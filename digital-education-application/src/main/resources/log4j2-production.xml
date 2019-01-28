@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration
+        xmlns="http://logging.apache.org/log4j/2.0/config"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://logging.apache.org/log4j/2.0/config ">
+    <Properties>
+        <Property name="path">logs</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout
+                    pattern="%-5p | %X{ClientId} | %X{RequestId} | %d{yyyy-MM-dd HH:mm:ss} | [%t] %C - %m%n"/>
+        </Console>
+        <RollingFile name="ApplicationLog"
+                     fileName="${path}/application.log"
+                     filePattern="${path}/archive/application-%d{yyyy-MM-dd}-%i.log.gz">
+            <Jsonlayout eventEol="true" compact="true">
+                <KeyValuePair key="requestId" value="$${ctx:requestId:-null}"/>
+            </Jsonlayout>
+            <PatternLayout
+                    pattern="%-5p | %X{ClientId} | %X{RequestId} | %d{yyyy-MM-dd HH:mm:ss} | [%t] %C{2} - %m%n"/>
+
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="500 MB"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="RequestLog"
+                     fileName="${path}/request.log"
+                     filePattern="${path}/archive/request-%d{yyyy-MM-dd}-%i.log.gz">
+
+            <PatternLayout
+                    pattern="%X{ServiceName} | %X{ClientId} | %X{RequestId} | %d{yyyy-MM-dd HH:mm:ss} | %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"
+                                           modulate="true"/>
+                <SizeBasedTriggeringPolicy size="500 MB"/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="INFO">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="ApplicationLog"/>
+        </Root>
+        <Logger name="org.apache" level="WARN"/>
+        <Logger name="httpclient" level="WARN"/>
+        <Logger
+                name="com.paytm.digital.education.application.config.aspect.LogAdvice"
+                level="DEBUG" additivity="true">
+            <AppenderRef ref="RequestLog"/>
+            <AppenderRef ref="STDOUT"/>
+        </Logger>
+    </Loggers>
+</Configuration>

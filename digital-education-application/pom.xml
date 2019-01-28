@@ -11,6 +11,12 @@
 
     <artifactId>digital-education-application</artifactId>
 
+    <properties>
+        <datadog.version>2.6.1</datadog.version>
+        <persona.version>0.0.1-SNAPSHOT</persona.version>
+        <swagger.version>2.9.2</swagger.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.paytm.digital.education</groupId>
@@ -22,6 +28,61 @@
             <artifactId>digital-education-explore</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.6</version>
+        </dependency>
+
+        <!-- AspectJ -->
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+        </dependency>
+
+        <!-- DataDog -->
+        <dependency>
+            <groupId>com.datadoghq</groupId>
+            <artifactId>java-dogstatsd-client</artifactId>
+            <version>${datadog.version}</version>
+        </dependency>
+
+        <!-- Authentication -->
+		<dependency>
+			<groupId>paytm.auth</groupId>
+			<artifactId>persona-acl-client</artifactId>
+			<version>${persona.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>net.sf.ehcache</groupId>
+					<artifactId>ehcache-core</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+        <dependency>
+            <groupId>com.paytm.digital.education</groupId>
+            <artifactId>digital-education-utilities</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>
