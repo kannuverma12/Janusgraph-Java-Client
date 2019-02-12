@@ -1,0 +1,56 @@
+Subscription Collection:
+
+db.createCollection("subscription",
+{
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: [
+        "user_id",
+        "entity",
+        "entity_id"
+      ],
+      properties: {
+        user_id: {
+          bsonType: "number",
+          description: "must be a number and is required"
+        },
+        entity: {
+          enum: [
+            "EXAM",
+            "COLLEGE",
+            "COURSE"
+          ],
+          description: "can only be one of the enum values"
+        },
+        entity_id: {
+          bsonType: "number",
+          description: "must be a number and is required"
+        },
+        status: {
+          enum: [
+            "SUBSCRIBED",
+            "UNSUBSCRIBED"
+          ],
+          description: "can only be one of the enum values"
+        },
+        created_at: {
+          bsonType: "date"
+        },
+        updated_at: {
+          bsonType: "date"
+        }
+      }
+    }
+  }
+});
+
+
+db.subscription.ensureIndex({
+  'user_id': 1,
+  'entity_id': 1,
+  'entity': 1
+},
+{
+  'unique': true
+});

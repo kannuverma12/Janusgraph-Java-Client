@@ -44,7 +44,7 @@ public class SwaggerConfig {
                         .description("X-CLIENT-ID header")
                         .modelRef(new ModelRef("string"))
                         .parameterType("header")
-                        .required(true)
+                        .required(false)
                         .build()));
     }
 

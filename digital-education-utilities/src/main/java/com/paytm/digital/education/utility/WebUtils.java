@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerMapping;
@@ -25,7 +26,7 @@ public class WebUtils {
             HandlerExecutionChain chain = mapping.getHandler(request);
             if (chain != null) {
                 HandlerMethod handler = (HandlerMethod) chain.getHandler();
-                String requestURI = getRequestMethodMappingURI(request.getMethod(), handler);
+                String requestURI = String.join(",", handler.getMethodAnnotation(RequestMapping.class).path());
                 return buildURIFromParts(baseControllerUri, requestURI);
             }
         } catch (Exception e) {
