@@ -23,27 +23,27 @@ import java.util.Date;
 public class Subscription {
 
     @Id
-    private ObjectId           id;
+    private ObjectId id;
 
     @Field("user_id")
-    private long               userId;
+    private long userId;
 
     @Field("entity")
     private EducationEntity entity;
 
     @Field("entity_id")
-    private long               entityId;
+    private long entityId;
 
     @Field("status")
     private SubscriptionStatus status;
 
     @CreatedDate
     @Field("created_at")
-    private Date               createdAt;
+    private Date createdAt;
 
     @LastModifiedDate
     @Field("updated_at")
-    private Date               lastModified;
+    private Date lastModified;
 
     public Subscription(long userId, EducationEntity subscriptionEntity, long clgId,
             SubscriptionStatus subscriptionStatus, Date createdAt, Date updatedAt) {

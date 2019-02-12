@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Handles all the business logic related to subscriptions.
  * TODO: Implement `UPSERT` - instead of handling on application level, move it to mongo repo
- * 
+ *
  * @author himanshujain
  */
 

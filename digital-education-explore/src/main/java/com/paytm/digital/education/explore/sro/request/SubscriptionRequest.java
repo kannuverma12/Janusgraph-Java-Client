@@ -17,8 +17,8 @@ public class SubscriptionRequest {
     private EducationEntity subscriptionEntity;
 
     @JsonProperty("entity_id")
-    private long               subscriptionEntityId;
+    private long subscriptionEntityId;
 
     @JsonProperty("user_id")
-    private long               userId;
+    private long userId;
 }
