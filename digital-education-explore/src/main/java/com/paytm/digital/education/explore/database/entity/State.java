@@ -1,5 +1,6 @@
 package com.paytm.digital.education.explore.database.entity;
 
+import com.paytm.digital.education.explore.enums.StateType;
 import lombok.Data;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -13,7 +14,11 @@ public class State {
     @Indexed(unique = true)
     private String name;
 
-    public State(String name) {
+    @Indexed
+    private StateType type;
+
+    public State(String name, StateType type) {
         this.name = name;
+        this.type = type;
     }
 }
