@@ -9,6 +9,7 @@
         <module>digital-education-coaching</module>
         <module>digital-education-utilities</module>
         <module>digital-education-application</module>
+        <module>digital-education-elasticsearch</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
