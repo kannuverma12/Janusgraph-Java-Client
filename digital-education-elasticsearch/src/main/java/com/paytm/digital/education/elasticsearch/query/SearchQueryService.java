@@ -20,13 +20,15 @@ import org.elasticsearch.search.sort.NestedSortBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
 import java.time.temporal.ValueRange;
 import java.util.HashMap;
 import java.util.Map;
 
-
-public class SearchQueryBuilder {
+@Service
+public class SearchQueryService {
 
     private QueryBuilder addQueryMapsIntoRequest(Map<String, QueryBuilder> searchQueries,
             Map<String, QueryBuilder> filterQueries) {
