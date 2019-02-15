@@ -1,5 +1,15 @@
 package com.paytm.digital.education.explore.enums;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public enum EducationEntity {
-    EXAM, INSTITUTE, COURSE;
+
+    @JsonProperty("exam")
+    EXAM,
+
+    @JsonProperty("institute")
+    INSTITUTE,
+
+    @JsonProperty("course")
+    COURSE;
 }

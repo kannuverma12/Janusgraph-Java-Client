@@ -6,6 +6,8 @@ import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.elasticsearch.query.SearchQueryService;
 import com.paytm.digital.education.elasticsearch.service.ElasticSearchService;
+import com.paytm.digital.education.utility.JsonUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -18,6 +20,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
+@Slf4j
 @Service
 public class ElasticSearchServiceImpl<T> implements ElasticSearchService<T> {
 
@@ -26,7 +29,7 @@ public class ElasticSearchServiceImpl<T> implements ElasticSearchService<T> {
     private RestHighLevelClient esClient;
 
     @Autowired
-    SearchQueryService          searchQueryService;
+    private SearchQueryService searchQueryService;
 
     @Override
     public ElasticResponse<T> executeSearch(ElasticRequest request, Class<T> type)
@@ -35,10 +38,10 @@ public class ElasticSearchServiceImpl<T> implements ElasticSearchService<T> {
         ElasticResponse<T> response = new ElasticResponse<T>();
 
         if (request.isSearchRequest()) {
-
             SearchRequest searchRequest = searchQueryService.buildRequest(request);
+            log.info("Elastic Search Request : {}", searchRequest.source().toString());
             SearchResponse searchResponse = esClient.search(searchRequest, RequestOptions.DEFAULT);
-
+            log.info("Elastic Search response : {}", JsonUtils.toJson(searchResponse));
 
             if (searchResponse.isTimedOut()) {
                 throw new TimeoutException();

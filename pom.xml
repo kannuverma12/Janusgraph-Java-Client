@@ -10,6 +10,7 @@
         <module>digital-education-utilities</module>
         <module>digital-education-application</module>
         <module>digital-education-elasticsearch</module>
+        <module>digital-education-search</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

@@ -7,6 +7,7 @@ import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.FilterField;
 import com.paytm.digital.education.elasticsearch.models.SearchField;
 import com.paytm.digital.education.elasticsearch.models.SortField;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -21,9 +22,8 @@ import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import java.time.temporal.ValueRange;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -122,6 +122,7 @@ public class SearchQueryService {
 
         String path;
         String fieldName;
+        float boost;
         Map<String, QueryBuilder> searchQueries = new HashMap<String, QueryBuilder>();
 
         for (SearchField field : request.getSearchFields()) {
@@ -132,6 +133,7 @@ public class SearchQueryService {
                         : field.getPath();
                 fieldName = path.equals(ESConstants.PRIMARY_FIELD_PATH) ? field.getName()
                         : path + '.' + field.getName();
+                boost = field.getBoost() == 0.0 ? ESConstants.DEFAULT_BOOST : field.getBoost();
 
                 if (!searchQueries.containsKey(path)) {
 
@@ -149,7 +151,7 @@ public class SearchQueryService {
                 }
 
                 ((MultiMatchQueryBuilder) searchQueries.get(path)).field(fieldName,
-                        field.getBoost());
+                        boost);
             }
         }
         return searchQueries;
@@ -165,7 +167,7 @@ public class SearchQueryService {
 
             if (field.getName() != null && field.getValues() != null) {
 
-                path = StringUtils.isEmpty(field.getPath()) ? ESConstants.PRIMARY_FIELD_PATH
+                path = StringUtils.isBlank(field.getPath()) ? ESConstants.PRIMARY_FIELD_PATH
                         : field.getPath();
                 fieldName = path.equals(ESConstants.PRIMARY_FIELD_PATH) ? field.getName()
                         : path + '.' + field.getName();
@@ -173,7 +175,7 @@ public class SearchQueryService {
 
                 if (field.getType() == FilterQueryType.TERMS) {
                     filtetQuery = QueryBuilders.termsQuery(fieldName,
-                            field.getValues());
+                            (Collection<?>) field.getValues());
                 } else if (field.getType() == FilterQueryType.RANGE) {
                     filtetQuery = QueryBuilders.rangeQuery(fieldName)
                             .from(((ValueRange) field.getValues()).getMinimum())
@@ -186,7 +188,7 @@ public class SearchQueryService {
                     filterQueries.put(path, QueryBuilders.boolQuery());
                 }
 
-                ((BoolQueryBuilder) filterQueries.get(field.getPath())).filter(filtetQuery);
+                ((BoolQueryBuilder) filterQueries.get(path)).filter(filtetQuery);
             }
         }
         return filterQueries;

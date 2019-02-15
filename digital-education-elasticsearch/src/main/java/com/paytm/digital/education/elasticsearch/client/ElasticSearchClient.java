@@ -11,14 +11,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ElasticSearchClient {
 
-    @Value("${spring.search.education.hostname}")
+    @Value("${spring.elasticsearch.education.hostname}")
     private String esSearchClusterHostName;
 
-    @Value("${spring.search.education.hostname}")
+    @Value("${spring.elasticsearch.education.scheme}")
     private String esSearchClusterScheme;
 
-    @Value("${spring.search.education.hostname}")
-    private int    esSearchClusterPort;
+    @Value("${spring.elasticsearch.education.port}")
+    private int esSearchClusterPort;
 
     @Bean(ESConstants.EDUCATION_ES_CLIENT)
     public RestHighLevelClient esClient() {

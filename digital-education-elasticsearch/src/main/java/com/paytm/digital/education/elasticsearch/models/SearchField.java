@@ -9,6 +9,6 @@ public class SearchField {
 
     private String path;
 
-    private Float boost;
+    private float boost;
 
 }
