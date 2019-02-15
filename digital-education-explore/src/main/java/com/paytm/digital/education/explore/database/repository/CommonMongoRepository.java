@@ -34,11 +34,15 @@ public class CommonMongoRepository {
         return executeQuery(mongoQuery, instance);
     }
 
-    public <T> List<String> getFieldsByGroup(Class<T> instance, String fieldGroup) {
-        String collectionName = context.getPersistentEntity(instance).getCollection();
-        Query mongoQuery = new Query(Criteria.where("name")
-                .is(fieldGroup).and("entity")
-                .is(collectionName));
+    public <T> List<String> getFieldsByGroup(Class<T> collectionClass, String fieldGroup) {
+        String collectionName = context.getPersistentEntity(collectionClass).getCollection();
+        return getFieldsByGroupAndCollectioName(collectionName, fieldGroup);
+    }
+
+    public List<String> getFieldsByGroupAndCollectioName(String collectionName, String fieldGroup) {
+        Query mongoQuery = new Query(Criteria
+            .where("name").is(fieldGroup)
+            .and("entity").is(collectionName));
         FieldGroup groupDetail = executeQuery(mongoQuery, FieldGroup.class);
         return groupDetail.getFields();
     }

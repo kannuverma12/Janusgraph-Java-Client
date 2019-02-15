@@ -1,6 +1,7 @@
 package com.paytm.digital.education.elasticsearch.models;
 
 import lombok.Data;
+
 import java.util.List;
 
 @Data

@@ -1,14 +1,14 @@
 package com.paytm.digital.education.explore.database.entity;
 
-import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.explore.enums.SubscribableEntityType;
 import com.paytm.digital.education.explore.enums.SubscriptionStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -19,20 +19,21 @@ import java.util.Date;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "subscription")
+@Document
 public class Subscription {
 
-    @Id
-    private ObjectId id;
+    private String id;
 
     @Field("user_id")
-    private long userId;
+    @JsonProperty("user_id")
+    private Long userId;
 
     @Field("entity")
-    private EducationEntity entity;
+    @JsonProperty("entity")
+    private SubscribableEntityType subscribableEntityType;
 
     @Field("entity_id")
-    private long entityId;
+    private Long entityId;
 
     @Field("status")
     private SubscriptionStatus status;
@@ -43,16 +44,28 @@ public class Subscription {
 
     @LastModifiedDate
     @Field("updated_at")
+    @JsonProperty("updated_at")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date lastModified;
 
-    public Subscription(long userId, EducationEntity subscriptionEntity, long clgId,
+    public Subscription(Long userId, SubscribableEntityType subscribableEntityType, Long entityId,
             SubscriptionStatus subscriptionStatus, Date createdAt, Date updatedAt) {
         this.userId = userId;
-        this.entity = subscriptionEntity;
-        this.entityId = clgId;
+        this.subscribableEntityType = subscribableEntityType;
+        this.entityId = entityId;
         this.status = subscriptionStatus;
         this.createdAt = createdAt;
         this.lastModified = updatedAt;
+    }
+
+    public Subscription(Long userId, SubscribableEntityType subscribableEntityType, Long entityId,
+                        SubscriptionStatus subscriptionStatus) {
+        this.userId = userId;
+        this.subscribableEntityType = subscribableEntityType;
+        this.entityId = entityId;
+        this.status = subscriptionStatus;
+        this.createdAt = new Date();
+        this.lastModified = new Date();
     }
 
 }

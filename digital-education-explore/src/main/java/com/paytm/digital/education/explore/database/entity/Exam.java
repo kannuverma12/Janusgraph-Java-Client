@@ -6,25 +6,24 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.explore.enums.PublishStatus;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.util.List;
 
 @Data
 @ToString
-@Document(collection = "exam")
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@NoArgsConstructor
 public class Exam {
 
-    @JsonIgnore
     @Id
-    private ObjectId id;
+    @Field("_id")
+    @JsonIgnore
+    private String id;
 
     @Field("exam_id")
     @JsonProperty("exam_id")
@@ -103,10 +102,12 @@ public class Exam {
     @JsonProperty("synonyms")
     private List<String> synonyms;
 
-    public Exam() {
+    public Exam(long examId) {
+        this.examId = examId;
     }
 
-    public Exam(long examId) {
+    public Exam(String examShortName, Long examId) {
+        this.examShortName = examShortName;
         this.examId = examId;
     }
 }

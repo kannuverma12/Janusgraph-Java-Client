@@ -4,16 +4,20 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.COU
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
 
+import com.paytm.digital.education.explore.daoresult.SubscribedEntityCount;
 import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.entity.Subscription;
-import com.paytm.digital.education.explore.enums.EducationEntity;
-import com.paytm.digital.education.explore.service.impl.EntityDetailsService;
-import com.paytm.digital.education.explore.service.impl.SubscriptionServiceImpl;
+import com.paytm.digital.education.explore.enums.SubscribableEntityType;
+import com.paytm.digital.education.explore.service.CommonMongoService;
+import com.paytm.digital.education.explore.service.EntityDetailsService;
+import com.paytm.digital.education.explore.service.SubscriptionService;
 import com.paytm.digital.education.explore.sro.request.SubscriptionRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,14 +29,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@Slf4j
 @AllArgsConstructor
 @RestController
 @RequestMapping("/v1")
+@Slf4j
 public class ExploreController {
 
-    private SubscriptionServiceImpl subscriptionServiceImpl;
-    private EntityDetailsService    entityDetailsService;
+    private SubscriptionService subscriptionService;
+    private EntityDetailsService entityDetailsService;
+    private CommonMongoService commonMongoService;
 
     @GetMapping("/ping")
     public String ping() {
@@ -42,9 +47,9 @@ public class ExploreController {
     @RequestMapping(method = RequestMethod.POST, path = "/subscribe")
     @ResponseBody
     public String subscribe(
-            @RequestBody SubscriptionRequest request) {
-        subscriptionServiceImpl.subscribe(request.getUserId(), request.getSubscriptionEntity(),
-                request.getSubscriptionEntityId());
+        @RequestBody SubscriptionRequest request) {
+        subscriptionService.subscribe(request.getUserId(), request.getSubscriptionEntity(),
+            request.getSubscriptionEntityId());
         return "success";
     }
 
@@ -75,21 +80,37 @@ public class ExploreController {
     @RequestMapping(method = RequestMethod.POST, path = "/unsubscribe")
     @ResponseBody
     public String unsubscribe(
-            @RequestBody SubscriptionRequest request) {
-        subscriptionServiceImpl.unsubscribe(request.getUserId(), request.getSubscriptionEntity(),
-                request.getSubscriptionEntityId());
+        @RequestBody SubscriptionRequest request) {
+
+        subscriptionService.unsubscribe(request.getUserId(), request.getSubscriptionEntity(),
+            request.getSubscriptionEntityId());
         return "success";
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/subscriptions/count")
+    @ResponseBody
+    public List<SubscribedEntityCount> subscriptionCount(
+        @RequestParam("user_id") long userId,
+        @RequestParam("entities") List<SubscribableEntityType> subscribableEntityTypeList) {
+        return subscriptionService.fetchSubscribedEntityCount(userId, subscribableEntityTypeList);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/subscriptions")
     @ResponseBody
-    public List<Subscription> subscriptions(
-            @RequestParam("user_id") long userId,
-            @RequestParam(value = "entities",
-                    required = false) List<EducationEntity> subscriptionEntitiesList) {
-        return subscriptionServiceImpl.fetchSubscriptionList(userId, subscriptionEntitiesList);
+    public ResponseEntity subscriptions(
+        @RequestParam("user_id") long userId,
+        @RequestParam(value = "entity") SubscribableEntityType subscriptionEntity,
+        @RequestParam(value = "fields", required = false) List<String> fields,
+        @RequestParam(value = "field_group", required = false) String fieldGroup,
+        @RequestParam(value = "offset", required = false, defaultValue = "0") long offset,
+        @RequestParam(value = "limit", required = false, defaultValue = "10") long limit) {
+
+        if (subscriptionService.isFieldsAndFieldGroupParamsInvalid(fields, fieldGroup)) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        List<Subscription> userSubscriptionResultList = subscriptionService
+            .fetchSubscriptions(userId, subscriptionEntity, fields, fieldGroup, offset, limit);
+        return ResponseEntity.ok(userSubscriptionResultList);
     }
-
-
-
 }

@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @Repository
-public interface CollegeRepository extends MongoRepository<Institute, String> {
+public interface InstituteRepository extends MongoRepository<Institute, String> {
 
     Institute findByInstituteId(long id);
 

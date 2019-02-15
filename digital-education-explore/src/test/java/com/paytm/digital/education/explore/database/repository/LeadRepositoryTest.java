@@ -15,10 +15,8 @@ import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
 import de.flapdoodle.embed.process.runtime.Network;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -34,7 +32,7 @@ public class LeadRepositoryTest {
 
     private static String mongoHost = "localhost";
 
-    private static int mongoPort = 27017;
+    private static int mongoPort = 27018;
 
     private static MongodExecutable mongoExe;
 
@@ -58,7 +56,7 @@ public class LeadRepositoryTest {
         leadToAdd.setContactNumber("NewNumber");
         leadToAdd.setContactEmail("dummy-new@email.com");
         leadToAdd.setEntityId("newDummyEntityId");
-        leadToAdd.setEntityType(EducationEntity.COLLEGE);
+        leadToAdd.setEntityType(EducationEntity.INSTITUTE);
         leadToInsert = leadToAdd;
 
         Lead existingLead = new Lead();
@@ -67,7 +65,7 @@ public class LeadRepositoryTest {
         existingLead.setContactNumber("ExistingNumber");
         existingLead.setContactEmail("existing@email.com");
         existingLead.setEntityId("existingEntityId");
-        existingLead.setEntityType(EducationEntity.COLLEGE);
+        existingLead.setEntityType(EducationEntity.INSTITUTE);
         existingLead.setAction(LeadAction.GetInTouch);
         existingLead.setActionCount(1);
 

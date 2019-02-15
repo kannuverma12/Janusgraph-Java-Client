@@ -1,6 +1,7 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.explore.service.EntityDetailsService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -14,10 +15,11 @@ import java.util.stream.Collectors;
 @Slf4j
 @AllArgsConstructor
 @Service
-public class EntityDetailsService {
+public class EntityDetailsServiceImpl implements EntityDetailsService {
 
     private CommonMongoRepository commonMongoRepository;
 
+    @Override
     public <T> T getEntityDetails(String keyName, long entityId, Class<T> type,
             String fieldGroup, String fields) {
         if (StringUtils.isNotBlank(fieldGroup) && StringUtils.isNotBlank(fields)) {

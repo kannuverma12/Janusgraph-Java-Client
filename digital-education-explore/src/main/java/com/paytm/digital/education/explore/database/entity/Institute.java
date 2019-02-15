@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.explore.enums.CollegeEntityType;
 import lombok.Data;
 import lombok.ToString;
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -17,13 +16,13 @@ import java.util.List;
 
 @Data
 @ToString
-@Document(collection = "institute")
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Document
 public class Institute {
 
+    @Field("_id")
     @JsonIgnore
-    @Id
-    private ObjectId id;
+    private String id;
 
     @Field("institute_id")
     @JsonProperty("institute_id")
@@ -121,5 +120,10 @@ public class Institute {
     @Field("rankings")
     @JsonProperty("rankings")
     private List<Ranking> rankings;
+
+    public Institute(String commonName, Long instituteId) {
+        this.commonName = commonName;
+        this.instituteId = instituteId;
+    }
 
 }
