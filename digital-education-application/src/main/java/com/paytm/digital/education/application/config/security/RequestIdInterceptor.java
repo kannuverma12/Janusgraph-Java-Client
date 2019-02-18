@@ -1,7 +1,7 @@
 package com.paytm.digital.education.application.config.security;
 
-import com.paytm.digital.education.application.constant.ErrorCode;
-import com.paytm.digital.education.application.exception.InvalidRequestException;
+import com.paytm.digital.education.constant.ErrorCode;
+import com.paytm.digital.education.exception.InvalidRequestException;
 import com.paytm.digital.education.utility.CommonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

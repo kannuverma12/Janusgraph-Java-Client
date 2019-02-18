@@ -1,15 +1,17 @@
-package com.paytm.digital.education.application.exception;
+package com.paytm.digital.education.exception;
 
-import com.paytm.digital.education.application.constant.ErrorCode;
+import com.paytm.digital.education.constant.ErrorCode;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
+@ResponseStatus(HttpStatus.NOT_FOUND)
 public class ResourceNotFoundException extends GlobalException {
 
     private static final long serialVersionUID = 9179933784421097052L;

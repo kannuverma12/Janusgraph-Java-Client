@@ -5,7 +5,7 @@ import com.paytm.digital.education.application.config.aspect.LogRequestResponse;
 import com.paytm.digital.education.application.config.aspect.RequestRate;
 import com.paytm.digital.education.application.config.aspect.Timed;
 import com.paytm.digital.education.application.config.metric.DataDogClient;
-import com.paytm.digital.education.application.exception.ExceptionHelper;
+import com.paytm.digital.education.exception.ExceptionHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

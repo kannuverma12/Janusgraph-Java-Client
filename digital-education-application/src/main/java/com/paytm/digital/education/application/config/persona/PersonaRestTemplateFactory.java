@@ -1,8 +1,8 @@
 package com.paytm.digital.education.application.config.persona;
 
 import com.paytm.digital.education.application.constant.Constant;
-import com.paytm.digital.education.application.constant.ErrorCode;
-import com.paytm.digital.education.application.exception.GlobalException;
+import com.paytm.digital.education.constant.ErrorCode;
+import com.paytm.digital.education.exception.GlobalException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;

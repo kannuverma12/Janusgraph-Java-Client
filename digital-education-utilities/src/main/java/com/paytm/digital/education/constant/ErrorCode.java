@@ -1,4 +1,4 @@
-package com.paytm.digital.education.application.constant;
+package com.paytm.digital.education.constant;
 
 import lombok.Getter;
 
@@ -7,7 +7,7 @@ public enum ErrorCode {
 
     METHOD_ARGUMENTS("001", "Invalid request - Method Arguments"),
     MALFORMED_JSON_REQUEST("002", "Malformed Json Request"),
-    UNAUTHORIZED_REQUEST("_003", "Unauthroized Request"),
+    UNAUTHORIZED_REQUEST("003", "Unauthorized Request"),
     UNSUPPORTED_MEDIATYPE("004", "Unsupported Media Type"),
 
     DP_INVALID_CALL("DP_001", "Dependency - Invalid API/DB Call"),
@@ -26,7 +26,7 @@ public enum ErrorCode {
     private final String code;
     private final String description;
 
-    private ErrorCode(String code, String description) {
+    ErrorCode(String code, String description) {
         this.code = code;
         this.description = description;
     }

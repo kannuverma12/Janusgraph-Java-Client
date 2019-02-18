@@ -1,6 +1,6 @@
-package com.paytm.digital.education.application.exception;
+package com.paytm.digital.education.exception;
 
-import com.paytm.digital.education.application.constant.ErrorCode;
+import com.paytm.digital.education.constant.ErrorCode;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

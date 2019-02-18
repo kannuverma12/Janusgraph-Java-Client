@@ -1,8 +1,8 @@
-package com.paytm.digital.education.application.exception;
+package com.paytm.digital.education.exception;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.paytm.digital.education.application.constant.ErrorCode;
+import com.paytm.digital.education.constant.ErrorCode;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.springframework.beans.factory.annotation.Autowired;
