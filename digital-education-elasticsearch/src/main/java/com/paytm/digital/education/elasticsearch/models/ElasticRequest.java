@@ -23,6 +23,8 @@ public class ElasticRequest {
 
     private Integer          limit;
 
+    private boolean          isAggregationRequest;
+
     private boolean          isSearchRequest;
 
 }

@@ -1,63 +1,100 @@
 package com.paytm.digital.education.elasticsearch.service.impl;
 
 import com.paytm.digital.education.elasticsearch.constants.ESConstants;
+import com.paytm.digital.education.elasticsearch.deserializer.AggregationResponseDeserializer;
 import com.paytm.digital.education.elasticsearch.deserializer.SearchResponseDeserializer;
+import com.paytm.digital.education.elasticsearch.models.AggregationResponse;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
-import com.paytm.digital.education.elasticsearch.query.SearchQueryService;
+import com.paytm.digital.education.elasticsearch.query.AggregationQueryBuilderService;
+import com.paytm.digital.education.elasticsearch.query.SearchQueryBuilderService;
 import com.paytm.digital.education.elasticsearch.service.ElasticSearchService;
-import com.paytm.digital.education.utility.JsonUtils;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 @Slf4j
 @Service
-public class ElasticSearchServiceImpl<T> implements ElasticSearchService<T> {
+@AllArgsConstructor
+public class ElasticSearchServiceImpl implements ElasticSearchService {
 
     @Qualifier(ESConstants.EDUCATION_ES_CLIENT)
-    @Autowired
-    private RestHighLevelClient esClient;
+    private RestHighLevelClient             esClient;
 
-    @Autowired
-    private SearchQueryService searchQueryService;
+    private SearchQueryBuilderService       searchQueryService;
+
+    private AggregationQueryBuilderService  aggregationQueryService;
+
+    private AggregationResponseDeserializer aggregationResponseDes;
+
+    private SearchResponseDeserializer      searchResponseDes;
 
     @Override
-    public ElasticResponse<T> executeSearch(ElasticRequest request, Class<T> type)
+    public <T> ElasticResponse<T> executeSearch(ElasticRequest request, Class<T> type)
             throws IOException, TimeoutException {
 
         ElasticResponse<T> response = new ElasticResponse<T>();
 
         if (request.isSearchRequest()) {
-            SearchRequest searchRequest = searchQueryService.buildRequest(request);
-            log.info("Elastic Search Request : {}", searchRequest.source().toString());
-            SearchResponse searchResponse = esClient.search(searchRequest, RequestOptions.DEFAULT);
-            log.info("Elastic Search response : {}", JsonUtils.toJson(searchResponse));
 
-            if (searchResponse.isTimedOut()) {
+            SearchRequest elasticSearchRequest = searchQueryService.buildRequest(request);
+            log.info("Elastic Search Request (Search) : {}",
+                    elasticSearchRequest.source().toString());
+
+            SearchResponse elasticSearchResponse =
+                    esClient.search(elasticSearchRequest, RequestOptions.DEFAULT);
+            log.info("Elastic Search response (Search) : {}", elasticSearchResponse.toString());
+
+            long timeTakenInElasticSearchQueryExecution = elasticSearchResponse.getTook().micros();
+
+            if (elasticSearchResponse.isTimedOut()) {
                 throw new TimeoutException();
             }
-
-            SearchResponseDeserializer<T> searchResponseDes = new SearchResponseDeserializer<T>();
-
-            long timeTaken = searchResponse.getTook().micros();
-            List<T> documents = searchResponseDes.formatResponse(searchResponse, type, response);
-
+            /**
+             * Deserialise ES response into list for document of type 'T' provided by the caller.
+             */
+            List<T> documents = searchResponseDes.formatResponse(elasticSearchResponse, type);
             response.setDocuments(documents);
-            response.setSearchQueryTime(timeTaken);
-
+            response.setSearchQueryExecutionTime(timeTakenInElasticSearchQueryExecution);
         }
 
+        if (request.isAggregationRequest()) {
+
+            SearchRequest elasticAggregationRequest = aggregationQueryService.buildRequest(request);
+            log.info("Elastic Search Request (Aggregation) : {}",
+                    elasticAggregationRequest.source().toString());
+
+            SearchResponse elasticAggregationResponse =
+                    esClient.search(elasticAggregationRequest, RequestOptions.DEFAULT);
+            log.info("Elastic Search response (Aggregation) : {}",
+                    elasticAggregationResponse.toString());
+
+            long timeTakenInElasticFilterQueryExecution =
+                    elasticAggregationResponse.getTook().micros();
+
+            if (elasticAggregationResponse.isTimedOut()) {
+                throw new TimeoutException();
+            }
+            
+            /**
+             * Deserialise ES aggregation response into a generic response. A map of key(field name)
+             * and value (Aggregation data)
+             */
+            Map<String, AggregationResponse> aggregationResponse =
+                    aggregationResponseDes.formatResponse(elasticAggregationResponse, request);
+            response.setAggregationResponse(aggregationResponse);
+            response.setAggregationQueryExecutionTime(timeTakenInElasticFilterQueryExecution);
+        }
+        
         return response;
     }
-
 }

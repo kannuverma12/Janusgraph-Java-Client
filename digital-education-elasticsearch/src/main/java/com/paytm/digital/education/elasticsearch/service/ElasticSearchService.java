@@ -6,9 +6,9 @@ import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-public interface ElasticSearchService<T> {
+public interface ElasticSearchService {
 
-    public  ElasticResponse<T> executeSearch(ElasticRequest request, Class<T> type)
+    public  <T> ElasticResponse<T> executeSearch(ElasticRequest request, Class<T> type)
             throws IOException, TimeoutException;
 
 }
