@@ -20,6 +20,7 @@ import com.paytm.digital.education.explore.response.dto.AutoSuggestData;
 import com.paytm.digital.education.explore.response.dto.AutoSuggestResponse;
 import com.paytm.digital.education.explore.response.dto.SuggestResult;
 import com.paytm.digital.education.search.service.AutoSuggestionService;
+import com.paytm.digital.education.utility.HierarchyIdentifierUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
+import javax.annotation.PostConstruct;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -39,6 +41,12 @@ import java.util.stream.Collectors;
 public class AutoSuggestServiceImpl {
 
     private AutoSuggestionService autoSuggestionService;
+    private Map<String, String> suggestClassLevelMap;
+
+    @PostConstruct
+    private void generateLevelMap() {
+        suggestClassLevelMap = HierarchyIdentifierUtils.getClassHierarchy(AutoSuggestEsData.class);
+    }
 
     public AutoSuggestResponse getSuggestions(String searchTerm, List<EducationEntity> entities) {
 
@@ -63,6 +71,8 @@ public class AutoSuggestServiceImpl {
         elasticRequest.setOffSet(DEFAULT_OFFSET);
         elasticRequest.setLimit(DEFAULT_SIZE);
         elasticRequest.setSearchRequest(true);
+        String filterFieldPath = suggestClassLevelMap.get(ENTITY_TYPE);
+
         if (!CollectionUtils.isEmpty(entities)) {
             FilterField[] filterFields = new FilterField[1];
             filterFields[0] = new FilterField();
@@ -70,13 +80,15 @@ public class AutoSuggestServiceImpl {
             filterFields[0].setType(FilterQueryType.TERMS);
             List<String> values = entities.stream().map(item -> item.name().toLowerCase()).collect(Collectors.toList());
             filterFields[0].setValues(values);
-
+            filterFields[0].setPath(filterFieldPath);
             elasticRequest.setFilterFields(filterFields);
         }
 
+        String searchFieldPath = suggestClassLevelMap.get(NAMES);
         SearchField[] searchFields = new SearchField[1];
         searchFields[0] = new SearchField();
         searchFields[0].setName(NAMES);
+        searchFields[0].setPath(searchFieldPath);
         elasticRequest.setSearchFields(searchFields);
 
         SortField[] sortFields = new SortField[1];
