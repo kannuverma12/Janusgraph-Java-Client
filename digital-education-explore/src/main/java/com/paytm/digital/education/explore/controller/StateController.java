@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EDUCATION_BASE_URL;
+
 @RestController
-@RequestMapping("/v1")
+@RequestMapping(EDUCATION_BASE_URL)
 @AllArgsConstructor
 public class StateController {
 

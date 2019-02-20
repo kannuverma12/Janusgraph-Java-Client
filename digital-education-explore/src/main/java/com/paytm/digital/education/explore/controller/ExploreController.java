@@ -3,6 +3,7 @@ package com.paytm.digital.education.explore.controller;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EDUCATION_BASE_URL;
 
 import com.paytm.digital.education.explore.daoresult.SubscribedEntityCount;
 import com.paytm.digital.education.explore.database.entity.Course;
@@ -31,7 +32,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/v1")
+@RequestMapping(EDUCATION_BASE_URL)
 @Slf4j
 public class ExploreController {
 

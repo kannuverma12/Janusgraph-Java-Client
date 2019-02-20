@@ -18,4 +18,6 @@ public interface ExploreConstants {
     public static final String ENTITY_TYPE    = "entity_type";
     public static final String AUTOSUGGEST_OFFICIAL_NAME    = "official_name";
     public static final String NAMES    = "names";
+
+    public static final String EDUCATION_BASE_URL = "/education/explore/v1";
 }
