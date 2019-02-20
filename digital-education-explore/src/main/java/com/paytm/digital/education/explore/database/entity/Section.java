@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.explore.enums.WebLayout;
 import lombok.Data;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -21,6 +22,8 @@ import java.util.Map;
 public class Section {
     @JsonIgnore
     private String id;
+
+    @Indexed(unique = true)
     private String name;
     private String label;
     private Layout layout;
