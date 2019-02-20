@@ -1,11 +1,12 @@
 package com.paytm.digital.education.utility;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.experimental.UtilityClass;
 
 /**
@@ -23,10 +24,11 @@ public class HierarchyIdentifierUtils {
 
     private final String startLevelName          = "";
     private final String keyNameInJsonAnnotation = "value=";
+    private final String jsonValidPropertyName   = "JsonProperty";
 
 
     /**
-     * Takes care of json annotated name for now 
+     * Takes care of json annotated name for now
      * TODO: add functionalities as and when required
      */
     private static void iterateClass(Class<?> cls, Map<String, String> hierarchyMap,
@@ -37,22 +39,13 @@ public class HierarchyIdentifierUtils {
         for (Field field : fields) {
 
             String fieldName = field.getName();
-            Annotation[] annotationArr = field.getAnnotations();
 
-            /*
-             * extract value field from the below annotation str:
-             * `@com.fasterxml.jackson.annotation.JsonProperty(index=-1, access=AUTO,
-             * value=exams_accepted, required=false, defaultValue=)`
-             */
-            if (annotationArr.length != 0) {
-                for (Annotation val : annotationArr) {
-                    fieldName = CommonUtils.extractValueOfSubstringKey(val.toString(),
-                            keyNameInJsonAnnotation, ",");
-                }
+            if (field.isAnnotationPresent(JsonProperty.class)) {
+                JsonProperty annotation = field.getAnnotation(JsonProperty.class);
+                fieldName = annotation.value();
             }
 
-            String levelName = hierarchyPath.equals(startLevelName) ? fieldName
-                    : hierarchyPath + "." + fieldName;
+            String levelName = hierarchyPath.equals(startLevelName) ? fieldName : hierarchyPath + "." + fieldName;
             hierarchyMap.put(fieldName, hierarchyPath);
 
             Type type = field.getGenericType();

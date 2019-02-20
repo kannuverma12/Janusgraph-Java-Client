@@ -177,6 +177,7 @@ public class AggregationQueryBuilderService {
             switch (order.getOrder()) {
                 case ASC:
                     bucketsOrder = BucketOrder.key(true);
+                    break;
                 case DESC:
                 default:
                     bucketsOrder = BucketOrder.key(false);
@@ -185,6 +186,7 @@ public class AggregationQueryBuilderService {
             switch (order.getOrder()) {
                 case ASC:
                     bucketsOrder = BucketOrder.count(true);
+                    break;
                 case DESC:
                 default:
                     bucketsOrder = BucketOrder.count(false);
