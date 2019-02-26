@@ -43,5 +43,5 @@ public interface ExploreConstants {
     public static final String EXAMS_ACCEPTED = "exams";
     public static final String FEES           = "fees";
 
-    public static final String EDUCATION_BASE_URL = "/education-backend/explore/v1";
+    public static final String EDUCATION_BASE_URL = "/explore";
 }

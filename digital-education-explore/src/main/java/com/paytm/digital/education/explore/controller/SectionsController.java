@@ -19,7 +19,7 @@ public class SectionsController {
 
     private PageService pageService;
 
-    @GetMapping("page/{pageName}/sections")
+    @GetMapping("/v1/page/{pageName}/sections")
     public Map<String, Section> getPageSections(@PathVariable("pageName") String pageName) {
         return pageService.getPageSections(pageName);
     }

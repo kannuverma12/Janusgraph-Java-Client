@@ -16,7 +16,7 @@ public class StreamController {
 
     private StreamService streamService;
 
-    @RequestMapping(method = RequestMethod.GET, path = "/streams")
+    @RequestMapping(method = RequestMethod.GET, path = "/v1/streams")
     public Iterable<Stream> getStreams() {
         return streamService.getAllStreams();
     }

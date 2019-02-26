@@ -17,9 +17,9 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EDU
 public class LeadController {
     private LeadService leadService;
 
-    @PostMapping("lead")
+    @PostMapping("/auth/v1/lead")
     public void captureLead(@RequestBody Lead lead,
-                            @RequestHeader("x-user-id") String userId) {
+                            @RequestHeader("x-user-id") long userId) {
         lead.setUserId(userId);
         leadService.captureLead(lead);
     }

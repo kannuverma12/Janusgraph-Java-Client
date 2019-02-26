@@ -22,7 +22,4 @@ public class SubscriptionRequest {
     @Min(1)
     private long subscriptionEntityId;
 
-    @JsonProperty("user_id")
-    @Min(1)
-    private long userId;
 }

@@ -23,7 +23,7 @@ public class AutoSuggestController {
     private AutoSuggestServiceImpl autoSuggestServiceImpl;
     private AutoSuggestValidator autoSuggestValidator;
 
-    @RequestMapping(method = RequestMethod.GET, path = "/autosuggest")
+    @RequestMapping(method = RequestMethod.GET, path = "/v1/autosuggest")
     public @ResponseBody AutoSuggestResponse autosuggest(@RequestParam("query") String query,
             @RequestParam(value = "entities") List<EducationEntity> entities) {
 

@@ -16,7 +16,7 @@ public class StateController {
 
     private StateService stateService;
 
-    @RequestMapping(method = RequestMethod.GET, path = "/states")
+    @RequestMapping(method = RequestMethod.GET, path = "/v1/states")
     public Iterable<State> getStates() {
         return stateService.getAllStates();
     }

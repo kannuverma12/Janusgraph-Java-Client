@@ -29,7 +29,7 @@ public class Lead {
      */
     @JsonIgnore
     @Field(Constants.USER_ID)
-    private String userId;
+    private Long userId;
 
     @Field(Constants.CONTACT_NAME)
     @NotBlank

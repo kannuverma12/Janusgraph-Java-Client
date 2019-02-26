@@ -22,7 +22,7 @@ public class SearchController {
     private SearchRequestValidator searchRequestValidator;
     private SearchServiceImpl      searchServiceImpl;
 
-    @PostMapping("/search")
+    @PostMapping("/auth/v1/search")
     public @ResponseBody SearchResponse search(@RequestBody SearchRequest searchRequest) throws
             Exception {
         searchRequestValidator.validate(searchRequest);
