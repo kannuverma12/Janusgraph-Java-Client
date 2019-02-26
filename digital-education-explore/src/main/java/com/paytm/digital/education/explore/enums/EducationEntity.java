@@ -11,5 +11,11 @@ public enum EducationEntity {
     INSTITUTE,
 
     @JsonProperty("course")
-    COURSE;
+    COURSE,
+
+    @JsonProperty("state")
+    STATE,
+
+    @JsonProperty("city")
+    CITY;
 }

@@ -17,6 +17,7 @@ import org.elasticsearch.search.aggregations.metrics.max.Max;
 import org.elasticsearch.search.aggregations.metrics.min.Min;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +33,13 @@ public class AggregationResponseDeserializer {
         String key;
         long count;
         List<Bucket> buckets = new ArrayList<>();
-        Terms termsAggregation = filterAggregation.getAggregations().get(aggregationName);
+        Terms termsAggregation;
+        if (path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
+            termsAggregation = filterAggregation.getAggregations().get(aggregationName);
+        } else {
+            Nested nestedAgg = filterAggregation.getAggregations().get(aggregationName);
+            termsAggregation = nestedAgg.getAggregations().get(aggregationName);
+        }
 
         for (Terms.Bucket esRespBucket : termsAggregation.getBuckets()) {
             key = esRespBucket.getKeyAsString();
@@ -46,23 +53,34 @@ public class AggregationResponseDeserializer {
                         esRespBucket.getAggregations().get(aggregationName);
                 count = childAggregation.getDocCount();
             }
-            
+
             buckets.add(new Bucket(key, count));
         }
-        
+
         aggregationResponse.setBuckets(buckets);
-        
+
         return aggregationResponse;
     }
 
     private AggregationResponse getBucketsFromMetricAggregationResponse(Filter filterAggregation,
-            String aggregationName) {
+            String aggregationName, String path) {
 
         MetricAggregationResponse aggregationResponse = new MetricAggregationResponse();
-        Min minAggregation = filterAggregation.getAggregations()
-                .get(aggregationName + ESConstants.MIN_AGGREGATION_SUFFIX);
-        Max maxAggregation = filterAggregation.getAggregations()
-                .get(aggregationName + ESConstants.MAX_AGGREGATION_SUFFIX);
+        Min minAggregation;
+        Max maxAggregation;
+
+        if (path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
+            minAggregation = filterAggregation.getAggregations()
+                    .get(aggregationName + ESConstants.MIN_AGGREGATION_SUFFIX);
+            maxAggregation = filterAggregation.getAggregations()
+                    .get(aggregationName + ESConstants.MAX_AGGREGATION_SUFFIX);
+        } else {
+            Nested nestedAgg = filterAggregation.getAggregations().get(aggregationName);
+            minAggregation = nestedAgg.getAggregations()
+                    .get(aggregationName + ESConstants.MIN_AGGREGATION_SUFFIX);
+            maxAggregation = nestedAgg.getAggregations()
+                    .get(aggregationName + ESConstants.MAX_AGGREGATION_SUFFIX);
+        }
 
         String key = aggregationName;
         double minValue = minAggregation.getValue();
@@ -85,7 +103,7 @@ public class AggregationResponseDeserializer {
             String path;
             String fieldName;
             String aggregationName;
-            
+
             for (AggregateField field : request.getAggregateFields()) {
                 path = StringUtils.isEmpty(field.getPath())
                         ? ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS
@@ -95,22 +113,15 @@ public class AggregationResponseDeserializer {
                                 : path + '.' + field.getName();
                 fieldName = field.getName();
                 AggregationResponse aggResponse = null;
-                Filter filterAggregation;
-
-                if (path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
-                    filterAggregation = esResponse.getAggregations().get(aggregationName);
-                } else {
-                    Nested nestedAgg = esResponse.getAggregations().get(aggregationName);
-                    filterAggregation = nestedAgg.getAggregations().get(aggregationName);
-                }
-
+                Filter filterAggregation = esResponse.getAggregations().get(aggregationName);
+                
                 if (field.getType() == AggregationType.TERMS) {
                     aggResponse =
                             getBucketsFromTermsAggregationResponse(filterAggregation,
                                     aggregationName, path);
                 } else if (field.getType() == AggregationType.MINMAX) {
                     aggResponse = getBucketsFromMetricAggregationResponse(filterAggregation,
-                            aggregationName);
+                            aggregationName, path);
                 }
 
                 if (aggResponse != null) {
@@ -118,7 +129,7 @@ public class AggregationResponseDeserializer {
                 }
             }
         }
-        
+
         return responseMap;
     }
 }

@@ -11,6 +11,8 @@ public class ElasticResponse<T> {
 
     private long                             aggregationQueryExecutionTime;
 
+    private long                             totalSearchResultsCount;
+
     private List<T>                          documents;
 
     private Map<String, AggregationResponse> aggregationResponse;

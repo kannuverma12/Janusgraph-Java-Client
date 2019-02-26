@@ -54,15 +54,17 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
                     esClient.search(elasticSearchRequest, RequestOptions.DEFAULT);
             log.info("Elastic Search response (Search) : {}", elasticSearchResponse.toString());
 
-            long timeTakenInElasticSearchQueryExecution = elasticSearchResponse.getTook().micros();
-
             if (elasticSearchResponse.isTimedOut()) {
                 throw new TimeoutException();
             }
+
+            long totalDocumentsCount = elasticSearchResponse.getHits().totalHits;
+            long timeTakenInElasticSearchQueryExecution = elasticSearchResponse.getTook().micros();
             /**
              * Deserialise ES response into list for document of type 'T' provided by the caller.
              */
             List<T> documents = searchResponseDes.formatResponse(elasticSearchResponse, type);
+            response.setTotalSearchResultsCount(totalDocumentsCount);
             response.setDocuments(documents);
             response.setSearchQueryExecutionTime(timeTakenInElasticSearchQueryExecution);
         }
@@ -84,7 +86,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
             if (elasticAggregationResponse.isTimedOut()) {
                 throw new TimeoutException();
             }
-            
+
             /**
              * Deserialise ES aggregation response into a generic response. A map of key(field name)
              * and value (Aggregation data)
@@ -94,7 +96,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
             response.setAggregationResponse(aggregationResponse);
             response.setAggregationQueryExecutionTime(timeTakenInElasticFilterQueryExecution);
         }
-        
+
         return response;
     }
 }

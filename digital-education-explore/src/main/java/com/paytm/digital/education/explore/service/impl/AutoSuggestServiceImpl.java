@@ -2,11 +2,10 @@ package com.paytm.digital.education.explore.service.impl;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTOSUGGEST_ANALYZER;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTOSUGGEST_INDEX;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTOSUGGEST_OFFICIAL_NAME;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTOSUGGEST_NAMES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_OFFSET;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_SIZE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.NAMES;
 
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
@@ -16,9 +15,9 @@ import com.paytm.digital.education.elasticsearch.models.SearchField;
 import com.paytm.digital.education.elasticsearch.models.SortField;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.es.model.AutoSuggestEsData;
-import com.paytm.digital.education.explore.response.dto.AutoSuggestData;
-import com.paytm.digital.education.explore.response.dto.AutoSuggestResponse;
-import com.paytm.digital.education.explore.response.dto.SuggestResult;
+import com.paytm.digital.education.explore.response.dto.suggest.AutoSuggestData;
+import com.paytm.digital.education.explore.response.dto.suggest.AutoSuggestResponse;
+import com.paytm.digital.education.explore.response.dto.suggest.SuggestResult;
 import com.paytm.digital.education.search.service.AutoSuggestionService;
 import com.paytm.digital.education.utility.HierarchyIdentifierUtils;
 import lombok.AllArgsConstructor;
@@ -32,8 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
-import javax.annotation.PostConstruct;
 import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
 
 @Slf4j
 @AllArgsConstructor
@@ -41,7 +40,7 @@ import java.util.stream.Collectors;
 public class AutoSuggestServiceImpl {
 
     private AutoSuggestionService autoSuggestionService;
-    private Map<String, String> suggestClassLevelMap;
+    private Map<String, String>   suggestClassLevelMap;
 
     @PostConstruct
     private void generateLevelMap() {
@@ -78,16 +77,17 @@ public class AutoSuggestServiceImpl {
             filterFields[0] = new FilterField();
             filterFields[0].setName(ENTITY_TYPE);
             filterFields[0].setType(FilterQueryType.TERMS);
-            List<String> values = entities.stream().map(item -> item.name().toLowerCase()).collect(Collectors.toList());
+            List<String> values = entities.stream().map(item -> item.name().toLowerCase())
+                    .collect(Collectors.toList());
             filterFields[0].setValues(values);
             filterFields[0].setPath(filterFieldPath);
             elasticRequest.setFilterFields(filterFields);
         }
 
-        String searchFieldPath = suggestClassLevelMap.get(NAMES);
+        String searchFieldPath = suggestClassLevelMap.get(AUTOSUGGEST_NAMES);
         SearchField[] searchFields = new SearchField[1];
         searchFields[0] = new SearchField();
-        searchFields[0].setName(NAMES);
+        searchFields[0].setName(AUTOSUGGEST_NAMES);
         searchFields[0].setPath(searchFieldPath);
         elasticRequest.setSearchFields(searchFields);
 

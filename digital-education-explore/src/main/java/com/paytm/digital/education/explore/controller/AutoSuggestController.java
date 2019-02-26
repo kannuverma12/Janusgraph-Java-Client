@@ -1,7 +1,7 @@
 package com.paytm.digital.education.explore.controller;
 
 import com.paytm.digital.education.explore.enums.EducationEntity;
-import com.paytm.digital.education.explore.response.dto.AutoSuggestResponse;
+import com.paytm.digital.education.explore.response.dto.suggest.AutoSuggestResponse;
 import com.paytm.digital.education.explore.service.impl.AutoSuggestServiceImpl;
 import com.paytm.digital.education.explore.validators.AutoSuggestValidator;
 import lombok.AllArgsConstructor;

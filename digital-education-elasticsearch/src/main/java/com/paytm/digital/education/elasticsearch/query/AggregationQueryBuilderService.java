@@ -9,6 +9,7 @@ import com.paytm.digital.education.elasticsearch.models.BucketSort;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.FilterField;
 import com.paytm.digital.education.elasticsearch.models.SearchField;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -21,12 +22,14 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.max.MaxAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.min.MinAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import java.time.temporal.ValueRange;
+
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -44,8 +47,8 @@ public class AggregationQueryBuilderService {
 
         for (SearchField field : searchFields) {
 
-            if (!StringUtils.isEmpty(field.getName())) {
-                path = StringUtils.isEmpty(field.getPath())
+            if (StringUtils.isNotBlank(field.getName())) {
+                path = StringUtils.isBlank(field.getPath())
                         ? ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS
                         : field.getPath();
                 fieldName =
@@ -56,7 +59,7 @@ public class AggregationQueryBuilderService {
                     MultiMatchQueryBuilder multiMatchQuery =
                             QueryBuilders.multiMatchQuery(queryTerm);
 
-                    if (!StringUtils.isEmpty(analyzer)) {
+                    if (StringUtils.isNotBlank(analyzer)) {
                         multiMatchQuery.analyzer(analyzer);
                     }
 
@@ -84,8 +87,8 @@ public class AggregationQueryBuilderService {
 
         for (FilterField field : filterFields) {
 
-            if (!StringUtils.isEmpty(field.getName()) && field.getValues() != null) {
-                path = StringUtils.isEmpty(field.getPath())
+            if (StringUtils.isNotBlank(field.getName()) && field.getValues() != null) {
+                path = StringUtils.isBlank(field.getPath())
                         ? ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS
                         : field.getPath();
                 fieldName =
@@ -98,9 +101,10 @@ public class AggregationQueryBuilderService {
                             (Collection<?>) field.getValues());
                 } else if (field.getType() == FilterQueryType.RANGE) {
                     // TODO: validation in BL2
+                    List<Double> values = (List<Double>) field.getValues();
                     filterQuery = QueryBuilders.rangeQuery(fieldName)
-                            .from(((ValueRange) field.getValues()).getMinimum())
-                            .to(((ValueRange) field.getValues()).getMaximum());
+                            .from(values.get(0))
+                            .to(values.get(1));
                 }
 
                 if (!filterQueries.containsKey(path)) {
@@ -141,7 +145,7 @@ public class AggregationQueryBuilderService {
         BoolQueryBuilder filterAggregationQuery = QueryBuilders.boolQuery();
 
         if (filterQueries != null) {
-            
+
             filterQueries.forEach((path, fieldQueryMap) -> {
 
                 if (fieldQueryMap != null) {
@@ -205,8 +209,8 @@ public class AggregationQueryBuilderService {
 
         for (AggregateField field : aggregateFields) {
 
-            if (!StringUtils.isEmpty(field.getName())) {
-                path = StringUtils.isEmpty(field.getPath())
+            if (StringUtils.isNotBlank(field.getName())) {
+                path = StringUtils.isBlank(field.getPath())
                         ? ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS
                         : field.getPath();
                 fieldName =
@@ -225,37 +229,42 @@ public class AggregationQueryBuilderService {
                      * Adding reverse nested in order to get count of parent documents in case of
                      * nested aggregations
                      */
-                    if (!path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
+                    if (path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
+                        filterAggregation.subAggregation(termsAggregation);
+                    } else {
                         termsAggregation
                                 .subAggregation(AggregationBuilders.reverseNested(fieldName));
+                        NestedAggregationBuilder nestedAggregation =
+                                new NestedAggregationBuilder(fieldName, path);
+                        nestedAggregation.subAggregation(termsAggregation);
+                        filterAggregation.subAggregation(nestedAggregation);
                     }
-
-                    filterAggregation.subAggregation(termsAggregation);
+                    source.aggregation(filterAggregation);
 
                 } else if (field.getType() == AggregationType.MINMAX) {
                     /**
                      * Using suffix because two sibling aggregations cannot have save name
                      */
-                    filterAggregation
-                            .subAggregation(
-                                    AggregationBuilders
-                                            .min(fieldName + ESConstants.MIN_AGGREGATION_SUFFIX)
-                                            .field(fieldName));
-                    filterAggregation
-                            .subAggregation(
-                                    AggregationBuilders
-                                            .max(fieldName + ESConstants.MAX_AGGREGATION_SUFFIX)
-                                            .field(fieldName));
+                    MinAggregationBuilder minAggregation = AggregationBuilders
+                            .min(fieldName + ESConstants.MIN_AGGREGATION_SUFFIX)
+                            .field(fieldName);
+                    MaxAggregationBuilder maxAggregation = AggregationBuilders
+                            .max(fieldName + ESConstants.MAX_AGGREGATION_SUFFIX)
+                            .field(fieldName);
+
+                    if (path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
+                        filterAggregation.subAggregation(minAggregation);
+                        filterAggregation.subAggregation(maxAggregation);
+                    } else {
+                        NestedAggregationBuilder nestedAggregation =
+                                new NestedAggregationBuilder(fieldName, path);
+                        nestedAggregation.subAggregation(minAggregation);
+                        nestedAggregation.subAggregation(maxAggregation);
+                        filterAggregation.subAggregation(nestedAggregation);
+                    }
+                    source.aggregation(filterAggregation);
                 }
 
-                if (path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
-                    source.aggregation(filterAggregation);
-                } else {
-                    NestedAggregationBuilder nestedAggregation =
-                            new NestedAggregationBuilder(fieldName, path);
-                    nestedAggregation.subAggregation(filterAggregation);
-                    source.aggregation(nestedAggregation);
-                }
             }
         }
     }
@@ -265,7 +274,7 @@ public class AggregationQueryBuilderService {
         Map<String, QueryBuilder> searchQueries = null;
         Map<String, Map<String, QueryBuilder>> filterQueries = null;
 
-        if (request.getSearchFields() != null && !StringUtils.isEmpty(request.getQueryTerm())) {
+        if (request.getSearchFields() != null && StringUtils.isNotBlank(request.getQueryTerm())) {
             searchQueries = fillSearchFieldsQueryMap(request.getSearchFields(),
                     request.getAnalyzer(), request.getQueryTerm());
         }

@@ -1,5 +1,6 @@
 package com.paytm.digital.education.elasticsearch.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -7,8 +8,10 @@ import lombok.Data;
 @Data
 public class Bucket {
 
+    @JsonProperty("key")
     private String key;
 
-    private long docCount;
+    @JsonProperty("count")
+    private long   docCount;
 
 }

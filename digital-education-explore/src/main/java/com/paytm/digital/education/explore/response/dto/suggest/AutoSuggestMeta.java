@@ -1,4 +1,4 @@
-package com.paytm.digital.education.explore.response.dto;
+package com.paytm.digital.education.explore.response.dto.suggest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

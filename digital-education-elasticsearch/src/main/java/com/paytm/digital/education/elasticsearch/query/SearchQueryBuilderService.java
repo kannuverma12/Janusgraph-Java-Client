@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.time.temporal.ValueRange;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -92,7 +93,7 @@ public class SearchQueryBuilderService {
 
             if (sortField.getName() != null) {
 
-                path = StringUtils.isEmpty(sortField.getPath())
+                path = StringUtils.isBlank(sortField.getPath())
                         ? ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS
                         : sortField.getPath();
                 fieldName = path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS)
@@ -137,7 +138,7 @@ public class SearchQueryBuilderService {
 
         for (SearchField field : searchFields) {
             if (field.getName() != null) {
-                path = StringUtils.isEmpty(field.getPath())
+                path = StringUtils.isBlank(field.getPath())
                         ? ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS
                         : field.getPath();
                 fieldName =
@@ -188,9 +189,10 @@ public class SearchQueryBuilderService {
                     filtetQuery = QueryBuilders.termsQuery(fieldName,
                             (Collection<?>) field.getValues());
                 } else if (field.getType() == FilterQueryType.RANGE) {
+                    List<Double> values = (List<Double>) field.getValues();
                     filtetQuery = QueryBuilders.rangeQuery(fieldName)
-                            .from(((ValueRange) field.getValues()).getMinimum())
-                            .to(((ValueRange) field.getValues()).getMaximum());
+                            .from(values.get(0))
+                            .to(values.get(1));
                 } else {
                     // Keep a default query or throw exception?
                 }
@@ -210,7 +212,7 @@ public class SearchQueryBuilderService {
         Map<String, QueryBuilder> searchQueries = null;
         Map<String, QueryBuilder> filterQueries = null;
 
-        if (request.getSearchFields() != null && !StringUtils.isEmpty(request.getQueryTerm())) {
+        if (request.getSearchFields() != null && StringUtils.isNotBlank(request.getQueryTerm())) {
             searchQueries = fillSearchFieldsQueryMap(request.getSearchFields(),
                     request.getQueryTerm(), request.getAnalyzer());
         }

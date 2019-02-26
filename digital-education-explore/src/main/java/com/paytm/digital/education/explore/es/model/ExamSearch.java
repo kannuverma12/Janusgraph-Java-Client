@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.List;
 
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class ExamSearch {
 
     @JsonProperty("exam_id")
