@@ -19,7 +19,7 @@ import java.util.Date;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@Document
+@Document("subscription")
 public class Subscription {
 
     private String id;

@@ -17,9 +17,9 @@ public class RangeFilterData extends FilterData {
     private double maxValue;
 
     @JsonProperty("min_selected")
-    private double minSelected;
+    private Double minSelected;
 
     @JsonProperty("max_selected")
-    private double maxSelected;
+    private Double maxSelected;
 
 }

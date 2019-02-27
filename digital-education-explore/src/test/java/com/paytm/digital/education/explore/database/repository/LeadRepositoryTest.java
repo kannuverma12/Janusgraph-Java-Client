@@ -50,7 +50,7 @@ public class LeadRepositoryTest {
         leadRepository = new LeadRepository(mongoTemplate);
 
         Lead leadToAdd = new Lead();
-        leadToAdd.setUserId("newUserId");
+        leadToAdd.setUserId(1234L);
         leadToAdd.setAction(LeadAction.GetInTouch);
         leadToAdd.setContactName("New Name");
         leadToAdd.setContactNumber("NewNumber");
@@ -60,7 +60,7 @@ public class LeadRepositoryTest {
         leadToInsert = leadToAdd;
 
         Lead existingLead = new Lead();
-        existingLead.setUserId("existingUserId");
+        existingLead.setUserId(2345L);
         existingLead.setContactName("Existing Name");
         existingLead.setContactNumber("ExistingNumber");
         existingLead.setContactEmail("existing@email.com");

@@ -42,7 +42,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -160,7 +162,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
     }
 
     @Override
-    protected SearchResponse buildSearchResponse(ElasticResponse<InstituteSearch> elasticResponse,
+    protected SearchResponse buildSearchResponse(ElasticResponse elasticResponse,
             ElasticRequest elasticRequest) {
         SearchResponse searchResponse = new SearchResponse();
         if (elasticRequest.isSearchRequest()) {
@@ -179,6 +181,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
             ElasticResponse<InstituteSearch> elasticResponse) {
         List<InstituteSearch> instituteSearches = elasticResponse.getDocuments();
         SearchResult searchResults = new SearchResult();
+        Map<Long, SearchBaseData> instituteDataMap = new HashMap<Long, SearchBaseData>();
         if (!CollectionUtils.isEmpty(instituteSearches)) {
             searchResults.setEntity(EducationEntity.INSTITUTE);
             List<SearchBaseData> instituteDataList = new ArrayList<SearchBaseData>();
@@ -192,11 +195,12 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
                         OfficialAddress.builder().city(instituteSearch.getCity())
                                 .state(instituteSearch.getState()).build();
                 instituteData.setOfficialAddress(officialAddress);
+                instituteDataMap.put(instituteSearch.getInstituteId(), instituteData);
                 instituteDataList.add(instituteData);
             });
             searchResults.setValues(instituteDataList);
         }
+        searchResponse.setEntityDataMap(instituteDataMap);
         searchResponse.setResults(searchResults);
     }
-
 }

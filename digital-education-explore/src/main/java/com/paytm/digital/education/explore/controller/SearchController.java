@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,10 +24,11 @@ public class SearchController {
     private SearchServiceImpl      searchServiceImpl;
 
     @PostMapping("/auth/v1/search")
-    public @ResponseBody SearchResponse search(@RequestBody SearchRequest searchRequest) throws
+    public @ResponseBody SearchResponse search(@RequestBody SearchRequest searchRequest,
+            @RequestHeader(value = "x-user-id", required = false) Long userId) throws
             Exception {
         searchRequestValidator.validate(searchRequest);
-        SearchResponse searchResponse = searchServiceImpl.search(searchRequest);
+        SearchResponse searchResponse = searchServiceImpl.search(searchRequest, userId);
         return searchResponse;
     }
 }

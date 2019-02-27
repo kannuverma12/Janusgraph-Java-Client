@@ -13,7 +13,6 @@ import com.paytm.digital.education.explore.response.dto.search.FilterData;
 import com.paytm.digital.education.explore.response.dto.search.RangeFilterData;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.response.dto.search.TermFilterData;
-import javafx.beans.binding.ObjectExpression;
 import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -74,8 +73,10 @@ public class SearchResponseBuilder {
                             rangeFilter.setMaxValue(metricAggResponse.getMaxValue());
                             Pair<Double, Double> selectionValue = getSelectedRange(rangeFilter,
                                     filterFieldMap.get(fieldName));
-                            rangeFilter.setMinSelected(selectionValue.getKey().longValue());
-                            rangeFilter.setMaxSelected(selectionValue.getValue().longValue());
+                            if (selectionValue != null) {
+                                rangeFilter.setMinSelected(selectionValue.getKey());
+                                rangeFilter.setMaxSelected(selectionValue.getValue());
+                            }
                             filters.add(rangeFilter);
                         }
                     }
@@ -109,6 +110,6 @@ public class SearchResponseBuilder {
             return new Pair<>(Double.parseDouble("" + values.get(0)),
                     Double.parseDouble("" + values.get(1)));
         }
-        return new Pair<>(rangeFilter.getMinValue(), rangeFilter.getMaxValue());
+        return null;
     }
 }

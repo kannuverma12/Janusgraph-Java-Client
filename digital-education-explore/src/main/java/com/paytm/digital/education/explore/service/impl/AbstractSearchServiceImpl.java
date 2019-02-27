@@ -60,7 +60,7 @@ public abstract class AbstractSearchServiceImpl {
             ElasticRequest elasticRequest);
 
     protected abstract SearchResponse buildSearchResponse(
-            ElasticResponse<InstituteSearch> elasticResponse,
+            ElasticResponse elasticResponse,
             ElasticRequest elasticRequest);
 
     protected ElasticResponse initiateSearch(ElasticRequest elasticRequest, Class type)
