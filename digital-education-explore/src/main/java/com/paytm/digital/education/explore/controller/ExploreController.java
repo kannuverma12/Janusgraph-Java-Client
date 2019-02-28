@@ -11,13 +11,13 @@ import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.entity.Subscription;
 import com.paytm.digital.education.explore.enums.SubscribableEntityType;
-import com.paytm.digital.education.explore.service.CommonMongoService;
 import com.paytm.digital.education.explore.service.EntityDetailsService;
 import com.paytm.digital.education.explore.service.SubscriptionService;
+import com.paytm.digital.education.explore.sro.request.FetchSubscriptionsRequest;
 import com.paytm.digital.education.explore.sro.request.SubscriptionRequest;
+import com.paytm.digital.education.explore.validators.ExploreValidator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,7 +42,7 @@ public class ExploreController {
 
     private SubscriptionService subscriptionService;
     private EntityDetailsService entityDetailsService;
-    private CommonMongoService commonMongoService;
+    private ExploreValidator exploreValidator;
 
     @GetMapping("/ping")
     public String ping() {
@@ -60,27 +60,34 @@ public class ExploreController {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/v1/exam/{examId}")
-    public @ResponseBody Exam getExamById(@PathVariable("examId") long examId,
-            @RequestParam(name = "field_group", required = false) String fieldGroups,
-            @RequestParam(name = "fields", required = false) String fields) {
+    public @ResponseBody Exam getExamById(@PathVariable("examId") Long examId,
+        @RequestParam(name = "fields", required = false) List<String> fields,
+        @RequestParam(name = "field_group", required = false) String fieldGroup) {
+
+        exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
         return entityDetailsService
-                .getEntityDetails(EXAM_ID, examId, Exam.class, fieldGroups, fields);
+            .getEntityDetails(
+                EXAM_ID, examId, Exam.class, fieldGroup, fields);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/v1/course/{courseId}")
-    public @ResponseBody Course getCourseById(@PathVariable("courseId") long courseId,
-            @RequestParam(name = "field_group", required = false) String fieldGroups,
-            @RequestParam(name = "fields", required = false) String fields) {
+    public @ResponseBody Course getCourseById(@PathVariable("courseId") Long courseId,
+        @RequestParam(name = "field_group", required = false) String fieldGroup,
+        @RequestParam(name = "fields", required = false) List<String> fields) {
+
+        exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
         return entityDetailsService
-                .getEntityDetails(COURSE_ID, courseId, Course.class, fieldGroups, fields);
+            .getEntityDetails(COURSE_ID, courseId, Course.class, fieldGroup, fields);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/v1/institute/{instituteId}")
-    public @ResponseBody Institute getInstituteById(@PathVariable("instituteId") long instituteId,
-            @RequestParam(name = "field_group", required = false) String fieldGroups,
-            @RequestParam(name = "fields", required = false) String fields) {
+    public @ResponseBody Institute getInstituteById(@PathVariable("instituteId") Long instituteId,
+        @RequestParam(name = "fields", required = false) List<String> fields,
+        @RequestParam(name = "field_group", required = false) String fieldGroup) {
+
+        exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
         return entityDetailsService
-                .getEntityDetails(INSTITUTE_ID, instituteId, Institute.class, fieldGroups, fields);
+            .getEntityDetails(INSTITUTE_ID, instituteId, Institute.class, fieldGroup, fields);
     }
 
     @RequestMapping(method = RequestMethod.POST, path = "/auth/v1/unsubscribe")
@@ -105,19 +112,26 @@ public class ExploreController {
     @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/subscriptions")
     @ResponseBody
     public ResponseEntity subscriptions(
-        @RequestHeader("x-user-id") @Min(1) long userId,
-        @RequestParam(value = "entity") SubscribableEntityType subscriptionEntity,
+        @RequestHeader(value = "x-user-id", required = false) Long userId,
+        @RequestParam(value = "entity", required = false) SubscribableEntityType subscriptionEntity,
         @RequestParam(value = "fields", required = false) List<String> fields,
         @RequestParam(value = "field_group", required = false) String fieldGroup,
-        @RequestParam(value = "offset", required = false, defaultValue = "0") long offset,
-        @RequestParam(value = "limit", required = false, defaultValue = "10") long limit) {
+        @RequestParam(value = "offset", required = false, defaultValue = "0") Long offset,
+        @RequestParam(value = "limit", required = false, defaultValue = "10") Long limit) {
 
-        if (subscriptionService.isFieldsAndFieldGroupParamsInvalid(fields, fieldGroup)) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        exploreValidator.validateFetchSubscriptionRequest(new FetchSubscriptionsRequest(
+            userId,
+            subscriptionEntity,
+            offset,
+            limit,
+            fields,
+            fieldGroup
+        ));
 
         List<Subscription> userSubscriptionResultList = subscriptionService
-            .fetchSubscriptions(userId, subscriptionEntity, fields, fieldGroup, offset, limit);
+            .fetchSubscriptions(
+                userId, subscriptionEntity, fields, fieldGroup, offset, limit);
         return ResponseEntity.ok(userSubscriptionResultList);
+
     }
 }

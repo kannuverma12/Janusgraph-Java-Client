@@ -11,7 +11,6 @@ import com.paytm.digital.education.explore.service.CommonMongoService;
 import com.paytm.digital.education.explore.service.SubscriptionService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
@@ -81,10 +80,4 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         long userId, List<SubscribableEntityType> subscribableEntityTypes) {
         return subscriptionDao.getSubscribedEntityCount(userId, subscribableEntityTypes);
     }
-
-    @Override
-    public boolean isFieldsAndFieldGroupParamsInvalid(List<String> fields, String fieldGroup) {
-        return CollectionUtils.isEmpty(fields) == StringUtils.isEmpty(fieldGroup);
-    }
-
 }

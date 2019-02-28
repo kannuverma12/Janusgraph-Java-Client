@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 @ToString
 @Data
@@ -16,6 +17,7 @@ import javax.validation.constraints.Min;
 public class SubscriptionRequest {
 
     @JsonProperty("entity")
+    @NotNull
     private SubscribableEntityType subscriptionEntity;
 
     @JsonProperty("entity_id")

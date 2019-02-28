@@ -18,6 +18,4 @@ public interface SubscriptionService {
 
     List<SubscribedEntityCount> fetchSubscribedEntityCount(
         long userId, List<SubscribableEntityType> subscribableEntityTypes);
-
-    boolean isFieldsAndFieldGroupParamsInvalid(List<String> fields, String fieldGroup);
 }

@@ -21,17 +21,12 @@ public class EntityDetailsServiceImpl implements EntityDetailsService {
 
     @Override
     public <T> T getEntityDetails(String keyName, long entityId, Class<T> type,
-            String fieldGroup, String fields) {
-        if (StringUtils.isNotBlank(fieldGroup) && StringUtils.isNotBlank(fields)) {
-            log.error("Either fields or field_group should be requested.");
-            throw new RuntimeException("Bad Request.");
-        }
-
+            String fieldGroup, List<String> fields) {
         List<String> queryFields = null;
         if (StringUtils.isNotBlank(fieldGroup)) {
             queryFields = commonMongoRepository.getFieldsByGroup(type, fieldGroup);
-        } else if (StringUtils.isNotBlank(fields)) {
-            queryFields = Arrays.stream(fields.split(",")).collect(Collectors.toList());
+        } else if (!CollectionUtils.isEmpty(fields)) {
+            queryFields = fields;
         }
 
         if (!CollectionUtils.isEmpty(queryFields)) {

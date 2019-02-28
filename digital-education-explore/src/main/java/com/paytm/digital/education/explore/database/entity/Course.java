@@ -68,7 +68,7 @@ public class Course {
 
     @Field("institution_id")
     @JsonProperty("institution_id")
-    private int institutionId;
+    private Integer institutionId;
 
     @Field("form_application_url_officail")
     @JsonProperty("form_application_url_officail")
