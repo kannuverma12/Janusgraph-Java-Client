@@ -22,6 +22,8 @@ public final class ESConstants {
 
     public static final String MAX_AGGREGATION_SUFFIX                 = "_max";
 
+    public static final String INCLUDE_AGGREGATION_SUFFIX             = "_include";
+
     public static final String RELAVANCE_SCORE                        = "_score";
 
 }

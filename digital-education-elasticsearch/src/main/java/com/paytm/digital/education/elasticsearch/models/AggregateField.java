@@ -13,4 +13,6 @@ public class AggregateField {
     private AggregationType type;
 
     private BucketSort      bucketsOrder;
+
+    private String[]        values;
 }

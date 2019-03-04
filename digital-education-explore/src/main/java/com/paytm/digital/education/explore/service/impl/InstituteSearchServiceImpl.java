@@ -11,7 +11,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.MAX
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_NAMES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STATE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM;
-
+import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
@@ -35,7 +35,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,7 +50,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
 
-    private        SearchResponseBuilder        searchResponseBuilder;
+    private SearchResponseBuilder               searchResponseBuilder;
     private static Map<String, FilterQueryType> filterQueryTypeMap;
     private static List<String>                 searchFieldKeys;
     private static List<String>                 sortKeysInOrder;
@@ -65,7 +64,6 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
         filterQueryTypeMap.put(EXAMS_ACCEPTED, TERMS);
         filterQueryTypeMap.put(FEES, RANGE);
         filterQueryTypeMap.put(INSTITUTE_ID, TERMS);
-
         searchFieldKeys = Arrays.asList(SEARCH_NAMES);
         sortKeysInOrder = Arrays.asList(MAX_RANK);
     }
@@ -137,9 +135,22 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
             ElasticRequest elasticRequest) {
         if (searchRequest.isFetchFilter()) {
             AggregateField[] aggregateFields = SearchAggregateHelper.getInstituteAggregateData();
+
+            Map<String, List<Object>> filters = searchRequest.getFilter();
+
             for (int i = 0; i < aggregateFields.length; i++) {
                 aggregateFields[i].setPath(
                         hierarchyMap.get(InstituteSearch.class).get(aggregateFields[i].getName()));
+
+                if (aggregateFields[i].getType() == AggregationType.TERMS
+                        && filters.containsKey(aggregateFields[i].getName())) {
+                    if (!CollectionUtils.isEmpty(filters.get(aggregateFields[i].getName()))) {
+                        // TODO: need a sol, as ES include exclude takes only long[] and String[]
+                        Object[] values = filters.get(aggregateFields[i].getName()).toArray();
+                        String[] valuesStr = Arrays.copyOf(values, values.length, String[].class);
+                        aggregateFields[i].setValues(valuesStr);
+                    }
+                }
             }
             elasticRequest.setAggregateFields(aggregateFields);
         }

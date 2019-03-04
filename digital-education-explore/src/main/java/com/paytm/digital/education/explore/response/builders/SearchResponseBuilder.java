@@ -17,7 +17,6 @@ import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -50,7 +49,8 @@ public class SearchResponseBuilder {
                                         .isSelected(
                                                 checkIfRequestedFilter(
                                                         filterFieldMap.get(fieldName),
-                                                        bucket.getKey())).build();
+                                                        bucket.getKey()))
+                                        .build();
 
                                 filterBuckets.add(filterBucket);
                             });

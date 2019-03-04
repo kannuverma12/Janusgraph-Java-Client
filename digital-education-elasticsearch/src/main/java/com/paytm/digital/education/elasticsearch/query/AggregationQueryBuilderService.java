@@ -12,6 +12,7 @@ import com.paytm.digital.education.elasticsearch.models.SearchField;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.common.util.CollectionUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder.Type;
@@ -21,12 +22,12 @@ import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.IncludeExclude;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.max.MaxAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.min.MinAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.stereotype.Service;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -225,18 +226,45 @@ public class AggregationQueryBuilderService {
                             AggregationBuilders.terms(fieldName).field(fieldName);
                     termsAggregation.order(getBucketAggregationOrder(field.getBucketsOrder()));
                     termsAggregation.size(ESConstants.DEFAULT_TERMS_AGGREGATION_BUCKETS_SIZE);
+
+                    TermsAggregationBuilder termsAggregationInclude = null;
+                    if (!CollectionUtils.isEmpty(field.getValues())) {
+
+                        IncludeExclude includeValues = new IncludeExclude(field.getValues(), null);
+                        IncludeExclude excludeValues = new IncludeExclude(null, field.getValues());
+
+                        termsAggregation.includeExclude(excludeValues);
+
+                        termsAggregationInclude =
+                                AggregationBuilders
+                                        .terms(fieldName + ESConstants.INCLUDE_AGGREGATION_SUFFIX);
+                        termsAggregationInclude.field(fieldName);
+                        termsAggregationInclude.includeExclude(includeValues);
+                        termsAggregationInclude
+                                .order(getBucketAggregationOrder(field.getBucketsOrder()));
+                    }
                     /**
                      * Adding reverse nested in order to get count of parent documents in case of
                      * nested aggregations
                      */
                     if (path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
                         filterAggregation.subAggregation(termsAggregation);
+                        if (termsAggregationInclude != null) {
+                            filterAggregation.subAggregation(termsAggregationInclude);
+                        }
                     } else {
                         termsAggregation
                                 .subAggregation(AggregationBuilders.reverseNested(fieldName));
+
                         NestedAggregationBuilder nestedAggregation =
                                 new NestedAggregationBuilder(fieldName, path);
                         nestedAggregation.subAggregation(termsAggregation);
+                        if (termsAggregationInclude != null) {
+                            termsAggregationInclude
+                                    .subAggregation(AggregationBuilders.reverseNested(
+                                            fieldName + ESConstants.INCLUDE_AGGREGATION_SUFFIX));
+                            nestedAggregation.subAggregation(termsAggregationInclude);
+                        }
                         filterAggregation.subAggregation(nestedAggregation);
                     }
                     source.aggregation(filterAggregation);
