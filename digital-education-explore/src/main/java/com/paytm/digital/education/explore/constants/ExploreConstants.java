@@ -2,17 +2,16 @@ package com.paytm.digital.education.explore.constants;
 
 public interface ExploreConstants {
 
-    ///////////////////////////////////////
     ////// Common constants /////////////
 
-    public static final String INSTITUTE_ID              = "institute_id";
-    public static final String EXAM_ID                   = "exam_id";
-    public static final String COURSE_ID                 = "course_id";
+    String INSTITUTE_ID = "institute_id";
+    String EXAM_ID      = "exam_id";
+    String COURSE_ID    = "course_id";
 
-    public static final String ENTITY_TYPE               = "entity_type";
+    String ENTITY_TYPE = "entity_type";
 
-    public static final int    DEFAULT_OFFSET            = 0;
-    public static final int    DEFAULT_SIZE              = 10;
+    int DEFAULT_OFFSET = 0;
+    int DEFAULT_SIZE   = 10;
 
     public static final int    DEFAULT_AUTOSUGGEST_SIZE  = 4;
 
@@ -20,30 +19,32 @@ public interface ExploreConstants {
     ///////////////////////////////////////////
     ////// AutoSuggest Constants ////////////
 
-    public static final String AUTOSUGGEST_INDEX         = "education_autosuggestion_v1";
-    public static final String AUTOSUGGEST_ANALYZER      = "words_with_spaces_analyzer";
+    String AUTOSUGGEST_INDEX    = "education_autosuggestion_v1";
+    String AUTOSUGGEST_ANALYZER = "words_with_spaces_analyzer";
 
-    public static final int    AUTOSUGGEST_MIN_CHARS     = 3;
-    public static final int    AUTOSUGGEST_MAX_CHARS     = 50;
+    int AUTOSUGGEST_MIN_CHARS = 3;
+    int AUTOSUGGEST_MAX_CHARS = 50;
 
+    String AUTOSUGGEST_OFFICIAL_NAME = "official_name";
+    String AUTOSUGGEST_NAMES         = "names";
 
-    public static final String AUTOSUGGEST_OFFICIAL_NAME = "official_name";
-    public static final String AUTOSUGGEST_NAMES         = "names";
-
-    ////////////////////////////////////////////////
     ///////// Explore search Constatnts ///////////
 
-    public static final String SEARCH_INDEX              = "education_search_institute_v1";
-    public static final String SEARCH_ANALYZER           = "word_delimiter_analyzer";
+    String SEARCH_INDEX    = "education_search_institute_v1";
+    String SEARCH_ANALYZER = "word_delimiter_analyzer";
 
-    public static final String SEARCH_NAMES              = "names";
-    public static final String MAX_RANK                  = "max_rank";
-    public static final String STATE                     = "state";
-    public static final String CITY                      = "city";
-    public static final String STREAM                    = "domain_name";
-    public static final String COURSE_LEVEL              = "level";
-    public static final String EXAMS_ACCEPTED            = "exams";
-    public static final String FEES                      = "fees";
+    String SEARCH_NAMES       = "names";
+    String MAX_RANK           = "max_rank";
+    String STATE              = "state";
+    String CITY               = "city";
+    String STREAM             = "domain_name";
+    String COURSE_LEVEL       = "level";
+    String EXAMS_ACCEPTED     = "exams";
+    String FEES               = "fees";
+    String INSTITUTE_GENDER   = "institute_gender";
+    String ESTABLISHMENT_YEAR = "year_of_estd";
+    String OWNERSHIP          = "ownership";
+    String FACILITIES         = "facilities";
 
-    public static final String EDUCATION_BASE_URL        = "/explore";
+    String EDUCATION_BASE_URL = "/explore";
 }

@@ -4,13 +4,19 @@ import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.RA
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.TERMS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CITY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_LEVEL;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.ESTABLISHMENT_YEAR;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAMS_ACCEPTED;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.FACILITIES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.FEES;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_GENDER;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.MAX_RANK;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.OWNERSHIP;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_NAMES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STATE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_RANGE_FILTER_VALUES;
+
 import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
@@ -23,6 +29,7 @@ import com.paytm.digital.education.elasticsearch.models.FilterField;
 import com.paytm.digital.education.elasticsearch.models.MetricAggregationResponse;
 import com.paytm.digital.education.elasticsearch.models.SearchField;
 import com.paytm.digital.education.elasticsearch.models.SortField;
+import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.es.model.InstituteSearch;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
@@ -42,6 +49,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,16 +57,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @AllArgsConstructor
 public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
 
-    private SearchResponseBuilder               searchResponseBuilder;
+    private        SearchResponseBuilder        searchResponseBuilder;
     private static Map<String, FilterQueryType> filterQueryTypeMap;
     private static List<String>                 searchFieldKeys;
     private static List<String>                 sortKeysInOrder;
@@ -72,6 +78,10 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
         filterQueryTypeMap.put(EXAMS_ACCEPTED, TERMS);
         filterQueryTypeMap.put(FEES, RANGE);
         filterQueryTypeMap.put(INSTITUTE_ID, TERMS);
+        filterQueryTypeMap.put(OWNERSHIP, TERMS);
+        filterQueryTypeMap.put(FACILITIES, TERMS);
+        filterQueryTypeMap.put(INSTITUTE_GENDER, TERMS);
+        filterQueryTypeMap.put(ESTABLISHMENT_YEAR, RANGE);
         searchFieldKeys = Arrays.asList(SEARCH_NAMES);
         sortKeysInOrder = Arrays.asList(MAX_RANK);
     }
@@ -126,8 +136,9 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
                 if (filterQueryTypeMap.get(filterKey).equals(RANGE)) {
                     List<Object> values = searchRequest.getFilter().get(filterKey);
                     if (CollectionUtils.isEmpty(values) || values.size() < 2) {
-                        throw new RuntimeException(
-                                "Bad Request. Filter " + filterKey + " size should be 2.");
+                        throw new BadRequestException(INVALID_RANGE_FILTER_VALUES,
+                                INVALID_RANGE_FILTER_VALUES.getExternalMessage(),
+                                new Object[] {filterKey});
                     }
                 }
                 filterField.setValues(searchRequest.getFilter().get(filterKey));

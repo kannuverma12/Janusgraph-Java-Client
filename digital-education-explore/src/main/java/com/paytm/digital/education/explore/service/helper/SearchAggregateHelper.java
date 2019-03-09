@@ -4,8 +4,12 @@ import static com.paytm.digital.education.elasticsearch.enums.AggregationType.MI
 import static com.paytm.digital.education.elasticsearch.enums.AggregationType.TERMS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CITY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_LEVEL;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.ESTABLISHMENT_YEAR;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAMS_ACCEPTED;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.FACILITIES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.FEES;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_GENDER;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.OWNERSHIP;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STATE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM;
 
@@ -29,11 +33,14 @@ public class SearchAggregateHelper {
                         DataSortOrder.ASC).build();
 
         List<String> instituteKeys =
-                Arrays.asList(STATE, CITY, STREAM, COURSE_LEVEL, EXAMS_ACCEPTED, FEES);
+                Arrays.asList(STATE, CITY, STREAM, COURSE_LEVEL, EXAMS_ACCEPTED, FEES, OWNERSHIP,
+                        FACILITIES, INSTITUTE_GENDER, ESTABLISHMENT_YEAR);
         List<AggregationType> instituteAggregateType =
-                Arrays.asList(TERMS, TERMS, TERMS, TERMS, TERMS, MINMAX);
+                Arrays.asList(TERMS, TERMS, TERMS, TERMS, TERMS, MINMAX, TERMS, TERMS, TERMS,
+                        MINMAX);
         List<BucketSort> instituteSortOrder =
-                Arrays.asList(bucketSort, bucketSort, bucketSort, bucketSort, bucketSort, null);
+                Arrays.asList(bucketSort, bucketSort, bucketSort, bucketSort, bucketSort, null,
+                        bucketSort, bucketSort, bucketSort, null);
 
         instituteAggregateData = new AggregateField[instituteKeys.size()];
 

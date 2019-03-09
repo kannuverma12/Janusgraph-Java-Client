@@ -4,14 +4,17 @@ import org.springframework.http.HttpStatus;
 
 public enum ErrorEnum {
     UNEXPECTED_ERROR(5001, "Something unexpected happened", HttpStatus.INTERNAL_SERVER_ERROR, 0),
-    BAD_AUTO_SUGGEST_QUERY_ERROR(4001, "Bad Request. Search Term can't be empty.", HttpStatus.BAD_REQUEST, 0),
+    BAD_AUTO_SUGGEST_QUERY_ERROR(4001, "Bad Request. Search Term can't be empty.",
+            HttpStatus.BAD_REQUEST, 0),
     MIN_LENGTH_ERROR(4002, "Must have minimum length of %s", HttpStatus.BAD_REQUEST, 1),
-    MAX_LENGTH_ERROR(4003, "Must have maximum length of %s", HttpStatus.BAD_REQUEST, 1);
+    MAX_LENGTH_ERROR(4003, "Must have maximum length of %s", HttpStatus.BAD_REQUEST, 1),
+    INVALID_RANGE_FILTER_VALUES(4007, "Invalid range filter. Filter %s size should be 2",
+            HttpStatus.BAD_REQUEST, 1);
 
-    private final int internalCode;
-    private final String externalMessage;
+    private final int        internalCode;
+    private final String     externalMessage;
     private final HttpStatus httpStatus;
-    private final int numberOfArgs;
+    private final int        numberOfArgs;
 
     ErrorEnum(int internalCode, String externalMessage, HttpStatus httpStatus, int numberOfArgs) {
         this.internalCode = internalCode;
