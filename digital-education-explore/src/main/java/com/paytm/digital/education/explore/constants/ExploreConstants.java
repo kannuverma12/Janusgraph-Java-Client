@@ -22,12 +22,15 @@ public interface ExploreConstants {
     String AUTOSUGGEST_INDEX    = "education_autosuggestion_v1";
     String AUTOSUGGEST_ANALYZER = "words_with_spaces_analyzer";
 
-    int AUTOSUGGEST_MIN_CHARS = 3;
-    int AUTOSUGGEST_MAX_CHARS = 50;
+    int AUTOSUGGEST_MIN_CHARS   = 3;
+    int AUTOSUGGEST_MAX_CHARS   = 200;
 
-    String AUTOSUGGEST_OFFICIAL_NAME = "official_name";
-    String AUTOSUGGEST_NAMES         = "names";
+    int SEARCH_REQUEST_MAX_LIMIT = 50;
 
+    String AUTOSUGGEST_OFFICIAL_NAME    = "official_name";
+    String AUTOSUGGEST_NAMES    = "names";
+
+    ////////////////////////////////////////////////
     ///////// Explore search Constatnts ///////////
 
     String SEARCH_INDEX    = "education_search_institute_v1";
@@ -47,4 +50,6 @@ public interface ExploreConstants {
     String FACILITIES         = "facilities";
 
     String EDUCATION_BASE_URL = "/explore";
+
+    String USER_UNAUTHORIZED_MESSAGE = "Unauthorized Request";
 }

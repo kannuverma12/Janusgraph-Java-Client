@@ -133,7 +133,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
                 filterField.setName(filterKey);
                 filterField.setPath(hierarchyMap.get(InstituteSearch.class).get(filterKey));
                 filterField.setType(filterQueryTypeMap.get(filterKey));
-                if (filterQueryTypeMap.get(filterKey).equals(RANGE)) {
+                if (RANGE.equals(filterQueryTypeMap.get(filterKey))) {
                     List<Object> values = searchRequest.getFilter().get(filterKey);
                     if (CollectionUtils.isEmpty(values) || values.size() < 2) {
                         throw new BadRequestException(INVALID_RANGE_FILTER_VALUES,

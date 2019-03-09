@@ -2,7 +2,9 @@ package com.paytm.digital.education.explore.controller;
 
 import com.paytm.digital.education.explore.database.entity.Lead;
 import com.paytm.digital.education.explore.service.LeadService;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -14,12 +16,13 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EDU
 @RestController
 @RequestMapping(EDUCATION_BASE_URL)
 @AllArgsConstructor
+@Validated
 public class LeadController {
     private LeadService leadService;
 
     @PostMapping("/auth/v1/lead")
-    public void captureLead(@RequestBody Lead lead,
-                            @RequestHeader(value = "x-user-id", required = true) long userId) {
+    public void captureLead(@Valid @RequestBody Lead lead,
+                            @RequestHeader("x-user-id") long userId) {
         lead.setUserId(userId);
         leadService.captureLead(lead);
     }

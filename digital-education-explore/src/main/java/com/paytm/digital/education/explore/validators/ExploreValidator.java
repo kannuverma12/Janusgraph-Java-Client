@@ -17,7 +17,7 @@ public class ExploreValidator {
 
     private final Validator validator;
 
-    private void validateAndThrowException(Object o) {
+    public void validateAndThrowException(Object o) {
         Set<ConstraintViolation<Object>> violations = validator.validate(o);
         if (!violations.isEmpty()) {
             throw ValidationException.buildValidationException(violations);

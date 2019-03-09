@@ -62,7 +62,7 @@ public class ExploreController {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/v1/exam/{examId}")
-    public @ResponseBody Exam getExamById(@PathVariable("examId") Long examId,
+    public @ResponseBody Exam getExamById(@PathVariable("examId") @Min(1) Long examId,
         @RequestParam(name = "fields", required = false) List<String> fields,
         @RequestParam(name = "field_group", required = false) String fieldGroup) {
 
@@ -73,7 +73,7 @@ public class ExploreController {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/v1/course/{courseId}")
-    public @ResponseBody Course getCourseById(@PathVariable("courseId") Long courseId,
+    public @ResponseBody Course getCourseById(@PathVariable("courseId") @Min(1) Long courseId,
         @RequestParam(name = "field_group", required = false) String fieldGroup,
         @RequestParam(name = "fields", required = false) List<String> fields) {
 
@@ -83,7 +83,7 @@ public class ExploreController {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/v1/institute/{instituteId}")
-    public @ResponseBody Institute getInstituteById(@PathVariable("instituteId") Long instituteId,
+    public @ResponseBody Institute getInstituteById(@PathVariable("instituteId") @Min(1) Long instituteId,
         @RequestParam(name = "fields", required = false) List<String> fields,
         @RequestParam(name = "field_group", required = false) String fieldGroup) {
 

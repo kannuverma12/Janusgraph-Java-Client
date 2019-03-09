@@ -29,7 +29,7 @@ public class AutoSuggestValidator {
             throw new BadAutoSuggestException(
                             ErrorEnum.MAX_LENGTH_ERROR,
                             ErrorEnum.MAX_LENGTH_ERROR.getExternalMessage(),
-                            new Object[]{AUTOSUGGEST_MIN_CHARS});
+                            new Object[]{AUTOSUGGEST_MAX_CHARS});
         }
 
     }

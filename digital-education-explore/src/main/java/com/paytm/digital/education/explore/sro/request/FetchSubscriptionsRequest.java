@@ -21,7 +21,7 @@ public class FetchSubscriptionsRequest extends FieldsAndFieldGroupRequest {
     @Min(0)
     private Long offset;
 
-    @Min(0)
+    @Min(1)
     @Max(20)
     private Long limit;
 

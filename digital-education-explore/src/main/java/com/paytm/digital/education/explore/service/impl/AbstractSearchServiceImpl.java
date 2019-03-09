@@ -77,11 +77,7 @@ public abstract class AbstractSearchServiceImpl {
         if (searchRequest.isFetchFilter()) {
             elasticRequest.setAggregationRequest(true);
         }
-        
-        int size = (searchRequest.getLimit() != 0)
-                ? searchRequest.getLimit()
-                : DEFAULT_SIZE;
-        elasticRequest.setLimit(size);
+        elasticRequest.setLimit(searchRequest.getLimit());
         elasticRequest.setOffSet(searchRequest.getOffset());
         return elasticRequest;
     }
