@@ -4,6 +4,7 @@ import com.paytm.digital.education.explore.daoresult.SubscribedEntityCount;
 import com.paytm.digital.education.explore.database.entity.Subscription;
 import com.paytm.digital.education.explore.enums.SubscribableEntityType;
 
+import com.paytm.digital.education.explore.enums.SubscriptionStatus;
 import java.util.List;
 
 public interface SubscriptionService {
@@ -14,8 +15,8 @@ public interface SubscriptionService {
 
     List<Subscription> fetchSubscriptions(long userId, SubscribableEntityType subscriptionEntity,
                                           List<String> fields, String fieldGroup,
-                                          long offset, long limit);
+                                          long offset, long limit, SubscriptionStatus subscriptionStatus);
 
     List<SubscribedEntityCount> fetchSubscribedEntityCount(
-        long userId, List<SubscribableEntityType> subscribableEntityTypes);
+        long userId, List<SubscribableEntityType> subscribableEntityTypes, SubscriptionStatus subscriptionStatus);
 }

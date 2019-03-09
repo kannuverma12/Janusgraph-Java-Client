@@ -65,19 +65,20 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public List<Subscription> fetchSubscriptions(long userId, SubscribableEntityType subscriptionEntity,
-                                                List<String> fields, String fieldGroup, long offset, long limit) {
+                                                List<String> fields, String fieldGroup, long offset, long limit,
+                                                SubscriptionStatus subscriptionStatus) {
         List<String> toBeFetchedFieldList = StringUtils.isEmpty(fieldGroup)
             ? fields :
             commonMongoService.getFieldsByGroupAndCollectioName(
                 subscriptionEntity.getCorrespondingCollectionName(), fieldGroup);
 
         return subscriptionDao.getUserSubscriptions(
-            userId, subscriptionEntity, toBeFetchedFieldList, offset, limit);
+            userId, subscriptionEntity, toBeFetchedFieldList, offset, limit, subscriptionStatus);
     }
 
     @Override
     public List<SubscribedEntityCount> fetchSubscribedEntityCount(
-        long userId, List<SubscribableEntityType> subscribableEntityTypes) {
-        return subscriptionDao.getSubscribedEntityCount(userId, subscribableEntityTypes);
+        long userId, List<SubscribableEntityType> subscribableEntityTypes, SubscriptionStatus subscriptionStatus) {
+        return subscriptionDao.getSubscribedEntityCount(userId, subscribableEntityTypes, subscriptionStatus);
     }
 }

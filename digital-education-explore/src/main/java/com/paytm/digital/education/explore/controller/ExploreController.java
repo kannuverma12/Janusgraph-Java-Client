@@ -11,6 +11,7 @@ import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.entity.Subscription;
 import com.paytm.digital.education.explore.enums.SubscribableEntityType;
+import com.paytm.digital.education.explore.enums.SubscriptionStatus;
 import com.paytm.digital.education.explore.service.EntityDetailsService;
 import com.paytm.digital.education.explore.service.SubscriptionService;
 import com.paytm.digital.education.explore.sro.request.FetchSubscriptionsRequest;
@@ -39,6 +40,7 @@ import java.util.List;
 @Slf4j
 @Validated
 public class ExploreController {
+    private static final SubscriptionStatus SUBSCRIBED_STATUS = SubscriptionStatus.SUBSCRIBED;
 
     private SubscriptionService subscriptionService;
     private EntityDetailsService entityDetailsService;
@@ -106,7 +108,8 @@ public class ExploreController {
     public List<SubscribedEntityCount> subscriptionCount(
         @RequestHeader("x-user-id") @Min(1) long userId,
         @RequestParam("entities") List<SubscribableEntityType> subscribableEntityTypeList) {
-        return subscriptionService.fetchSubscribedEntityCount(userId, subscribableEntityTypeList);
+        return subscriptionService.fetchSubscribedEntityCount(userId, subscribableEntityTypeList,
+            SUBSCRIBED_STATUS);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/subscriptions")
@@ -130,7 +133,8 @@ public class ExploreController {
 
         List<Subscription> userSubscriptionResultList = subscriptionService
             .fetchSubscriptions(
-                userId, subscriptionEntity, fields, fieldGroup, offset, limit);
+                userId, subscriptionEntity, fields, fieldGroup, offset, limit,
+                    SUBSCRIBED_STATUS);
         return ResponseEntity.ok(userSubscriptionResultList);
 
     }

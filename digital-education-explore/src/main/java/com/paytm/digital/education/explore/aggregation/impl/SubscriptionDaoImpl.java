@@ -13,6 +13,7 @@ import com.paytm.digital.education.explore.aggregation.SubscriptionDao;
 import com.paytm.digital.education.explore.daoresult.SubscribedEntityCount;
 import com.paytm.digital.education.explore.database.entity.Subscription;
 import com.paytm.digital.education.explore.enums.SubscribableEntityType;
+import com.paytm.digital.education.explore.enums.SubscriptionStatus;
 import lombok.AllArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -51,16 +52,17 @@ public class SubscriptionDaoImpl implements SubscriptionDao {
     @Override
     public List<Subscription> getUserSubscriptions(long userId,
                                                    SubscribableEntityType subscribableEntityType,
-                                                   List<String> fields,
-                                                   long offset,
-                                                   long limit) {
+                                                   List<String> fields, long offset,
+                                                   long limit, SubscriptionStatus subscriptionStatus) {
         String subscriptionEntityCollectionName = subscribableEntityType.getCorrespondingCollectionName();
         ProjectionOperation basicProjection = project(
             ENTITY, STATUS, UPDATED_AT);
         Aggregation agg = newAggregation(
             match(new Criteria().andOperator(
                 Criteria.where(USER_ID).is(userId),
-                Criteria.where(ENTITY).is(subscribableEntityType.toString()))),
+                Criteria.where(ENTITY).is(subscribableEntityType.toString()),
+                Criteria.where(STATUS).is(subscriptionStatus)
+            )),
             lookup(subscriptionEntityCollectionName, ENTITY_ID,
                 subscriptionEntityCollectionName + ID, ENTITY_DETAILS_ALIAS),
             unwind(ENTITY_DETAILS_ALIAS),
@@ -75,12 +77,14 @@ public class SubscriptionDaoImpl implements SubscriptionDao {
     }
 
     /* TODO:- Count must verify from entity collections */
+    @Override
     public List<SubscribedEntityCount> getSubscribedEntityCount(long userId,
-        List<SubscribableEntityType> subscribableEntityTypes) {
+        List<SubscribableEntityType> subscribableEntityTypes, SubscriptionStatus subscriptionStatus) {
         Aggregation agg = newAggregation(
             match(new Criteria().andOperator(
                 Criteria.where(USER_ID).is(userId),
-                Criteria.where(ENTITY).in(subscribableEntityTypes)
+                Criteria.where(ENTITY).in(subscribableEntityTypes),
+                Criteria.where(STATUS).is(subscriptionStatus)
             )),
             group(ENTITY).count().as(COUNT),
             project(COUNT).and(ENTITY).previousOperation());
