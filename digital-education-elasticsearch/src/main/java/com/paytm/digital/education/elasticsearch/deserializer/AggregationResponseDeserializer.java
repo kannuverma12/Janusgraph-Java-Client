@@ -8,7 +8,11 @@ import com.paytm.digital.education.elasticsearch.models.Bucket;
 import com.paytm.digital.education.elasticsearch.models.BucketAggregationResponse;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.MetricAggregationResponse;
+import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationResponse;
+import com.paytm.digital.education.elasticsearch.utils.JsonUtils;
+import javafx.util.Pair;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.common.util.CollectionUtils;
 import org.elasticsearch.search.aggregations.bucket.filter.Filter;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
@@ -16,14 +20,17 @@ import org.elasticsearch.search.aggregations.bucket.nested.ParsedReverseNested;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.metrics.max.Max;
 import org.elasticsearch.search.aggregations.metrics.min.Min;
-import org.springframework.context.annotation.Configuration;
+import org.elasticsearch.search.aggregations.metrics.tophits.TopHits;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
-@Configuration
+@Component
 public class AggregationResponseDeserializer {
 
     private List<Bucket> getBucketsFromTermsAggregation(Terms termsAggregation, String path,
@@ -114,8 +121,60 @@ public class AggregationResponseDeserializer {
         return aggregationResponse;
     }
 
-    public Map<String, AggregationResponse> formatResponse(SearchResponse esResponse,
-            ElasticRequest request) {
+    private <T> List<T> getDocumentsFromBuckets(TopHits topHitsAggregtaion,
+            Class<T> type) {
+        List<T> documents = new ArrayList<>();
+        SearchHit[] searchHits = topHitsAggregtaion.getHits().getHits();
+        for (SearchHit searchHit : searchHits) {
+            Map<String, Object> sourceAsMap = searchHit.getSourceAsMap();
+            T object = JsonUtils.convertValue(sourceAsMap, type);
+            documents.add(object);
+        }
+        return documents;
+    }
+
+    private <T> TopHitsAggregationResponse<T> getDocumentsPerEntityFromTopHitsAggregationResponse(
+            Filter filterAggregation, String aggregationName, String path, Class<T> type) {
+
+        TopHitsAggregationResponse<T> aggregationResponse = new TopHitsAggregationResponse<>();
+
+        Map<Pair<String, Float>, List<T>> documentsPerEntity =
+                new TreeMap<Pair<String, Float>, List<T>>(new Comparator<Pair<String, Float>>() {
+                    @Override
+                    public int compare(Pair<String, Float> p1, Pair<String, Float> p2) {
+                        if (p2.getValue() > p1.getValue()) {
+                            return 1;
+                        } else if (p2.getValue() < p1.getValue()) {
+                            return -1;
+                        }
+                        return 0;
+                    }
+                });
+
+        Terms termsAggregation;
+
+        if (path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
+            termsAggregation = filterAggregation.getAggregations().get(aggregationName);
+        } else {
+            Nested nestedAggregation = filterAggregation.getAggregations().get(aggregationName);
+            termsAggregation = nestedAggregation.getAggregations().get(aggregationName);
+        }
+        for (Terms.Bucket bucket : termsAggregation.getBuckets()) {
+            TopHits topHitsAggregtaion = bucket.getAggregations().get(aggregationName);
+            List<T> documentsScoreMap =
+                    getDocumentsFromBuckets(topHitsAggregtaion, type);
+            String entityName = bucket.getKeyAsString();
+            Float maxScore = topHitsAggregtaion.getHits().getMaxScore();
+            Pair<String, Float> key = new Pair<>(entityName, maxScore);
+            documentsPerEntity.put(key, documentsScoreMap);
+        }
+        aggregationResponse.setDocumentsPerEntity(documentsPerEntity);
+        return aggregationResponse;
+    }
+
+
+    public <T> Map<String, AggregationResponse> formatResponse(SearchResponse esResponse,
+            ElasticRequest request, Class<T> type) {
 
         Map<String, AggregationResponse> responseMap =
                 new HashMap<String, AggregationResponse>();
@@ -144,6 +203,9 @@ public class AggregationResponseDeserializer {
                 } else if (field.getType() == AggregationType.MINMAX) {
                     aggResponse = getBucketsFromMetricAggregationResponse(filterAggregation,
                             aggregationName, path);
+                } else if (field.getType() == AggregationType.TOP_HITS) {
+                    aggResponse = getDocumentsPerEntityFromTopHitsAggregationResponse(
+                            filterAggregation, aggregationName, path, type);
                 }
 
                 if (aggResponse != null) {

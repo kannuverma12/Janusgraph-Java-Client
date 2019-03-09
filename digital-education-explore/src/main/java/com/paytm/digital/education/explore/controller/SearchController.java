@@ -1,7 +1,6 @@
 package com.paytm.digital.education.explore.controller;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EDUCATION_BASE_URL;
-
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.service.impl.SearchServiceImpl;

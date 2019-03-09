@@ -19,7 +19,10 @@ public enum EducationEntity {
     STATE,
 
     @JsonProperty("city")
-    CITY;
+    CITY,
+    
+    @JsonProperty("stream")
+    STREAM;
 
     public static SubscribableEntityType convertToSubscribableEntity(
             EducationEntity educationEntity) {

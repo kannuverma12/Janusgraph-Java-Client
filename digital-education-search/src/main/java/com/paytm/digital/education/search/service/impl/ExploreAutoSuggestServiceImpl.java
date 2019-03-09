@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 @Service
@@ -18,9 +17,9 @@ public class ExploreAutoSuggestServiceImpl implements AutoSuggestionService {
     private ElasticSearchService elasticSearchService;
 
     @Override
-    public <T> List<T> suggest(ElasticRequest elasticRequest, Class<T> type)
+    public <T> ElasticResponse<T> suggest(ElasticRequest elasticRequest, Class<T> type)
             throws IOException, TimeoutException {
-        ElasticResponse elasticResponse = elasticSearchService.executeSearch(elasticRequest, type);
-        return elasticResponse.getDocuments();
+        ElasticResponse<T> elasticResponse = elasticSearchService.executeSearch(elasticRequest, type);
+        return elasticResponse;
     }
 }

@@ -31,7 +31,7 @@ public class SearchRequestValidator {
             throw new RuntimeException("Bad Request. Error : " + StringUtils
                     .substringBeforeLast(messagesBuilder.toString(), ","));
         }
-
+        
         if (!(StringUtils.isNotBlank(searchRequest.getFieldGroup()) ^ !CollectionUtils
                 .isEmpty(searchRequest.getFields()))) {
             throw new RuntimeException("Either fields or field_group is accepted.");

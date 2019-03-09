@@ -35,5 +35,5 @@ public class SearchRequest {
 
     @JsonProperty("fetch_filter")
     private boolean fetchFilter = true;
-
+   
 }

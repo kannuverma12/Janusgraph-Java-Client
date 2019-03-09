@@ -23,7 +23,7 @@ public class SearchAggregateHelper {
     private static AggregateField[] instituteAggregateData;
 
     static {
-
+        
         final BucketSort bucketSort =
                 BucketSort.builder().key(BucketAggregationSortParms.KEY).order(
                         DataSortOrder.ASC).build();

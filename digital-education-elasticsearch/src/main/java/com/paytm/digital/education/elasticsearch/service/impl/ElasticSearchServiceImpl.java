@@ -92,7 +92,8 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
              * and value (Aggregation data)
              */
             Map<String, AggregationResponse> aggregationResponse =
-                    aggregationResponseDes.formatResponse(elasticAggregationResponse, request);
+                    aggregationResponseDes.formatResponse(elasticAggregationResponse, request,
+                            type);
             response.setAggregationResponse(aggregationResponse);
             response.setAggregationQueryExecutionTime(timeTakenInElasticFilterQueryExecution);
         }

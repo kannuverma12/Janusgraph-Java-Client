@@ -11,5 +11,5 @@ public class FilterData {
 
     @JsonProperty("display_name")
     private String displayName;
-
+    
 }

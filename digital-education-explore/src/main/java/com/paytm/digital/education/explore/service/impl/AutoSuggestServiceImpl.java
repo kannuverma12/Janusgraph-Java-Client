@@ -3,16 +3,20 @@ package com.paytm.digital.education.explore.service.impl;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTOSUGGEST_ANALYZER;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTOSUGGEST_INDEX;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTOSUGGEST_NAMES;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_AUTOSUGGEST_SIZE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_OFFSET;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_SIZE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE;
-
-import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
+import com.paytm.digital.education.elasticsearch.models.AggregateField;
+import com.paytm.digital.education.elasticsearch.models.AggregationResponse;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
+import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.elasticsearch.models.FilterField;
 import com.paytm.digital.education.elasticsearch.models.SearchField;
-import com.paytm.digital.education.elasticsearch.models.SortField;
+import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationResponse;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.es.model.AutoSuggestEsData;
 import com.paytm.digital.education.explore.response.dto.suggest.AutoSuggestData;
@@ -22,12 +26,9 @@ import com.paytm.digital.education.search.service.AutoSuggestionService;
 import com.paytm.digital.education.utility.HierarchyIdentifierUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -50,16 +51,17 @@ public class AutoSuggestServiceImpl {
     public AutoSuggestResponse getSuggestions(String searchTerm, List<EducationEntity> entities) {
 
         ElasticRequest elasticRequest = buildAutoSuggestRequest(searchTerm, entities);
-        List<AutoSuggestEsData> autoSuggestEsDataList = null;
+        ElasticResponse<AutoSuggestEsData> response = null;
         try {
-            autoSuggestEsDataList =
-                    autoSuggestionService.suggest(elasticRequest, AutoSuggestEsData.class);
+            response =
+                    (ElasticResponse<AutoSuggestEsData>) autoSuggestionService
+                            .suggest(elasticRequest, AutoSuggestEsData.class);
         } catch (TimeoutException | IOException ex) {
             log.error("Error caught while calling autosuggest service with exception : {}", ex);
             throw new RuntimeException(ex.getMessage());
         }
 
-        return buildAutoSuggestResponse(autoSuggestEsDataList, searchTerm);
+        return buildAutoSuggestResponse(response);
     }
 
     private ElasticRequest buildAutoSuggestRequest(String term, List<EducationEntity> entities) {
@@ -68,9 +70,16 @@ public class AutoSuggestServiceImpl {
         elasticRequest.setAnalyzer(AUTOSUGGEST_ANALYZER);
         elasticRequest.setQueryTerm(term);
         elasticRequest.setOffSet(DEFAULT_OFFSET);
-        elasticRequest.setLimit(DEFAULT_SIZE);
-        elasticRequest.setSearchRequest(true);
+        elasticRequest.setLimit(DEFAULT_AUTOSUGGEST_SIZE);
+        elasticRequest.setAggregationRequest(true);
         String filterFieldPath = suggestClassLevelMap.get(ENTITY_TYPE);
+
+        AggregateField[] aggFields = new AggregateField[1];
+        aggFields[0] = new AggregateField();
+        aggFields[0].setName(ENTITY_TYPE);
+        aggFields[0].setType(AggregationType.TOP_HITS);
+        elasticRequest.setAggregateFields(aggFields);
+
 
         if (!CollectionUtils.isEmpty(entities)) {
             FilterField[] filterFields = new FilterField[1];
@@ -83,7 +92,6 @@ public class AutoSuggestServiceImpl {
             filterFields[0].setPath(filterFieldPath);
             elasticRequest.setFilterFields(filterFields);
         }
-
         String searchFieldPath = suggestClassLevelMap.get(AUTOSUGGEST_NAMES);
         SearchField[] searchFields = new SearchField[1];
         searchFields[0] = new SearchField();
@@ -91,42 +99,40 @@ public class AutoSuggestServiceImpl {
         searchFields[0].setPath(searchFieldPath);
         elasticRequest.setSearchFields(searchFields);
 
-        SortField[] sortFields = new SortField[1];
-        sortFields[0] = new SortField();
-        sortFields[0].setName("_score");
-        sortFields[0].setOrder(DataSortOrder.DESC);
-        elasticRequest.setSortFields(sortFields);
-
         return elasticRequest;
     }
 
     private AutoSuggestResponse buildAutoSuggestResponse(
-            List<AutoSuggestEsData> autoSuggestEsDataList, String searchTerm) {
-        AutoSuggestResponse autoSuggestResponse = new AutoSuggestResponse(searchTerm);
-        if (CollectionUtils.isEmpty(autoSuggestEsDataList)) {
-            autoSuggestResponse.setData(new ArrayList<>());
-            return autoSuggestResponse;
-        }
+            ElasticResponse<AutoSuggestEsData> esResponse) {
 
-        Map<EducationEntity, List<SuggestResult>> bucketData = new HashMap<>();
-        for (AutoSuggestEsData autoSuggestEsData : autoSuggestEsDataList) {
-            if (!bucketData.containsKey(autoSuggestEsData.getEntityType())) {
-                bucketData.put(autoSuggestEsData.getEntityType(), new ArrayList<>());
-            }
-            bucketData.get(autoSuggestEsData.getEntityType())
-                    .add(new SuggestResult(autoSuggestEsData.getEntityId(),
-                            autoSuggestEsData.getOfficialName()));
-        }
-        List<AutoSuggestData> autoSuggestDataList = new ArrayList<>();
-        for (EducationEntity entityType : bucketData.keySet()) {
-            AutoSuggestData autoSuggestData = new AutoSuggestData();
-            autoSuggestData.setEntityType(entityType.name());
-            autoSuggestData.setResults(bucketData.get(entityType));
-            autoSuggestDataList.add(autoSuggestData);
-        }
-        autoSuggestResponse.setData(autoSuggestDataList);
+        AutoSuggestResponse response = new AutoSuggestResponse();
 
-        return autoSuggestResponse;
+        Map<String, AggregationResponse> aggregationResponse = esResponse.getAggregationResponse();
+
+        if (aggregationResponse.containsKey(ENTITY_TYPE)) {
+
+            TopHitsAggregationResponse<AutoSuggestEsData> topHitsPerEntity =
+                    (TopHitsAggregationResponse<AutoSuggestEsData>) aggregationResponse
+                            .get(ENTITY_TYPE);
+
+            // topHitsPerEntity
+            List<AutoSuggestData> suggestData = new ArrayList<>();
+
+            topHitsPerEntity.getDocumentsPerEntity().forEach((key, documents) -> {
+                AutoSuggestData dataPerEntity = new AutoSuggestData();
+                List<SuggestResult> responseResultDocList = new ArrayList<>();
+                documents.forEach(esDocument -> {
+                    SuggestResult responseDoc = new SuggestResult(esDocument.getEntityId(),
+                            esDocument.getOfficialName());
+                    responseResultDocList.add(responseDoc);
+                });
+                dataPerEntity.setEntityType(key.getKey());
+                dataPerEntity.setResults(responseResultDocList);
+                suggestData.add(dataPerEntity);
+            });
+            response.setData(suggestData);
+        }
+        return response;
     }
 
 }
