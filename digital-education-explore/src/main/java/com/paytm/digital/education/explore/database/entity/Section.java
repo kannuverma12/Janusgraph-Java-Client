@@ -32,6 +32,9 @@ public class Section {
     @Field("view_all_label") @JsonProperty("view_all_label")
     private String viewAllLabel;
 
+    @Field("view_less_label") @JsonProperty("view_less_label")
+    private String viewLessLabel;
+
     private List<Map<String, Object>> items;
 
     @Data

@@ -54,3 +54,37 @@ db.subscription.ensureIndex({
 {
   'unique': true
 });
+
+# Queries for adding view_less_label in section collection
+
+db.section.update({"name":"streams"}, {$set: {"view_less_label":"View Less Streams"}}, {multi:true});
+db.section.update({"name":"top_colleges"}, {$set: {"view_less_label":"View Less Colleges"}}, {multi:true});
+
+# Queries to execute before running course detail API on any environment
+
+db.field_groups.insert( {
+    "name" : "details",
+    "entity" : "course",
+    "fields" : [
+        "course_id",
+        "course_name_official",
+        "fees_url_official",
+        "course_duration",
+        "seats_available",
+        "about_course",
+        "institute_id",
+        "eligibility_criteria",
+        "eligibility_url_official",
+        "study_mode",
+        "admission_process",
+        "admission_process_url_official",
+        "official_brochure_url",
+        "course_fees",
+        "institute.official_address",
+        "institute.official_name",
+        "institute.approvals"
+    ],
+    "created_at": ISODate("2019-03-01T01:11:18.965Z"),
+    "updated_at":ISODate("2019-03-01T01:11:18.965Z"),
+    "active":true
+})

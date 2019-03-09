@@ -53,7 +53,6 @@ public class AggregationResponseDeserializer {
     private AggregationResponse getTermsFromFilterAggregationResponse(Filter filterAggregation,
             String aggregationName, String path, boolean hasIncludeAggregation) {
 
-        BucketAggregationResponse aggregationResponse = new BucketAggregationResponse();
         List<Bucket> buckets = new ArrayList<>();
         Terms termsAggregation;
         Terms termsIncludeAggregation = null;
@@ -78,6 +77,7 @@ public class AggregationResponseDeserializer {
                             aggregationName + ESConstants.INCLUDE_AGGREGATION_SUFFIX));
         }
         buckets.addAll(getBucketsFromTermsAggregation(termsAggregation, path, aggregationName));
+        BucketAggregationResponse aggregationResponse = new BucketAggregationResponse();
         aggregationResponse.setBuckets(buckets);
 
         return aggregationResponse;

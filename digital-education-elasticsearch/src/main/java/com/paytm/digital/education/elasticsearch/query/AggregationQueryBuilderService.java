@@ -230,7 +230,6 @@ public class AggregationQueryBuilderService {
                     TermsAggregationBuilder termsAggregationInclude = null;
                     if (!CollectionUtils.isEmpty(field.getValues())) {
 
-                        IncludeExclude includeValues = new IncludeExclude(field.getValues(), null);
                         IncludeExclude excludeValues = new IncludeExclude(null, field.getValues());
 
                         termsAggregation.includeExclude(excludeValues);
@@ -239,6 +238,7 @@ public class AggregationQueryBuilderService {
                                 AggregationBuilders
                                         .terms(fieldName + ESConstants.INCLUDE_AGGREGATION_SUFFIX);
                         termsAggregationInclude.field(fieldName);
+                        IncludeExclude includeValues = new IncludeExclude(field.getValues(), null);
                         termsAggregationInclude.includeExclude(includeValues);
                         termsAggregationInclude
                                 .order(getBucketAggregationOrder(field.getBucketsOrder()));
