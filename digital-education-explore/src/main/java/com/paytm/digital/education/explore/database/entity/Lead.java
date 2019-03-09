@@ -1,6 +1,7 @@
 package com.paytm.digital.education.explore.database.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.enums.LeadAction;
 import lombok.Data;
@@ -24,22 +25,31 @@ public class Lead {
     @JsonIgnore
     private boolean status = true;
 
+    @JsonProperty(Constants.COURSE_ID)
+    @Field(Constants.COURSE_ID)
+    @NotNull
+    private Long courseId;
+
     /**
      * Id of the current logged In user
      */
     @JsonIgnore
+    @JsonProperty(Constants.USER_ID)
     @Field(Constants.USER_ID)
     private Long userId;
 
     @Field(Constants.CONTACT_NAME)
+    @JsonProperty(Constants.CONTACT_NAME)
     @NotBlank
     private String contactName;
 
     @Field(Constants.CONTACT_EMAIL)
+    @JsonProperty(Constants.CONTACT_EMAIL)
     @Email
     private String contactEmail;
 
     @Field(Constants.CONTACT_NUMBER)
+    @JsonProperty(Constants.CONTACT_NUMBER)
     @NotBlank
     private String contactNumber;
 
@@ -53,14 +63,17 @@ public class Lead {
      * Number of times a user has performed the {@link LeadAction}
      */
     @JsonIgnore
+    @JsonProperty(Constants.ACTION_COUNT)
     @Field(Constants.ACTION_COUNT)
     private int actionCount;
 
     @Field(Constants.ENTITY_ID)
+    @JsonProperty(Constants.ENTITY_ID)
     @NotNull
-    private String entityId;
+    private Long entityId;
 
     @Field(Constants.ENTITY_TYPE)
+    @JsonProperty(Constants.ENTITY_TYPE)
     @NotNull
     private EducationEntity entityType;
 
@@ -81,6 +94,7 @@ public class Lead {
         public static final String CONTACT_NUMBER = "contact_number";
         public static final String ACTION_COUNT = "action_count";
         public static final String ENTITY_ID = "entity_id";
+        public static final String COURSE_ID = "course_id";
         public static final String ENTITY_TYPE = "entity_type";
         public static final String CREATED_AT = "created_at";
         public static final String UPDATED_AT = "updated_at";

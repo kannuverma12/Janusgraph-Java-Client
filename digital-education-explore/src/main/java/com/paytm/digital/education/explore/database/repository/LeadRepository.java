@@ -25,6 +25,7 @@ public class LeadRepository {
      */
     public void upsertLead(@NotNull Lead lead) {
         Query query = new Query(Criteria.where(Lead.Constants.CONTACT_NUMBER).is(lead.getContactNumber())
+            .and(Lead.Constants.COURSE_ID).is(lead.getCourseId())
             .and(Lead.Constants.CONTACT_NAME).is(lead.getContactName())
             .and(Lead.Constants.CONTACT_EMAIL).is(lead.getContactEmail())
             .and(Lead.Constants.ENTITY_ID).is(lead.getEntityId())

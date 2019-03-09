@@ -19,7 +19,7 @@ public class LeadController {
 
     @PostMapping("/auth/v1/lead")
     public void captureLead(@RequestBody Lead lead,
-                            @RequestHeader("x-user-id") long userId) {
+                            @RequestHeader(value = "x-user-id", required = true) long userId) {
         lead.setUserId(userId);
         leadService.captureLead(lead);
     }

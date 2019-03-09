@@ -55,7 +55,7 @@ public class LeadRepositoryTest {
         leadToAdd.setContactName("New Name");
         leadToAdd.setContactNumber("NewNumber");
         leadToAdd.setContactEmail("dummy-new@email.com");
-        leadToAdd.setEntityId("newDummyEntityId");
+        leadToAdd.setEntityId(12L);
         leadToAdd.setEntityType(EducationEntity.INSTITUTE);
         leadToInsert = leadToAdd;
 
@@ -64,7 +64,7 @@ public class LeadRepositoryTest {
         existingLead.setContactName("Existing Name");
         existingLead.setContactNumber("ExistingNumber");
         existingLead.setContactEmail("existing@email.com");
-        existingLead.setEntityId("existingEntityId");
+        existingLead.setEntityId(13L);
         existingLead.setEntityType(EducationEntity.INSTITUTE);
         existingLead.setAction(LeadAction.GetInTouch);
         existingLead.setActionCount(1);
