@@ -2,22 +2,8 @@ package com.paytm.digital.education.explore.controller;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EDUCATION_BASE_URL;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
-
-import com.paytm.digital.education.explore.daoresult.SubscribedEntityCount;
-import com.paytm.digital.education.explore.database.entity.Course;
-import com.paytm.digital.education.explore.database.entity.Exam;
-import com.paytm.digital.education.explore.database.entity.Institute;
-import com.paytm.digital.education.explore.database.entity.Subscription;
-import com.paytm.digital.education.explore.enums.SubscribableEntityType;
-import com.paytm.digital.education.explore.enums.SubscriptionStatus;
-import com.paytm.digital.education.explore.service.EntityDetailsService;
-import com.paytm.digital.education.explore.service.SubscriptionService;
-import com.paytm.digital.education.explore.sro.request.FetchSubscriptionsRequest;
-import com.paytm.digital.education.explore.sro.request.SubscriptionRequest;
-import com.paytm.digital.education.explore.validators.ExploreValidator;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+import javax.validation.constraints.Min;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,9 +15,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import javax.validation.constraints.Min;
+import com.paytm.digital.education.explore.daoresult.SubscribedEntityCount;
+import com.paytm.digital.education.explore.database.entity.Course;
+import com.paytm.digital.education.explore.database.entity.Subscription;
+import com.paytm.digital.education.explore.enums.SubscribableEntityType;
+import com.paytm.digital.education.explore.enums.SubscriptionStatus;
+import com.paytm.digital.education.explore.service.EntityDetailsService;
+import com.paytm.digital.education.explore.service.SubscriptionService;
+import com.paytm.digital.education.explore.sro.request.FetchSubscriptionsRequest;
+import com.paytm.digital.education.explore.sro.request.SubscriptionRequest;
+import com.paytm.digital.education.explore.validators.ExploreValidator;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @AllArgsConstructor
 @RestController
@@ -41,10 +36,10 @@ import javax.validation.constraints.Min;
 public class ExploreController {
     private static final SubscriptionStatus SUBSCRIBED_STATUS = SubscriptionStatus.SUBSCRIBED;
 
-    private SubscriptionService  subscriptionService;
-    private EntityDetailsService entityDetailsService;
-    private ExploreValidator     exploreValidator;
-
+    private SubscriptionService             subscriptionService;
+    private EntityDetailsService            entityDetailsService;
+    private ExploreValidator                exploreValidator;
+    
     @GetMapping("/ping")
     public String ping() {
         return "pong";
@@ -60,25 +55,14 @@ public class ExploreController {
         return "success";
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "/v1/exam/{examId}")
-    public @ResponseBody Exam getExamById(@PathVariable("examId") @Min(1) Long examId,
-        @RequestParam(name = "fields", required = false) List<String> fields,
-        @RequestParam(name = "field_group", required = false) String fieldGroup) {
-
-        exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
-        return entityDetailsService
-                .getEntityDetails(
-                        EXAM_ID, examId, Exam.class, fieldGroup, fields);
-    }
-
     @RequestMapping(method = RequestMethod.GET, path = "/v1/course/{courseId}")
     public @ResponseBody Course getCourseById(@PathVariable("courseId") @Min(1) Long courseId,
-        @RequestParam(name = "field_group", required = false) String fieldGroup,
-        @RequestParam(name = "fields", required = false) List<String> fields) {
+            @RequestParam(name = "field_group", required = false) String fieldGroup,
+            @RequestParam(name = "fields", required = false) List<String> fields) {
 
         exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
         return entityDetailsService
-            .getEntityDetails(COURSE_ID, courseId, Course.class, fieldGroup, fields);
+                .getEntityDetails(COURSE_ID, courseId, Course.class, fieldGroup, fields);
     }
 
     @RequestMapping(method = RequestMethod.POST, path = "/auth/v1/unsubscribe")
@@ -95,10 +79,10 @@ public class ExploreController {
     @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/subscriptions/count")
     @ResponseBody
     public List<SubscribedEntityCount> subscriptionCount(
-        @RequestHeader("x-user-id") @Min(1) long userId,
-        @RequestParam("entities") List<SubscribableEntityType> subscribableEntityTypeList) {
+            @RequestHeader("x-user-id") @Min(1) long userId,
+            @RequestParam("entities") List<SubscribableEntityType> subscribableEntityTypeList) {
         return subscriptionService.fetchSubscribedEntityCount(userId, subscribableEntityTypeList,
-            SUBSCRIBED_STATUS);
+                SUBSCRIBED_STATUS);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/subscriptions")
@@ -118,13 +102,12 @@ public class ExploreController {
                 offset,
                 limit,
                 fields,
-                fieldGroup
-        ));
+                fieldGroup));
 
         List<Subscription> userSubscriptionResultList = subscriptionService
-            .fetchSubscriptions(
-                userId, subscriptionEntity, fields, fieldGroup, offset, limit,
-                    SUBSCRIBED_STATUS);
+                .fetchSubscriptions(
+                        userId, subscriptionEntity, fields, fieldGroup, offset, limit,
+                        SUBSCRIBED_STATUS);
         return ResponseEntity.ok(userSubscriptionResultList);
 
     }

@@ -8,23 +8,21 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.YYY
 import static com.paytm.digital.education.utility.DateUtil.dateToString;
 import static com.paytm.digital.education.utility.DateUtil.formatDateString;
 import static com.paytm.digital.education.utility.DateUtil.stringToDate;
-
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import com.paytm.digital.education.explore.database.entity.Event;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Instance;
 import com.paytm.digital.education.explore.database.entity.SubExam;
 import com.paytm.digital.education.explore.response.dto.detail.CutOff;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 @Service
 public class ExamInstanceHelper {
 
-    private static Date   MAX_DATE             = new Date(Long.MAX_VALUE);
+    private static Date MAX_DATE = new Date(Long.MAX_VALUE);
 
     public List<CutOff> getExamCutOffs(List<Exam> examList) {
         if (!CollectionUtils.isEmpty(examList)) {
@@ -46,7 +44,7 @@ public class ExamInstanceHelper {
                         }
                     } else {
                         cutOff.setExamStartDate(
-                                formatDateString(event.getMonth(), YYYY_MM, MMM_YYYY));
+                                formatDateString(event.getMonthDate(), YYYY_MM, MMM_YYYY));
                     }
                 }
                 cutOffList.add(cutOff);
@@ -107,9 +105,10 @@ public class ExamInstanceHelper {
                         Date eventDate = null;
                         if (NON_TENTATIVE.equalsIgnoreCase(event.getCertainty())) {
                             eventDate = event.getDate() != null
-                                    ? event.getDate() : event.getDateRangeStart();
+                                    ? event.getDate()
+                                    : event.getDateRangeStart();
                         } else {
-                            eventDate = stringToDate(event.getMonth(), YYYY_MM);
+                            eventDate = stringToDate(event.getMonthDate(), YYYY_MM);
                         }
 
                         if (eventDate != null && minApplicationDate.after(eventDate)) {

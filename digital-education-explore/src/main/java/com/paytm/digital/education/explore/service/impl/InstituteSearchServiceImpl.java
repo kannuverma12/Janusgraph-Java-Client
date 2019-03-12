@@ -2,21 +2,31 @@ package com.paytm.digital.education.explore.service.impl;
 
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.RANGE;
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.TERMS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.CITY;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_LEVEL;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.CITY_INSTITUTE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_LEVEL_INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ESTABLISHMENT_YEAR;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAMS_ACCEPTED;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAMS_ACCEPTED_INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.FACILITIES;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.FEES;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.FEES_INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_GENDER;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.MAX_RANK;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.MAX_RANK_INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OWNERSHIP;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_NAMES;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.STATE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_NAMES_INSTITUTE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.STATE_INSTITUTE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM_INSTITUTE;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_RANGE_FILTER_VALUES;
-
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeoutException;
+import javax.annotation.PostConstruct;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
@@ -39,43 +49,33 @@ import com.paytm.digital.education.explore.response.dto.search.SearchResult;
 import com.paytm.digital.education.explore.service.helper.SearchAggregateHelper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
 @Slf4j
 @Service
 @AllArgsConstructor
 public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
 
-    private        SearchResponseBuilder        searchResponseBuilder;
+    private SearchResponseBuilder               searchResponseBuilder;
     private static Map<String, FilterQueryType> filterQueryTypeMap;
     private static List<String>                 searchFieldKeys;
     private static List<String>                 sortKeysInOrder;
 
-    static {
-        filterQueryTypeMap = new HashMap<>();
-        filterQueryTypeMap.put(STATE, TERMS);
-        filterQueryTypeMap.put(CITY, TERMS);
-        filterQueryTypeMap.put(STREAM, TERMS);
-        filterQueryTypeMap.put(COURSE_LEVEL, TERMS);
-        filterQueryTypeMap.put(EXAMS_ACCEPTED, TERMS);
-        filterQueryTypeMap.put(FEES, RANGE);
+    @PostConstruct
+    private void init() {
+        filterQueryTypeMap = new HashMap<String, FilterQueryType>();
+        filterQueryTypeMap.put(STATE_INSTITUTE, TERMS);
+        filterQueryTypeMap.put(CITY_INSTITUTE, TERMS);
+        filterQueryTypeMap.put(STREAM_INSTITUTE, TERMS);
+        filterQueryTypeMap.put(COURSE_LEVEL_INSTITUTE, TERMS);
+        filterQueryTypeMap.put(EXAMS_ACCEPTED_INSTITUTE, TERMS);
+        filterQueryTypeMap.put(FEES_INSTITUTE, RANGE);
         filterQueryTypeMap.put(INSTITUTE_ID, TERMS);
         filterQueryTypeMap.put(OWNERSHIP, TERMS);
         filterQueryTypeMap.put(FACILITIES, TERMS);
         filterQueryTypeMap.put(INSTITUTE_GENDER, TERMS);
         filterQueryTypeMap.put(ESTABLISHMENT_YEAR, RANGE);
-        searchFieldKeys = Arrays.asList(SEARCH_NAMES);
-        sortKeysInOrder = Arrays.asList(MAX_RANK);
+        searchFieldKeys = Arrays.asList(SEARCH_NAMES_INSTITUTE);
+        sortKeysInOrder = Arrays.asList(MAX_RANK_INSTITUTE);
     }
 
     @Override

@@ -21,10 +21,6 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Course {
 
-    @Field("admission_process_url_official")
-    @JsonProperty("admission_process_url_official")
-    public String admissionProcessUrlOfficial;
-
     @Id
     @Field("_id")
     @JsonIgnore
@@ -34,9 +30,18 @@ public class Course {
     @JsonProperty("course_id")
     private Long courseId;
 
+    @Field("course_name_official")
+    @JsonProperty("course_name_official")
+    private String courseNameOfficial;
+
+    @Field("url")
+    @JsonProperty("url")
+    private String url;
+
     @Field("about_course")
     @JsonProperty("about_course")
     private String aboutCourse;
+
 
     @Field("master_branch")
     @JsonProperty("master_branch")
@@ -54,9 +59,9 @@ public class Course {
     @JsonProperty("seats_available")
     private Integer seatsAvailable;
 
-    @Field("eligibility_url_official")
-    @JsonProperty("eligibility_url_official")
-    private String eligibilityUrlOfficial;
+    @Field("study_mode")
+    @JsonProperty("study_mode")
+    private String studyMode;
 
     @Field("exams_accepted")
     @JsonProperty("exams_accepted")
@@ -77,6 +82,23 @@ public class Course {
     @Field("form_application_url_officail")
     @JsonProperty("form_application_url_officail")
     private String formApplicationUrlOfficail;
+
+
+    @Field("admission_process")
+    @JsonProperty("admission_process")
+    private String admissionProcess;
+
+    @Field("admission_process_url_official")
+    @JsonProperty("admission_process_url_official")
+    public String admissionProcessUrlOfficial;
+
+    @Field("eligibility_criteria")
+    @JsonProperty("eligibility_criteria")
+    private String eligibilityCriteria;
+
+    @Field("eligibility_url_official")
+    @JsonProperty("eligibility_url_official")
+    private String eligibilityUrlOfficial;
 
     @Field("form_submission_date")
     @JsonProperty("form_submission_date")
@@ -99,15 +121,11 @@ public class Course {
     @JsonProperty("streams")
     private List<String> streams;
 
-    @Field("course_name_official")
-    @JsonProperty("course_name_official")
-    private String courseNameOfficial;
-
-    @Field("url")
-    @JsonProperty("url")
-    private String url;
-
     @Field("cutoffs")
     @JsonProperty("cutoffs")
     private List<Cutoff> cutoffs;
+    
+    @JsonProperty("institute")
+    private Institute institute;
+
 }

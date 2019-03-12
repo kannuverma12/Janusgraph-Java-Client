@@ -3,7 +3,6 @@ package com.paytm.digital.education.explore.database.repository;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.GROUP_ACTIVE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.GROUP_ENTITY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.GROUP_NAME;
-
 import com.paytm.digital.education.explore.database.entity.FieldGroup;
 import com.paytm.digital.education.explore.database.entity.FtlTemplate;
 import lombok.AllArgsConstructor;
@@ -14,7 +13,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
-
 import java.util.List;
 
 @Slf4j
@@ -64,6 +62,7 @@ public class CommonMongoRepository {
             return groupDetail.getFields();
         }
         return null;
+
     }
 
     public <T> List<T> getEntitiesByIdAndFields(String key, long entityId, Class<T> type,

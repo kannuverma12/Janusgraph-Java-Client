@@ -1,8 +1,8 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_SIZE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_ANALYZER;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_INDEX;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_ANALYZER_INSTITUTE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_INDEX_INSTITUTE;
 
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
@@ -71,8 +71,8 @@ public abstract class AbstractSearchServiceImpl {
     protected ElasticRequest createSearchRequest(SearchRequest searchRequest) {
         ElasticRequest elasticRequest = new ElasticRequest();
         elasticRequest.setQueryTerm(searchRequest.getTerm());
-        elasticRequest.setIndex(SEARCH_INDEX);
-        elasticRequest.setAnalyzer(SEARCH_ANALYZER);
+        elasticRequest.setIndex(SEARCH_INDEX_INSTITUTE);
+        elasticRequest.setAnalyzer(SEARCH_ANALYZER_INSTITUTE);
         elasticRequest.setSearchRequest(true);
         if (searchRequest.isFetchFilter()) {
             elasticRequest.setAggregationRequest(true);
