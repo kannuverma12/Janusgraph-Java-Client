@@ -147,7 +147,7 @@ public class AggregationResponseDeserializer {
                         } else if (p2.getValue() < p1.getValue()) {
                             return -1;
                         }
-                        return 0;
+                        return 1;
                     }
                 });
 
