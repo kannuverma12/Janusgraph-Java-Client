@@ -15,7 +15,10 @@ public enum ErrorEnum {
     INVALID_FIELD_GROUP(4006, "No such field_group exists. Please provide a valid field_group",
             HttpStatus.BAD_REQUEST, 0),
     INVALID_INSTITUTE_ID(4007, "Invalid institute ID. Please provide a valid institute ID.",
-            HttpStatus.BAD_REQUEST, 0);
+            HttpStatus.BAD_REQUEST, 0),
+    RANGE_TYPE_FILTER_VALUES_ERROR(4008,"Range type filter must have length if %s", HttpStatus.BAD_REQUEST, 1),
+    FILTER_DOESNOT_EXIST(4009, "Applied filter doesnot exist", HttpStatus.BAD_REQUEST,1);
+
 
     private final int        internalCode;
     private final String     externalMessage;

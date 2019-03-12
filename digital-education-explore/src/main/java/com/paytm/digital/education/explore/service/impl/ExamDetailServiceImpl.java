@@ -26,6 +26,7 @@ import com.paytm.digital.education.explore.response.dto.detail.Section;
 import com.paytm.digital.education.explore.response.dto.detail.Syllabus;
 import com.paytm.digital.education.explore.response.dto.detail.Topic;
 import com.paytm.digital.education.explore.response.dto.detail.Unit;
+import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.utility.DateUtil;
 import lombok.AllArgsConstructor;
@@ -90,7 +91,7 @@ public class ExamDetailServiceImpl {
                                 eventDate = DateUtil.stringToDate(
                                         events.get(eventIndex).getMonthDate(), DD_MMM_YYYY);
                             }
-                            if (minApplicationDate.compareTo(eventDate) > 0) {
+                            if (eventDate != null && minApplicationDate.compareTo(eventDate) > 0) {
                                 minApplicationDate = eventDate;
                             }
                             if (minApplicationDate.compareTo(presentDate) >= 0

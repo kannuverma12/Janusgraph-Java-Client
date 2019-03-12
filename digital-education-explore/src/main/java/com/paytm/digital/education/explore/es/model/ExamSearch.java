@@ -1,49 +1,38 @@
 package com.paytm.digital.education.explore.es.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-
-import java.util.Date;
 import java.util.List;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ExamSearch {
 
     @JsonProperty("exam_id")
-    private long examId;
+    private int                examId;
 
-    @JsonProperty("short_name")
-    private String shortName;
+    @JsonProperty("official_name")
+    private String             officialName;
 
-    @JsonProperty("name")
-    private String name;
+    @JsonProperty("names")
+    private List<String>       names;
 
-    @JsonProperty("category")
-    private String category; //Stream
+    @JsonProperty("logo_url")
+    private String             logoUrl;
 
-    @JsonProperty("mode")
-    private String mode;
+    @JsonProperty("linguistic_medium")
+    private List<String>       linguisticMedium;
 
     @JsonProperty("level")
-    private String level;
+    private String             level;
 
-    @JsonProperty("exam_date")
-    private Date examDate;
+    @JsonProperty("instances")
+    private List<ExamInstance> examInstances;
 
-    @JsonProperty("application_date")
-    private Date applicationDate;
-
-    @JsonProperty("result_date")
-    private Date resultDate;
-
-    @JsonProperty("status")
-    private boolean status;
-
-    @JsonProperty("exam_language")
-    private List<String> examLanguage;
-
-    @JsonProperty("type")
-    private String type;
+    @JsonProperty("tabs_available")
+    private List<String>       dataAvailable;
 
 }

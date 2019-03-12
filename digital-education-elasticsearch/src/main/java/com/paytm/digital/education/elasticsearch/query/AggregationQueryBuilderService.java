@@ -36,7 +36,7 @@ import java.util.Map;
 
 @Service
 public class AggregationQueryBuilderService {
-
+    
     /**
      * Creates a map containing multiMatch query for every nested path and parent document
      */

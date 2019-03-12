@@ -15,7 +15,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,11 +28,14 @@ public class SearchServiceImpl {
     private SubscriptionRepository     subscriptionRepository;
     //private LeadRepository             leadRepository;
 
+    private ExamSearchServiceImpl      examSearchService;
+
     public SearchResponse search(SearchRequest searchRequest, Long userId) throws Exception {
         SearchResponse response = handler(searchRequest.getEntity()).search(searchRequest);
         log.debug("Search Response : {}", JsonUtils.toJson(response));
 
-        if (userId != null && userId > 0 && response.isSearchResponse()) {
+        if (userId != null && userId > 0 && response.isSearchResponse()
+                && !CollectionUtils.isEmpty(response.getEntityDataMap())) {
             Map<Long, SearchBaseData> searchBaseDataMap = response.getEntityDataMap();
             List<Long> entityIds = new ArrayList<>(searchBaseDataMap.keySet());
             SubscribableEntityType subscribableEntityType =
@@ -59,7 +61,9 @@ public class SearchServiceImpl {
                 }
             }*/
         }
-        response.getEntityDataMap().clear();
+        if (!CollectionUtils.isEmpty(response.getEntityDataMap())) {
+            response.getEntityDataMap().clear();
+        }
         return response;
     }
 
@@ -67,6 +71,8 @@ public class SearchServiceImpl {
         switch (educationEntity) {
             case INSTITUTE:
                 return instituteSearchService;
+            case EXAM:
+                return examSearchService;
             default:
                 throw new RuntimeException("Invalid entity requested.");
         }

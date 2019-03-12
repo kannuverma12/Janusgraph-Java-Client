@@ -1,5 +1,14 @@
 package com.paytm.digital.education.explore.service.helper;
 
+import com.paytm.digital.education.elasticsearch.enums.AggregationType;
+import com.paytm.digital.education.elasticsearch.enums.BucketAggregationSortParms;
+import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
+import com.paytm.digital.education.elasticsearch.models.AggregateField;
+import com.paytm.digital.education.elasticsearch.models.BucketSort;
+
+import java.util.Arrays;
+import java.util.List;
+
 import static com.paytm.digital.education.elasticsearch.enums.AggregationType.MINMAX;
 import static com.paytm.digital.education.elasticsearch.enums.AggregationType.TERMS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CITY_INSTITUTE;
@@ -9,20 +18,16 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EXA
 import static com.paytm.digital.education.explore.constants.ExploreConstants.FACILITIES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.FEES_INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_GENDER;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.LINGUISTIC_MEDIUM;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OWNERSHIP;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_EXAM_LEVEL;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STATE_INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM_INSTITUTE;
-import java.util.Arrays;
-import java.util.List;
-import com.paytm.digital.education.elasticsearch.enums.AggregationType;
-import com.paytm.digital.education.elasticsearch.enums.BucketAggregationSortParms;
-import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
-import com.paytm.digital.education.elasticsearch.models.AggregateField;
-import com.paytm.digital.education.elasticsearch.models.BucketSort;
 
 public class SearchAggregateHelper {
 
     private static AggregateField[] instituteAggregateData;
+    private static AggregateField[] examAggregateData;
 
     static {
 
@@ -50,9 +55,30 @@ public class SearchAggregateHelper {
             aggregateField.setBucketsOrder(instituteSortOrder.get(i));
             instituteAggregateData[i] = aggregateField;
         }
+
+        List<String> examKeys =
+                Arrays.asList(LINGUISTIC_MEDIUM, SEARCH_EXAM_LEVEL);
+        List<AggregationType> examAggregateType =
+                Arrays.asList(TERMS, TERMS);
+        List<BucketSort> examSortOrder =
+                Arrays.asList(bucketSort, bucketSort);
+
+        examAggregateData = new AggregateField[examKeys.size()];
+
+        for (int i = 0; i < examKeys.size(); i++) {
+            AggregateField aggregateField = new AggregateField();
+            aggregateField.setName(examKeys.get(i));
+            aggregateField.setType(examAggregateType.get(i));
+            aggregateField.setBucketsOrder(examSortOrder.get(i));
+            examAggregateData[i] = aggregateField;
+        }
     }
 
     public static AggregateField[] getInstituteAggregateData() {
         return instituteAggregateData;
+    }
+
+    public static AggregateField[] getExamAggregateData() {
+        return examAggregateData;
     }
 }

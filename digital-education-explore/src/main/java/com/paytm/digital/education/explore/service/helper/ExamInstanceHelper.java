@@ -8,16 +8,16 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.YYY
 import static com.paytm.digital.education.utility.DateUtil.dateToString;
 import static com.paytm.digital.education.utility.DateUtil.formatDateString;
 import static com.paytm.digital.education.utility.DateUtil.stringToDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import com.paytm.digital.education.explore.database.entity.Event;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Instance;
 import com.paytm.digital.education.explore.database.entity.SubExam;
 import com.paytm.digital.education.explore.response.dto.detail.CutOff;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class ExamInstanceHelper {
@@ -89,7 +89,7 @@ public class ExamInstanceHelper {
         return null;
     }
 
-    private int getRelevantInstanceIndex(List<Instance> instances, String eventType) {
+    public int getRelevantInstanceIndex(List<Instance> instances, String eventType) {
         int instanceIndex = 0;
         if (!CollectionUtils.isEmpty(instances) || instances.size() > 1) {
             Date presentDate = new Date();
@@ -129,4 +129,5 @@ public class ExamInstanceHelper {
         }
         return instanceIndex;
     }
+
 }
