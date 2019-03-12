@@ -52,11 +52,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             subscriptionRepository.findBySubscribableEntityTypeAndEntityIdAndUserId(
                 entity, entityId, userId);
 
-        if (subscriptionObj == null) {
-            subscriptionRepository.save(new Subscription(userId, entity,
-                entityId, SubscriptionStatus.UNSUBSCRIBED, currentDate,
-                currentDate));
-        } else if (!subscriptionObj.getStatus().equals(SubscriptionStatus.UNSUBSCRIBED)) {
+        if (subscriptionObj != null && subscriptionObj.getStatus().equals(SubscriptionStatus.SUBSCRIBED)) {
             subscriptionObj.setStatus(SubscriptionStatus.UNSUBSCRIBED);
             subscriptionObj.setLastModified(currentDate);
             subscriptionRepository.save(subscriptionObj);
