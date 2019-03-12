@@ -46,6 +46,7 @@ public class Lead {
     @Field(Constants.CONTACT_EMAIL)
     @JsonProperty(Constants.CONTACT_EMAIL)
     @Email
+    @NotBlank
     private String contactEmail;
 
     @Field(Constants.CONTACT_NUMBER)
