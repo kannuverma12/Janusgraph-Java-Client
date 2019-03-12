@@ -11,6 +11,6 @@ public class BadRequestException extends EducationException {
     }
 
     public BadRequestException(ErrorEnum errorEnum, String internalMessage) {
-        this(errorEnum, internalMessage, new Object[]{});
+        this(errorEnum, internalMessage, new Object[] {});
     }
 }

@@ -1,5 +1,10 @@
 package com.paytm.digital.education.explore.constants;
 
+import freemarker.template.Configuration;
+import freemarker.template.Version;
+
+import java.text.SimpleDateFormat;
+
 public interface ExploreConstants {
 
     ////// Common constants /////////////
@@ -15,8 +20,14 @@ public interface ExploreConstants {
 
     public static final int    DEFAULT_AUTOSUGGEST_SIZE  = 4;
 
+    String GROUP_NAME   = "name";
+    String GROUP_ENTITY   = "entity";
+    String GROUP_ACTIVE   = "active";
 
-    ///////////////////////////////////////////
+    String EDUCATION_BASE_URL = "/explore";
+
+    String EXPLORE_COMPONENT         = "explore";
+
     ////// AutoSuggest Constants ////////////
 
     String AUTOSUGGEST_INDEX    = "education_autosuggestion_v1";
@@ -30,7 +41,6 @@ public interface ExploreConstants {
     String AUTOSUGGEST_OFFICIAL_NAME    = "official_name";
     String AUTOSUGGEST_NAMES    = "names";
 
-    ////////////////////////////////////////////////
     ///////// Explore search Constatnts ///////////
 
     String SEARCH_INDEX    = "education_search_institute_v1";
@@ -49,7 +59,33 @@ public interface ExploreConstants {
     String OWNERSHIP          = "ownership";
     String FACILITIES         = "facilities";
 
-    String EDUCATION_BASE_URL = "/explore";
+    // Detail APIs constants
+
+    String EXAM_SHORT_NAME = "exam_short_name";
+    String COURSE_PREFIX   = "course.";
+    String INSTITUTE_PREFIX   = "institute.";
+    String EXAM_PREFIX   = "exam.";
+    String HIGHLIGHTS_TEMPLATE   = "highlights";
+
+    String MAXIMUM_PACKAGE_LABEL = "Maximum Package";
+    String MINIMUM_PACKAGE_LABEL = "Minimum Package";
+    String AVERAGE_PACKAGE_LABEL = "Average Package";
+    String MEDIAN_PACKAGE_LABEL = "Median Package";
+
+    String NON_TENTATIVE = "NON_TENTATIVE";
+    String TENTATIVE = "TENTATIVE";
+    String EVENT_TYPE_EXAM = "EXAM";
+
+    String DISPLAY_NAME = "display_name";
+    String LOGO = "logo";
+
+    // Date formatter
+    SimpleDateFormat YYYY_MM = new SimpleDateFormat("yyyy-MM");
+    SimpleDateFormat DD_MMM_YYYY = new SimpleDateFormat("dd MMM,yyyy");
+    SimpleDateFormat MMM_YYYY = new SimpleDateFormat("MMM,yyyy");
+
+    //Other Constants
+    Version FTL_CURRENT_VERSION = Configuration.VERSION_2_3_23;
 
     String USER_UNAUTHORIZED_MESSAGE = "Unauthorized Request";
 }

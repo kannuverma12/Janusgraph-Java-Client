@@ -12,15 +12,20 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class Placement {
 
     @Field("year")
-    @JsonProperty("year")
     private Integer year;
 
     @Field("degree")
-    @JsonProperty("degree")
     private String degree;
 
     @Field("median")
-    @JsonProperty("median")
     private Integer median;
 
+    @Field("average")
+    public Integer average;
+
+    @Field("maximum")
+    public Integer maximum;
+
+    @Field("minimum")
+    public Integer minimum;
 }

@@ -9,4 +9,7 @@ public class SearchBaseData {
     @JsonProperty("shortlisted")
     private boolean shortlisted;
 
+    @JsonProperty("get_in_touch")
+    private boolean getInTouch;
+
 }

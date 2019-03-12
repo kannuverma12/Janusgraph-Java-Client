@@ -11,6 +11,7 @@ import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -96,7 +97,7 @@ public class Exam {
 
     @Field("subexams")
     @JsonProperty("subexams")
-    private List<SubExam> subExams;
+    private ArrayList<SubExam> subExams;
 
     @Field("synonyms")
     @JsonProperty("synonyms")

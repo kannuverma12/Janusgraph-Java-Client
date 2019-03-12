@@ -13,17 +13,22 @@ public class Ranking {
 
     @Field("year")
     @JsonProperty("year")
-    private int year;
+    private Integer year;
 
     @Field("rank")
     @JsonProperty("rank")
-    private int rank;
+    private Integer rank;
 
     @Field("score")
     @JsonProperty("score")
-    private double score;
+    private Double score;
 
     @Field("stream")
     @JsonProperty("stream")
     private String stream;
+
+    @Field("category")
+    @JsonProperty("category")
+    private String category;
+
 }

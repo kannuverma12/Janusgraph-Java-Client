@@ -233,7 +233,6 @@ public class AggregationQueryBuilderService {
 
                     TermsAggregationBuilder termsAggregationInclude = null;
                     if (!CollectionUtils.isEmpty(field.getValues())) {
-
                         IncludeExclude excludeValues = new IncludeExclude(null, field.getValues());
                         termsAggregation.includeExclude(excludeValues);
                         termsAggregationInclude =

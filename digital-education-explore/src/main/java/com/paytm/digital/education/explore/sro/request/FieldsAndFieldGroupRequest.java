@@ -1,7 +1,7 @@
 package com.paytm.digital.education.explore.sro.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.explore.validations.FieldsAndFieldGroup;
+import com.paytm.digital.education.explore.annotation.FieldsAndFieldGroup;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -11,4 +11,9 @@ public class CustomStringUtils {
         return stream(name.split("_"))
             .map(s -> toCamelCase(s, true)).collect(joining(" "));
     }
+
+    public static String splitAndConvertToCamelCase(String name, String separator) {
+        return stream(name.split(separator))
+                .map(s -> toCamelCase(s, true)).collect(joining(" "));
+    }
 }

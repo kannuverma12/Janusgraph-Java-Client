@@ -8,6 +8,10 @@ public enum ErrorEnum {
             HttpStatus.BAD_REQUEST, 0),
     MIN_LENGTH_ERROR(4002, "Must have minimum length of %s", HttpStatus.BAD_REQUEST, 1),
     MAX_LENGTH_ERROR(4003, "Must have maximum length of %s", HttpStatus.BAD_REQUEST, 1),
+    INVALID_FIELD_GROUP(4004, "No such field_group exists. Please provide a valid field_group",
+            HttpStatus.BAD_REQUEST, 0),
+    INVALID_INSTITUTE_ID(4005, "Invalid institute ID. Please provide a valid institute ID.",
+            HttpStatus.BAD_REQUEST, 0),
     INVALID_RANGE_FILTER_VALUES(4007, "Invalid range filter. Filter %s size should be 2",
             HttpStatus.BAD_REQUEST, 1);
 

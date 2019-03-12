@@ -6,7 +6,6 @@ import com.paytm.digital.education.explore.database.entity.Subscription;
 import com.paytm.digital.education.explore.database.repository.SubscriptionRepository;
 import com.paytm.digital.education.explore.enums.SubscribableEntityType;
 import com.paytm.digital.education.explore.enums.SubscriptionStatus;
-
 import com.paytm.digital.education.explore.service.CommonMongoService;
 import com.paytm.digital.education.explore.service.SubscriptionService;
 import lombok.AllArgsConstructor;
@@ -30,13 +29,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public void subscribe(long userId, SubscribableEntityType entity, long entityId) {
         Date currentDate = new java.util.Date();
         Subscription subscriptionObj =
-            subscriptionRepository.findBySubscribableEntityTypeAndEntityIdAndUserId(
-                entity, entityId, userId);
+                subscriptionRepository.findBySubscribableEntityTypeAndUserIdAndEntityId(
+                        entity, userId, entityId);
 
         if (subscriptionObj == null) {
             subscriptionRepository.save(new Subscription(userId, entity,
-                entityId, SubscriptionStatus.SUBSCRIBED, currentDate,
-                currentDate));
+                    entityId, SubscriptionStatus.SUBSCRIBED, currentDate,
+                    currentDate));
         } else if (!subscriptionObj.getStatus().equals(SubscriptionStatus.SUBSCRIBED)) {
             subscriptionObj.setStatus(SubscriptionStatus.SUBSCRIBED);
             subscriptionObj.setLastModified(currentDate);
@@ -49,10 +48,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         Date currentDate = new java.util.Date();
 
         Subscription subscriptionObj =
-            subscriptionRepository.findBySubscribableEntityTypeAndEntityIdAndUserId(
-                entity, entityId, userId);
+                subscriptionRepository.findBySubscribableEntityTypeAndUserIdAndEntityId(
+                        entity, userId, entityId);
 
-        if (subscriptionObj != null && subscriptionObj.getStatus().equals(SubscriptionStatus.SUBSCRIBED)) {
+        if (subscriptionObj != null && subscriptionObj.getStatus()
+                .equals(SubscriptionStatus.SUBSCRIBED)) {
             subscriptionObj.setStatus(SubscriptionStatus.UNSUBSCRIBED);
             subscriptionObj.setLastModified(currentDate);
             subscriptionRepository.save(subscriptionObj);
@@ -60,21 +60,25 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public List<Subscription> fetchSubscriptions(long userId, SubscribableEntityType subscriptionEntity,
-                                                List<String> fields, String fieldGroup, long offset, long limit,
-                                                SubscriptionStatus subscriptionStatus) {
+    public List<Subscription> fetchSubscriptions(long userId,
+            SubscribableEntityType subscriptionEntity,
+            List<String> fields, String fieldGroup, long offset, long limit,
+            SubscriptionStatus subscriptionStatus) {
         List<String> toBeFetchedFieldList = StringUtils.isEmpty(fieldGroup)
-            ? fields :
-            commonMongoService.getFieldsByGroupAndCollectioName(
-                subscriptionEntity.getCorrespondingCollectionName(), fieldGroup);
+                ? fields :
+                commonMongoService.getFieldsByGroupAndCollectioName(
+                        subscriptionEntity.getCorrespondingCollectionName(), fieldGroup);
 
         return subscriptionDao.getUserSubscriptions(
-            userId, subscriptionEntity, toBeFetchedFieldList, offset, limit, subscriptionStatus);
+                userId, subscriptionEntity, toBeFetchedFieldList, offset, limit,
+                subscriptionStatus);
     }
 
     @Override
     public List<SubscribedEntityCount> fetchSubscribedEntityCount(
-        long userId, List<SubscribableEntityType> subscribableEntityTypes, SubscriptionStatus subscriptionStatus) {
-        return subscriptionDao.getSubscribedEntityCount(userId, subscribableEntityTypes, subscriptionStatus);
+            long userId, List<SubscribableEntityType> subscribableEntityTypes,
+            SubscriptionStatus subscriptionStatus) {
+        return subscriptionDao
+                .getSubscribedEntityCount(userId, subscribableEntityTypes, subscriptionStatus);
     }
 }

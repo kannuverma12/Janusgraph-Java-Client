@@ -1,7 +1,7 @@
 package com.paytm.digital.education.explore.validators;
 
 import com.paytm.digital.education.explore.sro.request.FieldsAndFieldGroupRequest;
-import com.paytm.digital.education.explore.validations.FieldsAndFieldGroup;
+import com.paytm.digital.education.explore.annotation.FieldsAndFieldGroup;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 

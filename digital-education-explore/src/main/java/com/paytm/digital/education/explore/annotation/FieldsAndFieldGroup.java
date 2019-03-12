@@ -1,4 +1,4 @@
-package com.paytm.digital.education.explore.validations;
+package com.paytm.digital.education.explore.annotation;
 
 import com.paytm.digital.education.explore.validators.FieldsAndFieldGroupValidator;
 

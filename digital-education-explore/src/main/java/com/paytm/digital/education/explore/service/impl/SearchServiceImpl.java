@@ -1,9 +1,12 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import com.paytm.digital.education.explore.database.entity.Lead;
 import com.paytm.digital.education.explore.database.entity.Subscription;
+import com.paytm.digital.education.explore.database.repository.LeadRepository;
 import com.paytm.digital.education.explore.database.repository.SubscriptionRepository;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.enums.SubscribableEntityType;
+import com.paytm.digital.education.explore.enums.SubscriptionStatus;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.search.SearchBaseData;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
@@ -24,6 +27,7 @@ public class SearchServiceImpl {
 
     private InstituteSearchServiceImpl instituteSearchService;
     private SubscriptionRepository     subscriptionRepository;
+    //private LeadRepository             leadRepository;
 
     public SearchResponse search(SearchRequest searchRequest, Long userId) throws Exception {
         SearchResponse response = handler(searchRequest.getEntity()).search(searchRequest);
@@ -35,13 +39,25 @@ public class SearchServiceImpl {
             SubscribableEntityType subscribableEntityType =
                     EducationEntity.convertToSubscribableEntity(searchRequest.getEntity());
             List<Subscription> subscribedEntities =
-                    subscriptionRepository.findBySubscribableEntityTypeAndUserIdAndEntityIdIn(
-                            subscribableEntityType, entityIds, userId);
+                    subscriptionRepository
+                            .findBySubscribableEntityTypeAndUserIdAndStatusAndEntityIdIn(
+                                    subscribableEntityType, userId, SubscriptionStatus.SUBSCRIBED,
+                                    entityIds);
             if (!CollectionUtils.isEmpty(subscribedEntities)) {
                 for (Subscription subscription : subscribedEntities) {
                     searchBaseDataMap.get(subscription.getEntityId()).setShortlisted(true);
                 }
             }
+
+            //To be not used as of now. Will be incorporated in sprint3
+            /*List<Lead> leadList = leadRepository
+                    .fetchLeadByEntityTypeAndUserIdAndEntityIdIn(searchRequest.getEntity(), userId,
+                            entityIds);
+            if (!CollectionUtils.isEmpty(leadList)) {
+                for (Lead lead : leadList) {
+                    searchBaseDataMap.get(lead.getEntityId()).setGetInTouch(true);
+                }
+            }*/
         }
         response.getEntityDataMap().clear();
         return response;

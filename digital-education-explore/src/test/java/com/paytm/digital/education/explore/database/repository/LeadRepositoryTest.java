@@ -77,9 +77,9 @@ public class LeadRepositoryTest {
     @AfterClass
     public static void tearDown() throws Exception {
         mongoTemplate.findAndRemove(new Query(Criteria.where(Lead.Constants.CONTACT_NUMBER)
-            .is(leadToInsert.getContactNumber())), Lead.class);
+                .is(leadToInsert.getContactNumber())), Lead.class);
         mongoTemplate.findAndRemove(new Query(Criteria.where(Lead.Constants.CONTACT_NUMBER)
-            .is(leadToUpdate.getContactNumber())), Lead.class);
+                .is(leadToUpdate.getContactNumber())), Lead.class);
 
         mongoExe.stop();
     }
@@ -117,25 +117,25 @@ public class LeadRepositoryTest {
 
     private Query buildQueryToFindLead(Lead lead) {
         return new Query(Criteria.where(Lead.Constants.CONTACT_NUMBER).is(lead.getContactNumber())
-            .and(Lead.Constants.CONTACT_EMAIL).is(lead.getContactEmail())
-            .and(Lead.Constants.CONTACT_NAME).is(lead.getContactName())
-            .and(Lead.Constants.ACTION).is(lead.getAction())
-            .and(Lead.Constants.USER_ID).is(lead.getUserId())
-            .and(Lead.Constants.ENTITY_ID).is(lead.getEntityId())
-            .and(Lead.Constants.ENTITY_TYPE).is(lead.getEntityType()));
+                .and(Lead.Constants.CONTACT_EMAIL).is(lead.getContactEmail())
+                .and(Lead.Constants.CONTACT_NAME).is(lead.getContactName())
+                .and(Lead.Constants.ACTION).is(lead.getAction())
+                .and(Lead.Constants.USER_ID).is(lead.getUserId())
+                .and(Lead.Constants.ENTITY_ID).is(lead.getEntityId())
+                .and(Lead.Constants.ENTITY_TYPE).is(lead.getEntityType()));
     }
 
     private static void setUpMongo(String mongoHost, int mongoPort) throws IOException {
         Logger logger = LoggerFactory.getLogger(LeadRepositoryTest.class);
 
         IMongodConfig mongodConfig = new MongodConfigBuilder().version(Version.Main.PRODUCTION)
-            .net(new Net(mongoHost, mongoPort, Network.localhostIsIPv6()))
-            .build();
+                .net(new Net(mongoHost, mongoPort, Network.localhostIsIPv6()))
+                .build();
 
         IRuntimeConfig runtimeConfig = new RuntimeConfigBuilder()
-            .defaultsWithLogger(Command.MongoD, logger)
-            .processOutput(ProcessOutput.getDefaultInstanceSilent())
-            .build();
+                .defaultsWithLogger(Command.MongoD, logger)
+                .processOutput(ProcessOutput.getDefaultInstanceSilent())
+                .build();
 
         MongodStarter mongodStarter = MongodStarter.getInstance(runtimeConfig);
         mongoExe = mongodStarter.prepare(mongodConfig);

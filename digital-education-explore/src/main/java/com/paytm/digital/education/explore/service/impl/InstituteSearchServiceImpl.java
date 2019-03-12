@@ -21,12 +21,9 @@ import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
-import com.paytm.digital.education.elasticsearch.models.AggregationResponse;
-import com.paytm.digital.education.elasticsearch.models.BucketAggregationResponse;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.elasticsearch.models.FilterField;
-import com.paytm.digital.education.elasticsearch.models.MetricAggregationResponse;
 import com.paytm.digital.education.elasticsearch.models.SearchField;
 import com.paytm.digital.education.elasticsearch.models.SortField;
 import com.paytm.digital.education.exception.BadRequestException;
@@ -35,14 +32,10 @@ import com.paytm.digital.education.explore.es.model.InstituteSearch;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.builders.SearchResponseBuilder;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
-import com.paytm.digital.education.explore.response.dto.search.FilterBucket;
-import com.paytm.digital.education.explore.response.dto.search.FilterData;
 import com.paytm.digital.education.explore.response.dto.search.InstituteData;
-import com.paytm.digital.education.explore.response.dto.search.RangeFilterData;
 import com.paytm.digital.education.explore.response.dto.search.SearchBaseData;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.response.dto.search.SearchResult;
-import com.paytm.digital.education.explore.response.dto.search.TermFilterData;
 import com.paytm.digital.education.explore.service.helper.SearchAggregateHelper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,7 +45,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +62,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
     private static List<String>                 sortKeysInOrder;
 
     static {
-        filterQueryTypeMap = new HashMap<String, FilterQueryType>();
+        filterQueryTypeMap = new HashMap<>();
         filterQueryTypeMap.put(STATE, TERMS);
         filterQueryTypeMap.put(CITY, TERMS);
         filterQueryTypeMap.put(STREAM, TERMS);
@@ -194,7 +186,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
     @Override
     protected SearchResponse buildSearchResponse(ElasticResponse elasticResponse,
             ElasticRequest elasticRequest) {
-        SearchResponse searchResponse = new SearchResponse();
+        SearchResponse searchResponse = new SearchResponse(elasticRequest.getQueryTerm());
         if (elasticRequest.isSearchRequest()) {
             populateSearchResults(searchResponse, elasticResponse);
             long total = elasticResponse.getTotalSearchResultsCount();

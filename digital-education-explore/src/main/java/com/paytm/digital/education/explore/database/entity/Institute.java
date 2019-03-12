@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.explore.enums.CollegeEntityType;
 import lombok.Data;
 import lombok.ToString;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -120,6 +119,15 @@ public class Institute {
     @Field("rankings")
     @JsonProperty("rankings")
     private List<Ranking> rankings;
+
+    @Field("gallery")
+    private Gallery gallery;
+
+    @Field("accreditations")
+    public List<Accreditation> accreditations;
+
+    @Field("approvals")
+    public List<String> approvals;
 
     public Institute(String commonName, Long instituteId) {
         this.commonName = commonName;

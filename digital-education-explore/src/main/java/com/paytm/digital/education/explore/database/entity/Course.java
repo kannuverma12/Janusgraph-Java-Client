@@ -34,6 +34,10 @@ public class Course {
     @JsonProperty("course_id")
     private Long courseId;
 
+    @Field("about_course")
+    @JsonProperty("about_course")
+    private String aboutCourse;
+
     @Field("master_branch")
     @JsonProperty("master_branch")
     private String masterBranch;
@@ -56,7 +60,7 @@ public class Course {
 
     @Field("exams_accepted")
     @JsonProperty("exams_accepted")
-    private List<Integer> examsAccepted;
+    private List<Long> examsAccepted;
 
     @Field("course_fees")
     @JsonProperty("course_fees")
@@ -66,8 +70,8 @@ public class Course {
     @JsonProperty("fees_url_official")
     private String feesUrlOfficial;
 
-    @Field("institution_id")
-    @JsonProperty("institution_id")
+    @Field("institute_id")
+    @JsonProperty("institute_id")
     private Integer institutionId;
 
     @Field("form_application_url_officail")

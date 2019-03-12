@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.Map;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@NoArgsConstructor
 public class SearchResponse {
 
     @JsonProperty("results")
@@ -25,6 +27,13 @@ public class SearchResponse {
 
     @JsonIgnore
     private Map<Long, SearchBaseData> entityDataMap;
+
+    @JsonProperty("search_term")
+    private String searchTerm;
+
+    public SearchResponse(String term) {
+        this.searchTerm = term;
+    }
 
     @JsonIgnore
     public boolean isSearchResponse() {
