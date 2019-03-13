@@ -3,6 +3,8 @@ package com.paytm.digital.education.application.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.GitProperties;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,6 +24,11 @@ public class HealthController {
 
     @Value("${spring.application.version}")
     private String applicationVersion;
+
+    @GetMapping("/health")
+    public ResponseEntity health() {
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     @GetMapping("/ping")
     public Map<String, Object> ping() {

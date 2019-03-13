@@ -1,10 +1,8 @@
 package com.paytm.digital.education.application.config.security;
 
-import com.paytm.digital.education.application.constant.ProfileConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -17,14 +15,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @EnableWebSecurity
-@Profile({ProfileConstants.LOCAL, ProfileConstants.STAGING})
-public class LocalSecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final List<String> allowedHosts;
     private final List<String> allowedMethods;
     private final List<String> allowedHeaders;
 
-    public LocalSecurityConfig(
+    public SecurityConfig(
         @Value("#{'${cors.allowed.hosts}'.split(',')}") final List<String> allowedHosts,
         @Value("#{'${cors.allowed.methods}'.split(',')}") final List<String> allowedMethods,
         @Value("#{'${cors.allowed.headers}'.split(',')}") final List<String> allowedHeaders) {

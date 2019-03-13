@@ -15,9 +15,6 @@
         <RollingFile name="ApplicationLog"
                      fileName="${path}/application.log"
                      filePattern="${path}/archive/application-%d{yyyy-MM-dd}-%i.log.gz">
-            <Jsonlayout eventEol="true" compact="true">
-                <KeyValuePair key="requestId" value="$${ctx:requestId:-null}"/>
-            </Jsonlayout>
             <PatternLayout
                     pattern="%-5p | %X{ClientId} | %X{RequestId} | %d{yyyy-MM-dd HH:mm:ss} | [%t] %C{2} - %m%n"/>
 

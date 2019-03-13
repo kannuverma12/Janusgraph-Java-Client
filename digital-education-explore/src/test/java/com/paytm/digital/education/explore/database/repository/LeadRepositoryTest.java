@@ -30,7 +30,7 @@ import java.util.List;
 
 public class LeadRepositoryTest {
 
-    private static String mongoHost = "localhost";
+    private static String mongoHost = "127.0.0.1";
 
     private static int mongoPort = 27018;
 
