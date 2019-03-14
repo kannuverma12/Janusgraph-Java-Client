@@ -14,10 +14,6 @@ public class Event {
     @JsonProperty("name")
     private String       name;
 
-    @JsonProperty("date")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd MMMM,yyyy")
-    private Date         date;
-
     @JsonProperty("date_start_range")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd MMMM,yyyy")
     private Date         dateStartRange;

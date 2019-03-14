@@ -28,6 +28,7 @@ import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.builders.SearchResponseBuilder;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.mapping.ErrorEnum;
+import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.search.service.ISearchService;
 import com.paytm.digital.education.utility.HierarchyIdentifierUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,9 @@ public abstract class AbstractSearchServiceImpl {
 
     @Autowired
     private SearchResponseBuilder             searchResponseBuilder;
+
+    @Autowired
+    private PropertyReader                    propertyReader;
 
     protected Map<Class, Map<String, String>> hierarchyMap;
 
@@ -135,9 +139,8 @@ public abstract class AbstractSearchServiceImpl {
         }
     }
 
-    protected SearchResponse buildSearchResponse(
-            ElasticResponse elasticResponse,
-            ElasticRequest elasticRequest) {
+    protected SearchResponse buildSearchResponse(ElasticResponse elasticResponse,
+            ElasticRequest elasticRequest, String component, String namespace) {
         SearchResponse searchResponse = new SearchResponse(elasticRequest.getQueryTerm());
         if (elasticRequest.isSearchRequest()) {
             populateSearchResults(searchResponse, elasticResponse);
@@ -145,8 +148,11 @@ public abstract class AbstractSearchServiceImpl {
             searchResponse.setTotal(total);
         }
         if (elasticRequest.isAggregationRequest()) {
+            Map<String, Map<String, Object>> propertyMap = propertyReader
+                    .getPropertiesAsMap(component, namespace);
             searchResponseBuilder
-                    .populateSearchFilters(searchResponse, elasticResponse, elasticRequest);
+                    .populateSearchFilters(searchResponse, elasticResponse, elasticRequest,
+                            propertyMap);
         }
         return searchResponse;
     }

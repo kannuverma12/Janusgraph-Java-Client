@@ -3,10 +3,12 @@ package com.paytm.digital.education.explore.service.impl;
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.TERMS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.APPLICATION;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DATE_TAB;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DD_MMMM_YYYY;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.DD_MMM_YYYY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_FILTER_NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LINGUISTIC_MEDIUM;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.MMMM_YYYY;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.MMM_YYYY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.NON_TENTATIVE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.RESULT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_ANALYZER_EXAM;
@@ -29,7 +31,6 @@ import com.paytm.digital.education.explore.response.dto.search.ExamData;
 import com.paytm.digital.education.explore.response.dto.search.SearchBaseData;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.response.dto.search.SearchResult;
-import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
 import com.paytm.digital.education.explore.service.helper.SearchAggregateHelper;
 import com.paytm.digital.education.utility.DateUtil;
 import lombok.AllArgsConstructor;
@@ -68,7 +69,8 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
         validateRequest(searchRequest, filterQueryTypeMap);
         ElasticRequest elasticRequest = buildSearchRequest(searchRequest);
         ElasticResponse elasticResponse = initiateSearch(elasticRequest, ExamSearch.class);
-        return buildSearchResponse(elasticResponse, elasticRequest);
+        return buildSearchResponse(elasticResponse, elasticRequest, EXPLORE_COMPONENT,
+                EXAM_FILTER_NAMESPACE);
     }
 
 
@@ -92,48 +94,48 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
                             && event.getCertainty().equalsIgnoreCase(NON_TENTATIVE)) {
                         if (event.getStartDate() != null) {
                             examData.setApplicationStartDate(
-                                    DateUtil.dateToString(event.getStartDate(), DD_MMMM_YYYY));
+                                    DateUtil.dateToString(event.getStartDate(), DD_MMM_YYYY));
                             examData.setApplicationEndDate(
-                                    DateUtil.dateToString(event.getEndDate(), DD_MMMM_YYYY));
+                                    DateUtil.dateToString(event.getEndDate(), DD_MMM_YYYY));
                         } else {
                             examData.setApplicationStartDate(
-                                    DateUtil.dateToString(event.getDate(), DD_MMMM_YYYY));
+                                    DateUtil.dateToString(event.getDate(), DD_MMM_YYYY));
                         }
                     } else {
                         examData.setApplicationMonth(
-                                DateUtil.formatDateString(event.getMonth(), YYYY_MM, MMMM_YYYY));
+                                DateUtil.formatDateString(event.getMonth(), YYYY_MM, MMM_YYYY));
                     }
                 } else if (event.getType().equalsIgnoreCase(EXAM)) {
                     if (event.getCertainty() != null
                             && event.getCertainty().equalsIgnoreCase(NON_TENTATIVE)) {
                         if (event.getStartDate() != null) {
                             examData.setExamStartDate(
-                                    DateUtil.dateToString(event.getStartDate(), DD_MMMM_YYYY));
+                                    DateUtil.dateToString(event.getStartDate(), DD_MMM_YYYY));
                             examData.setExamEndDate(
-                                    DateUtil.dateToString(event.getEndDate(), DD_MMMM_YYYY));
+                                    DateUtil.dateToString(event.getEndDate(), DD_MMM_YYYY));
                         } else {
                             examData.setExamStartDate(
-                                    DateUtil.dateToString(event.getDate(), MMMM_YYYY));
+                                    DateUtil.dateToString(event.getDate(), MMM_YYYY));
                         }
                     } else {
                         examData.setExamMonth(
-                                DateUtil.formatDateString(event.getMonth(), YYYY_MM, MMMM_YYYY));
+                                DateUtil.formatDateString(event.getMonth(), YYYY_MM, MMM_YYYY));
                     }
                 } else if (event.getType().equalsIgnoreCase(RESULT)) {
                     if (event.getCertainty() != null
                             && event.getCertainty().equalsIgnoreCase(NON_TENTATIVE)) {
                         if (event.getStartDate() != null) {
                             examData.setResultStartDate(
-                                    DateUtil.dateToString(event.getStartDate(), DD_MMMM_YYYY));
+                                    DateUtil.dateToString(event.getStartDate(), DD_MMM_YYYY));
                             examData.setResultEndDate(
-                                    DateUtil.dateToString(event.getEndDate(), DD_MMMM_YYYY));
+                                    DateUtil.dateToString(event.getEndDate(), DD_MMM_YYYY));
                         } else {
                             examData.setResultStartDate(
-                                    DateUtil.dateToString(event.getDate(), DD_MMMM_YYYY));
+                                    DateUtil.dateToString(event.getDate(), DD_MMM_YYYY));
                         }
                     } else {
                         examData.setResultMonth(
-                                DateUtil.formatDateString(event.getMonth(), YYYY_MM, MMMM_YYYY));
+                                DateUtil.formatDateString(event.getMonth(), YYYY_MM, MMM_YYYY));
                     }
                 }
             });

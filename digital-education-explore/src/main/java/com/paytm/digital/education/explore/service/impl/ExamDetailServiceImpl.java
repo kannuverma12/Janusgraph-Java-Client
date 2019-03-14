@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.database.entity.Exam;
-import com.paytm.digital.education.explore.database.entity.Instance;
 import com.paytm.digital.education.explore.database.entity.SubExam;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.response.dto.detail.Event;
@@ -36,6 +35,7 @@ import lombok.AllArgsConstructor;
 public class ExamDetailServiceImpl {
 
     private CommonMongoRepository commonMongoRepository;
+    private ExamInstanceHelper    examInstanceHelper;
 
     private static int            EXAM_PREFIX_LENGTH = EXAM_PREFIX.length();
 
@@ -64,51 +64,6 @@ public class ExamDetailServiceImpl {
         }
         throw new BadRequestException(ErrorEnum.INVALID_EXAM_ID,
                 INVALID_EXAM_ID.getExternalMessage());
-    }
-
-    private int getRelevantInstanceIndex(List<Instance> instances) throws ParseException {
-        int instanceIndex = 0;
-        if (!CollectionUtils.isEmpty(instances) || instances.size() > 1) {
-            Date presentDate = new Date();
-            Date futureMinDate = new Date(Long.MAX_VALUE);
-            Date pastMaxDate = new Date(Long.MIN_VALUE);
-            for (int index = 0; index < instances.size(); index++) {
-                Date minApplicationDate = new Date(Long.MAX_VALUE);
-                if (!CollectionUtils.isEmpty(instances.get(index).getEvents())) {
-                    List<com.paytm.digital.education.explore.database.entity.Event> events =
-                            instances.get(index).getEvents();
-                    for (int eventIndex = 0; eventIndex < events.size(); eventIndex++) {
-                        if (events.get(eventIndex).getType() != null
-                                && events.get(eventIndex).getType().equalsIgnoreCase(APPLICATION)) {
-                            Date eventDate;
-                            if (events.get(eventIndex).getCertainty() != null
-                                    && events.get(eventIndex).getCertainty()
-                                            .equalsIgnoreCase(NON_TENTATIVE)) {
-                                eventDate = events.get(eventIndex).getDateRangeStart() != null
-                                        ? events.get(eventIndex).getDateRangeStart()
-                                        : events.get(eventIndex).getDate();
-                            } else {
-                                eventDate = DateUtil.stringToDate(
-                                        events.get(eventIndex).getMonthDate(), DD_MMM_YYYY);
-                            }
-                            if (eventDate != null && minApplicationDate.compareTo(eventDate) > 0) {
-                                minApplicationDate = eventDate;
-                            }
-                            if (minApplicationDate.compareTo(presentDate) >= 0
-                                    && futureMinDate.compareTo(minApplicationDate) > 0) {
-                                futureMinDate = minApplicationDate;
-                                instanceIndex = index;
-                            } else if (futureMinDate.compareTo(new Date(Long.MAX_VALUE)) == 0
-                                    && minApplicationDate.compareTo(pastMaxDate) > 0) {
-                                pastMaxDate = minApplicationDate;
-                                instanceIndex = index;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return instanceIndex;
     }
 
     private ExamDetail processExamDetail(Exam exam, List<String> examFields, Long userId)
@@ -145,9 +100,12 @@ public class ExamDetailServiceImpl {
             entityEvents.forEach(event -> {
                 Event respEvent = new Event();
                 respEvent.setName(examName);
-                respEvent.setDate(event.getDate());
-                respEvent.setDateEndRange(event.getDateRangeEnd());
-                respEvent.setDateStartRange(event.getDateRangeStart());
+                if (event.getDateRangeStart() != null) {
+                    respEvent.setDateEndRange(event.getDateRangeEnd());
+                    respEvent.setDateStartRange(event.getDateRangeStart());
+                } else {
+                    respEvent.setDateStartRange(event.getDate());
+                }
                 respEvent.setMonthDate(
                         DateUtil.formatDateString(event.getMonthDate(), YYYY_MM, MMM_YYYY));
                 respEvent.setModes(event.getModes());
@@ -164,7 +122,7 @@ public class ExamDetailServiceImpl {
             if (importantDates.get(i).getType().equalsIgnoreCase(APPLICATION)) {
                 if (importantDates.get(i).getCertainity() != null
                         && importantDates.get(i).getCertainity().equalsIgnoreCase(NON_TENTATIVE)) {
-                    if (importantDates.get(i).getDateStartRange() != null) {
+                    if (importantDates.get(i).getDateEndRange() != null) {
                         examDetail.setApplicationOpening(
                                 DateUtil.dateToString(importantDates.get(i).getDateStartRange(),
                                         DD_MMM_YYYY));
@@ -172,17 +130,17 @@ public class ExamDetailServiceImpl {
                                 importantDates.get(i).getDateEndRange(), DD_MMM_YYYY));
                     } else {
                         examDetail.setApplicationOpening(DateUtil
-                                .dateToString(importantDates.get(i).getDate(), DD_MMM_YYYY));
+                                .dateToString(importantDates.get(i).getDateStartRange(), DD_MMM_YYYY));
                     }
 
                 } else {
                     examDetail.setApplicationMonth(DateUtil.formatDateString(
-                            importantDates.get(i).getMonthDate(), YYYY_MM, DD_MMM_YYYY));
+                            importantDates.get(i).getMonthDate(), YYYY_MM, MMM_YYYY));
                 }
             } else if (importantDates.get(i).getType().equalsIgnoreCase(EXAM)) {
                 if (importantDates.get(i).getCertainity() != null
                         && importantDates.get(i).getCertainity().equalsIgnoreCase(NON_TENTATIVE)) {
-                    if (importantDates.get(i).getDateStartRange() != null) {
+                    if (importantDates.get(i).getDateEndRange() != null) {
                         examDetail.setExamStartDate(
                                 DateUtil.dateToString(importantDates.get(i).getDateStartRange(),
                                         DD_MMM_YYYY));
@@ -191,7 +149,7 @@ public class ExamDetailServiceImpl {
                                         DD_MMM_YYYY));
                     } else {
                         examDetail.setExamStartDate(
-                                DateUtil.dateToString(importantDates.get(i).getDate(),
+                                DateUtil.dateToString(importantDates.get(i).getDateStartRange(),
                                         DD_MMM_YYYY));
                     }
 
@@ -210,9 +168,11 @@ public class ExamDetailServiceImpl {
         subExams.forEach(subExam -> {
             subExam.getInstances().forEach(subExamInstance -> {
                 if (subExamInstance.getParentInstanceId() == parentInstanceId) {
-                    Syllabus syllabus = new Syllabus(subExam.getSubExamName(),
-                            getSectionsFromEntitySyllabus(subExamInstance.getSyllabusList()));
-                    syllabusList.add(syllabus);
+                    if (!CollectionUtils.isEmpty(subExamInstance.getSyllabusList())) {
+                        Syllabus syllabus = new Syllabus(subExam.getSubExamName(),
+                                getSectionsFromEntitySyllabus(subExamInstance.getSyllabusList()));
+                        syllabusList.add(syllabus);
+                    }
                     importantDates
                             .addAll(convertEntityEventToResponse(subExam.getSubExamName(),
                                     subExamInstance.getEvents()));
@@ -243,9 +203,12 @@ public class ExamDetailServiceImpl {
         List<Event> importantDates = new ArrayList<>();
         int instanceIndex = -1;
         if (!CollectionUtils.isEmpty(exam.getInstances())) {
-            instanceIndex = getRelevantInstanceIndex(exam.getInstances());
-            int centersCount = exam.getInstances().get(instanceIndex).getExamCenters().size();
-            examDetail.setCentersCount(centersCount);
+            instanceIndex =
+                    examInstanceHelper.getRelevantInstanceIndex(exam.getInstances(), APPLICATION);
+            if (!CollectionUtils.isEmpty(exam.getInstances().get(instanceIndex).getExamCenters())) {
+                int centersCount = exam.getInstances().get(instanceIndex).getExamCenters().size();
+                examDetail.setCentersCount(centersCount);
+            }
             importantDates.addAll(convertEntityEventToResponse(exam.getExamFullName(),
                     exam.getInstances().get(instanceIndex).getEvents()));
         }

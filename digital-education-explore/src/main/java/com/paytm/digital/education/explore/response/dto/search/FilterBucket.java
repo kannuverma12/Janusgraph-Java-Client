@@ -1,7 +1,6 @@
 package com.paytm.digital.education.explore.response.dto.search;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
@@ -11,6 +10,9 @@ public class FilterBucket {
 
     @JsonProperty("key")
     private String value;
+
+    @JsonProperty("display_name")
+    private String displayName;
 
     @JsonProperty("count")
     private long   docCount;

@@ -5,5 +5,8 @@ public enum CollegeEntityType {
     SCHOOL,
     COLLEGE,
     INSTITUTE,
-    FACULTY;
+    FACULTY,
+    CAMPUS,
+    CENTRE,
+    DEPARTMENT;
 }

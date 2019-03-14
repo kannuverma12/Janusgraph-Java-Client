@@ -27,7 +27,8 @@ import java.util.Map;
 public class SearchResponseBuilder {
 
     public <T> void populateSearchFilters(SearchResponse searchResponse,
-            ElasticResponse<T> elasticResponse, ElasticRequest elasticRequest) {
+            ElasticResponse<T> elasticResponse, ElasticRequest elasticRequest,
+            Map<String, Map<String, Object>> propertyMap) {
         Map<String, AggregationResponse> aggregationResponse =
                 elasticResponse.getAggregationResponse();
         List<FilterData> filters = new ArrayList<>();
@@ -43,8 +44,17 @@ public class SearchResponseBuilder {
                         if (!CollectionUtils.isEmpty(bucketAggResponse.getBuckets())) {
                             List<FilterBucket> filterBuckets = new ArrayList<>();
                             bucketAggResponse.getBuckets().forEach(bucket -> {
+                                String keyName;
+                                if (!CollectionUtils.isEmpty(propertyMap)
+                                        && propertyMap.containsKey(fieldName)) {
+                                    keyName = propertyMap.get(fieldName).get(bucket.getKey())
+                                            .toString();
+                                } else {
+                                    keyName = bucket.getKey();
+                                }
                                 FilterBucket filterBucket = FilterBucket.builder()
                                         .value(bucket.getKey())
+                                        .displayName(keyName)
                                         .docCount(bucket.getDocCount())
                                         .isSelected(
                                                 checkIfRequestedFilter(
