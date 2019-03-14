@@ -110,8 +110,8 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
                 instituteData.setOfficialName(instituteSearch.getOfficialName());
                 instituteData.setApprovals(instituteSearch.getApprovedBy());
                 instituteData.setExams(instituteSearch.getExamsAccepted());
-                if(StringUtils.isNotBlank(instituteSearch.getImageLink())) {
-                    instituteData.setLogo(logoUrlPrefix+instituteSearch.getImageLink());
+                if (StringUtils.isNotBlank(instituteSearch.getImageLink())) {
+                    instituteData.setLogoUrl(logoUrlPrefix + instituteSearch.getImageLink());
                 }
                 OfficialAddress officialAddress =
                         OfficialAddress.builder().city(instituteSearch.getCity())
