@@ -26,8 +26,7 @@ public class SearchServiceImpl {
 
     private InstituteSearchServiceImpl instituteSearchService;
     private SubscriptionRepository     subscriptionRepository;
-    //private LeadRepository             leadRepository;
-
+    private LeadRepository             leadRepository;
     private ExamSearchServiceImpl      examSearchService;
 
     public SearchResponse search(SearchRequest searchRequest, Long userId) throws Exception {
@@ -51,15 +50,14 @@ public class SearchServiceImpl {
                 }
             }
 
-            //To be not used as of now. Will be incorporated in sprint3
-            /*List<Lead> leadList = leadRepository
+            List<Lead> leadList = leadRepository
                     .fetchLeadByEntityTypeAndUserIdAndEntityIdIn(searchRequest.getEntity(), userId,
                             entityIds);
             if (!CollectionUtils.isEmpty(leadList)) {
                 for (Lead lead : leadList) {
                     searchBaseDataMap.get(lead.getEntityId()).setGetInTouch(true);
                 }
-            }*/
+            }
         }
         if (!CollectionUtils.isEmpty(response.getEntityDataMap())) {
             response.getEntityDataMap().clear();
