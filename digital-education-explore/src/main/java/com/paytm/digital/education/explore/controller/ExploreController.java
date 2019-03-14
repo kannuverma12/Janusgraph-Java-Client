@@ -88,7 +88,7 @@ public class ExploreController {
     @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/subscriptions")
     @ResponseBody
     public ResponseEntity subscriptions(
-            @RequestHeader(value = "x-user-id", required = false) Long userId,
+            @RequestHeader(value = "x-user-id") Long userId,
             @RequestParam(value = "entity", required = false)
                     SubscribableEntityType subscriptionEntity,
             @RequestParam(value = "fields", required = false) List<String> fields,
