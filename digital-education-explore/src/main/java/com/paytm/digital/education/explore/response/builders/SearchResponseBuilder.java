@@ -46,7 +46,8 @@ public class SearchResponseBuilder {
                             bucketAggResponse.getBuckets().forEach(bucket -> {
                                 String keyName;
                                 if (!CollectionUtils.isEmpty(propertyMap)
-                                        && propertyMap.containsKey(fieldName)) {
+                                        && propertyMap.containsKey(fieldName) && propertyMap
+                                                .get(fieldName).containsKey(bucket.getKey())) {
                                     keyName = propertyMap.get(fieldName).get(bucket.getKey())
                                             .toString();
                                 } else {
