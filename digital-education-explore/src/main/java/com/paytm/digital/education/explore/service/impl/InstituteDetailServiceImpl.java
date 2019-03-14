@@ -29,7 +29,9 @@ import com.paytm.digital.education.explore.service.helper.GalleryDataHelper;
 import com.paytm.digital.education.explore.service.helper.PlacementDataHelper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -55,6 +57,12 @@ public class InstituteDetailServiceImpl {
 
     private static int EXAM_PREFIX_LENGTH   = EXAM_PREFIX.length();
     private static int COURSE_PREFIX_LENGTH = COURSE_PREFIX.length();
+    private static String logoUrlPrefix;
+
+    @Value("${institute.gallery.image.prefix}")
+    private static void setLogoUrlPrefix(String urlPrefix) {
+        logoUrlPrefix = urlPrefix;
+    }
 
     @Cacheable(value = "institute_detail")
     public InstituteDetail getDetail(Long entityId, Long userId,
@@ -151,8 +159,8 @@ public class InstituteDetailServiceImpl {
         if (institute.getEntityType() != null) {
             instituteDetail.setInstituteType(institute.getEntityType().name());
         }
-        if (institute.getGallery() != null) {
-            instituteDetail.setLogoUrl(institute.getGallery().getLogo());
+        if (institute.getGallery() != null && StringUtils.isNotBlank(institute.getGallery().getLogo())) {
+            instituteDetail.setLogoUrl(logoUrlPrefix + institute.getGallery().getLogo());
         }
         instituteDetail.setEstablishedYear(institute.getEstablishedYear());
         instituteDetail.setOfficialName(institute.getOfficialName());

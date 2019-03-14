@@ -3,6 +3,7 @@ package com.paytm.digital.education.explore.service.helper;
 import static com.paytm.digital.education.utility.CustomStringUtils.splitAndConvertToCamelCase;
 
 import com.paytm.digital.education.explore.response.dto.detail.Gallery;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -27,10 +28,13 @@ public class GalleryDataHelper {
             if (!CollectionUtils.isEmpty(galleryData.getImages())) {
                 Map<String, List<String>> imageMap = new HashMap<>();
                 for (String key : galleryData.getImages().keySet()) {
-                    List<String> urlList = galleryData.getImages().get(key).stream().map(url ->
-                            imageUrlPrefix + url).collect(Collectors.toList());
-                    imageMap.put(splitAndConvertToCamelCase(key, GALLERY_SEPERATOR),
-                            urlList);
+                    List<String> urlList = galleryData.getImages().get(key).stream()
+                            .filter(url -> StringUtils.isNotBlank(url))
+                            .map(url -> imageUrlPrefix + url).collect(Collectors.toList());
+                    if (!CollectionUtils.isEmpty(urlList)) {
+                        imageMap.put(splitAndConvertToCamelCase(key, GALLERY_SEPERATOR),
+                                urlList);
+                    }
                 }
                 response.setImages(imageMap);
             }
