@@ -12,4 +12,7 @@ public class SearchBaseData {
     @JsonProperty("get_in_touch")
     private boolean getInTouch;
 
+    @JsonProperty("logo")
+    private String logo;
+
 }

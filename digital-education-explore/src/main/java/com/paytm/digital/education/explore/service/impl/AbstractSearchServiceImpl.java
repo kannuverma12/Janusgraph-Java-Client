@@ -10,6 +10,7 @@ import java.util.concurrent.TimeoutException;
 import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
@@ -42,6 +43,9 @@ public abstract class AbstractSearchServiceImpl {
     private SearchResponseBuilder             searchResponseBuilder;
 
     protected Map<Class, Map<String, String>> hierarchyMap;
+
+    @Value("${institute.gallery.image.prefix}")
+    protected String logoUrlPrefix;
 
     @PostConstruct
     private void generateLevelMap() {

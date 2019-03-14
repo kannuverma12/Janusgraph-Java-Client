@@ -17,6 +17,7 @@ import com.paytm.digital.education.explore.response.dto.search.SearchResult;
 import com.paytm.digital.education.explore.service.helper.SearchAggregateHelper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -110,6 +111,9 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
                 instituteData.setOfficialName(instituteSearch.getOfficialName());
                 instituteData.setApprovals(instituteSearch.getApprovedBy());
                 instituteData.setExams(instituteSearch.getExamsAccepted());
+                if(StringUtils.isNotBlank(instituteSearch.getImageLink())) {
+                    instituteData.setLogo(logoUrlPrefix+instituteSearch.getImageLink());
+                }
                 OfficialAddress officialAddress =
                         OfficialAddress.builder().city(instituteSearch.getCity())
                                 .state(instituteSearch.getState()).build();
