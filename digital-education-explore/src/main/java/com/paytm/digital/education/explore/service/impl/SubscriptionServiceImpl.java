@@ -2,6 +2,7 @@ package com.paytm.digital.education.explore.service.impl;
 
 import com.paytm.digital.education.explore.aggregation.SubscriptionDao;
 import com.paytm.digital.education.explore.daoresult.SubscribedEntityCount;
+import com.paytm.digital.education.explore.daoresult.subscription.SubscriptionWithInstitute;
 import com.paytm.digital.education.explore.database.entity.Subscription;
 import com.paytm.digital.education.explore.database.repository.SubscriptionRepository;
 import com.paytm.digital.education.explore.enums.SubscribableEntityType;
@@ -9,23 +10,26 @@ import com.paytm.digital.education.explore.enums.SubscriptionStatus;
 import com.paytm.digital.education.explore.service.CommonMongoService;
 import com.paytm.digital.education.explore.service.SubscriptionService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 import java.util.Date;
 import java.util.List;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class SubscriptionServiceImpl implements SubscriptionService {
 
     private SubscriptionRepository subscriptionRepository;
 
-    private SubscriptionDao        subscriptionDao;
+    private SubscriptionDao subscriptionDao;
 
-    private CommonMongoService     commonMongoService;
+    private CommonMongoService commonMongoService;
 
-    private static String          logoUrlPrefix;
+    private static String logoUrlPrefix;
 
     @Value("${institute.gallery.image.prefix}")
     public void setLogoUrlPrefix(String urlPrefix) {
@@ -74,16 +78,15 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         List<String> toBeFetchedFieldList = StringUtils.isEmpty(fieldGroup)
                 ? fields
                 : commonMongoService.getFieldsByGroupAndCollectioName(
-                        subscriptionEntity.getCorrespondingCollectionName(), fieldGroup);
+                subscriptionEntity.getCorrespondingCollectionName(), fieldGroup);
 
         List<Subscription> subscriptions = subscriptionDao.getUserSubscriptions(
                 userId, subscriptionEntity, toBeFetchedFieldList, offset, limit,
                 subscriptionStatus);
-        subscriptions.forEach(subscription -> {
-            if (StringUtils.isNotBlank(subscription.getLogoUrl())) {
-                subscription.setLogoUrl(logoUrlPrefix + subscription.getLogoUrl());
-            }
-        });
+
+        for (Subscription subscription : subscriptions) {
+            updateInstituteLogoUrl(subscription, subscriptionEntity);
+        }
         return subscriptions;
     }
 
@@ -93,5 +96,20 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             SubscriptionStatus subscriptionStatus) {
         return subscriptionDao
                 .getSubscribedEntityCount(userId, subscribableEntityTypes, subscriptionStatus);
+    }
+
+    //TODO - add warning and entityId and entityType in case of missing logo or exception
+    private void updateInstituteLogoUrl(Subscription subscription, SubscribableEntityType subscriptionEntity) {
+        try {
+            if (subscriptionEntity.getCorrespondingClass() == SubscriptionWithInstitute.class) {
+                SubscriptionWithInstitute subscriptionWithInstitute = (SubscriptionWithInstitute) subscription;
+                String logoUrl = subscriptionWithInstitute.getEntityDetails().getGallery().getLogo();
+                if (StringUtils.isNotBlank(logoUrl)) {
+                    subscriptionWithInstitute.getEntityDetails().getGallery().setLogo(logoUrlPrefix + logoUrl);
+                }
+            }
+        } catch (Exception ex) {
+            log.error("Error caught while setting logo url in subscription data for . Exception : ", ex);
+        }
     }
 }
