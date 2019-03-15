@@ -3,6 +3,7 @@ package com.paytm.digital.education.explore.controller;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EDUCATION_BASE_URL;
 import java.util.List;
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -49,7 +50,7 @@ public class ExploreController {
     @ResponseBody
     public String subscribe(
             @RequestHeader(name = "x-user-id") @Min(1) long userId,
-            @RequestBody SubscriptionRequest request) {
+            @Valid @RequestBody SubscriptionRequest request) {
         subscriptionService.subscribe(userId, request.getSubscriptionEntity(),
                 request.getSubscriptionEntityId());
         return "success";
