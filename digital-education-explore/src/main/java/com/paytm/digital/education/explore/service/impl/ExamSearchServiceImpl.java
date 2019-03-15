@@ -55,6 +55,7 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
     private static List<String>                 searchFieldKeys;
     private static Map<String, FilterQueryType> filterQueryTypeMap;
     private static List<String>                 sortKeysInOrder;
+    private SearchAggregateHelper               searchAggregateHelper;
 
     @PostConstruct
     private void init() {
@@ -182,7 +183,7 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
     protected void populateAggregateFields(SearchRequest searchRequest,
             ElasticRequest elasticRequest) {
         if (searchRequest.getFetchFilter()) {
-            AggregateField[] aggregateFields = SearchAggregateHelper.getExamAggregateData();
+            AggregateField[] aggregateFields = searchAggregateHelper.getExamAggregateData();
             Map<String, List<Object>> filters = searchRequest.getFilter();
             for (int i = 0; i < aggregateFields.length; i++) {
                 aggregateFields[i].setPath(

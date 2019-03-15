@@ -1,14 +1,5 @@
 package com.paytm.digital.education.explore.service.helper;
 
-import com.paytm.digital.education.elasticsearch.enums.AggregationType;
-import com.paytm.digital.education.elasticsearch.enums.BucketAggregationSortParms;
-import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
-import com.paytm.digital.education.elasticsearch.models.AggregateField;
-import com.paytm.digital.education.elasticsearch.models.BucketSort;
-
-import java.util.Arrays;
-import java.util.List;
-
 import static com.paytm.digital.education.elasticsearch.enums.AggregationType.MINMAX;
 import static com.paytm.digital.education.elasticsearch.enums.AggregationType.TERMS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CITY_INSTITUTE;
@@ -23,18 +14,19 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.OWN
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_EXAM_LEVEL;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STATE_INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM_INSTITUTE;
+import com.paytm.digital.education.elasticsearch.enums.AggregationType;
+import com.paytm.digital.education.elasticsearch.enums.BucketAggregationSortParms;
+import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
+import com.paytm.digital.education.elasticsearch.models.AggregateField;
+import com.paytm.digital.education.elasticsearch.models.BucketSort;
+import java.util.Arrays;
+import java.util.List;
+import org.springframework.stereotype.Service;
 
+@Service
 public class SearchAggregateHelper {
 
-    private static AggregateField[] instituteAggregateData;
-    private static AggregateField[] examAggregateData;
-
-    static {
-
-        final BucketSort bucketSort =
-                BucketSort.builder().key(BucketAggregationSortParms.KEY).order(
-                        DataSortOrder.ASC).build();
-
+    public AggregateField[] getInstituteAggregateData() {
         List<String> instituteKeys =
                 Arrays.asList(STATE_INSTITUTE, CITY_INSTITUTE, STREAM_INSTITUTE,
                         COURSE_LEVEL_INSTITUTE, EXAMS_ACCEPTED_INSTITUTE, FEES_INSTITUTE, OWNERSHIP,
@@ -42,11 +34,13 @@ public class SearchAggregateHelper {
         List<AggregationType> instituteAggregateType =
                 Arrays.asList(TERMS, TERMS, TERMS, TERMS, TERMS, MINMAX, TERMS, TERMS, TERMS,
                         MINMAX);
+        BucketSort bucketSort = BucketSort.builder().key(BucketAggregationSortParms.KEY).order(
+                DataSortOrder.ASC).build();
         List<BucketSort> instituteSortOrder =
                 Arrays.asList(bucketSort, bucketSort, bucketSort, bucketSort, bucketSort, null,
                         bucketSort, bucketSort, bucketSort, null);
 
-        instituteAggregateData = new AggregateField[instituteKeys.size()];
+        AggregateField[] instituteAggregateData = new AggregateField[instituteKeys.size()];
 
         for (int i = 0; i < instituteKeys.size(); i++) {
             AggregateField aggregateField = new AggregateField();
@@ -55,15 +49,19 @@ public class SearchAggregateHelper {
             aggregateField.setBucketsOrder(instituteSortOrder.get(i));
             instituteAggregateData[i] = aggregateField;
         }
+        return instituteAggregateData;
+    }
 
+    public AggregateField[] getExamAggregateData() {
         List<String> examKeys =
                 Arrays.asList(LINGUISTIC_MEDIUM, SEARCH_EXAM_LEVEL);
         List<AggregationType> examAggregateType =
                 Arrays.asList(TERMS, TERMS);
+        BucketSort bucketSort = BucketSort.builder().key(BucketAggregationSortParms.KEY).order(
+                DataSortOrder.ASC).build();
         List<BucketSort> examSortOrder =
                 Arrays.asList(bucketSort, bucketSort);
-
-        examAggregateData = new AggregateField[examKeys.size()];
+        AggregateField[] examAggregateData = new AggregateField[examKeys.size()];
 
         for (int i = 0; i < examKeys.size(); i++) {
             AggregateField aggregateField = new AggregateField();
@@ -72,13 +70,6 @@ public class SearchAggregateHelper {
             aggregateField.setBucketsOrder(examSortOrder.get(i));
             examAggregateData[i] = aggregateField;
         }
-    }
-
-    public static AggregateField[] getInstituteAggregateData() {
-        return instituteAggregateData;
-    }
-
-    public static AggregateField[] getExamAggregateData() {
         return examAggregateData;
     }
 }
