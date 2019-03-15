@@ -22,9 +22,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final List<String> allowedHeaders;
 
     public SecurityConfig(
-        @Value("#{'${cors.allowed.hosts}'.split(',')}") final List<String> allowedHosts,
-        @Value("#{'${cors.allowed.methods}'.split(',')}") final List<String> allowedMethods,
-        @Value("#{'${cors.allowed.headers}'.split(',')}") final List<String> allowedHeaders) {
+            @Value("#{'${cors.allowed.hosts}'.split(',')}") final List<String> allowedHosts,
+            @Value("#{'${cors.allowed.methods}'.split(',')}") final List<String> allowedMethods,
+            @Value("#{'${cors.allowed.headers}'.split(',')}") final List<String> allowedHeaders) {
         this.allowedHosts = allowedHosts;
         this.allowedMethods = allowedMethods;
         this.allowedHeaders = allowedHeaders;
@@ -32,20 +32,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-            .httpBasic()
-            .and()
-            .csrf().disable()
-            .cors();
+        http.csrf().disable()
+                .cors();
     }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         List<String> allowedHostList = allowedHosts.stream()
-                                .map(StringUtils::trim)
-                                .filter(StringUtils::isNotBlank)
-                                .flatMap(s -> Stream.of("http://" + s, "https://" + s))
-                                .collect(Collectors.toList());
+                .map(StringUtils::trim)
+                .filter(StringUtils::isNotBlank)
+                .flatMap(s -> Stream.of("http://" + s, "https://" + s))
+                .collect(Collectors.toList());
 
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(allowedHostList);
