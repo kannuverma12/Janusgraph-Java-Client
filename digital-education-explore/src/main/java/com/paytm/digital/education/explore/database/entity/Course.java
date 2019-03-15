@@ -124,8 +124,4 @@ public class Course {
     @Field("cutoffs")
     @JsonProperty("cutoffs")
     private List<Cutoff> cutoffs;
-    
-    @JsonProperty("institute")
-    private Institute institute;
-
 }
