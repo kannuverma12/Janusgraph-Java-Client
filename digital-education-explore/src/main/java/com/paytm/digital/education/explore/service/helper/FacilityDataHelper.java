@@ -28,9 +28,12 @@ public class FacilityDataHelper {
             List<Facility> facilityList = new ArrayList<>();
             for (String facilityKey : facilites) {
                 Facility facilityData = new Facility();
-                facilityData.setName(propertyMap.get(facilityKey).get(DISPLAY_NAME).toString());
-                facilityData.setLogoUrl(propertyMap.get(facilityKey).get(LOGO).toString());
-                facilityList.add(facilityData);
+                if (!CollectionUtils.isEmpty(propertyMap) && propertyMap.containsKey(facilityKey)
+                        && propertyMap.get(facilityKey).containsKey(DISPLAY_NAME)) {
+                    facilityData.setName(propertyMap.get(facilityKey).get(DISPLAY_NAME).toString());
+                    facilityData.setLogoUrl(propertyMap.get(facilityKey).get(LOGO).toString());
+                    facilityList.add(facilityData);
+                }
             }
             return facilityList;
         }

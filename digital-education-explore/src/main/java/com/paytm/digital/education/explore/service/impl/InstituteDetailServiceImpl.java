@@ -60,7 +60,7 @@ public class InstituteDetailServiceImpl {
     private static String logoUrlPrefix;
 
     @Value("${institute.gallery.image.prefix}")
-    private static void setLogoUrlPrefix(String urlPrefix) {
+    public void setLogoUrlPrefix(String urlPrefix) {
         logoUrlPrefix = urlPrefix;
     }
 
