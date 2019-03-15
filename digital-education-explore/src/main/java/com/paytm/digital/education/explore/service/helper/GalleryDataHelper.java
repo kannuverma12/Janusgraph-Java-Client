@@ -5,9 +5,11 @@ import static com.paytm.digital.education.utility.CustomStringUtils.splitAndConv
 import com.paytm.digital.education.explore.response.dto.detail.Gallery;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,16 +23,17 @@ public class GalleryDataHelper {
     @Value("${institute.gallery.image.prefix}")
     private String imageUrlPrefix;
 
-    public Gallery getGalleryData(
+    @Cacheable("gallery")
+    public Gallery getGalleryData(long instituteId,
             com.paytm.digital.education.explore.database.entity.Gallery galleryData) {
         Gallery response = new Gallery();
         if (galleryData != null) {
             if (!CollectionUtils.isEmpty(galleryData.getImages())) {
                 Map<String, List<String>> imageMap = new HashMap<>();
                 for (String key : galleryData.getImages().keySet()) {
-                    List<String> urlList = galleryData.getImages().get(key).stream()
+                    List<String> urlList = new ArrayList<>(galleryData.getImages().get(key).stream()
                             .filter(url -> StringUtils.isNotBlank(url))
-                            .map(url -> imageUrlPrefix + url).collect(Collectors.toList());
+                            .map(url -> imageUrlPrefix + url).collect(Collectors.toSet()));
                     if (!CollectionUtils.isEmpty(urlList)) {
                         imageMap.put(splitAndConvertToCamelCase(key, GALLERY_SEPERATOR),
                                 urlList);

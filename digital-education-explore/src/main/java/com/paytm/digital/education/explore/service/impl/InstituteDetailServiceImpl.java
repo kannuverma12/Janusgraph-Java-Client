@@ -55,8 +55,8 @@ public class InstituteDetailServiceImpl {
     private GalleryDataHelper       galleryDataHelper;
     private FacilityDataHelper      facilityDataHelper;
 
-    private static int EXAM_PREFIX_LENGTH   = EXAM_PREFIX.length();
-    private static int COURSE_PREFIX_LENGTH = COURSE_PREFIX.length();
+    private static int    EXAM_PREFIX_LENGTH   = EXAM_PREFIX.length();
+    private static int    COURSE_PREFIX_LENGTH = COURSE_PREFIX.length();
     private static String logoUrlPrefix;
 
     @Value("${institute.gallery.image.prefix}")
@@ -159,14 +159,16 @@ public class InstituteDetailServiceImpl {
         if (institute.getEntityType() != null) {
             instituteDetail.setInstituteType(institute.getEntityType().name());
         }
-        if (institute.getGallery() != null && StringUtils.isNotBlank(institute.getGallery().getLogo())) {
+        if (institute.getGallery() != null && StringUtils
+                .isNotBlank(institute.getGallery().getLogo())) {
             instituteDetail.setLogoUrl(logoUrlPrefix + institute.getGallery().getLogo());
         }
         instituteDetail.setEstablishedYear(institute.getEstablishedYear());
         instituteDetail.setOfficialName(institute.getOfficialName());
         instituteDetail
                 .setFacilities(facilityDataHelper.getFacilitiesData(institute.getFacilities()));
-        instituteDetail.setGallery(galleryDataHelper.getGalleryData(institute.getGallery()));
+        instituteDetail.setGallery(galleryDataHelper
+                .getGalleryData(institute.getInstituteId(), institute.getGallery()));
         instituteDetail.setCourses(courseDetailHelper.getCoursesListing(courses));
         instituteDetail.setCutOff(examInstanceHelper.getExamCutOffs(examList));
         instituteDetail.setDerivedAttributes(
