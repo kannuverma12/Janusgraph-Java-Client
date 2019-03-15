@@ -29,6 +29,6 @@ public class Event {
     @JsonProperty("type")
     private String  type;
 
-    @JsonProperty("certanity")
+    @JsonProperty("certainty")
     private String  certainty;
 }

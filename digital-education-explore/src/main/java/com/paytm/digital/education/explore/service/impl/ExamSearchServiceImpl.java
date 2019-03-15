@@ -214,32 +214,30 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
                     List<Event> events = instances.get(index).getEvents();
                     for (int eventIndex = 0; eventIndex < events.size(); eventIndex++) {
                         if (events.get(eventIndex).getType() != null
-                                && events.get(eventIndex).getType().equalsIgnoreCase(type)
-                                && (events.get(eventIndex).getDate() != null
-                                        || events.get(eventIndex).getStartDate() != null
-                                        || events.get(eventIndex).getMonth() != null)) {
-                            Date eventDate;
+                                && events.get(eventIndex).getType().equalsIgnoreCase(type)) {
                             if (events.get(eventIndex).getCertainty() != null
                                     && events.get(eventIndex).getCertainty()
                                             .equalsIgnoreCase(NON_TENTATIVE)) {
-                                eventDate = events.get(eventIndex).getStartDate() != null
+                                minApplicationDate = events.get(eventIndex).getStartDate() != null
                                         ? events.get(eventIndex).getStartDate()
                                         : events.get(eventIndex).getDate();
                             } else {
-                                eventDate = DateUtil.stringToDate(events.get(eventIndex).getMonth(),
-                                        YYYY_MM);
+                                minApplicationDate =
+                                        DateUtil.stringToDate(events.get(eventIndex).getMonth(),
+                                                YYYY_MM);
                             }
-
-                            minApplicationDate = eventDate;
                         }
-                        if (minApplicationDate.compareTo(presentDate) >= 0
-                                && futureMinDate.compareTo(minApplicationDate) > 0) {
-                            futureMinDate = minApplicationDate;
-                            instanceIndex = index;
-                        } else if (futureMinDate.compareTo(new Date(Long.MAX_VALUE)) == 0
-                                && minApplicationDate.compareTo(pastMaxDate) > 0) {
-                            pastMaxDate = minApplicationDate;
-                            instanceIndex = index;
+
+                        if (minApplicationDate != null) {
+                            if (minApplicationDate.compareTo(presentDate) >= 0
+                                    && futureMinDate.compareTo(minApplicationDate) > 0) {
+                                futureMinDate = minApplicationDate;
+                                instanceIndex = index;
+                            } else if (futureMinDate.compareTo(new Date(Long.MAX_VALUE)) == 0
+                                    && minApplicationDate.compareTo(pastMaxDate) > 0) {
+                                pastMaxDate = minApplicationDate;
+                                instanceIndex = index;
+                            }
                         }
                     }
                 }

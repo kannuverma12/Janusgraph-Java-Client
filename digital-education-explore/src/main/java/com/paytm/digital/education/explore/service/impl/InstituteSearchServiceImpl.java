@@ -117,6 +117,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
                         OfficialAddress.builder().city(instituteSearch.getCity())
                                 .state(instituteSearch.getState()).build();
                 instituteData.setOfficialAddress(officialAddress);
+                instituteData.setLogoUrl(instituteSearch.getImageLink());
                 instituteDataMap.put(instituteSearch.getInstituteId(), instituteData);
                 instituteDataList.add(instituteData);
             });

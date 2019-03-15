@@ -22,6 +22,9 @@ public class InstituteData extends SearchBaseData {
     @JsonProperty("approvals")
     private List<String>    approvals;
 
+    @JsonProperty("logo_url")
+    private String          logoUrl;
+
     @JsonProperty("official_address")
     private OfficialAddress officialAddress;
 
