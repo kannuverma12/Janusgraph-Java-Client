@@ -24,7 +24,7 @@ public class MetricsAgent {
   @Value("${datadog.port}")
   private Integer DATADOG_PORT;
 
-  @Value("${digital.education.env}")
+  @Value("${spring.profiles.active}")
   private String DIGI_EDU_ENV;
 
   @PostConstruct
