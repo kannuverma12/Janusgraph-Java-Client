@@ -9,9 +9,9 @@ import com.paytm.digital.education.explore.enums.SubscriptionStatus;
 import com.paytm.digital.education.explore.service.CommonMongoService;
 import com.paytm.digital.education.explore.service.SubscriptionService;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import java.util.Date;
 import java.util.List;
 
@@ -21,9 +21,16 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private SubscriptionRepository subscriptionRepository;
 
-    private SubscriptionDao subscriptionDao;
+    private SubscriptionDao        subscriptionDao;
 
-    private CommonMongoService commonMongoService;
+    private CommonMongoService     commonMongoService;
+
+    private static String          logoUrlPrefix;
+
+    @Value("${institute.gallery.image.prefix}")
+    public void setLogoUrlPrefix(String urlPrefix) {
+        logoUrlPrefix = urlPrefix;
+    }
 
     @Override
     public void subscribe(long userId, SubscribableEntityType entity, long entityId) {
@@ -65,13 +72,19 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             List<String> fields, String fieldGroup, long offset, long limit,
             SubscriptionStatus subscriptionStatus) {
         List<String> toBeFetchedFieldList = StringUtils.isEmpty(fieldGroup)
-                ? fields :
-                commonMongoService.getFieldsByGroupAndCollectioName(
+                ? fields
+                : commonMongoService.getFieldsByGroupAndCollectioName(
                         subscriptionEntity.getCorrespondingCollectionName(), fieldGroup);
 
-        return subscriptionDao.getUserSubscriptions(
+        List<Subscription> subscriptions = subscriptionDao.getUserSubscriptions(
                 userId, subscriptionEntity, toBeFetchedFieldList, offset, limit,
                 subscriptionStatus);
+        subscriptions.forEach(subscription -> {
+            if (StringUtils.isNotBlank(subscription.getLogoUrl())) {
+                subscription.setLogoUrl(logoUrlPrefix + subscription.getLogoUrl());
+            }
+        });
+        return subscriptions;
     }
 
     @Override

@@ -47,6 +47,10 @@ public class Subscription {
     @JsonProperty("updated_at")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date lastModified;
+    
+    @Field("logo")
+    @JsonProperty("logo_url")
+    private String logoUrl;
 
     public Subscription(Long userId, SubscribableEntityType subscribableEntityType, Long entityId,
             SubscriptionStatus subscriptionStatus, Date createdAt, Date updatedAt) {
