@@ -15,4 +15,7 @@ public interface PropertyReader {
 
     public Map<String, Map<String, Object>> getPropertiesAsMap(String component,
             String namespace);
+
+    public Map<String, Object> getPropertiesAsMapByKey(String component, String namespace,
+            String key);
 }

@@ -56,4 +56,15 @@ public class MongoPropertyReaderImpl implements PropertyReader {
         }
         return null;
     }
+
+    @Override
+    public Map<String, Object> getPropertiesAsMapByKey(String component, String namespace,
+            String key) {
+        Properties properties = propertyRepository
+                .findByComponentAndNamespaceAndKey(component, namespace, key);
+        if (properties != null) {
+            return properties.getAttributes();
+        }
+        return null;
+    }
 }

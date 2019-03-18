@@ -8,11 +8,16 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EXA
 import static com.paytm.digital.education.explore.constants.ExploreConstants.MMM_YYYY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.NON_TENTATIVE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.YYYY_MM;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.LINGUISTIC_MEDIUM_NAMESPACE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_FILTER_NAMESPACE;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import com.paytm.digital.education.exception.BadRequestException;
@@ -26,7 +31,9 @@ import com.paytm.digital.education.explore.response.dto.detail.Syllabus;
 import com.paytm.digital.education.explore.response.dto.detail.Topic;
 import com.paytm.digital.education.explore.response.dto.detail.Unit;
 import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
+import com.paytm.digital.education.explore.utility.NameConversionUtil;
 import com.paytm.digital.education.mapping.ErrorEnum;
+import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.DateUtil;
 import lombok.AllArgsConstructor;
 
@@ -36,6 +43,7 @@ public class ExamDetailServiceImpl {
 
     private CommonMongoRepository commonMongoRepository;
     private ExamInstanceHelper    examInstanceHelper;
+    private PropertyReader        propertyReader;
 
     private static int            EXAM_PREFIX_LENGTH = EXAM_PREFIX.length();
 
@@ -68,7 +76,7 @@ public class ExamDetailServiceImpl {
 
     private ExamDetail processExamDetail(Exam exam, List<String> examFields, Long userId)
             throws ParseException {
-        ExamDetail examDetail = buildResponse(exam);;
+        ExamDetail examDetail = buildResponse(exam);
         return examDetail;
     }
 
@@ -130,7 +138,8 @@ public class ExamDetailServiceImpl {
                                 importantDates.get(i).getDateEndRange(), DD_MMM_YYYY));
                     } else {
                         examDetail.setApplicationOpening(DateUtil
-                                .dateToString(importantDates.get(i).getDateStartRange(), DD_MMM_YYYY));
+                                .dateToString(importantDates.get(i).getDateStartRange(),
+                                        DD_MMM_YYYY));
                     }
 
                 } else {
@@ -184,6 +193,18 @@ public class ExamDetailServiceImpl {
         }
     }
 
+    private void setLanguageFromLanguageCodes(ExamDetail examDetail,
+            List<String> linguisticMediumCodes) {
+        Map<String, Object> propertyMap = propertyReader
+                .getPropertiesAsMapByKey(EXPLORE_COMPONENT, EXAM_FILTER_NAMESPACE,
+                        LINGUISTIC_MEDIUM_NAMESPACE);
+        List<String> examLang = new ArrayList<>();
+        linguisticMediumCodes.forEach(code -> {
+            examLang.add(NameConversionUtil.getDisplayName(propertyMap, code));
+        });
+        examDetail.setLinguisticMedium(examLang);
+    }
+
     private ExamDetail buildResponse(Exam exam) throws ParseException {
         ExamDetail examDetail = new ExamDetail();
         examDetail.setExamId(exam.getExamId());
@@ -191,7 +212,9 @@ public class ExamDetailServiceImpl {
         examDetail.setExamId(exam.getExamId());
         examDetail.setExamFullName(exam.getExamFullName());
         examDetail.setExamShortName(exam.getExamShortName());
-        examDetail.setLinguisticMedium(exam.getLinguisticMediumExam());
+        if (!CollectionUtils.isEmpty(exam.getLinguisticMediumExam())) {
+            setLanguageFromLanguageCodes(examDetail, exam.getLinguisticMediumExam());
+        }
         examDetail.setExamLevel(exam.getLevelOfExam());
         examDetail.setDocumentsRequiredAtExam(exam.getDocumentsExam());
         examDetail.setDocumentsRequiredAtCounselling(exam.getDocumentsCounselling());
