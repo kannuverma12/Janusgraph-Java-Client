@@ -39,6 +39,9 @@ public class InstituteDetail {
     @JsonProperty("shortlisted")
     private boolean shortlisted;
 
+    @JsonProperty("get_in_touch")
+    private boolean getInTouch;
+
     @JsonProperty("title")
     private String title;
 

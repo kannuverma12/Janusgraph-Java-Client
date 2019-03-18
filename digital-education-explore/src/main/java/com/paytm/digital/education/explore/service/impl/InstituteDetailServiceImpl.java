@@ -12,12 +12,8 @@ import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
-import com.paytm.digital.education.explore.database.entity.Subscription;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.explore.database.repository.SubscriptionRepository;
 import com.paytm.digital.education.explore.enums.EducationEntity;
-import com.paytm.digital.education.explore.enums.SubscribableEntityType;
-import com.paytm.digital.education.explore.enums.SubscriptionStatus;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
 import com.paytm.digital.education.explore.response.dto.detail.Ranking;
@@ -26,7 +22,9 @@ import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelpe
 import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
 import com.paytm.digital.education.explore.service.helper.FacilityDataHelper;
 import com.paytm.digital.education.explore.service.helper.GalleryDataHelper;
+import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
 import com.paytm.digital.education.explore.service.helper.PlacementDataHelper;
+import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,14 +45,15 @@ import java.util.Set;
 @AllArgsConstructor
 public class InstituteDetailServiceImpl {
 
-    private CommonMongoRepository   commonMongoRepository;
-    private SubscriptionRepository  subscriptionRepository;
-    private ExamInstanceHelper      examInstanceHelper;
-    private DerivedAttributesHelper derivedAttributesHelper;
-    private PlacementDataHelper     placementDataHelper;
-    private CourseDetailHelper      courseDetailHelper;
-    private GalleryDataHelper       galleryDataHelper;
-    private FacilityDataHelper      facilityDataHelper;
+    private CommonMongoRepository    commonMongoRepository;
+    private ExamInstanceHelper       examInstanceHelper;
+    private DerivedAttributesHelper  derivedAttributesHelper;
+    private PlacementDataHelper      placementDataHelper;
+    private CourseDetailHelper       courseDetailHelper;
+    private GalleryDataHelper        galleryDataHelper;
+    private FacilityDataHelper       facilityDataHelper;
+    private LeadDetailHelper         leadDetailHelper;
+    private SubscriptionDetailHelper subscriptionDetailHelper;
 
     private static int    EXAM_PREFIX_LENGTH   = EXAM_PREFIX.length();
     private static int    COURSE_PREFIX_LENGTH = COURSE_PREFIX.length();
@@ -117,23 +117,11 @@ public class InstituteDetailServiceImpl {
         }
 
         InstituteDetail instituteDetail = buildResponse(institute, courses, examList);
-        updateShortList(instituteDetail, INSTITUTE, userId);
-        return instituteDetail;
-    }
-
-    private void updateShortList(InstituteDetail instituteDetail, EducationEntity educationEntity,
-            Long userId) {
-        if (userId != null && userId > 0) {
-            SubscribableEntityType subscribableEntityType =
-                    EducationEntity.convertToSubscribableEntity(educationEntity);
-            Subscription subscription = subscriptionRepository
-                    .findBySubscribableEntityTypeAndUserIdAndStatusAndEntityId(
-                            subscribableEntityType, userId,
-                            SubscriptionStatus.SUBSCRIBED, instituteDetail.getInstituteId());
-            if (subscription != null) {
-                instituteDetail.setShortlisted(true);
-            }
+        if (userId != null && userId > 0 && instituteDetail.getInstituteId() > 0) {
+            updateShortist(instituteDetail, INSTITUTE, userId);
+            updateGetInTouch(instituteDetail, INSTITUTE, userId);
         }
+        return instituteDetail;
     }
 
     private Set<Long> getExamIds(List<Course> courses) {
@@ -200,5 +188,23 @@ public class InstituteDetailServiceImpl {
             return rankings;
         }
         return null;
+    }
+
+    private void updateShortist(InstituteDetail instituteDetail, EducationEntity educationEntity,
+            Long userId) {
+        List<Long> subscribedEntities = subscriptionDetailHelper
+                .getSubscribedEntities(educationEntity, userId, Arrays.asList(instituteDetail.getInstituteId()));
+        if (!CollectionUtils.isEmpty(subscribedEntities)) {
+            instituteDetail.setShortlisted(true);
+        }
+    }
+
+    private void updateGetInTouch(InstituteDetail instituteDetail, EducationEntity educationEntity,
+            Long userId) {
+        List<Long> leadEntities = leadDetailHelper
+                .getLeadEntities(educationEntity, userId, Arrays.asList(instituteDetail.getInstituteId()));
+        if (!CollectionUtils.isEmpty(leadEntities)) {
+            instituteDetail.setGetInTouch(true);
+        }
     }
 }

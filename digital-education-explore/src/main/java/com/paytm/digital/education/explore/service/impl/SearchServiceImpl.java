@@ -1,20 +1,17 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import com.paytm.digital.education.explore.database.entity.Lead;
-import com.paytm.digital.education.explore.database.entity.Subscription;
-import com.paytm.digital.education.explore.database.repository.LeadRepository;
-import com.paytm.digital.education.explore.database.repository.SubscriptionRepository;
 import com.paytm.digital.education.explore.enums.EducationEntity;
-import com.paytm.digital.education.explore.enums.SubscribableEntityType;
-import com.paytm.digital.education.explore.enums.SubscriptionStatus;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.search.SearchBaseData;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
+import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
+import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,8 +22,8 @@ import java.util.Map;
 public class SearchServiceImpl {
 
     private InstituteSearchServiceImpl instituteSearchService;
-    private SubscriptionRepository     subscriptionRepository;
-    private LeadRepository             leadRepository;
+    private LeadDetailHelper           leadDetailHelper;
+    private SubscriptionDetailHelper   subscriptionDetailHelper;
     private ExamSearchServiceImpl      examSearchService;
 
     public SearchResponse search(SearchRequest searchRequest, Long userId) throws Exception {
@@ -37,29 +34,8 @@ public class SearchServiceImpl {
                 && !CollectionUtils.isEmpty(response.getEntityDataMap())) {
             Map<Long, SearchBaseData> searchBaseDataMap = response.getEntityDataMap();
             List<Long> entityIds = new ArrayList<>(searchBaseDataMap.keySet());
-            SubscribableEntityType subscribableEntityType =
-                    EducationEntity.convertToSubscribableEntity(searchRequest.getEntity());
-            List<Subscription> subscribedEntities =
-                    subscriptionRepository
-                            .findBySubscribableEntityTypeAndUserIdAndStatusAndEntityIdIn(
-                                    subscribableEntityType, userId, SubscriptionStatus.SUBSCRIBED,
-                                    entityIds);
-            if (!CollectionUtils.isEmpty(subscribedEntities)) {
-                for (Subscription subscription : subscribedEntities) {
-                    searchBaseDataMap.get(subscription.getEntityId()).setShortlisted(true);
-                }
-            }
-
-            List<Lead> leadList = leadRepository
-                    .fetchLeadByEntityTypeAndUserIdAndEntityIdIn(searchRequest.getEntity(), userId,
-                            entityIds);
-            if (!CollectionUtils.isEmpty(leadList)) {
-                for (Lead lead : leadList) {
-                    searchBaseDataMap.get(lead.getEntityId()).setGetInTouch(true);
-                }
-            }
-        }
-        if (!CollectionUtils.isEmpty(response.getEntityDataMap())) {
+            updateShortlist(searchRequest.getEntity(), userId, searchBaseDataMap, entityIds);
+            updateGetInTouch(searchRequest.getEntity(), userId, searchBaseDataMap, entityIds);
             response.getEntityDataMap().clear();
         }
         return response;
@@ -73,6 +49,23 @@ public class SearchServiceImpl {
                 return examSearchService;
             default:
                 throw new RuntimeException("Invalid entity requested.");
+        }
+    }
+
+    private void updateShortlist(EducationEntity educationEntity, Long userId,
+            Map<Long, SearchBaseData> searchBaseDataMap, List<Long> entityIds) {
+        List<Long> subscribedEntities =
+                subscriptionDetailHelper.getSubscribedEntities(educationEntity, userId, entityIds);
+        if (!CollectionUtils.isEmpty(subscribedEntities)) {
+            subscribedEntities.forEach(entityId -> searchBaseDataMap.get(entityId).setShortlisted(true));
+        }
+    }
+
+    private void updateGetInTouch(EducationEntity educationEntity, Long userId,
+            Map<Long, SearchBaseData> searchBaseDataMap, List<Long> entityIds) {
+        List<Long> leadEntities = leadDetailHelper.getLeadEntities(educationEntity, userId, entityIds);
+        if (!CollectionUtils.isEmpty(leadEntities)) {
+            leadEntities.forEach(entityId -> searchBaseDataMap.get(entityId).setGetInTouch(true));
         }
     }
 }
