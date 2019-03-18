@@ -23,9 +23,7 @@ public class DatadogFilter extends OncePerRequestFilter {
   private String generateMetricNameFromRequestAndResponse(HttpServletRequest request, HttpServletResponse response) {
     final String requestURI = request.getRequestURI();
     final String requestType = request.getMethod();
-    final String apiNameHeaderValue = response.getHeader("method-name");
-    final String apiName = Objects.nonNull(apiNameHeaderValue) ? apiNameHeaderValue : requestURI;
-    return requestType + apiName;
+    return requestType + requestURI;
   }
 
   @Override
@@ -34,21 +32,14 @@ public class DatadogFilter extends OncePerRequestFilter {
     long startTime = System.currentTimeMillis();
     filterChain.doFilter(request, response);
     long elapsed = System.currentTimeMillis() - startTime;
-
     Integer httpCode = response.getStatus();
-    String errorCode = response.getHeader("Error-Code");
 
     String metricName = generateMetricNameFromRequestAndResponse(request, response);
-    log.debug("Generated metric name - {}", metricName);
-    log.debug(metricName + " took " + elapsed + " ms" + " with status " + httpCode
-        + " and error code " + errorCode);
+    log.debug(metricName + " took " + elapsed + " ms" + " with status " + httpCode);
     metricsAgent.recordExecutionTimeOfApi(metricName, elapsed);
     metricsAgent.incrementApiCount(metricName);
-    if (Objects.isNull(errorCode)) {
-      metricsAgent.recordResponseCodeCount(metricName, httpCode.toString());
-    } else {
-      metricsAgent.recordResponseCodeCount(metricName, httpCode.toString(), errorCode);
-    }
+    metricsAgent.recordResponseCodeCount(metricName, httpCode.toString());
+    //TODO - Combine all above metric into one in later phase
   }
 
   @Override
