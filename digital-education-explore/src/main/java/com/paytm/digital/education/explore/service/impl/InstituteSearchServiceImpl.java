@@ -11,6 +11,8 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.FAC
 import static com.paytm.digital.education.explore.constants.ExploreConstants.FEES_INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_GENDER;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.MAX_RANK;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_FILTER_NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OWNERSHIP;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_ANALYZER;
@@ -73,6 +75,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
         filterQueryTypeMap.put(INSTITUTE_GENDER, TERMS);
         filterQueryTypeMap.put(ESTABLISHMENT_YEAR, RANGE);
         searchFieldKeys = Arrays.asList(SEARCH_NAMES_INSTITUTE);
+        sortKeysInOrder = Arrays.asList(MAX_RANK, OFFICIAL_NAME);
     }
 
     @Override

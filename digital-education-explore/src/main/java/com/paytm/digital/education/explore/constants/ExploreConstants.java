@@ -73,6 +73,7 @@ public interface ExploreConstants {
     String           SEARCH_ANALYZER             = "word_delimiter_analyzer";
     String           SEARCH_NAMES                = "names";
     String           MAX_RANK                    = "max_rank";
+    String           OFFICIAL_NAME               = "official_name";
     String           STATE                       = "state";
     String           CITY                        = "city";
     String           STREAM                      = "domain_name";
