@@ -34,11 +34,16 @@ public class SearchAggregateHelper {
         List<AggregationType> instituteAggregateType =
                 Arrays.asList(TERMS, TERMS, TERMS, TERMS, TERMS, MINMAX, TERMS, TERMS, TERMS,
                         MINMAX);
-        BucketSort bucketSort = BucketSort.builder().key(BucketAggregationSortParms.KEY).order(
+        BucketSort keyAscSort = BucketSort.builder().key(BucketAggregationSortParms.KEY).order(
                 DataSortOrder.ASC).build();
+
+        BucketSort countDescSort = BucketSort.builder().key(BucketAggregationSortParms.COUNT).order(
+                DataSortOrder.DESC).build();
+
         List<BucketSort> instituteSortOrder =
-                Arrays.asList(bucketSort, bucketSort, bucketSort, bucketSort, bucketSort, null,
-                        bucketSort, bucketSort, bucketSort, null);
+                Arrays.asList(countDescSort, countDescSort, keyAscSort, keyAscSort, keyAscSort,
+                        null,
+                        keyAscSort, keyAscSort, keyAscSort, null);
 
         AggregateField[] instituteAggregateData = new AggregateField[instituteKeys.size()];
 
@@ -57,10 +62,11 @@ public class SearchAggregateHelper {
                 Arrays.asList(LINGUISTIC_MEDIUM, SEARCH_EXAM_LEVEL);
         List<AggregationType> examAggregateType =
                 Arrays.asList(TERMS, TERMS);
-        BucketSort bucketSort = BucketSort.builder().key(BucketAggregationSortParms.KEY).order(
-                DataSortOrder.ASC).build();
+        BucketSort countDescSort = BucketSort.builder().key(BucketAggregationSortParms.COUNT).order(
+                DataSortOrder.DESC).build();
+
         List<BucketSort> examSortOrder =
-                Arrays.asList(bucketSort, bucketSort);
+                Arrays.asList(countDescSort, countDescSort);
         AggregateField[] examAggregateData = new AggregateField[examKeys.size()];
 
         for (int i = 0; i < examKeys.size(); i++) {

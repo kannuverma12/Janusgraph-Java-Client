@@ -39,6 +39,8 @@ public interface ExploreConstants {
     String           AUTOSUGGEST_OFFICIAL_NAME   = "official_name";
     String           AUTOSUGGEST_NAMES           = "names";
     String           RESULT                      = "results";
+    String           ENTITY_TYPE_STATE           = "state";
+    String           ENTITY_TYPE_CITY            = "city";
 
     ///////// Institute search Constatnts ///////////
     String           SEARCH_INDEX_INSTITUTE      = "education_search_institute_v1";
