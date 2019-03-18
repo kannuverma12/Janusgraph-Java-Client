@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.config.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,7 +24,7 @@ public class DatadogFilter extends OncePerRequestFilter {
   private String generateMetricNameFromRequestAndResponse(HttpServletRequest request, HttpServletResponse response) {
     final String requestURI = request.getRequestURI();
     final String requestType = request.getMethod();
-    return requestType + requestURI;
+    return requestType + "_" + getApiNameFromUri(request.getRequestURI());
   }
 
   @Override
@@ -45,6 +46,25 @@ public class DatadogFilter extends OncePerRequestFilter {
   @Override
   public void destroy() {
 
+  }
+
+  private String getApiNameFromUri(String requestUri) {
+    requestUri = requestUri.toLowerCase();
+    if (StringUtils.isEmpty(requestUri)) {
+      return "";
+    } else if (requestUri.contains("/v1/page")) {
+      return "/v1/page";
+    } else if (requestUri.contains("/v1/course")) {
+      return "/v1/course";
+    } else if (requestUri.contains("/auth/v1/exam")) {
+      return "/auth/v1/exam";
+    } else if (requestUri.contains("/v1/lcp/order")) {
+      return "/v1/lcp/order";
+    } else if (requestUri.contains("/auth/v1/institute")) {
+      return "/auth/v1/institute";
+    } else {
+      return requestUri;
+    }
   }
 
 }
