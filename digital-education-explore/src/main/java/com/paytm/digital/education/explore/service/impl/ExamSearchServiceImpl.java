@@ -7,6 +7,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.DD_
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_FILTER_NAMESPACE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_SEARCH_NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LINGUISTIC_MEDIUM;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.MAX_RANK;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.MMM_YYYY;
@@ -20,6 +21,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.SEA
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SYLLABUS_TAB;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.YYYY_MM;
 import com.paytm.digital.education.elasticsearch.enums.AggregationType;
+import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
@@ -37,6 +39,7 @@ import com.paytm.digital.education.explore.service.helper.SearchAggregateHelper;
 import com.paytm.digital.education.utility.DateUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import java.io.IOException;
@@ -56,7 +59,7 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
 
     private static List<String>                 searchFieldKeys;
     private static Map<String, FilterQueryType> filterQueryTypeMap;
-    private static List<String>                 sortKeysInOrder;
+    private static Map<String, DataSortOrder>   sortKeysInOrder;
     private SearchAggregateHelper               searchAggregateHelper;
 
     @PostConstruct
@@ -68,12 +71,13 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
     }
 
     @Override
+    @Cacheable(value = "exam_search")
     public SearchResponse search(SearchRequest searchRequest) throws IOException, TimeoutException {
         validateRequest(searchRequest, filterQueryTypeMap);
         ElasticRequest elasticRequest = buildSearchRequest(searchRequest);
         ElasticResponse elasticResponse = initiateSearch(elasticRequest, ExamSearch.class);
         return buildSearchResponse(elasticResponse, elasticRequest, EXPLORE_COMPONENT,
-                EXAM_FILTER_NAMESPACE);
+                EXAM_FILTER_NAMESPACE, EXAM_SEARCH_NAMESPACE);
     }
 
 
@@ -83,7 +87,8 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
                 createSearchRequest(searchRequest, SEARCH_ANALYZER_EXAM, SEARCH_INDEX_EXAM);
         populateSearchFields(searchRequest, elasticRequest, searchFieldKeys, ExamSearch.class);
         populateFilterFields(searchRequest, elasticRequest, ExamSearch.class, filterQueryTypeMap);
-        populateAggregateFields(searchRequest, elasticRequest);
+        populateAggregateFields(searchRequest, elasticRequest,
+                searchAggregateHelper.getExamAggregateData(), ExamSearch.class);
         populateSortFields(searchRequest, elasticRequest, ExamSearch.class, sortKeysInOrder);
         return elasticRequest;
     }
@@ -147,7 +152,7 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
 
     @Override
     protected void populateSearchResults(SearchResponse searchResponse,
-            ElasticResponse elasticResponse) {
+            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties) {
         List<ExamSearch> examSearches = elasticResponse.getDocuments();
         SearchResult searchResults = new SearchResult();
         if (!CollectionUtils.isEmpty(examSearches)) {
@@ -179,30 +184,6 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
             searchResults.setValues(examDataList);
         }
         searchResponse.setResults(searchResults);
-    }
-
-    @Override
-    protected void populateAggregateFields(SearchRequest searchRequest,
-            ElasticRequest elasticRequest) {
-        if (searchRequest.getFetchFilter()) {
-            AggregateField[] aggregateFields = searchAggregateHelper.getExamAggregateData();
-            Map<String, List<Object>> filters = searchRequest.getFilter();
-            for (int i = 0; i < aggregateFields.length; i++) {
-                aggregateFields[i].setPath(
-                        hierarchyMap.get(ExamSearch.class).get(aggregateFields[i].getName()));
-                if (!CollectionUtils.isEmpty(filters)
-                        && aggregateFields[i].getType() == AggregationType.TERMS
-                        && filters.containsKey(aggregateFields[i].getName())) {
-                    if (!CollectionUtils.isEmpty(filters.get(aggregateFields[i].getName()))) {
-                        // TODO: need a sol, as ES include exclude takes only long[] and String[]
-                        Object[] values = filters.get(aggregateFields[i].getName()).toArray();
-                        String[] valuesStr = Arrays.copyOf(values, values.length, String[].class);
-                        aggregateFields[i].setValues(valuesStr);
-                    }
-                }
-            }
-            elasticRequest.setAggregateFields(aggregateFields);
-        }
     }
 
     private int getRelevantInstanceIndex(List<ExamInstance> instances, String type) {

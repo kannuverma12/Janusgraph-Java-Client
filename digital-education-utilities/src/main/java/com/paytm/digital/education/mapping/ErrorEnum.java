@@ -16,10 +16,18 @@ public enum ErrorEnum {
             HttpStatus.BAD_REQUEST, 0),
     INVALID_INSTITUTE_ID(4007, "Invalid institute ID. Please provide a valid institute ID.",
             HttpStatus.BAD_REQUEST, 0),
-    RANGE_TYPE_FILTER_VALUES_ERROR(4008,"Range type filter must have length if %s", HttpStatus.BAD_REQUEST, 1),
-    FILTER_DOESNOT_EXIST(4009, "Applied filter doesnot exist", HttpStatus.BAD_REQUEST,1);
-
-
+    RANGE_TYPE_FILTER_VALUES_ERROR(4008, "Range type filter must have length if %s",
+            HttpStatus.BAD_REQUEST, 1),
+    FILTER_DOESNOT_EXIST(4009, "Applied filter doesnot exist", HttpStatus.BAD_REQUEST, 1),
+    ENTITY_NOT_SUBSCRIBED(4010, "Requested entity is not subscribed. Please subscribe first.",
+            HttpStatus.BAD_REQUEST,
+            0),
+    INVALID_COURSE_ID(4011, "Invalid course ID. Please provide a valid course ID.",
+            HttpStatus.BAD_REQUEST, 0),
+    ENTITY_ID_IS_MANDATORY(4012, "entity id is mandatory for course search", HttpStatus.BAD_REQUEST, 0),
+    INVALID_ENTITY_ID_LIST_SIZE(4013, "entity id must contain one and only one value", HttpStatus.BAD_REQUEST, 0),
+    QUERY_TERM_MUST_BE_EMPTY(4014, "query term is not supported in course search", HttpStatus.BAD_REQUEST, 0);
+    
     private final int        internalCode;
     private final String     externalMessage;
     private final HttpStatus httpStatus;

@@ -6,6 +6,7 @@ import static com.paytm.digital.education.elasticsearch.constants.ESConstants.DU
 import static com.paytm.digital.education.elasticsearch.constants.ESConstants.INCLUDE_AGGREGATION_SUFFIX;
 import static com.paytm.digital.education.elasticsearch.constants.ESConstants.MAX_AGGREGATION_SUFFIX;
 import static com.paytm.digital.education.elasticsearch.constants.ESConstants.MIN_AGGREGATION_SUFFIX;
+
 import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.BucketAggregationSortParms;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
@@ -235,7 +236,16 @@ public class AggregationQueryBuilderService {
                 if (field.getType() == AggregationType.TERMS) {
                     TermsAggregationBuilder termsAggregation =
                             AggregationBuilders.terms(fieldName).field(fieldName);
-                    termsAggregation.order(getBucketAggregationOrder(field.getBucketsOrder()));
+                    /**
+                     * We are doing sorting of nested aggregation on count at application level.
+                     */
+                    if (path.equals(DUMMY_PATH_FOR_OUTERMOST_FIELDS)
+                            || (field.getBucketsOrder() != null
+                                    && !field.getBucketsOrder().getKey()
+                                            .equals(BucketAggregationSortParms.COUNT))) {
+                        termsAggregation.order(getBucketAggregationOrder(field.getBucketsOrder()));
+                    }
+
                     termsAggregation.size(DEFAULT_TERMS_AGGREGATION_BUCKETS_SIZE);
 
                     TermsAggregationBuilder termsAggregationInclude = null;

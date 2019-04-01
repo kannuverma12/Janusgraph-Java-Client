@@ -28,7 +28,7 @@ public class MongoPropertyReaderImpl implements PropertyReader {
     }
 
     @Override
-    @Cacheable(value = "properties")
+    @Cacheable(value = "properties", unless = "#result == null ")
     public Map<String, Map<String, Object>> getPropertiesAsMap(List<String> keys, String component,
             String namespace) {
         List<Properties> propertiesList = propertyRepository
@@ -44,6 +44,7 @@ public class MongoPropertyReaderImpl implements PropertyReader {
     }
 
     @Override
+    @Cacheable(value = "properties", unless = "#result == null ")
     public Map<String, Map<String, Object>> getPropertiesAsMap(String component, String namespace) {
         List<Properties> propertiesList = propertyRepository
                 .findByComponentAndNamespace(component, namespace);
@@ -58,6 +59,7 @@ public class MongoPropertyReaderImpl implements PropertyReader {
     }
 
     @Override
+    @Cacheable(value = "properties", unless = "#result == null ")
     public Map<String, Object> getPropertiesAsMapByKey(String component, String namespace,
             String key) {
         Properties properties = propertyRepository

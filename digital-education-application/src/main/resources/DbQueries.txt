@@ -79,6 +79,7 @@ db.field_groups.insert( {
         "admission_process",
         "admission_process_url_official",
         "official_brochure_url",
+        "exams_accepted",
         "course_fees",
         "institute.official_address",
         "institute.official_name",
@@ -88,3 +89,14 @@ db.field_groups.insert( {
     "updated_at":ISODate("2019-03-01T01:11:18.965Z"),
     "active":true
 })
+
+# Mongo queries for course highlights template
+
+db.templates.insert({
+	"name" : "highlights",
+	"entity" : "course",
+	"template" : "<#if course?? || exam ??>{\"highlights\":[<#if course?? && course.courseFees??><#list course.courseFees as fee><#if !fee.casteGroup?? || fee.casteGroup == \"GENERAL\">{\"logo_url\":\"http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg\",\"title\":\"Total Fees\",\"description\":\"${fee.fee}\"},<#break></#if></#list><#else>{},</#if><#if exam??><#if exam.examShortName??>{\"logo_url\":\"http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg\",\"title\":\"Exam\",\"description\":\"${exam.examShortName}\"},<#else>{\"logo_url\":\"http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg\",\"title\":\"Exam\",\"description\":\"${exam.examFullName}\"},</#if><#else>{},</#if><#if course?? && course.seatsAvailable??>{\"logo_url\":\"http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg\",\"title\":\"Seats\",\"description\":\"${course.seatsAvailable}\"}<#else>{}</#if>]}<#else>{}</#if>",
+	"active" : true,
+	"created_at" : ISODate("2019-03-18T11:54:45.756Z"),
+	"updated_at" : ISODate("2019-03-18T11:54:45.756Z")
+});

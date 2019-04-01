@@ -14,6 +14,11 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.OWN
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_EXAM_LEVEL;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STATE_INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM_INSTITUTE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.BRANCH_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.DEGREE_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_NAME_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.LEVEL_COURSE;
 import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.BucketAggregationSortParms;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
@@ -34,16 +39,15 @@ public class SearchAggregateHelper {
         List<AggregationType> instituteAggregateType =
                 Arrays.asList(TERMS, TERMS, TERMS, TERMS, TERMS, MINMAX, TERMS, TERMS, TERMS,
                         MINMAX);
-        BucketSort keyAscSort = BucketSort.builder().key(BucketAggregationSortParms.KEY).order(
-                DataSortOrder.ASC).build();
 
         BucketSort countDescSort = BucketSort.builder().key(BucketAggregationSortParms.COUNT).order(
                 DataSortOrder.DESC).build();
 
         List<BucketSort> instituteSortOrder =
-                Arrays.asList(countDescSort, countDescSort, keyAscSort, keyAscSort, keyAscSort,
-                        null,
-                        keyAscSort, keyAscSort, keyAscSort, null);
+                Arrays.asList(countDescSort, countDescSort, countDescSort, countDescSort,
+                        countDescSort,
+                        null, countDescSort, countDescSort, countDescSort, countDescSort, null);
+
 
         AggregateField[] instituteAggregateData = new AggregateField[instituteKeys.size()];
 
@@ -77,5 +81,29 @@ public class SearchAggregateHelper {
             examAggregateData[i] = aggregateField;
         }
         return examAggregateData;
+    }
+
+    public AggregateField[] getCourseAggregateData() {
+        List<String> courseKeys =
+                Arrays.asList(DEGREE_COURSE, BRANCH_COURSE, INSTITUTE_NAME_COURSE, STREAM_COURSE,
+                        LEVEL_COURSE);
+        List<AggregationType> courseAggregateType =
+                Arrays.asList(TERMS, TERMS, TERMS, TERMS, TERMS);
+        BucketSort countDescSort = BucketSort.builder().key(BucketAggregationSortParms.COUNT).order(
+                DataSortOrder.DESC).build();
+
+        List<BucketSort> examSortOrder =
+                Arrays.asList(countDescSort, countDescSort, countDescSort, countDescSort,
+                        countDescSort);
+        AggregateField[] courseAggregateData = new AggregateField[courseKeys.size()];
+
+        for (int i = 0; i < courseKeys.size(); i++) {
+            AggregateField aggregateField = new AggregateField();
+            aggregateField.setName(courseKeys.get(i));
+            aggregateField.setType(courseAggregateType.get(i));
+            aggregateField.setBucketsOrder(examSortOrder.get(i));
+            courseAggregateData[i] = aggregateField;
+        }
+        return courseAggregateData;
     }
 }

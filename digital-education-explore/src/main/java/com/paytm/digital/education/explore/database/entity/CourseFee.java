@@ -12,10 +12,8 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class CourseFee {
 
     @Field("fee")
-    @JsonProperty("fee")
     private Integer fee;
 
     @Field("caste_group")
-    @JsonProperty("caste_group")
     private String casteGroup;
 }

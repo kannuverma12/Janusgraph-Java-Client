@@ -23,7 +23,7 @@ public class GalleryDataHelper {
     @Value("${institute.gallery.image.prefix}")
     private String imageUrlPrefix;
 
-    @Cacheable("gallery")
+    @Cacheable(value = "gallery", key = "#instituteId")
     public Gallery getGalleryData(long instituteId,
             com.paytm.digital.education.explore.database.entity.Gallery galleryData) {
         Gallery response = new Gallery();

@@ -8,8 +8,7 @@
 <#if institute??>
   {"highlights":[
   <#if institute.accreditations??>
-    <#assign i = 0>
-    {"logo_url":"http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg","title":"Accreditations","description":"${institute.accreditations[i].name}"},
+    {"logo_url":"http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg","title":"Accreditations","description":"${institute.accreditations[0].name}"},
   </#if>
   <#if institute.salariesPlacement??>
     <#if institute.salariesPlacement[0].maximum??>
@@ -48,14 +47,24 @@
     {"logo_url":"http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg","title":"Faculties","description":"${institute.facultyCount}"},
   </#if>
   <#if institute.approvals??>
-    {"logo_url":"http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg","title":"Approved By","description":"${institute.approvals?join(", ")}"},
+    <#assign approvalVar = "">
+    <#list institute.approvals as approval>
+      <#if approval?? && approval != "Affiliated">
+        <#assign approvalVar = "${approval},">
+        </#if>
+    </#list>
+    <#if approvalVar?has_content>
+      {"logo_url":"http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg","title":"Approved By","description":"${approvalVar?keep_before_last(",")}"},
+    </#if>
   </#if>
   <#if institute.instituteTypes??>
-    <#assign i = 0>
-    {"logo_url":"http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg","title":"Institute Type","description":"${institute.instituteTypes[i]}"},
+    {"logo_url":"http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg","title":"Institute Type","description":"${institute.instituteTypes?join(", ")}"},
   </#if>
   <#if institute.ownership??>
     {"logo_url":"http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg","title":"Ownership","description":"${institute.ownership}"},
+  </#if>
+  <#if institute.gendersAccepted??>
+    {"logo_url":"http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg","title":"Gender Accepted","description":"${institute.gendersAccepted?join(", ")}"},
   </#if>
   <#if institute.establishedYear??>
     {"logo_url":"http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg","title":"Established Year","description":"Year ${institute.establishedYear?c}"}

@@ -22,7 +22,7 @@ import java.util.Map;
 public class TemplateProcessor {
 
     public String processTemplate(String formattedTemplate, String templateName,
-            Object object, String objectName) {
+            Map<String, Object> valuesMap) {
         try {
             Configuration configuration = new Configuration(FTL_CURRENT_VERSION);
             StringTemplateLoader stringLoader = new StringTemplateLoader();
@@ -30,8 +30,6 @@ public class TemplateProcessor {
             configuration.setTemplateLoader(stringLoader);
             configuration.setDefaultEncoding("UTF-8");
             configuration.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-            Map<String, Object> valuesMap = new HashMap<>();
-            valuesMap.put(objectName, object);
             Template template = configuration.getTemplate(templateName);
             StringWriter stringWriter = new StringWriter();
             template.process(valuesMap, stringWriter);

@@ -1,6 +1,8 @@
 package com.paytm.digital.education.explore.response.dto.detail;
 
 import java.util.List;
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -92,5 +94,11 @@ public class ExamDetail {
 
     @JsonProperty("shortlisted")
     private boolean        shortlisted;
+
+    @JsonProperty("derived_attributes")
+    private Map<String, List<Attribute>> derivedAttributes;
+
+    @JsonProperty("exam_centers")
+    private List<Location> examCenters;
 
 }

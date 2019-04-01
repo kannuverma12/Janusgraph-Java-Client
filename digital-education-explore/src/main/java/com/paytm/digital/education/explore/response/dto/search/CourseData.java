@@ -1,0 +1,33 @@
+package com.paytm.digital.education.explore.response.dto.search;
+
+import java.util.List;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
+
+@Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class CourseData {
+
+    @JsonProperty("course_id")
+    private Long         courseId;
+
+    @JsonProperty("official_name")
+    private String       officialName;
+
+    @JsonProperty("duration_in_months")
+    private Integer      durationInMonths;
+
+    @JsonProperty("fee")
+    private Long         fee;
+
+    @JsonProperty("seats_available")
+    private Integer      seatsAvailable;
+
+    @JsonProperty("degrees")
+    private List<String> degrees;
+
+    @JsonProperty("college_name")
+    private String       instituteName;
+
+}

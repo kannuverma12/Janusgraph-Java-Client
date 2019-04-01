@@ -5,6 +5,7 @@ import com.paytm.digital.education.explore.service.EntityDetailsService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -20,6 +21,7 @@ public class EntityDetailsServiceImpl implements EntityDetailsService {
     private CommonMongoRepository commonMongoRepository;
 
     @Override
+    @Cacheable(value = "entity_detail", unless = "#result == null")
     public <T> T getEntityDetails(String keyName, long entityId, Class<T> type,
             String fieldGroup, List<String> fields) {
         List<String> queryFields = null;

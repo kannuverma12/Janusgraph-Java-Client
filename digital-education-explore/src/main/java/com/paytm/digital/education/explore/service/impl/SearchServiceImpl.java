@@ -25,8 +25,11 @@ public class SearchServiceImpl {
     private LeadDetailHelper           leadDetailHelper;
     private SubscriptionDetailHelper   subscriptionDetailHelper;
     private ExamSearchServiceImpl      examSearchService;
+    private CourseSearchService        courseSearchService;
 
     public SearchResponse search(SearchRequest searchRequest, Long userId) throws Exception {
+        long startTime = System.currentTimeMillis();
+        log.debug("Starting search at : " + startTime);
         SearchResponse response = handler(searchRequest.getEntity()).search(searchRequest);
         log.debug("Search Response : {}", JsonUtils.toJson(response));
 
@@ -38,6 +41,7 @@ public class SearchServiceImpl {
             updateGetInTouch(searchRequest.getEntity(), userId, searchBaseDataMap, entityIds);
             response.getEntityDataMap().clear();
         }
+        log.debug("Time taken in search : " + (System.currentTimeMillis() - startTime));
         return response;
     }
 
@@ -47,6 +51,8 @@ public class SearchServiceImpl {
                 return instituteSearchService;
             case EXAM:
                 return examSearchService;
+            case COURSE:
+                return courseSearchService;
             default:
                 throw new RuntimeException("Invalid entity requested.");
         }
@@ -57,13 +63,15 @@ public class SearchServiceImpl {
         List<Long> subscribedEntities =
                 subscriptionDetailHelper.getSubscribedEntities(educationEntity, userId, entityIds);
         if (!CollectionUtils.isEmpty(subscribedEntities)) {
-            subscribedEntities.forEach(entityId -> searchBaseDataMap.get(entityId).setShortlisted(true));
+            subscribedEntities
+                    .forEach(entityId -> searchBaseDataMap.get(entityId).setShortlisted(true));
         }
     }
 
     private void updateGetInTouch(EducationEntity educationEntity, Long userId,
             Map<Long, SearchBaseData> searchBaseDataMap, List<Long> entityIds) {
-        List<Long> leadEntities = leadDetailHelper.getLeadEntities(educationEntity, userId, entityIds);
+        List<Long> leadEntities =
+                leadDetailHelper.getLeadEntities(educationEntity, userId, entityIds);
         if (!CollectionUtils.isEmpty(leadEntities)) {
             leadEntities.forEach(entityId -> searchBaseDataMap.get(entityId).setGetInTouch(true));
         }

@@ -9,8 +9,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.OFF
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE_CITY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE_STATE;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
+
 import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
@@ -31,6 +30,10 @@ import com.paytm.digital.education.search.service.AutoSuggestionService;
 import com.paytm.digital.education.utility.HierarchyIdentifierUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +55,7 @@ public class AutoSuggestServiceImpl {
         suggestClassLevelMap = HierarchyIdentifierUtils.getClassHierarchy(AutoSuggestEsData.class);
     }
 
+    @Cacheable(value = "autosuggest")
     public AutoSuggestResponse getSuggestions(String searchTerm, List<EducationEntity> entities) {
 
         ElasticRequest elasticRequest = buildAutoSuggestRequest(searchTerm, entities);
@@ -113,6 +117,7 @@ public class AutoSuggestServiceImpl {
             sortFields[0].setPath(suggestClassLevelMap.get(OFFICIAL_NAME));
             aggFields[0].setSortFields(sortFields);
         }
+
         elasticRequest.setAggregateFields(aggFields);
 
         String searchFieldPath = suggestClassLevelMap.get(AUTOSUGGEST_NAMES);

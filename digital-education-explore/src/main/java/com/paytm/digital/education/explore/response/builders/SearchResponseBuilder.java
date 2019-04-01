@@ -13,7 +13,7 @@ import com.paytm.digital.education.explore.response.dto.search.FilterData;
 import com.paytm.digital.education.explore.response.dto.search.RangeFilterData;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.response.dto.search.TermFilterData;
-import com.paytm.digital.education.explore.utility.NameConversionUtil;
+import com.paytm.digital.education.explore.utility.CommonUtil;
 import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -47,7 +47,7 @@ public class SearchResponseBuilder {
                             bucketAggResponse.getBuckets().forEach(bucket -> {
                                 FilterBucket filterBucket = FilterBucket.builder()
                                         .value(bucket.getKey())
-                                        .displayName(NameConversionUtil.getDisplayName(propertyMap,
+                                        .displayName(CommonUtil.getDisplayName(propertyMap,
                                                 fieldName,
                                                 bucket.getKey()))
                                         .docCount(bucket.getDocCount())
@@ -62,7 +62,7 @@ public class SearchResponseBuilder {
                             TermFilterData termFilter = new TermFilterData();
                             termFilter.setName(fieldName);
                             termFilter.setDisplayName(
-                                    NameConversionUtil.getDisplayName(propertyMap, fieldName,
+                                    CommonUtil.getDisplayName(propertyMap, fieldName,
                                             fieldName));
                             termFilter.setBuckets(filterBuckets);
                             filters.add(termFilter);
@@ -75,7 +75,7 @@ public class SearchResponseBuilder {
                         if (!Double.isInfinite(metricAggResponse.getMinValue())
                                 && !Double.isInfinite(metricAggResponse.getMaxValue())) {
                             rangeFilter.setName(fieldName);
-                            rangeFilter.setDisplayName(NameConversionUtil
+                            rangeFilter.setDisplayName(CommonUtil
                                     .getDisplayName(propertyMap, fieldName, fieldName));
                             rangeFilter.setMinValue(metricAggResponse.getMinValue());
                             rangeFilter.setMaxValue(metricAggResponse.getMaxValue());

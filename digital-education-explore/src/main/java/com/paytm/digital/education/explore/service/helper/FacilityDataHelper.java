@@ -8,6 +8,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.LOG
 import com.paytm.digital.education.explore.response.dto.detail.Facility;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -21,7 +22,8 @@ public class FacilityDataHelper {
 
     private PropertyReader propertyReader;
 
-    public List<Facility> getFacilitiesData(List<String> facilites) {
+    @Cacheable(value = "properties", key = "#instituteId", unless = "#result == null")
+    public List<Facility> getFacilitiesData(long instituteId, List<String> facilites) {
         if (!CollectionUtils.isEmpty(facilites)) {
             Map<String, Map<String, Object>> propertyMap =
                     propertyReader.getPropertiesAsMap(facilites, EXPLORE_COMPONENT, FACILITIES);

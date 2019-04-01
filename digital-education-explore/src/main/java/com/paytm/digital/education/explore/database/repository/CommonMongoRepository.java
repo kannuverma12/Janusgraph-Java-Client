@@ -7,6 +7,7 @@ import com.paytm.digital.education.explore.database.entity.FieldGroup;
 import com.paytm.digital.education.explore.database.entity.FtlTemplate;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -23,12 +24,14 @@ public class CommonMongoRepository {
     private MongoOperations     mongoOperation;
     private MongoMappingContext context;
 
+    @Cacheable(value = "entities", unless = "#result == null")
     public <T> T getEntityById(String key, long entityId, Class<T> instance) {
         log.debug("Querying entityById for key :  {}, entityId : {}", key, entityId);
         Query mongoQuery = new Query(Criteria.where(key).is(entityId));
         return executeQuery(mongoQuery, instance);
     }
 
+    @Cacheable(value = "fields", unless = "#result == null")
     public <T> T getEntityByFields(String key, long entityId, Class<T> instance,
             List<String> fields) {
         Query mongoQuery = new Query(Criteria.where(key).is(entityId));
@@ -38,6 +41,7 @@ public class CommonMongoRepository {
         return executeQuery(mongoQuery, instance);
     }
 
+    @Cacheable(value = "fields", unless = "#result == null")
     public <T> List<T> getEntityFieldsByValuesIn(String key, List<Long> entityIds,
             Class<T> instance,
             List<String> fields) {
@@ -48,11 +52,13 @@ public class CommonMongoRepository {
         return executeMongoQuery(mongoQuery, instance);
     }
 
+    @Cacheable(value = "field_group", unless = "#result == null")
     public <T> List<String> getFieldsByGroup(Class<T> collectionClass, String fieldGroup) {
         String collectionName = context.getPersistentEntity(collectionClass).getCollection();
         return getFieldsByGroupAndCollectioName(collectionName, fieldGroup);
     }
 
+    @Cacheable(value = "field_group", unless = "#result == null")
     public List<String> getFieldsByGroupAndCollectioName(String collectionName, String fieldGroup) {
         Query mongoQuery = new Query(Criteria
                 .where(GROUP_NAME).is(fieldGroup)
@@ -65,6 +71,7 @@ public class CommonMongoRepository {
 
     }
 
+    @Cacheable(value = "entities", unless = "#result == null")
     public <T> List<T> getEntitiesByIdAndFields(String key, long entityId, Class<T> type,
             List<String> fields) {
         Query mongoQuery = new Query(Criteria.where(key).is(entityId));
@@ -76,6 +83,7 @@ public class CommonMongoRepository {
         return executeMongoQuery(mongoQuery, type);
     }
 
+    @Cacheable(value = "ftl_templates", unless = "#result == null")
     public String getTemplate(String templateName, String entityName) {
         Query mongoQuery = new Query(
                 Criteria.where("name").is(templateName).and("entity").is(entityName).and("active")

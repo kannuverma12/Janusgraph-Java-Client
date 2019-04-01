@@ -1,19 +1,15 @@
 package com.paytm.digital.education.elasticsearch.deserializer;
 
-import com.paytm.digital.education.elasticsearch.constants.ESConstants;
-import com.paytm.digital.education.elasticsearch.enums.AggregationType;
-import com.paytm.digital.education.elasticsearch.models.AggregateField;
-import com.paytm.digital.education.elasticsearch.models.AggregationResponse;
-import com.paytm.digital.education.elasticsearch.models.Bucket;
-import com.paytm.digital.education.elasticsearch.models.BucketAggregationResponse;
-import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
-import com.paytm.digital.education.elasticsearch.models.MetricAggregationResponse;
-import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationResponse;
-import com.paytm.digital.education.elasticsearch.utils.JsonUtils;
-import javafx.util.Pair;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.common.util.CollectionUtils;
+import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.bucket.filter.Filter;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
 import org.elasticsearch.search.aggregations.bucket.nested.ParsedReverseNested;
@@ -23,18 +19,27 @@ import org.elasticsearch.search.aggregations.metrics.min.Min;
 import org.elasticsearch.search.aggregations.metrics.tophits.TopHits;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import com.paytm.digital.education.elasticsearch.constants.ESConstants;
+import com.paytm.digital.education.elasticsearch.enums.AggregationType;
+import com.paytm.digital.education.elasticsearch.enums.BucketAggregationSortParms;
+import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
+import com.paytm.digital.education.elasticsearch.models.AggregateField;
+import com.paytm.digital.education.elasticsearch.models.AggregationResponse;
+import com.paytm.digital.education.elasticsearch.models.Bucket;
+import com.paytm.digital.education.elasticsearch.models.BucketAggregationResponse;
+import com.paytm.digital.education.elasticsearch.models.BucketSort;
+import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
+import com.paytm.digital.education.elasticsearch.models.MetricAggregationResponse;
+import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationResponse;
+import com.paytm.digital.education.elasticsearch.utils.BucketSortUtil;
+import com.paytm.digital.education.elasticsearch.utils.JsonUtils;
+import javafx.util.Pair;
 
 @Component
 public class AggregationResponseDeserializer {
 
     private List<Bucket> getBucketsFromTermsAggregation(Terms termsAggregation, String path,
-            String aggregationName) {
+            String aggregationName, BucketSort bucketsOrder) {
 
         List<Bucket> buckets = new ArrayList<>();
         String key;
@@ -51,14 +56,22 @@ public class AggregationResponseDeserializer {
                         esRespBucket.getAggregations().get(aggregationName);
                 count = childAggregation.getDocCount();
             }
-
             buckets.add(new Bucket(key, count));
+        }
+        if (!path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS) && bucketsOrder != null
+                && bucketsOrder.getKey().equals(BucketAggregationSortParms.COUNT)) {
+            if (bucketsOrder.getOrder().equals(DataSortOrder.ASC)) {
+                Collections.sort(buckets, BucketSortUtil.ascendingCountSort);
+            } else {
+                Collections.sort(buckets, BucketSortUtil.descendingCountSort);
+            }
         }
         return buckets;
     }
 
     private AggregationResponse getTermsFromFilterAggregationResponse(Filter filterAggregation,
-            String aggregationName, String path, boolean hasIncludeAggregation) {
+            String aggregationName, String path, boolean hasIncludeAggregation,
+            BucketSort bucketsOrder) {
 
         List<Bucket> buckets = new ArrayList<>();
         Terms termsAggregation;
@@ -81,9 +94,11 @@ public class AggregationResponseDeserializer {
         if (hasIncludeAggregation) {
             buckets.addAll(
                     getBucketsFromTermsAggregation(termsIncludeAggregation, path,
-                            aggregationName + ESConstants.INCLUDE_AGGREGATION_SUFFIX));
+                            aggregationName + ESConstants.INCLUDE_AGGREGATION_SUFFIX,
+                            bucketsOrder));
         }
-        buckets.addAll(getBucketsFromTermsAggregation(termsAggregation, path, aggregationName));
+        buckets.addAll(getBucketsFromTermsAggregation(termsAggregation, path, aggregationName,
+                bucketsOrder));
         BucketAggregationResponse aggregationResponse = new BucketAggregationResponse();
         aggregationResponse.setBuckets(buckets);
 
@@ -199,7 +214,8 @@ public class AggregationResponseDeserializer {
                     boolean hasIncludeaggregation = !CollectionUtils.isEmpty(field.getValues());
                     aggResponse =
                             getTermsFromFilterAggregationResponse(filterAggregation,
-                                    aggregationName, path, hasIncludeaggregation);
+                                    aggregationName, path, hasIncludeaggregation,
+                                    field.getBucketsOrder());
                 } else if (field.getType() == AggregationType.MINMAX) {
                     aggResponse = getBucketsFromMetricAggregationResponse(filterAggregation,
                             aggregationName, path);

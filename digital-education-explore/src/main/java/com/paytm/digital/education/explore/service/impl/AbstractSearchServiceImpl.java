@@ -13,17 +13,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
+import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.elasticsearch.models.FilterField;
 import com.paytm.digital.education.elasticsearch.models.SearchField;
 import com.paytm.digital.education.elasticsearch.models.SortField;
 import com.paytm.digital.education.exception.EducationException;
-import com.paytm.digital.education.explore.es.model.CourseSearch;
+import com.paytm.digital.education.explore.es.model.NestedCourseSearch;
 import com.paytm.digital.education.explore.es.model.ExamSearch;
 import com.paytm.digital.education.explore.es.model.InstituteSearch;
+import com.paytm.digital.education.explore.es.model.CourseSearch;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.builders.SearchResponseBuilder;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
@@ -48,9 +51,6 @@ public abstract class AbstractSearchServiceImpl {
 
     protected Map<Class, Map<String, String>> hierarchyMap;
 
-    @Value("${institute.gallery.image.prefix}")
-    protected String logoUrlPrefix;
-
     @PostConstruct
     private void generateLevelMap() {
         hierarchyMap = new HashMap<>();
@@ -58,6 +58,8 @@ public abstract class AbstractSearchServiceImpl {
                 InstituteSearch.class));
         hierarchyMap.put(ExamSearch.class,
                 HierarchyIdentifierUtils.getClassHierarchy(ExamSearch.class));
+        hierarchyMap.put(NestedCourseSearch.class,
+                HierarchyIdentifierUtils.getClassHierarchy(NestedCourseSearch.class));
         hierarchyMap.put(CourseSearch.class,
                 HierarchyIdentifierUtils.getClassHierarchy(CourseSearch.class));
     }
@@ -118,21 +120,42 @@ public abstract class AbstractSearchServiceImpl {
         }
     }
 
-    protected abstract void populateAggregateFields(SearchRequest searchRequest,
-            ElasticRequest elasticRequest);
+    protected <T> void populateAggregateFields(SearchRequest searchRequest,
+            ElasticRequest elasticRequest, AggregateField[] aggregateFields, Class<T> type) {
+        if (searchRequest.getFetchFilter()) {
+            Map<String, List<Object>> filters = searchRequest.getFilter();
+            for (int i = 0; i < aggregateFields.length; i++) {
+                aggregateFields[i].setPath(
+                        hierarchyMap.get(type).get(aggregateFields[i].getName()));
+                if (!CollectionUtils.isEmpty(filters)
+                        && aggregateFields[i].getType() == AggregationType.TERMS
+                        && filters.containsKey(aggregateFields[i].getName())) {
+                    if (!CollectionUtils.isEmpty(filters.get(aggregateFields[i].getName()))) {
+                        // TODO: need a sol, as ES include exclude takes only long[] and String[]
+                        String[] valuesString =
+                                filters.get(aggregateFields[i].getName()).toArray(new String[] {});
+                        aggregateFields[i].setValues(valuesString);
+                    }
+                }
+            }
+            elasticRequest.setAggregateFields(aggregateFields);
+        }
+
+    }
 
     protected abstract ElasticRequest buildSearchRequest(SearchRequest searchRequest);
 
     protected <T> void populateSortFields(SearchRequest searchRequest,
-            ElasticRequest elasticRequest, Class<T> type, List<String> sortKeysInOrder) {
+            ElasticRequest elasticRequest, Class<T> type,
+            Map<String, DataSortOrder> sortKeysInOrder) {
         if (!CollectionUtils.isEmpty(sortKeysInOrder)) {
             SortField[] sortFields = new SortField[sortKeysInOrder.size()];
             int i = 0;
-            for (String keyName : sortKeysInOrder) {
+            for (Map.Entry<String, DataSortOrder> key : sortKeysInOrder.entrySet()) {
                 SortField sortField = new SortField();
-                sortField.setName(keyName);
-                sortField.setPath(hierarchyMap.get(type).get(keyName));
-                sortField.setOrder(DataSortOrder.ASC);
+                sortField.setName(key.getKey());
+                sortField.setPath(hierarchyMap.get(type).get(key.getKey()));
+                sortField.setOrder(key.getValue());
                 sortFields[i++] = sortField;
             }
             elasticRequest.setSortFields(sortFields);
@@ -140,16 +163,19 @@ public abstract class AbstractSearchServiceImpl {
     }
 
     protected SearchResponse buildSearchResponse(ElasticResponse elasticResponse,
-            ElasticRequest elasticRequest, String component, String namespace) {
+            ElasticRequest elasticRequest, String component, String filterNamespace,
+            String searchResultNamespace) {
         SearchResponse searchResponse = new SearchResponse(elasticRequest.getQueryTerm());
         if (elasticRequest.isSearchRequest()) {
-            populateSearchResults(searchResponse, elasticResponse);
+            Map<String, Map<String, Object>> propertyMap = propertyReader
+                    .getPropertiesAsMap(component, searchResultNamespace);
+            populateSearchResults(searchResponse, elasticResponse, propertyMap);
             long total = elasticResponse.getTotalSearchResultsCount();
             searchResponse.setTotal(total);
         }
         if (elasticRequest.isAggregationRequest()) {
             Map<String, Map<String, Object>> propertyMap = propertyReader
-                    .getPropertiesAsMap(component, namespace);
+                    .getPropertiesAsMap(component, filterNamespace);
             searchResponseBuilder
                     .populateSearchFilters(searchResponse, elasticResponse, elasticRequest,
                             propertyMap);
@@ -178,6 +204,6 @@ public abstract class AbstractSearchServiceImpl {
     }
 
     protected abstract void populateSearchResults(SearchResponse searchResponse,
-            ElasticResponse elasticResponse);
+            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties);
 
 }

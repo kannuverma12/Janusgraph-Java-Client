@@ -70,5 +70,5 @@ public class InstituteSearch {
     private int maxRank;
 
     @JsonProperty("courses")
-    private List<CourseSearch> courses;
+    private List<NestedCourseSearch> courses;
 }
