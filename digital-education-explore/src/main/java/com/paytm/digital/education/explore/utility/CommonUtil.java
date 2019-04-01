@@ -1,12 +1,10 @@
 package com.paytm.digital.education.explore.utility;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.IGNORE_VALUES;
-
 import com.paytm.digital.education.explore.config.ConfigProperties;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import lombok.experimental.UtilityClass;
 import org.springframework.util.CollectionUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -77,12 +75,23 @@ public class CommonUtil {
         String displayName;
         if (!CollectionUtils.isEmpty(propertyMap)
                 && propertyMap.containsKey(fieldName) && propertyMap
-                .get(fieldName).containsKey(keyName)) {
+                        .get(fieldName).containsKey(keyName)) {
             displayName = propertyMap.get(fieldName).get(keyName)
                     .toString();
         } else {
             displayName = keyName;
         }
         return displayName;
+    }
+
+    public void convertStringValuesToLowerCase(Map<String, List<Object>> filters) {
+        for (Map.Entry<String, List<Object>> filter : filters.entrySet()) {
+            if (!CollectionUtils.isEmpty(filter.getValue())
+                    && filter.getValue().get(0) instanceof String) {
+                for (int i = 0; i < filter.getValue().size(); i++) {
+                    filter.getValue().set(i, ((String) filter.getValue().get(i)).toLowerCase());
+                }
+            }
+        }
     }
 }
