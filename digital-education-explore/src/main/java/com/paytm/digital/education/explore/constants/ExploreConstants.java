@@ -42,7 +42,6 @@ public interface ExploreConstants {
     String           ENTITY_TYPE_STATE                = "state";
     String           ENTITY_TYPE_CITY                 = "city";
 
-
     ///////// Institute search Constatnts ///////////
     String           SEARCH_INDEX_INSTITUTE           = "education_search_institute_v1";
     String           SEARCH_ANALYZER_INSTITUTE        = "word_delimiter_analyzer";

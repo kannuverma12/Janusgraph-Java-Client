@@ -117,7 +117,6 @@ public class AutoSuggestServiceImpl {
             sortFields[0].setPath(suggestClassLevelMap.get(OFFICIAL_NAME));
             aggFields[0].setSortFields(sortFields);
         }
-
         elasticRequest.setAggregateFields(aggFields);
 
         String searchFieldPath = suggestClassLevelMap.get(AUTOSUGGEST_NAMES);

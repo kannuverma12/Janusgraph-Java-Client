@@ -48,7 +48,6 @@ public class SearchAggregateHelper {
                         countDescSort,
                         null, countDescSort, countDescSort, countDescSort, countDescSort, null);
 
-
         AggregateField[] instituteAggregateData = new AggregateField[instituteKeys.size()];
 
         for (int i = 0; i < instituteKeys.size(); i++) {

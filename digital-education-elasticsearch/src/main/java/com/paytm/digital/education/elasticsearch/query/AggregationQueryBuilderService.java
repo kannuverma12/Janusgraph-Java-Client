@@ -6,7 +6,6 @@ import static com.paytm.digital.education.elasticsearch.constants.ESConstants.DU
 import static com.paytm.digital.education.elasticsearch.constants.ESConstants.INCLUDE_AGGREGATION_SUFFIX;
 import static com.paytm.digital.education.elasticsearch.constants.ESConstants.MAX_AGGREGATION_SUFFIX;
 import static com.paytm.digital.education.elasticsearch.constants.ESConstants.MIN_AGGREGATION_SUFFIX;
-
 import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.BucketAggregationSortParms;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
@@ -245,7 +244,6 @@ public class AggregationQueryBuilderService {
                                             .equals(BucketAggregationSortParms.COUNT))) {
                         termsAggregation.order(getBucketAggregationOrder(field.getBucketsOrder()));
                     }
-
                     termsAggregation.size(DEFAULT_TERMS_AGGREGATION_BUCKETS_SIZE);
 
                     TermsAggregationBuilder termsAggregationInclude = null;
