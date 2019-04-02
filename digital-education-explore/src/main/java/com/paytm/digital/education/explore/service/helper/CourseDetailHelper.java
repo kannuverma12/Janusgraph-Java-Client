@@ -10,6 +10,7 @@ import com.paytm.digital.education.explore.response.dto.search.SearchBaseData;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.service.impl.CourseSearchService;
 import com.paytm.digital.education.explore.response.dto.detail.Course;
+import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
 import com.paytm.digital.education.explore.response.dto.search.CourseSearchResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,8 @@ public class CourseDetailHelper {
     /**
      * Filtering by parent institute id for universities to get courses of all child colleges
      */
-    public List<Course> addCourseData(List<Object> instituteIds, CollegeEntityType type)
+    public void addCourseData(InstituteDetail instituteDetail, List<Object> instituteIds,
+            CollegeEntityType type)
             throws IOException, TimeoutException {
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.setEntity(EducationEntity.COURSE);
@@ -57,8 +59,8 @@ public class CourseDetailHelper {
                     courses.add(course);
                 });
             }
-            return courses;
+            instituteDetail.setTotalCourses(response.getTotal());
+            instituteDetail.setCourses(courses);
         }
-        return null;
     }
 }

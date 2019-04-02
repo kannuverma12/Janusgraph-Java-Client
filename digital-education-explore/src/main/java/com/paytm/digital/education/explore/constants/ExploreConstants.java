@@ -114,7 +114,7 @@ public interface ExploreConstants {
     String           GALLERY_LOGO                     = "gallery.logo";
     String           OFFICIAL_ADDRESS                 = "official_address";
     String           ENTITY_ID                        = "entity_id";
-    int              COURSE_SIZE_FOR_INSTITUTE_DETAIL = 5;
+    int              COURSE_SIZE_FOR_INSTITUTE_DETAIL = 6;
 
     // Detail APIs constants
     String           EXAM_SHORT_NAME                  = "exam_short_name";

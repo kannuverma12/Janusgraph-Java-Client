@@ -8,7 +8,6 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.OVE
 import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
-
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Exam;
@@ -34,7 +33,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,8 +58,8 @@ public class InstituteDetailServiceImpl {
     private LeadDetailHelper         leadDetailHelper;
     private SubscriptionDetailHelper subscriptionDetailHelper;
 
-    private static int EXAM_PREFIX_LENGTH   = EXAM_PREFIX.length();
-    private static int COURSE_PREFIX_LENGTH = COURSE_PREFIX.length();
+    private static int               EXAM_PREFIX_LENGTH   = EXAM_PREFIX.length();
+    private static int               COURSE_PREFIX_LENGTH = COURSE_PREFIX.length();
 
     public InstituteDetail getDetail(Long entityId, Long userId,
             String fieldGroup, List<String> fields) throws IOException, TimeoutException {
@@ -162,21 +160,23 @@ public class InstituteDetailServiceImpl {
         instituteDetail.setBrochureUrl(institute.getOfficialUrlBrochure());
         instituteDetail
                 .setFacilities(
-                        facilityDataHelper.getFacilitiesData(institute.getInstituteId(), institute.getFacilities()));
+                        facilityDataHelper.getFacilitiesData(institute.getInstituteId(),
+                                institute.getFacilities()));
         instituteDetail.setGallery(galleryDataHelper
                 .getGalleryData(institute.getInstituteId(), institute.getGallery()));
-        instituteDetail.setCourses(
-                courseDetailHelper.addCourseData(Arrays.asList((Object) institute.getInstituteId()),
-                        institute.getEntityType()));
+        courseDetailHelper.addCourseData(instituteDetail,
+                Arrays.asList((Object) institute.getInstituteId()),
+                institute.getEntityType());
         instituteDetail.setCutOff(examInstanceHelper.getExamCutOffs(examList));
         Map<String, Object> highlights = new HashMap<>();
         highlights.put(INSTITUTE.name().toLowerCase(), institute);
         instituteDetail.setDerivedAttributes(
                 derivedAttributesHelper.getDerivedAttributes(highlights,
                         INSTITUTE.name().toLowerCase()));
-        OfficialAddress officialAddress = CommonUtil.getOfficialAddress(institute.getInstitutionState(),
-                institute.getInstitutionCity(), institute.getPhone(), institute.getUrl(),
-                institute.getOfficialAddress());
+        OfficialAddress officialAddress =
+                CommonUtil.getOfficialAddress(institute.getInstitutionState(),
+                        institute.getInstitutionCity(), institute.getPhone(), institute.getUrl(),
+                        institute.getOfficialAddress());
         instituteDetail.setOfficialAddress(officialAddress);
         instituteDetail.setRankings(getRanking(institute.getRankings()));
         instituteDetail.setPlacements(placementDataHelper.getSalariesPlacements(institute));
