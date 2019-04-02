@@ -3,12 +3,9 @@ package com.paytm.digital.education.explore.response.dto.common;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 
-@Getter
-@Builder
+@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OfficialAddress {
@@ -18,5 +15,23 @@ public class OfficialAddress {
 
     @JsonProperty("state")
     private String state;
+
+    @JsonProperty("lat_lon")
+    private String latLon;
+
+    @JsonProperty("street_address")
+    private String streetAddress;
+
+    @JsonProperty("pin_code")
+    private String pinCode;
+
+    @JsonProperty("place_id")
+    private String placeId;
+
+    @JsonProperty("phone")
+    private String phone;
+
+    @JsonProperty("url")
+    private String url;
 
 }

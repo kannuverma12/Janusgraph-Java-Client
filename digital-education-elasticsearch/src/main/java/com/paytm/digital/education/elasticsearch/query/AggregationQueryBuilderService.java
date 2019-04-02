@@ -1,6 +1,11 @@
 package com.paytm.digital.education.elasticsearch.query;
 
-import com.paytm.digital.education.elasticsearch.constants.ESConstants;
+import static com.paytm.digital.education.elasticsearch.constants.ESConstants.AGGREGATION_QUERY_SIZE;
+import static com.paytm.digital.education.elasticsearch.constants.ESConstants.DEFAULT_TERMS_AGGREGATION_BUCKETS_SIZE;
+import static com.paytm.digital.education.elasticsearch.constants.ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS;
+import static com.paytm.digital.education.elasticsearch.constants.ESConstants.INCLUDE_AGGREGATION_SUFFIX;
+import static com.paytm.digital.education.elasticsearch.constants.ESConstants.MAX_AGGREGATION_SUFFIX;
+import static com.paytm.digital.education.elasticsearch.constants.ESConstants.MIN_AGGREGATION_SUFFIX;
 import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.BucketAggregationSortParms;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
@@ -9,6 +14,8 @@ import com.paytm.digital.education.elasticsearch.models.BucketSort;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.FilterField;
 import com.paytm.digital.education.elasticsearch.models.SearchField;
+import com.paytm.digital.education.elasticsearch.models.SortField;
+import com.paytm.digital.education.elasticsearch.utils.DataSortUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequest;
@@ -36,7 +43,7 @@ import java.util.Map;
 
 @Service
 public class AggregationQueryBuilderService {
-    
+
     /**
      * Creates a map containing multiMatch query for every nested path and parent document
      */
@@ -51,10 +58,10 @@ public class AggregationQueryBuilderService {
 
             if (StringUtils.isNotBlank(field.getName())) {
                 path = StringUtils.isBlank(field.getPath())
-                        ? ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS
+                        ? DUMMY_PATH_FOR_OUTERMOST_FIELDS
                         : field.getPath();
                 fieldName =
-                        path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS) ? field.getName()
+                        path.equals(DUMMY_PATH_FOR_OUTERMOST_FIELDS) ? field.getName()
                                 : path + '.' + field.getName();
 
                 if (!searchQueries.containsKey(path)) {
@@ -91,10 +98,10 @@ public class AggregationQueryBuilderService {
 
             if (StringUtils.isNotBlank(field.getName()) && field.getValues() != null) {
                 path = StringUtils.isBlank(field.getPath())
-                        ? ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS
+                        ? DUMMY_PATH_FOR_OUTERMOST_FIELDS
                         : field.getPath();
                 fieldName =
-                        path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS) ? field.getName()
+                        path.equals(DUMMY_PATH_FOR_OUTERMOST_FIELDS) ? field.getName()
                                 : path + '.' + field.getName();
                 QueryBuilder filterQuery = null;
 
@@ -126,7 +133,7 @@ public class AggregationQueryBuilderService {
         if (searchQueries != null) {
             searchQueries.forEach((path, multiMatchQuery) -> {
 
-                if (path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
+                if (path.equals(DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
                     boolQuery.must(multiMatchQuery);
                 } else {
                     boolQuery.filter(
@@ -152,7 +159,7 @@ public class AggregationQueryBuilderService {
 
                 if (fieldQueryMap != null) {
 
-                    if (path == ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS) {
+                    if (path == DUMMY_PATH_FOR_OUTERMOST_FIELDS) {
                         fieldQueryMap.forEach((filterFieldName, filterQuery) -> {
                             if (type == AggregationType.TOP_HITS
                                     || !aggFieldName.equals(filterFieldName)) {
@@ -215,10 +222,10 @@ public class AggregationQueryBuilderService {
 
             if (StringUtils.isNotBlank(field.getName())) {
                 path = StringUtils.isBlank(field.getPath())
-                        ? ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS
+                        ? DUMMY_PATH_FOR_OUTERMOST_FIELDS
                         : field.getPath();
                 fieldName =
-                        path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS) ? field.getName()
+                        path.equals(DUMMY_PATH_FOR_OUTERMOST_FIELDS) ? field.getName()
                                 : path + '.' + field.getName();
                 QueryBuilder filterQuery =
                         addAggregationFilterQuery(fieldName, filterQueries, field.getType());
@@ -228,8 +235,16 @@ public class AggregationQueryBuilderService {
                 if (field.getType() == AggregationType.TERMS) {
                     TermsAggregationBuilder termsAggregation =
                             AggregationBuilders.terms(fieldName).field(fieldName);
-                    termsAggregation.order(getBucketAggregationOrder(field.getBucketsOrder()));
-                    termsAggregation.size(ESConstants.DEFAULT_TERMS_AGGREGATION_BUCKETS_SIZE);
+                    /**
+                     * We are doing sorting of nested aggregation on count at application level.
+                     */
+                    if (path.equals(DUMMY_PATH_FOR_OUTERMOST_FIELDS)
+                            || (field.getBucketsOrder() != null
+                                    && !field.getBucketsOrder().getKey()
+                                            .equals(BucketAggregationSortParms.COUNT))) {
+                        termsAggregation.order(getBucketAggregationOrder(field.getBucketsOrder()));
+                    }
+                    termsAggregation.size(DEFAULT_TERMS_AGGREGATION_BUCKETS_SIZE);
 
                     TermsAggregationBuilder termsAggregationInclude = null;
                     if (!CollectionUtils.isEmpty(field.getValues())) {
@@ -237,7 +252,7 @@ public class AggregationQueryBuilderService {
                         termsAggregation.includeExclude(excludeValues);
                         termsAggregationInclude =
                                 AggregationBuilders
-                                        .terms(fieldName + ESConstants.INCLUDE_AGGREGATION_SUFFIX);
+                                        .terms(fieldName + INCLUDE_AGGREGATION_SUFFIX);
                         termsAggregationInclude.field(fieldName);
                         IncludeExclude includeValues = new IncludeExclude(field.getValues(), null);
                         termsAggregationInclude.includeExclude(includeValues);
@@ -249,7 +264,7 @@ public class AggregationQueryBuilderService {
                      * Adding reverse nested in order to get count of parent documents in case of
                      * nested aggregations
                      */
-                    if (path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
+                    if (path.equals(DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
                         filterAggregation.subAggregation(termsAggregation);
                         if (termsAggregationInclude != null) {
                             filterAggregation.subAggregation(termsAggregationInclude);
@@ -264,7 +279,7 @@ public class AggregationQueryBuilderService {
                         if (termsAggregationInclude != null) {
                             termsAggregationInclude
                                     .subAggregation(AggregationBuilders.reverseNested(
-                                            fieldName + ESConstants.INCLUDE_AGGREGATION_SUFFIX));
+                                            fieldName + INCLUDE_AGGREGATION_SUFFIX));
                             nestedAggregation.subAggregation(termsAggregationInclude);
                         }
                         filterAggregation.subAggregation(nestedAggregation);
@@ -276,13 +291,13 @@ public class AggregationQueryBuilderService {
                      * Using suffix because two sibling aggregations cannot have save name
                      */
                     MinAggregationBuilder minAggregation = AggregationBuilders
-                            .min(fieldName + ESConstants.MIN_AGGREGATION_SUFFIX)
+                            .min(fieldName + MIN_AGGREGATION_SUFFIX)
                             .field(fieldName);
                     MaxAggregationBuilder maxAggregation = AggregationBuilders
-                            .max(fieldName + ESConstants.MAX_AGGREGATION_SUFFIX)
+                            .max(fieldName + MAX_AGGREGATION_SUFFIX)
                             .field(fieldName);
 
-                    if (path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
+                    if (path.equals(DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
                         filterAggregation.subAggregation(minAggregation);
                         filterAggregation.subAggregation(maxAggregation);
                     } else {
@@ -298,12 +313,16 @@ public class AggregationQueryBuilderService {
                             AggregationBuilders.topHits(fieldName);
                     topHitsAggregation.size(bucketDocCount);
                     topHitsAggregation.fetchSource(true);
-
+                    if (field.getSortFields() != null) {
+                        for (SortField sortField : field.getSortFields()) {
+                            topHitsAggregation.sort(DataSortUtil.buildSort(sortField, null));
+                        }
+                    }
                     TermsAggregationBuilder termsAggregation = AggregationBuilders.terms(fieldName);
                     termsAggregation.field(fieldName);
-                    termsAggregation.size(ESConstants.DEFAULT_TERMS_AGGREGATION_BUCKETS_SIZE);
+                    termsAggregation.size(DEFAULT_TERMS_AGGREGATION_BUCKETS_SIZE);
                     termsAggregation.subAggregation(topHitsAggregation);
-                    if (path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
+                    if (path.equals(DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
                         filterAggregation.subAggregation(termsAggregation);
                     } else {
                         NestedAggregationBuilder nestedAggs =
@@ -333,7 +352,7 @@ public class AggregationQueryBuilderService {
         }
 
         SearchSourceBuilder source = new SearchSourceBuilder();
-        source.size(ESConstants.AGGREGATION_QUERY_SIZE);
+        source.size(AGGREGATION_QUERY_SIZE);
         source.query(addSearchQueryListIntoRequest(searchQueries));
 
         if (request.getAggregateFields() != null) {

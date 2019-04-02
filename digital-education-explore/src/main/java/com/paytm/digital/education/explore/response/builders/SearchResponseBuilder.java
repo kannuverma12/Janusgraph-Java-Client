@@ -13,6 +13,7 @@ import com.paytm.digital.education.explore.response.dto.search.FilterData;
 import com.paytm.digital.education.explore.response.dto.search.RangeFilterData;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.response.dto.search.TermFilterData;
+import com.paytm.digital.education.explore.utility.CommonUtil;
 import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -44,18 +45,11 @@ public class SearchResponseBuilder {
                         if (!CollectionUtils.isEmpty(bucketAggResponse.getBuckets())) {
                             List<FilterBucket> filterBuckets = new ArrayList<>();
                             bucketAggResponse.getBuckets().forEach(bucket -> {
-                                String keyName;
-                                if (!CollectionUtils.isEmpty(propertyMap)
-                                        && propertyMap.containsKey(fieldName) && propertyMap
-                                                .get(fieldName).containsKey(bucket.getKey())) {
-                                    keyName = propertyMap.get(fieldName).get(bucket.getKey())
-                                            .toString();
-                                } else {
-                                    keyName = bucket.getKey();
-                                }
                                 FilterBucket filterBucket = FilterBucket.builder()
                                         .value(bucket.getKey())
-                                        .displayName(keyName)
+                                        .displayName(CommonUtil.getDisplayName(propertyMap,
+                                                fieldName,
+                                                bucket.getKey()))
                                         .docCount(bucket.getDocCount())
                                         .isSelected(
                                                 checkIfRequestedFilter(
@@ -67,7 +61,9 @@ public class SearchResponseBuilder {
                             });
                             TermFilterData termFilter = new TermFilterData();
                             termFilter.setName(fieldName);
-                            termFilter.setDisplayName(fieldName.toUpperCase());
+                            termFilter.setDisplayName(
+                                    CommonUtil.getDisplayName(propertyMap, fieldName,
+                                            fieldName));
                             termFilter.setBuckets(filterBuckets);
                             filters.add(termFilter);
                         }
@@ -79,7 +75,8 @@ public class SearchResponseBuilder {
                         if (!Double.isInfinite(metricAggResponse.getMinValue())
                                 && !Double.isInfinite(metricAggResponse.getMaxValue())) {
                             rangeFilter.setName(fieldName);
-                            rangeFilter.setDisplayName(fieldName.toUpperCase());
+                            rangeFilter.setDisplayName(CommonUtil
+                                    .getDisplayName(propertyMap, fieldName, fieldName));
                             rangeFilter.setMinValue(metricAggResponse.getMinValue());
                             rangeFilter.setMaxValue(metricAggResponse.getMaxValue());
                             Pair<Double, Double> selectionValue = getSelectedRange(rangeFilter,

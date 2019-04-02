@@ -26,7 +26,7 @@ public class PageServiceImpl implements PageService {
     private SectionRepository sectionRepository;
 
     @Override
-    @Cacheable("page")
+    @Cacheable(value = "page", key = "#pageName", unless = "#result == null ")
     public Map<String, Section> getPageSections(@NotBlank final String pageName) {
         Page page = pageRepository.getPageByName(pageName);
 

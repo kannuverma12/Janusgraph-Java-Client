@@ -7,6 +7,7 @@ import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.FilterField;
 import com.paytm.digital.education.elasticsearch.models.SearchField;
 import com.paytm.digital.education.elasticsearch.models.SortField;
+import com.paytm.digital.education.elasticsearch.utils.DataSortUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequest;
@@ -59,64 +60,11 @@ public class SearchQueryBuilderService {
         return boolQuery;
     }
 
-    private SortBuilder<FieldSortBuilder> buildNestedSort(String fieldName, String path,
-            DataSortOrder order, Map<String, QueryBuilder> filterQueries) {
-
-        NestedSortBuilder nestedSort = new NestedSortBuilder(path);
-
-        if (filterQueries.containsKey(path)) {
-            nestedSort.setFilter(filterQueries.get(path));
-        }
-
-        SortBuilder<FieldSortBuilder> sortBuilder =
-                SortBuilders.fieldSort(fieldName).setNestedSort(nestedSort);
-
-        switch (order) {
-            case ASC:
-                sortBuilder.order(SortOrder.ASC);
-                break;
-            case DESC:
-            default:
-                sortBuilder.order(SortOrder.DESC);
-        }
-        return sortBuilder;
-    }
-
     private void addSortFieldsIntoRequest(ElasticRequest request, SearchSourceBuilder source,
-            Map<String, QueryBuilder> searchQueries, Map<String, QueryBuilder> filterQueries) {
-
-        String path;
-        String fieldName;
-        DataSortOrder order;
-
+            Map<String, QueryBuilder> filterQueries) {
         for (SortField sortField : request.getSortFields()) {
-
             if (sortField.getName() != null) {
-
-                path = StringUtils.isBlank(sortField.getPath())
-                        ? ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS
-                        : sortField.getPath();
-                fieldName = path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS)
-                        ? sortField.getName()
-                        : path + '.' + sortField.getName();
-                order = sortField.getOrder() != null ? sortField.getOrder()
-                        : DataSortOrder.DESC;
-
-                if (path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
-                    switch (order) {
-                        case ASC:
-                            source.sort(sortField.getName(), SortOrder.ASC);
-                            break;
-                        case DESC:
-                        default:
-                            source.sort(sortField.getName(), SortOrder.DESC);
-                            break;
-                    }
-                } else {
-                    SortBuilder<FieldSortBuilder> nestedSort =
-                            buildNestedSort(fieldName, path, order, filterQueries);
-                    source.sort(nestedSort);
-                }
+                source.sort(DataSortUtil.buildSort(sortField, filterQueries));
             }
         }
         /**
@@ -232,7 +180,7 @@ public class SearchQueryBuilderService {
         source.query(addQueryMapsIntoRequest(searchQueries, filterQueries));
 
         if (request.getSortFields() != null) {
-            addSortFieldsIntoRequest(request, source, searchQueries, filterQueries);
+            addSortFieldsIntoRequest(request, source, filterQueries);
         }
 
 

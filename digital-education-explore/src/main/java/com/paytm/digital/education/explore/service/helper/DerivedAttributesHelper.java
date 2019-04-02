@@ -1,9 +1,7 @@
 package com.paytm.digital.education.explore.service.helper;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.HIGHLIGHTS_TEMPLATE;
-import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
 
-import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.response.dto.detail.Attribute;
 import com.paytm.digital.education.explore.template.TemplateProcessor;
@@ -22,12 +20,12 @@ public class DerivedAttributesHelper {
     private CommonMongoRepository commonMongoRepository;
     private TemplateProcessor     templateProcessor;
 
-    public Map<String, List<Attribute>> getInstituteDerivedAttributes(Institute institute) {
+    public Map<String, List<Attribute>> getDerivedAttributes(
+            Map<String, Object> highlightData, String entityType) {
         String highlightsTemplate = commonMongoRepository
-                .getTemplate(HIGHLIGHTS_TEMPLATE, INSTITUTE.name().toLowerCase());
+                .getTemplate(HIGHLIGHTS_TEMPLATE, entityType);
         String highlights = templateProcessor
-                .processTemplate(highlightsTemplate, HIGHLIGHTS_TEMPLATE, institute,
-                        INSTITUTE.name().toLowerCase());
+                .processTemplate(highlightsTemplate, HIGHLIGHTS_TEMPLATE, highlightData);
         if (StringUtils.isNotBlank(highlights)) {
             return JsonUtils.fromJson(highlights, Map.class);
         }

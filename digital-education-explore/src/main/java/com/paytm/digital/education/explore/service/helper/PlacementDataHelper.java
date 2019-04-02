@@ -7,6 +7,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.MIN
 
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.response.dto.detail.Placement;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -16,6 +17,7 @@ import java.util.List;
 @Service
 public class PlacementDataHelper {
 
+    @Cacheable(value = "placements", key = "#institute.instituteId", unless = "#result == null")
     public List<Placement> getSalariesPlacements(Institute institute) {
         if (!CollectionUtils.isEmpty(institute.getSalariesPlacement())) {
             List<Placement> placementList = new ArrayList<>();

@@ -5,10 +5,13 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.AUT
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTOSUGGEST_NAMES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_AUTOSUGGEST_SIZE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_OFFSET;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE_CITY;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE_STATE;
+
 import com.paytm.digital.education.elasticsearch.enums.AggregationType;
+import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.AggregationResponse;
@@ -16,6 +19,7 @@ import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.elasticsearch.models.FilterField;
 import com.paytm.digital.education.elasticsearch.models.SearchField;
+import com.paytm.digital.education.elasticsearch.models.SortField;
 import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationResponse;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.es.model.AutoSuggestEsData;
@@ -26,6 +30,9 @@ import com.paytm.digital.education.search.service.AutoSuggestionService;
 import com.paytm.digital.education.utility.HierarchyIdentifierUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,6 +55,7 @@ public class AutoSuggestServiceImpl {
         suggestClassLevelMap = HierarchyIdentifierUtils.getClassHierarchy(AutoSuggestEsData.class);
     }
 
+    @Cacheable(value = "autosuggest")
     public AutoSuggestResponse getSuggestions(String searchTerm, List<EducationEntity> entities) {
 
         ElasticRequest elasticRequest = buildAutoSuggestRequest(searchTerm, entities);
@@ -73,13 +81,7 @@ public class AutoSuggestServiceImpl {
         elasticRequest.setLimit(DEFAULT_AUTOSUGGEST_SIZE);
         elasticRequest.setAggregationRequest(true);
         String filterFieldPath = suggestClassLevelMap.get(ENTITY_TYPE);
-
-        AggregateField[] aggFields = new AggregateField[1];
-        aggFields[0] = new AggregateField();
-        aggFields[0].setName(ENTITY_TYPE);
-        aggFields[0].setType(AggregationType.TOP_HITS);
-        elasticRequest.setAggregateFields(aggFields);
-
+        boolean alphabeticalSorting = true;
 
         if (!CollectionUtils.isEmpty(entities)) {
             FilterField[] filterFields = new FilterField[1];
@@ -91,7 +93,32 @@ public class AutoSuggestServiceImpl {
             filterFields[0].setValues(values);
             filterFields[0].setPath(filterFieldPath);
             elasticRequest.setFilterFields(filterFields);
+            /**
+             * Alphabetical sort is applied for requests containing only state or city entity
+             * otherwise sort order is relevance(default).
+             */
+            for (String value : values) {
+                if (!value.equalsIgnoreCase(ENTITY_TYPE_CITY)
+                        && !value.equalsIgnoreCase(ENTITY_TYPE_STATE)) {
+                    alphabeticalSorting = false;
+                }
+            }
         }
+
+        AggregateField[] aggFields = new AggregateField[1];
+        aggFields[0] = new AggregateField();
+        aggFields[0].setName(ENTITY_TYPE);
+        aggFields[0].setType(AggregationType.TOP_HITS);
+        if (alphabeticalSorting) {
+            SortField[] sortFields = new SortField[1];
+            sortFields[0] = new SortField();
+            sortFields[0].setName(OFFICIAL_NAME);
+            sortFields[0].setOrder(DataSortOrder.ASC);
+            sortFields[0].setPath(suggestClassLevelMap.get(OFFICIAL_NAME));
+            aggFields[0].setSortFields(sortFields);
+        }
+        elasticRequest.setAggregateFields(aggFields);
+
         String searchFieldPath = suggestClassLevelMap.get(AUTOSUGGEST_NAMES);
         SearchField[] searchFields = new SearchField[1];
         searchFields[0] = new SearchField();

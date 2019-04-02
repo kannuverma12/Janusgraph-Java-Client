@@ -26,6 +26,7 @@ public class SearchRequest extends FieldsAndFieldGroupRequest {
     private Map<String, List<Object>> filter;
 
     @JsonProperty("entity")
+    @NotNull
     private EducationEntity           entity;
 
     @JsonProperty("offset")

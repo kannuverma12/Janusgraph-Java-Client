@@ -13,16 +13,17 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InstituteDetail {
 
-    @Field("institute_id")
     @JsonProperty("institute_id")
     private long instituteId;
 
-    @Field("official_name")
     @JsonProperty("official_name")
     private String officialName;
 
     @JsonProperty("logo_url")
     private String logoUrl;
+
+    @JsonProperty("brochure_url")
+    private String brochureUrl;
 
     @JsonProperty("official_address")
     private OfficialAddress officialAddress;
@@ -38,6 +39,9 @@ public class InstituteDetail {
 
     @JsonProperty("shortlisted")
     private boolean shortlisted;
+
+    @JsonProperty("get_in_touch")
+    private boolean getInTouch;
 
     @JsonProperty("title")
     private String title;
@@ -62,4 +66,5 @@ public class InstituteDetail {
 
     @JsonProperty("placements")
     private List<Placement> placements;
+    
 }
