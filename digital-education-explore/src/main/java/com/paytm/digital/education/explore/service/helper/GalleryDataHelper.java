@@ -1,13 +1,14 @@
 package com.paytm.digital.education.explore.service.helper;
 
 import static com.paytm.digital.education.utility.CustomStringUtils.splitAndConvertToCamelCase;
+
 import com.paytm.digital.education.explore.response.dto.detail.Gallery;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 public class GalleryDataHelper {
 
     private static String GALLERY_SEPERATOR = "[-.,_]";
-    
+
     @Cacheable(value = "gallery", key = "#instituteId")
     public Gallery getGalleryData(long instituteId,
             com.paytm.digital.education.explore.database.entity.Gallery galleryData) {

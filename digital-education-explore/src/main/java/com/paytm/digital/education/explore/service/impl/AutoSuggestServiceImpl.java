@@ -5,10 +5,10 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.AUT
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTOSUGGEST_NAMES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_AUTOSUGGEST_SIZE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_OFFSET;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE_CITY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE_STATE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
 
 import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;

@@ -4,42 +4,31 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.COU
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_PREFIX;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.OVERALL_RANKING;
 import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
+
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.enums.EducationEntity;
-import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
+import com.paytm.digital.education.explore.response.builders.InstituteDetailResponseBuilder;
 import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
-import com.paytm.digital.education.explore.response.dto.detail.Ranking;
-import com.paytm.digital.education.explore.service.helper.CourseDetailHelper;
-import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
-import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
-import com.paytm.digital.education.explore.service.helper.FacilityDataHelper;
-import com.paytm.digital.education.explore.service.helper.GalleryDataHelper;
 import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
-import com.paytm.digital.education.explore.service.helper.PlacementDataHelper;
 import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
-import com.paytm.digital.education.explore.utility.CommonUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
@@ -48,18 +37,13 @@ import java.util.concurrent.TimeoutException;
 @AllArgsConstructor
 public class InstituteDetailServiceImpl {
 
-    private CommonMongoRepository    commonMongoRepository;
-    private ExamInstanceHelper       examInstanceHelper;
-    private DerivedAttributesHelper  derivedAttributesHelper;
-    private PlacementDataHelper      placementDataHelper;
-    private CourseDetailHelper       courseDetailHelper;
-    private GalleryDataHelper        galleryDataHelper;
-    private FacilityDataHelper       facilityDataHelper;
-    private LeadDetailHelper         leadDetailHelper;
-    private SubscriptionDetailHelper subscriptionDetailHelper;
+    private CommonMongoRepository          commonMongoRepository;
+    private InstituteDetailResponseBuilder instituteDetailResponseBuilder;
+    private LeadDetailHelper               leadDetailHelper;
+    private SubscriptionDetailHelper       subscriptionDetailHelper;
 
-    private static int               EXAM_PREFIX_LENGTH   = EXAM_PREFIX.length();
-    private static int               COURSE_PREFIX_LENGTH = COURSE_PREFIX.length();
+    private static int EXAM_PREFIX_LENGTH   = EXAM_PREFIX.length();
+    private static int COURSE_PREFIX_LENGTH = COURSE_PREFIX.length();
 
     public InstituteDetail getDetail(Long entityId, Long userId,
             String fieldGroup, List<String> fields) throws IOException, TimeoutException {
@@ -124,7 +108,7 @@ public class InstituteDetailServiceImpl {
                     .getEntityFieldsByValuesIn(EXAM_ID, new ArrayList<>(examIds), Exam.class,
                             examFields);
         }
-        return buildResponse(institute, courses, examList);
+        return instituteDetailResponseBuilder.buildResponse(institute, courses, examList);
     }
 
     private Set<Long> getExamIds(List<Course> courses) {
@@ -137,66 +121,6 @@ public class InstituteDetailServiceImpl {
             });
         }
         return examIds;
-    }
-
-    private InstituteDetail buildResponse(Institute institute, List<Course> courses,
-            List<Exam> examList) throws IOException, TimeoutException {
-        InstituteDetail instituteDetail = new InstituteDetail();
-        if (institute == null) {
-            return instituteDetail;
-        }
-
-        instituteDetail.setInstituteId(institute.getInstituteId());
-        if (institute.getEntityType() != null) {
-            instituteDetail.setInstituteType(institute.getEntityType().name());
-        }
-        if (institute.getGallery() != null && StringUtils
-                .isNotBlank(institute.getGallery().getLogo())) {
-            instituteDetail
-                    .setLogoUrl(CommonUtil.getLogoLink(institute.getGallery().getLogo()));
-        }
-        instituteDetail.setEstablishedYear(institute.getEstablishedYear());
-        instituteDetail.setOfficialName(institute.getOfficialName());
-        instituteDetail.setBrochureUrl(institute.getOfficialUrlBrochure());
-        instituteDetail
-                .setFacilities(
-                        facilityDataHelper.getFacilitiesData(institute.getInstituteId(),
-                                institute.getFacilities()));
-        instituteDetail.setGallery(galleryDataHelper
-                .getGalleryData(institute.getInstituteId(), institute.getGallery()));
-        courseDetailHelper.addCourseData(instituteDetail,
-                Arrays.asList((Object) institute.getInstituteId()),
-                institute.getEntityType());
-        instituteDetail.setCutOff(examInstanceHelper.getExamCutOffs(examList));
-        Map<String, Object> highlights = new HashMap<>();
-        highlights.put(INSTITUTE.name().toLowerCase(), institute);
-        instituteDetail.setDerivedAttributes(
-                derivedAttributesHelper.getDerivedAttributes(highlights,
-                        INSTITUTE.name().toLowerCase()));
-        OfficialAddress officialAddress =
-                CommonUtil.getOfficialAddress(institute.getInstitutionState(),
-                        institute.getInstitutionCity(), institute.getPhone(), institute.getUrl(),
-                        institute.getOfficialAddress());
-        instituteDetail.setOfficialAddress(officialAddress);
-        instituteDetail.setRankings(getRanking(institute.getRankings()));
-        instituteDetail.setPlacements(placementDataHelper.getSalariesPlacements(institute));
-        return instituteDetail;
-    }
-
-    private List<Ranking> getRanking(
-            List<com.paytm.digital.education.explore.database.entity.Ranking> rankingList) {
-        if (!CollectionUtils.isEmpty(rankingList)) {
-            List<Ranking> rankings = new ArrayList<>();
-            rankingList.forEach(ranking -> {
-                if (!OVERALL_RANKING.equalsIgnoreCase(ranking.getCategory())) {
-                    Ranking rankingData = new Ranking();
-                    BeanUtils.copyProperties(ranking, rankingData);
-                    rankings.add(rankingData);
-                }
-            });
-            return rankings;
-        }
-        return null;
     }
 
     private void updateShortist(InstituteDetail instituteDetail, EducationEntity educationEntity,
