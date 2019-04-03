@@ -21,8 +21,7 @@ stateNames=[]
 streams = ["Animation and Design","Arts, Humanities and Social Sciences","Commerce","Competition","Computer Application and IT","Education","Engineering and Architecture","Hospitality and Tourism","Law","Management and Business Administration","Media, Mass Communication and Journalism","Medicine and Allied Sciences","Pharmacy","School","Sciences","Study Abroad","University"]
 
 def getInstiData(instiNames):
-	for i in range(0, len(instiNames)):
-		insti = instiNames[i]
+	for insti in instiNames:
 		if 'city' in insti['_source'] and insti['_source']['city'] :	
 			cityNames.append(insti['_source']['city'])
 		if 'state' in insti['_source'] and insti['_source']['state']:
@@ -31,8 +30,7 @@ def getInstiData(instiNames):
 
 
 def genExamData(examNames):
-	for i in range(0, len(examNames)):
-		exam = examNames[i]
+	for exam in examNames:
 		print exam
 		print
 		yield { "_index": autosuggestIndex, "_type":autosuggestIndexType,"_id": exam['_id'], "_source" : {"names" : exam['_source']['names'], "official_name" : exam['_source']['official_name'], "entity_type": "exam", "entity_id": exam['_source']['exam_id']}, }
