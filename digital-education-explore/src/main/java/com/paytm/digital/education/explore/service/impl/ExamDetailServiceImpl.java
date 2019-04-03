@@ -284,7 +284,7 @@ public class ExamDetailServiceImpl {
         addDatesToResponse(examDetail, importantDates);
         examDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName));
         examDetail.setBanners(bannerDataHelper.getBannerData(entityName));
-        examDetail.setWidgets(widgetsDataHelper.getWidgets(entityName));
+        examDetail.setWidgets(widgetsDataHelper.getWidgets(entityName, exam.getExamId()));
         return examDetail;
     }
 

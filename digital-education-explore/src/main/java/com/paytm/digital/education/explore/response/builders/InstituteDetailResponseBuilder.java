@@ -87,7 +87,7 @@ public class InstituteDetailResponseBuilder {
         instituteDetail.setPlacements(placementDataHelper.getSalariesPlacements(institute));
         instituteDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName));
         instituteDetail.setBanners(bannerDataHelper.getBannerData(entityName));
-        instituteDetail.setWidgets(widgetsDataHelper.getWidgets(entityName));
+        instituteDetail.setWidgets(widgetsDataHelper.getWidgets(entityName, institute.getInstituteId()));
         return instituteDetail;
     }
 
