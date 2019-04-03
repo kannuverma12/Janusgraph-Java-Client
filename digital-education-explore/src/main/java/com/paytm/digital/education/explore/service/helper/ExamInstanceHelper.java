@@ -1,53 +1,62 @@
 package com.paytm.digital.education.explore.service.helper;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DD_MMM_YYYY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EVENT_TYPE_EXAM;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.MMM_YYYY;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_CUTOFF_CASTEGROUP;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_CUTOFF_GENDER;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_DEGREES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.NON_TENTATIVE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.YYYY_MM;
-import static com.paytm.digital.education.utility.DateUtil.dateToString;
-import static com.paytm.digital.education.utility.DateUtil.formatDateString;
 import static com.paytm.digital.education.utility.DateUtil.stringToDate;
+
 import com.paytm.digital.education.explore.database.entity.Event;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Instance;
 import com.paytm.digital.education.explore.database.entity.SubExam;
-import com.paytm.digital.education.explore.response.dto.detail.CutOff;
+import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.explore.enums.Gender;
+import com.paytm.digital.education.explore.response.dto.detail.ExamAndCutOff;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+@AllArgsConstructor
 @Service
 public class ExamInstanceHelper {
 
     private static Date MAX_DATE = new Date(Long.MAX_VALUE);
 
-    public List<CutOff> getExamCutOffs(List<Exam> examList) {
+    public List<ExamAndCutOff> getExamCutOffs(List<Exam> examList,
+            Map<String, Object> examRelatedData) {
+        Map<Long, String> examIdAndMasterDegrees =
+                (Map<Long, String>) examRelatedData.get(EXAM_DEGREES);
+        Map<Long, Set<Gender>> examGender =
+                (Map<Long, Set<Gender>>) examRelatedData.get(EXAM_CUTOFF_GENDER);
+        Map<Long, Set<String>> examCategoryGroup =
+                (Map<Long, Set<String>>) examRelatedData.get(EXAM_CUTOFF_CASTEGROUP);
         if (!CollectionUtils.isEmpty(examList)) {
-            List<CutOff> cutOffList = new ArrayList<>();
+            List<ExamAndCutOff> cutOffList = new ArrayList<>();
             for (Exam exam : examList) {
-                CutOff cutOff = new CutOff();
-                cutOff.setExamId(exam.getExamId());
-                cutOff.setExamShortName(exam.getExamShortName());
-                Event event = getExamDateEvent(exam);
-                if (event != null) {
-                    if (NON_TENTATIVE.equalsIgnoreCase(event.getCertainty())) {
-                        if (event.getDate() != null) {
-                            cutOff.setExamStartDate(DD_MMM_YYYY.format(event.getDate()));
-                        } else {
-                            cutOff.setExamStartDate(
-                                    dateToString(event.getDateRangeStart(), DD_MMM_YYYY));
-                            cutOff.setExamEndDate(
-                                    dateToString(event.getDateRangeEnd(), DD_MMM_YYYY));
-                        }
-                    } else {
-                        cutOff.setExamStartDate(
-                                formatDateString(event.getMonthDate(), YYYY_MM, MMM_YYYY));
-                    }
+                long examId = exam.getExamId();
+                ExamAndCutOff examAndCutOff = new ExamAndCutOff();
+                examAndCutOff.setExamId(examId);
+                examAndCutOff.setExamShortName(exam.getExamShortName());
+                examAndCutOff.setMasterDegree(examIdAndMasterDegrees.get(examId));
+                if (examCategoryGroup.containsKey(examId)) {
+                    examAndCutOff.setCasteGroups(
+                            new ArrayList<>(examCategoryGroup.get(examId)));
+                    examAndCutOff.setGenders(new ArrayList<>(examGender.get(examId)));
+                    examAndCutOff.setHasCutoff(true);
+                } else {
+                    examAndCutOff.setHasCutoff(false);
                 }
-                cutOffList.add(cutOff);
+
+                cutOffList.add(examAndCutOff);
             }
             return cutOffList;
         }
@@ -129,5 +138,4 @@ public class ExamInstanceHelper {
         }
         return instanceIndex;
     }
-
 }

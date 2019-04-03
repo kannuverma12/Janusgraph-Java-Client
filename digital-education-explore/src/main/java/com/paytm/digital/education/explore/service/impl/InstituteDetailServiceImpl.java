@@ -1,6 +1,9 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_PREFIX;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_CUTOFF_CASTEGROUP;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_CUTOFF_GENDER;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_DEGREES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_PREFIX;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
@@ -14,12 +17,14 @@ import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.paytm.digital.education.explore.enums.Gender;
 import com.paytm.digital.education.explore.response.builders.InstituteDetailResponseBuilder;
 import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
 import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
 import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -27,8 +32,10 @@ import org.springframework.util.CollectionUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
@@ -101,26 +108,54 @@ public class InstituteDetailServiceImpl {
                     .getEntitiesByIdAndFields(INSTITUTE_ID, entityId, Course.class,
                             courseFields);
         }
-        Set<Long> examIds = getExamIds(courses);
+        Map<String, Object> examData = getExamData(courses);
+        Set<Long> examIds = ((Map<Long, String>) examData.get(EXAM_DEGREES)).keySet();
         List<Exam> examList = null;
         if (!CollectionUtils.isEmpty(examFields) && !CollectionUtils.isEmpty(examIds)) {
             examList = commonMongoRepository
                     .getEntityFieldsByValuesIn(EXAM_ID, new ArrayList<>(examIds), Exam.class,
                             examFields);
         }
-        return instituteDetailResponseBuilder.buildResponse(institute, courses, examList);
+        return instituteDetailResponseBuilder
+                .buildResponse(institute, courses, examList, examData);
     }
 
-    private Set<Long> getExamIds(List<Course> courses) {
-        Set<Long> examIds = new HashSet<>();
+    private Map<String, Object> getExamData(List<Course> courses) {
+        Map<Long, String> examDegrees = new HashMap<>();
+        Map<Long, Set<Gender>> examGenders = new HashMap<>();
+        Map<Long, Set<String>> examCasteGroup = new HashMap<>();
         if (!CollectionUtils.isEmpty(courses)) {
             courses.forEach(course -> {
                 if (!CollectionUtils.isEmpty(course.getExamsAccepted())) {
-                    examIds.addAll(course.getExamsAccepted());
+                    course.getExamsAccepted().forEach(examId -> {
+                        examDegrees.put(examId, StringUtils.join(course.getMasterDegree(), ','));
+                    });
+                }
+                if (!CollectionUtils.isEmpty(course.getCutoffs())) {
+                    course.getCutoffs().forEach(cutoff -> {
+                        long examId = cutoff.getExamId();
+                        Set<Gender> genders = examGenders.get(examId);
+                        if (genders == null) {
+                            genders = new HashSet<>();
+                        }
+                        genders.add(cutoff.getGender());
+                        examGenders.put(examId, genders);
+
+                        Set<String> casteGroup = examCasteGroup.get(examId);
+                        if (casteGroup == null) {
+                            casteGroup = new HashSet<>();
+                        }
+                        casteGroup.add(cutoff.getCasteGroup());
+                        examCasteGroup.put(examId, casteGroup);
+                    });
                 }
             });
         }
-        return examIds;
+        Map<String, Object> examData = new HashMap<>();
+        examData.put(EXAM_DEGREES, examDegrees);
+        examData.put(EXAM_CUTOFF_GENDER, examGenders);
+        examData.put(EXAM_CUTOFF_CASTEGROUP, examCasteGroup);
+        return examData;
     }
 
     private void updateShortist(InstituteDetail instituteDetail, EducationEntity educationEntity,

@@ -137,8 +137,18 @@ public interface ExploreConstants {
     String DETAIL_PAGE_SECTION_ORDER = "detail_page_section_order";
     String BANNER                    = "banner";
     String WIDGETS                   = "widgets";
-    String DATA_STRING                   = "data";
+    String DATA_STRING               = "data";
 
     // Other Constants
     Version FTL_CURRENT_VERSION = Configuration.VERSION_2_3_23;
+
+    //CUTOFF Constants
+    String CUTOFF_EXAM_ID         = "cutoffs.exam_id";
+    String CUTOFF_GENDER          = "cutoffs.gender";
+    String CUTOFF_CASTE_GROUP     = "cutoffs.caste_group";
+    String EXAM_DEGREES           = "exam_degrees";
+    String EXAM_CUTOFF_GENDER     = "exam_cutoff_gender";
+    String EXAM_CUTOFF_CASTEGROUP = "exam_cutoff_castegroup";
+    String CUTOFF                 = "cutoffs";
+    String EXAMS_ACCEPTED         = "exams_accepted";
 }

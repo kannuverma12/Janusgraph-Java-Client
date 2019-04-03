@@ -6,9 +6,17 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 
+import com.paytm.digital.education.explore.request.dto.search.CutoffSearchRequest;
+import com.paytm.digital.education.explore.response.dto.detail.ExamAndCutOff;
+import com.paytm.digital.education.explore.response.dto.detail.ExamInfo;
+import com.paytm.digital.education.explore.response.dto.search.CutoffSearchResponse;
+import com.paytm.digital.education.explore.service.CutoffService;
+import com.paytm.digital.education.explore.service.impl.ExamListServiceImpl;
+import com.paytm.digital.education.explore.service.impl.InstituteDetailServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +28,6 @@ import com.paytm.digital.education.explore.daoresult.SubscribedEntityCount;
 import com.paytm.digital.education.explore.database.entity.Subscription;
 import com.paytm.digital.education.explore.enums.SubscribableEntityType;
 import com.paytm.digital.education.explore.enums.SubscriptionStatus;
-import com.paytm.digital.education.explore.service.EntityDetailsService;
 import com.paytm.digital.education.explore.service.SubscriptionService;
 import com.paytm.digital.education.explore.sro.request.FetchSubscriptionsRequest;
 import com.paytm.digital.education.explore.sro.request.SubscriptionRequest;
@@ -36,9 +43,10 @@ import lombok.extern.slf4j.Slf4j;
 public class ExploreController {
     private static final SubscriptionStatus SUBSCRIBED_STATUS = SubscriptionStatus.SUBSCRIBED;
 
-    private SubscriptionService  subscriptionService;
-    private EntityDetailsService entityDetailsService;
-    private ExploreValidator     exploreValidator;
+    private SubscriptionService subscriptionService;
+    private CutoffService       cutoffService;
+    private ExploreValidator    exploreValidator;
+    private ExamListServiceImpl examListService;
 
     @GetMapping("/ping")
     public String ping() {
@@ -100,5 +108,25 @@ public class ExploreController {
                         SUBSCRIBED_STATUS);
         return ResponseEntity.ok(userSubscriptionResultList);
 
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/v1/cutoffs/search")
+    @ResponseBody
+    public List<CutoffSearchResponse> searchCutOffs(CutoffSearchRequest cutoffSearchRequest) {
+        exploreValidator.validateCutOffSearchRequest(cutoffSearchRequest);
+        return cutoffService.searchCutOffs(cutoffSearchRequest);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/v1/cutoffs/search_list")
+    @ResponseBody
+    public ExamAndCutOff getList(
+            @RequestParam(value = "institute_id") @Min(1) long instituteId,
+            @RequestParam(value = "exam_id") @Min(1) long examId) {
+        return cutoffService.getSearchList(instituteId, examId);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/v1/institute/exam_list/{instituteId}")
+    public List<ExamInfo> getExamList(@PathVariable("instituteId") @Min(1) long instituteId) {
+        return examListService.getExamList(instituteId);
     }
 }

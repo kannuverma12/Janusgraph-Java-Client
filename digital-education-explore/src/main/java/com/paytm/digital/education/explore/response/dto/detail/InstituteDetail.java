@@ -59,8 +59,8 @@ public class InstituteDetail {
     @JsonProperty("rankings")
     private List<Ranking> rankings;
 
-    @JsonProperty("cut_off")
-    private List<CutOff> cutOff;
+    @JsonProperty("cut_offs")
+    private List<ExamAndCutOff> cutOffs;
 
     @JsonProperty("facilities")
     private List<Facility> facilities;

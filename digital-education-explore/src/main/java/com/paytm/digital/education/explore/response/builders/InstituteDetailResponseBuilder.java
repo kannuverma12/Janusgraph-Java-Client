@@ -49,7 +49,8 @@ public class InstituteDetailResponseBuilder {
     private WidgetsDataHelper       widgetsDataHelper;
 
     public InstituteDetail buildResponse(Institute institute, List<Course> courses,
-            List<Exam> examList) throws IOException, TimeoutException {
+            List<Exam> examList, Map<String, Object> examRelatedData)
+            throws IOException, TimeoutException {
         InstituteDetail instituteDetail = new InstituteDetail();
         instituteDetail.setInstituteId(institute.getInstituteId());
         if (institute.getEntityType() != null) {
@@ -65,23 +66,28 @@ public class InstituteDetailResponseBuilder {
         instituteDetail.setBrochureUrl(institute.getOfficialUrlBrochure());
         instituteDetail
                 .setFacilities(
-                        facilityDataHelper.getFacilitiesData(institute.getInstituteId(), institute.getFacilities()));
+                        facilityDataHelper.getFacilitiesData(institute.getInstituteId(),
+                                institute.getFacilities()));
         instituteDetail.setGallery(galleryDataHelper
                 .getGalleryData(institute.getInstituteId(), institute.getGallery()));
-        Pair<Long, List<com.paytm.digital.education.explore.response.dto.detail.Course>> courseDetail =
-                courseDetailHelper.getCourseDataList(Arrays.asList((Object) institute.getInstituteId()),
-                        institute.getEntityType());
+        Pair<Long, List<com.paytm.digital.education.explore.response.dto.detail.Course>>
+                courseDetail =
+                courseDetailHelper
+                        .getCourseDataList(Arrays.asList((Object) institute.getInstituteId()),
+                                institute.getEntityType());
         instituteDetail.setTotalCourses(courseDetail.getKey());
         instituteDetail.setCourses(courseDetail.getValue());
-        instituteDetail.setCutOff(examInstanceHelper.getExamCutOffs(examList));
+        instituteDetail
+                .setCutOffs(examInstanceHelper.getExamCutOffs(examList, examRelatedData));
         String entityName = INSTITUTE.name().toLowerCase();
         Map<String, Object> highlights = new HashMap<>();
         highlights.put(entityName, institute);
         instituteDetail.setDerivedAttributes(
                 derivedAttributesHelper.getDerivedAttributes(highlights, entityName));
-        OfficialAddress officialAddress = CommonUtil.getOfficialAddress(institute.getInstitutionState(),
-                institute.getInstitutionCity(), institute.getPhone(), institute.getUrl(),
-                institute.getOfficialAddress());
+        OfficialAddress officialAddress =
+                CommonUtil.getOfficialAddress(institute.getInstitutionState(),
+                        institute.getInstitutionCity(), institute.getPhone(), institute.getUrl(),
+                        institute.getOfficialAddress());
         instituteDetail.setOfficialAddress(officialAddress);
         instituteDetail.setRankings(getRanking(institute.getRankings()));
         instituteDetail.setPlacements(placementDataHelper.getSalariesPlacements(institute));
