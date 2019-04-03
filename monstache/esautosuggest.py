@@ -48,7 +48,8 @@ def getStateData(stateNames):
 def getStreamsData(streamNames):
 	for i in range(0, len(streamNames)):
 		stream = streamNames[i]
-		yield { "_index": autosuggestIndex, "_type":autosuggestIndexType,"_id":i, "_source" : {"names" : [stream], "official_name" : stream, "entity_type": "stream"}, }
+		sId = abs(hash(stream)) % (10 ** 8)
+		yield { "_index": autosuggestIndex, "_type":autosuggestIndexType,"_id":sId, "_source" : {"names" : [stream], "official_name" : stream, "entity_type": "stream"}, }
 
 print "ingesting streams auto suggest data:"
 print
