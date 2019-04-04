@@ -26,14 +26,14 @@ def getInstiData(instiNames):
 			cityNames.append(insti['_source']['city'])
 		if 'state' in insti['_source'] and insti['_source']['state']:
 			stateNames.append(insti['_source']['state'])
-		yield { "_index": autosuggestIndex, "_type":autosuggestIndexType,"_id": insti['_id'], "_source" : {"names" : insti['_source']['names'], "official_name" : insti['_source']['official_name'], "entity_type": "institute", "entity_id": insti['_source']['institute_id']}, }
+		yield { "_index": autosuggestIndex, "_type":autosuggestIndexType,"_id": 'insti_'+insti['_id'], "_source" : {"names" : insti['_source']['names'], "official_name" : insti['_source']['official_name'], "entity_type": "institute", "entity_id": insti['_source']['institute_id']}, }
 
 
 def genExamData(examNames):
 	for exam in examNames:
 		print exam
 		print
-		yield { "_index": autosuggestIndex, "_type":autosuggestIndexType,"_id": exam['_id'], "_source" : {"names" : exam['_source']['names'], "official_name" : exam['_source']['official_name'], "entity_type": "exam", "entity_id": exam['_source']['exam_id']}, }
+		yield { "_index": autosuggestIndex, "_type":autosuggestIndexType,"_id": 'exam_'+exam['_id'], "_source" : {"names" : exam['_source']['names'], "official_name" : exam['_source']['official_name'], "entity_type": "exam", "entity_id": exam['_source']['exam_id']}, }
 
 
 def getCityData(cityNames):
