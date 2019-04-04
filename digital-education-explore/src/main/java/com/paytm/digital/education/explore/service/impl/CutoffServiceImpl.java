@@ -6,7 +6,6 @@ import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Cutoff;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.enums.Gender;
-import com.paytm.digital.education.explore.request.dto.search.CutoffSearchRequest;
 import com.paytm.digital.education.explore.response.dto.common.CutOff;
 import com.paytm.digital.education.explore.response.dto.detail.ExamAndCutOff;
 import com.paytm.digital.education.explore.response.dto.search.CutoffSearchResponse;
@@ -33,6 +32,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.CUT
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.explore.enums.EducationEntity.COURSE;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
+import static com.paytm.digital.education.mapping.ErrorEnum.NO_CUTOFF_EXISTS;
 import static com.paytm.digital.education.mapping.ErrorEnum.NO_LIST_EXISTS;
 
 @Slf4j
@@ -43,34 +43,41 @@ public class CutoffServiceImpl implements CutoffService {
     private CommonMongoRepository commonMongoRepository;
 
     @Cacheable(value = "cutoff_search")
-    public List<CutoffSearchResponse> searchCutOffs(CutoffSearchRequest cutoffSearchRequest) {
+    public List<CutoffSearchResponse> searchCutOffs(long instituteId, long examId, Gender gender,
+            String casteGroup, String fieldGroup) {
         List<String> projectionFields = commonMongoRepository
-                .getFieldsByGroup(Course.class, cutoffSearchRequest.getFieldGroup());
+                .getFieldsByGroup(Course.class, fieldGroup);
         if (projectionFields != null) {
             Map<String, ArrayList<String>> allFields =
                     FieldsRetrievalUtil.getFormattedFields(projectionFields, COURSE_CLASS);
             ArrayList<String> courseProjectionFields = allFields.get(COURSE.name().toLowerCase());
             List<Course> courseAndCutoffs = commonMongoRepository
-                    .findAll(buildQueryObject(cutoffSearchRequest), Course.class,
+                    .findAll(buildQueryObject(instituteId, examId, gender, casteGroup),
+                            Course.class,
                             courseProjectionFields);
-            return buildResponse(courseAndCutoffs, cutoffSearchRequest);
+            if (courseAndCutoffs.isEmpty()) {
+                throw new NotFoundException(NO_CUTOFF_EXISTS,
+                        NO_CUTOFF_EXISTS.getExternalMessage());
+            }
+            return buildResponse(courseAndCutoffs, gender, casteGroup, examId);
         } else {
             throw new BadRequestException(INVALID_FIELD_GROUP,
                     INVALID_FIELD_GROUP.getExternalMessage());
         }
     }
 
-    private Map<String, Object> buildQueryObject(CutoffSearchRequest cutoffSearchRequest) {
+    private Map<String, Object> buildQueryObject(long instituteId, long examId, Gender gender,
+            String casteGroup) {
         Map<String, Object> queryObject = new HashMap<>();
-        queryObject.put(INSTITUTE_ID, cutoffSearchRequest.getInstituteId());
-        queryObject.put(CUTOFF_EXAM_ID, cutoffSearchRequest.getExamId());
-        queryObject.put(CUTOFF_CASTE_GROUP, cutoffSearchRequest.getCasteGroup());
-        queryObject.put(CUTOFF_GENDER, cutoffSearchRequest.getGender());
+        queryObject.put(INSTITUTE_ID, instituteId);
+        queryObject.put(CUTOFF_EXAM_ID, examId);
+        queryObject.put(CUTOFF_CASTE_GROUP, casteGroup);
+        queryObject.put(CUTOFF_GENDER, gender);
         return queryObject;
     }
 
-    private List<CutoffSearchResponse> buildResponse(List<Course> courses,
-            CutoffSearchRequest cutoffSearchRequest) {
+    private List<CutoffSearchResponse> buildResponse(List<Course> courses, Gender gender,
+            String casteGroup, long examId) {
         List<CutoffSearchResponse> response = new ArrayList<>();
         for (Course course : courses) {
             CutoffSearchResponse individualResponse = new CutoffSearchResponse();
@@ -79,18 +86,20 @@ public class CutoffServiceImpl implements CutoffService {
             individualResponse.setCourseNameOfficial(course.getCourseNameOfficial());
             individualResponse.setMasterBranch(course.getMasterBranch());
             individualResponse.setCourseLevel(course.getCourseLevel());
-            individualResponse.setCutOffs(getCutOffs(course.getCutoffs(), cutoffSearchRequest));
+            individualResponse.setCutOffs(getCutOffs(course.getCutoffs(), gender, casteGroup,
+                    examId));
             response.add(individualResponse);
         }
         return response;
     }
 
-    private List<CutOff> getCutOffs(List<Cutoff> cutoffs, CutoffSearchRequest cutoffSearchRequest) {
+    private List<CutOff> getCutOffs(List<Cutoff> cutoffs, Gender gender, String casteGroup,
+            long examId) {
         List<CutOff> responseCutoffs = new ArrayList<>();
         for (Cutoff cutoff : cutoffs) {
-            if (cutoff.getCasteGroup().equals(cutoffSearchRequest.getCasteGroup()) && cutoff
-                    .getGender().equals(cutoffSearchRequest.getGender())
-                    && cutoff.getExamId() == cutoffSearchRequest.getExamId()) {
+            if (cutoff.getCasteGroup().equals(casteGroup) && cutoff
+                    .getGender().equals(gender)
+                    && cutoff.getExamId() == examId) {
                 CutOff individualCutOff = new CutOff();
                 individualCutOff.setCasteGroup(cutoff.getCasteGroup());
                 individualCutOff.setCutoffType(cutoff.getCutoffType());
@@ -138,5 +147,4 @@ public class CutoffServiceImpl implements CutoffService {
         }
         return examAndCutOff;
     }
-
 }

@@ -33,7 +33,7 @@ public enum ErrorEnum {
     NO_LIST_EXISTS(4015, "No list exists for this combination.",
             HttpStatus.NOT_FOUND, 0),
     NO_CUTOFF_EXISTS(4016, "Cutoff does not exists for this combination.",
-            HttpStatus.BAD_REQUEST, 0),
+            HttpStatus.NOT_FOUND, 0),
     NO_EXAM_LIST_EXISTS(4017, "No exam lists exists for this institute",
             HttpStatus.NOT_FOUND, 0);
 

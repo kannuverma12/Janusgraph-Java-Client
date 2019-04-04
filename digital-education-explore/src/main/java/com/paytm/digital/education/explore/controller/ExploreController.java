@@ -5,14 +5,15 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EDU
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
-import com.paytm.digital.education.explore.request.dto.search.CutoffSearchRequest;
+import com.paytm.digital.education.explore.enums.Gender;
 import com.paytm.digital.education.explore.response.dto.detail.ExamAndCutOff;
 import com.paytm.digital.education.explore.response.dto.detail.ExamInfo;
 import com.paytm.digital.education.explore.response.dto.search.CutoffSearchResponse;
 import com.paytm.digital.education.explore.service.CutoffService;
 import com.paytm.digital.education.explore.service.impl.ExamListServiceImpl;
-import com.paytm.digital.education.explore.service.impl.InstituteDetailServiceImpl;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -111,14 +112,17 @@ public class ExploreController {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/v1/cutoffs/search")
-    @ResponseBody
-    public List<CutoffSearchResponse> searchCutOffs(CutoffSearchRequest cutoffSearchRequest) {
-        exploreValidator.validateCutOffSearchRequest(cutoffSearchRequest);
-        return cutoffService.searchCutOffs(cutoffSearchRequest);
+    public List<CutoffSearchResponse> searchCutOffs(
+            @RequestParam(value = "institute_id") @Min(1) long instituteId,
+            @RequestParam(value = "exam_id") @Min(1) long examId,
+            @RequestParam(value = "gender") @NotNull Gender gender,
+            @RequestParam(value = "caste_group") @NotNull String casteGroup,
+            @RequestParam(value = "field_group") @NotNull String fieldGroup) {
+        exploreValidator.validateFieldAndFieldGroup(null, fieldGroup);
+        return cutoffService.searchCutOffs(instituteId, examId, gender, casteGroup, fieldGroup);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/v1/cutoffs/search_list")
-    @ResponseBody
     public ExamAndCutOff getList(
             @RequestParam(value = "institute_id") @Min(1) long instituteId,
             @RequestParam(value = "exam_id") @Min(1) long examId) {
