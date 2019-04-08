@@ -1,5 +1,7 @@
 package com.paytm.digital.education.explore.database.repository;
 
+import static com.mongodb.QueryOperators.AND;
+import static com.mongodb.QueryOperators.OR;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.GROUP_ACTIVE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.GROUP_ENTITY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.GROUP_NAME;
@@ -117,8 +119,13 @@ public class CommonMongoRepository {
     }
 
     public <T> List<T> findAll(Map<String, Object> searchRequest, Class<T> instance,
-            List<String> fields) {
-        return executeMongoQuery(createMongoQuery(searchRequest, fields), instance);
+            List<String> fields, String queryOperatorType) {
+        if (queryOperatorType.equals(AND)) {
+            return executeMongoQuery(createMongoQuery(searchRequest, fields), instance);
+        } else if (queryOperatorType.equals(OR)) {
+            return executeMongoQuery(createOrMongoQuery(searchRequest, fields), instance);
+        }
+        return null;
     }
 
     public <T> List<T> findAllDistinctValues(Map<String, Object> searchRequest, Class<?> instance,
@@ -132,12 +139,34 @@ public class CommonMongoRepository {
      ** Params :
      *        searchRequest : map of field and its value for the where clause
      *        fields : list of projection fields
+     *        it uses and operator
      */
     private Query createMongoQuery(Map<String, Object> searchRequest, List<String> fields) {
         Query mongoQuery = new Query();
         searchRequest.forEach((key, value) -> {
             mongoQuery.addCriteria(Criteria.where(key).is(value));
         });
+        fields.forEach(field -> {
+            mongoQuery.fields().include(field);
+        });
+        return mongoQuery;
+    }
+
+    /*
+     ** This will generate a query object based on the params passed
+     ** Params :
+     *        searchRequest : map of field and its value for the where clause
+     *        fields : list of projection fields
+     *        it uses or operator
+     */
+    private Query createOrMongoQuery(Map<String, Object> searchRequest, List<String> fields) {
+        Query mongoQuery = new Query();
+        List<Criteria> criteriaList = new ArrayList<>();
+        for (Map.Entry<String, Object> entry : searchRequest.entrySet()) {
+            criteriaList.add(Criteria.where(entry.getKey()).in((ArrayList) entry.getValue()));
+        }
+        mongoQuery.addCriteria(
+                new Criteria().orOperator(criteriaList.toArray(new Criteria[criteriaList.size()])));
         fields.forEach(field -> {
             mongoQuery.fields().include(field);
         });

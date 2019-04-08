@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static com.mongodb.QueryOperators.AND;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_CLASS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CUTOFF;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CUTOFF_CASTE_GROUP;
@@ -54,7 +55,7 @@ public class CutoffServiceImpl implements CutoffService {
             List<Course> courseAndCutoffs = commonMongoRepository
                     .findAll(buildQueryObject(instituteId, examId, gender, casteGroup),
                             Course.class,
-                            courseProjectionFields);
+                            courseProjectionFields, AND);
             if (courseAndCutoffs.isEmpty()) {
                 throw new NotFoundException(NO_CUTOFF_EXISTS,
                         NO_CUTOFF_EXISTS.getExternalMessage());
@@ -132,7 +133,7 @@ public class CutoffServiceImpl implements CutoffService {
         List<String> projectionFields = Arrays.asList(CUTOFF);
         List<Course> courses = commonMongoRepository
                 .findAll(queryParams, Course.class,
-                        projectionFields);
+                        projectionFields, AND);
         Set<Gender> genders = new HashSet<>();
         Set<String> casteGroups = new HashSet<>();
         for (Course course : courses) {

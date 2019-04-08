@@ -12,7 +12,6 @@ import com.paytm.digital.education.explore.database.entity.Event;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Instance;
 import com.paytm.digital.education.explore.database.entity.SubExam;
-import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.enums.Gender;
 import com.paytm.digital.education.explore.response.dto.detail.ExamAndCutOff;
 import lombok.AllArgsConstructor;
@@ -32,7 +31,7 @@ public class ExamInstanceHelper {
     private static Date MAX_DATE = new Date(Long.MAX_VALUE);
 
     public List<ExamAndCutOff> getExamCutOffs(List<Exam> examList,
-            Map<String, Object> examRelatedData) {
+            Map<String, Object> examRelatedData, Set<Long> examIds) {
         Map<Long, String> examIdAndMasterDegrees =
                 (Map<Long, String>) examRelatedData.get(EXAM_DEGREES);
         Map<Long, Set<Gender>> examGender =
@@ -55,7 +54,30 @@ public class ExamInstanceHelper {
                 } else {
                     examAndCutOff.setHasCutoff(false);
                 }
-
+                /*
+                 **remove exam id to avoid traversing subexam (for loop) when there is no exam id
+                 ** left
+                 */
+                examIds.remove(examId);
+                /*
+                 ** Get the data of the first subexam which is present in the
+                 ** examIds set
+                 */
+                if (examAndCutOff.getHasCutoff() == false && !examIds.isEmpty()) {
+                    for (SubExam subExam : exam.getSubExams()) {
+                        examId = subExam.getId();
+                        if (examIds.contains(examId)) {
+                            examAndCutOff.setExamId(examId);
+                            examAndCutOff.setCasteGroups(
+                                    new ArrayList<>(examCategoryGroup.get(examId)));
+                            examAndCutOff.setGenders(new ArrayList<>(examGender.get(examId)));
+                            examAndCutOff.setHasCutoff(true);
+                            // this is done so that we can do empty check correctly in the examIds
+                            examIds.remove(examId);
+                            break;
+                        }
+                    }
+                }
                 cutOffList.add(examAndCutOff);
             }
             return cutOffList;

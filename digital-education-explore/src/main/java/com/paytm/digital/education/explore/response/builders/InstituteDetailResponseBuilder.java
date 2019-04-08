@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
 @Service
@@ -49,7 +50,7 @@ public class InstituteDetailResponseBuilder {
     private WidgetsDataHelper       widgetsDataHelper;
 
     public InstituteDetail buildResponse(Institute institute, List<Course> courses,
-            List<Exam> examList, Map<String, Object> examRelatedData)
+            List<Exam> examList, Map<String, Object> examRelatedData, Set<Long> examIds)
             throws IOException, TimeoutException {
         InstituteDetail instituteDetail = new InstituteDetail();
         instituteDetail.setInstituteId(institute.getInstituteId());
@@ -78,7 +79,7 @@ public class InstituteDetailResponseBuilder {
         instituteDetail.setTotalCourses(courseDetail.getKey());
         instituteDetail.setCourses(courseDetail.getValue());
         instituteDetail
-                .setCutOffs(examInstanceHelper.getExamCutOffs(examList, examRelatedData));
+                .setCutOffs(examInstanceHelper.getExamCutOffs(examList, examRelatedData, examIds));
         String entityName = INSTITUTE.name().toLowerCase();
         Map<String, Object> highlights = new HashMap<>();
         highlights.put(entityName, institute);
@@ -93,7 +94,8 @@ public class InstituteDetailResponseBuilder {
         instituteDetail.setPlacements(placementDataHelper.getSalariesPlacements(institute));
         instituteDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName));
         instituteDetail.setBanners(bannerDataHelper.getBannerData(entityName));
-        instituteDetail.setWidgets(widgetsDataHelper.getWidgets(entityName, institute.getInstituteId()));
+        instituteDetail.setWidgets(widgetsDataHelper.getWidgets(entityName,
+                institute.getInstituteId()));
         return instituteDetail;
     }
 

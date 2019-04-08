@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -117,6 +118,15 @@ public class ErrorAdvice extends ResponseEntityExceptionHandler {
                 HttpStatus.BAD_REQUEST);
         }
         return super.handleHttpMessageNotReadable(ex, headers, status, request);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMissingServletRequestParameter(
+            MissingServletRequestParameterException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        String name = ex.getParameterName();
+        String errorMessage = name + " is missing";
+        return new ResponseEntity<>(new ErrorDetails(400, errorMessage, errorMessage),
+                HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Throwable.class)

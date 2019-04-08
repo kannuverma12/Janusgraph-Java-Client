@@ -150,5 +150,6 @@ public interface ExploreConstants {
     String EXAM_CUTOFF_GENDER     = "exam_cutoff_gender";
     String EXAM_CUTOFF_CASTEGROUP = "exam_cutoff_castegroup";
     String CUTOFF                 = "cutoffs";
-    String EXAMS_ACCEPTED         = "exams_accepted";
+    String SUBEXAM_NAME           = "subexams.sub_exam_name";
+    String SUBEXAM_ID             = "subexams.id";
 }
