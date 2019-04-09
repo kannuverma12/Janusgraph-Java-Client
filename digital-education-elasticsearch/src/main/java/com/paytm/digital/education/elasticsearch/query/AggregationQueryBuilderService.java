@@ -6,6 +6,7 @@ import static com.paytm.digital.education.elasticsearch.constants.ESConstants.DU
 import static com.paytm.digital.education.elasticsearch.constants.ESConstants.INCLUDE_AGGREGATION_SUFFIX;
 import static com.paytm.digital.education.elasticsearch.constants.ESConstants.MAX_AGGREGATION_SUFFIX;
 import static com.paytm.digital.education.elasticsearch.constants.ESConstants.MIN_AGGREGATION_SUFFIX;
+
 import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.BucketAggregationSortParms;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
@@ -36,6 +37,7 @@ import org.elasticsearch.search.aggregations.metrics.min.MinAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.tophits.TopHitsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.stereotype.Service;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -240,8 +242,8 @@ public class AggregationQueryBuilderService {
                      */
                     if (path.equals(DUMMY_PATH_FOR_OUTERMOST_FIELDS)
                             || (field.getBucketsOrder() != null
-                                    && !field.getBucketsOrder().getKey()
-                                            .equals(BucketAggregationSortParms.COUNT))) {
+                            && !field.getBucketsOrder().getKey()
+                            .equals(BucketAggregationSortParms.COUNT))) {
                         termsAggregation.order(getBucketAggregationOrder(field.getBucketsOrder()));
                     }
                     termsAggregation.size(DEFAULT_TERMS_AGGREGATION_BUCKETS_SIZE);

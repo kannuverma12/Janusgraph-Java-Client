@@ -11,8 +11,8 @@ autosuggestIndex="education_autosuggestion_v1"
 autosuggestIndexType="education"
 
 
-instiESData= es.search(index='education_search_institute_v1', filter_path=['hits.hits._source.names', 'hits.hits._source.official_name', 'hits.hits._source.city', 'hits.hits._source.state', 'hits.hits._source.institute_id'],size=10000)
-examESData= es.search(index='education_search_exam_v1', filter_path=['hits.hits._source.names', 'hits.hits._source.official_name','hits.hits._source.exam_id'],size=10000)
+instiESData= es.search(index='education_search_institute_v1', filter_path=['hits.hits._id','hits.hits._source.names', 'hits.hits._source.official_name', 'hits.hits._source.city', 'hits.hits._source.state', 'hits.hits._source.institute_id'],size=10000)
+examESData= es.search(index='education_search_exam_v1', filter_path=['hits.hits._id','hits.hits._source.names', 'hits.hits._source.official_name','hits.hits._source.exam_id'],size=10000)
 
 instiNames= instiESData['hits']['hits']
 examNames= examESData['hits']['hits']
@@ -21,19 +21,19 @@ stateNames=[]
 streams = ["Animation and Design","Arts, Humanities and Social Sciences","Commerce","Competition","Computer Application and IT","Education","Engineering and Architecture","Hospitality and Tourism","Law","Management and Business Administration","Media, Mass Communication and Journalism","Medicine and Allied Sciences","Pharmacy","School","Sciences","Study Abroad","University"]
 
 def getInstiData(instiNames):
-	for insti in instiNames: 
+	for insti in instiNames:
 		if 'city' in insti['_source'] and insti['_source']['city'] :	
 			cityNames.append(insti['_source']['city'])
 		if 'state' in insti['_source'] and insti['_source']['state']:
 			stateNames.append(insti['_source']['state'])
-		yield { "_index": autosuggestIndex, "_type":autosuggestIndexType,"_source" : {"names" : insti['_source']['names'], "official_name" : insti['_source']['official_name'], "entity_type": "institute", "entity_id": insti['_source']['institute_id']}, }
+		yield { "_index": autosuggestIndex, "_type":autosuggestIndexType,"_id": 'insti_'+insti['_id'], "_source" : {"names" : insti['_source']['names'], "official_name" : insti['_source']['official_name'], "entity_type": "institute", "entity_id": insti['_source']['institute_id']}, }
 
 
 def genExamData(examNames):
 	for exam in examNames:
 		print exam
 		print
-		yield { "_index": autosuggestIndex, "_type":autosuggestIndexType,"_source" : {"names" : exam['_source']['names'], "official_name" : exam['_source']['official_name'], "entity_type": "exam", "entity_id": exam['_source']['exam_id']}, }
+		yield { "_index": autosuggestIndex, "_type":autosuggestIndexType,"_id": 'exam_'+exam['_id'], "_source" : {"names" : exam['_source']['names'], "official_name" : exam['_source']['official_name'], "entity_type": "exam", "entity_id": exam['_source']['exam_id']}, }
 
 
 def getCityData(cityNames):
@@ -46,8 +46,10 @@ def getStateData(stateNames):
 
 
 def getStreamsData(streamNames):
-	for stream in streamNames:
-		yield { "_index": autosuggestIndex, "_type":autosuggestIndexType,"_source" : {"names" : [stream], "official_name" : stream, "entity_type": "stream"}, }
+	for i in range(0, len(streamNames)):
+		stream = streamNames[i]
+		sId = abs(hash(stream)) % (10 ** 8)
+		yield { "_index": autosuggestIndex, "_type":autosuggestIndexType,"_id":sId, "_source" : {"names" : [stream], "official_name" : stream, "entity_type": "stream"}, }
 
 print "ingesting streams auto suggest data:"
 print

@@ -4,6 +4,7 @@ import static com.paytm.digital.education.mapping.ErrorEnum.ENTITY_NOT_SUBSCRIBE
 import static com.paytm.digital.education.explore.constants.ExploreConstants.APPROVALS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_SEARCH_NAMESPACE;
+
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.aggregation.SubscriptionDao;
 import com.paytm.digital.education.explore.daoresult.SubscribedEntityCount;
@@ -19,8 +20,8 @@ import com.paytm.digital.education.property.reader.PropertyReader;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -32,11 +33,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private SubscriptionRepository subscriptionRepository;
 
-    private SubscriptionDao        subscriptionDao;
+    private SubscriptionDao subscriptionDao;
 
-    private CommonMongoService     commonMongoService;
+    private CommonMongoService commonMongoService;
 
-    private PropertyReader         propertyReader;
+    private PropertyReader propertyReader;
 
     @Override
     public void subscribe(long userId, SubscribableEntityType entity, long entityId) {
@@ -83,7 +84,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         List<String> toBeFetchedFieldList = StringUtils.isEmpty(fieldGroup)
                 ? fields
                 : commonMongoService.getFieldsByGroupAndCollectioName(
-                        subscriptionEntity.getCorrespondingCollectionName(), fieldGroup);
+                subscriptionEntity.getCorrespondingCollectionName(), fieldGroup);
 
         List<Subscription> subscriptions = subscriptionDao.getUserSubscriptions(
                 userId, subscriptionEntity, toBeFetchedFieldList, offset, limit,

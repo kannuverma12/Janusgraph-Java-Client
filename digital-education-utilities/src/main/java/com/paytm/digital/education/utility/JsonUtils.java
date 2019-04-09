@@ -1,6 +1,7 @@
 package com.paytm.digital.education.utility;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,7 +13,8 @@ import java.io.IOException;
 @Slf4j
 public class JsonUtils {
 
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    private static ObjectMapper objectMapper =
+            new ObjectMapper().configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 
     public static String toJson(Object input) {
         try {
@@ -54,6 +56,18 @@ public class JsonUtils {
                     + typeReference.getType(), ioe);
         } catch (Exception ex) {
             log.error("Error caught while converting Json string: [ " + json + " ] to object type: "
+                    + typeReference.getType(), ex);
+        }
+        return null;
+    }
+
+    public static <T> T convertValue(Object object, TypeReference typeReference) {
+        try {
+            return objectMapper.convertValue(object, typeReference);
+        } catch (IllegalArgumentException ex) {
+            log.error("Illegal argument : [ " + object.toString() + " ]", ex);
+        } catch (Exception ex) {
+            log.error("Error caught while converting object : [ " + object.toString() + " ] to object type: "
                     + typeReference.getType(), ex);
         }
         return null;
