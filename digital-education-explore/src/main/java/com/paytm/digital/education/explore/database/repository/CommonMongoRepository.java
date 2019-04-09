@@ -1,8 +1,11 @@
 package com.paytm.digital.education.explore.database.repository;
 
+import static com.mongodb.QueryOperators.AND;
+import static com.mongodb.QueryOperators.OR;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.GROUP_ACTIVE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.GROUP_ENTITY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.GROUP_NAME;
+
 import com.paytm.digital.education.explore.database.entity.FieldGroup;
 import com.paytm.digital.education.explore.database.entity.FtlTemplate;
 import lombok.AllArgsConstructor;
@@ -14,7 +17,10 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @AllArgsConstructor
@@ -105,5 +111,65 @@ public class CommonMongoRepository {
 
     private <T> List<T> executeMongoQuery(Query mongoQuery, Class<T> type) {
         return mongoOperation.find(mongoQuery, type);
+    }
+
+    private <T> List<T> executeMongoQueryDistinct(Query mongoQuery, String field, Class<?> type,
+            Class<T> result) {
+        return mongoOperation.findDistinct(mongoQuery, field, type, result);
+    }
+
+    public <T> List<T> findAll(Map<String, Object> searchRequest, Class<T> instance,
+            List<String> fields, String queryOperatorType) {
+        if (queryOperatorType.equals(AND)) {
+            return executeMongoQuery(createMongoQuery(searchRequest, fields), instance);
+        } else if (queryOperatorType.equals(OR)) {
+            return executeMongoQuery(createOrMongoQuery(searchRequest, fields), instance);
+        }
+        return null;
+    }
+
+    public <T> List<T> findAllDistinctValues(Map<String, Object> searchRequest, Class<?> instance,
+            String field, Class<T> result) {
+        return executeMongoQueryDistinct(createMongoQuery(searchRequest, new ArrayList<>()),
+                field, instance, result);
+    }
+
+    /*
+     ** This will generate a query object based on the params passed
+     ** Params :
+     *        searchRequest : map of field and its value for the where clause
+     *        fields : list of projection fields
+     *        it uses and operator
+     */
+    private Query createMongoQuery(Map<String, Object> searchRequest, List<String> fields) {
+        Query mongoQuery = new Query();
+        searchRequest.forEach((key, value) -> {
+            mongoQuery.addCriteria(Criteria.where(key).is(value));
+        });
+        fields.forEach(field -> {
+            mongoQuery.fields().include(field);
+        });
+        return mongoQuery;
+    }
+
+    /*
+     ** This will generate a query object based on the params passed
+     ** Params :
+     *        searchRequest : map of field and its value for the where clause
+     *        fields : list of projection fields
+     *        it uses or operator
+     */
+    private Query createOrMongoQuery(Map<String, Object> searchRequest, List<String> fields) {
+        Query mongoQuery = new Query();
+        List<Criteria> criteriaList = new ArrayList<>();
+        for (Map.Entry<String, Object> entry : searchRequest.entrySet()) {
+            criteriaList.add(Criteria.where(entry.getKey()).in((ArrayList) entry.getValue()));
+        }
+        mongoQuery.addCriteria(
+                new Criteria().orOperator(criteriaList.toArray(new Criteria[criteriaList.size()])));
+        fields.forEach(field -> {
+            mongoQuery.fields().include(field);
+        });
+        return mongoQuery;
     }
 }

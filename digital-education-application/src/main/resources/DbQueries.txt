@@ -100,3 +100,22 @@ db.templates.insert({
 	"created_at" : ISODate("2019-03-18T11:54:45.756Z"),
 	"updated_at" : ISODate("2019-03-18T11:54:45.756Z")
 });
+
+# Mongo query for cutoff search field group
+
+db.field_groups.insert({
+	"name" : "cutoffs",
+	"entity" : "course",
+	"fields" : [
+      	"course_id",
+	  	"course_name_official",
+		"course_duration",
+		"master_branch",
+		"course_level",
+		"course_duration",
+		"cutoffs"
+	],
+	"created_at":ISODate("2019-03-27T01:11:18.965Z"),
+	"updated_at":ISODate("2019-03-27T01:11:18.965Z"),
+	"active":true
+})

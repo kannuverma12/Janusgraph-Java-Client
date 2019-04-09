@@ -2,6 +2,7 @@ package com.paytm.digital.education.explore.database.entity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.explore.enums.Gender;
 import lombok.Data;
 import lombok.ToString;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -12,34 +13,26 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class Cutoff {
 
     @Field("caste_group")
-    @JsonProperty("caste_group")
     private String casteGroup;
 
     @Field("counselling")
-    @JsonProperty("counselling")
     private Counselling counselling;
 
     @Field("cutoff_type")
-    @JsonProperty("cutoff_type")
     private String cutoffType;
 
     @Field("exam_id")
-    @JsonProperty("exam_id")
-    private int examId;
+    private long examId;
 
     @Field("final_value")
-    @JsonProperty("final_value")
     private double finalValue;
 
     @Field("gender")
-    @JsonProperty("gender")
-    private String gender;
+    private Gender gender;
 
     @Field("merit_list_type")
-    @JsonProperty("merit_list_type")
     private String meritListType;
 
     @Field("year")
-    @JsonProperty("year")
     private int year;
 }

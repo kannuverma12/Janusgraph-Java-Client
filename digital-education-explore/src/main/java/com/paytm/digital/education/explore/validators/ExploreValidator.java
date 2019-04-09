@@ -1,6 +1,7 @@
 package com.paytm.digital.education.explore.validators;
 
 import com.paytm.digital.education.exception.ValidationException;
+import com.paytm.digital.education.explore.request.dto.search.CutoffSearchRequest;
 import com.paytm.digital.education.explore.sro.request.FieldsAndFieldGroupRequest;
 import com.paytm.digital.education.explore.sro.request.FetchSubscriptionsRequest;
 import lombok.AllArgsConstructor;
@@ -31,5 +32,9 @@ public class ExploreValidator {
     public void validateFieldAndFieldGroup(List<String> fields, String fieldGroup) {
         FieldsAndFieldGroupRequest fieldsAndFieldGroupRequest = new FieldsAndFieldGroupRequest(fields, fieldGroup);
         validateAndThrowException(fieldsAndFieldGroupRequest);
+    }
+
+    public void validateCutOffSearchRequest(CutoffSearchRequest cutoffSearchRequest) {
+        validateAndThrowException(cutoffSearchRequest);
     }
 }

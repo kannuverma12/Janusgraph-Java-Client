@@ -47,14 +47,14 @@ public class Lead {
 
     @Field(Constants.CONTACT_NAME)
     @JsonProperty(Constants.CONTACT_NAME)
-    @NotBlank
+    @NotBlank(message = Constants.BLANK_NAME_VALIDATION_MESSAGE)
     @Pattern(regexp = Constants.NAME_REGEX, message = Constants.NAME_VALIDATION_MESSAGE)
     private String contactName;
 
     @Field(Constants.CONTACT_EMAIL)
     @JsonProperty(Constants.CONTACT_EMAIL)
-    @Email
-    @NotBlank
+    @Email(message = Constants.BLANK_EMAIL_VALIDATION_MESSAGE)
+    @NotBlank(message = Constants.EMAIL_VALIDATION_MESSAGE)
     private String contactEmail;
 
     @Field(Constants.CONTACT_NUMBER)
@@ -113,7 +113,9 @@ public class Lead {
         public static final String PHONE_REGEX              = "^\\(?(\\d{3})\\)?[- ]?(\\d{3})[- ]?(\\d{4})$";
         public static final String NAME_REGEX               = "^[\\p{L} .'-]+$";
         public static final String PHONE_VALIDATION_MESSAGE = "Invalid phone number.";
-        public static final String NAME_VALIDATION_MESSAGE  = "Only alphabets and space are allowed in name.";
-
+        public static final String NAME_VALIDATION_MESSAGE  = "Name must only contain Alphabets & Spaces.";
+        public static final String BLANK_NAME_VALIDATION_MESSAGE = "Name cannot be left Blank.";
+        public static final String BLANK_EMAIL_VALIDATION_MESSAGE = "Enter a Valid Email Id.";
+        public static final String EMAIL_VALIDATION_MESSAGE = "Email cannot be left Blank.";
     }
 }

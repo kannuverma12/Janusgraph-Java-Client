@@ -26,8 +26,11 @@ import com.paytm.digital.education.explore.response.dto.detail.Section;
 import com.paytm.digital.education.explore.response.dto.detail.Syllabus;
 import com.paytm.digital.education.explore.response.dto.detail.Topic;
 import com.paytm.digital.education.explore.response.dto.detail.Unit;
+import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
+import com.paytm.digital.education.explore.service.helper.DetailPageSectionHelper;
 import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
+import com.paytm.digital.education.explore.service.helper.WidgetsDataHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.property.reader.PropertyReader;
@@ -51,6 +54,9 @@ public class ExamDetailServiceImpl {
     private ExamInstanceHelper      examInstanceHelper;
     private PropertyReader          propertyReader;
     private DerivedAttributesHelper derivedAttributesHelper;
+    private DetailPageSectionHelper detailPageSectionHelper;
+    private BannerDataHelper        bannerDataHelper;
+    private WidgetsDataHelper       widgetsDataHelper;
 
     private static int EXAM_PREFIX_LENGTH = EXAM_PREFIX.length();
 
@@ -268,13 +274,17 @@ public class ExamDetailServiceImpl {
         if (examDetail.getDurationInHour() == null) {
             examDetail.setDurationInHour(exam.getExamDuration());
         }
+        String entityName = EXAM.name().toLowerCase();
         Map<String, Object> highlights = new HashMap<>();
-        highlights.put(EXAM.name().toLowerCase(), exam);
+        highlights.put(entityName, exam);
         highlights.put(LINGUISTIC_MEDIUM, examDetail.getLinguisticMedium());
         examDetail.setDerivedAttributes(
                 derivedAttributesHelper.getDerivedAttributes(highlights,
-                        EXAM.name().toLowerCase()));
+                        entityName));
         addDatesToResponse(examDetail, importantDates);
+        examDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName));
+        examDetail.setBanners(bannerDataHelper.getBannerData(entityName));
+        examDetail.setWidgets(widgetsDataHelper.getWidgets(entityName, exam.getExamId()));
         return examDetail;
     }
 
