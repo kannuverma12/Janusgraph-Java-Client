@@ -1,5 +1,6 @@
 package com.paytm.digital.education.explore.response.builders;
 
+import static com.paytm.digital.education.explore.constants.ExploreConstants.APPROVALS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OVERALL_RANKING;
 import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
 
@@ -7,6 +8,7 @@ import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
+import com.paytm.digital.education.explore.response.dto.detail.Attribute;
 import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
 import com.paytm.digital.education.explore.response.dto.detail.Ranking;
 import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
@@ -50,7 +52,8 @@ public class InstituteDetailResponseBuilder {
     private WidgetsDataHelper       widgetsDataHelper;
 
     public InstituteDetail buildResponse(Institute institute, List<Course> courses,
-            List<Exam> examList, Map<String, Object> examRelatedData, Set<Long> examIds)
+            List<Exam> examList, Map<String, Object> examRelatedData, Set<Long> examIds,
+            String parentInstitutionName)
             throws IOException, TimeoutException {
         InstituteDetail instituteDetail = new InstituteDetail();
         instituteDetail.setInstituteId(institute.getInstituteId());
@@ -83,6 +86,8 @@ public class InstituteDetailResponseBuilder {
         String entityName = INSTITUTE.name().toLowerCase();
         Map<String, Object> highlights = new HashMap<>();
         highlights.put(entityName, institute);
+        highlights.put(APPROVALS,
+                CommonUtil.getApprovals(institute.getApprovals(), parentInstitutionName));
         instituteDetail.setDerivedAttributes(
                 derivedAttributesHelper.getDerivedAttributes(highlights, entityName));
         OfficialAddress officialAddress =

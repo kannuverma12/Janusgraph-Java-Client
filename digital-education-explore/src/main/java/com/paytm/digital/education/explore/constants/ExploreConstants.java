@@ -152,4 +152,16 @@ public interface ExploreConstants {
     String CUTOFF                 = "cutoffs";
     String SUBEXAM_NAME           = "subexams.sub_exam_name";
     String SUBEXAM_ID             = "subexams.id";
+
+    String AFFILIATED           = "affiliated";
+    String UGC                  = "ugc";
+    String CONSTITUENT          = "constituent";
+    String AUTONOMOUS           = "autonomous";
+    String STANDALONE_INSTITUTE = "standalone institute";
+    String STATE_LEGISLATURE    = "state legislature/parliament";
+    String AFFILIATED_TO        = "Affiliated To";
+    String APPROVED_BY          = "Approved By";
+    String CONSTITUENT_OF       = "Constituent Of";
+    String GOVERNED_BY          = "Governed By";
+    String INSTITUTE_TYPE       = "Institute Type";
 }
