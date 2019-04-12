@@ -126,9 +126,13 @@ public class ExamDetailServiceImpl {
                 if (event.getDateRangeStart() != null) {
                     respEvent.setDateEndRange(event.getDateRangeEnd());
                     respEvent.setDateStartRange(event.getDateRangeStart());
+                    respEvent.setDateEndRangeTimestamp(event.getDateRangeEnd());
+                    respEvent.setDateEndRangeTimestamp(event.getDateRangeStart());
                 } else {
+                    respEvent.setDateStartRangeTimestamp(event.getDate());
                     respEvent.setDateStartRange(event.getDate());
                 }
+                respEvent.setMonthTimestamp(DateUtil.stringToDate(event.getMonthDate(), YYYY_MM));
                 respEvent.setMonthDate(
                         DateUtil.formatDateString(event.getMonthDate(), YYYY_MM, MMM_YYYY));
                 respEvent.setModes(event.getModes());
@@ -293,7 +297,8 @@ public class ExamDetailServiceImpl {
             int admissonYear = 0;
             List<String> examCenters = null;
             for (Instance instance : instances) {
-                if (instance.getAdmissionYear() != null && instance.getAdmissionYear() > admissonYear
+                if (instance.getAdmissionYear() != null
+                        && instance.getAdmissionYear() > admissonYear
                         && !CollectionUtils.isEmpty(instance.getExamCenters())) {
                     admissonYear = instance.getAdmissionYear();
                     examCenters = instance.getExamCenters();
@@ -304,7 +309,9 @@ public class ExamDetailServiceImpl {
                 examCenters.forEach(examCenter -> {
                     String[] locationArr = examCenter.split(",");
                     if (locationArr.length == 2) {
-                        locationList.add(Location.builder().city(locationArr[0]).state(locationArr[1]).build());
+                        locationList
+                                .add(Location.builder().city(locationArr[0]).state(locationArr[1])
+                                        .build());
                     }
                 });
                 return locationList;
