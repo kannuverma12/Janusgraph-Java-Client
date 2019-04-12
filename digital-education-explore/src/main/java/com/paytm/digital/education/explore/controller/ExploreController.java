@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import com.paytm.digital.education.dto.NotificationFlags;
 import com.paytm.digital.education.explore.enums.Gender;
 import com.paytm.digital.education.explore.response.dto.detail.ExamAndCutOff;
 import com.paytm.digital.education.explore.response.dto.detail.ExamInfo;
@@ -14,6 +15,7 @@ import com.paytm.digital.education.explore.response.dto.search.CutoffSearchRespo
 import com.paytm.digital.education.explore.service.CutoffService;
 import com.paytm.digital.education.explore.service.impl.ExamListServiceImpl;
 
+import com.paytm.digital.education.service.notification.NotificationServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,6 +50,7 @@ public class ExploreController {
     private CutoffService       cutoffService;
     private ExploreValidator    exploreValidator;
     private ExamListServiceImpl examListService;
+    private NotificationServiceImpl notificationServiceImpl;
 
     @GetMapping("/ping")
     public String ping() {
@@ -56,23 +59,21 @@ public class ExploreController {
 
     @RequestMapping(method = RequestMethod.POST, path = "/auth/v1/subscribe")
     @ResponseBody
-    public String subscribe(
+    public NotificationFlags subscribe(
             @RequestHeader(name = "x-user-id") @Min(1) long userId,
             @Valid @RequestBody SubscriptionRequest request) {
-        subscriptionService.subscribe(userId, request.getSubscriptionEntity(),
+        return subscriptionService.subscribe(userId, request.getSubscriptionEntity(),
                 request.getSubscriptionEntityId());
-        return "success";
     }
 
     @RequestMapping(method = RequestMethod.POST, path = "/auth/v1/unsubscribe")
     @ResponseBody
-    public String unsubscribe(
+    public NotificationFlags unsubscribe(
             @RequestHeader(name = "x-user-id") @Min(1) long userId,
             @RequestBody @Valid SubscriptionRequest request) {
 
-        subscriptionService.unsubscribe(userId, request.getSubscriptionEntity(),
+        return subscriptionService.unsubscribe(userId, request.getSubscriptionEntity(),
                 request.getSubscriptionEntityId());
-        return "success";
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/subscriptions/count")
@@ -132,5 +133,11 @@ public class ExploreController {
     @RequestMapping(method = RequestMethod.GET, path = "/v1/institute/exam_list/{instituteId}")
     public List<ExamInfo> getExamList(@PathVariable("instituteId") @Min(1) long instituteId) {
         return examListService.getExamList(instituteId);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/user_flags")
+    @ResponseBody
+    public NotificationFlags getUserFlags(@RequestHeader(value = "x-user-id") @Min(1) @NotNull Long userId) {
+        return notificationServiceImpl.getNotificationFlags(userId);
     }
 }

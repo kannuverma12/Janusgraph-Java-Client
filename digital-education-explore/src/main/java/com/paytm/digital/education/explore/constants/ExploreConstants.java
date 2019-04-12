@@ -141,6 +141,7 @@ public interface ExploreConstants {
 
     // Other Constants
     Version FTL_CURRENT_VERSION = Configuration.VERSION_2_3_23;
+    String  SUCCESS             = "success";
 
     //CUTOFF Constants
     String CUTOFF_EXAM_ID         = "cutoffs.exam_id";
