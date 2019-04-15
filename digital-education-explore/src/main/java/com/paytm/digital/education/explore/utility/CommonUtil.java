@@ -141,7 +141,9 @@ public class CommonUtil {
                     default:
                 }
             }
-            return output;
+            if (!CollectionUtils.isEmpty(output)) {
+                return output;
+            }
         }
         return null;
     }
