@@ -51,7 +51,7 @@ public class ApprovalUtilTest {
         List<String> approvals = new ArrayList<>();
         approvals.add(CONSTITUENT_OF);
         Map<String, String> expected = new HashMap<>();
-        Assert.assertEquals(expected, CommonUtil.getApprovals(approvals, null));
+        Assert.assertNull(CommonUtil.getApprovals(approvals, null));
     }
 
     @Test
