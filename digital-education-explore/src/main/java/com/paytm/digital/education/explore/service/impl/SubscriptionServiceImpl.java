@@ -172,6 +172,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         NotificationFlags notificationFlags = new NotificationFlags(SUCCESS);
         if (userFlags != null) {
             notificationFlags.setUnreadShortlist(userFlags.getShortlistFlag());
+        } else {
+            notificationFlags.setUnreadShortlist(0);
         }
         return notificationFlags;
     }
