@@ -4,6 +4,7 @@ import static com.paytm.digital.education.constant.DBConstants.USER_ID;
 
 import com.paytm.digital.education.database.entity.UserFlags;
 import lombok.AllArgsConstructor;
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -16,24 +17,26 @@ import java.util.Date;
 @Repository
 public class UserFlagRepository {
 
-    private MongoOperations mongoOperation;
+    private        MongoOperations      mongoOperation;
+    private static FindAndModifyOptions findAndModifyOptions =
+            new FindAndModifyOptions().returnNew(true);
 
     public UserFlags incrementCounter(long userId, String counterName, int counterValue) {
         Query query = new Query(Criteria.where(USER_ID).is(userId));
         Update update = new Update().inc(counterName, counterValue);
-        return mongoOperation.findAndModify(query, update, UserFlags.class);
+        return mongoOperation.findAndModify(query, update, findAndModifyOptions, UserFlags.class);
     }
 
     public UserFlags decrementCounterIfPositive(long userId, String counterName, int counterValue) {
         Query query = new Query(Criteria.where(USER_ID).is(userId).and(counterName).gt(0));
         Update update = new Update().inc(counterName, -counterValue);
-        return mongoOperation.findAndModify(query, update, UserFlags.class);
+        return mongoOperation.findAndModify(query, update, findAndModifyOptions, UserFlags.class);
     }
 
     public UserFlags updateCounter(long userId, String counterName, int counterValue) {
         Query query = new Query(Criteria.where(USER_ID).is(userId));
         Update update = new Update().set(counterName, counterValue);
-        return mongoOperation.findAndModify(query, update, UserFlags.class);
+        return mongoOperation.findAndModify(query, update, findAndModifyOptions, UserFlags.class);
     }
 
     public UserFlags getUserFlag(long userId) {
