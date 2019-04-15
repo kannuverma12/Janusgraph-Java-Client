@@ -6,12 +6,14 @@ import lombok.Data;
 @Data
 public class FilterField {
 
-    private String          name;
+    private String name;
 
-    private String          path;
+    private String path;
 
     private FilterQueryType type;
 
-    private Object          values;
+    private Object values;
+
+    private Operator operator = Operator.AND;
 
 }

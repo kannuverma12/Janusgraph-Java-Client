@@ -67,7 +67,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
 
     @PostConstruct
     private void init() {
-        filterQueryTypeMap = new HashMap<String, FilterQueryType>();
+        filterQueryTypeMap = new HashMap<>();
         filterQueryTypeMap.put(STATE_INSTITUTE, TERMS);
         filterQueryTypeMap.put(CITY_INSTITUTE, TERMS);
         filterQueryTypeMap.put(STREAM_INSTITUTE, TERMS);

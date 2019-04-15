@@ -1,27 +1,29 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.RANGE;
+
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.PostConstruct;
+
+import com.paytm.digital.education.elasticsearch.models.FilterField;
+import com.paytm.digital.education.elasticsearch.models.SearchField;
+import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
+import com.paytm.digital.education.elasticsearch.models.Operator;
+import com.paytm.digital.education.elasticsearch.models.AggregateField;
+import com.paytm.digital.education.elasticsearch.models.SortField;
+import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
+import javafx.util.Pair;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
-import com.paytm.digital.education.elasticsearch.models.AggregateField;
-import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
-import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
-import com.paytm.digital.education.elasticsearch.models.FilterField;
-import com.paytm.digital.education.elasticsearch.models.SearchField;
-import com.paytm.digital.education.elasticsearch.models.SortField;
 import com.paytm.digital.education.exception.EducationException;
 import com.paytm.digital.education.explore.es.model.NestedCourseSearch;
 import com.paytm.digital.education.explore.es.model.ExamSearch;
@@ -42,13 +44,13 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class AbstractSearchServiceImpl {
 
     @Autowired
-    private ISearchService                    searchService;
+    private ISearchService searchService;
 
     @Autowired
-    private SearchResponseBuilder             searchResponseBuilder;
+    private SearchResponseBuilder searchResponseBuilder;
 
     @Autowired
-    private PropertyReader                    propertyReader;
+    private PropertyReader propertyReader;
 
     protected Map<Class, Map<String, String>> hierarchyMap;
 
@@ -108,10 +110,19 @@ public abstract class AbstractSearchServiceImpl {
                 filterField.setPath(hierarchyMap.get(type).get(filterKey));
                 filterField.setType(filterQueryTypeMap.get(filterKey));
                 if (filterQueryTypeMap.get(filterKey).equals(RANGE)) {
-                    List<Object> values = searchRequest.getFilter().get(filterKey);
-                    if (CollectionUtils.isEmpty(values) || values.size() < 2) {
-                        throw new EducationException(ErrorEnum.RANGE_TYPE_FILTER_VALUES_ERROR,
-                                "values of range filter must be of size 2", new String[] {"2"});
+                    List<List<Double>> values =
+                            ((List<List<Double>>) (Object) searchRequest.getFilter()
+                                    .get(filterKey));
+                    if (values.size() > 1) {
+                        filterField.setOperator(Operator.OR);
+                    } else {
+                        filterField.setOperator(Operator.AND);
+                    }
+                    for (List<Double> value : values) {
+                        if (CollectionUtils.isEmpty(value) || value.size() != 2) {
+                            throw new EducationException(ErrorEnum.RANGE_TYPE_FILTER_VALUES_ERROR,
+                                    "values of range filter must be of size 2", new String[] {"2"});
+                        }
                     }
                 }
                 filterField.setValues(searchRequest.getFilter().get(filterKey));
