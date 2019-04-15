@@ -127,7 +127,7 @@ public class ExamDetailServiceImpl {
                     respEvent.setDateEndRange(event.getDateRangeEnd());
                     respEvent.setDateStartRange(event.getDateRangeStart());
                     respEvent.setDateEndRangeTimestamp(event.getDateRangeEnd());
-                    respEvent.setDateEndRangeTimestamp(event.getDateRangeStart());
+                    respEvent.setDateStartRangeTimestamp(event.getDateRangeStart());
                 } else {
                     respEvent.setDateStartRangeTimestamp(event.getDate());
                     respEvent.setDateStartRange(event.getDate());
