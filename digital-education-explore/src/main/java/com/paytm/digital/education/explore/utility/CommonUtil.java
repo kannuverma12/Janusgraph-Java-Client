@@ -132,12 +132,12 @@ public class CommonUtil {
                         }
                         break;
                     case AUTONOMOUS:
-                    case STANDALONE_INSTITUTE:
+                        //case STANDALONE_INSTITUTE:
                         output.put(INSTITUTE_TYPE, STANDALONE_INSTITUTE);
                         break;
-                    case STATE_LEGISLATURE:
-                        output.put(GOVERNED_BY, STATE_LEGISLATURE);
-                        break;
+                    //                    case STATE_LEGISLATURE:
+                    //                        output.put(GOVERNED_BY, STATE_LEGISLATURE);
+                    //                        break;
                     default:
                 }
             }

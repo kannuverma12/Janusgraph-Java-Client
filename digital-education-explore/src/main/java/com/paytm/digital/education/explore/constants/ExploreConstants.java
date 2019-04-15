@@ -164,5 +164,5 @@ public interface ExploreConstants {
     String APPROVED_BY          = "Approved By";
     String CONSTITUENT_OF       = "Constituent Of";
     String GOVERNED_BY          = "Governed By";
-    String INSTITUTE_TYPE       = "Institute Type";
+    String INSTITUTE_TYPE       = "Institute Governance";
 }
