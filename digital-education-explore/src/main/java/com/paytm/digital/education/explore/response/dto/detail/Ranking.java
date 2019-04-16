@@ -22,4 +22,18 @@ public class Ranking {
 
     @JsonProperty("category")
     public String category;
+
+    @JsonProperty("source")
+    public String source;
+
+    @JsonProperty("ranking_type")
+    private String rankingType;
+
+    @JsonProperty("rating")
+    private String rating;
+
+    @JsonProperty("label")
+    private String label;
+
+
 }

@@ -1,9 +1,11 @@
 package com.paytm.digital.education.explore.response.builders;
 
+import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_PREFIX;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.APPROVALS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OVERALL_RANKING;
 import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
 
+import com.paytm.digital.education.explore.database.entity.Alumni;
 import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
@@ -11,16 +13,11 @@ import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import com.paytm.digital.education.explore.response.dto.detail.Attribute;
 import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
 import com.paytm.digital.education.explore.response.dto.detail.Ranking;
-import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
-import com.paytm.digital.education.explore.service.helper.CourseDetailHelper;
-import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
-import com.paytm.digital.education.explore.service.helper.DetailPageSectionHelper;
-import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
-import com.paytm.digital.education.explore.service.helper.FacilityDataHelper;
-import com.paytm.digital.education.explore.service.helper.GalleryDataHelper;
-import com.paytm.digital.education.explore.service.helper.PlacementDataHelper;
-import com.paytm.digital.education.explore.service.helper.WidgetsDataHelper;
+import com.paytm.digital.education.explore.service.helper.*;
 import com.paytm.digital.education.explore.utility.CommonUtil;
+
+import java.util.*;
+import java.util.stream.Collectors;
 import javafx.util.Pair;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -29,13 +26,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Stream;
 
 @Service
 @AllArgsConstructor
@@ -50,6 +42,7 @@ public class InstituteDetailResponseBuilder {
     private DetailPageSectionHelper detailPageSectionHelper;
     private BannerDataHelper        bannerDataHelper;
     private WidgetsDataHelper       widgetsDataHelper;
+    private StreamDataHelper        streamDataHelper;
 
     public InstituteDetail buildResponse(Institute institute, List<Course> courses,
             List<Exam> examList, Map<String, Object> examRelatedData, Set<Long> examIds,
@@ -95,28 +88,86 @@ public class InstituteDetailResponseBuilder {
                         institute.getInstitutionCity(), institute.getPhone(), institute.getUrl(),
                         institute.getOfficialAddress());
         instituteDetail.setOfficialAddress(officialAddress);
-        instituteDetail.setRankings(getRanking(institute.getRankings()));
         instituteDetail.setPlacements(placementDataHelper.getSalariesPlacements(institute));
         instituteDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName));
         instituteDetail.setBanners(bannerDataHelper.getBannerData(entityName));
         instituteDetail.setWidgets(widgetsDataHelper.getWidgets(entityName,
                 institute.getInstituteId()));
+        instituteDetail.setNotableAlumni(institute.getNotableAlumni());
+        instituteDetail.setRankings(getRankingList(institute.getRankings()));
+        instituteDetail.setDegreeOffered(getDegreeMap(courses));
         return instituteDetail;
     }
 
-    private List<Ranking> getRanking(
-            List<com.paytm.digital.education.explore.database.entity.Ranking> rankingList) {
+    private List<Ranking> getRankingList(List<com.paytm.digital.education.explore.database.entity.Ranking> rankingList) {
+        Map<Integer, List<Ranking>> rMap = new TreeMap<>();
         if (!CollectionUtils.isEmpty(rankingList)) {
-            List<Ranking> rankings = new ArrayList<>();
-            rankingList.forEach(ranking -> {
-                if (!OVERALL_RANKING.equalsIgnoreCase(ranking.getCategory())) {
-                    Ranking rankingData = new Ranking();
-                    BeanUtils.copyProperties(ranking, rankingData);
-                    rankings.add(rankingData);
+            for (com.paytm.digital.education.explore.database.entity.Ranking r : rankingList) {
+                String rStream = r.getStream();
+                String rType = r.getRankingType();
+                Ranking rDto = getResponseRanking(r);
+                if (Objects.nonNull(rType) && rType.equalsIgnoreCase(OVERALL_RANKING)) {
+                    rDto.setLabel(OVERALL_RANKING);
+                    updateMap(rMap, rDto, 1);
+                }else if(!StringUtils.isEmpty(rStream)){
+                    rDto.setLabel(rStream);
+                    updateMap(rMap, rDto, 2);
+                } else if (StringUtils.isEmpty(rStream)) {
+                    if(StringUtils.isEmpty(rType)){
+                        rDto.setLabel(INSTITUTE_PREFIX);
+                        updateMap(rMap, rDto, 4);
+                    }else{
+                        rDto.setLabel(Objects.nonNull(rType) ? rType : "");
+                        updateMap(rMap, rDto, 3);
+                    }
                 }
-            });
-            return rankings;
+            }
+        }
+
+        Map<String, String> streamMap = streamDataHelper.getStreamMap();
+
+        List<Ranking> rList = rMap.values().stream()
+                .flatMap(List::stream)
+                .filter(r -> Objects.nonNull(r.getLabel()))
+                .map(r -> {
+                    String key = r.getLabel().toLowerCase();
+                    r.setLabel(Objects.nonNull(streamMap.get(key)) ? streamMap.get(key) : r.getLabel());
+                    return r;
+                })
+                .collect(Collectors.toList());
+        return rList;
+    }
+
+    private void updateMap(Map<Integer, List<Ranking>> map, Ranking r, int i) {
+        List<Ranking> list = map.get(i);
+        if(Objects.isNull(list)){
+            list = new ArrayList<>();
+        }
+        list.add(r);
+        map.put(i, list);
+    }
+
+    private Ranking getResponseRanking(com.paytm.digital.education.explore.database.entity.Ranking dbRanking){
+        Ranking r = new Ranking();
+        r.setCategory(dbRanking.getCategory());
+        r.setRank(dbRanking.getRank());
+        r.setScore(dbRanking.getScore());
+        r.setSource(dbRanking.getSource());
+        r.setYear(dbRanking.getYear());
+        r.setRating(dbRanking.getRating());
+        return r;
+    }
+
+    private Map<String, Set<String>> getDegreeMap(List<Course> courses) {
+        if (!CollectionUtils.isEmpty(courses)) {
+            Map<String, Set<String>> degreeMap = courses.stream()
+                .collect(Collectors.toMap(course -> course.getCourseLevel().toString(),
+                    course -> new HashSet<>(course.getMasterDegree()),
+                        (set1, set2) -> Stream.of(set1, set2)
+                            .flatMap(Set::stream).collect(Collectors.toSet())));
+            return degreeMap;
         }
         return null;
     }
+
 }

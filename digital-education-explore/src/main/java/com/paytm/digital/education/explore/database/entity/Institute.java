@@ -114,6 +114,15 @@ public class Institute {
     @Field("institution_city")
     private String institutionCity;
 
+    @Field("notable_alumni")
+    private List<Alumni> notableAlumni;
+
+    @Field("campus_size")
+    private Integer campusSize;
+
+    @Field("total_intake")
+    private Integer totalIntake;
+
     public Institute(String commonName, Long instituteId) {
         this.commonName = commonName;
         this.instituteId = instituteId;
