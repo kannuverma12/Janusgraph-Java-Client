@@ -1,16 +1,15 @@
 package com.paytm.digital.education.explore.database.entity;
 
+import java.util.Date;
+import java.util.List;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.explore.enums.CollegeEntityType;
 import lombok.Data;
 import lombok.ToString;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
-
-import java.util.Date;
-import java.util.List;
 
 @ToString
 @Data
@@ -113,10 +112,15 @@ public class Institute {
 
     @Field("institution_city")
     private String institutionCity;
+    
+
+    @Field("imagesUploaded")
+    private Boolean imagesUploaded;
 
     public Institute(String commonName, Long instituteId) {
         this.commonName = commonName;
         this.instituteId = instituteId;
     }
+
 
 }
