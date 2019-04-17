@@ -2,6 +2,7 @@ package com.paytm.digital.education.explore.service.impl;
 
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.RANGE;
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.TERMS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.APPROVALS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CITY_INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_LEVEL_INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ESTABLISHMENT_YEAR;
@@ -14,16 +15,13 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.INS
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_SEARCH_NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.MAX_RANK;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_OFFICIAL_NAME;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OWNERSHIP;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_ANALYZER;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_INDEX;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.COMMON_NAME;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.ALTERNATE_NAMES;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.FORMER_NAME;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_NAMES_INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STATE_INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM_INSTITUTE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.UNIVERSITY_NAME;
 
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
@@ -81,12 +79,10 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
         filterQueryTypeMap.put(FACILITIES, TERMS);
         filterQueryTypeMap.put(INSTITUTE_GENDER, TERMS);
         filterQueryTypeMap.put(ESTABLISHMENT_YEAR, RANGE);
-        searchFieldKeys =
-                Arrays.asList(FORMER_NAME, INSTITUTE_OFFICIAL_NAME, ALTERNATE_NAMES, COMMON_NAME,
-                        UNIVERSITY_NAME);
-        sortKeysInOrder = new LinkedHashMap<>();
+        searchFieldKeys = Arrays.asList(SEARCH_NAMES_INSTITUTE);
+        sortKeysInOrder = new LinkedHashMap<String, DataSortOrder>();
         sortKeysInOrder.put(MAX_RANK, DataSortOrder.ASC);
-        sortKeysInOrder.put(INSTITUTE_OFFICIAL_NAME, DataSortOrder.ASC);
+        sortKeysInOrder.put(OFFICIAL_NAME, DataSortOrder.ASC);
     }
 
     @Override
