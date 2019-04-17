@@ -44,11 +44,8 @@ public interface ExploreConstants {
     String ENTITY_TYPE_CITY          = "city";
 
     ///////// Institute search Constatnts ///////////
-    String SEARCH_INDEX_INSTITUTE    = "education_search_institute_v1";
-    String SEARCH_ANALYZER_INSTITUTE = "word_delimiter_analyzer";
     String SEARCH_INDEX_COURSE       = "education_search_course_v1";
     String SEARCH_ANALYZER_COURSE    = "word_delimiter_analyzer";
-    String SEARCH_NAMES_INSTITUTE    = "names";
     String MAX_RANK_INSTITUTE        = "max_rank";
     String STATE_INSTITUTE           = "state";
     String CITY_INSTITUTE            = "city";
@@ -63,6 +60,11 @@ public interface ExploreConstants {
     String FACILITIES                = "facilities";
     String USER_UNAUTHORIZED_MESSAGE = "Unauthorized Request";
     String APPROVALS                 = "approvals";
+    String COMMON_NAME               = "common_name";
+    String ALTERNATE_NAMES           = "alternate_names";
+    String FORMER_NAME               = "former_name";
+    String INSTITUTE_OFFICIAL_NAME   = "official_name";
+    String UNIVERSITY_NAME           = "university_name";
 
     SimpleDateFormat MMM_YYYY    = new SimpleDateFormat("MMM,yyyy");
     SimpleDateFormat DD_MMM_YYYY = new SimpleDateFormat("dd MMM,yyyy");
@@ -75,7 +77,7 @@ public interface ExploreConstants {
     String SEARCH_NAMES_EXAM    = "names";
     String DATE_TAB             = "dates";
     String SYLLABUS_TAB         = "syllabus";
-    String SEARCH_INDEX         = "education_search_institute_v1";
+    String SEARCH_INDEX         = "education_search_institute_v10";
     String SEARCH_ANALYZER      = "word_delimiter_analyzer";
     String SEARCH_NAMES         = "names";
     String MAX_RANK             = "max_rank";
