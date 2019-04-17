@@ -83,7 +83,7 @@ public class InstituteDetail {
     private List<Alumni> notableAlumni;
 
     @JsonProperty("rankings")
-    private List<Ranking> rankings;
+    private Map<String, List<Ranking>> rankings;
 
     @JsonProperty("degree_offered")
     private Map<String, Set<String>> degreeOffered;

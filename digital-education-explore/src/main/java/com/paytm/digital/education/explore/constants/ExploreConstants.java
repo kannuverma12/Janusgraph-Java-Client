@@ -104,6 +104,7 @@ public interface ExploreConstants {
     String LINGUISTIC_MEDIUM           = "linguistic_medium";
     String SEARCH_EXAM_LEVEL           = "level";
     String IGNORE_VALUES               = "ignore";
+    String RANKING_STREAM_NAMESPACE    = "ranking_stream";
 
     String STREAM_COURSE                    = "domain_name";
     String DEGREE_COURSE                    = "degree";
