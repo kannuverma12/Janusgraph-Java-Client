@@ -90,6 +90,9 @@ public interface ExploreConstants {
     String COURSE_CLASS         = "Course";
     String EXAM_CLASS           = "Exam";
     String INSTITUTE_CLASS      = "Institute";
+    String DATA                 = "data";
+    String KEY                  = "key";
+
 
     String LINGUISTIC_MEDIUM_NAMESPACE = "linguistic_medium";
     String FACILITIES_NAMESPACE        = "facilities";
