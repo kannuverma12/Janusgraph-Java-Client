@@ -191,11 +191,14 @@ public class InstituteDetailResponseBuilder {
 
     private Map<String, Set<String>> getDegreeMap(List<Course> courses) {
         if (!CollectionUtils.isEmpty(courses)) {
-            Map<String, Set<String>> degreeMap = courses.stream().collect(Collectors
-                    .toMap(course -> course.getCourseLevel().toString(),
-                        course -> new HashSet<>(course.getMasterDegree()),
-                        (set1, set2) -> Stream.of(set1, set2).flatMap(Set::stream)
-                                    .collect(Collectors.toSet())));
+            Map<String, Set<String>> degreeMap =
+                    courses.stream().filter(c -> Objects.nonNull(c.getCourseLevel()))
+                            .collect(Collectors
+                                    .toMap(course -> course.getCourseLevel().toString(),
+                                        course -> new HashSet<>(course.getMasterDegree()),
+                                        (set1, set2) -> Stream.of(set1, set2)
+                                                .flatMap(Set::stream)
+                                                .collect(Collectors.toSet())));
             return degreeMap;
         }
         return null;
