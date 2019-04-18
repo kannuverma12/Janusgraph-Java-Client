@@ -173,6 +173,6 @@ module.exports = function(doc) {
 		targetExam.tabs_available.push('Syllabus');
 	}
 
-	//console.log ("exam: " + targetExam.exam_id );
+	console.log ("exam: " + targetExam.exam_id );
 	return targetExam;
 }
