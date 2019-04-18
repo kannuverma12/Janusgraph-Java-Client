@@ -103,6 +103,7 @@ function getCollegeSuperDocument(college_id) {
   }
 
   targetCollege.courses = listOfCourses;
+  console.log ("targetCollege: " + targetCollege.id);
   return targetCollege;
 }
 

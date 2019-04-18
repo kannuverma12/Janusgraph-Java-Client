@@ -103,6 +103,7 @@ function transformCourse(doc) {
         });
 
     }
+    console.log ("course: " + transformedCourse.course_id);
     return transformedCourse;
 }
 
