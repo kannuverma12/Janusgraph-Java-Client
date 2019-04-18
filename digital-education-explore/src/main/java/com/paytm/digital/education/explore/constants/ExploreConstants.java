@@ -90,6 +90,9 @@ public interface ExploreConstants {
     String COURSE_CLASS         = "Course";
     String EXAM_CLASS           = "Exam";
     String INSTITUTE_CLASS      = "Institute";
+    String DATA                 = "data";
+    String KEY                  = "key";
+
 
     String LINGUISTIC_MEDIUM_NAMESPACE = "linguistic_medium";
     String FACILITIES_NAMESPACE        = "facilities";
@@ -101,6 +104,7 @@ public interface ExploreConstants {
     String LINGUISTIC_MEDIUM           = "linguistic_medium";
     String SEARCH_EXAM_LEVEL           = "level";
     String IGNORE_VALUES               = "ignore";
+    String RANKING_STREAM_NAMESPACE    = "ranking_stream";
 
     String STREAM_COURSE                    = "domain_name";
     String DEGREE_COURSE                    = "degree";
@@ -141,6 +145,7 @@ public interface ExploreConstants {
 
     // Other Constants
     Version FTL_CURRENT_VERSION = Configuration.VERSION_2_3_23;
+    String  SUCCESS             = "success";
 
     //CUTOFF Constants
     String CUTOFF_EXAM_ID         = "cutoffs.exam_id";
@@ -152,4 +157,16 @@ public interface ExploreConstants {
     String CUTOFF                 = "cutoffs";
     String SUBEXAM_NAME           = "subexams.sub_exam_name";
     String SUBEXAM_ID             = "subexams.id";
+
+    String AFFILIATED           = "affiliated";
+    String UGC                  = "ugc";
+    String CONSTITUENT          = "constituent";
+    String AUTONOMOUS           = "autonomous";
+    String STANDALONE_INSTITUTE = "standalone institute";
+    String STATE_LEGISLATURE    = "state legislature/parliament";
+    String AFFILIATED_TO        = "Affiliated To";
+    String APPROVED_BY          = "Approved By";
+    String CONSTITUENT_OF       = "Constituent Of";
+    String GOVERNED_BY          = "Governed By";
+    String INSTITUTE_TYPE       = "Institute Governance";
 }

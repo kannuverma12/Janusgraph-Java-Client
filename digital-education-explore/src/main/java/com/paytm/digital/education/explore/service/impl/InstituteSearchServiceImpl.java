@@ -67,7 +67,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
 
     @PostConstruct
     private void init() {
-        filterQueryTypeMap = new HashMap<String, FilterQueryType>();
+        filterQueryTypeMap = new HashMap<>();
         filterQueryTypeMap.put(STATE_INSTITUTE, TERMS);
         filterQueryTypeMap.put(CITY_INSTITUTE, TERMS);
         filterQueryTypeMap.put(STREAM_INSTITUTE, TERMS);
@@ -124,15 +124,17 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
                 InstituteData instituteData = new InstituteData();
                 instituteData.setInstituteId(instituteSearch.getInstituteId());
                 instituteData.setOfficialName(instituteSearch.getOfficialName());
-                instituteData.setApprovals(CommonUtil.formatValues(properties, APPROVALS,
-                        instituteSearch.getApprovedBy()));
+                instituteData.setApprovals(CommonUtil.getApprovals(instituteSearch.getApprovedBy(),
+                        instituteSearch.getUniversityName()));
                 instituteData.setExams(instituteSearch.getExamsAccepted());
                 if (StringUtils.isNotBlank(instituteSearch.getImageLink())) {
-                    instituteData.setLogoUrl(CommonUtil.getLogoLink(instituteSearch.getImageLink()));
+                    instituteData
+                            .setLogoUrl(CommonUtil.getLogoLink(instituteSearch.getImageLink()));
                 }
 
-                OfficialAddress officialAddress = CommonUtil.getOfficialAddress(instituteSearch.getState(),
-                        instituteSearch.getCity(), null, null, null);
+                OfficialAddress officialAddress =
+                        CommonUtil.getOfficialAddress(instituteSearch.getState(),
+                                instituteSearch.getCity(), null, null, null);
                 instituteData.setOfficialAddress(officialAddress);
                 instituteDataMap.put(instituteSearch.getInstituteId(), instituteData);
                 instituteDataList.add(instituteData);

@@ -1,10 +1,15 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import static com.paytm.digital.education.mapping.ErrorEnum.ENTITY_NOT_SUBSCRIBED;
+import static com.paytm.digital.education.constant.DBConstants.UNREAD_SHORTLIST_COUNT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.APPROVALS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_SEARCH_NAMESPACE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SUCCESS;
+import static com.paytm.digital.education.mapping.ErrorEnum.ENTITY_NOT_SUBSCRIBED;
 
+import com.paytm.digital.education.database.entity.UserFlags;
+import com.paytm.digital.education.database.repository.UserFlagRepository;
+import com.paytm.digital.education.dto.NotificationFlags;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.aggregation.SubscriptionDao;
 import com.paytm.digital.education.explore.daoresult.SubscribedEntityCount;
@@ -37,10 +42,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private CommonMongoService commonMongoService;
 
-    private PropertyReader propertyReader;
+    private PropertyReader     propertyReader;
+    private UserFlagRepository userFlagRepository;
+
+    private static NotificationFlags DEFAULT_SUCCESS_MESSAGE = new NotificationFlags(SUCCESS);
 
     @Override
-    public void subscribe(long userId, SubscribableEntityType entity, long entityId) {
+    public NotificationFlags subscribe(long userId, SubscribableEntityType entity, long entityId) {
         Date currentDate = new java.util.Date();
         Subscription subscriptionObj =
                 subscriptionRepository.findBySubscribableEntityTypeAndUserIdAndEntityId(
@@ -50,15 +58,18 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             subscriptionRepository.save(new Subscription(userId, entity,
                     entityId, SubscriptionStatus.SUBSCRIBED, currentDate,
                     currentDate));
+            return createOrUpdateUserFlag(userId);
         } else if (!subscriptionObj.getStatus().equals(SubscriptionStatus.SUBSCRIBED)) {
             subscriptionObj.setStatus(SubscriptionStatus.SUBSCRIBED);
             subscriptionObj.setLastModified(currentDate);
             subscriptionRepository.save(subscriptionObj);
+            return createOrUpdateUserFlag(userId);
         }
+        return DEFAULT_SUCCESS_MESSAGE;
     }
 
     @Override
-    public void unsubscribe(long userId, SubscribableEntityType entity, long entityId) {
+    public NotificationFlags unsubscribe(long userId, SubscribableEntityType entity, long entityId) {
         Date currentDate = new java.util.Date();
 
         Subscription subscriptionObj =
@@ -73,7 +84,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             subscriptionObj.setStatus(SubscriptionStatus.UNSUBSCRIBED);
             subscriptionObj.setLastModified(currentDate);
             subscriptionRepository.save(subscriptionObj);
+            return decrementShortlistCount(userId);
         }
+        return DEFAULT_SUCCESS_MESSAGE;
     }
 
     @Override
@@ -95,6 +108,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         for (Subscription subscription : subscriptions) {
             updateValues(subscription, subscriptionEntity, propertyMap);
         }
+        resetUnreadShortlistFlag(userId);
         return subscriptions;
     }
 
@@ -129,5 +143,38 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                     "Error caught while formatting values in subscription data for . Exception : ",
                     ex);
         }
+    }
+
+    private void resetUnreadShortlistFlag(Long userId) {
+        userFlagRepository.updateCounter(userId, UNREAD_SHORTLIST_COUNT, 0);
+    }
+
+    private NotificationFlags createOrUpdateUserFlag(long userId) {
+        NotificationFlags notificationFlags = new NotificationFlags(SUCCESS);
+        UserFlags userFlags = userFlagRepository.incrementCounter(userId, UNREAD_SHORTLIST_COUNT, 1);
+        if (userFlags == null) {
+            userFlags = new UserFlags();
+            userFlags.setUserId(userId);
+            userFlags.setUnreadShortlistCount(1);
+            userFlagRepository.saveOrUpdate(userFlags);
+            notificationFlags.setFirstShortlist(1);
+        } else if (userFlags.getUnreadShortlistCount() == null) {
+            userFlags.setUnreadShortlistCount(1);
+            notificationFlags.setFirstShortlist(1);
+            userFlagRepository.saveOrUpdate(userFlags);
+        }
+        notificationFlags.setUnreadShortlist(1);
+        return notificationFlags;
+    }
+
+    private NotificationFlags decrementShortlistCount(long userId) {
+        UserFlags userFlags = userFlagRepository.decrementCounterIfPositive(userId, UNREAD_SHORTLIST_COUNT, 1);
+        NotificationFlags notificationFlags = new NotificationFlags(SUCCESS);
+        if (userFlags != null) {
+            notificationFlags.setUnreadShortlist(userFlags.getShortlistFlag());
+        } else {
+            notificationFlags.setUnreadShortlist(0);
+        }
+        return notificationFlags;
     }
 }

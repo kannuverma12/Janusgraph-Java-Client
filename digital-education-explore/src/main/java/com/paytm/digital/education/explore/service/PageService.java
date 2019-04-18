@@ -2,8 +2,8 @@ package com.paytm.digital.education.explore.service;
 
 import com.paytm.digital.education.explore.database.entity.Section;
 
-import java.util.Map;
+import java.util.List;
 
 public interface PageService {
-    Map<String, Section> getPageSections(String pageName);
+    List<Section> getPageSections(String pageName);
 }

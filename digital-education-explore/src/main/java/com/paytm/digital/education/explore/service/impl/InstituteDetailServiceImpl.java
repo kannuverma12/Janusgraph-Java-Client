@@ -1,14 +1,15 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import static com.mongodb.QueryOperators.OR;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_PREFIX;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_CUTOFF_CASTEGROUP;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_CUTOFF_GENDER;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_DEGREES;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_PREFIX;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SUBEXAM_ID;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_DEGREES;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_CUTOFF_GENDER;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_CUTOFF_CASTEGROUP;
 import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
@@ -78,6 +79,9 @@ public class InstituteDetailServiceImpl {
         List<String> instituteFields = new ArrayList<>();
         List<String> courseFields = new ArrayList<>();
         List<String> examFields = new ArrayList<>();
+        List<String> parentInstitutionFields = new ArrayList<>();
+
+        parentInstitutionFields.add(OFFICIAL_NAME);
 
         for (String requestedField : groupFields) {
             if (requestedField.startsWith(COURSE_PREFIX)) {
@@ -95,14 +99,24 @@ public class InstituteDetailServiceImpl {
                 commonMongoRepository.getEntityByFields(INSTITUTE_ID, entityId, Institute.class,
                         instituteFields);
         if (institute != null) {
-            return processInstituteDetail(institute, entityId, courseFields, examFields);
+            Long parentInstitutionId = institute.getParentInstitution();
+            String parentInstitutionName = null;
+            if (parentInstitutionId != null) {
+                Institute parentInstitution = commonMongoRepository
+                        .getEntityByFields(INSTITUTE_ID, parentInstitutionId, Institute.class,
+                                parentInstitutionFields);
+                parentInstitutionName =
+                        parentInstitution != null ? parentInstitution.getOfficialName() : null;
+            }
+            return processInstituteDetail(institute, entityId, courseFields, examFields,
+                    parentInstitutionName);
         }
         throw new BadRequestException(INVALID_INSTITUTE_ID,
                 INVALID_INSTITUTE_ID.getExternalMessage());
     }
 
     private InstituteDetail processInstituteDetail(Institute institute, Long entityId,
-            List<String> courseFields, List<String> examFields)
+            List<String> courseFields, List<String> examFields, String parentInstitutionName)
             throws IOException, TimeoutException {
         List<Course> courses = null;
         if (!CollectionUtils.isEmpty(courseFields)) {
@@ -121,7 +135,8 @@ public class InstituteDetailServiceImpl {
                     .findAll(queryObject, Exam.class, examFields, OR);
         }
         return instituteDetailResponseBuilder
-                .buildResponse(institute, courses, examList, examData, examIds);
+                .buildResponse(institute, courses, examList, examData, examIds,
+                        parentInstitutionName);
     }
 
     private Map<String, Object> getExamData(List<Course> courses) {

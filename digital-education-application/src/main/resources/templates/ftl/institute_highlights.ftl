@@ -46,16 +46,10 @@
   <#if institute.facultyCount??>
     {"logo_url":"http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg","title":"Faculties","description":"${institute.facultyCount}"},
   </#if>
-  <#if institute.approvals??>
-    <#assign approvalVar = "">
-    <#list institute.approvals as approval>
-      <#if approval?? && approval != "Affiliated">
-        <#assign approvalVar = "${approval},">
-        </#if>
+  <#if approvals??>
+    <#list approvals?keys as approvalKey>
+        {"logo_url":"http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg","title":"${approvalKey}","description":"${approvals[approvalKey]}"},
     </#list>
-    <#if approvalVar?has_content>
-      {"logo_url":"http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg","title":"Approved By","description":"${approvalVar?keep_before_last(",")}"},
-    </#if>
   </#if>
   <#if institute.instituteTypes??>
     {"logo_url":"http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg","title":"Institute Type","description":"${institute.instituteTypes?join(", ")}"},

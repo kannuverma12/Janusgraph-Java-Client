@@ -1,6 +1,7 @@
 package com.paytm.digital.education.elasticsearch.utils;
 
 import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
@@ -23,7 +24,6 @@ public class DataSortUtil {
         if (!CollectionUtils.isEmpty(filterQueries) && filterQueries.containsKey(path)) {
             nestedSort.setFilter(filterQueries.get(path));
         }
-
         SortBuilder<FieldSortBuilder> sortBuilder =
                 SortBuilders.fieldSort(fieldName).setNestedSort(nestedSort);
 

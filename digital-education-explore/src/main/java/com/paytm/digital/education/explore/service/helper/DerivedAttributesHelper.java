@@ -20,8 +20,8 @@ public class DerivedAttributesHelper {
     private CommonMongoRepository commonMongoRepository;
     private TemplateProcessor     templateProcessor;
 
-    public Map<String, List<Attribute>> getDerivedAttributes(
-            Map<String, Object> highlightData, String entityType) {
+    public Map<String, List<Attribute>> getDerivedAttributes(Map<String, Object> highlightData,
+            String entityType) {
         String highlightsTemplate = commonMongoRepository
                 .getTemplate(HIGHLIGHTS_TEMPLATE, entityType);
         String highlights = templateProcessor
@@ -31,4 +31,5 @@ public class DerivedAttributesHelper {
         }
         return null;
     }
+
 }
