@@ -24,10 +24,19 @@ public enum ErrorEnum {
             0),
     INVALID_COURSE_ID(4011, "Invalid course ID. Please provide a valid course ID.",
             HttpStatus.BAD_REQUEST, 0),
-    ENTITY_ID_IS_MANDATORY(4012, "entity id is mandatory for course search", HttpStatus.BAD_REQUEST, 0),
-    INVALID_ENTITY_ID_LIST_SIZE(4013, "entity id must contain one and only one value", HttpStatus.BAD_REQUEST, 0),
-    QUERY_TERM_MUST_BE_EMPTY(4014, "query term is not supported in course search", HttpStatus.BAD_REQUEST, 0);
-    
+    ENTITY_ID_IS_MANDATORY(4012, "entity id is mandatory for course search", HttpStatus.BAD_REQUEST,
+            0),
+    INVALID_ENTITY_ID_LIST_SIZE(4013, "entity id must contain one and only one value",
+            HttpStatus.BAD_REQUEST, 0),
+    QUERY_TERM_MUST_BE_EMPTY(4014, "query term is not supported in course search",
+            HttpStatus.BAD_REQUEST, 0),
+    NO_LIST_EXISTS(4015, "No list exists for this combination.",
+            HttpStatus.NOT_FOUND, 0),
+    NO_CUTOFF_EXISTS(4016, "Cutoff does not exists for this combination.",
+            HttpStatus.NOT_FOUND, 0),
+    NO_EXAM_LIST_EXISTS(4017, "No exam lists exists for this institute",
+            HttpStatus.NOT_FOUND, 0);
+
     private final int        internalCode;
     private final String     externalMessage;
     private final HttpStatus httpStatus;

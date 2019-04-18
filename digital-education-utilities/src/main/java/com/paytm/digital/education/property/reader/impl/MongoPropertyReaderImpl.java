@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,16 +17,6 @@ import java.util.Map;
 public class MongoPropertyReaderImpl implements PropertyReader {
 
     private PropertyRepository propertyRepository;
-
-    @Override
-    public Properties getProperty(String key, String component, String namespace) {
-        return null;
-    }
-
-    @Override
-    public List<Properties> getProperties(List<String> keys, String component, String namespace) {
-        return null;
-    }
 
     @Override
     @Cacheable(value = "properties", unless = "#result == null ")

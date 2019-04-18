@@ -3,6 +3,7 @@ package com.paytm.digital.education.application.config;
 import com.paytm.digital.education.application.constant.Constant;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -18,6 +19,7 @@ import java.util.Collections;
 
 @Configuration
 @EnableSwagger2
+@Profile({"dev","staging","local"})
 public class SwaggerConfig {
 
     private static final String SWAGGER_API_INFO_DESCRIPTION      = "Digital Education";

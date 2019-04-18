@@ -2,9 +2,10 @@ package com.paytm.digital.education.explore.response.dto.detail;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.explore.response.dto.common.BannerData;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
+import com.paytm.digital.education.explore.response.dto.common.Widget;
 import lombok.Data;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.List;
 import java.util.Map;
@@ -51,12 +52,15 @@ public class InstituteDetail {
 
     @JsonProperty("courses")
     private List<Course> courses;
+    
+    @JsonProperty("total_courses")
+    private long totalCourses;
 
     @JsonProperty("rankings")
     private List<Ranking> rankings;
 
-    @JsonProperty("cut_off")
-    private List<CutOff> cutOff;
+    @JsonProperty("cut_offs")
+    private List<ExamAndCutOff> cutOffs;
 
     @JsonProperty("facilities")
     private List<Facility> facilities;
@@ -66,5 +70,13 @@ public class InstituteDetail {
 
     @JsonProperty("placements")
     private List<Placement> placements;
-    
+
+    @JsonProperty("widgets")
+    private List<Widget> widgets;
+
+    @JsonProperty("banners")
+    private List<BannerData> banners;
+
+    @JsonProperty("sections")
+    private List<String> sections;
 }

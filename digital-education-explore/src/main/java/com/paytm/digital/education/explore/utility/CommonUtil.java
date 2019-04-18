@@ -77,6 +77,7 @@ public class CommonUtil {
         String displayName;
         if (!CollectionUtils.isEmpty(propertyMap)
                 && propertyMap.containsKey(fieldName) && propertyMap
+
                 .get(fieldName).containsKey(keyName)) {
             displayName = propertyMap.get(fieldName).get(keyName)
                     .toString();
@@ -84,5 +85,17 @@ public class CommonUtil {
             displayName = keyName;
         }
         return displayName;
+    }
+
+
+    public void convertStringValuesToLowerCase(Map<String, List<Object>> filters) {
+        for (Map.Entry<String, List<Object>> filter : filters.entrySet()) {
+            if (!CollectionUtils.isEmpty(filter.getValue())
+                    && filter.getValue().get(0) instanceof String) {
+                for (int i = 0; i < filter.getValue().size(); i++) {
+                    filter.getValue().set(i, ((String) filter.getValue().get(i)).toLowerCase());
+                }
+            }
+        }
     }
 }
