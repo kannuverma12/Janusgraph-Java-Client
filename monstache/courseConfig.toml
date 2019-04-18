@@ -38,7 +38,7 @@ resume = true # data is kept in mongodb to resume
 
 [[mapping]]  #index mapping
 namespace = "digital_education.course"
-index = "education_search_course_v1"
+index = "education_search_course_test"
 type = "education"
 
 
