@@ -81,7 +81,7 @@ public interface ExploreConstants {
     ///////// Explore search Constatnts ///////////
     // Exam
     String SEARCH_INDEX_EXAM              = "education_search_exam_v2";
-    String SEARCH_ANALYZER_EXAM           = "word_delimiter_analyzer";
+    String SEARCH_ANALYZER_EXAM           = "word_delimiter_analyzer_search";
     String SEARCH_NAMES_EXAM              = "names";
     String EXAM_FULL_NAME_SEARCH          = "exam_full_name";
     String EXAM_SHORT_NAME_SEARCH         = "exam_short_name";
