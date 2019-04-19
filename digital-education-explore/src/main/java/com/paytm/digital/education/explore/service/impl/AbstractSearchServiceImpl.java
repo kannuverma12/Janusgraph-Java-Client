@@ -82,15 +82,15 @@ public abstract class AbstractSearchServiceImpl {
     }
 
     protected <T> void populateSearchFields(SearchRequest searchRequest,
-            ElasticRequest elasticRequest, List<String> searchFieldKeys, Class<T> type) {
+            ElasticRequest elasticRequest, Map<String, Float> searchFieldKeys, Class<T> type) {
         if (StringUtils.isNotBlank(searchRequest.getTerm())) {
             SearchField[] searchFields = new SearchField[searchFieldKeys.size()];
             int i = 0;
-            for (String searchKey : searchFieldKeys) {
+            for (Map.Entry<String, Float> searchKey : searchFieldKeys.entrySet()) {
                 SearchField searchField = new SearchField();
-                searchField.setName(searchKey);
-                searchField.setPath(hierarchyMap.get(type).get(searchKey));
-                searchField.setBoost(1.0f);
+                searchField.setName(searchKey.getKey());
+                searchField.setPath(hierarchyMap.get(type).get(searchKey.getKey()));
+                searchField.setBoost(searchKey.getValue());
                 searchFields[i++] = searchField;
             }
             elasticRequest.setSearchFields(searchFields);
