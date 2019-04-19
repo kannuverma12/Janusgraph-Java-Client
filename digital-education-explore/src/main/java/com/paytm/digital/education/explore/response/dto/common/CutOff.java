@@ -27,6 +27,9 @@ public class CutOff {
     @JsonProperty("merit_list_type")
     private String meritListType;
 
+    @JsonProperty("location")
+    private String location;
+
     @JsonProperty("year")
     private int year;
 }

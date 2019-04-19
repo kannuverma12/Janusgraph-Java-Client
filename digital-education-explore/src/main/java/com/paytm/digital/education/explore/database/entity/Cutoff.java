@@ -30,6 +30,9 @@ public class Cutoff {
     @Field("gender")
     private Gender gender;
 
+    @Field("location")
+    private String location;
+
     @Field("merit_list_type")
     private String meritListType;
 

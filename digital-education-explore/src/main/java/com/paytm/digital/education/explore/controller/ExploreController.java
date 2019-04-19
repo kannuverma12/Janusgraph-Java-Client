@@ -116,8 +116,8 @@ public class ExploreController {
     public List<CutoffSearchResponse> searchCutOffs(
             @RequestParam(value = "institute_id") @Min(1) long instituteId,
             @RequestParam(value = "exam_id") @Min(1) long examId,
-            @RequestParam(value = "gender") @NotNull Gender gender,
-            @RequestParam(value = "caste_group") @NotNull String casteGroup,
+            @RequestParam(value = "gender", required = false) Gender gender,
+            @RequestParam(value = "caste_group", required = false) String casteGroup,
             @RequestParam(value = "field_group") @NotNull String fieldGroup) {
         exploreValidator.validateFieldAndFieldGroup(null, fieldGroup);
         return cutoffService.searchCutOffs(instituteId, examId, gender, casteGroup, fieldGroup);
