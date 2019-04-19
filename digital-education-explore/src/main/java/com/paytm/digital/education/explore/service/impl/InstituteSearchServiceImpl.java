@@ -77,7 +77,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
 
     @PostConstruct
     private void init() {
-        filterQueryTypeMap = Collections.EMPTY_MAP;
+        filterQueryTypeMap = new HashMap<>();
         filterQueryTypeMap.put(STATE_INSTITUTE, TERMS);
         filterQueryTypeMap.put(CITY_INSTITUTE, TERMS);
         filterQueryTypeMap.put(STREAM_INSTITUTE, TERMS);
@@ -89,7 +89,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
         filterQueryTypeMap.put(FACILITIES, TERMS);
         filterQueryTypeMap.put(INSTITUTE_GENDER, TERMS);
         filterQueryTypeMap.put(ESTABLISHMENT_YEAR, RANGE);
-        searchFieldKeys = Collections.EMPTY_MAP;
+        searchFieldKeys = new HashMap<>();
         searchFieldKeys.put(OFFICIAL_NAME_SEARCH, OFFICIAL_NAME_SEARCH_BOOST);
         searchFieldKeys.put(FORMER_NAME, FORMER_NAME_BOOST);
         searchFieldKeys.put(COMMON_NAME, C0MMON_NAME_BOOST);

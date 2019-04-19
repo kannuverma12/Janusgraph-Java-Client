@@ -71,10 +71,10 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
 
     @PostConstruct
     private void init() {
-        filterQueryTypeMap = Collections.EMPTY_MAP;
+        filterQueryTypeMap = new HashMap<>();
         filterQueryTypeMap.put(LINGUISTIC_MEDIUM, TERMS);
         filterQueryTypeMap.put(SEARCH_EXAM_LEVEL, TERMS);
-        searchFieldKeys = Collections.EMPTY_MAP;
+        searchFieldKeys = new HashMap<>();
         searchFieldKeys.put(EXAM_FULL_NAME, EXAM_FULL_NAME_BOOST);
         searchFieldKeys.put(EXAM_SHORT_NAME, EXAM_SHORT_NAME_BOOST);
         searchFieldKeys.put(EXAM_NAME_SYNONYMS, EXAM_NAME_SYNONYMS_BOOST);
