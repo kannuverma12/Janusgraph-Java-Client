@@ -64,17 +64,19 @@ public class ExamInstanceHelper {
                  ** examIds set
                  */
                 if (examAndCutOff.getHasCutoff() == false && !examIds.isEmpty()) {
-                    for (SubExam subExam : exam.getSubExams()) {
-                        examId = subExam.getId();
-                        if (examIds.contains(examId)) {
-                            examAndCutOff.setExamId(examId);
-                            examAndCutOff.setCasteGroups(
-                                    new ArrayList<>(examCategoryGroup.get(examId)));
-                            examAndCutOff.setGenders(new ArrayList<>(examGender.get(examId)));
-                            examAndCutOff.setHasCutoff(true);
-                            // this is done so that we can do empty check correctly in the examIds
-                            examIds.remove(examId);
-                            break;
+                    if(exam.getSubExams() != null) {
+                        for (SubExam subExam : exam.getSubExams()) {
+                            examId = subExam.getId();
+                            if (examIds.contains(examId)) {
+                                examAndCutOff.setExamId(examId);
+                                examAndCutOff.setCasteGroups(
+                                        new ArrayList<>(examCategoryGroup.get(examId)));
+                                examAndCutOff.setGenders(new ArrayList<>(examGender.get(examId)));
+                                examAndCutOff.setHasCutoff(true);
+                                // this is done so that we can do empty check correctly in the examIds
+                                examIds.remove(examId);
+                                break;
+                            }
                         }
                     }
                 }

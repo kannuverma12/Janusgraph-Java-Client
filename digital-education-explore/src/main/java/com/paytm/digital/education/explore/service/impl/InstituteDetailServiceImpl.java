@@ -115,6 +115,55 @@ public class InstituteDetailServiceImpl {
                 INVALID_INSTITUTE_ID.getExternalMessage());
     }
 
+    @Cacheable(value = "institute")
+    public Institute getinstitute(Long entityId, String fieldGroup)
+            throws IOException, TimeoutException {
+        List<String> groupFields =
+                commonMongoRepository.getFieldsByGroup(Institute.class, fieldGroup);
+        if (CollectionUtils.isEmpty(groupFields)) {
+            throw new BadRequestException(INVALID_FIELD_GROUP,
+                    INVALID_FIELD_GROUP.getExternalMessage());
+        }
+        List<String> instituteFields = new ArrayList<>();
+        List<String> courseFields = new ArrayList<>();
+        List<String> examFields = new ArrayList<>();
+        List<String> parentInstitutionFields = new ArrayList<>();
+
+        parentInstitutionFields.add(OFFICIAL_NAME);
+
+        for (String requestedField : groupFields) {
+            if (requestedField.startsWith(COURSE_PREFIX)) {
+                courseFields.add(requestedField
+                        .substring(COURSE_PREFIX_LENGTH, requestedField.length()));
+            } else if (requestedField.startsWith(EXAM_PREFIX)) {
+                examFields
+                        .add(requestedField.substring(EXAM_PREFIX_LENGTH, requestedField.length()));
+            } else {
+                instituteFields.add(requestedField);
+            }
+        }
+
+        Institute institute =
+                commonMongoRepository.getEntityByFields(INSTITUTE_ID, entityId, Institute.class,
+                        instituteFields);
+        if (institute != null) {
+            Long parentInstitutionId = institute.getParentInstitution();
+            String parentInstitutionName = null;
+            if (parentInstitutionId != null) {
+                Institute parentInstitution = commonMongoRepository
+                        .getEntityByFields(INSTITUTE_ID, parentInstitutionId, Institute.class,
+                                parentInstitutionFields);
+                parentInstitutionName =
+                        parentInstitution != null ? parentInstitution.getOfficialName() : null;
+            }
+            return institute;
+//            return processInstituteDetail(institute, entityId, courseFields, examFields,
+//                    parentInstitutionName);
+        }
+        throw new BadRequestException(INVALID_INSTITUTE_ID,
+                INVALID_INSTITUTE_ID.getExternalMessage());
+    }
+
     private InstituteDetail processInstituteDetail(Institute institute, Long entityId,
             List<String> courseFields, List<String> examFields, String parentInstitutionName)
             throws IOException, TimeoutException {
