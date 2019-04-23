@@ -124,7 +124,7 @@ public class CommonUtil {
                         }
                         break;
                     case UGC:
-                        output.put(APPROVED_BY, UGC);
+                        output.put(APPROVED_BY, UGC.toUpperCase());
                         break;
                     case CONSTITUENT:
                         if (StringUtils.isNotBlank(universityName)) {

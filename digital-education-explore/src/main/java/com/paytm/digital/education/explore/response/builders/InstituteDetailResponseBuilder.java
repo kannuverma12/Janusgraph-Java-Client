@@ -109,8 +109,12 @@ public class InstituteDetailResponseBuilder {
         instituteDetail.setBanners(bannerDataHelper.getBannerData(entityName));
         instituteDetail.setWidgets(widgetsDataHelper.getWidgets(entityName,
                 institute.getInstituteId()));
-        instituteDetail.setNotableAlumni(institute.getNotableAlumni());
-        instituteDetail.setRankings(getRankingDetails(institute.getRankings()));
+        if ((!CollectionUtils.isEmpty(institute.getNotableAlumni()))) {
+            instituteDetail.setNotableAlumni(institute.getNotableAlumni());
+        }
+        if ((!CollectionUtils.isEmpty(institute.getRankings()))) {
+            instituteDetail.setRankings(getRankingDetails(institute.getRankings()));
+        }
         instituteDetail.setDegreeOffered(getDegreeMap(courses));
         return instituteDetail;
     }
