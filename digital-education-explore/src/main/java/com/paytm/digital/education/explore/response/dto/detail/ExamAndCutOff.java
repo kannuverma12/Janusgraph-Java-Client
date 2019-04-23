@@ -6,6 +6,7 @@ import com.paytm.digital.education.explore.enums.Gender;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -24,9 +25,9 @@ public class ExamAndCutOff {
     private Boolean hasCutoff;
 
     @JsonProperty("genders")
-    private List<Gender> genders;
+    private Map<Gender, String> genders;
 
     @JsonProperty("caste_groups")
-    private List<String> casteGroups;
+    private Map<String, String> casteGroups;
 
 }

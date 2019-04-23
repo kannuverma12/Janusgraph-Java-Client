@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ public class PageServiceImpl implements PageService {
 
     @Override
     @Cacheable(value = "page", key = "#pageName", unless = "#result == null ")
-    public Map<String, Section> getPageSections(@NotBlank final String pageName) {
+    public List<Section> getPageSections(@NotBlank final String pageName) {
         Page page = pageRepository.getPageByName(pageName);
 
         if (page == null) {
@@ -36,22 +37,19 @@ public class PageServiceImpl implements PageService {
                 .resourceName(pageName).build();
         }
 
-        final Collection<String> pageSectionNames = page.getSections().values();
+        final Collection<String> pageSectionNames = page.getSections();
         final List<Section> pageSections = sectionRepository.getSectionsByNameIn(pageSectionNames);
 
         final Map<String, Section> sectionsByName = pageSections.stream()
-            .collect(Collectors.toMap(Section::getName, Function.identity()));
+                .collect(Collectors.toMap(Section::getName, Function.identity()));
 
-        // used to represent Section whose entry does exist in Page document
-        // but that Section document doesn't exist
-        // Note: it'll only be used in case of data mismatch (inconsistent data)
-        // and UI folks demanded to send empty Section object in that case
-        final Section dummySection = new Section();
-
-        return page.getSections().entrySet().stream()
-            .collect(Collectors.toMap(Map.Entry::getKey, entry -> {
-                Section value = sectionsByName.get(entry.getValue());
-                return value != null ? value : dummySection;
-            }));
+        List<Section> response = new ArrayList<>();
+        for (String sectionName : pageSectionNames) {
+            Section section = sectionsByName.get(sectionName);
+            if (section != null) {
+                response.add(section);
+            }
+        }
+        return response;
     }
 }

@@ -44,25 +44,35 @@ public interface ExploreConstants {
     String ENTITY_TYPE_CITY          = "city";
 
     ///////// Institute search Constatnts ///////////
-    String SEARCH_INDEX_INSTITUTE    = "education_search_institute_v1";
-    String SEARCH_ANALYZER_INSTITUTE = "word_delimiter_analyzer";
-    String SEARCH_INDEX_COURSE       = "education_search_course_v1";
-    String SEARCH_ANALYZER_COURSE    = "word_delimiter_analyzer";
-    String SEARCH_NAMES_INSTITUTE    = "names";
-    String MAX_RANK_INSTITUTE        = "max_rank";
-    String STATE_INSTITUTE           = "state";
-    String CITY_INSTITUTE            = "city";
-    String STREAM_INSTITUTE          = "domain_name";
-    String COURSE_LEVEL_INSTITUTE    = "level";
-    String EXAMS_ACCEPTED_INSTITUTE  = "exams";
-    String FEES_INSTITUTE            = "fees";
-    String EXAM_PREFIX               = "exam.";
-    String INSTITUTE_GENDER          = "institute_gender";
-    String ESTABLISHMENT_YEAR        = "year_of_estd";
-    String OWNERSHIP                 = "ownership";
-    String FACILITIES                = "facilities";
-    String USER_UNAUTHORIZED_MESSAGE = "Unauthorized Request";
-    String APPROVALS                 = "approvals";
+    String SEARCH_INDEX_COURSE          = "education_search_course_v1";
+    String SEARCH_ANALYZER_COURSE       = "word_delimiter_analyzer";
+    String SEARCH_NAMES_INSTITUTE       = "names";
+    String MAX_RANK_INSTITUTE           = "max_rank";
+    String STATE_INSTITUTE              = "state";
+    String CITY_INSTITUTE               = "city";
+    String STREAM_INSTITUTE             = "domain_name";
+    String COURSE_LEVEL_INSTITUTE       = "level";
+    String EXAMS_ACCEPTED_INSTITUTE     = "exams";
+    String FEES_INSTITUTE               = "fees";
+    String EXAM_PREFIX                  = "exam.";
+    String INSTITUTE_GENDER             = "institute_gender";
+    String ESTABLISHMENT_YEAR           = "year_of_estd";
+    String OWNERSHIP                    = "ownership";
+    String FACILITIES                   = "facilities";
+    String USER_UNAUTHORIZED_MESSAGE    = "Unauthorized Request";
+    String APPROVALS                    = "approvals";
+    String OFFICIAL_NAME_SEARCH         = "official_name.search";
+    String FORMER_NAME                  = "former_name";
+    String COMMON_NAME                  = "common_name";
+    String ALTERNATE_NAMES              = "alternate_names";
+    String UNIVERSITY_NAME_SEARCH       = "university_name_search";
+    String OTHER_NAMES_NGRAM            = "names_ngram";
+    Float  OFFICIAL_NAME_SEARCH_BOOST   = 1F;
+    Float  FORMER_NAME_BOOST            = 1F;
+    Float  C0MMON_NAME_BOOST            = 1F;
+    Float  ALTERNATE_NAMES_BOOST        = 1F;
+    Float  UNIVERSITY_NAME_SEARCH_BOOST = 1F;
+    Float  OTHER_NAMES_NGRAM_BOOST      = 0.00001F;
 
     SimpleDateFormat MMM_YYYY    = new SimpleDateFormat("MMM,yyyy");
     SimpleDateFormat DD_MMM_YYYY = new SimpleDateFormat("dd MMM,yyyy");
@@ -70,26 +80,39 @@ public interface ExploreConstants {
 
     ///////// Explore search Constatnts ///////////
     // Exam
-    String SEARCH_INDEX_EXAM    = "education_search_exam_v1";
-    String SEARCH_ANALYZER_EXAM = "word_delimiter_analyzer";
-    String SEARCH_NAMES_EXAM    = "names";
-    String DATE_TAB             = "dates";
-    String SYLLABUS_TAB         = "syllabus";
-    String SEARCH_INDEX         = "education_search_institute_v1";
-    String SEARCH_ANALYZER      = "word_delimiter_analyzer";
-    String SEARCH_NAMES         = "names";
-    String MAX_RANK             = "max_rank";
-    String OFFICIAL_NAME        = "official_name";
-    String STATE                = "state";
-    String CITY                 = "city";
-    String INSTITUTION_STATE    = "institution_state";
-    String INSTITUTION_CITY     = "institution_city";
-    String STREAM               = "domain_name";
-    String COURSE_LEVEL         = "level";
-    String FEES                 = "fees";
-    String COURSE_CLASS         = "Course";
-    String EXAM_CLASS           = "Exam";
-    String INSTITUTE_CLASS      = "Institute";
+    String SEARCH_INDEX_EXAM              = "education_search_exam_v2";
+    String SEARCH_ANALYZER_EXAM           = "word_delimiter_analyzer_search";
+    String SEARCH_NAMES_EXAM              = "names";
+    String EXAM_FULL_NAME_SEARCH          = "exam_full_name";
+    String EXAM_SHORT_NAME_SEARCH         = "exam_short_name";
+    String EXAM_OFFICIAL_NAME             = "official_name";
+    String EXAM_OFFICIAL_NAME_NGRAM       = "official_name.raw";
+    String EXAM_NAME_SYNONYMS             = "exam_name_synonyms";
+    Float  EXAM_FULL_NAME_BOOST           = 1F;
+    Float  EXAM_SHORT_NAME_BOOST          = 1F;
+    Float  EXAM_OFFICIAL_NAME_BOOST       = 1F;
+    Float  EXAM_NAME_SYNONYMS_BOOST       = 1F;
+    Float  EXAM_OFFICIAL_NAME_NGRAM_BOOST = 0.00001F;
+    String DATE_TAB                       = "dates";
+    String SYLLABUS_TAB                   = "syllabus";
+    String SEARCH_INDEX_INSTITUTE         = "education_search_institute_v2";
+    String SEARCH_ANALYZER_INSTITUTE      = "word_delimiter_analyzer";
+    String SEARCH_NAMES                   = "names";
+    String MAX_RANK                       = "max_rank";
+    String OFFICIAL_NAME                  = "official_name";
+    String STATE                          = "state";
+    String CITY                           = "city";
+    String INSTITUTION_STATE              = "institution_state";
+    String INSTITUTION_CITY               = "institution_city";
+    String STREAM                         = "domain_name";
+    String COURSE_LEVEL                   = "level";
+    String FEES                           = "fees";
+    String COURSE_CLASS                   = "Course";
+    String EXAM_CLASS                     = "Exam";
+    String INSTITUTE_CLASS                = "Institute";
+    String DATA                           = "data";
+    String KEY                            = "key";
+
 
     String LINGUISTIC_MEDIUM_NAMESPACE = "linguistic_medium";
     String FACILITIES_NAMESPACE        = "facilities";
@@ -101,6 +124,7 @@ public interface ExploreConstants {
     String LINGUISTIC_MEDIUM           = "linguistic_medium";
     String SEARCH_EXAM_LEVEL           = "level";
     String IGNORE_VALUES               = "ignore";
+    String RANKING_STREAM_NAMESPACE    = "ranking_stream";
 
     String STREAM_COURSE                    = "domain_name";
     String DEGREE_COURSE                    = "degree";
@@ -141,6 +165,7 @@ public interface ExploreConstants {
 
     // Other Constants
     Version FTL_CURRENT_VERSION = Configuration.VERSION_2_3_23;
+    String  SUCCESS             = "success";
 
     //CUTOFF Constants
     String CUTOFF_EXAM_ID         = "cutoffs.exam_id";
@@ -150,7 +175,6 @@ public interface ExploreConstants {
     String EXAM_CUTOFF_GENDER     = "exam_cutoff_gender";
     String EXAM_CUTOFF_CASTEGROUP = "exam_cutoff_castegroup";
     String CUTOFF                 = "cutoffs";
-    String SUBEXAM_NAME           = "subexams.sub_exam_name";
     String SUBEXAM_ID             = "subexams.id";
     
     //S3 constants
@@ -159,4 +183,22 @@ public interface ExploreConstants {
     //CRON KEYS
     String IMAGE_UPLOAD_CRON_KEY = "isImageUploadCronEnabled";
     String FAILED_IMAGE_CRON_KEY = "isFailedImageCronEnabled";
+   
+    
+    String EXAMS_ACCEPTED         = "exams_accepted";
+    String OTHER_CATEGORIES       = "OTHERS";
+    String GENDER                 = "gender";
+    String CASTEGROUP             = "caste_group";
+
+    String AFFILIATED           = "affiliated";
+    String UGC                  = "ugc";
+    String CONSTITUENT          = "constituent";
+    String AUTONOMOUS           = "autonomous";
+    String STANDALONE_INSTITUTE = "standalone institute";
+    String STATE_LEGISLATURE    = "state legislature/parliament";
+    String AFFILIATED_TO        = "Affiliated To";
+    String APPROVED_BY          = "Approved By";
+    String CONSTITUENT_OF       = "Constituent Of";
+    String GOVERNED_BY          = "Governed By";
+    String INSTITUTE_TYPE       = "Institute Governance";
 }

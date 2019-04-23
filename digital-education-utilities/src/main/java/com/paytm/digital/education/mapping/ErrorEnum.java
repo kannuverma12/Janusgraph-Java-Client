@@ -35,7 +35,11 @@ public enum ErrorEnum {
     NO_CUTOFF_EXISTS(4016, "Cutoff does not exists for this combination.",
             HttpStatus.NOT_FOUND, 0),
     NO_EXAM_LIST_EXISTS(4017, "No exam lists exists for this institute",
-            HttpStatus.NOT_FOUND, 0);
+            HttpStatus.NOT_FOUND, 0),
+    GENDER_PARAMETER_MISSING(4018, "Gender parameter is missing in request.",
+            HttpStatus.BAD_REQUEST, 0),
+    CASTE_CATEGORY_PARAMETER_MISSING(4019, "Caste category parameter is missing in request.",
+            HttpStatus.BAD_REQUEST, 0);
 
     private final int        internalCode;
     private final String     externalMessage;

@@ -10,38 +10,57 @@ import com.paytm.digital.education.explore.response.dto.common.CutOff;
 import com.paytm.digital.education.explore.response.dto.detail.ExamAndCutOff;
 import com.paytm.digital.education.explore.response.dto.search.CutoffSearchResponse;
 import com.paytm.digital.education.explore.service.CutoffService;
+import com.paytm.digital.education.explore.service.helper.GenderAndCasteGroupHelper;
 import com.paytm.digital.education.explore.utility.FieldsRetrievalUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Objects;
 
 import static com.mongodb.QueryOperators.AND;
+import static com.mongodb.QueryOperators.EXISTS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.CASTEGROUP;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_CLASS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CUTOFF;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CUTOFF_CASTE_GROUP;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CUTOFF_EXAM_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CUTOFF_GENDER;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAMS_ACCEPTED;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.GENDER;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.OTHER_CATEGORIES;
 import static com.paytm.digital.education.explore.enums.EducationEntity.COURSE;
+
+import static com.paytm.digital.education.explore.enums.Gender.OTHERS;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 import static com.paytm.digital.education.mapping.ErrorEnum.NO_CUTOFF_EXISTS;
-import static com.paytm.digital.education.mapping.ErrorEnum.NO_LIST_EXISTS;
 
 @Slf4j
 @AllArgsConstructor
 @Service
+
 public class CutoffServiceImpl implements CutoffService {
 
-    private CommonMongoRepository commonMongoRepository;
+    private CommonMongoRepository     commonMongoRepository;
+    private GenderAndCasteGroupHelper genderAndCasteGroupHelper;
+
+    private Map<String, Map<String, Object>> genderCategoryMap;
+
+    @PostConstruct
+    private void setGenderCategoryMap() {
+        genderCategoryMap = genderAndCasteGroupHelper.getGenderAndCasteGroupMap();
+    }
 
     @Cacheable(value = "cutoff_search")
     public List<CutoffSearchResponse> searchCutOffs(long instituteId, long examId, Gender gender,
@@ -52,6 +71,12 @@ public class CutoffServiceImpl implements CutoffService {
             Map<String, ArrayList<String>> allFields =
                     FieldsRetrievalUtil.getFormattedFields(projectionFields, COURSE_CLASS);
             ArrayList<String> courseProjectionFields = allFields.get(COURSE.name().toLowerCase());
+            if (Objects.nonNull(casteGroup) && casteGroup.equals(OTHER_CATEGORIES)) {
+                casteGroup = null;
+            }
+            if (Objects.nonNull(gender) && gender.equals(OTHERS)) {
+                gender = null;
+            }
             List<Course> courseAndCutoffs = commonMongoRepository
                     .findAll(buildQueryObject(instituteId, examId, gender, casteGroup),
                             Course.class,
@@ -87,29 +112,39 @@ public class CutoffServiceImpl implements CutoffService {
             individualResponse.setCourseNameOfficial(course.getCourseNameOfficial());
             individualResponse.setMasterBranch(course.getMasterBranch());
             individualResponse.setCourseLevel(course.getCourseLevel());
-            individualResponse.setCutOffs(getCutOffs(course.getCutoffs(), gender, casteGroup,
+            individualResponse.setCutOffs(getCutOffList(course.getCutoffs(), gender, casteGroup,
                     examId));
             response.add(individualResponse);
         }
         return response;
     }
 
-    private List<CutOff> getCutOffs(List<Cutoff> cutoffs, Gender gender, String casteGroup,
+    private List<CutOff> getCutOffList(List<Cutoff> cutoffs, Gender gender, String casteGroup,
             long examId) {
         List<CutOff> responseCutoffs = new ArrayList<>();
+        Collections.sort(cutoffs,
+                Comparator.comparingInt(Cutoff::getYear).reversed());
+        int year = 0;
         for (Cutoff cutoff : cutoffs) {
-            if (cutoff.getCasteGroup().equals(casteGroup) && cutoff
-                    .getGender().equals(gender)
-                    && cutoff.getExamId() == examId) {
-                CutOff individualCutOff = new CutOff();
-                individualCutOff.setCasteGroup(cutoff.getCasteGroup());
-                individualCutOff.setCutoffType(cutoff.getCutoffType());
-                individualCutOff.setGender(cutoff.getGender());
-                individualCutOff.setExamId(cutoff.getExamId());
-                individualCutOff.setValue(cutoff.getFinalValue());
-                individualCutOff.setMeritListType(cutoff.getMeritListType());
-                individualCutOff.setYear(cutoff.getYear());
-                responseCutoffs.add(individualCutOff);
+            if (cutoff.getExamId() == examId) {
+                String cutoffCasteGroup = cutoff.getCasteGroup();
+                Gender cutoffGender = cutoff.getGender();
+                if (Objects.equals(cutoffCasteGroup, casteGroup)
+                        && Objects.equals(cutoffGender, gender) && (year == 0
+                        || year == cutoff.getYear())) {
+                    if (year == 0) {
+                        year = cutoff.getYear();
+                    }
+                    CutOff individualCutOff = new CutOff();
+                    individualCutOff.setCasteGroup(cutoffCasteGroup);
+                    individualCutOff.setCutoffType(cutoff.getCutoffType());
+                    individualCutOff.setGender(cutoffGender);
+                    individualCutOff.setExamId(cutoff.getExamId());
+                    individualCutOff.setValue(cutoff.getFinalValue());
+                    individualCutOff.setLocation(cutoff.getLocation());
+                    individualCutOff.setYear(cutoff.getYear());
+                    responseCutoffs.add(individualCutOff);
+                }
             }
         }
         return responseCutoffs;
@@ -120,11 +155,10 @@ public class CutoffServiceImpl implements CutoffService {
         Map<String, Object> queryParams = new HashMap<>();
         queryParams.put(INSTITUTE_ID, instituteId);
         queryParams.put(CUTOFF_EXAM_ID, examId);
+        Map<String, Boolean> existsQuery = new HashMap<>();
+        existsQuery.put(EXISTS, true);
+        queryParams.put(EXAMS_ACCEPTED, existsQuery);
         ExamAndCutOff genderCasteList = getGenderCasteGroupList(queryParams);
-        if (genderCasteList.getCasteGroups() == null) {
-            throw new NotFoundException(NO_LIST_EXISTS,
-                    NO_LIST_EXISTS.getExternalMessage());
-        }
         return genderCasteList;
     }
 
@@ -134,17 +168,35 @@ public class CutoffServiceImpl implements CutoffService {
         List<Course> courses = commonMongoRepository
                 .findAll(queryParams, Course.class,
                         projectionFields, AND);
-        Set<Gender> genders = new HashSet<>();
-        Set<String> casteGroups = new HashSet<>();
+        Map<Gender, String> genders = new HashMap<>();
+        Map<String, String> casteGroups = new HashMap<>();
+        Map<String, Object> genderMap = genderCategoryMap.get(GENDER);
+        Map<String, Object> casteGroupMap = genderCategoryMap.get(CASTEGROUP);
         for (Course course : courses) {
             for (Cutoff cutoff : course.getCutoffs()) {
-                genders.add(cutoff.getGender());
-                casteGroups.add(cutoff.getCasteGroup());
+                String caste = cutoff.getCasteGroup();
+                Gender gender = cutoff.getGender();
+                if (Objects.nonNull(gender)) {
+                    genders.put(gender, (String) genderMap.get(gender.toString()));
+                } else {
+                    genders.put(OTHERS, (String) genderMap.get(OTHERS.toString()));
+                }
+                if (StringUtils.isNotBlank(caste)) {
+                    casteGroups.put(caste, (String) casteGroupMap.get(caste));
+                } else {
+                    casteGroups.put(OTHER_CATEGORIES, (String) casteGroupMap.get(OTHER_CATEGORIES));
+                }
             }
         }
-        if (!casteGroups.isEmpty()) {
-            examAndCutOff.setCasteGroups(new ArrayList<>(casteGroups));
-            examAndCutOff.setGenders(new ArrayList<>(genders));
+        if (!casteGroups.isEmpty() && !(casteGroups.size() == 1 && casteGroups.entrySet().iterator()
+                .next().getKey()
+                .equals(OTHER_CATEGORIES))) {
+            examAndCutOff.setCasteGroups(casteGroups);
+        }
+        if (!genders.isEmpty() && !(genders.size() == 1 && genders.entrySet().iterator().next()
+                .getKey()
+                .equals(OTHERS))) {
+            examAndCutOff.setGenders(genders);
         }
         return examAndCutOff;
     }

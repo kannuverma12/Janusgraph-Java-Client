@@ -1,15 +1,20 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import static com.mongodb.QueryOperators.OR;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.CASTEGROUP;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.GENDER;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_PREFIX;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_CUTOFF_CASTEGROUP;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_CUTOFF_GENDER;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_DEGREES;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_PREFIX;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.OTHER_CATEGORIES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SUBEXAM_ID;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_DEGREES;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_CUTOFF_GENDER;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_CUTOFF_CASTEGROUP;
 import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
+import static com.paytm.digital.education.explore.enums.Gender.OTHERS;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
 
@@ -22,6 +27,7 @@ import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.enums.Gender;
 import com.paytm.digital.education.explore.response.builders.InstituteDetailResponseBuilder;
 import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
+import com.paytm.digital.education.explore.service.helper.GenderAndCasteGroupHelper;
 import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
 import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import lombok.AllArgsConstructor;
@@ -31,6 +37,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,6 +45,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
@@ -53,6 +61,14 @@ public class InstituteDetailServiceImpl {
 
     private static int EXAM_PREFIX_LENGTH   = EXAM_PREFIX.length();
     private static int COURSE_PREFIX_LENGTH = COURSE_PREFIX.length();
+
+    private GenderAndCasteGroupHelper        genderAndCasteGroupHelper;
+    private Map<String, Map<String, Object>> genderCategoryMap;
+
+    @PostConstruct
+    private void setGenderCategoryMap() {
+        genderCategoryMap = genderAndCasteGroupHelper.getGenderAndCasteGroupMap();
+    }
 
     public InstituteDetail getDetail(Long entityId, Long userId,
             String fieldGroup, List<String> fields) throws IOException, TimeoutException {
@@ -78,6 +94,9 @@ public class InstituteDetailServiceImpl {
         List<String> instituteFields = new ArrayList<>();
         List<String> courseFields = new ArrayList<>();
         List<String> examFields = new ArrayList<>();
+        List<String> parentInstitutionFields = new ArrayList<>();
+
+        parentInstitutionFields.add(OFFICIAL_NAME);
 
         for (String requestedField : groupFields) {
             if (requestedField.startsWith(COURSE_PREFIX)) {
@@ -95,14 +114,24 @@ public class InstituteDetailServiceImpl {
                 commonMongoRepository.getEntityByFields(INSTITUTE_ID, entityId, Institute.class,
                         instituteFields);
         if (institute != null) {
-            return processInstituteDetail(institute, entityId, courseFields, examFields);
+            Long parentInstitutionId = institute.getParentInstitution();
+            String parentInstitutionName = null;
+            if (parentInstitutionId != null) {
+                Institute parentInstitution = commonMongoRepository
+                        .getEntityByFields(INSTITUTE_ID, parentInstitutionId, Institute.class,
+                                parentInstitutionFields);
+                parentInstitutionName =
+                        parentInstitution != null ? parentInstitution.getOfficialName() : null;
+            }
+            return processInstituteDetail(institute, entityId, courseFields, examFields,
+                    parentInstitutionName);
         }
         throw new BadRequestException(INVALID_INSTITUTE_ID,
                 INVALID_INSTITUTE_ID.getExternalMessage());
     }
 
     private InstituteDetail processInstituteDetail(Institute institute, Long entityId,
-            List<String> courseFields, List<String> examFields)
+            List<String> courseFields, List<String> examFields, String parentInstitutionName)
             throws IOException, TimeoutException {
         List<Course> courses = null;
         if (!CollectionUtils.isEmpty(courseFields)) {
@@ -121,13 +150,16 @@ public class InstituteDetailServiceImpl {
                     .findAll(queryObject, Exam.class, examFields, OR);
         }
         return instituteDetailResponseBuilder
-                .buildResponse(institute, courses, examList, examData, examIds);
+                .buildResponse(institute, courses, examList, examData, examIds,
+                        parentInstitutionName);
     }
 
     private Map<String, Object> getExamData(List<Course> courses) {
         Map<Long, String> examDegrees = new HashMap<>();
-        Map<Long, Set<Gender>> examGenders = new HashMap<>();
-        Map<Long, Set<String>> examCasteGroup = new HashMap<>();
+        Map<Long, Map<Gender, String>> examGenders = new HashMap<>();
+        Map<Long, Map<String, String>> examCasteGroup = new HashMap<>();
+        Map<String, Object> genderMap = genderCategoryMap.get(GENDER);
+        Map<String, Object> casteGroupMap = genderCategoryMap.get(CASTEGROUP);
         Set<Long> examIds = new HashSet<>();
         if (!CollectionUtils.isEmpty(courses)) {
             courses.forEach(course -> {
@@ -136,25 +168,36 @@ public class InstituteDetailServiceImpl {
                         examDegrees.put(examId, StringUtils.join(course.getMasterDegree(), ','));
                         examIds.add(examId);
                     });
-                }
-                if (!CollectionUtils.isEmpty(course.getCutoffs())) {
-                    course.getCutoffs().forEach(cutoff -> {
-                        long examId = cutoff.getExamId();
-                        Set<Gender> genders = examGenders.get(examId);
-                        if (genders == null) {
-                            genders = new HashSet<>();
-                        }
-                        genders.add(cutoff.getGender());
-                        examGenders.put(examId, genders);
+                    if (!CollectionUtils.isEmpty(course.getCutoffs())) {
+                        course.getCutoffs().forEach(cutoff -> {
+                            long examId = cutoff.getExamId();
+                            Gender gender = cutoff.getGender();
+                            Map<Gender, String> genders = examGenders.get(examId);
+                            if (Objects.isNull(genders)) {
+                                genders = new HashMap<>();
+                            }
+                            if (Objects.nonNull(gender)) {
+                                genders.put(gender, (String) genderMap.get(gender.toString()));
+                            } else {
+                                genders.put(OTHERS, (String) genderMap.get(OTHERS.toString()));
+                            }
+                            examGenders.put(examId, genders);
 
-                        Set<String> casteGroup = examCasteGroup.get(examId);
-                        if (casteGroup == null) {
-                            casteGroup = new HashSet<>();
-                        }
-                        casteGroup.add(cutoff.getCasteGroup());
-                        examCasteGroup.put(examId, casteGroup);
-                        examIds.add(examId);
-                    });
+                            Map<String, String> casteGroups = examCasteGroup.get(examId);
+                            String caste = cutoff.getCasteGroup();
+                            if (Objects.isNull(casteGroups)) {
+                                casteGroups = new HashMap<>();
+                            }
+                            if (Objects.nonNull(caste)) {
+                                casteGroups.put(caste, (String) casteGroupMap.get(caste));
+                            } else {
+                                casteGroups.put(OTHER_CATEGORIES,
+                                        (String) casteGroupMap.get(OTHER_CATEGORIES));
+                            }
+                            examCasteGroup.put(examId, casteGroups);
+                            examIds.add(examId);
+                        });
+                    }
                 }
             });
         }

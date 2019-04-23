@@ -1,33 +1,29 @@
 package com.paytm.digital.education.elasticsearch.query;
 
 import com.paytm.digital.education.elasticsearch.constants.ESConstants;
-import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.FilterField;
-import com.paytm.digital.education.elasticsearch.models.SearchField;
+import com.paytm.digital.education.elasticsearch.models.Operator;
 import com.paytm.digital.education.elasticsearch.models.SortField;
+import com.paytm.digital.education.elasticsearch.query.helper.PathWiseMultiMatchQueryMapBuilder;
 import com.paytm.digital.education.elasticsearch.utils.DataSortUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.MultiMatchQueryBuilder;
-import org.elasticsearch.index.query.MultiMatchQueryBuilder.Type;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.sort.FieldSortBuilder;
-import org.elasticsearch.search.sort.NestedSortBuilder;
-import org.elasticsearch.search.sort.SortBuilder;
-import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.stereotype.Service;
-import java.time.temporal.ValueRange;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import org.springframework.util.CollectionUtils;
+
 import java.util.Map;
+import java.util.Objects;
+import java.util.HashMap;
+import java.util.Collection;
+import java.util.List;
 
 @Service
 public class SearchQueryBuilderService {
@@ -37,9 +33,9 @@ public class SearchQueryBuilderService {
 
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
-        if (searchQueries != null) {
+        if (!CollectionUtils.isEmpty(searchQueries)) {
             searchQueries.forEach((path, multiMatchQuery) -> {
-                if (path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
+                if (ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS.equals(path)) {
                     boolQuery.must(multiMatchQuery);
                 } else {
                     boolQuery.must(
@@ -48,12 +44,13 @@ public class SearchQueryBuilderService {
             });
         }
 
-        if (filterQueries != null) {
-            filterQueries.forEach((path, filterQuery) -> {
-                if (path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
+        if (!CollectionUtils.isEmpty(filterQueries)) {
+            filterQueries.forEach((operatorPerPath, filterQuery) -> {
+                if (ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS.equals(operatorPerPath)) {
                     boolQuery.filter(filterQuery);
                 } else {
-                    boolQuery.filter(QueryBuilders.nestedQuery(path, filterQuery, ScoreMode.None));
+                    boolQuery.filter(QueryBuilders
+                            .nestedQuery(operatorPerPath, filterQuery, ScoreMode.None));
                 }
             });
         }
@@ -63,7 +60,7 @@ public class SearchQueryBuilderService {
     private void addSortFieldsIntoRequest(ElasticRequest request, SearchSourceBuilder source,
             Map<String, QueryBuilder> filterQueries) {
         for (SortField sortField : request.getSortFields()) {
-            if (sortField.getName() != null) {
+            if (Objects.nonNull(sortField.getName())) {
                 source.sort(DataSortUtil.buildSort(sortField, filterQueries));
             }
         }
@@ -73,83 +70,53 @@ public class SearchQueryBuilderService {
         source.sort(ESConstants.RELAVANCE_SCORE, SortOrder.DESC);
     }
 
-    /**
-     * Creates a map containing multiMatch query for every nested path and parent document
-     */
-    private Map<String, QueryBuilder> fillSearchFieldsQueryMap(SearchField[] searchFields,
-            String queryTerm, String analyzer) {
-
-        String path;
-        String fieldName;
-        float boost;
-        Map<String, QueryBuilder> searchQueries = new HashMap<String, QueryBuilder>();
-
-        for (SearchField field : searchFields) {
-            if (field.getName() != null) {
-                path = StringUtils.isBlank(field.getPath())
-                        ? ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS
-                        : field.getPath();
-                fieldName =
-                        path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS) ? field.getName()
-                                : path + '.' + field.getName();
-                boost = field.getBoost() == 0.0 ? ESConstants.DEFAULT_BOOST : field.getBoost();
-
-                if (!searchQueries.containsKey(path)) {
-                    MultiMatchQueryBuilder multiMatchQuery =
-                            QueryBuilders.multiMatchQuery(queryTerm);
-                    if (analyzer != null) {
-                        multiMatchQuery.analyzer(analyzer);
-                    }
-                    multiMatchQuery.type(Type.CROSS_FIELDS);
-                    searchQueries.put(path, multiMatchQuery);
-                }
-
-                ((MultiMatchQueryBuilder) searchQueries.get(path)).field(fieldName,
-                        boost);
-            }
+    private void addQueryToMap(String path, Operator operator, Map<String, QueryBuilder> queryMap,
+            QueryBuilder query) {
+        if (!queryMap.containsKey(path)) {
+            queryMap.put(path, QueryBuilders.boolQuery());
         }
-
-        return searchQueries;
+        if (Operator.AND.equals(operator)) {
+            ((BoolQueryBuilder) queryMap.get(path)).filter(query);
+        } else {
+            ((BoolQueryBuilder) queryMap.get(path)).should(query).minimumShouldMatch(1);
+        }
     }
 
     /**
      * Creates a map containing term level query for every nested path and parent document
      */
-    private Map<String, QueryBuilder> fillFilterFieldsQueryMap(FilterField[] filterFields) {
+    private Map<String, QueryBuilder> fillFilterFieldsQueryMap(
+            FilterField[] filterFields) {
 
         String fieldName;
         String path;
-        Map<String, QueryBuilder> filterQueries = new HashMap<String, QueryBuilder>();
+        Map<String, QueryBuilder> filterQueries = new HashMap<>();
 
         for (FilterField field : filterFields) {
 
-            if (field.getName() != null && field.getValues() != null) {
-
+            if (Objects.nonNull(field.getName()) && Objects.nonNull(field.getValues())) {
                 path = StringUtils.isBlank(field.getPath())
                         ? ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS
                         : field.getPath();
                 fieldName =
-                        path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS) ? field.getName()
+                        ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS.equals(path) ? field.getName()
                                 : path + '.' + field.getName();
-                QueryBuilder filtetQuery = null;
 
-                if (field.getType() == FilterQueryType.TERMS) {
-                    filtetQuery = QueryBuilders.termsQuery(fieldName,
+                if (field.getType().equals(FilterQueryType.TERMS)) {
+                    QueryBuilder filterQuery = QueryBuilders.termsQuery(fieldName,
                             (Collection<?>) field.getValues());
-                } else if (field.getType() == FilterQueryType.RANGE) {
-                    List<Double> values = (List<Double>) field.getValues();
-                    filtetQuery = QueryBuilders.rangeQuery(fieldName)
-                            .from(values.get(0))
-                            .to(values.get(1));
+                    addQueryToMap(path, field.getOperator(), filterQueries, filterQuery);
+                } else if (field.getType().equals(FilterQueryType.RANGE)) {
+                    List<List<Double>> values = (List<List<Double>>) field.getValues();
+                    for (List<Double> value : values) {
+                        QueryBuilder filterQuery = QueryBuilders.rangeQuery(fieldName)
+                                .from(value.get(0))
+                                .to(value.get(1));
+                        addQueryToMap(path, field.getOperator(), filterQueries, filterQuery);
+                    }
                 } else {
                     // Keep a default query or throw exception?
                 }
-
-                if (!filterQueries.containsKey(path)) {
-                    filterQueries.put(path, QueryBuilders.boolQuery());
-                }
-
-                ((BoolQueryBuilder) filterQueries.get(path)).filter(filtetQuery);
             }
         }
         return filterQueries;
@@ -160,29 +127,30 @@ public class SearchQueryBuilderService {
         Map<String, QueryBuilder> searchQueries = null;
         Map<String, QueryBuilder> filterQueries = null;
 
-        if (request.getSearchFields() != null && StringUtils.isNotBlank(request.getQueryTerm())) {
-            searchQueries = fillSearchFieldsQueryMap(request.getSearchFields(),
-                    request.getQueryTerm(), request.getAnalyzer());
+        if (Objects.nonNull(request.getSearchFields()) && StringUtils
+                .isNotBlank(request.getQueryTerm())) {
+            searchQueries =
+                    PathWiseMultiMatchQueryMapBuilder.getQueryMap(request.getSearchFields(),
+                            request.getAnalyzer(), request.getQueryTerm());
         }
 
-        if (request.getFilterFields() != null) {
+        if (Objects.nonNull(request.getFilterFields())) {
             filterQueries = fillFilterFieldsQueryMap(request.getFilterFields());
         }
 
-        int offset =
-                (request.getOffSet() != null) ? request.getOffSet() : ESConstants.DEFAULT_OFFSET;
-        int limit =
-                (request.getLimit() != null) ? request.getLimit() : ESConstants.DEFAULT_LIMIT;
+        int offset = Objects.nonNull(request.getOffSet())
+                ? request.getOffSet() : ESConstants.DEFAULT_OFFSET;
+        int limit = Objects.nonNull(request.getLimit())
+                ? request.getLimit() : ESConstants.DEFAULT_LIMIT;
 
         SearchSourceBuilder source = new SearchSourceBuilder();
         source.from(offset);
         source.size(limit);
         source.query(addQueryMapsIntoRequest(searchQueries, filterQueries));
 
-        if (request.getSortFields() != null) {
+        if (Objects.nonNull(request.getSortFields())) {
             addSortFieldsIntoRequest(request, source, filterQueries);
         }
-
 
         return new SearchRequest(request.getIndex()).source(source);
     }

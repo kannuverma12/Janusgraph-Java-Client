@@ -11,19 +11,18 @@ import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.BucketAggregationSortParms;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
-import com.paytm.digital.education.elasticsearch.models.BucketSort;
-import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.FilterField;
-import com.paytm.digital.education.elasticsearch.models.SearchField;
+import com.paytm.digital.education.elasticsearch.models.Operator;
+import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
+import com.paytm.digital.education.elasticsearch.models.BucketSort;
 import com.paytm.digital.education.elasticsearch.models.SortField;
+import com.paytm.digital.education.elasticsearch.query.helper.PathWiseMultiMatchQueryMapBuilder;
 import com.paytm.digital.education.elasticsearch.utils.DataSortUtil;
+import javafx.util.Pair;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.common.util.CollectionUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.MultiMatchQueryBuilder;
-import org.elasticsearch.index.query.MultiMatchQueryBuilder.Type;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
@@ -37,64 +36,29 @@ import org.elasticsearch.search.aggregations.metrics.min.MinAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.tophits.TopHitsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.ArrayList;
+import java.util.Collection;
+
 
 @Service
 public class AggregationQueryBuilderService {
 
     /**
-     * Creates a map containing multiMatch query for every nested path and parent document
+     * Creates a map containing term level query with operator for every nested path and parent document
      */
-    private Map<String, QueryBuilder> fillSearchFieldsQueryMap(SearchField[] searchFields,
-            String analyzer, String queryTerm) {
-
-        String fieldName;
-        String path;
-        Map<String, QueryBuilder> searchQueries = new HashMap<String, QueryBuilder>();
-
-        for (SearchField field : searchFields) {
-
-            if (StringUtils.isNotBlank(field.getName())) {
-                path = StringUtils.isBlank(field.getPath())
-                        ? DUMMY_PATH_FOR_OUTERMOST_FIELDS
-                        : field.getPath();
-                fieldName =
-                        path.equals(DUMMY_PATH_FOR_OUTERMOST_FIELDS) ? field.getName()
-                                : path + '.' + field.getName();
-
-                if (!searchQueries.containsKey(path)) {
-                    MultiMatchQueryBuilder multiMatchQuery =
-                            QueryBuilders.multiMatchQuery(queryTerm);
-
-                    if (StringUtils.isNotBlank(analyzer)) {
-                        multiMatchQuery.analyzer(analyzer);
-                    }
-
-                    multiMatchQuery.type(Type.CROSS_FIELDS);
-                    searchQueries.put(path, multiMatchQuery);
-                }
-
-                ((MultiMatchQueryBuilder) searchQueries.get(path)).field(fieldName);
-            }
-        }
-
-        return searchQueries;
-    }
-
-    /**
-     * Creates a map containing term level query for every nested path and parent document
-     */
-    private Map<String, Map<String, QueryBuilder>> fillFilterFieldsQueryMap(
+    private Map<String, Map<Pair<String, Operator>, List<QueryBuilder>>> fillFilterFieldsQueryMap(
             FilterField[] filterFields) {
 
         String fieldName;
         String path;
-        Map<String, Map<String, QueryBuilder>> filterQueries =
-                new HashMap<String, Map<String, QueryBuilder>>();
+        Map<String, Map<Pair<String, Operator>, List<QueryBuilder>>> filterQueries =
+                new HashMap<>();
 
         for (FilterField field : filterFields) {
 
@@ -103,28 +67,34 @@ public class AggregationQueryBuilderService {
                         ? DUMMY_PATH_FOR_OUTERMOST_FIELDS
                         : field.getPath();
                 fieldName =
-                        path.equals(DUMMY_PATH_FOR_OUTERMOST_FIELDS) ? field.getName()
+                        DUMMY_PATH_FOR_OUTERMOST_FIELDS.equals(path) ? field.getName()
                                 : path + '.' + field.getName();
-                QueryBuilder filterQuery = null;
 
-                if (field.getType() == FilterQueryType.TERMS) {
-                    filterQuery = QueryBuilders.termsQuery(fieldName,
+                List<QueryBuilder> filterQueryList = new ArrayList<>();
+                if (field.getType().equals(FilterQueryType.TERMS)) {
+                    QueryBuilder filterQuery = QueryBuilders.termsQuery(fieldName,
                             (Collection<?>) field.getValues());
+                    filterQueryList.add(filterQuery);
                 } else if (field.getType() == FilterQueryType.RANGE) {
                     // TODO: validation in BL2
-                    List<Double> values = (List<Double>) field.getValues();
-                    filterQuery = QueryBuilders.rangeQuery(fieldName)
-                            .from(values.get(0))
-                            .to(values.get(1));
+                    List<List<Double>> values = (List<List<Double>>) field.getValues();
+                    for (List<Double> value : values) {
+                        QueryBuilder filterQuery = QueryBuilders.rangeQuery(fieldName)
+                                .from(value.get(0))
+                                .to(value.get(1));
+                        filterQueryList.add(filterQuery);
+                    }
                 }
-
-                if (!filterQueries.containsKey(path)) {
-                    filterQueries.put(path, new HashMap<String, QueryBuilder>());
+                if (!CollectionUtils.isEmpty(filterQueryList)) {
+                    if (!filterQueries.containsKey(path)) {
+                        filterQueries.put(path, new HashMap<>());
+                    }
+                    filterQueries.get(path)
+                            .put(new Pair<>(fieldName, field.getOperator()), filterQueryList);
                 }
-                filterQueries.get(path).put(fieldName, filterQuery);
             }
-        }
 
+        }
         return filterQueries;
     }
 
@@ -132,10 +102,10 @@ public class AggregationQueryBuilderService {
 
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
-        if (searchQueries != null) {
+        if (!CollectionUtils.isEmpty(searchQueries)) {
             searchQueries.forEach((path, multiMatchQuery) -> {
 
-                if (path.equals(DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
+                if (DUMMY_PATH_FOR_OUTERMOST_FIELDS.equals(path)) {
                     boolQuery.must(multiMatchQuery);
                 } else {
                     boolQuery.filter(
@@ -147,11 +117,23 @@ public class AggregationQueryBuilderService {
         return boolQuery;
     }
 
+    private void addTermLevelQueryIntoBool(List<QueryBuilder> filterQueries,
+            BoolQueryBuilder boolQuery, Operator operator) {
+        for (QueryBuilder query : filterQueries) {
+            if (Operator.AND.equals(operator)) {
+                boolQuery.filter(query);
+            } else {
+                boolQuery.should(query).minimumShouldMatch(1);
+            }
+        }
+    }
+
     /**
      * Add query for filtering documents before aggregation
      */
     private QueryBuilder addAggregationFilterQuery(String aggFieldName,
-            Map<String, Map<String, QueryBuilder>> filterQueries, AggregationType type) {
+            Map<String, Map<Pair<String, Operator>, List<QueryBuilder>>> filterQueries,
+            AggregationType type) {
 
         BoolQueryBuilder filterAggregationQuery = QueryBuilders.boolQuery();
 
@@ -159,26 +141,27 @@ public class AggregationQueryBuilderService {
 
             filterQueries.forEach((path, fieldQueryMap) -> {
 
-                if (fieldQueryMap != null) {
+                if (!CollectionUtils.isEmpty(fieldQueryMap)) {
 
-                    if (path == DUMMY_PATH_FOR_OUTERMOST_FIELDS) {
-                        fieldQueryMap.forEach((filterFieldName, filterQuery) -> {
-                            if (type == AggregationType.TOP_HITS
-                                    || !aggFieldName.equals(filterFieldName)) {
-                                filterAggregationQuery.filter(filterQuery);
+                    if (DUMMY_PATH_FOR_OUTERMOST_FIELDS.equals(path)) {
+                        fieldQueryMap.forEach((fieldAndOperator, filterQueryList) -> {
+                            if (type.equals(AggregationType.TOP_HITS)
+                                    || !aggFieldName.equals(fieldAndOperator.getKey())) {
+                                addTermLevelQueryIntoBool(filterQueryList, filterAggregationQuery,
+                                        fieldAndOperator.getValue());
                             }
                         });
                     } else {
                         BoolQueryBuilder nestedBoolQuery = QueryBuilders.boolQuery();
-                        fieldQueryMap.forEach((filterFieldName, filterQuery) -> {
-                            if (type == AggregationType.TOP_HITS
-                                    || !aggFieldName.equals(filterFieldName)) {
-                                nestedBoolQuery.filter(filterQuery);
+                        fieldQueryMap.forEach((fieldAndOperator, filterQueryList) -> {
+                            if (type.equals(AggregationType.TOP_HITS)
+                                    || !aggFieldName.equals(fieldAndOperator.getKey())) {
+                                addTermLevelQueryIntoBool(filterQueryList, nestedBoolQuery,
+                                        fieldAndOperator.getValue());
                             }
                         });
-                        filterAggregationQuery
-                                .filter(QueryBuilders.nestedQuery(path, nestedBoolQuery,
-                                        ScoreMode.None));
+                        filterAggregationQuery.filter(QueryBuilders
+                                .nestedQuery(path, nestedBoolQuery, ScoreMode.None));
                     }
                 }
             });
@@ -215,7 +198,8 @@ public class AggregationQueryBuilderService {
 
     private void addAggregationsIntoRequest(AggregateField[] aggregateFields,
             SearchSourceBuilder source,
-            Map<String, Map<String, QueryBuilder>> filterQueries, int bucketDocCount) {
+            Map<String, Map<Pair<String, Operator>, List<QueryBuilder>>> filterQueries,
+            int bucketDocCount) {
 
         String path;
         String fieldName;
@@ -227,20 +211,20 @@ public class AggregationQueryBuilderService {
                         ? DUMMY_PATH_FOR_OUTERMOST_FIELDS
                         : field.getPath();
                 fieldName =
-                        path.equals(DUMMY_PATH_FOR_OUTERMOST_FIELDS) ? field.getName()
+                        DUMMY_PATH_FOR_OUTERMOST_FIELDS.equals(path) ? field.getName()
                                 : path + '.' + field.getName();
                 QueryBuilder filterQuery =
                         addAggregationFilterQuery(fieldName, filterQueries, field.getType());
                 AggregationBuilder filterAggregation =
                         AggregationBuilders.filter(fieldName, filterQuery);
 
-                if (field.getType() == AggregationType.TERMS) {
+                if (field.getType().equals(AggregationType.TERMS)) {
                     TermsAggregationBuilder termsAggregation =
                             AggregationBuilders.terms(fieldName).field(fieldName);
                     /**
                      * We are doing sorting of nested aggregation on count at application level.
                      */
-                    if (path.equals(DUMMY_PATH_FOR_OUTERMOST_FIELDS)
+                    if (DUMMY_PATH_FOR_OUTERMOST_FIELDS.equals(path)
                             || (field.getBucketsOrder() != null
                             && !field.getBucketsOrder().getKey()
                             .equals(BucketAggregationSortParms.COUNT))) {
@@ -249,7 +233,7 @@ public class AggregationQueryBuilderService {
                     termsAggregation.size(DEFAULT_TERMS_AGGREGATION_BUCKETS_SIZE);
 
                     TermsAggregationBuilder termsAggregationInclude = null;
-                    if (!CollectionUtils.isEmpty(field.getValues())) {
+                    if (Objects.nonNull(field.getValues())) {
                         IncludeExclude excludeValues = new IncludeExclude(null, field.getValues());
                         termsAggregation.includeExclude(excludeValues);
                         termsAggregationInclude =
@@ -266,9 +250,9 @@ public class AggregationQueryBuilderService {
                      * Adding reverse nested in order to get count of parent documents in case of
                      * nested aggregations
                      */
-                    if (path.equals(DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
+                    if (DUMMY_PATH_FOR_OUTERMOST_FIELDS.equals(path)) {
                         filterAggregation.subAggregation(termsAggregation);
-                        if (termsAggregationInclude != null) {
+                        if (Objects.nonNull(termsAggregationInclude)) {
                             filterAggregation.subAggregation(termsAggregationInclude);
                         }
                     } else {
@@ -278,7 +262,7 @@ public class AggregationQueryBuilderService {
                         NestedAggregationBuilder nestedAggregation =
                                 new NestedAggregationBuilder(fieldName, path);
                         nestedAggregation.subAggregation(termsAggregation);
-                        if (termsAggregationInclude != null) {
+                        if (Objects.nonNull(termsAggregationInclude)) {
                             termsAggregationInclude
                                     .subAggregation(AggregationBuilders.reverseNested(
                                             fieldName + INCLUDE_AGGREGATION_SUFFIX));
@@ -288,7 +272,7 @@ public class AggregationQueryBuilderService {
                     }
                     source.aggregation(filterAggregation);
 
-                } else if (field.getType() == AggregationType.MINMAX) {
+                } else if (field.getType().equals(AggregationType.MINMAX)) {
                     /**
                      * Using suffix because two sibling aggregations cannot have save name
                      */
@@ -299,7 +283,7 @@ public class AggregationQueryBuilderService {
                             .max(fieldName + MAX_AGGREGATION_SUFFIX)
                             .field(fieldName);
 
-                    if (path.equals(DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
+                    if (DUMMY_PATH_FOR_OUTERMOST_FIELDS.equals(path)) {
                         filterAggregation.subAggregation(minAggregation);
                         filterAggregation.subAggregation(maxAggregation);
                     } else {
@@ -310,7 +294,7 @@ public class AggregationQueryBuilderService {
                         filterAggregation.subAggregation(nestedAggregation);
                     }
                     source.aggregation(filterAggregation);
-                } else if (field.getType() == AggregationType.TOP_HITS) {
+                } else if (field.getType().equals(AggregationType.TOP_HITS)) {
                     TopHitsAggregationBuilder topHitsAggregation =
                             AggregationBuilders.topHits(fieldName);
                     topHitsAggregation.size(bucketDocCount);
@@ -324,7 +308,7 @@ public class AggregationQueryBuilderService {
                     termsAggregation.field(fieldName);
                     termsAggregation.size(DEFAULT_TERMS_AGGREGATION_BUCKETS_SIZE);
                     termsAggregation.subAggregation(topHitsAggregation);
-                    if (path.equals(DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
+                    if (DUMMY_PATH_FOR_OUTERMOST_FIELDS.equals(path)) {
                         filterAggregation.subAggregation(termsAggregation);
                     } else {
                         NestedAggregationBuilder nestedAggs =
@@ -342,14 +326,16 @@ public class AggregationQueryBuilderService {
     public SearchRequest buildRequest(ElasticRequest request) {
 
         Map<String, QueryBuilder> searchQueries = null;
-        Map<String, Map<String, QueryBuilder>> filterQueries = null;
+        Map<String, Map<Pair<String, Operator>, List<QueryBuilder>>> filterQueries = null;
 
-        if (request.getSearchFields() != null && StringUtils.isNotBlank(request.getQueryTerm())) {
-            searchQueries = fillSearchFieldsQueryMap(request.getSearchFields(),
-                    request.getAnalyzer(), request.getQueryTerm());
+        if (Objects.nonNull(request.getSearchFields()) && StringUtils
+                .isNotBlank(request.getQueryTerm())) {
+            searchQueries =
+                    PathWiseMultiMatchQueryMapBuilder.getQueryMap(request.getSearchFields(),
+                            request.getAnalyzer(), request.getQueryTerm());
         }
 
-        if (request.getFilterFields() != null) {
+        if (Objects.nonNull(request.getFilterFields())) {
             filterQueries = fillFilterFieldsQueryMap(request.getFilterFields());
         }
 
@@ -357,7 +343,7 @@ public class AggregationQueryBuilderService {
         source.size(AGGREGATION_QUERY_SIZE);
         source.query(addSearchQueryListIntoRequest(searchQueries));
 
-        if (request.getAggregateFields() != null) {
+        if (Objects.nonNull(request.getAggregateFields())) {
             addAggregationsIntoRequest(request.getAggregateFields(), source, filterQueries,
                     request.getLimit());
         }

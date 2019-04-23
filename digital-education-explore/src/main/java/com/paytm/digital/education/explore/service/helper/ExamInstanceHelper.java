@@ -5,7 +5,9 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EXA
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_CUTOFF_GENDER;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_DEGREES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.NON_TENTATIVE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.OTHER_CATEGORIES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.YYYY_MM;
+import static com.paytm.digital.education.explore.enums.Gender.OTHERS;
 import static com.paytm.digital.education.utility.DateUtil.stringToDate;
 
 import com.paytm.digital.education.explore.database.entity.Event;
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -34,10 +37,10 @@ public class ExamInstanceHelper {
             Map<String, Object> examRelatedData, Set<Long> examIds) {
         Map<Long, String> examIdAndMasterDegrees =
                 (Map<Long, String>) examRelatedData.get(EXAM_DEGREES);
-        Map<Long, Set<Gender>> examGender =
-                (Map<Long, Set<Gender>>) examRelatedData.get(EXAM_CUTOFF_GENDER);
-        Map<Long, Set<String>> examCategoryGroup =
-                (Map<Long, Set<String>>) examRelatedData.get(EXAM_CUTOFF_CASTEGROUP);
+        Map<Long, Map<Gender, String>> examGender =
+                (Map<Long, Map<Gender, String>>) examRelatedData.get(EXAM_CUTOFF_GENDER);
+        Map<Long, Map<String, String>> examCategoryGroup =
+                (Map<Long, Map<String, String>>) examRelatedData.get(EXAM_CUTOFF_CASTEGROUP);
         if (!CollectionUtils.isEmpty(examList)) {
             List<ExamAndCutOff> cutOffList = new ArrayList<>();
             for (Exam exam : examList) {
@@ -47,9 +50,7 @@ public class ExamInstanceHelper {
                 examAndCutOff.setExamShortName(exam.getExamShortName());
                 examAndCutOff.setMasterDegree(examIdAndMasterDegrees.get(examId));
                 if (examCategoryGroup.containsKey(examId)) {
-                    examAndCutOff.setCasteGroups(
-                            new ArrayList<>(examCategoryGroup.get(examId)));
-                    examAndCutOff.setGenders(new ArrayList<>(examGender.get(examId)));
+                    setCasteGroupAndGender(examId, examGender, examCategoryGroup, examAndCutOff);
                     examAndCutOff.setHasCutoff(true);
                 } else {
                     examAndCutOff.setHasCutoff(false);
@@ -64,17 +65,18 @@ public class ExamInstanceHelper {
                  ** examIds set
                  */
                 if (examAndCutOff.getHasCutoff() == false && !examIds.isEmpty()) {
-                    for (SubExam subExam : exam.getSubExams()) {
-                        examId = subExam.getId();
-                        if (examIds.contains(examId)) {
-                            examAndCutOff.setExamId(examId);
-                            examAndCutOff.setCasteGroups(
-                                    new ArrayList<>(examCategoryGroup.get(examId)));
-                            examAndCutOff.setGenders(new ArrayList<>(examGender.get(examId)));
-                            examAndCutOff.setHasCutoff(true);
-                            // this is done so that we can do empty check correctly in the examIds
-                            examIds.remove(examId);
-                            break;
+                    if (Objects.nonNull(exam.getSubExams())) {
+                        for (SubExam subExam : exam.getSubExams()) {
+                            examId = subExam.getId();
+                            if (examIds.contains(examId)) {
+                                examAndCutOff.setExamId(examId);
+                                setCasteGroupAndGender(examId, examGender, examCategoryGroup,
+                                        examAndCutOff);
+                                examAndCutOff.setHasCutoff(true);
+                                // this is done so that we can do empty check correctly in the examIds
+                                examIds.remove(examId);
+                                break;
+                            }
                         }
                     }
                 }
@@ -83,6 +85,22 @@ public class ExamInstanceHelper {
             return cutOffList;
         }
         return null;
+    }
+
+    private void setCasteGroupAndGender(Long examId, Map<Long, Map<Gender, String>> examGender,
+            Map<Long, Map<String, String>> examCategoryGroup, ExamAndCutOff examAndCutOff) {
+        Map<String, String> casteGroups = examCategoryGroup.get(examId);
+        Map<Gender, String> genders = examGender.get(examId);
+        if (!casteGroups.isEmpty() && !(casteGroups.size() == 1 && casteGroups.entrySet().iterator()
+                .next().getKey()
+                .equals(OTHER_CATEGORIES))) {
+            examAndCutOff.setCasteGroups(casteGroups);
+        }
+        if (!genders.isEmpty() && !(genders.size() == 1 && genders.entrySet().iterator().next()
+                .getKey()
+                .equals(OTHERS))) {
+            examAndCutOff.setGenders(genders);
+        }
     }
 
     private Event getExamDateEvent(Exam exam) {

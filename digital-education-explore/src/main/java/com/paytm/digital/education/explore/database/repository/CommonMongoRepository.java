@@ -1,6 +1,7 @@
 package com.paytm.digital.education.explore.database.repository;
 
 import static com.mongodb.QueryOperators.AND;
+import static com.mongodb.QueryOperators.EXISTS;
 import static com.mongodb.QueryOperators.OR;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.GROUP_ACTIVE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.GROUP_ENTITY;
@@ -144,7 +145,14 @@ public class CommonMongoRepository {
     private Query createMongoQuery(Map<String, Object> searchRequest, List<String> fields) {
         Query mongoQuery = new Query();
         searchRequest.forEach((key, value) -> {
-            mongoQuery.addCriteria(Criteria.where(key).is(value));
+            if (value instanceof Map) {
+                if (((Map) value).containsKey(EXISTS)) {
+                    mongoQuery.addCriteria(Criteria.where(key).exists((Boolean) ((Map) value).get(
+                            EXISTS)));
+                }
+            } else {
+                mongoQuery.addCriteria(Criteria.where(key).is(value));
+            }
         });
         fields.forEach(field -> {
             mongoQuery.fields().include(field);
