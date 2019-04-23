@@ -1,7 +1,10 @@
 package com.paytm.digital.education.explore.database.entity;
 
+import java.util.Date;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.ToString;
@@ -11,7 +14,11 @@ import lombok.ToString;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Document
 public class FailedImage {
-
+    
+    @Id
+    @Field("_id")
+    @JsonIgnore
+    private String id;
     
     @Field("institute_id")
     private Long instituteId;
@@ -24,6 +31,19 @@ public class FailedImage {
 
     @Field("reason")
     private String reason;
+    
+    @Field("is_deleted")
+    private Boolean isDeleted;
+    
+    @Field("retry_count")
+    private Integer retryCount;
+    
+    @Field("created_at")
+    private Date created_at;
+    
+    @Field("last_updated_at")
+    private Date lastUpdatedAt;
+   
 
     public FailedImage(Long instituteId, String imageUrl, String type, String reason) {
         super();

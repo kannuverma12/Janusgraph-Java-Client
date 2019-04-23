@@ -25,5 +25,12 @@ public class Gallery {
     @Field("logo")
     @JsonProperty("logo")
     private String logo;
+    
+    @Field("s3Images")
+    private Map<String, List<String>> s3Images;
+    
+    @Field("s3Logo")
+    @JsonProperty("s3Logo")
+    private String s3Logo;
 
 }

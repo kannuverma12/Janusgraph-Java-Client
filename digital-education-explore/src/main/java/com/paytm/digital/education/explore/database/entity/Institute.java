@@ -2,6 +2,7 @@ package com.paytm.digital.education.explore.database.entity;
 
 import java.util.Date;
 import java.util.List;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -17,6 +18,7 @@ import lombok.ToString;
 @Document
 public class Institute {
 
+    @Id
     @Field("_id")
     @JsonIgnore
     private String id;
@@ -50,7 +52,7 @@ public class Institute {
     private List<String> instituteTypes;
 
     @Field("last_updated")
-    private Date lastUpdated;
+    private String lastUpdated;
 
     @Field("common_name")
     private String commonName;
@@ -114,8 +116,8 @@ public class Institute {
     private String institutionCity;
     
 
-    @Field("imagesUploaded")
-    private Boolean imagesUploaded;
+    @Field("updated_at")
+    private Date updated_at;
 
     public Institute(String commonName, Long instituteId) {
         this.commonName = commonName;

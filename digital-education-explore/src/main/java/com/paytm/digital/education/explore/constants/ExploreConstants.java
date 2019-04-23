@@ -152,4 +152,11 @@ public interface ExploreConstants {
     String CUTOFF                 = "cutoffs";
     String SUBEXAM_NAME           = "subexams.sub_exam_name";
     String SUBEXAM_ID             = "subexams.id";
+    
+    //S3 constants
+    String S3_BUCKET_PATH = "assets.paytm.com/educationwebassets/education/explore/college/images/dummy/";
+    
+    //CRON KEYS
+    String IMAGE_UPLOAD_CRON_KEY = "isImageUploadCronEnabled";
+    String FAILED_IMAGE_CRON_KEY = "isFailedImageCronEnabled";
 }

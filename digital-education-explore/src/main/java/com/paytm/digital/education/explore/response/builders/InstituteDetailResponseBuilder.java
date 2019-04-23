@@ -58,9 +58,9 @@ public class InstituteDetailResponseBuilder {
             instituteDetail.setInstituteType(institute.getEntityType().name());
         }
         if (institute.getGallery() != null && StringUtils
-                .isNotBlank(institute.getGallery().getLogo())) {
+                .isNotBlank(institute.getGallery().getS3Logo())) {
             instituteDetail
-                    .setLogoUrl(CommonUtil.getLogoLink(institute.getGallery().getLogo()));
+                    .setLogoUrl(CommonUtil.getLogoLink(institute.getGallery().getS3Logo()));
         }
         instituteDetail.setEstablishedYear(institute.getEstablishedYear());
         instituteDetail.setOfficialName(institute.getOfficialName());

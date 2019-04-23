@@ -28,7 +28,7 @@ public class GalleryDataHelper {
             if (!CollectionUtils.isEmpty(galleryData.getImages())) {
                 Map<String, List<String>> imageMap = new HashMap<>();
                 for (String key : galleryData.getImages().keySet()) {
-                    List<String> urlList = new ArrayList<>(galleryData.getImages().get(key).stream()
+                    List<String> urlList = new ArrayList<>(galleryData.getS3Images().get(key).stream()
                             .filter(url -> StringUtils.isNotBlank(url))
                             .map(url -> CommonUtil.getLogoLink(url)).collect(Collectors.toSet()));
                     if (!CollectionUtils.isEmpty(urlList)) {

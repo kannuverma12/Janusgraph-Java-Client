@@ -19,9 +19,10 @@ public class FailedImagesUploadController {
     private ImageUploadServiceImpl imageUploadService;
     
     @RequestMapping(method = RequestMethod.GET, path = "/v1/failedImagesUpload")
-    public void uploadFailedImages() {
+    public String uploadFailedImages() {
         log.info("Entering uploadFailedImages");
         imageUploadService.uploadFailedImages();
         log.info("Exiting uploadFailedImages");
+        return "success";
     }
 }

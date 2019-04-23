@@ -98,4 +98,8 @@ public class CommonUtil {
             }
         }
     }
+    
+    public String encodeString(String url) {
+        return url.replace(" ", "%20");
+    }
 }

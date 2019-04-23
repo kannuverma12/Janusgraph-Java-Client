@@ -11,7 +11,9 @@ import org.springframework.validation.annotation.Validated;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.paytm.digital.education.explore.constants.ExploreConstants;
 import com.paytm.digital.education.explore.es.model.Aws;
+import com.paytm.digital.education.explore.utility.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -23,22 +25,21 @@ public class S3Service {
 
     public String uploadFile(String imageUrl, String fileName, Long instituteId) throws IOException {
         log.info("In S3Service.uploadFile with imageUrl {} fileName {} instituteId {} ", imageUrl, fileName, instituteId);
+        
+        imageUrl = CommonUtil.encodeString(imageUrl);
         URL url = new URL(imageUrl);
         InputStream is = url.openStream();
         ObjectMetadata metadata = new ObjectMetadata();
-        byte[] bytes = IOUtils.toByteArray(is);
-        metadata.setContentLength(bytes.length);
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+        byte[] bytes1 = IOUtils.toByteArray(is);
+        metadata.setContentLength(bytes1.length);
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes1);
         PutObjectRequest saveRequest =
                 new PutObjectRequest(
-                        "assets.paytm.com/educationwebassets/education/explore/college/images/"
-                                + instituteId + "/",
+                        ExploreConstants.S3_BUCKET_PATH + instituteId,
                         fileName, byteArrayInputStream, metadata);
         s3Client.putObject(saveRequest);
-        String s3Path =
-                "http://assetscdn1.paytm.com/educationwebassets/education/explore/college/images/"
-                        + instituteId + "/" + fileName;
         is.close();
+        String s3Path = "/" + instituteId + "/" + fileName;
         log.info("Exited from S3Service.uploadFile with imageUrl {} fileName {} instituteId {} s3Path {} ", imageUrl, fileName, instituteId, s3Path);
         return s3Path;
     }
