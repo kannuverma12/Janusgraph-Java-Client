@@ -1,7 +1,9 @@
 package com.paytm.digital.education.explore.response.dto.detail;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.explore.database.entity.Placement;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -11,13 +13,17 @@ import java.util.Set;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties( { "fake_rankings", "fake_placements" })
 public class CompareInstDetail {
 
     @JsonProperty("institute_id")
-    private Long institute_id;
+    private Long instituteId;
 
-    @JsonProperty("rankings")
-    private List<Ranking> rankings;
+    @JsonProperty("fake_rankings")
+    private Map<String, Ranking> fakeRankings;
+
+    @JsonProperty("fake_placements")
+    private Map<String, Placement> fakePlacements;
 
     @JsonProperty("approvals")
     private List<String> approvals;
@@ -28,11 +34,11 @@ public class CompareInstDetail {
     @JsonProperty("campus_area")
     private String campusArea;
 
-    @JsonProperty("minimum_course_fee") //check logic
+    @JsonProperty("minimum_course_fee")
     private Long minimumCourseFee;
 
     @JsonProperty("placements")
-    private String placements;
+    private Placement placements;
 
     @JsonProperty("exams_accepted")
     private List<String> examAccepted;
@@ -44,13 +50,9 @@ public class CompareInstDetail {
     private Set<String> courseLevel;
 
     @Field("facilities")
-    private List<String> facilities;
+    private Map<String, String> facilities;
 
-
-
-
-
-
-
+    @JsonProperty("rankings")
+    private Set<CompareRanking> rankings;
 
 }

@@ -105,6 +105,7 @@ public interface ExploreConstants {
     String SEARCH_EXAM_LEVEL           = "level";
     String IGNORE_VALUES               = "ignore";
     String RANKING_STREAM_NAMESPACE    = "ranking_stream";
+    String FACILITIES_MASTER_LIST       = "master_list";
 
     String STREAM_COURSE                    = "domain_name";
     String DEGREE_COURSE                    = "degree";
@@ -169,4 +170,21 @@ public interface ExploreConstants {
     String CONSTITUENT_OF       = "Constituent Of";
     String GOVERNED_BY          = "Governed By";
     String INSTITUTE_TYPE       = "Institute Governance";
+
+    String MEDIAN = "Median";
+    String AVERAGE = "Average";
+    String MAX = "Maximum";
+    String MIN = "Minimum";
+    String NIRF = "NIRF";
+    String CAREERS360 = "CAREERS360";
+    String RANKED = "Ranked ";
+    String AS_PER = "as per ";
+    String RANKINKS = " Rankings";
+    String GENERAL = "general";
+    String DETAILS = "details";
+    String YES = "yes";
+    String HIPHEN = "-";
+    Integer LATEST_YEAR = 1990;
+    String ACRES = " Acres";
+    String UNIVERSITIES = "UNIVERSITIES";
 }

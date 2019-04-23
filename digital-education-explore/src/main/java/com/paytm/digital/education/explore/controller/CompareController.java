@@ -32,9 +32,9 @@ public class CompareController {
     private ExploreValidator exploreValidator;
 
     @RequestMapping(method = RequestMethod.GET, path = "/compare/v1/inst")
-    public @ResponseBody
-    CompareDetail compareInstitutes(@RequestParam(name = "inst1", required = false) Long inst1,
-            @RequestParam(name = "inst2", required = false) Long inst2,
+    public @ResponseBody CompareDetail compareInstitutes(
+            @RequestParam(name = "inst1", required = true) Long inst1,
+            @RequestParam(name = "inst2", required = true) Long inst2,
             @RequestParam(name = "inst3", required = false) Long inst3,
             @RequestParam(name = "field_group", required = false) String fieldGroup,
             @RequestParam(name = "fields", required = false) List<String> fields,

@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties( { "label" })
+@JsonIgnoreProperties( { "label", "inst_id" })
 public class Ranking {
 
     @JsonProperty("rank")
@@ -36,5 +36,8 @@ public class Ranking {
 
     @JsonProperty("label")
     private String label;
+
+    @JsonProperty("inst_id")
+    private Long instID;
 
 }

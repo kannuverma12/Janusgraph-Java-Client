@@ -116,7 +116,7 @@ public class InstituteDetailServiceImpl {
     }
 
     @Cacheable(value = "institute")
-    public Institute getinstitute(Long entityId, String fieldGroup)
+    public Institute getInstitute(Long entityId, String fieldGroup)
             throws IOException, TimeoutException {
         List<String> groupFields =
                 commonMongoRepository.getFieldsByGroup(Institute.class, fieldGroup);
@@ -157,8 +157,6 @@ public class InstituteDetailServiceImpl {
                         parentInstitution != null ? parentInstitution.getOfficialName() : null;
             }
             return institute;
-//            return processInstituteDetail(institute, entityId, courseFields, examFields,
-//                    parentInstitutionName);
         }
         throw new BadRequestException(INVALID_INSTITUTE_ID,
                 INVALID_INSTITUTE_ID.getExternalMessage());

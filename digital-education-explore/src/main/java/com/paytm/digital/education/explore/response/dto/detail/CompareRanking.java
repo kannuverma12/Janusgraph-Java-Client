@@ -2,14 +2,17 @@ package com.paytm.digital.education.explore.response.dto.detail;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.List;
-import java.util.Map;
 import lombok.Data;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class InstituteComparison {
+public class CompareRanking {
+    @JsonProperty("title")
+    public String title;
 
-  private List<Map<Long, InstituteDetail>> instituteList;
+    @JsonProperty("subtitle")
+    public String subtitle;
 
+    @JsonProperty("source")
+    public String source;
 }
