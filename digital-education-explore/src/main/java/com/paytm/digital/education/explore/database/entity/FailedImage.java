@@ -39,7 +39,7 @@ public class FailedImage {
     private Integer retryCount;
     
     @Field("created_at")
-    private Date created_at;
+    private Date createdAt;
     
     @Field("last_updated_at")
     private Date lastUpdatedAt;

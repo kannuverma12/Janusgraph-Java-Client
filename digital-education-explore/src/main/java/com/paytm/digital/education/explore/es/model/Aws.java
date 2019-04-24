@@ -7,8 +7,9 @@ import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import lombok.extern.slf4j.Slf4j;
 
-
+@Slf4j
 @Configuration
 public class Aws {
 
@@ -25,11 +26,11 @@ public class Aws {
         } catch (AmazonServiceException e) {
             // The call was transmitted successfully, but Amazon S3 couldn't process
             // it, so it returned an error response.
-            e.printStackTrace();
+            log.error("Error In AWS.func() with AmazonServiceException ", e); 
         } catch (SdkClientException e) {
             // Amazon S3 couldn't be contacted for a response, or the client
             // couldn't parse the response from Amazon S3.
-            e.printStackTrace();
+            log.error("Error In AWS.func() with SdkClientException ", e); 
         }
         return null;
     }

@@ -37,7 +37,7 @@ public class ImageUploadServiceImpl {
         if (!CollectionUtils.isEmpty(institutes)) {
             log.info("In uploadImages with institutes count " + institutes.size());
             for (Institute institute : institutes) {
-                Date lastUpdated = institute.getUpdated_at();
+                Date lastUpdated = institute.getUpdatedAt();
                 if (institute.getGallery() != null && institute.getGallery().getImages() != null
                         && institute.getGallery().getS3Images() == null) {
                     Map<String, List<String>> imagesMap = institute.getGallery().getImages();
@@ -54,7 +54,8 @@ public class ImageUploadServiceImpl {
                             for (String imageUrl : imagesMap.get(key)) {
                                 if (imageUrl == null || !imageUrl.contains("/")) {
                                     log.error(
-                                            "In uploadImages with imageUrl is null or incorrect with institute id {} and imageurl {} ",
+                                            "In uploadImages with imageUrl is null or incorrect with institute id"
+                                            + " {} and imageurl {} ",
                                             institute.getInstituteId(), imageUrl);
                                     continue;
                                 }
@@ -85,13 +86,14 @@ public class ImageUploadServiceImpl {
                     institute.setGallery(gallery);
                     Institute updatedInstitute =
                             instituteRepository.findByInstituteId(institute.getInstituteId());
-                    if (lastUpdated.equals(updatedInstitute.getUpdated_at())) {
+                    if (lastUpdated.equals(updatedInstitute.getUpdatedAt())) {
                         log.info("In uploadImages saving institute with id "
                                 + institute.getInstituteId());
                         instituteRepository.save(institute);
                     } else {
                         log.error(
-                                "In  uploadImages update came before saving for id {}, previous updatedAt{} and new upDatedat {} ",
+                                "In  uploadImages update came before saving"
+                                + " for id {}, previous updatedAt{} and new upDatedat {} ",
                                 institute.getInstituteId(), lastUpdated,
                                 updatedInstitute.getLastUpdated());
                     }
@@ -115,7 +117,8 @@ public class ImageUploadServiceImpl {
             } catch (Exception e) {
                 if (count < maxTries) {
                     log.error(
-                            "Error caught while uploading image in uploadImages with id {} count {} maxTries {} exception  : {}",
+                            "Error caught while uploading image in"
+                            + " uploadImages with id {} count {} maxTries {} exception  : {}",
                             institute.getInstituteId(), count, maxTries,
                             e);
                     count++;
@@ -141,9 +144,9 @@ public class ImageUploadServiceImpl {
                         imageUrl,
                         key, rootCause);
         failedImage.setRetryCount(1);
-        failedImage.setCreated_at(new Date());
+        failedImage.setCreatedAt(new Date());
         failedImage
-                .setLastUpdatedAt(failedImage.getCreated_at());
+                .setLastUpdatedAt(failedImage.getCreatedAt());
         failedImageRepository.save(failedImage);
     }
 
@@ -193,7 +196,7 @@ public class ImageUploadServiceImpl {
                     institute.setGallery(gallery);
                     log.info("In uploadFailedImages saving institute with id "
                             + institute.getInstituteId());
-                    if (institute.getUpdated_at().compareTo(failedImage.getCreated_at()) < 0) {
+                    if (institute.getUpdatedAt().compareTo(failedImage.getCreatedAt()) < 0) {
                         instituteRepository.save(institute);
                         failedImage.setIsDeleted(Boolean.TRUE);
                         failedImageRepository.save(failedImage);

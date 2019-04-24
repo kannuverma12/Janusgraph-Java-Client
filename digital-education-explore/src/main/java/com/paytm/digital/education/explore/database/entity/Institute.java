@@ -18,7 +18,6 @@ import lombok.ToString;
 @Document
 public class Institute {
 
-    @Id
     @Field("_id")
     @JsonIgnore
     private String id;
@@ -52,7 +51,7 @@ public class Institute {
     private List<String> instituteTypes;
 
     @Field("last_updated")
-    private String lastUpdated;
+    private Date lastUpdated;
 
     @Field("common_name")
     private String commonName;
@@ -117,7 +116,7 @@ public class Institute {
     
 
     @Field("updated_at")
-    private Date updated_at;
+    private Date updatedAt;
 
     @Field("notable_alumni")
     private List<Alumni> notableAlumni;

@@ -25,7 +25,7 @@ public class ImagesUploadScheduler {
 
 
     @Scheduled(fixedDelay = 900000)
-    @SchedulerLock(name = "scheduledTaskName")
+    @SchedulerLock(name = "imagesUploadScheduler")
     public void imagesUploadScheduler() {
 
         CronProperties isImageUploadCronProperty =
@@ -37,8 +37,8 @@ public class ImagesUploadScheduler {
         }
     }
 
-   // @Scheduled(fixedDelay = 900000)
-    //@SchedulerLock(name = "scheduledTaskName")
+    @Scheduled(fixedDelay = 3600000, initialDelay = 600000)
+    @SchedulerLock(name = "failedImagesUploadScheduler")
     public void failedImagesUploadScheduler() {
         CronProperties isFailedImageCronProperty =
                 cronPropertiesRepository.findByKey(ExploreConstants.FAILED_IMAGE_CRON_KEY);

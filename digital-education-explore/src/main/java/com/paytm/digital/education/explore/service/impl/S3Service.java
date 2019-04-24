@@ -23,10 +23,12 @@ public class S3Service {
 
     private final AmazonS3 s3Client = Aws.func();
 
-    public String uploadFile(String imageUrl, String fileName, Long instituteId) throws IOException {
-        log.info("In S3Service.uploadFile with imageUrl {} fileName {} instituteId {} ", imageUrl, fileName, instituteId);
-        
-        imageUrl = CommonUtil.encodeString(imageUrl);
+    public String uploadFile(String imageUrl, String fileName, Long instituteId)
+            throws IOException {
+        log.info("In S3Service.uploadFile with imageUrl {} fileName {} instituteId {} ", imageUrl,
+                fileName, instituteId);
+
+        imageUrl = CommonUtil.encodeString(imageUrl, fileName);
         URL url = new URL(imageUrl);
         InputStream is = url.openStream();
         ObjectMetadata metadata = new ObjectMetadata();
@@ -40,7 +42,9 @@ public class S3Service {
         s3Client.putObject(saveRequest);
         is.close();
         String s3Path = "/" + instituteId + "/" + fileName;
-        log.info("Exited from S3Service.uploadFile with imageUrl {} fileName {} instituteId {} s3Path {} ", imageUrl, fileName, instituteId, s3Path);
+        log.info(
+                "Exited from S3Service.uploadFile with imageUrl {} fileName {} instituteId {} s3Path {} ",
+                imageUrl, fileName, instituteId, s3Path);
         return s3Path;
     }
 

@@ -10,6 +10,8 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.IGN
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_TYPE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STANDALONE_INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.UGC;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +21,9 @@ import org.springframework.util.CollectionUtils;
 import com.paytm.digital.education.explore.config.ConfigProperties;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @UtilityClass
 public class CommonUtil {
 
@@ -108,9 +112,20 @@ public class CommonUtil {
         }
     }
     
-    public String encodeString(String url) {
-        return url.replace(" ", "%20");
+    public String encodeString(String url, String fileName) {
+        if (StringUtils.isNotBlank(url) && StringUtils.contains(url, "/")) {
+            String baseUrl = url.substring(0, url.lastIndexOf("/") + 1);
+            try {
+                String encodedFileName = URLEncoder.encode(fileName, "UTF-8");
+                url = baseUrl + encodedFileName;
+            } catch (UnsupportedEncodingException e) {
+                log.error("Error in encodeString for url " + url, e);
+            }
+        }
+
+        return url;
     }
+    
     public Map<String, String> getApprovals(List<String> approvals, String universityName) {
         if (!CollectionUtils.isEmpty(approvals)) {
             Map<String, String> output = new HashMap<>();
@@ -130,12 +145,12 @@ public class CommonUtil {
                         }
                         break;
                     case AUTONOMOUS:
-                        //case STANDALONE_INSTITUTE:
+                        // case STANDALONE_INSTITUTE:
                         output.put(INSTITUTE_TYPE, STANDALONE_INSTITUTE);
                         break;
-                    //                    case STATE_LEGISLATURE:
-                    //                        output.put(GOVERNED_BY, STATE_LEGISLATURE);
-                    //                        break;
+                    // case STATE_LEGISLATURE:
+                    // output.put(GOVERNED_BY, STATE_LEGISLATURE);
+                    // break;
                     default:
                 }
             }
