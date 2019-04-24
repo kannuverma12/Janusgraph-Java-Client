@@ -68,6 +68,7 @@ public class CompareServiceImpl implements CompareService {
     private FacilityDataHelper facilityDataHelper;
 
     private static Map<Long, String> parentInstituteNameMap = new HashMap<>();
+    private static Map<Integer, List<Course>> instituteCoursesMap = new HashMap<>();
 
     @Override
     public CompareDetail compareInstitutes(List<Long> instList, String fieldGroup,
@@ -81,6 +82,7 @@ public class CompareServiceImpl implements CompareService {
             instList = instList.stream().filter(i -> Objects.nonNull(i)).collect(Collectors.toList());
             List<Institute> institutes = instituteDetailService.getInstitutes(instList, fieldGroupList);
             updateParentInstituteNameMap(institutes);
+            updateInstituteCoursesMap(instList);
 
             Map<Long, Institute> instituteMap =
                     institutes.stream().collect(Collectors.toMap(i -> i.getInstituteId(), i -> i));
@@ -106,6 +108,21 @@ public class CompareServiceImpl implements CompareService {
         }
 
         return compareDetail;
+    }
+
+    private void updateInstituteCoursesMap(List<Long> institutes) {
+        List<String> courseFields = commonMongoRepository.getFieldsByGroup(Course.class, DETAILS);
+        List<Course> courses = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(courseFields)) {
+            courses = commonMongoRepository
+                    .getEntityFieldsByValuesIn(INSTITUTE_ID, institutes, Course.class,
+                            courseFields);
+        }
+
+        instituteCoursesMap = courses.stream().filter(c -> Objects.nonNull(c.getInstitutionId()))
+                .collect(Collectors.groupingBy(c -> c.getInstitutionId(),
+                        Collectors.mapping(c -> c, Collectors.toList())));
+
     }
 
     private void updateParentInstituteNameMap(List<Institute> institutes) {
@@ -349,11 +366,8 @@ public class CompareServiceImpl implements CompareService {
 
     private List<Course> getCourses(Long instId) {
         List<Course> courses = new ArrayList<>();
-        List<String> courseFields = commonMongoRepository.getFieldsByGroup(Course.class, DETAILS);
-        if (!CollectionUtils.isEmpty(courseFields)) {
-            courses = commonMongoRepository
-                    .getEntitiesByIdAndFields(INSTITUTE_ID, instId, Course.class,
-                            courseFields);
+        if (Objects.nonNull(instituteCoursesMap.get(instId.intValue()))) {
+            courses = instituteCoursesMap.get(instId.intValue());
         }
         return courses;
     }
