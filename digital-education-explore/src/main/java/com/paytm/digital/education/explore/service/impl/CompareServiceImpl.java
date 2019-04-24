@@ -81,7 +81,18 @@ public class CompareServiceImpl implements CompareService {
             instList = instList.stream().filter(i -> Objects.nonNull(i)).collect(Collectors.toList());
             List<Institute> institutes = instituteDetailService.getInstitutes(instList, fieldGroupList);
             updateParentInstituteNameMap(institutes);
-            for (Institute institute : institutes) {
+
+            Map<Long, Institute> instituteMap =
+                    institutes.stream().collect(Collectors.toMap(i -> i.getInstituteId(), i -> i));
+
+            List<Institute> finalInstituteList = new ArrayList<>();
+            for (Long instId : instList) {
+                if (Objects.nonNull(instituteMap.get(instId))) {
+                    finalInstituteList.add(instituteMap.get(instId));
+                }
+            }
+
+            for (Institute institute : finalInstituteList) {
                 CompareInstDetail instDetail = getCompareInstDetail(institute);
                 instituteDetailsList.add(instDetail);
             }

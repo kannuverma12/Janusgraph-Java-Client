@@ -138,40 +138,21 @@ public class InstituteDetailServiceImpl {
                     INVALID_FIELD_GROUP.getExternalMessage());
         }
         List<String> instituteFields = new ArrayList<>();
-        List<String> courseFields = new ArrayList<>();
-        List<String> examFields = new ArrayList<>();
-        List<String> parentInstitutionFields = new ArrayList<>();
-
-        parentInstitutionFields.add(OFFICIAL_NAME);
 
         for (String requestedField : groupFields) {
-            if (requestedField.startsWith(COURSE_PREFIX)) {
-                courseFields.add(requestedField
-                        .substring(COURSE_PREFIX_LENGTH, requestedField.length()));
-            } else if (requestedField.startsWith(EXAM_PREFIX)) {
-                examFields
-                        .add(requestedField.substring(EXAM_PREFIX_LENGTH, requestedField.length()));
-            } else {
+            if (!requestedField.startsWith(COURSE_PREFIX) || !requestedField.startsWith(EXAM_PREFIX)) {
                 instituteFields.add(requestedField);
             }
         }
 
+        Set<Long> searchIds = new HashSet<>(entityIds);
         List<Institute> institutes =
-                commonMongoRepository.getEntityFieldsByValuesIn(INSTITUTE_ID, entityIds, Institute.class,
-                        instituteFields);
+                commonMongoRepository
+                        .getEntityFieldsByValuesIn(INSTITUTE_ID, new ArrayList<>(searchIds),
+                                Institute.class,
+                                instituteFields);
 
-        if (!CollectionUtils.isEmpty(institutes)) {
-            for (Institute institute : institutes) {
-                Long parentInstitutionId = institute.getParentInstitution();
-                String parentInstitutionName = null;
-                if (parentInstitutionId != null) {
-                    Institute parentInstitution = commonMongoRepository
-                            .getEntityByFields(INSTITUTE_ID, parentInstitutionId, Institute.class,
-                                    parentInstitutionFields);
-                    parentInstitutionName =
-                            parentInstitution != null ? parentInstitution.getOfficialName() : null;
-                }
-            }
+        if (!CollectionUtils.isEmpty(institutes) && searchIds.size() == institutes.size()) {
             return institutes;
         }
 
