@@ -194,20 +194,20 @@ public interface ExploreConstants {
     String GOVERNED_BY          = "Governed By";
     String INSTITUTE_TYPE       = "Institute Governance";
 
-    String MEDIAN = "Median";
-    String AVERAGE = "Average";
-    String MAX = "Maximum";
-    String MIN = "Minimum";
-    String NIRF = "NIRF";
-    String CAREERS360 = "CAREERS360";
-    String RANKED = "Ranked ";
-    String AS_PER = "as per ";
-    String RANKINKS = " Rankings";
-    String GENERAL = "general";
-    String DETAILS = "details";
-    String YES = "yes";
-    String HIPHEN = "-";
-    Integer LATEST_YEAR = 1990;
-    String ACRES = " Acres";
-    String UNIVERSITIES = "UNIVERSITIES";
+    String  MEDIAN       = "Median";
+    String  AVERAGE      = "Average";
+    String  MAX          = "Maximum";
+    String  MIN          = "Minimum";
+    String  NIRF         = "NIRF";
+    String  CAREERS360   = "CAREERS360";
+    String  RANKED       = "Ranked ";
+    String  AS_PER       = "as per ";
+    String  RANKINGS     = " Rankings";
+    String  GENERAL      = "general";
+    String  DETAILS      = "details";
+    String  YES          = "yes";
+    String  HIPHEN       = "-";
+    Integer LATEST_YEAR  = 1990;
+    String  ACRES        = " Acres";
+    String  UNIVERSITIES = "UNIVERSITIES";
 }

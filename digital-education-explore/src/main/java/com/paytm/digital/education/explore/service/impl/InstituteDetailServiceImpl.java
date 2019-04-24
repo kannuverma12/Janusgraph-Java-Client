@@ -130,8 +130,8 @@ public class InstituteDetailServiceImpl {
                 INVALID_INSTITUTE_ID.getExternalMessage());
     }
 
-    @Cacheable(value = "institute")
-    public Institute getInstitute(Long entityId, List<String> groupFields)
+    @Cacheable(value = "institutes")
+    public List<Institute> getInstitutes(List<Long> entityIds, List<String> groupFields)
             throws IOException, TimeoutException {
         if (CollectionUtils.isEmpty(groupFields)) {
             throw new BadRequestException(INVALID_FIELD_GROUP,
@@ -156,21 +156,25 @@ public class InstituteDetailServiceImpl {
             }
         }
 
-        Institute institute =
-                commonMongoRepository.getEntityByFields(INSTITUTE_ID, entityId, Institute.class,
+        List<Institute> institutes =
+                commonMongoRepository.getEntityFieldsByValuesIn(INSTITUTE_ID, entityIds, Institute.class,
                         instituteFields);
-        if (institute != null) {
-            Long parentInstitutionId = institute.getParentInstitution();
-            String parentInstitutionName = null;
-            if (parentInstitutionId != null) {
-                Institute parentInstitution = commonMongoRepository
-                        .getEntityByFields(INSTITUTE_ID, parentInstitutionId, Institute.class,
-                                parentInstitutionFields);
-                parentInstitutionName =
-                        parentInstitution != null ? parentInstitution.getOfficialName() : null;
+
+        if (!CollectionUtils.isEmpty(institutes)) {
+            for (Institute institute : institutes) {
+                Long parentInstitutionId = institute.getParentInstitution();
+                String parentInstitutionName = null;
+                if (parentInstitutionId != null) {
+                    Institute parentInstitution = commonMongoRepository
+                            .getEntityByFields(INSTITUTE_ID, parentInstitutionId, Institute.class,
+                                    parentInstitutionFields);
+                    parentInstitutionName =
+                            parentInstitution != null ? parentInstitution.getOfficialName() : null;
+                }
             }
-            return institute;
+            return institutes;
         }
+
         throw new BadRequestException(INVALID_INSTITUTE_ID,
                 INVALID_INSTITUTE_ID.getExternalMessage());
     }

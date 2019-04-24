@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import com.paytm.digital.education.explore.service.helper.FacilityDataHelper;
 import com.paytm.digital.education.explore.service.helper.StreamDataHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,7 +44,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.NIR
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CAREERS360;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKED;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AS_PER;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKINKS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKINGS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LATEST_YEAR;
@@ -58,6 +59,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.OVE
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class CompareServiceImpl implements CompareService {
 
     @Autowired
@@ -72,21 +74,26 @@ public class CompareServiceImpl implements CompareService {
     @Autowired
     private FacilityDataHelper facilityDataHelper;
 
+    private static Map<Long, String> parentInstituteNameMap = new HashMap<>();
+
     @Override
     public CompareDetail compareInstitutes(List<Long> instList, String fieldGroup,
             List<String> fields) throws IOException, TimeoutException {
 
         CompareDetail compareDetail = new CompareDetail();
         List<CompareInstDetail> instituteDetailsList = new ArrayList<>();
+        List<String> fieldGroupList = getFieldGroups(fieldGroup);
 
-        for (Long inst : instList) {
-            if (Objects.nonNull(inst)) {
-                List<String> fieldGroupList = getFieldGroups(fieldGroup);
-                Institute institute = instituteDetailService.getInstitute(inst, fieldGroupList);
+        if (!CollectionUtils.isEmpty(instList)) {
+            instList = instList.stream().filter(i -> Objects.nonNull(i)).collect(Collectors.toList());
+            List<Institute> institutes = instituteDetailService.getInstitutes(instList, fieldGroupList);
+            updateParentInstituteNameMap(institutes);
+            for (Institute institute : institutes) {
                 CompareInstDetail instDetail = getCompareInstDetail(institute);
                 instituteDetailsList.add(instDetail);
             }
         }
+
         if (!CollectionUtils.isEmpty(instituteDetailsList)) {
             updateRankings(instituteDetailsList);
             updatePlacememnts(instituteDetailsList);
@@ -95,6 +102,23 @@ public class CompareServiceImpl implements CompareService {
         }
 
         return compareDetail;
+    }
+
+    private void updateParentInstituteNameMap(List<Institute> institutes) {
+        String parentInstitutionName = null;
+        List<String> parentInstitutionFields = new ArrayList<>();
+        parentInstitutionFields.add(OFFICIAL_NAME);
+
+        List<Long> parentInstitutionIds =
+                institutes.stream().filter(i -> Objects.nonNull(i.getParentInstitution()))
+                        .map(i -> i.getParentInstitution()).collect(Collectors.toList());
+
+        List<Institute> parentInstitutions = commonMongoRepository
+                .getEntityFieldsByValuesIn(INSTITUTE_ID, parentInstitutionIds, Institute.class,
+                        parentInstitutionFields);
+
+        parentInstituteNameMap = parentInstitutions.stream().filter(Objects::isNull)
+                .collect(Collectors.toMap(i -> i.getInstituteId(), i -> i.getOfficialName()));
     }
 
     private List<String> getFieldGroups(String fieldGroup) {
@@ -108,22 +132,22 @@ public class CompareServiceImpl implements CompareService {
 
             if (Objects.nonNull(p)) {
                 if (p.containsKey(MEDIAN)) {
-                    c.setPlacements(p.get(MEDIAN));
+                    c.setPlacement(p.get(MEDIAN));
                     continue;
                 } else if (p.containsKey(AVERAGE)) {
-                    c.setPlacements(p.get(AVERAGE));
+                    c.setPlacement(p.get(AVERAGE));
                     continue;
                 } else if (p.containsKey(MAX)) {
-                    c.setPlacements(p.get(MAX));
+                    c.setPlacement(p.get(MAX));
                     continue;
                 } else if (p.containsKey(MIN)) {
-                    c.setPlacements(p.get(MIN));
+                    c.setPlacement(p.get(MIN));
                 }
             }
-
         }
     }
 
+    // find and update latest overall ranking for NIRF and Careers360
     private void updateRankings(List<CompareInstDetail> instituteDetailsList) {
         for (CompareInstDetail c : instituteDetailsList) {
             Map<String, Ranking> rankingMap = c.getFakeRankings();
@@ -144,7 +168,7 @@ public class CompareServiceImpl implements CompareService {
                             }
                         }
                         cr.setSource(ranking.getSource());
-                        cr.setSubtitle(AS_PER + ranking.getSource() + RANKINKS);
+                        cr.setSubtitle(AS_PER + ranking.getSource() + RANKINGS);
 
                         Set<CompareRanking> crList = c.getRankings();
                         if (Objects.isNull(crList)) {
@@ -171,17 +195,20 @@ public class CompareServiceImpl implements CompareService {
         if (Objects.nonNull(inst.getCampusSize())) {
             cDetail.setCampusArea(inst.getCampusSize() + ACRES);
         }
-        cDetail.setTotalIntake(inst.getTotalIntake());
-        String parentInstitutionName = getParentInstituteName(inst.getParentInstitution());
-        cDetail.setApprovals(getApprovalDetail(inst.getApprovals(), parentInstitutionName));
+        if (Objects.nonNull(inst.getTotalIntake()) && inst.getTotalIntake() != 0) {
+            cDetail.setTotalIntake(inst.getTotalIntake());
+        }
+        String parentInstitutionName = parentInstituteNameMap.get(inst.getParentInstitution());
+        cDetail.setApprovals(getApprovalDetail(inst.getApprovals(),
+                Objects.nonNull(parentInstitutionName) ? parentInstitutionName : ""));
         cDetail.setFacilities(getFacilitiesDetail(inst.getFacilities()));
-        cDetail.setFakeRankings(getResponseRankingMap(inst.getRankings()));
+        cDetail.setFakeRankings(CommonUtil.getResponseRankingMap(inst.getRankings()));
         cDetail.setFakePlacements(getPlacements(inst.getSalariesPlacement()));
         List<Course> courses = getCourses(inst.getInstituteId());
         if (!CollectionUtils.isEmpty(courses)) {
             cDetail.setCourseLevel(getCourseLevel(courses));
-            cDetail.setExamAccepted(getExamAccepted(courses));
-            cDetail.setMinimumCourseFee(getMinCourseFee(courses));
+            cDetail.setExamsAccepted(getExamAccepted(courses));
+            cDetail.setMinimumCourseFee(CommonUtil.getMinCourseFee(courses));
             cDetail.setStreamsPreparedFor(getStreams(courses));
         }
         return cDetail;
@@ -277,36 +304,6 @@ public class CompareServiceImpl implements CompareService {
 
     }
 
-    private Long getMinCourseFee(List<Course> courses) {
-        Long minFee = Long.MAX_VALUE;
-        for (Course c : courses) {
-            List<CourseFee> feesList = c.getCourseFees();
-            if (!CollectionUtils.isEmpty(feesList)) {
-                if (feesList.size() > 1) {
-                    for (CourseFee fee : feesList) {
-                        if (Objects.nonNull(fee.getCasteGroup()) && fee.getCasteGroup()
-                                .equalsIgnoreCase(GENERAL)) {
-                            if (Objects.nonNull(fee.getFee())) {
-                                minFee = Math.min(minFee, fee.getFee());
-                            }
-                        }
-                    }
-                } else {
-                    if (feesList.size() == 1) {
-                        CourseFee fee = feesList.get(0);
-                        if (Objects.nonNull(fee) && Objects.nonNull(fee.getFee())) {
-                            minFee = Math.min(minFee, fee.getFee());
-                        }
-                    }
-                }
-            }
-        }
-        if (minFee != Long.MAX_VALUE) {
-            return minFee;
-        }
-        return null;
-    }
-
     private List<String> getExamAccepted(List<Course> courses) {
         Set<Long> examAccepted = courses.stream().filter(c -> Objects.nonNull(c.getExamsAccepted()))
                 .flatMap(c -> c.getExamsAccepted().stream())
@@ -367,53 +364,5 @@ public class CompareServiceImpl implements CompareService {
             return facMap;
         }
         return null;
-    }
-
-    private Map<String, Ranking> getResponseRankingMap(
-            List<com.paytm.digital.education.explore.database.entity.Ranking> dbRankingList) {
-        Map<String, List<Ranking>> rankingMap = new HashMap<>();
-        Map<String, Ranking> retMap = new HashMap<>();
-
-        rankingMap = dbRankingList.stream().filter(r -> {
-            return (Objects.nonNull(r.getSource()) && Objects.nonNull(r.getRankingType()) && (
-                    r.getRankingType().equalsIgnoreCase(UNIVERSITIES) || r.getRankingType()
-                            .equalsIgnoreCase(OVERALL_RANKING)));
-        }).map(r -> getRankingDTO(r)).collect(Collectors.groupingBy(r -> r.getSource(),
-                Collectors.mapping(r -> r, Collectors.toList()))
-        );
-
-        for (Map.Entry<String, List<Ranking>> en : rankingMap.entrySet()) {
-            String key = en.getKey();
-            List<Ranking> rankingList = en.getValue();
-            Ranking ranking = null;
-            int latest = LATEST_YEAR;
-            for (Ranking r : rankingList) {
-                if (Objects.nonNull(r.getYear())) {
-                    if (r.getYear() > latest) {
-                        latest = r.getYear();
-                        ranking = r;
-                    }
-                }
-            }
-            if (Objects.nonNull(ranking)) {
-                retMap.put(ranking.getSource(), ranking);
-            }
-        }
-
-        if (!CollectionUtils.isEmpty(retMap)) {
-            return retMap;
-        }
-
-        return null;
-    }
-
-    private Ranking getRankingDTO(
-            com.paytm.digital.education.explore.database.entity.Ranking dbRanking) {
-        Ranking r = new Ranking();
-        r.setRank(dbRanking.getRank());
-        r.setSource(dbRanking.getSource());
-        r.setYear(dbRanking.getYear());
-        r.setRating(dbRanking.getRating());
-        return r;
     }
 }

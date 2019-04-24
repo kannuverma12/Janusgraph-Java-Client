@@ -8,6 +8,7 @@ import com.paytm.digital.education.explore.service.CompareService;
 import com.paytm.digital.education.explore.validators.ExploreValidator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -21,6 +22,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 @AllArgsConstructor
 @RestController
 @Validated
@@ -31,19 +35,16 @@ public class CompareController {
     private CompareService   compareService;
     private ExploreValidator exploreValidator;
 
-    @RequestMapping(method = RequestMethod.GET, path = "/compare/v1/inst")
+    @RequestMapping(method = RequestMethod.GET, path = "v1/compare/institute")
     public @ResponseBody CompareDetail compareInstitutes(
-            @RequestParam(name = "inst1", required = true) Long inst1,
-            @RequestParam(name = "inst2", required = true) Long inst2,
-            @RequestParam(name = "inst3", required = false) Long inst3,
-            @RequestParam(name = "field_group", required = false) String fieldGroup,
+            @RequestParam(name = "inst1") @Min(1) @NotNull Long inst1,
+            @RequestParam(name = "inst2") @Min(1) @NotNull Long inst2,
+            @RequestParam(name = "inst3", required = false) @Min(1) Long inst3,
+            @RequestParam(name = "field_group") @NotNull String fieldGroup,
             @RequestParam(name = "fields", required = false) List<String> fields,
-            @RequestHeader(value = "x-user-id", required = false) Long userId) throws Exception {
+            @RequestHeader(value = "x-user-id") @Min(1) @NotNull Long userId) throws Exception {
 
-        List<Long> instList = new ArrayList<>();
-        instList.add(inst1);
-        instList.add(inst2);
-        instList.add(inst3);
+        List<Long> instList = new ArrayList<Long>(Arrays.asList(inst1, inst2, inst3));
         exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
 
         return compareService.compareInstitutes(instList, fieldGroup, fields);

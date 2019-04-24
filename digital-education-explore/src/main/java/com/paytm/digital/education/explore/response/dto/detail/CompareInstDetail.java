@@ -37,11 +37,11 @@ public class CompareInstDetail {
     @JsonProperty("minimum_course_fee")
     private Long minimumCourseFee;
 
-    @JsonProperty("placements")
-    private Placement placements;
+    @JsonProperty("placement")
+    private Placement placement;
 
     @JsonProperty("exams_accepted")
-    private List<String> examAccepted;
+    private List<String> examsAccepted;
 
     @JsonProperty("streams_prepared_for")
     private Set<String> streamsPreparedFor;
