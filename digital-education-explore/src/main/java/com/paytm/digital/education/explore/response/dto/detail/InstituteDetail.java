@@ -67,7 +67,7 @@ public class InstituteDetail {
     @JsonProperty("gallery")
     private Gallery gallery;
 
-    @JsonProperty("placement")
+    @JsonProperty("placements")
     private List<Placement> placements;
 
     @JsonProperty("widgets")
