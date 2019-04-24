@@ -62,16 +62,9 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.OVE
 @AllArgsConstructor
 public class CompareServiceImpl implements CompareService {
 
-    @Autowired
     private InstituteDetailServiceImpl instituteDetailService;
-
-    @Autowired
     private CommonMongoRepository commonMongoRepository;
-
-    @Autowired
     private StreamDataHelper streamDataHelper;
-
-    @Autowired
     private FacilityDataHelper facilityDataHelper;
 
     private static Map<Long, String> parentInstituteNameMap = new HashMap<>();
