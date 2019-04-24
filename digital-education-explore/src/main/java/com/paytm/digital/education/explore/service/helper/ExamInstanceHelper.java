@@ -65,7 +65,7 @@ public class ExamInstanceHelper {
                  ** examIds set
                  */
                 if (examAndCutOff.getHasCutoff() == false && !examIds.isEmpty()) {
-                    if(exam.getSubExams() != null) {
+                    if (Objects.nonNull(exam.getSubExams())) {
                         for (SubExam subExam : exam.getSubExams()) {
                             examId = subExam.getId();
                             if (examIds.contains(examId)) {

@@ -81,7 +81,8 @@ public class CompareServiceImpl implements CompareService {
 
         for (Long inst : instList) {
             if (Objects.nonNull(inst)) {
-                Institute institute = instituteDetailService.getInstitute(inst, fieldGroup);
+                List<String> fieldGroupList = getFieldGroups(fieldGroup);
+                Institute institute = instituteDetailService.getInstitute(inst, fieldGroupList);
                 CompareInstDetail instDetail = getCompareInstDetail(institute);
                 instituteDetailsList.add(instDetail);
             }
@@ -94,6 +95,10 @@ public class CompareServiceImpl implements CompareService {
         }
 
         return compareDetail;
+    }
+
+    private List<String> getFieldGroups(String fieldGroup) {
+        return commonMongoRepository.getFieldsByGroup(Institute.class, fieldGroup);
     }
 
     private void updatePlacememnts(List<CompareInstDetail> instituteDetailsList) {
@@ -113,7 +118,6 @@ public class CompareServiceImpl implements CompareService {
                     continue;
                 } else if (p.containsKey(MIN)) {
                     c.setPlacements(p.get(MIN));
-                    continue;
                 }
             }
 

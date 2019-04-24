@@ -131,10 +131,8 @@ public class InstituteDetailServiceImpl {
     }
 
     @Cacheable(value = "institute")
-    public Institute getInstitute(Long entityId, String fieldGroup)
+    public Institute getInstitute(Long entityId, List<String> groupFields)
             throws IOException, TimeoutException {
-        List<String> groupFields =
-                commonMongoRepository.getFieldsByGroup(Institute.class, fieldGroup);
         if (CollectionUtils.isEmpty(groupFields)) {
             throw new BadRequestException(INVALID_FIELD_GROUP,
                     INVALID_FIELD_GROUP.getExternalMessage());
