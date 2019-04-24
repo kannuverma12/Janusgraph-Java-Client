@@ -55,4 +55,7 @@ public class CompareInstDetail {
     @JsonProperty("rankings")
     private Set<CompareRanking> rankings;
 
+    @JsonProperty("courses")
+    private Map<Long, String> courses;
+
 }

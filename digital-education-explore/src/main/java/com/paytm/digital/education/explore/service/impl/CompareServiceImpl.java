@@ -210,12 +210,22 @@ public class CompareServiceImpl implements CompareService {
         cDetail.setFakePlacements(getPlacements(inst.getSalariesPlacement()));
         List<Course> courses = getCourses(inst.getInstituteId());
         if (!CollectionUtils.isEmpty(courses)) {
+            Map<Long, String> courseMap = getCourseMap(courses);
+            if (!CollectionUtils.isEmpty(courseMap)) {
+                cDetail.setCourses(courseMap);
+            }
+
             cDetail.setCourseLevel(getCourseLevel(courses));
             cDetail.setExamsAccepted(getExamAccepted(courses));
             cDetail.setMinimumCourseFee(CommonUtil.getMinCourseFee(courses));
             cDetail.setStreamsPreparedFor(getStreams(courses));
         }
         return cDetail;
+    }
+
+    private Map<Long, String> getCourseMap(List<Course> courses) {
+        return courses.stream().filter(c -> Objects.nonNull(c.getCourseNameOfficial())).
+                collect(Collectors.toMap(c -> c.getCourseId(), c -> c.getCourseNameOfficial()));
     }
 
     private Map<String, Placement> getPlacements(List<Placement> placements) {
