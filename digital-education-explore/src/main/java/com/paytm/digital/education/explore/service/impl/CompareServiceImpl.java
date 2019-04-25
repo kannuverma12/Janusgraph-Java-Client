@@ -310,20 +310,6 @@ public class CompareServiceImpl implements CompareService {
         }
     }
 
-    private String getParentInstituteName(Long parentInstitutionId) {
-        String parentInstitutionName = null;
-        List<String> parentInstitutionFields = new ArrayList<>();
-        parentInstitutionFields.add(OFFICIAL_NAME);
-        if (parentInstitutionId != null) {
-            Institute parentInstitution = commonMongoRepository
-                    .getEntityByFields(INSTITUTE_ID, parentInstitutionId, Institute.class,
-                            parentInstitutionFields);
-            parentInstitutionName =
-                    parentInstitution != null ? parentInstitution.getOfficialName() : null;
-        }
-        return parentInstitutionName;
-    }
-
     private Set<String> getStreams(List<Course> courses) {
         Map<String, String> streamMap = streamDataHelper.getStreamMap();
         Set<String> streamList = courses.stream().filter(c -> Objects.nonNull(c.getStreams()))
