@@ -10,6 +10,8 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import com.paytm.digital.education.explore.constants.ExploreConstants;
+import com.paytm.digital.education.explore.database.entity.Alumni;
 import com.paytm.digital.education.explore.database.entity.FailedImage;
 import com.paytm.digital.education.explore.database.entity.Gallery;
 import com.paytm.digital.education.explore.database.entity.Institute;
@@ -55,7 +57,7 @@ public class ImageUploadServiceImpl {
                                 if (imageUrl == null || !imageUrl.contains("/")) {
                                     log.error(
                                             "In uploadImages with imageUrl is null or incorrect with institute id"
-                                            + " {} and imageurl {} ",
+                                                    + " {} and imageurl {} ",
                                             institute.getInstituteId(), imageUrl);
                                     continue;
                                 }
@@ -70,12 +72,14 @@ public class ImageUploadServiceImpl {
                     if (institute.getGallery() != null
                             && StringUtils.isNotBlank(institute.getGallery().getLogo())
                             && institute.getGallery().getS3Logo() == null) {
-                        if (!StringUtils.contains(institute.getGallery().getLogo(), "careers360")) {
+                        if (!StringUtils.contains(institute.getGallery().getLogo(),
+                                ExploreConstants.CAREERS_360)) {
                             s3Logo = institute.getGallery().getLogo();
                         } else {
                             String fileName = institute.getGallery().getLogo().substring(
                                     institute.getGallery().getLogo().lastIndexOf("/") + 1);
-                            s3Logo = uploadImageToS3(institute, "logo", new ArrayList<String>(),
+                            s3Logo = uploadImageToS3(institute, ExploreConstants.LOGO,
+                                    new ArrayList<String>(),
                                     institute.getGallery().getLogo(),
                                     fileName);
                         }
@@ -84,19 +88,37 @@ public class ImageUploadServiceImpl {
                     gallery.setS3Images(s3ImagesMap);
                     gallery.setS3Logo(s3Logo);
                     institute.setGallery(gallery);
-                    Institute updatedInstitute =
-                            instituteRepository.findByInstituteId(institute.getInstituteId());
-                    if (lastUpdated.equals(updatedInstitute.getUpdatedAt())) {
-                        log.info("In uploadImages saving institute with id "
-                                + institute.getInstituteId());
-                        instituteRepository.save(institute);
-                    } else {
-                        log.error(
-                                "In  uploadImages update came before saving"
-                                + " for id {}, previous updatedAt{} and new upDatedat {} ",
-                                institute.getInstituteId(), lastUpdated,
-                                updatedInstitute.getLastUpdated());
+
+                }
+
+                if (!CollectionUtils.isEmpty(institute.getNotableAlumni())) {
+                    List<Alumni> alumnis = institute.getNotableAlumni();
+                    for (Alumni alumni : alumnis) {
+                        String s3FilePath = "";
+                        if (alumni != null && StringUtils.isNotBlank(alumni.getAlumniPhoto())
+                                && alumni.getS3AlumniPhoto() == null) {
+                            String fileName = alumni.getAlumniPhoto()
+                                    .substring(alumni.getAlumniPhoto().lastIndexOf("/") + 1);
+                            s3FilePath = uploadImageToS3(institute, ExploreConstants.ALUMNI,
+                                    new ArrayList<String>(), alumni.getAlumniPhoto(),
+                                    fileName);
+                        }
+                        alumni.setS3AlumniPhoto(s3FilePath);
+                        institute.setNotableAlumni(alumnis);
                     }
+                }
+                Institute updatedInstitute =
+                        instituteRepository.findByInstituteId(institute.getInstituteId());
+                if (lastUpdated.equals(updatedInstitute.getUpdatedAt())) {
+                    log.info("In uploadImages saving institute with id "
+                            + institute.getInstituteId());
+                    instituteRepository.save(institute);
+                } else {
+                    log.error(
+                            "In  uploadImages update came before saving"
+                                    + " for id {}, previous updatedAt{} and new upDatedat {} ",
+                            institute.getInstituteId(), lastUpdated,
+                            updatedInstitute.getLastUpdated());
                 }
             }
         }
@@ -118,7 +140,7 @@ public class ImageUploadServiceImpl {
                 if (count < maxTries) {
                     log.error(
                             "Error caught while uploading image in"
-                            + " uploadImages with id {} count {} maxTries {} exception  : {}",
+                                    + " uploadImages with id {} count {} maxTries {} exception  : {}",
                             institute.getInstituteId(), count, maxTries,
                             e);
                     count++;
@@ -180,8 +202,17 @@ public class ImageUploadServiceImpl {
                     Institute institute =
                             instituteRepository.findByInstituteId(failedImage.getInstituteId());
                     Gallery gallery = institute.getGallery();
-                    if ("logo".equalsIgnoreCase(failedImage.getType())) {
+                    if (ExploreConstants.LOGO.equalsIgnoreCase(failedImage.getType())) {
                         gallery.setS3Logo(s3FilePath);
+                    } else if (ExploreConstants.ALUMNI.equalsIgnoreCase(failedImage.getType())) {
+                        List<Alumni> alumnis = institute.getNotableAlumni();
+                        for (Alumni alumni : alumnis) {
+                            if (alumni != null && alumni.getAlumniPhoto() != null
+                                    && alumni.getAlumniPhoto().equals(failedImage.getImageUrl())) {
+                                alumni.setS3AlumniPhoto(s3FilePath);
+                            }
+                        }
+                        institute.setNotableAlumni(alumnis);
                     } else {
 
                         Map<String, List<String>> imagesMap = gallery.getS3Images();

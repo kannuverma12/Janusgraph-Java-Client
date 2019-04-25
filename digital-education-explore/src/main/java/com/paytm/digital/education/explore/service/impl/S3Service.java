@@ -27,7 +27,7 @@ public class S3Service {
             throws IOException {
         log.info("In S3Service.uploadFile with imageUrl {} fileName {} instituteId {} ", imageUrl,
                 fileName, instituteId);
-
+        System.setProperty("http.agent", "Chrome");
         imageUrl = CommonUtil.encodeString(imageUrl, fileName);
         URL url = new URL(imageUrl);
         InputStream is = url.openStream();

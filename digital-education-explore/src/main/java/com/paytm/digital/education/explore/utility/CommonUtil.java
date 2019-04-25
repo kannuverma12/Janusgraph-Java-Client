@@ -116,7 +116,7 @@ public class CommonUtil {
         if (StringUtils.isNotBlank(url) && StringUtils.contains(url, "/")) {
             String baseUrl = url.substring(0, url.lastIndexOf("/") + 1);
             try {
-                String encodedFileName = URLEncoder.encode(fileName, "UTF-8");
+                String encodedFileName = URLEncoder.encode(fileName, "UTF-8").replace("+", "%20");
                 url = baseUrl + encodedFileName;
             } catch (UnsupportedEncodingException e) {
                 log.error("Error in encodeString for url " + url, e);

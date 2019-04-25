@@ -201,4 +201,8 @@ public interface ExploreConstants {
     String CONSTITUENT_OF       = "Constituent Of";
     String GOVERNED_BY          = "Governed By";
     String INSTITUTE_TYPE       = "Institute Governance";
+    
+    
+    String ALUMNI               = "alumni";
+    String CAREERS_360          = "careers360";
 }
