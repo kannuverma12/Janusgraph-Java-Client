@@ -18,7 +18,7 @@ public class FailedImagesUploadController {
     @Autowired
     private ImageUploadServiceImpl imageUploadService;
     
-    @RequestMapping(method = RequestMethod.GET, path = "/v1/failedImagesUpload")
+    @RequestMapping(method = RequestMethod.GET, path = "/v1/failedimagesupload")
     public String uploadFailedImages() {
         log.info("Entering uploadFailedImages");
         imageUploadService.uploadFailedImages();

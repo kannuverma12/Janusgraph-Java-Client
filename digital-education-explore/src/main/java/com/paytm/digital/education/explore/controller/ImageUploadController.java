@@ -18,7 +18,7 @@ public class ImageUploadController {
     @Autowired
     private ImageUploadServiceImpl imageUploadService;
 
-    @RequestMapping(method = RequestMethod.GET, path = "/v1/imageUpload")
+    @RequestMapping(method = RequestMethod.GET, path = "/v1/imageupload")
     public String uploadImages() {
         Long jobStartedAt = System.currentTimeMillis();
         log.info("Entering uploadImages at " + jobStartedAt);
