@@ -51,7 +51,7 @@ public class Institute {
     private List<String> instituteTypes;
 
     @Field("last_updated")
-    private String lastUpdated;
+    private Date lastUpdated;
 
     @Field("common_name")
     private String commonName;
