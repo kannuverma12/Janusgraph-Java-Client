@@ -95,8 +95,10 @@ public class InstituteDetailResponseBuilder {
         String entityName = INSTITUTE.name().toLowerCase();
         Map<String, Object> highlights = new HashMap<>();
         highlights.put(entityName, institute);
-        highlights.put(APPROVALS,
-                CommonUtil.getApprovals(institute.getApprovals(), parentInstitutionName));
+        Map<String, String> approvalsMap = CommonUtil.getApprovals(institute.getApprovals(), parentInstitutionName);
+        if (!CollectionUtils.isEmpty(approvalsMap)) {
+            highlights.put(APPROVALS, approvalsMap);
+        }
         instituteDetail.setDerivedAttributes(
                 derivedAttributesHelper.getDerivedAttributes(highlights, entityName));
         OfficialAddress officialAddress =
