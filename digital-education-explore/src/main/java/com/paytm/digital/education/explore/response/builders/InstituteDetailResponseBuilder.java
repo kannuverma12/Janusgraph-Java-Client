@@ -198,7 +198,7 @@ public class InstituteDetailResponseBuilder {
             Map<String, Set<String>> degreeMap =
                     courses.stream().filter(c -> Objects.nonNull(c.getCourseLevel()))
                             .collect(Collectors
-                                    .toMap(course -> course.getCourseLevel().toString(),
+                                    .toMap(course -> course.getCourseLevel().getDisplayName(),
                                         course -> new HashSet<>(course.getMasterDegree()),
                                         (set1, set2) -> Stream.of(set1, set2)
                                                 .flatMap(Set::stream)
