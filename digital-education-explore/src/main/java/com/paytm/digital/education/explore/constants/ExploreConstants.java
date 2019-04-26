@@ -163,6 +163,7 @@ public interface ExploreConstants {
     String BANNER                    = "banner";
     String WIDGETS                   = "widgets";
     String DATA_STRING               = "data";
+    String PARENT_INSTITUTION        = "parent_institution";
 
     // Other Constants
     Version FTL_CURRENT_VERSION = Configuration.VERSION_2_3_23;
