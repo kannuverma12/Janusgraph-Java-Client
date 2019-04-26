@@ -8,7 +8,7 @@ var database_name = "digital_education";
 var college_collection = "institute";
 var course_collection = "course";
 var exam_collection = "exam";
-var target_collection = "education_search_institute_v1";
+var target_collection = "education_search_institute_test";
 var target_doc_type = "education";
 
 /**

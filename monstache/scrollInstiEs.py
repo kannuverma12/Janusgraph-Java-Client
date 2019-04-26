@@ -39,7 +39,7 @@ print "init scroll.. "
 
 # Init scroll by search
 esInstiData = es.search(
-    index='education_search_institute_v1',
+    index='education_search_institute_test',
     doc_type='education',
     scroll='2m',
     size=100,
