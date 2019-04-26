@@ -3,6 +3,7 @@ package com.paytm.digital.education.explore.service.impl;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTOSUGGEST_ANALYZER;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTOSUGGEST_INDEX;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTOSUGGEST_NAMES;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.COMPARE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_AUTOSUGGEST_SIZE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_OFFSET;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE;
@@ -22,22 +23,28 @@ import com.paytm.digital.education.elasticsearch.models.SearchField;
 import com.paytm.digital.education.elasticsearch.models.SortField;
 import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationResponse;
 import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.paytm.digital.education.explore.enums.UserAction;
 import com.paytm.digital.education.explore.es.model.AutoSuggestEsData;
 import com.paytm.digital.education.explore.response.dto.suggest.AutoSuggestData;
 import com.paytm.digital.education.explore.response.dto.suggest.AutoSuggestResponse;
 import com.paytm.digital.education.explore.response.dto.suggest.SuggestResult;
+import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import com.paytm.digital.education.search.service.AutoSuggestionService;
 import com.paytm.digital.education.utility.HierarchyIdentifierUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
@@ -47,17 +54,24 @@ import javax.annotation.PostConstruct;
 @Service
 public class AutoSuggestServiceImpl {
 
-    private AutoSuggestionService autoSuggestionService;
-    private Map<String, String>   suggestClassLevelMap;
+    private AutoSuggestionService    autoSuggestionService;
+    private Map<String, String>      suggestClassLevelMap;
+    private SubscriptionDetailHelper subscriptionDetailHelper;
 
     @PostConstruct
     private void generateLevelMap() {
         suggestClassLevelMap = HierarchyIdentifierUtils.getClassHierarchy(AutoSuggestEsData.class);
     }
 
-    @Cacheable(value = "autosuggest")
-    public AutoSuggestResponse getSuggestions(String searchTerm, List<EducationEntity> entities) {
+    public AutoSuggestResponse getSuggestions(String searchTerm, List<EducationEntity> entities,
+            List<UserAction> actions, Long userId) {
+        AutoSuggestResponse autoSuggestResponse = getSuggestResults(searchTerm, entities);
+        updateShortlist(autoSuggestResponse, actions, userId);
+        return autoSuggestResponse;
+    }
 
+    @Cacheable(value = "autosuggest")
+    public AutoSuggestResponse getSuggestResults(String searchTerm, List<EducationEntity> entities) {
         ElasticRequest elasticRequest = buildAutoSuggestRequest(searchTerm, entities);
         ElasticResponse<AutoSuggestEsData> response = null;
         try {
@@ -68,7 +82,6 @@ public class AutoSuggestServiceImpl {
             log.error("Error caught while calling autosuggest service with exception : {}", ex);
             throw new RuntimeException(ex.getMessage());
         }
-
         return buildAutoSuggestResponse(response);
     }
 
@@ -144,13 +157,18 @@ public class AutoSuggestServiceImpl {
 
             // topHitsPerEntity
             List<AutoSuggestData> suggestData = new ArrayList<>();
+            Map<String, Map<Long, SuggestResult>> entityResultsMap = new HashMap<>();
 
             topHitsPerEntity.getDocumentsPerEntity().forEach((key, documents) -> {
                 AutoSuggestData dataPerEntity = new AutoSuggestData();
                 List<SuggestResult> responseResultDocList = new ArrayList<>();
+                if (!entityResultsMap.containsKey(key)) {
+                    entityResultsMap.put(key.getKey(), new HashMap<>());
+                }
                 documents.forEach(esDocument -> {
                     SuggestResult responseDoc = new SuggestResult(esDocument.getEntityId(),
                             esDocument.getOfficialName());
+                    entityResultsMap.get(key.getKey()).put(responseDoc.getEntityId(), responseDoc);
                     responseResultDocList.add(responseDoc);
                 });
                 dataPerEntity.setEntityType(key.getKey());
@@ -158,8 +176,28 @@ public class AutoSuggestServiceImpl {
                 suggestData.add(dataPerEntity);
             });
             response.setData(suggestData);
+            response.setPerEntitySuggestMap(entityResultsMap);
         }
         return response;
     }
 
+    private void updateShortlist(AutoSuggestResponse autoSuggestResponse, List<UserAction>  actions, Long userId) {
+        if (!CollectionUtils.isEmpty(actions) && actions.contains(UserAction.SHORTLIST)
+                && Objects.nonNull(userId) && userId > 0
+                && !CollectionUtils.isEmpty(autoSuggestResponse.getPerEntitySuggestMap())) {
+            Map<String, Map<Long, SuggestResult>> entitySuggestMap = autoSuggestResponse.getPerEntitySuggestMap();
+            for (String entity : entitySuggestMap.keySet()) {
+                Set<Long> entityIds = entitySuggestMap.get(entity).keySet();
+                if (!CollectionUtils.isEmpty(entityIds)) {
+                    List<Long> subscribedEntities = subscriptionDetailHelper
+                            .getSubscribedEntities(EducationEntity.getEntityFromValue(entity), userId, entityIds);
+                    if (!CollectionUtils.isEmpty(subscribedEntities)) {
+                        subscribedEntities
+                                .forEach(entityId -> entitySuggestMap.get(entity).get(entityId).setShortlisted(true));
+                    }
+                }
+            }
+            autoSuggestResponse.getPerEntitySuggestMap().clear();
+        }
+    }
 }

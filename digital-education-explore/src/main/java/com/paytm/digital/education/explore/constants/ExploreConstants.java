@@ -140,6 +140,7 @@ public interface ExploreConstants {
     String OFFICIAL_ADDRESS                 = "official_address";
     String ENTITY_ID                        = "entity_id";
     int    COURSE_SIZE_FOR_INSTITUTE_DETAIL = 6;
+    String COMPARE                          = "compare";
 
     // Detail APIs constants
     String EXAM_SHORT_NAME     = "exam_short_name";

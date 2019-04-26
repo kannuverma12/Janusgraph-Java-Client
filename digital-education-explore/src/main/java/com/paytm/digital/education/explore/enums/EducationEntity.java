@@ -37,4 +37,13 @@ public enum EducationEntity {
                 return null;
         }
     }
+
+    public static EducationEntity getEntityFromValue(String value) {
+        for (EducationEntity educationEntity : EducationEntity.values()) {
+            if (educationEntity.name().equalsIgnoreCase(value)) {
+                return educationEntity;
+            }
+        }
+        return null;
+    }
 }
