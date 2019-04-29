@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.paytm.digital.education.explore.enums.EducationEntity.COURSE;
+import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
+
 @Slf4j
 @Service
 @AllArgsConstructor
@@ -37,7 +40,12 @@ public class SearchServiceImpl {
                 && !CollectionUtils.isEmpty(response.getEntityDataMap())) {
             Map<Long, SearchBaseData> searchBaseDataMap = response.getEntityDataMap();
             List<Long> entityIds = new ArrayList<>(searchBaseDataMap.keySet());
-            updateShortlist(searchRequest.getEntity(), userId, searchBaseDataMap, entityIds);
+            EducationEntity entity = searchRequest.getEntity();
+            if (entity.equals(COURSE)) {
+                updateShortlist(INSTITUTE, userId, searchBaseDataMap, entityIds);
+            } else {
+                updateShortlist(entity, userId, searchBaseDataMap, entityIds);
+            }
             updateGetInTouch(searchRequest.getEntity(), userId, searchBaseDataMap, entityIds);
             response.getEntityDataMap().clear();
         }
