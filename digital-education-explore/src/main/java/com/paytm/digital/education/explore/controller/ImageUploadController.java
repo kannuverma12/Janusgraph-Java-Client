@@ -20,11 +20,7 @@ public class ImageUploadController {
 
     @RequestMapping(method = RequestMethod.GET, path = "/v1/imageupload")
     public String uploadImages() {
-        Long jobStartedAt = System.currentTimeMillis();
-        log.info("Entering uploadImages at " + jobStartedAt);
         imageUploadService.uploadImages();
-        log.info("Exiting uploadImages at {} and time taken is {}", System.currentTimeMillis(),
-                System.currentTimeMillis() - jobStartedAt);
         return "success";
     }
 

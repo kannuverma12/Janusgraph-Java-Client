@@ -178,7 +178,7 @@ public interface ExploreConstants {
     String SUBEXAM_ID             = "subexams.id";
     
     //S3 constants
-    String S3_BUCKET_PATH = "assets.paytm.com/educationwebassets/education/explore/college/images/dummy/";
+    String S3_BUCKET_PATH = "assets.paytm.com/educationwebassets/education/explore/college/images/";
     
     //CRON KEYS
     String IMAGE_UPLOAD_CRON_KEY = "isImageUploadCronEnabled";
