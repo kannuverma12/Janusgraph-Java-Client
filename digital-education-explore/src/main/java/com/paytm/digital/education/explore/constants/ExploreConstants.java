@@ -155,6 +155,7 @@ public interface ExploreConstants {
     String AVERAGE_PACKAGE_LABEL = "Average Package";
     String MEDIAN_PACKAGE_LABEL  = "Median Package";
     String EVENT_TYPE_EXAM       = "EXAM";
+    String ZERO                  = "0";
 
     String DISPLAY_NAME              = "display_name";
     String LOGO                      = "logo";
