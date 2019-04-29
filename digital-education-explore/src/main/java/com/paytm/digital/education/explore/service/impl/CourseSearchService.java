@@ -65,7 +65,7 @@ import javax.annotation.PostConstruct;
 public class CourseSearchService extends AbstractSearchServiceImpl {
 
     private static Map<String, FilterQueryType> filterQueryTypeMap;
-    private static Map<String, Float> searchFieldKeys;
+    private static Map<String, Float>           searchFieldKeys;
     private static Map<String, DataSortOrder>   sortKeysInOrder;
     private        SearchAggregateHelper        searchAggregateHelper;
     private        CommonMongoRepository        commonMongoRepository;
@@ -152,6 +152,7 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
                 .setOfficialAddress(CommonUtil.getOfficialAddress(institute.getInstitutionState(),
                         institute.getInstitutionCity(), null, null, null));
         courseSearchResponse.setInstituteName(institute.getOfficialName());
+        courseSearchResponse.setInstituteId(institute.getInstituteId());
     }
 
     @Override
@@ -190,6 +191,9 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
             List<SearchBaseData> values = new ArrayList<>();
             values.add(courseSearchResponse);
             searchResults.setValues(values);
+            Map<Long, SearchBaseData> searchBaseDataMap = new HashMap<>();
+            searchBaseDataMap.put(courseSearchResponse.getInstituteId(), values.get(0));
+            searchResponse.setEntityDataMap(searchBaseDataMap);
         }
         searchResponse.setResults(searchResults);
     }
