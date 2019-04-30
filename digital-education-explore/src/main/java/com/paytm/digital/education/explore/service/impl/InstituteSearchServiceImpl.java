@@ -40,11 +40,13 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.INS
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SORT_PARAM_KEY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STOPWORDS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STOPWORDS_KEY;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.TIE_BREAKER;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
+import com.paytm.digital.education.elasticsearch.models.CrossField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.explore.database.entity.SearchSortParam;
@@ -196,6 +198,12 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
         }
     }
 
+    private void populateSearchQueryType(ElasticRequest elasticRequest, Float tieBreaker) {
+        CrossField searchQueryType = new CrossField();
+        searchQueryType.setTieBreaker(tieBreaker);
+        elasticRequest.setSearchQueryType(searchQueryType);
+    }
+
     @Override
     protected ElasticRequest buildSearchRequest(SearchRequest searchRequest) {
         ElasticRequest elasticRequest =
@@ -212,6 +220,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
                 filterQueryTypeMap);
         populateAggregateFields(searchRequest, elasticRequest,
                 searchAggregateHelper.getInstituteAggregateData(), InstituteSearch.class);
+        populateSearchQueryType(elasticRequest, TIE_BREAKER);
         /*
          * Sort on rank will be done
          * 1. when search term is empty

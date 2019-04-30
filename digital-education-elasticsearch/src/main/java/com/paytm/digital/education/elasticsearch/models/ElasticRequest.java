@@ -17,6 +17,8 @@ public class ElasticRequest {
 
     private String analyzer;
 
+    private SearchQueryType searchQueryType;
+
     private SearchField[] searchFields;
     
     private FilterField[] filterFields;

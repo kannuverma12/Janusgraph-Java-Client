@@ -76,6 +76,7 @@ public interface ExploreConstants {
     String STOPWORDS                  = "stop_words";
     String NGRAM                      = ".ngram";
 
+    Float  TIE_BREAKER                  = 0.4f;
     Float  CITY_SEARCH_BOOST            = 1F;
     Float  STATE_SEARCH_BOOST           = 1F;
     Float  OFFICIAL_NAME_SEARCH_BOOST   = 1F;

@@ -1,6 +1,5 @@
 package com.paytm.digital.education.explore.utility;
 
-
 import com.paytm.digital.education.explore.config.ConfigProperties;
 import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.CourseFee;
