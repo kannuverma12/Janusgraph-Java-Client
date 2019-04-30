@@ -1,23 +1,17 @@
 package com.paytm.digital.education.elasticsearch.query.helper;
 
-import com.paytm.digital.education.elasticsearch.constants.ESConstants;
-import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
-import com.paytm.digital.education.elasticsearch.models.FilterField;
-import com.paytm.digital.education.elasticsearch.models.Operator;
 import com.paytm.digital.education.elasticsearch.models.SearchField;
-import javafx.util.Pair;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.Objects;
 
+import static com.paytm.digital.education.elasticsearch.constants.ESConstants.DEFAULT_BOOST;
 import static com.paytm.digital.education.elasticsearch.constants.ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS;
 
 @UtilityClass
@@ -31,6 +25,7 @@ public class PathWiseMultiMatchQueryMapBuilder {
 
         String fieldName;
         String path;
+        Float boost;
         Map<String, QueryBuilder> searchQueries = new HashMap<String, QueryBuilder>();
 
         for (SearchField field : searchFields) {
@@ -55,10 +50,10 @@ public class PathWiseMultiMatchQueryMapBuilder {
                     searchQueries.put(path, multiMatchQuery);
                 }
 
-                ((MultiMatchQueryBuilder) searchQueries.get(path)).field(fieldName);
+                ((MultiMatchQueryBuilder) searchQueries.get(path))
+                        .field(fieldName, field.getBoost());
             }
         }
-
         return searchQueries;
     }
 }

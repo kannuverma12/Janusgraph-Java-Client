@@ -4,7 +4,7 @@
  * @author: shashank.chhikara
  */
 
-var database_name = "digital_education";
+var database_name = "digital-education";
 var college_collection = "institute";
 var course_collection = "course";
 var exam_collection = "exam";
@@ -189,7 +189,7 @@ function transformCollege(superDoc) {
   }
 
   if (superDoc.official_name) {
-    transformedCollege.official_name = superDoc.official_name;
+     transformedCollege.official_name = superDoc.official_name;
   }
 
   if (superDoc.common_name) {
@@ -292,6 +292,9 @@ function transformCollege(superDoc) {
     transformedCollege.exams_accepted = Object.keys(superDoc.exam_map).map(function (key) {
       return superDoc.exam_map[key];
     });
+      transformedCollege.exams_accepted_search = Object.keys(superDoc.exam_map).map(function (key) {
+      return superDoc.exam_map[key];
+    });
   }
   // setup per stream ranking, max-rank, max-rating
 
@@ -312,8 +315,27 @@ function transformCollege(superDoc) {
 
       // of same stream then only latest year's value will/should be saved.
 
-      var stream_rank_key = "ranking_" + ranking.stream;
-      transformedCollege[stream_rank_key.toLowerCase()] = ranking.rank;
+    var ranking = superDoc.rankings[k];
+    var rating_prefix;
+    var rating_suffix;
+    var rating_key;
+    if(ranking.source){
+        rating_prefix = ranking.source.toLowerCase();
+    }
+    if(ranking.ranking_type && ranking.ranking_type !== 'STREAM WISE COLLEGES'){
+        rating_suffix = ranking.ranking_type.toLowerCase();
+    } else if(ranking.ranking_stream){
+        rating_suffix = ranking.stream.toLowerCase();
+    }
+    if(rating_suffix && rating_prefix) {
+        rating_key = 'ranking_' + rating_prefix + '_' +  rating_suffix;
+    }
+    if(rating_key && ranking.score){
+        transformedCollege[rating_key] = ranking.score;
+    }
+
+     // var stream_rank_key = "ranking_" + rating_prefix + '_' + rating_suffix;
+      //transformedCollege[stream_rank_key.toLowerCase()] = ranking.score;
       // NOTE: we are keeping minimum rank in max_rank here.
 
       if (ranking.rank < transformedCollege.max_rank) {
@@ -388,6 +410,7 @@ function transformCollege(superDoc) {
     delete transformedCollege.courses;
     delete transformedCollege.courses_offered;
   }
+  console.log(JSON.stringify(transformedCollege.institute_id));
   return transformedCollege;
 
 }

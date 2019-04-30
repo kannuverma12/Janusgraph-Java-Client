@@ -4,7 +4,6 @@ package com.paytm.digital.education.explore.service.impl;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Course;
-import com.paytm.digital.education.explore.database.entity.CourseFee;
 import com.paytm.digital.education.explore.database.entity.Placement;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.response.dto.detail.CompareInstDetail;
@@ -30,7 +29,6 @@ import com.paytm.digital.education.explore.service.helper.StreamDataHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -47,15 +45,12 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.AS_
 import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKINGS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.LATEST_YEAR;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.GENERAL;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.INST_LATEST_YEAR;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_SHORT_NAME;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DETAILS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.YES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.HIPHEN;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.UNIVERSITIES;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.OVERALL_RANKING;
 
 @Slf4j
 @Service
@@ -246,7 +241,7 @@ public class CompareServiceImpl implements CompareService {
     }
 
     private Map<String, Placement> getPlacements(List<Placement> placements) {
-        int latest = LATEST_YEAR;
+        int latest = INST_LATEST_YEAR;
         for (Placement p : placements) {
             if (p.getYear() > latest) {
                 latest = p.getYear();

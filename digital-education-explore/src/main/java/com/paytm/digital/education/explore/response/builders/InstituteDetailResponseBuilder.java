@@ -37,7 +37,6 @@ import java.util.stream.Collectors;
 import javafx.util.Pair;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -95,8 +94,10 @@ public class InstituteDetailResponseBuilder {
         String entityName = INSTITUTE.name().toLowerCase();
         Map<String, Object> highlights = new HashMap<>();
         highlights.put(entityName, institute);
-        highlights.put(APPROVALS,
-                CommonUtil.getApprovals(institute.getApprovals(), parentInstitutionName));
+        Map<String, String> approvalsMap = CommonUtil.getApprovals(institute.getApprovals(), parentInstitutionName);
+        if (!CollectionUtils.isEmpty(approvalsMap)) {
+            highlights.put(APPROVALS, approvalsMap);
+        }
         instituteDetail.setDerivedAttributes(
                 derivedAttributesHelper.getDerivedAttributes(highlights, entityName));
         OfficialAddress officialAddress =
@@ -198,7 +199,7 @@ public class InstituteDetailResponseBuilder {
             Map<String, Set<String>> degreeMap =
                     courses.stream().filter(c -> Objects.nonNull(c.getCourseLevel()))
                             .collect(Collectors
-                                    .toMap(course -> course.getCourseLevel().toString(),
+                                    .toMap(course -> course.getCourseLevel().getDisplayName(),
                                         course -> new HashSet<>(course.getMasterDegree()),
                                         (set1, set2) -> Stream.of(set1, set2)
                                                 .flatMap(Set::stream)

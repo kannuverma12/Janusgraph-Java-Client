@@ -10,13 +10,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.experimental.UtilityClass;
 
 /**
- * A utility class which will return the Map of 
- * - path of each variable in a class 
- * - caters nested class as well 
+ * A utility class which will return the Map of
+ * - path of each variable in a class
+ * - caters nested class as well
  * - takes care of primitive and java language specific classes for finding nested class
- * 
- * @author himanshujain
  *
+ * @author himanshujain
  */
 
 @UtilityClass
@@ -45,7 +44,8 @@ public class HierarchyIdentifierUtils {
                 fieldName = annotation.value();
             }
 
-            String levelName = hierarchyPath.equals(startLevelName) ? fieldName : hierarchyPath + "." + fieldName;
+            String levelName = hierarchyPath.equals(startLevelName)
+                    ? fieldName : hierarchyPath + "." + fieldName;
             hierarchyMap.put(fieldName, hierarchyPath);
 
             Type type = field.getGenericType();
@@ -56,6 +56,11 @@ public class HierarchyIdentifierUtils {
                     if (!CommonUtils.isLangSpecific((Class<?>) t)) {
                         iterateClass((Class<?>) t, hierarchyMap, levelName);
                     }
+                    /*
+                     * we should always check for the keys data type not values - so breaking this
+                     * loop on first itr itself
+                     */
+                    break;
                 }
             }
         }

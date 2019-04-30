@@ -11,6 +11,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.LIN
 import static com.paytm.digital.education.explore.constants.ExploreConstants.MMM_YYYY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.NON_TENTATIVE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.YYYY_MM;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.ZERO;
 import static com.paytm.digital.education.explore.enums.EducationEntity.EXAM;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
 
@@ -103,8 +104,11 @@ public class ExamDetailServiceImpl {
             entitySection.getUnits().forEach(entityUnit -> {
                 List<Topic> topics = new ArrayList<>();
                 entityUnit.getTopics().forEach(entityTopic -> {
-                    Topic topic = new Topic(entityTopic.getName());
-                    topics.add(topic);
+                    String topicName = entityTopic.getName();
+                    if (!topicName.equals(ZERO)) {
+                        Topic topic = new Topic(topicName);
+                        topics.add(topic);
+                    }
                 });
                 Unit unit = new Unit(entityUnit.getName(), topics);
                 units.add(unit);

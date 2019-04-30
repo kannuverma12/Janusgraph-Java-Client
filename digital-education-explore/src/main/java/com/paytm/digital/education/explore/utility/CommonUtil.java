@@ -29,7 +29,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.INS
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STANDALONE_INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.UNIVERSITIES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OVERALL_RANKING;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.LATEST_YEAR;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.INST_LATEST_YEAR;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.GENERAL;
 
 @UtilityClass
@@ -53,6 +53,34 @@ public class CommonUtil {
             address.setStreetAddress(officialAddress.getStreetAddress());
         }
         return address;
+    }
+
+    public String removeWordsFromString(String inputString, List<String> stopWords,
+            String seperator) {
+        if (CollectionUtils.isEmpty(stopWords)) {
+            return inputString;
+        }
+        String outputString = "";
+        String[] inputStringArray = inputString.split(seperator);
+        for (String word : inputStringArray) {
+            if (!stopWords.contains(word)) {
+                outputString = outputString + seperator + word;
+            }
+        }
+        return outputString.trim();
+    }
+
+    public void mergeTwoMapsContainigListAsValue(Map<String, List<Object>> inputMap,
+            Map<String, List<Object>> outputMap) {
+        for (Map.Entry<String, List<Object>> data : inputMap
+                .entrySet()) {
+            if (outputMap.containsKey(data.getKey())) {
+                outputMap.get(data.getKey())
+                        .addAll(data.getValue());
+            } else {
+                outputMap.put(data.getKey(), data.getValue());
+            }
+        }
     }
 
     public List<String> formatValues(Map<String, Map<String, Object>> propertyMap,
@@ -110,11 +138,13 @@ public class CommonUtil {
 
 
     public void convertStringValuesToLowerCase(Map<String, List<Object>> filters) {
-        for (Map.Entry<String, List<Object>> filter : filters.entrySet()) {
-            if (!CollectionUtils.isEmpty(filter.getValue())
-                    && filter.getValue().get(0) instanceof String) {
-                for (int i = 0; i < filter.getValue().size(); i++) {
-                    filter.getValue().set(i, ((String) filter.getValue().get(i)).toLowerCase());
+        if (!CollectionUtils.isEmpty(filters)) {
+            for (Map.Entry<String, List<Object>> filter : filters.entrySet()) {
+                if (!CollectionUtils.isEmpty(filter.getValue())
+                        && filter.getValue().get(0) instanceof String) {
+                    for (int i = 0; i < filter.getValue().size(); i++) {
+                        filter.getValue().set(i, ((String) filter.getValue().get(i)).toLowerCase());
+                    }
                 }
             }
         }
@@ -172,7 +202,7 @@ public class CommonUtil {
             String key = en.getKey();
             List<Ranking> rankingList = en.getValue();
             Ranking ranking = null;
-            int latest = LATEST_YEAR;
+            int latest = INST_LATEST_YEAR;
             for (Ranking r : rankingList) {
                 if (Objects.nonNull(r.getYear())) {
                     if (r.getYear() > latest) {
