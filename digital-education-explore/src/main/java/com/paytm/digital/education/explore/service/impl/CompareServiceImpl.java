@@ -211,8 +211,8 @@ public class CompareServiceImpl implements CompareService {
         if (Objects.nonNull(inst.getCampusSize())) {
             cDetail.setCampusArea(inst.getCampusSize() + ACRES);
         }
-        if (Objects.nonNull(inst.getTotalIntake()) && inst.getTotalIntake() != 0) {
-            cDetail.setTotalIntake(inst.getTotalIntake());
+        if (Objects.nonNull(inst.getStudentCount()) && inst.getStudentCount() != 0) {
+            cDetail.setTotalIntake(inst.getStudentCount());
         }
         String parentInstitutionName = parentInstituteNameMap.get(inst.getParentInstitution());
         cDetail.setApprovals(getApprovalDetail(inst.getApprovals(),
@@ -236,8 +236,8 @@ public class CompareServiceImpl implements CompareService {
     }
 
     private Map<Long, String> getCourseMap(List<Course> courses) {
-        return courses.stream().filter(c -> Objects.nonNull(c.getCourseNameOfficial())).
-                collect(Collectors.toMap(c -> c.getCourseId(), c -> c.getCourseNameOfficial()));
+        return courses.stream().filter(c -> Objects.nonNull(c.getCourseNameOfficial()))
+                .collect(Collectors.toMap(c -> c.getCourseId(), c -> c.getCourseNameOfficial()));
     }
 
     private Map<String, Placement> getPlacements(List<Placement> placements) {

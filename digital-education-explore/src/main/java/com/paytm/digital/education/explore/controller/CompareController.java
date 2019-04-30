@@ -35,7 +35,7 @@ public class CompareController {
     private CompareService   compareService;
     private ExploreValidator exploreValidator;
 
-    @RequestMapping(method = RequestMethod.GET, path = "auth/v1/compare/institute")
+    @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/compare/institute")
     public @ResponseBody CompareDetail compareInstitutes(
             @RequestParam(name = "inst1") @Min(1) @NotNull Long inst1,
             @RequestParam(name = "inst2") @Min(1) @NotNull Long inst2,
