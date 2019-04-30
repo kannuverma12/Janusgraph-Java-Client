@@ -14,7 +14,10 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.APP
 import static com.paytm.digital.education.explore.constants.ExploreConstants.UGC;
 
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paytm.digital.education.explore.config.ConfigProperties;
+import com.paytm.digital.education.explore.database.entity.SearchSortParam;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
@@ -46,6 +49,34 @@ public class CommonUtil {
             address.setStreetAddress(officialAddress.getStreetAddress());
         }
         return address;
+    }
+
+    public String removeWordsFromString(String inputString, List<String> stopWords,
+            String seperator) {
+        if (CollectionUtils.isEmpty(stopWords)) {
+            return inputString;
+        }
+        String outputString = "";
+        String[] inputStringArray = inputString.split(seperator);
+        for (String word : inputStringArray) {
+            if (!stopWords.contains(word)) {
+                outputString = outputString + seperator + word;
+            }
+        }
+        return outputString.trim();
+    }
+
+    public void mergeTwoMapsContainigListAsValue(Map<String, List<Object>> inputMap,
+            Map<String, List<Object>> outputMap) {
+        for (Map.Entry<String, List<Object>> data : inputMap
+                .entrySet()) {
+            if (outputMap.containsKey(data.getKey())) {
+                outputMap.get(data.getKey())
+                        .addAll(data.getValue());
+            } else {
+                outputMap.put(data.getKey(), data.getValue());
+            }
+        }
     }
 
     public List<String> formatValues(Map<String, Map<String, Object>> propertyMap,
@@ -103,11 +134,13 @@ public class CommonUtil {
 
 
     public void convertStringValuesToLowerCase(Map<String, List<Object>> filters) {
-        for (Map.Entry<String, List<Object>> filter : filters.entrySet()) {
-            if (!CollectionUtils.isEmpty(filter.getValue())
-                    && filter.getValue().get(0) instanceof String) {
-                for (int i = 0; i < filter.getValue().size(); i++) {
-                    filter.getValue().set(i, ((String) filter.getValue().get(i)).toLowerCase());
+        if (!CollectionUtils.isEmpty(filters)) {
+            for (Map.Entry<String, List<Object>> filter : filters.entrySet()) {
+                if (!CollectionUtils.isEmpty(filter.getValue())
+                        && filter.getValue().get(0) instanceof String) {
+                    for (int i = 0; i < filter.getValue().size(); i++) {
+                        filter.getValue().set(i, ((String) filter.getValue().get(i)).toLowerCase());
+                    }
                 }
             }
         }

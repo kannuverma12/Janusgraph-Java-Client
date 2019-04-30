@@ -3,9 +3,9 @@ package com.paytm.digital.education.elasticsearch.query;
 import com.paytm.digital.education.elasticsearch.constants.ESConstants;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
-import com.paytm.digital.education.elasticsearch.models.FilterField;
-import com.paytm.digital.education.elasticsearch.models.Operator;
 import com.paytm.digital.education.elasticsearch.models.SortField;
+import com.paytm.digital.education.elasticsearch.models.Operator;
+import com.paytm.digital.education.elasticsearch.models.FilterField;
 import com.paytm.digital.education.elasticsearch.query.helper.PathWiseMultiMatchQueryMapBuilder;
 import com.paytm.digital.education.elasticsearch.utils.DataSortUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -129,9 +129,8 @@ public class SearchQueryBuilderService {
 
         if (Objects.nonNull(request.getSearchFields()) && StringUtils
                 .isNotBlank(request.getQueryTerm())) {
-            searchQueries =
-                    PathWiseMultiMatchQueryMapBuilder.getQueryMap(request.getSearchFields(),
-                            request.getAnalyzer(), request.getQueryTerm());
+            searchQueries = PathWiseMultiMatchQueryMapBuilder.getQueryMap(request.getSearchFields(),
+                    request.getAnalyzer(), request.getQueryTerm());
         }
 
         if (Objects.nonNull(request.getFilterFields())) {

@@ -50,6 +50,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
@@ -63,10 +64,10 @@ import javax.annotation.PostConstruct;
 @AllArgsConstructor
 public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
 
-    private static Map<String, Float>           searchFieldKeys;
-    private static Map<String, FilterQueryType> filterQueryTypeMap;
-    private static Map<String, DataSortOrder>   sortKeysInOrder;
-    private        SearchAggregateHelper        searchAggregateHelper;
+    private static Map<String, Float>                   searchFieldKeys;
+    private static Map<String, FilterQueryType>         filterQueryTypeMap;
+    private static LinkedHashMap<String, DataSortOrder> sortKeysInOrder;
+    private        SearchAggregateHelper                searchAggregateHelper;
 
     @PostConstruct
     private void init() {
@@ -89,7 +90,7 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
         ElasticRequest elasticRequest = buildSearchRequest(searchRequest);
         ElasticResponse elasticResponse = initiateSearch(elasticRequest, ExamSearch.class);
         return buildSearchResponse(elasticResponse, elasticRequest, EXPLORE_COMPONENT,
-                EXAM_FILTER_NAMESPACE, EXAM_SEARCH_NAMESPACE);
+                EXAM_FILTER_NAMESPACE, EXAM_SEARCH_NAMESPACE, null);
     }
 
 
@@ -101,7 +102,7 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
         populateFilterFields(searchRequest, elasticRequest, ExamSearch.class, filterQueryTypeMap);
         populateAggregateFields(searchRequest, elasticRequest,
                 searchAggregateHelper.getExamAggregateData(), ExamSearch.class);
-        populateSortFields(searchRequest, elasticRequest, ExamSearch.class, sortKeysInOrder);
+        populateSortFields(searchRequest, elasticRequest, ExamSearch.class);
         return elasticRequest;
     }
 
