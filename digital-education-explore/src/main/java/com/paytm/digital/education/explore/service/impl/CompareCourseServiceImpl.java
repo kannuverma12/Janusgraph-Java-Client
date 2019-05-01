@@ -1,5 +1,12 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import static com.paytm.digital.education.explore.constants.CompareConstants.GENERAL;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_ID;
+import static com.paytm.digital.education.explore.enums.Gender.FEMALE;
+import static com.paytm.digital.education.explore.enums.Gender.MALE;
+import static com.paytm.digital.education.explore.enums.Gender.OTHERS;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
+
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.CourseFee;
@@ -23,13 +30,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.GENERAL;
-import static com.paytm.digital.education.explore.enums.Gender.FEMALE;
-import static com.paytm.digital.education.explore.enums.Gender.MALE;
-import static com.paytm.digital.education.explore.enums.Gender.OTHERS;
-import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 
 @Slf4j
 @Service

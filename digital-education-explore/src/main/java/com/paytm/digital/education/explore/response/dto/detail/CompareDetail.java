@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class CompareDetail {
 
     @JsonProperty("comparison_insights")
-    private Map<String, String> comparisonSights;
+    private Map<String, List<String>> keyInsights;
 
     @JsonProperty("institutes")
     private List<CompareInstDetail> institutes;

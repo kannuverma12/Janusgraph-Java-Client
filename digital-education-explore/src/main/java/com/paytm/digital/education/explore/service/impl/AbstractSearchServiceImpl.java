@@ -2,39 +2,26 @@ package com.paytm.digital.education.explore.service.impl;
 
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.RANGE;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.LinkedHashMap;
-import java.util.Objects;
-import java.util.concurrent.TimeoutException;
-import javax.annotation.PostConstruct;
-
-import com.paytm.digital.education.elasticsearch.models.FilterField;
-import com.paytm.digital.education.elasticsearch.models.SearchField;
-import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
-import com.paytm.digital.education.elasticsearch.models.Operator;
-import com.paytm.digital.education.elasticsearch.models.AggregateField;
-import com.paytm.digital.education.elasticsearch.models.SortField;
-import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
-import com.paytm.digital.education.explore.es.model.InstituteSearch;
-import com.paytm.digital.education.explore.es.model.ExamSearch;
-import com.paytm.digital.education.explore.es.model.NestedCourseSearch;
-import com.paytm.digital.education.explore.es.model.CourseSearch;
-import com.paytm.digital.education.explore.es.model.ClassifierSearchDoc;
-import com.paytm.digital.education.explore.request.dto.search.Classification;
-import com.paytm.digital.education.explore.response.dto.search.ClassificationResponse;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
+import com.paytm.digital.education.elasticsearch.models.AggregateField;
+import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
+import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
+import com.paytm.digital.education.elasticsearch.models.FilterField;
+import com.paytm.digital.education.elasticsearch.models.Operator;
+import com.paytm.digital.education.elasticsearch.models.SearchField;
+import com.paytm.digital.education.elasticsearch.models.SortField;
 import com.paytm.digital.education.exception.EducationException;
+import com.paytm.digital.education.explore.es.model.ClassifierSearchDoc;
+import com.paytm.digital.education.explore.es.model.CourseSearch;
+import com.paytm.digital.education.explore.es.model.ExamSearch;
+import com.paytm.digital.education.explore.es.model.InstituteSearch;
+import com.paytm.digital.education.explore.es.model.NestedCourseSearch;
+import com.paytm.digital.education.explore.request.dto.search.Classification;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.builders.SearchResponseBuilder;
+import com.paytm.digital.education.explore.response.dto.search.ClassificationResponse;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.mapping.ErrorEnum;
@@ -42,21 +29,30 @@ import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.search.service.ISearchService;
 import com.paytm.digital.education.utility.HierarchyIdentifierUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.TimeoutException;
+import javax.annotation.PostConstruct;
 
 @Slf4j
 @Component
 public abstract class AbstractSearchServiceImpl {
 
+    protected Map<Class, Map<String, String>> hierarchyMap;
     @Autowired
     private ISearchService searchService;
-
     @Autowired
     private SearchResponseBuilder searchResponseBuilder;
-
     @Autowired
     private PropertyReader propertyReader;
-
-    protected Map<Class, Map<String, String>> hierarchyMap;
 
     @PostConstruct
     private void generateLevelMap() {

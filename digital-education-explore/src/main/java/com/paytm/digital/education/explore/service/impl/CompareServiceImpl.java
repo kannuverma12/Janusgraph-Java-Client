@@ -1,70 +1,69 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import com.paytm.digital.education.explore.database.entity.Institute;
-import com.paytm.digital.education.explore.database.entity.Exam;
+import static com.mongodb.QueryOperators.OR;
+import static com.paytm.digital.education.explore.constants.CompareConstants.ACRES;
+import static com.paytm.digital.education.explore.constants.CompareConstants.AS_PER;
+import static com.paytm.digital.education.explore.constants.CompareConstants.AVERAGE;
+import static com.paytm.digital.education.explore.constants.CompareConstants.CAREERS360;
+import static com.paytm.digital.education.explore.constants.CompareConstants.DETAILS;
+import static com.paytm.digital.education.explore.constants.CompareConstants.INST_LATEST_YEAR;
+import static com.paytm.digital.education.explore.constants.CompareConstants.MAX;
+import static com.paytm.digital.education.explore.constants.CompareConstants.MEDIAN;
+import static com.paytm.digital.education.explore.constants.CompareConstants.MIN;
+import static com.paytm.digital.education.explore.constants.CompareConstants.NA_SIGN;
+import static com.paytm.digital.education.explore.constants.CompareConstants.NIRF;
+import static com.paytm.digital.education.explore.constants.CompareConstants.RANKED;
+import static com.paytm.digital.education.explore.constants.CompareConstants.RANKINGS;
+import static com.paytm.digital.education.explore.constants.CompareConstants.YES;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_SHORT_NAME;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SUBEXAM_ID;
+
 import com.paytm.digital.education.explore.database.entity.Course;
+import com.paytm.digital.education.explore.database.entity.Exam;
+import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.entity.Placement;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.explore.response.dto.detail.CompareInstDetail;
 import com.paytm.digital.education.explore.response.dto.detail.CompareDetail;
+import com.paytm.digital.education.explore.response.dto.detail.CompareInstDetail;
 import com.paytm.digital.education.explore.response.dto.detail.CompareRanking;
 import com.paytm.digital.education.explore.response.dto.detail.Ranking;
 import com.paytm.digital.education.explore.service.CompareService;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashMap;
-import java.util.HashSet;
-
-import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
-
 import com.paytm.digital.education.explore.service.helper.FacilityDataHelper;
 import com.paytm.digital.education.explore.service.helper.StreamDataHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
+import com.paytm.digital.education.explore.utility.CompareUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import static com.mongodb.QueryOperators.OR;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.MEDIAN;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.ACRES;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.AVERAGE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.MAX;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.MIN;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.NA_SIGN;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.NIRF;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.CAREERS360;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKED;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.AS_PER;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKINGS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INST_LATEST_YEAR;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_SHORT_NAME;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DETAILS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SUBEXAM_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.YES;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @AllArgsConstructor
 public class CompareServiceImpl implements CompareService {
 
-    private InstituteDetailServiceImpl instituteDetailService;
-    private CommonMongoRepository commonMongoRepository;
-    private StreamDataHelper streamDataHelper;
-    private FacilityDataHelper facilityDataHelper;
-
-    private static Map<Long, String> parentInstituteNameMap = new HashMap<>();
-    private static Map<Integer, List<Course>> instituteCoursesMap = new HashMap<>();
+    private static Map<Long, String>          parentInstituteNameMap = new HashMap<>();
+    private static Map<Integer, List<Course>> instituteCoursesMap    = new HashMap<>();
+    private        InstituteDetailServiceImpl instituteDetailService;
+    private        CommonMongoRepository      commonMongoRepository;
+    private        StreamDataHelper           streamDataHelper;
+    private        FacilityDataHelper         facilityDataHelper;
+    private        CompareInsightsServiceImpl compareInsightsService;
 
     @Override
     public CompareDetail compareInstitutes(List<Long> instList, String fieldGroup,
@@ -72,6 +71,7 @@ public class CompareServiceImpl implements CompareService {
 
         CompareDetail compareDetail = new CompareDetail();
         List<CompareInstDetail> instituteDetailsList = new ArrayList<>();
+        List<Institute> dbInstituteList = new ArrayList<>();
         List<String> fieldGroupList = getFieldGroups(fieldGroup);
 
         if (!CollectionUtils.isEmpty(instList)) {
@@ -94,6 +94,7 @@ public class CompareServiceImpl implements CompareService {
 
             for (Institute institute : finalInstituteList) {
                 CompareInstDetail instDetail = getCompareInstDetail(institute);
+                dbInstituteList.add(institute);
                 instituteDetailsList.add(instDetail);
             }
         }
@@ -102,9 +103,13 @@ public class CompareServiceImpl implements CompareService {
             updateRankings(instituteDetailsList);
             updatePlacememnts(instituteDetailsList);
 
+            Map<String, List<String>> keyInsights = compareInsightsService.getInstituteKeyInsights(dbInstituteList);
+            if (!CollectionUtils.isEmpty(keyInsights)) {
+                compareDetail.setKeyInsights(keyInsights);
+            }
+
             compareDetail.setInstitutes(instituteDetailsList);
         }
-
         return compareDetail;
     }
 
@@ -231,7 +236,7 @@ public class CompareServiceImpl implements CompareService {
         cDetail.setApprovals(getApprovalDetail(inst.getApprovals(),
                 Objects.nonNull(parentInstitutionName) ? parentInstitutionName : ""));
         cDetail.setFacilities(getFacilitiesDetail(inst.getFacilities()));
-        cDetail.setFakeRankings(CommonUtil.getResponseRankingMap(inst.getRankings()));
+        cDetail.setFakeRankings(CompareUtil.getResponseRankingMap(inst.getRankings()));
         cDetail.setFakePlacements(getPlacements(inst.getSalariesPlacement()));
         List<Course> courses = getCourses(inst.getInstituteId());
         if (!CollectionUtils.isEmpty(courses)) {
@@ -242,7 +247,7 @@ public class CompareServiceImpl implements CompareService {
 
             cDetail.setCourseLevel(getCourseLevel(courses));
             cDetail.setExamsAccepted(getExamAccepted(courses));
-            cDetail.setMinimumCourseFee(CommonUtil.getMinCourseFee(courses));
+            cDetail.setMinimumCourseFee(CompareUtil.getMinCourseFee(courses));
             cDetail.setStreamsPreparedFor(getStreams(courses));
         }
         return cDetail;
