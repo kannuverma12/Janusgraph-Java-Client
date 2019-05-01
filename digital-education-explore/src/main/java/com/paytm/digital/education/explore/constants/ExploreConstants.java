@@ -207,6 +207,6 @@ public interface ExploreConstants {
     String CAREERS_360          = "careers360";
     
     String HTTP_AGENT ="http.agent";
-    String CHROME_HTTP_AGENT = "Chrome;
+    String CHROME_HTTP_AGENT = "Chrome";
 
     String S3_PATH = "/{0}/{1}";}
