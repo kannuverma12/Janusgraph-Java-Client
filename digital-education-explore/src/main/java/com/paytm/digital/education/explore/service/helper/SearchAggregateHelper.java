@@ -36,13 +36,12 @@ public class SearchAggregateHelper {
 
     public AggregateField[] getInstituteAggregateData() {
         List<String> instituteKeys =
-                Arrays.asList(STATE_INSTITUTE, CITY_INSTITUTE, STREAM_INSTITUTE,
-                        COURSE_LEVEL_INSTITUTE, EXAMS_ACCEPTED_INSTITUTE, OWNERSHIP,
-                        FACILITIES, INSTITUTE_GENDER, ESTABLISHMENT_YEAR, FEES_INSTITUTE);
+                Arrays.asList(EXAMS_ACCEPTED_INSTITUTE, STREAM_INSTITUTE, COURSE_LEVEL_INSTITUTE,
+                        STATE_INSTITUTE, CITY_INSTITUTE, FEES_INSTITUTE, OWNERSHIP, FACILITIES,
+                        INSTITUTE_GENDER, ESTABLISHMENT_YEAR);
         List<AggregationType> instituteAggregateType =
-                Arrays.asList(TERMS, TERMS, TERMS, TERMS, TERMS, TERMS, TERMS, TERMS,
-                        MINMAX, MINMAX);
-
+                Arrays.asList(TERMS, TERMS, TERMS, TERMS, TERMS, MINMAX, TERMS, TERMS, TERMS,
+                        MINMAX);
         BucketSort countDescSort = BucketSort.builder().key(BucketAggregationSortParms.COUNT).order(
                 DataSortOrder.DESC).build();
 

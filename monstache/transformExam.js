@@ -12,19 +12,30 @@ module.exports = function(doc) {
 	targetExam.exam_id = doc.exam_id;
 	targetExam.official_name = doc.exam_full_name;
 
-	targetExam.names = [];
-
 	if (Array.isArray(doc.synonyms)) {
-		targetExam.names = targetExam.names.concat(doc.synonyms);
+		targetExam.exam_name_synonyms= doc.synonyms;
 	}
 
 	if (doc.exam_full_name) {
-		targetExam.names.push(doc.exam_full_name);
+		targetExam.exam_full_name = doc.exam_full_name;
 	}
 
 	if (doc.exam_short_name) {
-		targetExam.names.push(doc.exam_short_name);
+		targetExam.exam_short_name = doc.exam_short_name;
 	}
+        var tags = {};
+        if(doc.domains) {
+                if(doc.domains === 'MANAGEMENT_AND_BUSINESS_ADMINISTRATION') {
+                     tags.concat('mba');
+                }
+                if(doc.domains === 'ENGINEERING_AND_ARCHITECTURE') {
+                     tags.concat('engineering');
+                }
+                if(doc.domains === 'COMPETITION') {
+                     tags.concat('government');
+                }
+                targetExam.tags = tags;
+        }
 
 //	targetExam.category = doc.exam_category;
 	// mode : Online/Offline
@@ -173,6 +184,6 @@ module.exports = function(doc) {
 		targetExam.tabs_available.push('Syllabus');
 	}
 
-	//console.log ("exam: " + targetExam.exam_id );
+	console.log ("exam: " + targetExam.exam_id + " " + JSON.stringify(targetExam));
 	return targetExam;
 }

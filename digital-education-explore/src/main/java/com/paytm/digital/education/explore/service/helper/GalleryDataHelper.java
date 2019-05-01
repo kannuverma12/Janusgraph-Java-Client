@@ -39,6 +39,9 @@ public class GalleryDataHelper {
                 response.setImages(imageMap);
             }
         }
-        return response;
+        if (!response.isEmpty()) {
+            return response;
+        }
+        return null;
     }
 }

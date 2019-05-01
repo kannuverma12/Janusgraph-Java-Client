@@ -332,7 +332,8 @@ public class AggregationQueryBuilderService {
                 .isNotBlank(request.getQueryTerm())) {
             searchQueries =
                     PathWiseMultiMatchQueryMapBuilder.getQueryMap(request.getSearchFields(),
-                            request.getAnalyzer(), request.getQueryTerm());
+                            request.getAnalyzer(), request.getQueryTerm(),
+                            request.getSearchQueryType());
         }
 
         if (Objects.nonNull(request.getFilterFields())) {

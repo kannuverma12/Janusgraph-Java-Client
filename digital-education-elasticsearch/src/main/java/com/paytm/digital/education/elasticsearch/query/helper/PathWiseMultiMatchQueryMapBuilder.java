@@ -1,22 +1,17 @@
 package com.paytm.digital.education.elasticsearch.query.helper;
 
-import com.paytm.digital.education.elasticsearch.constants.ESConstants;
-import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
-import com.paytm.digital.education.elasticsearch.models.FilterField;
-import com.paytm.digital.education.elasticsearch.models.Operator;
+import com.paytm.digital.education.elasticsearch.models.CrossField;
 import com.paytm.digital.education.elasticsearch.models.SearchField;
-import javafx.util.Pair;
+import com.paytm.digital.education.elasticsearch.models.SearchQueryType;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.Objects;
 
 import static com.paytm.digital.education.elasticsearch.constants.ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS;
 
@@ -27,10 +22,11 @@ public class PathWiseMultiMatchQueryMapBuilder {
      * Creates a map containing multiMatch query for every nested path and parent document
      */
     public Map<String, QueryBuilder> getQueryMap(SearchField[] searchFields,
-            String analyzer, String queryTerm) {
+            String analyzer, String queryTerm, SearchQueryType searchQueryType) {
 
         String fieldName;
         String path;
+        Float boost;
         Map<String, QueryBuilder> searchQueries = new HashMap<String, QueryBuilder>();
 
         for (SearchField field : searchFields) {
@@ -50,15 +46,17 @@ public class PathWiseMultiMatchQueryMapBuilder {
                     if (StringUtils.isNotBlank(analyzer)) {
                         multiMatchQuery.analyzer(analyzer);
                     }
-
-                    multiMatchQuery.type(MultiMatchQueryBuilder.Type.CROSS_FIELDS);
+                    if (Objects.nonNull(searchQueryType) && searchQueryType instanceof CrossField) {
+                        multiMatchQuery.type(MultiMatchQueryBuilder.Type.CROSS_FIELDS);
+                        multiMatchQuery.tieBreaker(((CrossField) searchQueryType).getTieBreaker());
+                    }
                     searchQueries.put(path, multiMatchQuery);
                 }
 
-                ((MultiMatchQueryBuilder) searchQueries.get(path)).field(fieldName);
+                ((MultiMatchQueryBuilder) searchQueries.get(path))
+                        .field(fieldName, field.getBoost());
             }
         }
-
         return searchQueries;
     }
 }

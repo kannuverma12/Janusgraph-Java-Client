@@ -24,7 +24,7 @@ public class ApprovalUtilTest {
         approvals.add(UGC);
         Map<String, String> expected = new HashMap<>();
         expected.put(AFFILIATED_TO, "du");
-        expected.put(APPROVED_BY, UGC);
+        expected.put(APPROVED_BY, UGC.toUpperCase());
         Assert.assertEquals(expected, CommonUtil.getApprovals(approvals, "du"));
     }
 
@@ -33,7 +33,7 @@ public class ApprovalUtilTest {
         List<String> approvals = new ArrayList<>();
         approvals.add(UGC);
         Map<String, String> expected = new HashMap<>();
-        expected.put(APPROVED_BY, UGC);
+        expected.put(APPROVED_BY, UGC.toUpperCase());
         Assert.assertEquals(expected, CommonUtil.getApprovals(approvals, null));
     }
 

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.util.CollectionUtils;
+
 import java.util.List;
 import java.util.Map;
 
@@ -16,16 +17,19 @@ import java.util.Map;
 public class SearchResponse {
 
     @JsonProperty("results")
-    private SearchResult              results;
+    private SearchResult results;
 
     @JsonProperty("search_term")
-    private String                    searchTerm;
+    private String searchTerm;
 
     @JsonProperty("filters")
-    private List<FilterData>          filters;
+    private List<FilterData> filters;
 
     @JsonProperty("total")
-    private long                      total;
+    private long total;
+
+    @JsonProperty("meta")
+    private ClassificationResponse classificationResponseData;
 
     @JsonIgnore
     private Map<Long, SearchBaseData> entityDataMap;

@@ -123,8 +123,8 @@ public class Institute {
     @Field("campus_size")
     private Integer campusSize;
 
-    @Field("total_intake")
-    private Integer totalIntake;
+    @Field("total_enrollments")
+    private Integer totalEnrollments;
 
     public Institute(String commonName, Long instituteId) {
         this.commonName = commonName;

@@ -64,14 +64,13 @@ import javax.annotation.PostConstruct;
 @AllArgsConstructor
 public class CourseSearchService extends AbstractSearchServiceImpl {
 
-    private static Map<String, FilterQueryType> filterQueryTypeMap;
-    private static Map<String, Float> searchFieldKeys;
-    private static Map<String, DataSortOrder>   sortKeysInOrder;
-    private        SearchAggregateHelper        searchAggregateHelper;
-    private        CommonMongoRepository        commonMongoRepository;
-    private        PropertyReader               propertyReader;
-    private        SearchResponseBuilder        searchResponseBuilder;
-
+    private static Map<String, FilterQueryType>         filterQueryTypeMap;
+    private static Map<String, Float>                   searchFieldKeys;
+    private static LinkedHashMap<String, DataSortOrder> sortKeysInOrder;
+    private        SearchAggregateHelper                searchAggregateHelper;
+    private        CommonMongoRepository                commonMongoRepository;
+    private        PropertyReader                       propertyReader;
+    private        SearchResponseBuilder                searchResponseBuilder;
 
     @PostConstruct
     private void init() {
@@ -152,6 +151,7 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
                 .setOfficialAddress(CommonUtil.getOfficialAddress(institute.getInstitutionState(),
                         institute.getInstitutionCity(), null, null, null));
         courseSearchResponse.setInstituteName(institute.getOfficialName());
+        courseSearchResponse.setInstituteId(institute.getInstituteId());
     }
 
     @Override
@@ -164,7 +164,8 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
                 filterQueryTypeMap);
         populateAggregateFields(searchRequest, elasticRequest,
                 searchAggregateHelper.getCourseAggregateData(), CourseSearch.class);
-        populateSortFields(searchRequest, elasticRequest, CourseSearch.class, sortKeysInOrder);
+        searchRequest.setSortOrder(sortKeysInOrder);
+        populateSortFields(searchRequest, elasticRequest, CourseSearch.class);
         return elasticRequest;
     }
 
@@ -190,6 +191,9 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
             List<SearchBaseData> values = new ArrayList<>();
             values.add(courseSearchResponse);
             searchResults.setValues(values);
+            Map<Long, SearchBaseData> searchBaseDataMap = new HashMap<>();
+            searchBaseDataMap.put(courseSearchResponse.getInstituteId(), values.get(0));
+            searchResponse.setEntityDataMap(searchBaseDataMap);
         }
         searchResponse.setResults(searchResults);
     }

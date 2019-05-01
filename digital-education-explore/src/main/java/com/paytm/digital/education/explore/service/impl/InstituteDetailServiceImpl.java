@@ -8,6 +8,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.COU
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_PREFIX;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OTHER_CATEGORIES;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.PARENT_INSTITUTION;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SUBEXAM_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_DEGREES;
@@ -109,10 +110,22 @@ public class InstituteDetailServiceImpl {
                 instituteFields.add(requestedField);
             }
         }
-
-        Institute institute =
-                commonMongoRepository.getEntityByFields(INSTITUTE_ID, entityId, Institute.class,
-                        instituteFields);
+        Map<String, Object> queryObject = new HashMap<>();
+        List<Long> instituteIdList = new ArrayList<>();
+        instituteIdList.add(entityId);
+        queryObject.put(INSTITUTE_ID, instituteIdList);
+        queryObject.put(PARENT_INSTITUTION, instituteIdList);
+        List<Institute> institutes = commonMongoRepository.findAll(queryObject, Institute.class,
+                instituteFields, OR);
+        Institute institute = null;
+        for (Institute college : institutes) {
+            Long collegeId = college.getInstituteId();
+            if (collegeId.equals(entityId)) {
+                institute = college;
+            } else {
+                instituteIdList.add(collegeId);
+            }
+        }
         if (institute != null) {
             Long parentInstitutionId = institute.getParentInstitution();
             String parentInstitutionName = null;
@@ -124,20 +137,53 @@ public class InstituteDetailServiceImpl {
                         parentInstitution != null ? parentInstitution.getOfficialName() : null;
             }
             return processInstituteDetail(institute, entityId, courseFields, examFields,
-                    parentInstitutionName);
+                    parentInstitutionName, instituteIdList);
         }
         throw new BadRequestException(INVALID_INSTITUTE_ID,
                 INVALID_INSTITUTE_ID.getExternalMessage());
     }
 
+    @Cacheable(value = "institutes")
+    public List<Institute> getInstitutes(List<Long> entityIds, List<String> groupFields)
+            throws IOException, TimeoutException {
+        if (CollectionUtils.isEmpty(groupFields)) {
+            throw new BadRequestException(INVALID_FIELD_GROUP,
+                    INVALID_FIELD_GROUP.getExternalMessage());
+        }
+        List<String> instituteFields = new ArrayList<>();
+
+        for (String requestedField : groupFields) {
+            if (!requestedField.startsWith(COURSE_PREFIX) || !requestedField.startsWith(EXAM_PREFIX)) {
+                instituteFields.add(requestedField);
+            }
+        }
+
+        Set<Long> searchIds = new HashSet<>(entityIds);
+        List<Institute> institutes =
+                commonMongoRepository
+                        .getEntityFieldsByValuesIn(INSTITUTE_ID, new ArrayList<>(searchIds),
+                                Institute.class,
+                                instituteFields);
+
+        if (!CollectionUtils.isEmpty(institutes) && searchIds.size() == institutes.size()) {
+            return institutes;
+        }
+
+        throw new BadRequestException(INVALID_INSTITUTE_ID,
+                INVALID_INSTITUTE_ID.getExternalMessage());
+    }
+
     private InstituteDetail processInstituteDetail(Institute institute, Long entityId,
-            List<String> courseFields, List<String> examFields, String parentInstitutionName)
+            List<String> courseFields, List<String> examFields, String parentInstitutionName,
+            List<Long> instituteIdList)
             throws IOException, TimeoutException {
         List<Course> courses = null;
         if (!CollectionUtils.isEmpty(courseFields)) {
+            Map<String, Object> queryObject = new HashMap<>();
+            queryObject.put(INSTITUTE_ID, instituteIdList);
             courses = commonMongoRepository
-                    .getEntitiesByIdAndFields(INSTITUTE_ID, entityId, Course.class,
-                            courseFields);
+                    .findAll(queryObject, Course.class,
+                            courseFields, OR);
         }
         Map<String, Object> examData = getExamData(courses);
         Set<Long> examIds = (Set<Long>) examData.get(EXAM_ID);
