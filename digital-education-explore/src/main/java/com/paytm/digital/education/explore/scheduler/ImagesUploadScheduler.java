@@ -22,27 +22,26 @@ public class ImagesUploadScheduler {
 
     @Autowired
     private CronPropertiesRepository cronPropertiesRepository;
-
-
-    @Scheduled(fixedDelay = 900000)
+    
+    @Scheduled(fixedDelayString = "${image.upload.cron.fixed.delay}")
     @SchedulerLock(name = "imagesUploadScheduler")
     public void imagesUploadScheduler() {
 
-        CronProperties isImageUploadCronProperty =
-                cronPropertiesRepository.findByKey(ExploreConstants.IMAGE_UPLOAD_CRON_KEY);
-        if (BooleanUtils.isTrue((Boolean) isImageUploadCronProperty.getValue())) {
+        CronProperties imageUploadCronProperty =
+                cronPropertiesRepository.findByCronName(ExploreConstants.IMAGE_UPLOAD_CRON_KEY);
+        if (BooleanUtils.isTrue(imageUploadCronProperty.getIsActive())) {
             log.info("entered in imagesUploadScheduler");
             imageUploadServiceImpl.uploadImages();
             log.info("exited from imagesUploadScheduler");
         }
     }
 
-    @Scheduled(fixedDelay = 3600000, initialDelay = 600000)
+    @Scheduled(fixedDelayString = "${failed.image.cron.fixed.delay}", initialDelayString = "${failed.image.cron.initial.delay}")
     @SchedulerLock(name = "failedImagesUploadScheduler")
     public void failedImagesUploadScheduler() {
         CronProperties isFailedImageCronProperty =
-                cronPropertiesRepository.findByKey(ExploreConstants.FAILED_IMAGE_CRON_KEY);
-        if (BooleanUtils.isTrue((Boolean) isFailedImageCronProperty.getValue())) {
+                cronPropertiesRepository.findByCronName(ExploreConstants.FAILED_IMAGE_CRON_KEY);
+        if (BooleanUtils.isTrue(isFailedImageCronProperty.getIsActive())) {
             log.info("entered in imagesUploadScheduler");
             imageUploadServiceImpl.uploadFailedImages();
             log.info("exited from imagesUploadScheduler");

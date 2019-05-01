@@ -5,14 +5,15 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.text.MessageFormat;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.paytm.digital.education.explore.config.AwsConfig;
 import com.paytm.digital.education.explore.constants.ExploreConstants;
-import com.paytm.digital.education.explore.es.model.Aws;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,13 +22,13 @@ import lombok.extern.slf4j.Slf4j;
 @Validated
 public class S3Service {
 
-    private final AmazonS3 s3Client = Aws.func();
+    private final AmazonS3 s3Client = AwsConfig.func();
 
     public String uploadFile(String imageUrl, String fileName, Long instituteId)
             throws IOException {
         log.info("In S3Service.uploadFile with imageUrl {} fileName {} instituteId {} ", imageUrl,
                 fileName, instituteId);
-        System.setProperty("http.agent", "Chrome");
+        System.setProperty(ExploreConstants.HTTP_AGENT, ExploreConstants.CHROME_HTTP_AGENT);
         imageUrl = CommonUtil.encodeString(imageUrl, fileName);
         URL url = new URL(imageUrl);
         InputStream is = url.openStream();
@@ -41,7 +42,7 @@ public class S3Service {
                         fileName, byteArrayInputStream, metadata);
         s3Client.putObject(saveRequest);
         is.close();
-        String s3Path = "/" + instituteId + "/" + fileName;
+        String s3Path = MessageFormat.format(ExploreConstants.S3_PATH, instituteId, fileName);
         log.info(
                 "Exited from S3Service.uploadFile with imageUrl {} fileName {} instituteId {} s3Path {} ",
                 imageUrl, fileName, instituteId, s3Path);

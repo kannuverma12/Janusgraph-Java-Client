@@ -1,5 +1,6 @@
 package com.paytm.digital.education.explore.database.entity;
 
+import java.util.Date;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -14,10 +15,18 @@ import lombok.ToString;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CronProperties {
     
-    @Field("key")
-    private String key;
+    @Field("cron_name")
+    private String cronName;
     
-    @Field("value")
-    private Object value; 
+    @Field("is_active")
+    private Boolean isActive; 
+    
+    @Field("created_at")
+    private Date createdAt;
+    
+    @Field("updated_at")
+    private Date updatedAt;
 
+    
+    
 }

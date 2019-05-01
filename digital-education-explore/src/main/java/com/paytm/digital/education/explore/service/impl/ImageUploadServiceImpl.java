@@ -31,6 +31,9 @@ public class ImageUploadServiceImpl {
 
     @Autowired
     private S3Service             s3Service;
+    
+    int count = 1;
+    int maxTries = 2;
 
     public void uploadImages() {
         log.info("Entered in uploadImages");
@@ -40,49 +43,21 @@ public class ImageUploadServiceImpl {
             log.info("In uploadImages with institutes count " + institutes.size());
             for (Institute institute : institutes) {
                 Date lastUpdated = institute.getUpdatedAt();
-                if (institute.getGallery() != null && institute.getGallery().getImages() != null
-                        && institute.getGallery().getS3Images() == null) {
-                    Map<String, List<String>> imagesMap = institute.getGallery().getImages();
+                if (institute.getGallery() != null) {
                     Map<String, List<String>> s3ImagesMap =
                             new LinkedHashMap<String, List<String>>();
-
-
-                    for (String key : imagesMap.keySet()) {
-                        if (s3ImagesMap.get(key) == null) {
-                            s3ImagesMap.put(key, new ArrayList<String>());
-                        }
-                        if (!CollectionUtils.isEmpty(imagesMap.get(key))) {
-                            List<String> imagesUrls = new ArrayList<String>();
-                            for (String imageUrl : imagesMap.get(key)) {
-                                if (imageUrl == null || !imageUrl.contains("/")) {
-                                    log.error(
-                                            "In uploadImages with imageUrl is null or incorrect with institute id"
-                                                    + " {} and imageurl {} ",
-                                            institute.getInstituteId(), imageUrl);
-                                    continue;
-                                }
-                                String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
-                                uploadImageToS3(institute, key, imagesUrls, imageUrl,
-                                        fileName);
-                            }
-                            s3ImagesMap.put(key, imagesUrls);
-                        }
+                    //Upload gallery images
+                    if (institute.getGallery().getImages() != null
+                            && institute.getGallery().getS3Images() == null) {
+                    uploadGalleryImages(institute, s3ImagesMap);
                     }
+                    
+                    //Upload logo
                     String s3Logo = "";
                     if (institute.getGallery() != null
                             && StringUtils.isNotBlank(institute.getGallery().getLogo())
                             && institute.getGallery().getS3Logo() == null) {
-                        if (!StringUtils.contains(institute.getGallery().getLogo(),
-                                ExploreConstants.CAREERS_360)) {
-                            s3Logo = institute.getGallery().getLogo();
-                        } else {
-                            String fileName = institute.getGallery().getLogo().substring(
-                                    institute.getGallery().getLogo().lastIndexOf("/") + 1);
-                            s3Logo = uploadImageToS3(institute, ExploreConstants.LOGO,
-                                    new ArrayList<String>(),
-                                    institute.getGallery().getLogo(),
-                                    fileName);
-                        }
+                        s3Logo = uploadLogo(institute);
                     }
                     Gallery gallery = institute.getGallery();
                     gallery.setS3Images(s3ImagesMap);
@@ -90,22 +65,9 @@ public class ImageUploadServiceImpl {
                     institute.setGallery(gallery);
 
                 }
-
+                //Upload alumni images
                 if (!CollectionUtils.isEmpty(institute.getNotableAlumni())) {
-                    List<Alumni> alumnis = institute.getNotableAlumni();
-                    for (Alumni alumni : alumnis) {
-                        String s3FilePath = "";
-                        if (alumni != null && StringUtils.isNotBlank(alumni.getAlumniPhoto())
-                                && alumni.getS3AlumniPhoto() == null) {
-                            String fileName = alumni.getAlumniPhoto()
-                                    .substring(alumni.getAlumniPhoto().lastIndexOf("/") + 1);
-                            s3FilePath = uploadImageToS3(institute, ExploreConstants.ALUMNI,
-                                    new ArrayList<String>(), alumni.getAlumniPhoto(),
-                                    fileName);
-                        }
-                        alumni.setS3AlumniPhoto(s3FilePath);
-                        institute.setNotableAlumni(alumnis);
-                    }
+                    uploadAlumniImages(institute);
                 }
                 Institute updatedInstitute =
                         instituteRepository.findByInstituteId(institute.getInstituteId());
@@ -125,33 +87,88 @@ public class ImageUploadServiceImpl {
         log.info("Exited from uploadImages with imageUploadCount " + imageUploadCount);
     }
 
-    private String uploadImageToS3(Institute institute, String key, List<String> imagesUrls,
+    private void uploadGalleryImages(Institute institute, Map<String, List<String>> s3ImagesMap) {
+        Map<String, List<String>> imagesMap = institute.getGallery().getImages();
+        for (String key : imagesMap.keySet()) {
+            if (s3ImagesMap.get(key) == null) {
+                s3ImagesMap.put(key, new ArrayList<String>());
+            }
+            if (!CollectionUtils.isEmpty(imagesMap.get(key))) {
+                List<String> imagesUrls = new ArrayList<String>();
+                for (String imageUrl : imagesMap.get(key)) {
+                    if (imageUrl == null || !imageUrl.contains("/")) {
+                        log.error(
+                                "In uploadImages with imageUrl is null or incorrect with institute id"
+                                        + " {} and imageurl {} ",
+                                institute.getInstituteId(), imageUrl);
+                        continue;
+                    }
+                    String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+                   String s3FilePath = uploadImageToS3(institute.getInstituteId(), key, imageUrl,
+                            fileName);
+                    imagesUrls.add(s3FilePath);
+                }
+                s3ImagesMap.put(key, imagesUrls);
+            }
+        }
+    }
+
+    private String uploadLogo(Institute institute) {
+        String s3Logo;
+        if (!StringUtils.containsIgnoreCase(institute.getGallery().getLogo(),
+                ExploreConstants.CAREERS_360)) {
+            s3Logo = institute.getGallery().getLogo();
+        } else {
+            String fileName = institute.getGallery().getLogo().substring(
+                    institute.getGallery().getLogo().lastIndexOf("/") + 1);
+            s3Logo = uploadImageToS3(institute.getInstituteId(), ExploreConstants.LOGO,
+                    institute.getGallery().getLogo(),
+                    fileName);
+        }
+        return s3Logo;
+    }
+
+    private void uploadAlumniImages(Institute institute) {
+        List<Alumni> alumnis = institute.getNotableAlumni();
+        for (Alumni alumni : alumnis) {
+            String s3FilePath = "";
+            if (alumni != null && StringUtils.isNotBlank(alumni.getAlumniPhoto())
+                    && alumni.getS3AlumniPhoto() == null) {
+                String fileName = alumni.getAlumniPhoto()
+                        .substring(alumni.getAlumniPhoto().lastIndexOf("/") + 1);
+                s3FilePath = uploadImageToS3(institute.getInstituteId(), ExploreConstants.ALUMNI,
+                         alumni.getAlumniPhoto(), fileName);
+            }
+            alumni.setS3AlumniPhoto(s3FilePath);
+            institute.setNotableAlumni(alumnis);
+        }
+    }
+
+    private String uploadImageToS3(Long instituteId, String key,
             String imageUrl, String fileName) {
-        int count = 1;
-        int maxTries = 2;
+     
         String s3FilePath = null;
         while (true) {
             try {
                 s3FilePath = s3Service.uploadFile(imageUrl, fileName,
-                        institute.getInstituteId());
-                imagesUrls.add(s3FilePath);
+                        instituteId);
                 break;
             } catch (Exception e) {
                 if (count < maxTries) {
                     log.error(
                             "Error caught while uploading image in"
                                     + " uploadImages with id {} count {} maxTries {} exception  : {}",
-                            institute.getInstituteId(), count, maxTries,
+                                    instituteId, count, maxTries,
                             e);
                     count++;
                 } else {
                     log.error(
                             "Error caught while uploading image in uploadImages with id {} exception : {}",
-                            institute.getInstituteId(),
+                            instituteId,
                             e);
                     String rootCause =
                             ExceptionUtils.getRootCauseMessage(e);
-                    saveFailedImage(institute, key, imageUrl, rootCause);
+                    saveFailedImage(instituteId, key, imageUrl, rootCause);
                     break;
                 }
             }
@@ -159,10 +176,10 @@ public class ImageUploadServiceImpl {
         return s3FilePath;
     }
 
-    private void saveFailedImage(Institute institute, String key, String imageUrl,
+    private void saveFailedImage(Long instituteId, String key, String imageUrl,
             String rootCause) {
         FailedImage failedImage =
-                new FailedImage(institute.getInstituteId(),
+                new FailedImage(instituteId,
                         imageUrl,
                         key, rootCause);
         failedImage.setRetryCount(1);
