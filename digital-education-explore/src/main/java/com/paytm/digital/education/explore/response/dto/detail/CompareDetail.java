@@ -1,12 +1,12 @@
 package com.paytm.digital.education.explore.response.dto.detail;
 
 import lombok.Data;
+
 import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -17,8 +17,4 @@ public class CompareDetail {
 
     @JsonProperty("institutes")
     private List<CompareInstDetail> institutes;
-
-    @JsonProperty("courses")
-    private List<CourseDetail> courses;
-
 }

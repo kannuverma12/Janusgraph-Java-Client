@@ -1,6 +1,5 @@
 package com.paytm.digital.education.explore.service.impl;
 
-
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Course;
@@ -13,6 +12,7 @@ import com.paytm.digital.education.explore.response.dto.detail.Ranking;
 import com.paytm.digital.education.explore.service.CompareService;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -38,6 +38,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.ACR
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AVERAGE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.MAX;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.MIN;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.NA_SIGN;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.NIRF;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CAREERS360;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKED;
@@ -49,8 +50,8 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.INS
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_SHORT_NAME;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DETAILS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SUBEXAM_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.YES;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.HIPHEN;
 
 @Slf4j
 @Service
@@ -74,8 +75,10 @@ public class CompareServiceImpl implements CompareService {
         List<String> fieldGroupList = getFieldGroups(fieldGroup);
 
         if (!CollectionUtils.isEmpty(instList)) {
-            instList = instList.stream().filter(i -> Objects.nonNull(i)).collect(Collectors.toList());
-            List<Institute> institutes = instituteDetailService.getInstitutes(instList, fieldGroupList);
+            instList =
+                    instList.stream().filter(i -> Objects.nonNull(i)).collect(Collectors.toList());
+            List<Institute> institutes =
+                    instituteDetailService.getInstitutes(instList, fieldGroupList);
             updateParentInstituteNameMap(institutes);
             updateInstituteCoursesMap(instList);
 
@@ -103,6 +106,16 @@ public class CompareServiceImpl implements CompareService {
         }
 
         return compareDetail;
+    }
+
+    public List<Exam> getExamList(Set<Long> examIds) {
+        List<String> examFields = Arrays.asList(EXAM_SHORT_NAME, EXAM_ID, SUBEXAM_ID);
+        Map<String, Object> queryObject = new HashMap<>();
+        queryObject.put(EXAM_ID, new ArrayList<>(examIds));
+        queryObject.put(SUBEXAM_ID, new ArrayList<>(examIds));
+        List<Exam> examList = commonMongoRepository
+                .findAll(queryObject, Exam.class, examFields, OR);
+        return examList;
     }
 
     private void updateInstituteCoursesMap(List<Long> institutes) {
@@ -328,16 +341,6 @@ public class CompareServiceImpl implements CompareService {
         return retList;
     }
 
-    private List<Exam> getExamList(Set<Long> examIds) {
-        List<String> examFields = new ArrayList<>();
-        examFields.add(EXAM_SHORT_NAME);
-        Map<String, Object> queryObject = new HashMap<>();
-        queryObject.put(EXAM_ID, new ArrayList<>(examIds));
-        List<Exam> examList = commonMongoRepository
-                .findAll(queryObject, Exam.class, examFields, OR);
-        return examList;
-    }
-
     private Set<String> getCourseLevel(List<Course> courses) {
         Set<String> courseLevel = courses.stream().filter(c -> Objects.nonNull(c.getCourseLevel()))
                 .map(c -> c.getCourseLevel().name())
@@ -353,6 +356,7 @@ public class CompareServiceImpl implements CompareService {
         return courses;
     }
 
+
     private List<String> getApprovalDetail(List<String> approvals, String parentInstitutionName) {
         Map<String, String> approvalMap = CommonUtil.getApprovals(approvals, parentInstitutionName);
         List<String> approvalList = null;
@@ -366,9 +370,9 @@ public class CompareServiceImpl implements CompareService {
 
     private Map<String, String> getFacilitiesDetail(List<String> facilities) {
         Map<String, String> facilityMap = facilityDataHelper.getFacilitiesMasterList();
-        Map<String, String> facMap = facilityMap.entrySet().stream().collect(Collectors.toMap(en ->
-            en.getValue(),
-            en -> facilities.contains(en.getKey().toUpperCase()) ? YES : HIPHEN));
+        Map<String, String> facMap = facilityMap.entrySet().stream()
+                .collect(Collectors.toMap(en -> en.getValue(), en -> facilities
+                        .contains(en.getKey().toUpperCase()) ? YES : NA_SIGN));
         if (!CollectionUtils.isEmpty(facMap)) {
             return facMap;
         }
