@@ -10,7 +10,6 @@ import com.paytm.digital.education.explore.database.repository.CommonMongoReposi
 import com.paytm.digital.education.explore.enums.Gender;
 import com.paytm.digital.education.explore.response.dto.common.CutOff;
 import com.paytm.digital.education.explore.response.dto.detail.CompareCourseDetail;
-import com.paytm.digital.education.explore.response.dto.detail.CompareCourses;
 import com.paytm.digital.education.explore.service.CompareCourseService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

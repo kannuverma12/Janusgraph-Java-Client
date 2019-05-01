@@ -4,7 +4,6 @@ package com.paytm.digital.education.explore.controller;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EDUCATION_BASE_URL;
 
 import com.paytm.digital.education.explore.response.dto.detail.CompareCourseDetail;
-import com.paytm.digital.education.explore.response.dto.detail.CompareCourses;
 import com.paytm.digital.education.explore.response.dto.detail.CompareDetail;
 import com.paytm.digital.education.explore.service.CompareCourseService;
 import com.paytm.digital.education.explore.service.CompareService;
