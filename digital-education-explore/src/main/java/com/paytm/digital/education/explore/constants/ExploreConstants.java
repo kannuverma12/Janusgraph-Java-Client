@@ -31,7 +31,7 @@ public interface ExploreConstants {
     String EXPLORE_COMPONENT = "explore";
 
     ////// AutoSuggest Constants ////////////
-    String AUTOSUGGEST_INDEX         = "education_autosuggestion_v1";
+    String AUTOSUGGEST_INDEX         = "education_autosuggestion_v2";
     String AUTOSUGGEST_ANALYZER      = "words_with_spaces_analyzer";
     int    AUTOSUGGEST_MIN_CHARS     = 3;
     int    AUTOSUGGEST_MAX_CHARS     = 200;
@@ -44,7 +44,7 @@ public interface ExploreConstants {
     String ENTITY_TYPE_CITY          = "city";
 
     ///////// Institute search Constatnts ///////////
-    String SEARCH_INDEX_COURSE        = "education_search_course_v1";
+    String SEARCH_INDEX_COURSE        = "education_search_course_v2";
     String SEARCH_ANALYZER_COURSE     = "word_delimiter_analyzer";
     String SEARCH_NAMES_INSTITUTE     = "names";
     String MAX_RANK_INSTITUTE         = "max_rank";
@@ -121,7 +121,7 @@ public interface ExploreConstants {
     Float  EXAM_OFFICIAL_NAME_NGRAM_BOOST = 0.00001F;
     String DATE_TAB                       = "dates";
     String SYLLABUS_TAB                   = "syllabus";
-    String SEARCH_INDEX_INSTITUTE         = "education_search_institute_v3";
+    String SEARCH_INDEX_INSTITUTE         = "education_search_institute_v2";
     String SEARCH_ANALYZER_INSTITUTE      = "word_delimiter_analyzer";
     String SEARCH_NAMES                   = "names";
     String MAX_RANK                       = "max_rank";

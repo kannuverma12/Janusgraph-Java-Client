@@ -7,7 +7,7 @@ es = Elasticsearch(
     port=9200,
 )
 
-autosuggestIndex="education_autosuggestion_v1"
+autosuggestIndex="education_autosuggestion_v2"
 autosuggestIndexType="education"
 print autosuggestIndex
 
@@ -39,7 +39,7 @@ print "init scroll.. "
 
 # Init scroll by search
 esInstiData = es.search(
-    index='education_search_institute_test',
+    index='education_search_institute_v2',
     doc_type='education',
     scroll='2m',
     size=100,
