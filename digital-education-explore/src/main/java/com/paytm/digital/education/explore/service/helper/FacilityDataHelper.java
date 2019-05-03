@@ -1,10 +1,5 @@
 package com.paytm.digital.education.explore.service.helper;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DISPLAY_NAME;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.FACILITIES;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.LOGO;
-
 import com.paytm.digital.education.explore.response.dto.detail.Facility;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import lombok.AllArgsConstructor;
@@ -13,8 +8,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.FACILITIES;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.DISPLAY_NAME;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.LOGO;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.FACILITIES_MASTER_LIST;
 
 @Service
 @AllArgsConstructor
@@ -40,5 +43,17 @@ public class FacilityDataHelper {
             return facilityList;
         }
         return null;
+    }
+
+    public Map<String, String> getFacilitiesMasterList() {
+        Map<String, Object> facilityDataMap = propertyReader
+                .getPropertiesAsMapByKey(EXPLORE_COMPONENT, FACILITIES_MASTER_LIST,
+                        FACILITIES);
+        if (CollectionUtils.isEmpty(facilityDataMap)) {
+            facilityDataMap = Collections.EMPTY_MAP;
+        }
+        Map<String, String> facilityMap = facilityDataMap.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> (String) e.getValue()));
+        return facilityMap;
     }
 }

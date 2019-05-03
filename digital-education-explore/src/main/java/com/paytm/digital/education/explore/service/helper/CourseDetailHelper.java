@@ -58,6 +58,7 @@ public class CourseDetailHelper {
                     course.setDurationInMonth(courseData.getDurationInMonths());
                     course.setName(courseData.getOfficialName());
                     course.setSeats(courseData.getSeatsAvailable());
+                    course.setFee(courseData.getFee());
                     courses.add(course);
                 });
             }

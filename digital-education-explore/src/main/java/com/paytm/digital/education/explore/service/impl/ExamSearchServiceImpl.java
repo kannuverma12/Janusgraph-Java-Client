@@ -9,21 +9,27 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EXP
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_FILTER_NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_SEARCH_NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LINGUISTIC_MEDIUM;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.MAX_RANK;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.MMM_YYYY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.NON_TENTATIVE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_FULL_NAME;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_SHORT_NAME;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_NAME_SYNONYMS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_OFFICIAL_NAME;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_OFFICIAL_NAME_BOOST;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_FULL_NAME_BOOST;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_SHORT_NAME_BOOST;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_NAME_SYNONYMS_BOOST;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.RESULT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_ANALYZER_EXAM;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_OFFICIAL_NAME_NGRAM;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_OFFICIAL_NAME_NGRAM_BOOST;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_EXAM_LEVEL;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_INDEX_EXAM;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_NAMES_EXAM;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SYLLABUS_TAB;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.YYYY_MM;
-import com.paytm.digital.education.elasticsearch.enums.AggregationType;
+
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
-import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.explore.enums.EducationEntity;
@@ -42,13 +48,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.PostConstruct;
 
@@ -57,17 +64,23 @@ import javax.annotation.PostConstruct;
 @AllArgsConstructor
 public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
 
-    private static List<String>                 searchFieldKeys;
-    private static Map<String, FilterQueryType> filterQueryTypeMap;
-    private static Map<String, DataSortOrder>   sortKeysInOrder;
-    private SearchAggregateHelper               searchAggregateHelper;
+    private static Map<String, Float>                   searchFieldKeys;
+    private static Map<String, FilterQueryType>         filterQueryTypeMap;
+    private static LinkedHashMap<String, DataSortOrder> sortKeysInOrder;
+    private        SearchAggregateHelper                searchAggregateHelper;
 
     @PostConstruct
     private void init() {
-        filterQueryTypeMap = new HashMap<String, FilterQueryType>();
+        filterQueryTypeMap = new HashMap<>();
         filterQueryTypeMap.put(LINGUISTIC_MEDIUM, TERMS);
         filterQueryTypeMap.put(SEARCH_EXAM_LEVEL, TERMS);
-        searchFieldKeys = Arrays.asList(SEARCH_NAMES_EXAM);
+        searchFieldKeys = new HashMap<>();
+        searchFieldKeys.put(EXAM_FULL_NAME, EXAM_FULL_NAME_BOOST);
+        searchFieldKeys.put(EXAM_SHORT_NAME, EXAM_SHORT_NAME_BOOST);
+        searchFieldKeys.put(EXAM_NAME_SYNONYMS, EXAM_NAME_SYNONYMS_BOOST);
+        searchFieldKeys.put(EXAM_OFFICIAL_NAME, EXAM_OFFICIAL_NAME_BOOST);
+        searchFieldKeys.put(EXAM_OFFICIAL_NAME_NGRAM, EXAM_OFFICIAL_NAME_NGRAM_BOOST);
+
     }
 
     @Override
@@ -77,7 +90,7 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
         ElasticRequest elasticRequest = buildSearchRequest(searchRequest);
         ElasticResponse elasticResponse = initiateSearch(elasticRequest, ExamSearch.class);
         return buildSearchResponse(elasticResponse, elasticRequest, EXPLORE_COMPONENT,
-                EXAM_FILTER_NAMESPACE, EXAM_SEARCH_NAMESPACE);
+                EXAM_FILTER_NAMESPACE, EXAM_SEARCH_NAMESPACE, null);
     }
 
 
@@ -89,7 +102,7 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
         populateFilterFields(searchRequest, elasticRequest, ExamSearch.class, filterQueryTypeMap);
         populateAggregateFields(searchRequest, elasticRequest,
                 searchAggregateHelper.getExamAggregateData(), ExamSearch.class);
-        populateSortFields(searchRequest, elasticRequest, ExamSearch.class, sortKeysInOrder);
+        populateSortFields(searchRequest, elasticRequest, ExamSearch.class);
         return elasticRequest;
     }
 
@@ -201,7 +214,7 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
                                 && events.get(eventIndex).getType().equalsIgnoreCase(type)) {
                             if (events.get(eventIndex).getCertainty() != null
                                     && events.get(eventIndex).getCertainty()
-                                            .equalsIgnoreCase(NON_TENTATIVE)) {
+                                    .equalsIgnoreCase(NON_TENTATIVE)) {
                                 minApplicationDate = events.get(eventIndex).getStartDate() != null
                                         ? events.get(eventIndex).getStartDate()
                                         : events.get(eventIndex).getDate();

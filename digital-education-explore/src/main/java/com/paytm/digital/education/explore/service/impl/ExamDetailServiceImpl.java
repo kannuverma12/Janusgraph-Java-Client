@@ -11,6 +11,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.LIN
 import static com.paytm.digital.education.explore.constants.ExploreConstants.MMM_YYYY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.NON_TENTATIVE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.YYYY_MM;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.ZERO;
 import static com.paytm.digital.education.explore.enums.EducationEntity.EXAM;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
 
@@ -103,8 +104,11 @@ public class ExamDetailServiceImpl {
             entitySection.getUnits().forEach(entityUnit -> {
                 List<Topic> topics = new ArrayList<>();
                 entityUnit.getTopics().forEach(entityTopic -> {
-                    Topic topic = new Topic(entityTopic.getName());
-                    topics.add(topic);
+                    String topicName = entityTopic.getName();
+                    if (!topicName.equals(ZERO)) {
+                        Topic topic = new Topic(topicName);
+                        topics.add(topic);
+                    }
                 });
                 Unit unit = new Unit(entityUnit.getName(), topics);
                 units.add(unit);
@@ -126,9 +130,13 @@ public class ExamDetailServiceImpl {
                 if (event.getDateRangeStart() != null) {
                     respEvent.setDateEndRange(event.getDateRangeEnd());
                     respEvent.setDateStartRange(event.getDateRangeStart());
+                    respEvent.setDateEndRangeTimestamp(event.getDateRangeEnd());
+                    respEvent.setDateStartRangeTimestamp(event.getDateRangeStart());
                 } else {
+                    respEvent.setDateStartRangeTimestamp(event.getDate());
                     respEvent.setDateStartRange(event.getDate());
                 }
+                respEvent.setMonthTimestamp(DateUtil.stringToDate(event.getMonthDate(), YYYY_MM));
                 respEvent.setMonthDate(
                         DateUtil.formatDateString(event.getMonthDate(), YYYY_MM, MMM_YYYY));
                 respEvent.setModes(event.getModes());
@@ -293,7 +301,8 @@ public class ExamDetailServiceImpl {
             int admissonYear = 0;
             List<String> examCenters = null;
             for (Instance instance : instances) {
-                if (instance.getAdmissionYear() != null && instance.getAdmissionYear() > admissonYear
+                if (instance.getAdmissionYear() != null
+                        && instance.getAdmissionYear() > admissonYear
                         && !CollectionUtils.isEmpty(instance.getExamCenters())) {
                     admissonYear = instance.getAdmissionYear();
                     examCenters = instance.getExamCenters();
@@ -304,7 +313,9 @@ public class ExamDetailServiceImpl {
                 examCenters.forEach(examCenter -> {
                     String[] locationArr = examCenter.split(",");
                     if (locationArr.length == 2) {
-                        locationList.add(Location.builder().city(locationArr[0]).state(locationArr[1]).build());
+                        locationList
+                                .add(Location.builder().city(locationArr[0]).state(locationArr[1])
+                                        .build());
                     }
                 });
                 return locationList;

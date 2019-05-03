@@ -4,7 +4,7 @@
  * @author: shashank.chhikara
  */
 
-var database_name = "digital_education";
+var database_name = "digital-education";
 var college_collection = "institute";
 var course_collection = "course";
 var exam_collection = "exam";
@@ -419,6 +419,7 @@ function transformCollege(superDoc) {
     delete transformedCollege.courses;
     delete transformedCollege.courses_offered;
   }
+  console.log(JSON.stringify(transformedCollege.institute_id));
   return transformedCollege;
 
 }

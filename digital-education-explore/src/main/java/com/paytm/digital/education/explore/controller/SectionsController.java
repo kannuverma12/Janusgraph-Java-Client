@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
+import java.util.List;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EDUCATION_BASE_URL;
 
@@ -20,7 +20,7 @@ public class SectionsController {
     private PageService pageService;
 
     @GetMapping("/v1/page/{pageName}/sections")
-    public Map<String, Section> getPageSections(@PathVariable("pageName") String pageName) {
+    public List<Section> getPageSections(@PathVariable("pageName") String pageName) {
         return pageService.getPageSections(pageName);
     }
 }

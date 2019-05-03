@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,7 +19,7 @@ public class SubscriptionDetailHelper {
 
     private SubscriptionRepository subscriptionRepository;
 
-    public List<Long> getSubscribedEntities(EducationEntity educationEntity, Long userId, List<Long> entityIds) {
+    public List<Long> getSubscribedEntities(EducationEntity educationEntity, Long userId, Collection<Long> entityIds) {
         SubscribableEntityType subscribableEntityType = EducationEntity.convertToSubscribableEntity(educationEntity);
         List<Subscription> subscribedEntities = subscriptionRepository
                 .findBySubscribableEntityTypeAndUserIdAndStatusAndEntityIdIn(subscribableEntityType, userId,
@@ -29,5 +30,5 @@ public class SubscriptionDetailHelper {
         }
         return null;
     }
-
+    
 }

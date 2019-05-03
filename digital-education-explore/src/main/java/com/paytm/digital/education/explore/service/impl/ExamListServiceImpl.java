@@ -20,8 +20,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.mongodb.QueryOperators.EXISTS;
 import static com.mongodb.QueryOperators.OR;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CUTOFF_EXAM_ID;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAMS_ACCEPTED;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_FULL_NAME;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_SHORT_NAME;
@@ -39,6 +41,9 @@ public class ExamListServiceImpl implements ExamListService {
     public List<ExamInfo> getExamList(long instituteId) {
         Map<String, Object> courseQueryFields = new HashMap<>();
         courseQueryFields.put(INSTITUTE_ID, instituteId);
+        Map<String, Object> examAcceptedExists = new HashMap<>();
+        examAcceptedExists.put(EXISTS, true);
+        courseQueryFields.put(EXAMS_ACCEPTED, examAcceptedExists);
         List<Long> examIds = commonMongoRepository
                 .findAllDistinctValues(courseQueryFields, Course.class, CUTOFF_EXAM_ID,
                         Long.class);

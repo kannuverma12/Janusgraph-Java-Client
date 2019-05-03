@@ -19,13 +19,16 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.DEG
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_NAME_COURSE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM_COURSE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LEVEL_COURSE;
+
 import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.BucketAggregationSortParms;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.BucketSort;
+
 import java.util.Arrays;
 import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,20 +36,19 @@ public class SearchAggregateHelper {
 
     public AggregateField[] getInstituteAggregateData() {
         List<String> instituteKeys =
-                Arrays.asList(STATE_INSTITUTE, CITY_INSTITUTE, STREAM_INSTITUTE,
-                        COURSE_LEVEL_INSTITUTE, EXAMS_ACCEPTED_INSTITUTE, FEES_INSTITUTE, OWNERSHIP,
-                        FACILITIES, INSTITUTE_GENDER, ESTABLISHMENT_YEAR);
+                Arrays.asList(EXAMS_ACCEPTED_INSTITUTE, STREAM_INSTITUTE, COURSE_LEVEL_INSTITUTE,
+                        STATE_INSTITUTE, CITY_INSTITUTE, FEES_INSTITUTE, OWNERSHIP, FACILITIES,
+                        INSTITUTE_GENDER, ESTABLISHMENT_YEAR);
         List<AggregationType> instituteAggregateType =
                 Arrays.asList(TERMS, TERMS, TERMS, TERMS, TERMS, MINMAX, TERMS, TERMS, TERMS,
                         MINMAX);
-
         BucketSort countDescSort = BucketSort.builder().key(BucketAggregationSortParms.COUNT).order(
                 DataSortOrder.DESC).build();
 
         List<BucketSort> instituteSortOrder =
                 Arrays.asList(countDescSort, countDescSort, countDescSort, countDescSort,
-                        countDescSort,
-                        null, countDescSort, countDescSort, countDescSort, countDescSort, null);
+                        countDescSort, countDescSort, countDescSort, countDescSort, countDescSort,
+                        null, null);
 
         AggregateField[] instituteAggregateData = new AggregateField[instituteKeys.size()];
 

@@ -7,10 +7,12 @@ import com.paytm.digital.education.explore.database.entity.Section;
 import com.paytm.digital.education.explore.database.repository.PageRepository;
 import com.paytm.digital.education.explore.database.repository.SectionRepository;
 import com.paytm.digital.education.explore.service.PageService;
+import com.paytm.digital.education.explore.utility.CommonUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -18,40 +20,55 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotBlank;
 
+import static com.paytm.digital.education.explore.constants.ExploreConstants.COLLEGE_FOCUS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.ICON;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.LOGO;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP_COLLEGES;
+
 @Service
 @AllArgsConstructor
 public class PageServiceImpl implements PageService {
 
-    private PageRepository pageRepository;
+    private PageRepository    pageRepository;
     private SectionRepository sectionRepository;
 
     @Override
     @Cacheable(value = "page", key = "#pageName", unless = "#result == null ")
-    public Map<String, Section> getPageSections(@NotBlank final String pageName) {
+    public List<Section> getPageSections(@NotBlank final String pageName) {
         Page page = pageRepository.getPageByName(pageName);
 
         if (page == null) {
             throw ResourceNotFoundException.builder()
-                .errorCode(ErrorCode.DP_RESOURCE_NOT_FOUND)
-                .resourceName(pageName).build();
+                    .errorCode(ErrorCode.DP_RESOURCE_NOT_FOUND)
+                    .resourceName(pageName).build();
         }
 
-        final Collection<String> pageSectionNames = page.getSections().values();
+        final Collection<String> pageSectionNames = page.getSections();
         final List<Section> pageSections = sectionRepository.getSectionsByNameIn(pageSectionNames);
 
         final Map<String, Section> sectionsByName = pageSections.stream()
-            .collect(Collectors.toMap(Section::getName, Function.identity()));
+                .collect(Collectors.toMap(Section::getName, Function.identity()));
 
-        // used to represent Section whose entry does exist in Page document
-        // but that Section document doesn't exist
-        // Note: it'll only be used in case of data mismatch (inconsistent data)
-        // and UI folks demanded to send empty Section object in that case
-        final Section dummySection = new Section();
-
-        return page.getSections().entrySet().stream()
-            .collect(Collectors.toMap(Map.Entry::getKey, entry -> {
-                Section value = sectionsByName.get(entry.getValue());
-                return value != null ? value : dummySection;
-            }));
+        List<Section> response = new ArrayList<>();
+        for (String sectionName : pageSectionNames) {
+            Section section = sectionsByName.get(sectionName);
+            if (section != null) {
+                if (sectionName.equals(COLLEGE_FOCUS) || sectionName.equals(
+                        TOP_COLLEGES)) {
+                    String logoFieldName = "";
+                    if (sectionName.equals(TOP_COLLEGES)) {
+                        logoFieldName = ICON;
+                    } else {
+                        logoFieldName = LOGO;
+                    }
+                    for (Map<String, Object> item : section.getItems()) {
+                        String logo = CommonUtil.getLogoLink((String) item.get(logoFieldName));
+                        item.put(logoFieldName, logo);
+                    }
+                }
+                response.add(section);
+            }
+        }
+        return response;
     }
 }
