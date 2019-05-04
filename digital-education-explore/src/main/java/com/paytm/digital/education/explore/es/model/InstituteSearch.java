@@ -67,7 +67,7 @@ public class InstituteSearch {
     private float maxRating;
 
     @JsonProperty("max_rank")
-    private int maxRank;
+    private long maxRank;
 
     @JsonProperty("courses")
     private List<NestedCourseSearch> courses;

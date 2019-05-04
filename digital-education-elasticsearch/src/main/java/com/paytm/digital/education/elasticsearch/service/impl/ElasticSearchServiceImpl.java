@@ -17,6 +17,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -28,15 +29,15 @@ import java.util.concurrent.TimeoutException;
 public class ElasticSearchServiceImpl implements ElasticSearchService {
 
     @Qualifier(ESConstants.EDUCATION_ES_CLIENT)
-    private RestHighLevelClient             esClient;
+    private RestHighLevelClient esClient;
 
-    private SearchQueryBuilderService       searchQueryService;
+    private SearchQueryBuilderService searchQueryService;
 
-    private AggregationQueryBuilderService  aggregationQueryService;
+    private AggregationQueryBuilderService aggregationQueryService;
 
     private AggregationResponseDeserializer aggregationResponseDes;
 
-    private SearchResponseDeserializer      searchResponseDes;
+    private SearchResponseDeserializer searchResponseDes;
 
     @Override
     public <T> ElasticResponse<T> executeSearch(ElasticRequest request, Class<T> type)

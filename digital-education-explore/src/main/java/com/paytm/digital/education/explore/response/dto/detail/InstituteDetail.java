@@ -9,6 +9,7 @@ import lombok.Data;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -52,12 +53,9 @@ public class InstituteDetail {
 
     @JsonProperty("courses")
     private List<Course> courses;
-    
+
     @JsonProperty("total_courses")
     private long totalCourses;
-
-    @JsonProperty("rankings")
-    private List<Ranking> rankings;
 
     @JsonProperty("cut_offs")
     private List<ExamAndCutOff> cutOffs;
@@ -79,4 +77,13 @@ public class InstituteDetail {
 
     @JsonProperty("sections")
     private List<String> sections;
+
+    @JsonProperty("notable_alumni")
+    private List<Alumni> notableAlumni;
+
+    @JsonProperty("rankings")
+    private Map<String, List<Ranking>> rankings;
+
+    @JsonProperty("degree_offered")
+    private Map<String, Set<String>> degreeOffered;
 }

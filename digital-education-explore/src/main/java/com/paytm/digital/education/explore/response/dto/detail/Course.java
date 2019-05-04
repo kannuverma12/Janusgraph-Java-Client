@@ -19,4 +19,7 @@ public class Course {
 
     @JsonProperty("seats")
     private Integer seats;
+
+    @JsonProperty("fee")
+    private Long fee;
 }

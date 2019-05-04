@@ -1,4 +1,4 @@
-package com.paytm.digital.education.explore.database.repository;
+package com.paytm.digital.education.explore.utility;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;

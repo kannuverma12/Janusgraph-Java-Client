@@ -14,4 +14,12 @@ public class SuggestResult {
     @JsonProperty("official_name")
     private String officialName;
 
+    @JsonProperty("shortlisted")
+    private boolean shortlisted;
+
+    public SuggestResult(long entityId, String officialName) {
+        this.entityId = entityId;
+        this.officialName = officialName;
+    }
+
 }

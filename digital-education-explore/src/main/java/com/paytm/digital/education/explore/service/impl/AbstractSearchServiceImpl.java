@@ -1,18 +1,7 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.RANGE;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeoutException;
-import javax.annotation.PostConstruct;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
+
 import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
@@ -20,15 +9,19 @@ import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.elasticsearch.models.FilterField;
+import com.paytm.digital.education.elasticsearch.models.Operator;
 import com.paytm.digital.education.elasticsearch.models.SearchField;
 import com.paytm.digital.education.elasticsearch.models.SortField;
 import com.paytm.digital.education.exception.EducationException;
-import com.paytm.digital.education.explore.es.model.NestedCourseSearch;
+import com.paytm.digital.education.explore.es.model.ClassifierSearchDoc;
+import com.paytm.digital.education.explore.es.model.CourseSearch;
 import com.paytm.digital.education.explore.es.model.ExamSearch;
 import com.paytm.digital.education.explore.es.model.InstituteSearch;
-import com.paytm.digital.education.explore.es.model.CourseSearch;
+import com.paytm.digital.education.explore.es.model.NestedCourseSearch;
+import com.paytm.digital.education.explore.request.dto.search.Classification;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.builders.SearchResponseBuilder;
+import com.paytm.digital.education.explore.response.dto.search.ClassificationResponse;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.mapping.ErrorEnum;
@@ -36,21 +29,30 @@ import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.search.service.ISearchService;
 import com.paytm.digital.education.utility.HierarchyIdentifierUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.TimeoutException;
+import javax.annotation.PostConstruct;
 
 @Slf4j
 @Component
 public abstract class AbstractSearchServiceImpl {
 
-    @Autowired
-    private ISearchService                    searchService;
-
-    @Autowired
-    private SearchResponseBuilder             searchResponseBuilder;
-
-    @Autowired
-    private PropertyReader                    propertyReader;
-
     protected Map<Class, Map<String, String>> hierarchyMap;
+    @Autowired
+    private ISearchService searchService;
+    @Autowired
+    private SearchResponseBuilder searchResponseBuilder;
+    @Autowired
+    private PropertyReader propertyReader;
 
     @PostConstruct
     private void generateLevelMap() {
@@ -63,6 +65,8 @@ public abstract class AbstractSearchServiceImpl {
                 HierarchyIdentifierUtils.getClassHierarchy(NestedCourseSearch.class));
         hierarchyMap.put(CourseSearch.class,
                 HierarchyIdentifierUtils.getClassHierarchy(CourseSearch.class));
+        hierarchyMap.put(ClassifierSearchDoc.class,
+                HierarchyIdentifierUtils.getClassHierarchy(ClassifierSearchDoc.class));
     }
 
 
@@ -80,15 +84,15 @@ public abstract class AbstractSearchServiceImpl {
     }
 
     protected <T> void populateSearchFields(SearchRequest searchRequest,
-            ElasticRequest elasticRequest, List<String> searchFieldKeys, Class<T> type) {
+            ElasticRequest elasticRequest, Map<String, Float> searchFieldKeys, Class<T> type) {
         if (StringUtils.isNotBlank(searchRequest.getTerm())) {
             SearchField[] searchFields = new SearchField[searchFieldKeys.size()];
             int i = 0;
-            for (String searchKey : searchFieldKeys) {
+            for (Map.Entry<String, Float> searchKey : searchFieldKeys.entrySet()) {
                 SearchField searchField = new SearchField();
-                searchField.setName(searchKey);
-                searchField.setPath(hierarchyMap.get(type).get(searchKey));
-                searchField.setBoost(1.0f);
+                searchField.setName(searchKey.getKey());
+                searchField.setPath(hierarchyMap.get(type).get(searchKey.getKey()));
+                searchField.setBoost(searchKey.getValue());
                 searchFields[i++] = searchField;
             }
             elasticRequest.setSearchFields(searchFields);
@@ -108,10 +112,19 @@ public abstract class AbstractSearchServiceImpl {
                 filterField.setPath(hierarchyMap.get(type).get(filterKey));
                 filterField.setType(filterQueryTypeMap.get(filterKey));
                 if (filterQueryTypeMap.get(filterKey).equals(RANGE)) {
-                    List<Object> values = searchRequest.getFilter().get(filterKey);
-                    if (CollectionUtils.isEmpty(values) || values.size() < 2) {
-                        throw new EducationException(ErrorEnum.RANGE_TYPE_FILTER_VALUES_ERROR,
-                                "values of range filter must be of size 2", new String[] {"2"});
+                    List<List<Double>> values =
+                            ((List<List<Double>>) (Object) searchRequest.getFilter()
+                                    .get(filterKey));
+                    if (values.size() > 1) {
+                        filterField.setOperator(Operator.OR);
+                    } else {
+                        filterField.setOperator(Operator.AND);
+                    }
+                    for (List<Double> value : values) {
+                        if (CollectionUtils.isEmpty(value) || value.size() != 2) {
+                            throw new EducationException(ErrorEnum.RANGE_TYPE_FILTER_VALUES_ERROR,
+                                    "values of range filter must be of size 2", new String[] {"2"});
+                        }
                     }
                 }
                 filterField.setValues(searchRequest.getFilter().get(filterKey));
@@ -146,13 +159,15 @@ public abstract class AbstractSearchServiceImpl {
 
     protected abstract ElasticRequest buildSearchRequest(SearchRequest searchRequest);
 
+    /**
+     * If search request sort orders are null then we'll use BE sort orders
+     */
     protected <T> void populateSortFields(SearchRequest searchRequest,
-            ElasticRequest elasticRequest, Class<T> type,
-            Map<String, DataSortOrder> sortKeysInOrder) {
-        if (!CollectionUtils.isEmpty(sortKeysInOrder)) {
-            SortField[] sortFields = new SortField[sortKeysInOrder.size()];
+            ElasticRequest elasticRequest, Class<T> type) {
+        if (!CollectionUtils.isEmpty(searchRequest.getSortOrder())) {
+            SortField[] sortFields = new SortField[searchRequest.getSortOrder().size()];
             int i = 0;
-            for (Map.Entry<String, DataSortOrder> key : sortKeysInOrder.entrySet()) {
+            for (Map.Entry<String, DataSortOrder> key : searchRequest.getSortOrder().entrySet()) {
                 SortField sortField = new SortField();
                 sortField.setName(key.getKey());
                 sortField.setPath(hierarchyMap.get(type).get(key.getKey()));
@@ -165,7 +180,7 @@ public abstract class AbstractSearchServiceImpl {
 
     protected SearchResponse buildSearchResponse(ElasticResponse elasticResponse,
             ElasticRequest elasticRequest, String component, String filterNamespace,
-            String searchResultNamespace) {
+            String searchResultNamespace, Classification classificationData) {
         SearchResponse searchResponse = new SearchResponse(elasticRequest.getQueryTerm());
         if (elasticRequest.isSearchRequest()) {
             Map<String, Map<String, Object>> propertyMap = propertyReader
@@ -181,6 +196,16 @@ public abstract class AbstractSearchServiceImpl {
                     .populateSearchFilters(searchResponse, elasticResponse, elasticRequest,
                             propertyMap);
         }
+        ClassificationResponse classificationResponse = new ClassificationResponse();
+        if (Objects.isNull(classificationData)) {
+            classificationResponse.setClassified(false);
+        } else {
+            classificationResponse.setClassified(true);
+            classificationResponse.setFilters(classificationData.getFilters());
+            classificationResponse.setTerm(classificationData.getTerm());
+            classificationResponse.setSortParams(classificationData.getSortParams());
+        }
+        searchResponse.setClassificationResponseData(classificationResponse);
         return searchResponse;
     }
 

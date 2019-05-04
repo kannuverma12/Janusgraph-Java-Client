@@ -7,7 +7,7 @@ es = Elasticsearch(
     port=9200,
 )
 
-autosuggestIndex="education_autosuggestion_v1"
+autosuggestIndex="education_autosuggestion_v2"
 autosuggestIndexType="education"
 print autosuggestIndex
 
@@ -17,13 +17,20 @@ stateNames=[]
 # Process hits here
 def process_hits(hits):
     for insti in hits:
+        names=[]
         #cityNames.append(insti['_source']['city'])
         #stateNames.append(insti['_source']['state'])
-    if 'city' in insti['_source'] and insti['_source']['city'] :
-        cityNames.append(insti['_source']['city'])
-    if 'state' in insti['_source'] and insti['_source']['state']:
-        stateNames.append(insti['_source']['state'])
-    yield { "_index": autosuggestIndex, "_type":autosuggestIndexType,"_source" : {"names" : insti['_source']['names'], "official_name" : insti['_source']['official_name'], "entity_type": "institute", "entity_id": insti['_source']['institute_id']}, }
+        if 'city' in insti['_source'] and insti['_source']['city'] :
+            cityNames.append(insti['_source']['city'])
+        if 'state' in insti['_source'] and insti['_source']['state']:
+            stateNames.append(insti['_source']['state'])
+        if 'official_name' in insti['_source'] and insti['_source']['official_name']:
+            names.append(insti['_source']['official_name'])
+        if 'former_name' in insti['_source'] and insti['_source']['former_name']:
+            names.append(insti['_source']['former_name'])
+        if 'common_name' in insti['_source'] and insti['_source']['common_name']:
+            names.append(insti['_source']['common_name'])
+        yield { "_index": autosuggestIndex, "_type":autosuggestIndexType,"_source" : {"names" : names, "official_name" : insti['_source']['official_name'], "entity_type": "institute", "entity_id": insti['_source']['institute_id']}, }
 
 def getCityData(cityNames):
     for city in cityNames:
@@ -39,7 +46,7 @@ print "init scroll.. "
 
 # Init scroll by search
 esInstiData = es.search(
-    index='education_search_institute_v1',
+    index='education_search_institute_v2',
     doc_type='education',
     scroll='2m',
     size=100,
