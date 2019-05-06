@@ -11,6 +11,7 @@
         <module>digital-education-application</module>
         <module>digital-education-elasticsearch</module>
         <module>digital-education-search</module>
+        <module>forms-business-logic</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
