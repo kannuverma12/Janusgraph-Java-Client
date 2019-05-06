@@ -151,7 +151,8 @@ public class CompareServiceImpl implements CompareService {
                 .getEntityFieldsByValuesIn(INSTITUTE_ID, parentInstitutionIds, Institute.class,
                         parentInstitutionFields);
 
-        parentInstituteNameMap = parentInstitutions.stream().filter(Objects::nonNull)
+        Set<Institute> uniqueInstitutions = new HashSet<>(parentInstitutions);
+        parentInstituteNameMap = uniqueInstitutions.stream().filter(Objects::nonNull)
                 .collect(Collectors.toMap(i -> i.getInstituteId(), i -> i.getOfficialName()));
     }
 
