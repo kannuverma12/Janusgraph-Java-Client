@@ -21,6 +21,8 @@ public interface ExploreConstants {
     String NON_TENTATIVE = "non_tentative";
     String APPLICATION   = "APPLICATION";
     String EXAM          = "EXAM";
+    String PRECEDENCE    = "precedence";
+    String DEFAULT       = "DEFAULT";
 
     String GROUP_NAME   = "name";
     String GROUP_ENTITY = "entity";

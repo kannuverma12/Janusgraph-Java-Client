@@ -241,5 +241,4 @@ public class InstituteDetailResponseBuilder {
         }
         return null;
     }
-
 }
