@@ -142,6 +142,7 @@ public class CompareServiceImpl implements CompareService {
         String parentInstitutionName = null;
         List<String> parentInstitutionFields = new ArrayList<>();
         parentInstitutionFields.add(OFFICIAL_NAME);
+        parentInstitutionFields.add(INSTITUTE_ID);
 
         List<Long> parentInstitutionIds =
                 institutes.stream().filter(i -> Objects.nonNull(i.getParentInstitution()))
