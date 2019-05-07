@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -71,7 +72,7 @@ public class CompareInsightRankProcessor {
             + "+#institute1.instituteId}")
     public String getInsightBetweenTwoInstitutes(String rankingSource, Map<String, Ranking> rankingDataMap1,
             Map<String, Ranking> rankingDataMap2, Institute institute1, Institute institute2) {
-        if (rankingDataMap1.get(rankingSource).getRank() > rankingDataMap2.get(rankingSource).getRank()) {
+        if (rankingDataMap1.get(rankingSource).getRank() < rankingDataMap2.get(rankingSource).getRank()) {
             return institute1.getOfficialName() + IS_RANKED_HIGHER + institute2.getOfficialName();
         } else {
             return institute2.getOfficialName() + IS_RANKED_HIGHER + institute1.getOfficialName();
@@ -95,6 +96,10 @@ public class CompareInsightRankProcessor {
         List<String> result = new ArrayList<>();
         List<String> instituteNames = instituteList.stream().map(institute -> institute.getOfficialName()).collect(
                 Collectors.toList());
+        if (commonKeys.contains(NIRF)) {
+            commonKeys = new HashSet<>();
+            commonKeys.add(NIRF);
+        }
         for (String commonKey : commonKeys) {
             Integer maxRank = rankingDataMaps[0].get(commonKey).getRank();
             Double maxScore = rankingDataMaps[0].get(commonKey).getScore();
@@ -103,7 +108,7 @@ public class CompareInsightRankProcessor {
             int maxIndex = 0;
             for (int i = 1; i < instituteSize; i++) {
                 if (rankPresent && rankingDataMaps[i].get(commonKey).getRank() != null) {
-                    if (rankingDataMaps[i].get(commonKey).getRank() > maxRank) {
+                    if (rankingDataMaps[i].get(commonKey).getRank() < maxRank) {
                         maxRank = rankingDataMaps[i].get(commonKey).getRank();
                         maxIndex = i;
                     }
