@@ -48,6 +48,9 @@ public class SearchRequest extends FieldsAndFieldGroupRequest {
     @NotNull
     private Integer limit = DEFAULT_SIZE;
 
+    @JsonProperty("clear_filter")
+    private boolean clearFilters = false;
+
     @JsonProperty("fetch_filter")
     @NotNull
     private Boolean fetchFilter = true;

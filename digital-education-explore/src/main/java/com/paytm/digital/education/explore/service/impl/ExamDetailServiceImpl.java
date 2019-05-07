@@ -1,7 +1,9 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.APPLICATION;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.DATA;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DD_MMM_YYYY;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_FILTER_NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_PREFIX;
@@ -10,6 +12,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.LIN
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LINGUISTIC_MEDIUM_NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.MMM_YYYY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.NON_TENTATIVE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.PRECEDENCE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.YYYY_MM;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ZERO;
 import static com.paytm.digital.education.explore.enums.EducationEntity.EXAM;
@@ -292,8 +295,41 @@ public class ExamDetailServiceImpl {
         addDatesToResponse(examDetail, importantDates);
         examDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName));
         examDetail.setBanners(bannerDataHelper.getBannerData(entityName));
-        examDetail.setWidgets(widgetsDataHelper.getWidgets(entityName, exam.getExamId()));
+        examDetail.setWidgets(widgetsDataHelper.getWidgets(entityName, exam.getExamId(),
+                getDomainName(exam.getDomains())
+        ));
         return examDetail;
+    }
+
+    private String getDomainName(List<String> domains) {
+        int noOfDomains = domains.size();
+        if (noOfDomains == 0) {
+            // when exam is not associated with any domain
+            return DEFAULT;
+        } else if (noOfDomains == 1) {
+            // when exam is associated with only one domain
+            return domains.get(0);
+        } else {
+            // when exam is associated with multiple domains
+            return findHigherPrecedenceDomain(domains);
+        }
+    }
+
+    /*
+     ** Find the domain whose similar exams will be displayed when exam is associated with
+     ** multiple domains.
+     */
+    private String findHigherPrecedenceDomain(List<String> domains) {
+        Map<String, Object> propertyMap = propertyReader
+                .getPropertiesAsMapByKey(EXPLORE_COMPONENT, EXAM.toString().toUpperCase(),
+                        PRECEDENCE);
+        List<String> domainList = (List<String>) propertyMap.get(DATA);
+        for (String domain : domainList) {
+            if (domains.contains(domain)) {
+                return domain;
+            }
+        }
+        return DEFAULT;
     }
 
     private List<Location> getExamCenters(List<Instance> instances) {

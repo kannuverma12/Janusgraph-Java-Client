@@ -153,7 +153,8 @@ public class InstituteDetailServiceImpl {
         List<String> instituteFields = new ArrayList<>();
 
         for (String requestedField : groupFields) {
-            if (!requestedField.startsWith(COURSE_PREFIX) || !requestedField.startsWith(EXAM_PREFIX)) {
+            if (!requestedField.startsWith(COURSE_PREFIX) || !requestedField
+                    .startsWith(EXAM_PREFIX)) {
                 instituteFields.add(requestedField);
             }
         }
@@ -181,11 +182,12 @@ public class InstituteDetailServiceImpl {
         if (!CollectionUtils.isEmpty(courseFields)) {
             Map<String, Object> queryObject = new HashMap<>();
             queryObject.put(INSTITUTE_ID, instituteIdList);
+            courseFields.add(INSTITUTE_ID); // it will be removed in the future
             courses = commonMongoRepository
                     .findAll(queryObject, Course.class,
                             courseFields, OR);
         }
-        Map<String, Object> examData = getExamData(courses);
+        Map<String, Object> examData = getExamData(courses, entityId);
         Set<Long> examIds = (Set<Long>) examData.get(EXAM_ID);
         List<Exam> examList = null;
         if (!CollectionUtils.isEmpty(examFields) && !CollectionUtils.isEmpty(examIds)) {
@@ -200,7 +202,7 @@ public class InstituteDetailServiceImpl {
                         parentInstitutionName);
     }
 
-    private Map<String, Object> getExamData(List<Course> courses) {
+    private Map<String, Object> getExamData(List<Course> courses, Long instituteId) {
         Map<Long, String> examDegrees = new HashMap<>();
         Map<Long, Map<Gender, String>> examGenders = new HashMap<>();
         Map<Long, Map<String, String>> examCasteGroup = new HashMap<>();
@@ -208,44 +210,49 @@ public class InstituteDetailServiceImpl {
         Map<String, Object> casteGroupMap = genderCategoryMap.get(CASTEGROUP);
         Set<Long> examIds = new HashSet<>();
         if (!CollectionUtils.isEmpty(courses)) {
-            courses.forEach(course -> {
-                if (!CollectionUtils.isEmpty(course.getExamsAccepted())) {
-                    course.getExamsAccepted().forEach(examId -> {
-                        examDegrees.put(examId, StringUtils.join(course.getMasterDegree(), ','));
-                        examIds.add(examId);
-                    });
-                    if (!CollectionUtils.isEmpty(course.getCutoffs())) {
-                        course.getCutoffs().forEach(cutoff -> {
-                            long examId = cutoff.getExamId();
-                            Gender gender = cutoff.getGender();
-                            Map<Gender, String> genders = examGenders.get(examId);
-                            if (Objects.isNull(genders)) {
-                                genders = new HashMap<>();
-                            }
-                            if (Objects.nonNull(gender)) {
-                                genders.put(gender, (String) genderMap.get(gender.toString()));
-                            } else {
-                                genders.put(OTHERS, (String) genderMap.get(OTHERS.toString()));
-                            }
-                            examGenders.put(examId, genders);
-
-                            Map<String, String> casteGroups = examCasteGroup.get(examId);
-                            String caste = cutoff.getCasteGroup();
-                            if (Objects.isNull(casteGroups)) {
-                                casteGroups = new HashMap<>();
-                            }
-                            if (Objects.nonNull(caste)) {
-                                casteGroups.put(caste, (String) casteGroupMap.get(caste));
-                            } else {
-                                casteGroups.put(OTHER_CATEGORIES,
-                                        (String) casteGroupMap.get(OTHER_CATEGORIES));
-                            }
-                            examCasteGroup.put(examId, casteGroups);
+            //exclude child institute courses for the cutoffs
+            courses.stream().filter(course -> course.getInstitutionId().equals(instituteId.intValue()))
+                .forEach(course -> {
+                    if (!CollectionUtils.isEmpty(course.getExamsAccepted())) {
+                        course.getExamsAccepted().forEach(examId -> {
+                            examDegrees.put(examId,
+                                    StringUtils.join(course.getMasterDegree(), ','));
                             examIds.add(examId);
                         });
+                        if (!CollectionUtils.isEmpty(course.getCutoffs())) {
+                            course.getCutoffs().forEach(cutoff -> {
+                                long examId = cutoff.getExamId();
+                                Gender gender = cutoff.getGender();
+                                Map<Gender, String> genders = examGenders.get(examId);
+                                if (Objects.isNull(genders)) {
+                                    genders = new HashMap<>();
+                                }
+                                if (Objects.nonNull(gender)) {
+                                    genders.put(gender,
+                                            (String) genderMap.get(gender.toString()));
+                                } else {
+                                    genders.put(OTHERS,
+                                            (String) genderMap.get(OTHERS.toString()));
+                                }
+                                examGenders.put(examId, genders);
+
+                                Map<String, String> casteGroups = examCasteGroup.get(examId);
+                                String caste = cutoff.getCasteGroup();
+                                if (Objects.isNull(casteGroups)) {
+                                    casteGroups = new HashMap<>();
+                                }
+                                if (Objects.nonNull(caste)) {
+                                    casteGroups.put(caste, (String) casteGroupMap.get(caste));
+                                } else {
+                                    casteGroups.put(OTHER_CATEGORIES,
+                                            (String) casteGroupMap.get(OTHER_CATEGORIES));
+                                }
+                                examCasteGroup.put(examId, casteGroups);
+                                examIds.add(examId);
+                            });
+                        }
                     }
-                }
-            });
+                });
         }
         Map<String, Object> examData = new HashMap<>();
         examData.put(EXAM_DEGREES, examDegrees);

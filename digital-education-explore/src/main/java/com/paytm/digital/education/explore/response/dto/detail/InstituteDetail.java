@@ -54,7 +54,7 @@ public class InstituteDetail {
 
     @JsonProperty("courses")
     private List<Course> courses;
-    
+
     @JsonProperty("total_courses")
     private long totalCourses;
 

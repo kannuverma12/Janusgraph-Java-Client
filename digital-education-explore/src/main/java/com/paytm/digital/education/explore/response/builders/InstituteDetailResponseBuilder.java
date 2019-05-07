@@ -5,6 +5,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.APP
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OVERALL_RANKING;
 import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
 
+import com.paytm.digital.education.explore.database.entity.Alumni;
 import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
@@ -39,6 +40,7 @@ import java.util.stream.Collectors;
 import javafx.util.Pair;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -111,8 +113,6 @@ public class InstituteDetailResponseBuilder {
         instituteDetail.setPlacements(placementDataHelper.getSalariesPlacements(institute));
         instituteDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName));
         instituteDetail.setBanners(bannerDataHelper.getBannerData(entityName));
-        /*instituteDetail.setWidgets(widgetsDataHelper.getWidgets(entityName,
-                institute.getInstituteId()));*/
         Widget widget = similarInstituteService.getSimilarInstitutes(institute);
         if (Objects.nonNull(widget)) {
             instituteDetail.setWidgets(Arrays.asList(widget));
@@ -125,6 +125,24 @@ public class InstituteDetailResponseBuilder {
         }
         instituteDetail.setDegreeOffered(getDegreeMap(courses));
         return instituteDetail;
+    }
+
+    private List<com.paytm.digital.education.explore.response.dto.detail.Alumni> getNotableAlumni(
+            List<Alumni> notableAlumni) {
+        List<com.paytm.digital.education.explore.response.dto.detail.Alumni> alumniList =
+                new ArrayList<>();
+        for (Alumni alumni : notableAlumni) {
+            String alumniPhoto = alumni.getAlumniPhoto();
+            if (Objects.nonNull(alumniPhoto)) {
+                alumniPhoto = CommonUtil.getLogoLink(alumniPhoto);
+                alumni.setAlumniPhoto(alumniPhoto);
+            }
+            com.paytm.digital.education.explore.response.dto.detail.Alumni responseAlumni =
+                    new com.paytm.digital.education.explore.response.dto.detail.Alumni();
+            BeanUtils.copyProperties(alumni, responseAlumni);
+            alumniList.add(responseAlumni);
+        }
+        return alumniList;
     }
 
     //can delete this in later sprint
@@ -203,14 +221,12 @@ public class InstituteDetailResponseBuilder {
 
     private Map<String, Set<String>> getDegreeMap(List<Course> courses) {
         if (!CollectionUtils.isEmpty(courses)) {
-            Map<String, Set<String>> degreeMap =
-                    courses.stream().filter(c -> Objects.nonNull(c.getCourseLevel()))
-                            .collect(Collectors
-                                    .toMap(course -> course.getCourseLevel().getDisplayName(),
-                                        course -> new HashSet<>(course.getMasterDegree()),
-                                        (set1, set2) -> Stream.of(set1, set2)
-                                                .flatMap(Set::stream)
-                                                .collect(Collectors.toSet())));
+            Map<String, Set<String>> degreeMap = courses.stream().filter(c -> Objects.nonNull(c.getCourseLevel()))
+                .collect(Collectors.toMap(course -> course.getCourseLevel().getDisplayName(),
+                    course -> new HashSet<>(course.getMasterDegree()),
+                    (set1, set2) -> Stream.of(set1, set2)
+                    .flatMap(Set::stream)
+                    .collect(Collectors.toSet())));
             return degreeMap;
         }
         return null;
@@ -220,7 +236,8 @@ public class InstituteDetailResponseBuilder {
             List<com.paytm.digital.education.explore.database.entity.Ranking> rankingList) {
         if (!CollectionUtils.isEmpty(rankingList)) {
             Map<String, List<Ranking>> ratingMap = rankingList.stream()
-                    .filter(r -> Objects.nonNull(r.getStream()))
+                    .filter(r -> Objects.nonNull(r.getStream()) && (Objects.nonNull(r.getRank())
+                            || Objects.nonNull(r.getRating())))
                     .map(r -> getResponseRanking(r))
                     .filter(r -> Objects.nonNull(r.getLabel()))
                     .collect(Collectors.groupingBy(r -> r.getLabel(),

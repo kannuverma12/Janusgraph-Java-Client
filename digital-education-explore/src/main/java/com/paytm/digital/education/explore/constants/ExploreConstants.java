@@ -21,6 +21,8 @@ public interface ExploreConstants {
     String NON_TENTATIVE = "non_tentative";
     String APPLICATION   = "APPLICATION";
     String EXAM          = "EXAM";
+    String PRECEDENCE    = "precedence";
+    String DEFAULT       = "DEFAULT";
 
     String GROUP_NAME   = "name";
     String GROUP_ENTITY = "entity";
@@ -121,7 +123,7 @@ public interface ExploreConstants {
     Float  EXAM_OFFICIAL_NAME_NGRAM_BOOST = 0.00001F;
     String DATE_TAB                       = "dates";
     String SYLLABUS_TAB                   = "syllabus";
-    String SEARCH_INDEX_INSTITUTE         = "education_search_institute_v3";
+    String SEARCH_INDEX_INSTITUTE         = "education_search_institute_v2";
     String SEARCH_ANALYZER_INSTITUTE      = "word_delimiter_analyzer";
     String SEARCH_NAMES                   = "names";
     String MAX_RANK                       = "max_rank";
@@ -232,4 +234,8 @@ public interface ExploreConstants {
     int    NO_OF_LOWER_RANK_COLLEGE  = 2;
     int    NO_OF_HIGHER_RANK_COLLEGE = 2;
     int    MAX_STREAMS               = 2;
+
+    String COLLEGE_FOCUS = "colleges_focus";
+    String TOP_COLLEGES  = "top_colleges";
+    String ICON          = "icon";
 }

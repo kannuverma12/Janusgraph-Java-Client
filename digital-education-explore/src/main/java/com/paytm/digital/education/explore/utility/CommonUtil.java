@@ -121,7 +121,7 @@ public class CommonUtil {
             displayName = propertyMap.get(fieldName).get(keyName)
                     .toString();
         } else {
-            displayName = keyName;
+            displayName = toCamelCase(keyName);
         }
         return displayName;
     }
@@ -173,6 +173,26 @@ public class CommonUtil {
             }
         }
         return null;
+    }
+
+    public String toCamelCase(final String key) {
+        if (StringUtils.isBlank(key)) {
+            return "";
+        }
+
+        final StringBuilder ret = new StringBuilder(key.length());
+
+        for (final String word : key.split(" ")) {
+            if (!word.isEmpty()) {
+                ret.append(Character.toUpperCase(word.charAt(0)));
+                ret.append(word.substring(1).toLowerCase());
+            }
+            if (!(ret.length() == key.length())) {
+                ret.append(" ");
+            }
+        }
+
+        return ret.toString();
     }
 
     public int getIndexForMaxValue(List<Integer> data) {

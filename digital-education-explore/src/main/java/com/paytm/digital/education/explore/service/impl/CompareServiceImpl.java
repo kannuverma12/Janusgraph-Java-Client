@@ -142,6 +142,7 @@ public class CompareServiceImpl implements CompareService {
         String parentInstitutionName = null;
         List<String> parentInstitutionFields = new ArrayList<>();
         parentInstitutionFields.add(OFFICIAL_NAME);
+        parentInstitutionFields.add(INSTITUTE_ID);
 
         List<Long> parentInstitutionIds =
                 institutes.stream().filter(i -> Objects.nonNull(i.getParentInstitution()))
@@ -151,7 +152,8 @@ public class CompareServiceImpl implements CompareService {
                 .getEntityFieldsByValuesIn(INSTITUTE_ID, parentInstitutionIds, Institute.class,
                         parentInstitutionFields);
 
-        parentInstituteNameMap = parentInstitutions.stream().filter(Objects::nonNull)
+        Set<Institute> uniqueInstitutions = new HashSet<>(parentInstitutions);
+        parentInstituteNameMap = uniqueInstitutions.stream().filter(Objects::nonNull)
                 .collect(Collectors.toMap(i -> i.getInstituteId(), i -> i.getOfficialName()));
     }
 
@@ -237,7 +239,9 @@ public class CompareServiceImpl implements CompareService {
                 Objects.nonNull(parentInstitutionName) ? parentInstitutionName : ""));
         cDetail.setFacilities(getFacilitiesDetail(inst.getFacilities()));
         cDetail.setFakeRankings(CompareUtil.getResponseRankingMap(inst.getRankings()));
-        cDetail.setFakePlacements(getPlacements(inst.getSalariesPlacement()));
+        if (Objects.nonNull(inst.getSalariesPlacement())) {
+            cDetail.setFakePlacements(getPlacements(inst.getSalariesPlacement()));
+        }
         List<Course> courses = getCourses(inst.getInstituteId());
         if (!CollectionUtils.isEmpty(courses)) {
             Map<Long, String> courseMap = getCourseMap(courses);
@@ -330,8 +334,10 @@ public class CompareServiceImpl implements CompareService {
                 .filter(st -> Objects.nonNull(streamMap.get(st.toLowerCase())))
                 .map(st -> streamMap.get(st.toLowerCase()))
                 .collect(Collectors.toSet());
-        return streamList;
-
+        if (!CollectionUtils.isEmpty(streamList)) {
+            return streamList;
+        }
+        return null;
     }
 
     private List<String> getExamAccepted(List<Course> courses) {
@@ -343,7 +349,10 @@ public class CompareServiceImpl implements CompareService {
         List<String> retList =
                 exams.stream().filter(e -> Objects.nonNull(e.getExamShortName()))
                         .map(e -> e.getExamShortName()).collect(Collectors.toList());
-        return retList;
+        if (!CollectionUtils.isEmpty(retList)) {
+            return retList;
+        }
+        return null;
     }
 
     private Set<String> getCourseLevel(List<Course> courses) {
