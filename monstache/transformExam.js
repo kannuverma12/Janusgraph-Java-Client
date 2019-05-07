@@ -23,18 +23,6 @@ module.exports = function(doc) {
 	if (doc.exam_short_name) {
 		targetExam.exam_short_name = doc.exam_short_name;
 	}
-<<<<<<< HEAD
-        var tags = {};
-        if(doc.domains) {
-                if(doc.domains === 'MANAGEMENT_AND_BUSINESS_ADMINISTRATION') {
-                     tags.concat('mba');
-                }
-                if(doc.domains === 'ENGINEERING_AND_ARCHITECTURE') {
-                     tags.concat('engineering');
-                }
-                if(doc.domains === 'COMPETITION') {
-                     tags.concat('government');
-=======
         var tags = [];
         if(doc.domains) {
                 if(doc.domains === 'MANAGEMENT_AND_BUSINESS_ADMINISTRATION') {
@@ -45,7 +33,6 @@ module.exports = function(doc) {
                 }
                 if(doc.domains === 'COMPETITION') {
                      tags.push('government');
->>>>>>> sprint-1May
                 }
                 targetExam.tags = tags;
         }
@@ -197,10 +184,6 @@ module.exports = function(doc) {
 		targetExam.tabs_available.push('Syllabus');
 	}
 
-<<<<<<< HEAD
-	console.log ("exam: " + targetExam.exam_id + " " + JSON.stringify(targetExam));
-=======
 	console.log ("exam: " + targetExam.exam_id);
->>>>>>> sprint-1May
 	return targetExam;
 }
