@@ -334,7 +334,10 @@ public class CompareServiceImpl implements CompareService {
                 .filter(st -> Objects.nonNull(streamMap.get(st.toLowerCase())))
                 .map(st -> streamMap.get(st.toLowerCase()))
                 .collect(Collectors.toSet());
-        return streamList;
+        if (!CollectionUtils.isEmpty(streamList)) {
+            return streamList;
+        }
+        return null;
 
     }
 
@@ -347,7 +350,10 @@ public class CompareServiceImpl implements CompareService {
         List<String> retList =
                 exams.stream().filter(e -> Objects.nonNull(e.getExamShortName()))
                         .map(e -> e.getExamShortName()).collect(Collectors.toList());
-        return retList;
+        if (!CollectionUtils.isEmpty(retList)) {
+            return retList;
+        }
+        return null;
     }
 
     private Set<String> getCourseLevel(List<Course> courses) {
