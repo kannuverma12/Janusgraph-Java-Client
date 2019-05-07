@@ -1,11 +1,15 @@
 package com.paytm.digital.education.explore.database.repository;
 
 import static com.mongodb.QueryOperators.AND;
+import static com.mongodb.QueryOperators.ELEM_MATCH;
 import static com.mongodb.QueryOperators.EXISTS;
+import static com.mongodb.QueryOperators.NE;
 import static com.mongodb.QueryOperators.OR;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EQ_OPERATOR;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.GROUP_ACTIVE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.GROUP_ENTITY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.GROUP_NAME;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.IN_OPERATOR;
 
 import com.paytm.digital.education.explore.database.entity.FieldGroup;
 import com.paytm.digital.education.explore.database.entity.FtlTemplate;
@@ -13,6 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -22,6 +27,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @AllArgsConstructor
@@ -146,9 +152,30 @@ public class CommonMongoRepository {
         Query mongoQuery = new Query();
         searchRequest.forEach((key, value) -> {
             if (value instanceof Map) {
-                if (((Map) value).containsKey(EXISTS)) {
-                    mongoQuery.addCriteria(Criteria.where(key).exists((Boolean) ((Map) value).get(
-                            EXISTS)));
+                Map nestedMap = ((Map) value);
+                if (nestedMap.containsKey(EXISTS)) {
+                    mongoQuery.addCriteria(Criteria.where(key).exists((Boolean) (nestedMap.get(
+                            EXISTS))));
+                }
+                if (((Map) value).containsKey(ELEM_MATCH)) {
+                    Criteria elemMatchCriteria = null;
+                    for (Object nestedKey : nestedMap.keySet()) {
+                        if (Objects.isNull(elemMatchCriteria)) {
+                            elemMatchCriteria = Criteria.where(nestedKey.toString()).is(nestedMap.get(nestedKey));
+                        } else {
+                            elemMatchCriteria.and(nestedKey.toString()).is(nestedMap.get(nestedKey));
+                        }
+                    }
+                    mongoQuery.addCriteria(Criteria.where(key).elemMatch(elemMatchCriteria));
+                }
+                if (nestedMap.containsKey(NE)) {
+                    mongoQuery.addCriteria(Criteria.where(key).ne(nestedMap.get(NE)));
+                }
+                if (nestedMap.containsKey(EQ_OPERATOR)) {
+                    mongoQuery.addCriteria(Criteria.where(key).is(nestedMap.get(EQ_OPERATOR)));
+                }
+                if (nestedMap.containsKey(IN_OPERATOR)) {
+                    mongoQuery.addCriteria(Criteria.where(key).in(nestedMap.get(IN_OPERATOR)));
                 }
             } else {
                 mongoQuery.addCriteria(Criteria.where(key).is(value));

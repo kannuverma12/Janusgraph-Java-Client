@@ -222,4 +222,14 @@ public interface ExploreConstants {
     String CONSTITUENT_OF       = "Constituent Of";
     String GOVERNED_BY          = "Governed By";
     String INSTITUTE_TYPE       = "Institute Governance";
+
+    String EQ_OPERATOR               = "$eq";
+    String IN_OPERATOR               = "$in";
+    String EMPTY_SQUARE_BRACKETS     = "[]";
+    String STREAMS                   = "streams";
+    String SIMILAR_COLLEGES          = "Similar Colleges";
+    int    TOTAL_SIMILAR_COLLEGE     = 4;
+    int    NO_OF_LOWER_RANK_COLLEGE  = 2;
+    int    NO_OF_HIGHER_RANK_COLLEGE = 2;
+    int    MAX_STREAMS               = 2;
 }
