@@ -230,6 +230,7 @@ public interface ExploreConstants {
     String EMPTY_SQUARE_BRACKETS     = "[]";
     String STREAMS                   = "streams";
     String SIMILAR_COLLEGES          = "Similar Colleges";
+    String SIMILAR_COLLEGE_NAMESPACE = "similar_colleges";
     int    TOTAL_SIMILAR_COLLEGE     = 4;
     int    NO_OF_LOWER_RANK_COLLEGE  = 2;
     int    NO_OF_HIGHER_RANK_COLLEGE = 2;

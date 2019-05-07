@@ -20,6 +20,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.NO_
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OVERALL_RANKING;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SIMILAR_COLLEGES;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SIMILAR_COLLEGE_NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAMS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.TOTAL_SIMILAR_COLLEGE;
 
@@ -35,6 +36,7 @@ import com.paytm.digital.education.explore.response.dto.common.WidgetData;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -58,6 +60,7 @@ public class SimilarInstituteServiceImpl {
     private CommonMongoRepository commonMongoRepository;
     private InstituteRepository   instituteRepository;
 
+    @Cacheable(value = "similar_institutes", key = "'similar_'+#institute.instituteId")
     public Widget getSimilarInstitutes(Institute institute) {
         if (Objects.nonNull(institute)) {
             List<String> courseFields = Arrays.asList(STREAMS);
@@ -185,7 +188,8 @@ public class SimilarInstituteServiceImpl {
         return nextGreaterIndex;
     }
 
-    private List<Institute> getByOverAllRankings() {
+    @Cacheable(value = SIMILAR_COLLEGE_NAMESPACE, key = "nirf_overall_ranking")
+    public List<Institute> getByOverAllRankings() {
         List<Institute> instituteList = instituteRepository.findAllByNIRFOverallRanking();
         Collections.sort(instituteList, new Comparator<Institute>() {
             @Override public int compare(Institute institute1, Institute institute2) {
