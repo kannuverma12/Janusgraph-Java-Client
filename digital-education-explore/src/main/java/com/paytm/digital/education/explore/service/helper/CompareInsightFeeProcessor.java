@@ -34,7 +34,7 @@ public class CompareInsightFeeProcessor {
     public List<String> getComparativeInsights(List<Institute> instituteList) {
         Map<Long, Long> instituteIdFeeMap = new HashMap<>();
         Map<Long, String> instituteIdNameMap = new HashMap<>();
-        List<String> courseQueryFields = Arrays.asList(COURSE_FEES);
+        List<String> courseQueryFields = Arrays.asList(COURSE_FEES, INSTITUTE_ID);
         List<Long> instituteIds =
                 instituteList.stream().map(institute -> institute.getInstituteId()).collect(Collectors.toList());
         Map<Integer, List<Course>> instituteCoursesMap = new HashMap<>();
@@ -51,7 +51,7 @@ public class CompareInsightFeeProcessor {
 
         for (Institute institute : instituteList) {
             instituteIdNameMap.put(institute.getInstituteId(), institute.getOfficialName());
-            List<Course> courses = instituteCoursesMap.get(institute.getInstituteId());
+            List<Course> courses = instituteCoursesMap.get(institute.getInstituteId().intValue());
             if (!CollectionUtils.isEmpty(courses)) {
                 Long minFee = CompareUtil.getMinCourseFee(courses);
                 if (Objects.nonNull(minFee)) {
