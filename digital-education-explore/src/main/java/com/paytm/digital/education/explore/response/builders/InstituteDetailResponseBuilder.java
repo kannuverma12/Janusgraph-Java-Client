@@ -118,7 +118,7 @@ public class InstituteDetailResponseBuilder {
             instituteDetail.setWidgets(Arrays.asList(widget));
         }
         if ((!CollectionUtils.isEmpty(institute.getNotableAlumni()))) {
-            instituteDetail.setNotableAlumni(institute.getNotableAlumni());
+            instituteDetail.setNotableAlumni(getNotableAlumni(institute.getNotableAlumni()));
         }
         if ((!CollectionUtils.isEmpty(institute.getRankings()))) {
             instituteDetail.setRankings(getRankingDetails(institute.getRankings()));
