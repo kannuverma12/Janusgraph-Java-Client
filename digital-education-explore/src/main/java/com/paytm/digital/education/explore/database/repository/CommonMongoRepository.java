@@ -151,30 +151,30 @@ public class CommonMongoRepository {
         Query mongoQuery = new Query();
         searchRequest.forEach((key, value) -> {
             if (value instanceof Map) {
-                Map nestedMap = ((Map) value);
-                if (nestedMap.containsKey(EXISTS)) {
-                    mongoQuery.addCriteria(Criteria.where(key).exists((Boolean) (nestedMap.get(
+                Map nestedFieldsMap = ((Map) value);
+                if (nestedFieldsMap.containsKey(EXISTS)) {
+                    mongoQuery.addCriteria(Criteria.where(key).exists((Boolean) (nestedFieldsMap.get(
                             EXISTS))));
                 }
                 if (((Map) value).containsKey(ELEM_MATCH)) {
                     Criteria elemMatchCriteria = null;
-                    for (Object nestedKey : nestedMap.keySet()) {
+                    for (Object nestedKey : nestedFieldsMap.keySet()) {
                         if (Objects.isNull(elemMatchCriteria)) {
-                            elemMatchCriteria = Criteria.where(nestedKey.toString()).is(nestedMap.get(nestedKey));
+                            elemMatchCriteria = Criteria.where(nestedKey.toString()).is(nestedFieldsMap.get(nestedKey));
                         } else {
-                            elemMatchCriteria.and(nestedKey.toString()).is(nestedMap.get(nestedKey));
+                            elemMatchCriteria.and(nestedKey.toString()).is(nestedFieldsMap.get(nestedKey));
                         }
                     }
                     mongoQuery.addCriteria(Criteria.where(key).elemMatch(elemMatchCriteria));
                 }
-                if (nestedMap.containsKey(NE)) {
-                    mongoQuery.addCriteria(Criteria.where(key).ne(nestedMap.get(NE)));
+                if (nestedFieldsMap.containsKey(NE)) {
+                    mongoQuery.addCriteria(Criteria.where(key).ne(nestedFieldsMap.get(NE)));
                 }
-                if (nestedMap.containsKey(EQ_OPERATOR)) {
-                    mongoQuery.addCriteria(Criteria.where(key).is(nestedMap.get(EQ_OPERATOR)));
+                if (nestedFieldsMap.containsKey(EQ_OPERATOR)) {
+                    mongoQuery.addCriteria(Criteria.where(key).is(nestedFieldsMap.get(EQ_OPERATOR)));
                 }
-                if (nestedMap.containsKey(IN_OPERATOR)) {
-                    mongoQuery.addCriteria(Criteria.where(key).in(nestedMap.get(IN_OPERATOR)));
+                if (nestedFieldsMap.containsKey(IN_OPERATOR)) {
+                    mongoQuery.addCriteria(Criteria.where(key).in(nestedFieldsMap.get(IN_OPERATOR)));
                 }
             } else {
                 mongoQuery.addCriteria(Criteria.where(key).is(value));

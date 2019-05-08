@@ -16,7 +16,6 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.INS
 import static com.paytm.digital.education.explore.constants.ExploreConstants.IN_OPERATOR;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.MAX_STREAMS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.NO_OF_HIGHER_RANK_COLLEGE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.NO_OF_LOWER_RANK_COLLEGE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OVERALL_RANKING;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SIMILAR_COLLEGES;
@@ -44,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,7 +103,7 @@ public class SimilarInstituteServiceImpl {
                         resultList.add(instituteList.get(i));
                     }
                 }
-                for (int i = nextGreaterRankIndex - 1; i > 0 && resultList.size() < NO_OF_LOWER_RANK_COLLEGE; i--) {
+                for (int i = nextGreaterRankIndex - 1; i > 0 && resultList.size() < TOTAL_SIMILAR_COLLEGE; i--) {
                     if (instituteList.get(i).getInstituteId() != institute.getInstituteId()) {
                         resultList.add(instituteList.get(i));
                     }
@@ -133,12 +131,10 @@ public class SimilarInstituteServiceImpl {
 
         //If overall rank is not present, show institutes of maximum 2 streams in the priority order of the streams
         List<String> instituteStreams = new ArrayList<>(streams);
-        Collections.sort(instituteStreams, new Comparator<String>() {
-            @Override public int compare(String st1, String st2) {
-                InstituteStream stream1 = InstituteStream.valueOf(st1);
-                InstituteStream stream2 = InstituteStream.valueOf(st2);
-                return stream1.getValue() - stream2.getValue();
-            }
+        Collections.sort(instituteStreams, (String st1, String st2) -> {
+            InstituteStream stream1 = InstituteStream.valueOf(st1);
+            InstituteStream stream2 = InstituteStream.valueOf(st2);
+            return stream1.getValue() - stream2.getValue();
         });
         instituteStreams = instituteStreams.stream().limit(MAX_STREAMS).collect(Collectors.toList());
         return getSimilarCollegesByStream(IN_OPERATOR, instituteStreams);
@@ -191,25 +187,24 @@ public class SimilarInstituteServiceImpl {
     @Cacheable(value = SIMILAR_COLLEGE_NAMESPACE, key = "nirf_overall_ranking")
     public List<Institute> getByOverAllRankings() {
         List<Institute> instituteList = instituteRepository.findAllByNIRFOverallRanking();
-        Collections.sort(instituteList, new Comparator<Institute>() {
-            @Override public int compare(Institute institute1, Institute institute2) {
-                if (CollectionUtils.isEmpty(institute1.getRankings())) {
-                    return 1;
-                }
-                if (CollectionUtils.isEmpty(institute2.getRankings())) {
-                    return -1;
-                }
-                Ranking ranking1 = getOverallRankingBySource(institute1.getRankings(), NIRF);
-                Ranking ranking2 = getOverallRankingBySource(institute2.getRankings(), NIRF);
-
-                if (Objects.nonNull(ranking1) && Objects.nonNull(ranking2)) {
-                    return ranking1.getRank() - ranking2.getRank();
-                } else if (Objects.isNull(ranking1)) {
-                    return 1;
-                }
-                return 0;
+        Collections.sort(instituteList, (institute1, institute2) -> {
+            if (CollectionUtils.isEmpty(institute1.getRankings())) {
+                return 1;
             }
+            if (CollectionUtils.isEmpty(institute2.getRankings())) {
+                return -1;
+            }
+            Ranking ranking1 = getOverallRankingBySource(institute1.getRankings(), NIRF);
+            Ranking ranking2 = getOverallRankingBySource(institute2.getRankings(), NIRF);
+
+            if (Objects.nonNull(ranking1) && Objects.nonNull(ranking2)) {
+                return ranking1.getRank() - ranking2.getRank();
+            } else if (Objects.isNull(ranking1)) {
+                return 1;
+            }
+            return 0;
         });
+
         return instituteList;
     }
 
@@ -225,23 +220,21 @@ public class SimilarInstituteServiceImpl {
                 commonMongoRepository.findAll(instituteQueryMap, Institute.class, projectionFields, AND);
         //TODO - write comparator for based on C360 ranking
         if (instituteList.size() > TOTAL_SIMILAR_COLLEGE) {
-            Collections.sort(instituteList, new Comparator<Institute>() {
-                @Override public int compare(Institute inst1, Institute inst2) {
-                    if (CollectionUtils.isEmpty(inst1.getRankings())) {
-                        return 1;
-                    }
-                    if (CollectionUtils.isEmpty(inst2.getRankings())) {
-                        return -1;
-                    }
-                    Ranking ranking1 = getC360Ranking(inst1.getRankings());
-                    Ranking ranking2 = getC360Ranking(inst2.getRankings());
-                    if (Objects.nonNull(ranking1) && Objects.nonNull(ranking2)) {
-                        return ranking1.getRank() - ranking2.getRank();
-                    } else if (Objects.isNull(ranking1)) {
-                        return 1;
-                    }
+            Collections.sort(instituteList, (Institute inst1, Institute inst2) -> {
+                if (CollectionUtils.isEmpty(inst1.getRankings())) {
+                    return 1;
+                }
+                if (CollectionUtils.isEmpty(inst2.getRankings())) {
                     return -1;
                 }
+                Ranking ranking1 = getC360Ranking(inst1.getRankings());
+                Ranking ranking2 = getC360Ranking(inst2.getRankings());
+                if (Objects.nonNull(ranking1) && Objects.nonNull(ranking2)) {
+                    return ranking1.getRank() - ranking2.getRank();
+                } else if (Objects.isNull(ranking1)) {
+                    return 1;
+                }
+                return -1;
             });
             instituteList = instituteList.stream()
                     .filter(institute1 -> institute1.getInstituteId() != institute.getInstituteId()
@@ -282,9 +275,9 @@ public class SimilarInstituteServiceImpl {
                     .filter(ranking -> source.equalsIgnoreCase(ranking.getSource())
                             && StringUtils.isNotBlank(ranking.getRankingType())
                             && (ranking.getRankingType().equalsIgnoreCase(OVERALL_RANKING)
-                            || ranking.getRankingType().equalsIgnoreCase(UNIVERSITIES)
-                            && Objects.nonNull(ranking.getRank()))).findFirst();
-            if (Objects.nonNull(rankingOptional) && rankingOptional.isPresent()) {
+                            || ranking.getRankingType().equalsIgnoreCase(UNIVERSITIES))
+                            && Objects.nonNull(ranking.getRank())).findFirst();
+            if (rankingOptional.isPresent()) {
                 return rankingOptional.get();
             }
         }
