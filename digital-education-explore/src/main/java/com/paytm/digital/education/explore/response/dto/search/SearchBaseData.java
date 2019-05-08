@@ -9,8 +9,11 @@ public class SearchBaseData {
     @JsonProperty("shortlisted")
     private boolean shortlisted;
 
-    @JsonProperty("get_in_touch")
-    private boolean getInTouch;
+    @JsonProperty("interested")
+    private boolean interested;
+
+    @JsonProperty("is_client")
+    private boolean isClient;
 
     @JsonProperty("logo_url")
     private String logoUrl;

@@ -42,8 +42,8 @@ public class InstituteDetail {
     @JsonProperty("shortlisted")
     private boolean shortlisted;
 
-    @JsonProperty("get_in_touch")
-    private boolean getInTouch;
+    @JsonProperty("interested")
+    private boolean interested;
 
     @JsonProperty("title")
     private String title;
@@ -86,4 +86,7 @@ public class InstituteDetail {
 
     @JsonProperty("degree_offered")
     private Map<String, Set<String>> degreeOffered;
+
+    @JsonProperty("is_client")
+    private boolean isClient;
 }

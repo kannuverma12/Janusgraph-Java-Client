@@ -123,6 +123,9 @@ public class Institute {
     @Field("total_enrollments")
     private Integer totalEnrollments;
 
+    @Field("is_client")
+    private boolean isClient;
+
     public Institute(String commonName, Long instituteId) {
         this.commonName = commonName;
         this.instituteId = instituteId;

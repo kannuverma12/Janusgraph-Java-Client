@@ -99,7 +99,8 @@ public class InstituteDetailResponseBuilder {
         String entityName = INSTITUTE.name().toLowerCase();
         Map<String, Object> highlights = new HashMap<>();
         highlights.put(entityName, institute);
-        Map<String, String> approvalsMap = CommonUtil.getApprovals(institute.getApprovals(), parentInstitutionName);
+        Map<String, String> approvalsMap =
+                CommonUtil.getApprovals(institute.getApprovals(), parentInstitutionName);
         if (!CollectionUtils.isEmpty(approvalsMap)) {
             highlights.put(APPROVALS, approvalsMap);
         }
@@ -113,6 +114,7 @@ public class InstituteDetailResponseBuilder {
         instituteDetail.setPlacements(placementDataHelper.getSalariesPlacements(institute));
         instituteDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName));
         instituteDetail.setBanners(bannerDataHelper.getBannerData(entityName));
+        instituteDetail.setClient(institute.isClient());
         Widget widget = similarInstituteService.getSimilarInstitutes(institute);
         if (Objects.nonNull(widget)) {
             instituteDetail.setWidgets(Arrays.asList(widget));
@@ -165,7 +167,8 @@ public class InstituteDetailResponseBuilder {
                         rDto.setLabel(INSTITUTE_PREFIX);
                         updateMap(rMap, rDto, 4);
                     } else {
-                        rDto.setLabel(Objects.nonNull(rType) ? rType : "");
+                        rDto.setLabel(Objects.nonNull(rType)
+                                ? rType : "");
                         updateMap(rMap, rDto, 3);
                     }
                 }
@@ -179,7 +182,8 @@ public class InstituteDetailResponseBuilder {
                 .filter(r -> Objects.nonNull(r.getLabel()))
                 .map(r -> {
                     String key = r.getLabel().toLowerCase();
-                    r.setLabel(Objects.nonNull(streamMap.get(key)) ? streamMap.get(key) : r.getLabel());
+                    r.setLabel(Objects.nonNull(streamMap.get(key))
+                            ? streamMap.get(key) : r.getLabel());
                     return r;
                 })
                 .collect(Collectors.toList());
@@ -221,12 +225,14 @@ public class InstituteDetailResponseBuilder {
 
     private Map<String, Set<String>> getDegreeMap(List<Course> courses) {
         if (!CollectionUtils.isEmpty(courses)) {
-            Map<String, Set<String>> degreeMap = courses.stream().filter(c -> Objects.nonNull(c.getCourseLevel()))
-                .collect(Collectors.toMap(course -> course.getCourseLevel().getDisplayName(),
-                    course -> new HashSet<>(course.getMasterDegree()),
-                    (set1, set2) -> Stream.of(set1, set2)
-                    .flatMap(Set::stream)
-                    .collect(Collectors.toSet())));
+            Map<String, Set<String>> degreeMap =
+                    courses.stream().filter(c -> Objects.nonNull(c.getCourseLevel()))
+                            .collect(Collectors
+                                    .toMap(course -> course.getCourseLevel().getDisplayName(),
+                                        course -> new HashSet<>(course.getMasterDegree()),
+                                        (set1, set2) -> Stream.of(set1, set2)
+                                            .flatMap(Set::stream)
+                                            .collect(Collectors.toSet())));
             return degreeMap;
         }
         return null;
