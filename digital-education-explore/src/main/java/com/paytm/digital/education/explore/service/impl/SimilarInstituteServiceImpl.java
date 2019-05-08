@@ -234,18 +234,21 @@ public class SimilarInstituteServiceImpl {
             });
             instituteList = instituteList.stream()
                     .filter(institute1 -> institute1.getInstituteId() != institute.getInstituteId()
-                            && Objects.nonNull(institute.getRankings())).limit(TOTAL_SIMILAR_COLLEGE)
+                            && Objects.nonNull(institute.getRankings()))
+                    .limit(TOTAL_SIMILAR_COLLEGE)
                     .collect(Collectors.toList());
-            if (CollectionUtils.isEmpty(instituteList) || instituteList.size() < TOTAL_SIMILAR_COLLEGE) {
-                //instituteQueryMap.remove(INSTITUTION_STATE);
-                instituteQueryMap.put(INSTITUTION_CITY, institute.getInstitutionCity());
-                instituteList =
-                        commonMongoRepository.findAll(instituteQueryMap, Institute.class, projectionFields, AND);
-                instituteList = instituteList.stream()
-                        .filter(institute1 -> institute1.getInstituteId() != institute.getInstituteId())
-                        .limit(TOTAL_SIMILAR_COLLEGE)
-                        .collect(Collectors.toList());
-            }
+        }
+        if (CollectionUtils.isEmpty(instituteList)
+                || instituteList.size() < TOTAL_SIMILAR_COLLEGE) {
+            //instituteQueryMap.remove(INSTITUTION_STATE);
+            instituteQueryMap.put(INSTITUTION_CITY, institute.getInstitutionCity());
+            instituteList =
+                    commonMongoRepository
+                            .findAll(instituteQueryMap, Institute.class, projectionFields, AND);
+            instituteList = instituteList.stream()
+                    .filter(institute1 -> institute1.getInstituteId() != institute.getInstituteId())
+                    .limit(TOTAL_SIMILAR_COLLEGE)
+                    .collect(Collectors.toList());
         }
         return builWidgetResponse(instituteList);
     }

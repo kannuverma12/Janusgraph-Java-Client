@@ -151,10 +151,10 @@ public class CommonMongoRepository {
         Query mongoQuery = new Query();
         searchRequest.forEach((key, value) -> {
             if (value instanceof Map) {
+                Criteria criteria = Criteria.where(key);
                 Map nestedFieldsMap = ((Map) value);
                 if (nestedFieldsMap.containsKey(EXISTS)) {
-                    mongoQuery.addCriteria(Criteria.where(key).exists((Boolean) (nestedFieldsMap.get(
-                            EXISTS))));
+                    criteria.exists((Boolean) (nestedFieldsMap.get(EXISTS)));
                 }
                 if (((Map) value).containsKey(ELEM_MATCH)) {
                     Criteria elemMatchCriteria = null;
@@ -165,17 +165,18 @@ public class CommonMongoRepository {
                             elemMatchCriteria.and(nestedKey.toString()).is(nestedFieldsMap.get(nestedKey));
                         }
                     }
-                    mongoQuery.addCriteria(Criteria.where(key).elemMatch(elemMatchCriteria));
+                    criteria.elemMatch(elemMatchCriteria);
                 }
                 if (nestedFieldsMap.containsKey(NE)) {
-                    mongoQuery.addCriteria(Criteria.where(key).ne(nestedFieldsMap.get(NE)));
+                    criteria.ne(nestedFieldsMap.get(NE));
                 }
                 if (nestedFieldsMap.containsKey(EQ_OPERATOR)) {
-                    mongoQuery.addCriteria(Criteria.where(key).is(nestedFieldsMap.get(EQ_OPERATOR)));
+                    criteria.is(nestedFieldsMap.get(EQ_OPERATOR));
                 }
                 if (nestedFieldsMap.containsKey(IN_OPERATOR)) {
-                    mongoQuery.addCriteria(Criteria.where(key).in(nestedFieldsMap.get(IN_OPERATOR)));
+                    criteria.in(nestedFieldsMap.get(IN_OPERATOR));
                 }
+                mongoQuery.addCriteria(criteria);
             } else {
                 mongoQuery.addCriteria(Criteria.where(key).is(value));
             }
