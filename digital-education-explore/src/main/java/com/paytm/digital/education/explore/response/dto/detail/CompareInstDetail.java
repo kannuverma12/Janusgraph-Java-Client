@@ -19,6 +19,9 @@ public class CompareInstDetail {
     @JsonProperty("institute_id")
     private Long instituteId;
 
+    @JsonProperty("institute_name")
+    private String instituteName;
+
     @JsonProperty("fake_rankings")
     private Map<String, Ranking> fakeRankings;
 
