@@ -308,7 +308,7 @@ public class ExamDetailServiceImpl {
             return DEFAULT;
         } else if (noOfDomains == 1) {
             // when exam is associated with only one domain
-            return domains.get(0);
+            return ((isDomainExistInDefineList(domains.get(0))) ? domains.get(0) : DEFAULT);
         } else {
             // when exam is associated with multiple domains
             return findHigherPrecedenceDomain(domains);
@@ -320,16 +320,35 @@ public class ExamDetailServiceImpl {
      ** multiple domains.
      */
     private String findHigherPrecedenceDomain(List<String> domains) {
-        Map<String, Object> propertyMap = propertyReader
-                .getPropertiesAsMapByKey(EXPLORE_COMPONENT, EXAM.toString().toUpperCase(),
-                        PRECEDENCE);
-        List<String> domainList = (List<String>) propertyMap.get(DATA);
+        List<String> domainList = getDefinedDomainList();
         for (String domain : domainList) {
             if (domains.contains(domain)) {
                 return domain;
             }
         }
         return DEFAULT;
+    }
+
+    /*
+     ** Check whether the domain exists in the defined list of domains
+     */
+    private boolean isDomainExistInDefineList(String domain) {
+        List<String> domainList = getDefinedDomainList();
+        if (domainList.contains(domain)) {
+            return true;
+        }
+        return false;
+    }
+
+    /*
+     ** Get the defined exam domains list
+     */
+    @Cacheable(value = "exam_domain_list")
+    public List<String> getDefinedDomainList() {
+        Map<String, Object> propertyMap = propertyReader
+                .getPropertiesAsMapByKey(EXPLORE_COMPONENT, EXAM.name().toLowerCase(),
+                        PRECEDENCE);
+        return (List<String>) propertyMap.get(DATA);
     }
 
     private List<Location> getExamCenters(List<Instance> instances) {
