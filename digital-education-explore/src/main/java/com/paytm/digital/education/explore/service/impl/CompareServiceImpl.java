@@ -264,7 +264,8 @@ public class CompareServiceImpl implements CompareService {
 
     private Map<Long, String> getCourseMap(List<Course> courses) {
         return courses.stream().filter(c -> Objects.nonNull(c.getCourseNameOfficial()))
-                .collect(Collectors.toMap(c -> c.getCourseId(), c -> c.getCourseNameOfficial()));
+            .collect(Collectors.toMap(c -> c.getCourseId(), c -> c.getCourseNameOfficial(),
+                (a1, a2) -> a2));
     }
 
     private Map<String, Placement> getPlacements(List<Placement> placements) {
@@ -279,15 +280,18 @@ public class CompareServiceImpl implements CompareService {
         for (Placement p : placements) {
             if (p.getYear() == latest) {
                 if (p.getMedian() != null) {
+                    p.setAverage(null);
+                    p.setMaximum(null);
+                    p.setMinimum(null);
                     updatePlacementMap(placementMap, MEDIAN, p);
-                }
-                if (p.getAverage() != null) {
+                } else if (p.getAverage() != null) {
+                    p.setMaximum(null);
+                    p.setMinimum(null);
                     updatePlacementMap(placementMap, AVERAGE, p);
-                }
-                if (p.getMaximum() != null) {
+                } else if (p.getMaximum() != null) {
+                    p.setMinimum(null);
                     updatePlacementMap(placementMap, MAX, p);
-                }
-                if (p.getMinimum() != null) {
+                } else if (p.getMinimum() != null) {
                     updatePlacementMap(placementMap, MIN, p);
                 }
             }
