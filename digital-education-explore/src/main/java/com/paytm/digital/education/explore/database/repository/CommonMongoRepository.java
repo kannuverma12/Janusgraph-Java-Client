@@ -24,6 +24,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -174,7 +175,7 @@ public class CommonMongoRepository {
                     criteria.is(nestedFieldsMap.get(EQ_OPERATOR));
                 }
                 if (nestedFieldsMap.containsKey(IN_OPERATOR)) {
-                    criteria.in(nestedFieldsMap.get(IN_OPERATOR));
+                    criteria.in((Collection<?>) nestedFieldsMap.get(IN_OPERATOR));
                 }
                 mongoQuery.addCriteria(criteria);
             } else {

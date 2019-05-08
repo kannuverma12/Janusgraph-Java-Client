@@ -27,8 +27,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -84,12 +84,28 @@ public class CompareInsightRankProcessor {
     public String getInsightBetweenTwoInstitutes(String rankingSource,
             Map<String, Ranking> rankingDataMap1,
             Map<String, Ranking> rankingDataMap2, Institute institute1, Institute institute2) {
-        if (rankingDataMap1.get(rankingSource).getRank() < rankingDataMap2.get(rankingSource)
-                .getRank()) {
-            return institute1.getOfficialName() + IS_RANKED_HIGHER + institute2.getOfficialName();
-        } else {
-            return institute2.getOfficialName() + IS_RANKED_HIGHER + institute1.getOfficialName();
+        if (Objects.nonNull(rankingDataMap1.get(rankingSource).getRank())
+                && Objects.nonNull(rankingDataMap2.get(rankingSource).getRank())) {
+            if (rankingDataMap1.get(rankingSource).getRank() < rankingDataMap2.get(rankingSource)
+                    .getRank()) {
+                return institute1.getOfficialName() + IS_RANKED_HIGHER + institute2
+                        .getOfficialName();
+            } else {
+                return institute2.getOfficialName() + IS_RANKED_HIGHER + institute1
+                        .getOfficialName();
+            }
+        } else if (Objects.nonNull(rankingDataMap1.get(rankingSource).getScore())
+                && Objects.nonNull(rankingDataMap2.get(rankingSource).getScore())) {
+            if (Double.compare(rankingDataMap1.get(rankingSource).getScore(),
+                    rankingDataMap2.get(rankingSource).getScore()) < 0) {
+                return institute1.getOfficialName() + IS_RANKED_HIGHER + institute2
+                        .getOfficialName();
+            } else {
+                return institute2.getOfficialName() + IS_RANKED_HIGHER + institute1
+                        .getOfficialName();
+            }
         }
+        return null;
     }
 
     @Cacheable(value = COMPARE_CACHE_NAMESPACE, key = "'rank_'+#institute.instituteId")
@@ -191,9 +207,12 @@ public class CompareInsightRankProcessor {
                     nirfIncluded = true;
                 }
                 for (String rankingSource : commonKeys) {
-                    result.add(getInsightBetweenTwoInstitutes(rankingSource, rankingDataMaps[i],
+                    String rankInsight = getInsightBetweenTwoInstitutes(rankingSource, rankingDataMaps[i],
                             rankingDataMaps[(i + 1) % instituteSize], instituteList.get(i),
-                            instituteList.get((i + 1) % instituteSize)));
+                            instituteList.get((i + 1) % instituteSize));
+                    if (StringUtils.isNotBlank(rankInsight)) {
+                        result.add(rankInsight);
+                    }
                 }
             }
         }
@@ -216,9 +235,12 @@ public class CompareInsightRankProcessor {
             if (rankingDataMaps[i].containsKey(source) && rankingDataMaps[(i + 1)
                     % instituteSize]
                     .containsKey(source)) {
-                result.add(getInsightBetweenTwoInstitutes(source, rankingDataMaps[i],
+                String rankInsight = getInsightBetweenTwoInstitutes(source, rankingDataMaps[i],
                         rankingDataMaps[(i + 1) % instituteSize], instituteList.get(i),
-                        instituteList.get((i + 1) % instituteSize)));
+                        instituteList.get((i + 1) % instituteSize));
+                if (StringUtils.isNotBlank(rankInsight)) {
+                    result.add(rankInsight);
+                }
             }
         }
         return result;
