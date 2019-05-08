@@ -58,6 +58,8 @@ public class SimilarInstituteServiceImpl {
     private CommonMongoRepository commonMongoRepository;
     private InstituteRepository   instituteRepository;
 
+    private static List<String> projectionFields = Arrays.asList(INSTITUTE_ID, OFFICIAL_NAME, GALLERY_LOGO);
+
     @Cacheable(value = "similar_institutes", key = "'similar_'+#institute.instituteId")
     public Widget getSimilarInstitutes(Institute institute) {
         if (Objects.nonNull(institute)) {
@@ -131,7 +133,7 @@ public class SimilarInstituteServiceImpl {
 
         //If overall rank is not present, show institutes of maximum 2 streams in the priority order of the streams
         List<String> instituteStreams = new ArrayList<>(streams);
-        Collections.sort(instituteStreams, (String st1, String st2) -> {
+        Collections.sort(instituteStreams, (st1, st2) -> {
             InstituteStream stream1 = InstituteStream.valueOf(st1);
             InstituteStream stream2 = InstituteStream.valueOf(st2);
             return stream1.getValue() - stream2.getValue();
@@ -209,18 +211,11 @@ public class SimilarInstituteServiceImpl {
     }
 
     private Widget getSimilarCollegesByLocation(Institute institute, Set<String> streams) {
-        List<Long> instituteIds = getInstituteIdsByStreams(IN_OPERATOR, streams);
-        Map<String, Object> instituteIdMap = new HashMap<>();
-        instituteIdMap.put(IN_OPERATOR, instituteIds);
-        Map<String, Object> instituteQueryMap = new HashMap<>();
-        instituteQueryMap.put(INSTITUTION_STATE, institute.getInstitutionState());
-        instituteQueryMap.put(INSTITUTE_ID, instituteIdMap);
-        List<String> projectionFields = Arrays.asList(INSTITUTE_ID, OFFICIAL_NAME, GALLERY_LOGO);
+        Map<String, Object> instituteQueryMap = getInstituteQueryMapForStateAndStreams(institute.getInstitutionState(), streams);
         List<Institute> instituteList =
                 commonMongoRepository.findAll(instituteQueryMap, Institute.class, projectionFields, AND);
-        //TODO - write comparator for based on C360 ranking
         if (instituteList.size() > TOTAL_SIMILAR_COLLEGE) {
-            Collections.sort(instituteList, (Institute inst1, Institute inst2) -> {
+            Collections.sort(instituteList, (inst1, inst2) -> {
                 if (CollectionUtils.isEmpty(inst1.getRankings())) {
                     return 1;
                 }
@@ -254,14 +249,24 @@ public class SimilarInstituteServiceImpl {
         return builWidgetResponse(instituteList);
     }
 
+    private Map<String, Object> getInstituteQueryMapForStateAndStreams(String instituteState, Set<String> streams) {
+        List<Long> instituteIds = getInstituteIdsByStreams(IN_OPERATOR, streams);
+        Map<String, Object> instituteIdMap = new HashMap<>();
+        instituteIdMap.put(IN_OPERATOR, instituteIds);
+        Map<String, Object> instituteQueryMap = new HashMap<>();
+        instituteQueryMap.put(INSTITUTION_STATE, instituteState);
+        instituteQueryMap.put(INSTITUTE_ID, instituteIdMap);
+        return
+    }
+
     private Ranking getC360Ranking(List<Ranking> rankings) {
         if (!CollectionUtils.isEmpty(rankings)) {
             Optional<Ranking> rankingOptional = rankings.stream()
                     .filter(ranking -> CAREERS360.equalsIgnoreCase(ranking.getSource())
                             && StringUtils.isNotBlank(ranking.getRankingType())
                             && (ranking.getRankingType().equalsIgnoreCase(OVERALL_RANKING)
-                            || ranking.getRankingType().equalsIgnoreCase(UNIVERSITIES)
-                            && Objects.nonNull(ranking.getRank()) && ranking.getRank() > 100)).findFirst();
+                            || ranking.getRankingType().equalsIgnoreCase(UNIVERSITIES))
+                            && Objects.nonNull(ranking.getRank()) && ranking.getRank() > 100).findFirst();
             if (Objects.nonNull(rankingOptional) && !rankingOptional.isPresent()) {
                 return rankingOptional.get();
             }
