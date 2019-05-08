@@ -57,12 +57,18 @@ public class CompareInsightRankProcessor {
                     getCommonInsight(instituteSize, commonKeys, instituteList, rankingDataMap1,
                             rankingDataMap2, rankingDataMap3);
             if (!commonKeys.contains(NIRF)) {
-                List<String> nirfInsight =
-                        getMultipleInsightBySource(NIRF, instituteSize, instituteList,
+                List<String> nirfmultipleInsights =
+                        getMultipleInsightsBySource(NIRF, instituteSize, instituteList,
                                 rankingDataMap1,
                                 rankingDataMap2, rankingDataMap3);
-                if (!nirfInsight.isEmpty()) {
-                    rankingInsights.addAll(nirfInsight);
+                if (!nirfmultipleInsights.isEmpty()) {
+                    rankingInsights.addAll(nirfmultipleInsights);
+                } else {
+                    String nirfSingleInsight = getSingleInsightBySource(NIRF, instituteSize,
+                            instituteList, rankingDataMap1, rankingDataMap2, rankingDataMap3);
+                    if (StringUtils.isNotBlank(nirfSingleInsight)) {
+                        rankingInsights.add(nirfSingleInsight);
+                    }
                 }
             }
             return rankingInsights;
@@ -192,19 +198,18 @@ public class CompareInsightRankProcessor {
             }
         }
         if (nirfIncluded == false) {
-            List<String> sourceInsight = null;
-            sourceInsight =
-                    getPartialInsightBySource(NIRF, instituteSize, instituteList,
-                            rankingDataMaps[0],
-                            rankingDataMaps[1], rankingDataMaps[2]);
-            if (!CollectionUtils.isEmpty(sourceInsight)) {
-                result.addAll(sourceInsight);
+            String nirfSingleInsight = getSingleInsightBySource(NIRF, instituteSize, instituteList,
+                    rankingDataMaps[0],
+                    rankingDataMaps[1], rankingDataMaps[2]);
+            if (StringUtils.isNotBlank(nirfSingleInsight)) {
+                result.add(nirfSingleInsight);
             }
         }
         return result;
     }
 
-    private List<String> getMultipleInsightBySource(String source, int instituteSize,
+    //This method checks for common insights among institutes
+    private List<String> getMultipleInsightsBySource(String source, int instituteSize,
             List<Institute> instituteList, Map<String, Ranking>... rankingDataMaps) {
         List<String> result = new ArrayList<>();
         for (int i = 0; i < instituteSize; i++) {
@@ -216,30 +221,26 @@ public class CompareInsightRankProcessor {
                         instituteList.get((i + 1) % instituteSize)));
             }
         }
-        if (!CollectionUtils.isEmpty(result)) {
-            return result;
-        }
-        return getPartialInsightBySource(source, instituteSize, instituteList, rankingDataMaps);
+        return result;
     }
 
-    private List<String> getPartialInsightBySource(String source, int instituteSize,
+    //This method checks for single insights for given source
+    private String getSingleInsightBySource(String source, int instituteSize,
             List<Institute> instituteList,
             Map<String, Ranking>... rankingDataMaps) {
-        List<String> result = new ArrayList<>();
-        //check for single institutes
         for (int i = 0; i < instituteSize; i++) {
             if (rankingDataMaps[i].containsKey(source)) {
                 if (Objects.nonNull(rankingDataMaps[i].get(source).getRank())) {
-                    result.add(instituteList.get(i).getOfficialName() + IS_RANKED
+                    return instituteList.get(i).getOfficialName() + IS_RANKED
                             + rankingDataMaps[i].get(source)
-                            .getRank() + AS_PER + source);
+                            .getRank() + AS_PER + source;
                 } else if (StringUtils.isNotBlank(rankingDataMaps[i].get(source).getRating())) {
-                    result.add(instituteList.get(i).getOfficialName() + IS_RATED
+                    return instituteList.get(i).getOfficialName() + IS_RATED
                             + rankingDataMaps[i].get(source)
-                            .getRating() + AS_PER + source);
+                            .getRating() + AS_PER + source;
                 }
             }
         }
-        return result;
+        return null;
     }
 }
