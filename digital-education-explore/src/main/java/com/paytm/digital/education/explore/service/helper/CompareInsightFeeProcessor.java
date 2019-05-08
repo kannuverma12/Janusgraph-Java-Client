@@ -68,15 +68,17 @@ public class CompareInsightFeeProcessor {
         List<Long> allFees = new ArrayList<>(instituteIdFeeMap.values());
         List<String> instituteNames = new ArrayList<>(instituteIdNameMap.values());
         if (!CollectionUtils.isEmpty(instituteIdFeeMap)) {
-            Long minFeeInstituteId = getMinFeeInstituteId(instituteIdFeeMap);
-            if (Objects.nonNull(minFeeInstituteId)) {
-                result.add(getMinFeeInsightMessage(minFeeInstituteId, instituteIdNameMap));
+            if (areFeesSame(allFees)) {
+                result.add(getSameFeesInsight(instituteNames));
             } else if (areFeesAlmostSame(allFees)) {
                 result.add(getAlmostSameFeeInsight(instituteNames));
-            } else if (areFeesSame(allFees)) {
-                result.add(getSameFeesInsight(instituteNames));
             } else {
-                result.addAll(getMultipleInsightsForFee(instituteIdNameMap, instituteIdFeeMap));
+                Long minFeeInstituteId = getMinFeeInstituteId(instituteIdFeeMap);
+                if (Objects.nonNull(minFeeInstituteId)) {
+                    result.add(getMinFeeInsightMessage(minFeeInstituteId, instituteIdNameMap));
+                }  else {
+                    result.addAll(getMultipleInsightsForFee(instituteIdNameMap, instituteIdFeeMap));
+                }
             }
         }
         return result;
