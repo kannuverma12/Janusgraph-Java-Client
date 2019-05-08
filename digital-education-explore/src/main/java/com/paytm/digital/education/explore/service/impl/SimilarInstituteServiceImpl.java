@@ -211,7 +211,8 @@ public class SimilarInstituteServiceImpl {
     }
 
     private Widget getSimilarCollegesByLocation(Institute institute, Set<String> streams) {
-        Map<String, Object> instituteQueryMap = getInstituteQueryMapForStateAndStreams(institute.getInstitutionState(), streams);
+        Map<String, Object> instituteQueryMap =
+                getInstituteQueryMapForStateAndStreams(institute.getInstitutionState(), streams);
         List<Institute> instituteList =
                 commonMongoRepository.findAll(instituteQueryMap, Institute.class, projectionFields, AND);
         if (instituteList.size() > TOTAL_SIMILAR_COLLEGE) {
@@ -256,7 +257,7 @@ public class SimilarInstituteServiceImpl {
         Map<String, Object> instituteQueryMap = new HashMap<>();
         instituteQueryMap.put(INSTITUTION_STATE, instituteState);
         instituteQueryMap.put(INSTITUTE_ID, instituteIdMap);
-        return
+        return instituteQueryMap;
     }
 
     private Ranking getC360Ranking(List<Ranking> rankings) {
