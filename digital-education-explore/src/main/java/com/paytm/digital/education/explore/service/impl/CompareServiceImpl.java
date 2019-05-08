@@ -238,7 +238,11 @@ public class CompareServiceImpl implements CompareService {
         String parentInstitutionName = parentInstituteNameMap.get(inst.getParentInstitution());
         cDetail.setApprovals(getApprovalDetail(inst.getApprovals(),
                 Objects.nonNull(parentInstitutionName) ? parentInstitutionName : ""));
-        cDetail.setFacilities(getFacilitiesDetail(inst.getFacilities()));
+        if (Objects.nonNull(inst.getFacilities())) {
+            cDetail.setFacilities(getFacilitiesDetail(inst.getFacilities()));
+        } else {
+            cDetail.setFacilities(getFacilitiesDetail(new ArrayList<>()));
+        }
         cDetail.setFakeRankings(CompareUtil.getResponseRankingMap(inst.getRankings()));
         if (Objects.nonNull(inst.getSalariesPlacement())) {
             cDetail.setFakePlacements(getPlacements(inst.getSalariesPlacement()));
