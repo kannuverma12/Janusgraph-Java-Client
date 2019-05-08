@@ -10,6 +10,7 @@ import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
+import com.paytm.digital.education.explore.response.dto.common.Widget;
 import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
 import com.paytm.digital.education.explore.response.dto.detail.Ranking;
 import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
@@ -22,6 +23,7 @@ import com.paytm.digital.education.explore.service.helper.DetailPageSectionHelpe
 import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
 import com.paytm.digital.education.explore.service.helper.WidgetsDataHelper;
 import com.paytm.digital.education.explore.service.helper.StreamDataHelper;
+import com.paytm.digital.education.explore.service.impl.SimilarInstituteServiceImpl;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 
 import java.util.HashMap;
@@ -59,6 +61,7 @@ public class InstituteDetailResponseBuilder {
     private DetailPageSectionHelper detailPageSectionHelper;
     private BannerDataHelper        bannerDataHelper;
     private WidgetsDataHelper       widgetsDataHelper;
+    private SimilarInstituteServiceImpl similarInstituteService;
     private StreamDataHelper        streamDataHelper;
 
     public InstituteDetail buildResponse(Institute institute, List<Course> courses,
@@ -110,8 +113,10 @@ public class InstituteDetailResponseBuilder {
         instituteDetail.setPlacements(placementDataHelper.getSalariesPlacements(institute));
         instituteDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName));
         instituteDetail.setBanners(bannerDataHelper.getBannerData(entityName));
-        instituteDetail.setWidgets(widgetsDataHelper.getWidgets(entityName,
-                institute.getInstituteId()));
+        Widget widget = similarInstituteService.getSimilarInstitutes(institute);
+        if (Objects.nonNull(widget)) {
+            instituteDetail.setWidgets(Arrays.asList(widget));
+        }
         if ((!CollectionUtils.isEmpty(institute.getNotableAlumni()))) {
             instituteDetail.setNotableAlumni(getNotableAlumni(institute.getNotableAlumni()));
         }
@@ -242,4 +247,5 @@ public class InstituteDetailResponseBuilder {
         }
         return null;
     }
+
 }

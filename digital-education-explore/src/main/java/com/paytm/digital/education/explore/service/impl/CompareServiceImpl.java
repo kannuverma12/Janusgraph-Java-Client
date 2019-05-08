@@ -343,7 +343,6 @@ public class CompareServiceImpl implements CompareService {
             return streamList;
         }
         return null;
-
     }
 
     private List<String> getExamAccepted(List<Course> courses) {
