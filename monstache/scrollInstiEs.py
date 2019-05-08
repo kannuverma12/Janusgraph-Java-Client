@@ -19,13 +19,16 @@ stateNames = []
 def process_hits(hits):
     for insti in hits:
         names = []
+        logo = None
+        city = None
+        state = None
         # cityNames.append(insti['_source']['city'])
         # stateNames.append(insti['_source']['state'])
         if 'city' in insti['_source'] and insti['_source']['city']:
             cityNames.append(insti['_source']['city'])
         if 'state' in insti['_source'] and insti['_source']['state']:
             stateNames.append(insti['_source']['state'])
-        if 'university_name' in insti['source'] and insti['source']['university_name']:
+        if 'university_name' in insti['_source'] and insti['_source']['university_name']:
             names.append(insti['_source']['university_name'])
         if 'official_name' in insti['_source'] and insti['_source']['official_name']:
             names.append(insti['_source']['official_name'])
@@ -37,12 +40,12 @@ def process_hits(hits):
                 names.append(name)
         if 'common_name' in insti['_source'] and insti['_source']['common_name']:
             names.append(insti['_source']['common_name'])
-        if 'image_link' in insti['_source'] and insti['source']['image_link']:
-            logo = insti['source']['logo']
-        if 'stste' in insti['_source'] and insti['source']['state']:
-            state = insti['source']['state']
-        if 'city' in insti['_source'] and insti['source']['city']:
-            city = insti['source']['city']
+        if 'image_link' in insti['_source'] and insti['_source']['image_link']:
+            logo = insti['_source']['image_link']
+        if 'stste' in insti['_source'] and insti['_source']['state']:
+            state = insti['_source']['state']
+        if 'city' in insti['_source'] and insti['_source']['city']:
+            city = insti['_source']['city']
         yield {"_index": autosuggestIndex, "_type": autosuggestIndexType,
                "_source": {"names": names, "official_name": insti['_source']['official_name'],
                            "logo": logo, "official_address": {"state": state, "city": city},

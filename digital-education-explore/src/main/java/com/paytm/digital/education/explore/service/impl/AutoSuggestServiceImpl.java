@@ -3,7 +3,6 @@ package com.paytm.digital.education.explore.service.impl;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTOSUGGEST_ANALYZER;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTOSUGGEST_INDEX;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTOSUGGEST_NAMES;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.COMPARE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_AUTOSUGGEST_SIZE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_OFFSET;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE;
@@ -29,6 +28,7 @@ import com.paytm.digital.education.explore.response.dto.suggest.AutoSuggestData;
 import com.paytm.digital.education.explore.response.dto.suggest.AutoSuggestResponse;
 import com.paytm.digital.education.explore.response.dto.suggest.SuggestResult;
 import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
+import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.search.service.AutoSuggestionService;
 import com.paytm.digital.education.utility.HierarchyIdentifierUtils;
 import lombok.AllArgsConstructor;
@@ -71,7 +71,8 @@ public class AutoSuggestServiceImpl {
     }
 
     @Cacheable(value = "autosuggest")
-    public AutoSuggestResponse getSuggestResults(String searchTerm, List<EducationEntity> entities) {
+    public AutoSuggestResponse getSuggestResults(String searchTerm,
+            List<EducationEntity> entities) {
         ElasticRequest elasticRequest = buildAutoSuggestRequest(searchTerm, entities);
         ElasticResponse<AutoSuggestEsData> response = null;
         try {
@@ -168,6 +169,18 @@ public class AutoSuggestServiceImpl {
                 documents.forEach(esDocument -> {
                     SuggestResult responseDoc = new SuggestResult(esDocument.getEntityId(),
                             esDocument.getOfficialName());
+                    if (StringUtils.isNotBlank(esDocument.getLogo())) {
+                        responseDoc.setLogo(CommonUtil.getLogoLink(esDocument.getLogo()));
+                    }
+                    if (Objects.nonNull(esDocument.getOfficialAddress())) {
+                        responseDoc.setOfficialAddress(
+                                CommonUtil
+                                        .getOfficialAddress(
+                                                esDocument.getOfficialAddress().getState(),
+                                                esDocument.getOfficialAddress().getCity(), null,
+                                                null,
+                                                null));
+                    }
                     entityResultsMap.get(key.getKey()).put(responseDoc.getEntityId(), responseDoc);
                     responseResultDocList.add(responseDoc);
                 });
@@ -181,19 +194,23 @@ public class AutoSuggestServiceImpl {
         return response;
     }
 
-    private void updateShortlist(AutoSuggestResponse autoSuggestResponse, List<UserAction>  actions, Long userId) {
+    private void updateShortlist(AutoSuggestResponse autoSuggestResponse, List<UserAction> actions,
+            Long userId) {
         if (!CollectionUtils.isEmpty(actions) && actions.contains(UserAction.SHORTLIST)
                 && Objects.nonNull(userId) && userId > 0
                 && !CollectionUtils.isEmpty(autoSuggestResponse.getPerEntitySuggestMap())) {
-            Map<String, Map<Long, SuggestResult>> entitySuggestMap = autoSuggestResponse.getPerEntitySuggestMap();
+            Map<String, Map<Long, SuggestResult>> entitySuggestMap =
+                    autoSuggestResponse.getPerEntitySuggestMap();
             for (String entity : entitySuggestMap.keySet()) {
                 Set<Long> entityIds = entitySuggestMap.get(entity).keySet();
                 if (!CollectionUtils.isEmpty(entityIds)) {
                     List<Long> subscribedEntities = subscriptionDetailHelper
-                            .getSubscribedEntities(EducationEntity.getEntityFromValue(entity), userId, entityIds);
+                            .getSubscribedEntities(EducationEntity.getEntityFromValue(entity),
+                                    userId, entityIds);
                     if (!CollectionUtils.isEmpty(subscribedEntities)) {
                         subscribedEntities
-                                .forEach(entityId -> entitySuggestMap.get(entity).get(entityId).setShortlisted(true));
+                                .forEach(entityId -> entitySuggestMap.get(entity).get(entityId)
+                                        .setShortlisted(true));
                     }
                 }
             }

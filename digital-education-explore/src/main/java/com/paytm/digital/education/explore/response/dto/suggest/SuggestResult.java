@@ -1,6 +1,7 @@
 package com.paytm.digital.education.explore.response.dto.suggest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -13,6 +14,12 @@ public class SuggestResult {
 
     @JsonProperty("official_name")
     private String officialName;
+
+    @JsonProperty("logo")
+    private String logo;
+
+    @JsonProperty("official_address")
+    private OfficialAddress officialAddress;
 
     @JsonProperty("shortlisted")
     private boolean shortlisted;
