@@ -26,6 +26,7 @@ import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.entity.Placement;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import com.paytm.digital.education.explore.response.dto.detail.CompareDetail;
 import com.paytm.digital.education.explore.response.dto.detail.CompareInstDetail;
 import com.paytm.digital.education.explore.response.dto.detail.CompareRanking;
@@ -259,6 +260,14 @@ public class CompareServiceImpl implements CompareService {
             cDetail.setMinimumCourseFee(CompareUtil.getMinCourseFee(courses));
             cDetail.setStreamsPreparedFor(getStreams(courses));
         }
+        if (Objects.nonNull(inst.getGallery()) && Objects.nonNull(inst.getGallery().getLogo())) {
+            cDetail.setLogo(CommonUtil.getLogoLink(inst.getGallery().getLogo()));
+        }
+        OfficialAddress officialAddress =
+            CommonUtil.getOfficialAddress(inst.getInstitutionState(),
+                    inst.getInstitutionCity(), inst.getPhone(), inst.getUrl(),
+                    inst.getOfficialAddress());
+        cDetail.setOfficialAddress(officialAddress);
         return cDetail;
     }
 

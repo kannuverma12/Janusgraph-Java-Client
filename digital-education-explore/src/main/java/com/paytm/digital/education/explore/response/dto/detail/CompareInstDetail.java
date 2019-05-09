@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.explore.database.entity.Placement;
+import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -60,5 +61,11 @@ public class CompareInstDetail {
 
     @JsonProperty("courses")
     private Map<Long, String> courses;
+
+    @JsonProperty("logo")
+    private String logo;
+
+    @JsonProperty("official_address")
+    private OfficialAddress officialAddress;
 
 }
