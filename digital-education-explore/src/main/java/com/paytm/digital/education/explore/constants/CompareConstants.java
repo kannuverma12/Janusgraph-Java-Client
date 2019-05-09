@@ -42,5 +42,4 @@ public interface CompareConstants {
     String  HAS_MAXIMUM_PLACEMENT_OF = " has a maximum placements of Rs. ";
     String  HAS_MINIMUM_PLACEMENT_OF = " has a minimum placements of Rs. ";
     String  COMPARE_CACHE_NAMESPACE  = "compare_insights";
-
 }

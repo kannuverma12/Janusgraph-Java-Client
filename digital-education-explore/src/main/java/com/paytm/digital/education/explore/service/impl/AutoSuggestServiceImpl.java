@@ -66,7 +66,7 @@ public class AutoSuggestServiceImpl {
     public AutoSuggestResponse getSuggestions(String searchTerm, List<EducationEntity> entities,
             List<UserAction> actions, Long userId) {
         AutoSuggestResponse autoSuggestResponse = getSuggestResults(searchTerm, entities);
-        updateShortlist(autoSuggestResponse, actions, userId);
+        groupEntityBasedOnActions(autoSuggestResponse, actions, userId);
         return autoSuggestResponse;
     }
 
@@ -194,7 +194,9 @@ public class AutoSuggestServiceImpl {
         return response;
     }
 
-    private void updateShortlist(AutoSuggestResponse autoSuggestResponse, List<UserAction> actions,
+
+    private void groupEntityBasedOnActions(AutoSuggestResponse autoSuggestResponse,
+            List<UserAction> actions,
             Long userId) {
         if (!CollectionUtils.isEmpty(actions) && actions.contains(UserAction.SHORTLIST)
                 && Objects.nonNull(userId) && userId > 0
@@ -208,9 +210,25 @@ public class AutoSuggestServiceImpl {
                             .getSubscribedEntities(EducationEntity.getEntityFromValue(entity),
                                     userId, entityIds);
                     if (!CollectionUtils.isEmpty(subscribedEntities)) {
-                        subscribedEntities
-                                .forEach(entityId -> entitySuggestMap.get(entity).get(entityId)
-                                        .setShortlisted(true));
+                        List<SuggestResult> shortListData = new ArrayList<>();
+                        for (Long entityId : subscribedEntities) {
+                            shortListData.add(entitySuggestMap.get(entity).get(entityId));
+                        }
+                        for (AutoSuggestData data : autoSuggestResponse.getData()) {
+                            if (data.getEntityType().equals(entity)) {
+                                List<SuggestResult> resultLists = new ArrayList<>();
+                                for (SuggestResult result : data.getResults()) {
+                                    if (!subscribedEntities.contains(result.getEntityId())) {
+                                        resultLists.add(result);
+                                    }
+                                }
+                                data.setResults(resultLists);
+                            }
+                        }
+                        AutoSuggestData autoSuggestData = new AutoSuggestData();
+                        autoSuggestData.setEntityType(UserAction.SHORTLIST.name().toLowerCase());
+                        autoSuggestData.setResults(shortListData);
+                        autoSuggestResponse.getData().add(autoSuggestData);
                     }
                 }
             }

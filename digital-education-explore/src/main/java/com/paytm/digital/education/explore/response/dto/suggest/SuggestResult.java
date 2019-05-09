@@ -21,9 +21,6 @@ public class SuggestResult {
     @JsonProperty("official_address")
     private OfficialAddress officialAddress;
 
-    @JsonProperty("shortlisted")
-    private boolean shortlisted;
-
     public SuggestResult(long entityId, String officialName) {
         this.entityId = entityId;
         this.officialName = officialName;
