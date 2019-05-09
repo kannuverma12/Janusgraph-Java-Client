@@ -60,7 +60,6 @@ public class InstituteDetailResponseBuilder {
     private FacilityDataHelper      facilityDataHelper;
     private DetailPageSectionHelper detailPageSectionHelper;
     private BannerDataHelper        bannerDataHelper;
-    private WidgetsDataHelper       widgetsDataHelper;
     private SimilarInstituteServiceImpl similarInstituteService;
     private StreamDataHelper        streamDataHelper;
 
@@ -115,10 +114,7 @@ public class InstituteDetailResponseBuilder {
         instituteDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName));
         instituteDetail.setBanners(bannerDataHelper.getBannerData(entityName));
         instituteDetail.setClient(institute.isClient());
-        Widget widget = similarInstituteService.getSimilarInstitutes(institute);
-        if (Objects.nonNull(widget)) {
-            instituteDetail.setWidgets(Arrays.asList(widget));
-        }
+        instituteDetail.setWidgets(similarInstituteService.getSimilarInstitutes(institute));
         if ((!CollectionUtils.isEmpty(institute.getNotableAlumni()))) {
             instituteDetail.setNotableAlumni(getNotableAlumni(institute.getNotableAlumni()));
         }

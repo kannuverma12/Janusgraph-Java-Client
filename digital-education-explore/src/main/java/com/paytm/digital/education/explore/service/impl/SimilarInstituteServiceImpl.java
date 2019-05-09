@@ -8,7 +8,6 @@ import static com.paytm.digital.education.explore.constants.CompareConstants.CAR
 import static com.paytm.digital.education.explore.constants.CompareConstants.NIRF;
 import static com.paytm.digital.education.explore.constants.CompareConstants.UNIVERSITIES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EMPTY_SQUARE_BRACKETS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EQ_OPERATOR;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.GALLERY_LOGO;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTION_CITY;
@@ -22,6 +21,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.SIM
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SIMILAR_COLLEGE_NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAMS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.TOTAL_SIMILAR_COLLEGE;
+import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
 
 import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Institute;
@@ -32,8 +32,10 @@ import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.enums.InstituteStream;
 import com.paytm.digital.education.explore.response.dto.common.Widget;
 import com.paytm.digital.education.explore.response.dto.common.WidgetData;
+import com.paytm.digital.education.explore.service.helper.WidgetsDataHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -51,47 +53,50 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class SimilarInstituteServiceImpl {
 
     private CommonMongoRepository commonMongoRepository;
     private InstituteRepository   instituteRepository;
+    private WidgetsDataHelper     widgetsDataHelper;
 
     private static List<String> projectionFields = Arrays.asList(INSTITUTE_ID, OFFICIAL_NAME, GALLERY_LOGO);
 
     @Cacheable(value = "similar_institutes", key = "'similar_'+#institute.instituteId")
-    public Widget getSimilarInstitutes(Institute institute) {
+    public List<Widget> getSimilarInstitutes(Institute institute) {
         if (Objects.nonNull(institute)) {
-            List<String> courseFields = Arrays.asList(STREAMS);
-            List<Course> courses = commonMongoRepository
-                    .getEntityFieldsByValuesIn(INSTITUTE_ID, Arrays.asList(institute.getInstituteId()), Course.class,
-                            courseFields);
-            Set<String> courseStreams = courses.stream().filter(c -> Objects.nonNull(c.getStreams()))
-                    .flatMap(course -> course.getStreams().stream()).collect(Collectors.toSet());
-
-            Map<String, Map<String, Ranking>> rankingDataMap = getRankingMap(institute.getRankings());
-            if (!CollectionUtils.isEmpty(rankingDataMap)) {
-                if (rankingDataMap.containsKey(NIRF)) {
-                    return getSimilarCollegesByNirfRanking(institute, courseStreams, rankingDataMap.get(NIRF));
+            try {
+                Map<String, Map<String, Ranking>> rankingDataMap =
+                        getRankingMap(institute.getRankings());
+                if (!CollectionUtils.isEmpty(rankingDataMap) && rankingDataMap.containsKey(NIRF)) {
+                    Widget widget = getSimilarCollegesByNirfRanking(institute, rankingDataMap.get(NIRF));
+                    if (Objects.nonNull(widget)) {
+                        return Arrays.asList(widget);
+                    }
                 }
+                Widget widget = getSimilarCollegesByLocation(institute);
+                if (Objects.nonNull(widget)) {
+                    return Arrays.asList(widget);
+                }
+            } catch (Exception ex) {
+                log.error("Error caught while getting similar colleges for the instituteId : "
+                        + institute.getInstituteId(), ex);
             }
-            return getSimilarCollegesByLocation(institute, courseStreams);
+            return widgetsDataHelper.getWidgets(INSTITUTE.name().toLowerCase(), institute.getInstituteId());
         }
         return null;
     }
 
 
-    private Widget getSimilarCollegesByNirfRanking(Institute institute, Set<String> streams,
-            Map<String, Ranking> nirfRanking) {
+    private Widget getSimilarCollegesByNirfRanking(Institute institute, Map<String, Ranking> nirfRanking) {
         //If Only one stream is present, show similar colleges based on the streams present
-        //db.course.distinct("institute_id",{"streams":{$exists:true,$ne:[], $eq:["ENGINEERING_AND_ARCHITECTURE"]}})
+        Set<String> streams = getRankingStreams(nirfRanking);
         if (Objects.nonNull(streams) && streams.size() == ONE.getValue()) {
-            return getSimilarCollegesByStream(EQ_OPERATOR, streams);
+            return getSimilarCollegesByStream(NIRF, institute.getInstituteId(), streams);
         }
         //otherwise show similar colleges based on the OVERALL rankings
-        //db.institute.find({"rankings":{"$exists":true,"$ne":[],
-        // "$elemMatch":{"source":"NIRF","ranking_type":"OVERALL"}}})
         if (nirfRanking.containsKey(OVERALL_RANKING) || nirfRanking.containsKey(UNIVERSITIES)) {
             List<Institute> resultList = new ArrayList<>();
             List<Institute> instituteList = getByOverAllRankings();
@@ -139,7 +144,7 @@ public class SimilarInstituteServiceImpl {
             return stream1.getValue() - stream2.getValue();
         });
         instituteStreams = instituteStreams.stream().limit(MAX_STREAMS).collect(Collectors.toList());
-        return getSimilarCollegesByStream(IN_OPERATOR, instituteStreams);
+        return getSimilarCollegesByStream(NIRF, institute.getInstituteId(), instituteStreams);
     }
 
     private Widget builWidgetResponse(List<Institute> instituteList) {
@@ -156,7 +161,7 @@ public class SimilarInstituteServiceImpl {
                 widgetDataList.add(widgetData);
             }
             widget.setData(widgetDataList);
-            widget.setEntity(EducationEntity.INSTITUTE.name());
+            widget.setEntity(INSTITUTE.name());
             widget.setLabel(SIMILAR_COLLEGES);
             return widget;
         }
@@ -210,7 +215,8 @@ public class SimilarInstituteServiceImpl {
         return instituteList;
     }
 
-    private Widget getSimilarCollegesByLocation(Institute institute, Set<String> streams) {
+    private Widget getSimilarCollegesByLocation(Institute institute) {
+        Set<String> streams = getCourseStreamForInstitute(institute.getInstituteId());
         Map<String, Object> instituteQueryMap =
                 getInstituteQueryMapForStateAndStreams(institute.getInstitutionState(), streams);
         List<Institute> instituteList =
@@ -306,6 +312,8 @@ public class SimilarInstituteServiceImpl {
                     } else if (StringUtils.isNotBlank(ranking.getRankingType()) && UNIVERSITIES
                             .equalsIgnoreCase(ranking.getRankingType())) {
                         rankingDataMap.get(ranking.getSource()).put(UNIVERSITIES, ranking);
+                    } else if (StringUtils.isNotBlank(ranking.getStream())) {
+                        rankingDataMap.get(ranking.getSource()).put(ranking.getStream(), ranking);
                     }
                 }
             }
@@ -331,13 +339,39 @@ public class SimilarInstituteServiceImpl {
         return instituteIds;
     }
 
-    private Widget getSimilarCollegesByStream(String streamOperator, Collection<String> streams) {
-        List<Long> instituteIds = getInstituteIdsByStreams(streamOperator, streams);
-        List<String> instituteFields = Arrays.asList(INSTITUTE_ID, OFFICIAL_NAME, GALLERY_LOGO);
-        List<Institute> instituteList = commonMongoRepository
-                .getEntityFieldsByValuesIn(INSTITUTE_ID, instituteIds, Institute.class, instituteFields);
-        instituteList = instituteList.stream().limit(4).collect(Collectors.toList());
-        return builWidgetResponse(instituteList);
+    private Widget getSimilarCollegesByStream(String source, Long mainInstituteId, Collection<String> streams) {
+        List<Institute> instituteList = null;
+        if (streams.size() == 1) {
+            instituteList = instituteRepository.findAllBySourceAndStream(source, streams.iterator().next());
+        } else {
+            instituteList = instituteRepository.findAllBySourceAndStreamIn(source, streams);
+        }
+        if (!CollectionUtils.isEmpty(instituteList)) {
+            instituteList = instituteList.stream()
+                    .filter(institute -> institute.getInstituteId() != mainInstituteId)
+                    .limit(TOTAL_SIMILAR_COLLEGE).collect(Collectors.toList());
+            return builWidgetResponse(instituteList);
+        }
+        return null;
+    }
+
+    private Set<String> getRankingStreams(Map<String, Ranking> rankingMap) {
+        if (!CollectionUtils.isEmpty(rankingMap)) {
+            return rankingMap.keySet().stream()
+                    .filter(rankStream -> !rankStream.equalsIgnoreCase(UNIVERSITIES) && !rankStream
+                            .equalsIgnoreCase(OVERALL_RANKING)).collect(Collectors.toSet());
+        }
+        return null;
+    }
+
+    private Set<String> getCourseStreamForInstitute(Long instituteId) {
+        List<String> courseFields = Arrays.asList(STREAMS);
+        List<Course> courses = commonMongoRepository
+                .getEntityFieldsByValuesIn(INSTITUTE_ID, Arrays.asList(instituteId), Course.class,
+                        courseFields);
+        Set<String> courseStreams = courses.stream().filter(c -> Objects.nonNull(c.getStreams()))
+                .flatMap(course -> course.getStreams().stream()).collect(Collectors.toSet());
+        return courseStreams;
     }
 
 }
