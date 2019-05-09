@@ -88,5 +88,5 @@ public class InstituteDetail {
     private Map<String, Set<String>> degreeOffered;
 
     @JsonProperty("is_client")
-    private boolean isClient;
+    private boolean client;
 }

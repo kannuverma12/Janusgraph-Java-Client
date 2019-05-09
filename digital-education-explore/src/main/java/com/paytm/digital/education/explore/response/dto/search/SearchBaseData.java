@@ -1,5 +1,6 @@
 package com.paytm.digital.education.explore.response.dto.search;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -13,7 +14,7 @@ public class SearchBaseData {
     private boolean interested;
 
     @JsonProperty("is_client")
-    private boolean isClient;
+    private boolean client;
 
     @JsonProperty("logo_url")
     private String logoUrl;
