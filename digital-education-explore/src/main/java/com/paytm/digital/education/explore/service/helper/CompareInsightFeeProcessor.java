@@ -48,7 +48,8 @@ public class CompareInsightFeeProcessor {
                                 Collectors.mapping(c -> c, Collectors.toList())));
             }
         }
-
+        long minimumOfMinFee = Long.MAX_VALUE;
+        long maximumOfMinFee = Long.MIN_VALUE;
         for (Institute institute : instituteList) {
             instituteIdNameMap.put(institute.getInstituteId(), institute.getOfficialName());
             List<Course> courses = instituteCoursesMap.get(institute.getInstituteId().intValue());
@@ -56,21 +57,21 @@ public class CompareInsightFeeProcessor {
                 Long minFee = CompareUtil.getMinCourseFee(courses);
                 if (Objects.nonNull(minFee)) {
                     instituteIdFeeMap.put(institute.getInstituteId(), minFee);
+                    minimumOfMinFee = minimumOfMinFee > minFee ? minFee : minimumOfMinFee;
+                    maximumOfMinFee = maximumOfMinFee < minFee ? minFee : maximumOfMinFee;
                 }
             }
         }
 
-        return getInsightMessages(instituteIdNameMap, instituteIdFeeMap);
+        return getInsightMessages(instituteIdNameMap, instituteIdFeeMap, maximumOfMinFee, minimumOfMinFee);
     }
 
-    private List<String> getInsightMessages(Map<Long, String> instituteIdNameMap, Map<Long, Long> instituteIdFeeMap) {
+    private List<String> getInsightMessages(Map<Long, String> instituteIdNameMap,
+            Map<Long, Long> instituteIdFeeMap, long maxFee, long minFee) {
         List<String> result = new ArrayList<>();
-        List<Long> allFees = new ArrayList<>(instituteIdFeeMap.values());
         List<String> instituteNames = new ArrayList<>(instituteIdNameMap.values());
         if (!CollectionUtils.isEmpty(instituteIdFeeMap)) {
-            if (areFeesSame(allFees)) {
-                result.add(getSameFeesInsight(instituteNames));
-            } else if (areFeesAlmostSame(allFees)) {
+            if (areFeesAlmostSame(maxFee, minFee)) {
                 result.add(getAlmostSameFeeInsight(instituteNames));
             } else {
                 Long minFeeInstituteId = getMinFeeInstituteId(instituteIdFeeMap);
@@ -143,7 +144,7 @@ public class CompareInsightFeeProcessor {
         Long minFee = null;
         Long minFeeInstituteId = null;
         for (Long instituteId : instituteIdFeeMap.keySet()) {
-            if (minFee == null || (minFee < instituteIdFeeMap.get(instituteId) && !areFeesAlmostSame(minFee,
+            if (minFee == null || (minFee > instituteIdFeeMap.get(instituteId) && !areFeesAlmostSame(minFee,
                     instituteIdFeeMap.get(instituteId)))) {
                 minFee = instituteIdFeeMap.get(instituteId);
                 minFeeInstituteId = instituteId;
@@ -162,16 +163,7 @@ public class CompareInsightFeeProcessor {
         return flag;
     }
 
-    private boolean areFeesSame(List<Long> fees) {
-        int size = fees.size();
-        boolean flag = true;
-        for (int i = 0; i < size; i++) {
-            flag = flag && areFeesSame(fees.get(i), fees.get((i + 1) % size));
-        }
-        return flag;
-    }
-
-    //This function checks if diference of fees between two institues are 10 percent
+    //This function checks if difference of fees between two institutes are 10 percent
     private boolean areFeesAlmostSame(Long fee1, Long fee2) {
         long diff = Math.abs(fee1 - fee2);
         long denom = fee1 < fee2 ? fee1 : fee2;
