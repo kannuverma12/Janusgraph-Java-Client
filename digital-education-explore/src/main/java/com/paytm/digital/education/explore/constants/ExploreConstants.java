@@ -235,6 +235,7 @@ public interface ExploreConstants {
     int    NO_OF_LOWER_RANK_COLLEGE  = 2;
     int    NO_OF_HIGHER_RANK_COLLEGE = 2;
     int    MAX_STREAMS               = 2;
+    int    COLLEGES_PER_STREAM       = 2;
 
     String COLLEGE_FOCUS = "colleges_focus";
     String TOP_COLLEGES  = "top_colleges";
