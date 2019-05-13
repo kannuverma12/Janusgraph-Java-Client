@@ -40,7 +40,7 @@ public interface ExploreConstants {
     int    AUTOSUGGEST_MIN_CHARS     = 3;
     int    AUTOSUGGEST_MAX_CHARS     = 200;
     int    SEARCH_REQUEST_MAX_OFFSET = 9950;
-    int    SEARCH_REQUEST_MAX_LIMIT  = 50;
+    int    SEARCH_REQUEST_MAX_LIMIT  = 500;
     String AUTOSUGGEST_OFFICIAL_NAME = "official_name";
     String AUTOSUGGEST_NAMES         = "names";
     String RESULT                    = "results";
@@ -157,6 +157,7 @@ public interface ExploreConstants {
     String RANKING_STREAM_NAMESPACE    = "ranking_stream";
     String FACILITIES_MASTER_LIST      = "master_list";
 
+    String COURSE_ALPHABETICAL_SORT_KEY     = "alphabetical";
     String STREAM_COURSE                    = "domain_name";
     String DEGREE_COURSE                    = "degree";
     String BRANCH_COURSE                    = "branch";
@@ -164,6 +165,7 @@ public interface ExploreConstants {
     String INSTITUTE_NAME_COURSE            = "institute_official_name";
     String SEATS_COURSE                     = "seats";
     String FEE_COURSE                       = "fees";
+    String NAME_COURSE                      = "name";
     String DURATION_COURSE                  = "duration_in_months";
     String PARENT_INSTITUTE_ID_COURSE       = "parent_institute_id";
     String INSTITUTE_ID_COURSE              = "institute_id";

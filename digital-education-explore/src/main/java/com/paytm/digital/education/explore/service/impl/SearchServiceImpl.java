@@ -35,7 +35,7 @@ public class SearchServiceImpl {
         log.debug("Starting search at : " + startTime);
         SearchResponse response = handler(searchRequest.getEntity()).search(searchRequest);
         log.debug("Search Response : {}", JsonUtils.toJson(response));
-
+        
         if (userId != null && userId > 0 && response.isSearchResponse()
                 && !CollectionUtils.isEmpty(response.getEntityDataMap())) {
             Map<Long, SearchBaseData> searchBaseDataMap = response.getEntityDataMap();
