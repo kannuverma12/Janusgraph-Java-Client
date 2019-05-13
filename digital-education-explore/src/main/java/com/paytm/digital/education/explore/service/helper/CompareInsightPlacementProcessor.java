@@ -122,35 +122,42 @@ public class CompareInsightPlacementProcessor {
                 List<Integer> medianSalaries =
                         Arrays.stream(placementDataMaps).filter(placementMap -> Objects.nonNull(placementMap))
                                 .map(placementMap -> placementMap.get(MEDIAN).getMedian()).collect(Collectors.toList());
-                int maxIndex = CommonUtil.getIndexForMaxValue(medianSalaries);
-                return new Pair<>(maxIndex, MEDIAN);
+                int maxIndex = getMaxPlacementIndex(medianSalaries);
+                if (maxIndex != -1) {
+                    return new Pair<>(maxIndex, MEDIAN);
+                }
             }
             if (commonKeys.contains(AVERAGE)) {
                 List<Integer> averageSalaries =
                         Arrays.stream(placementDataMaps).filter(placementMap -> Objects.nonNull(placementMap))
                                 .map(placementMap -> placementMap.get(AVERAGE).getAverage())
                                 .collect(Collectors.toList());
-                int maxIndex = CommonUtil.getIndexForMaxValue(averageSalaries);
-                return new Pair<>(maxIndex, AVERAGE);
+                int maxIndex = getMaxPlacementIndex(averageSalaries);
+                if (maxIndex != -1) {
+                    return new Pair<>(maxIndex, AVERAGE);
+                }
             }
             if (commonKeys.contains(MAXIMUM)) {
                 List<Integer> maxSalaries =
                         Arrays.stream(placementDataMaps).filter(placementMap -> Objects.nonNull(placementMap))
                                 .map(placementMap -> placementMap.get(MAXIMUM).getMaximum())
                                 .collect(Collectors.toList());
-                int maxIndex = CommonUtil.getIndexForMaxValue(maxSalaries);
-                return new Pair<>(maxIndex, MAXIMUM);
+                int maxIndex = getMaxPlacementIndex(maxSalaries);
+                if (maxIndex != -1) {
+                    return new Pair<>(maxIndex, MAXIMUM);
+                }
             }
             if (commonKeys.contains(MINIMUM)) {
                 List<Integer> minSalaries =
                         Arrays.stream(placementDataMaps).filter(placementMap -> Objects.nonNull(placementMap))
                                 .map(placementMap -> placementMap.get(MINIMUM).getMinimum())
                                 .collect(Collectors.toList());
-                int maxIndex = CommonUtil.getIndexForMaxValue(minSalaries);
-                return new Pair<>(maxIndex, MINIMUM);
+                int maxIndex = getMaxPlacementIndex(minSalaries);
+                if (maxIndex != -1) {
+                    return new Pair<>(maxIndex, MINIMUM);
+                }
             }
         }
-
         return new Pair<>(-1, null);
     }
 
@@ -168,8 +175,10 @@ public class CompareInsightPlacementProcessor {
             String firstInstitute, String secondInstitute) {
         if (firstSalary > secondSalary) {
             return salaryType + PLACEMENTS_OF + firstInstitute + IS_HIGHER_THAN + secondInstitute;
+        } else if (firstSalary < secondSalary) {
+            return salaryType + PLACEMENTS_OF + secondInstitute + IS_HIGHER_THAN + firstInstitute;
         }
-        return salaryType + PLACEMENTS_OF + secondInstitute + IS_HIGHER_THAN + firstInstitute;
+        return null;
     }
 
     private List<String> getMultipleInsights(int size, List<Institute> instituteList,
@@ -228,5 +237,12 @@ public class CompareInsightPlacementProcessor {
             }
         }
         return placementDataMap;
+    }
+
+    private int getMaxPlacementIndex(List<Integer> placementSalaries) {
+        if (CommonUtil.areAllEqual(placementSalaries)) {
+            return -1;
+        }
+        return CommonUtil.getIndexForMaxValue(placementSalaries);
     }
 }

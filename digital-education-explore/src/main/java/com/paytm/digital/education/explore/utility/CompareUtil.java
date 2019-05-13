@@ -88,6 +88,7 @@ public class CompareUtil {
             com.paytm.digital.education.explore.database.entity.Ranking dbRanking) {
         Ranking r = new Ranking();
         r.setRank(dbRanking.getRank());
+        r.setScore(dbRanking.getScore());
         r.setSource(dbRanking.getSource());
         r.setYear(dbRanking.getYear());
         r.setRating(dbRanking.getRating());

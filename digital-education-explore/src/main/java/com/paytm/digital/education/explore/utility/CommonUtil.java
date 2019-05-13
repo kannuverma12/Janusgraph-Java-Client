@@ -206,4 +206,16 @@ public class CommonUtil {
         }
         return maxIndex;
     }
+
+    public boolean areAllEqual(List<Integer> data) {
+        if (!CollectionUtils.isEmpty(data)) {
+            int val = data.get(0);
+            for (int i = 1; i < data.size(); i++) {
+                if (data.get(i) != val) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }

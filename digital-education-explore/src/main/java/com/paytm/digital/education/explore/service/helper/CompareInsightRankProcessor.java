@@ -15,6 +15,7 @@ import static com.paytm.digital.education.explore.constants.CompareConstants.IS_
 import static com.paytm.digital.education.explore.constants.CompareConstants.NIRF;
 
 import com.paytm.digital.education.explore.database.entity.Institute;
+import com.paytm.digital.education.explore.enums.RankingSource;
 import com.paytm.digital.education.explore.response.dto.detail.Ranking;
 import com.paytm.digital.education.explore.utility.CompareUtil;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +37,10 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class CompareInsightRankProcessor {
+
+    private static Comparator<String> rankingSourceComparator = (src1, src2) -> {
+        return (RankingSource.valueOf(src1).getValue() - RankingSource.valueOf(src2).getValue());
+    };
 
     public List<String> getComparativeInsights(List<Institute> instituteList) {
         int instituteSize = instituteList.size();
@@ -89,20 +96,20 @@ public class CompareInsightRankProcessor {
             if (rankingDataMap1.get(rankingSource).getRank() < rankingDataMap2.get(rankingSource)
                     .getRank()) {
                 return institute1.getOfficialName() + IS_RANKED_HIGHER + institute2
-                        .getOfficialName();
+                        .getOfficialName() + BY + rankingSource;
             } else {
                 return institute2.getOfficialName() + IS_RANKED_HIGHER + institute1
-                        .getOfficialName();
+                        .getOfficialName() + BY + rankingSource;
             }
         } else if (Objects.nonNull(rankingDataMap1.get(rankingSource).getScore())
                 && Objects.nonNull(rankingDataMap2.get(rankingSource).getScore())) {
             if (Double.compare(rankingDataMap1.get(rankingSource).getScore(),
                     rankingDataMap2.get(rankingSource).getScore()) < 0) {
                 return institute1.getOfficialName() + IS_RANKED_HIGHER + institute2
-                        .getOfficialName();
+                        .getOfficialName() + BY + rankingSource;
             } else {
                 return institute2.getOfficialName() + IS_RANKED_HIGHER + institute1
-                        .getOfficialName();
+                        .getOfficialName() + BY + rankingSource;
             }
         }
         return null;
@@ -124,18 +131,19 @@ public class CompareInsightRankProcessor {
         return result;
     }
 
-    private List<String> getCommonInsight(int instituteSize, Set<String> commonKeys,
+    private List<String> getCommonInsight(int instituteSize, Set<String> rankingKeys,
             List<Institute> instituteList,
             Map<String, Ranking>... rankingDataMaps) {
         List<String> result = new ArrayList<>();
         List<String> instituteNames =
                 instituteList.stream().map(institute -> institute.getOfficialName()).collect(
                         Collectors.toList());
-        if (commonKeys.contains(NIRF)) {
-            commonKeys = new HashSet<>();
-            commonKeys.add(NIRF);
-        }
+        List<String> commonKeys = new ArrayList<>(rankingKeys);
+        Collections.sort(commonKeys, rankingSourceComparator);
         for (String commonKey : commonKeys) {
+            if (!CollectionUtils.isEmpty(result)) {
+                break;
+            }
             Integer maxRank = rankingDataMaps[0].get(commonKey).getRank();
             Double maxScore = rankingDataMaps[0].get(commonKey).getScore();
             boolean rankPresent = (maxRank != null);
@@ -199,10 +207,12 @@ public class CompareInsightRankProcessor {
         List<String> result = new ArrayList<>();
         boolean nirfIncluded = false;
         for (int i = 0; i < instituteSize; i++) {
-            Set<String> commonKeys = new HashSet<>(rankingDataMaps[i].keySet());
+            Set<String> rankingKeys = new HashSet<>(rankingDataMaps[i].keySet());
             Set<String> instituteKeys = rankingDataMaps[(i + 1) % instituteSize].keySet();
-            commonKeys.retainAll(instituteKeys);
+            rankingKeys.retainAll(instituteKeys);
+            List<String> commonKeys = new ArrayList<>(rankingKeys);
             if (!CollectionUtils.isEmpty(commonKeys)) {
+                Collections.sort(commonKeys, rankingSourceComparator);
                 if (commonKeys.contains(NIRF)) {
                     nirfIncluded = true;
                 }
@@ -212,6 +222,7 @@ public class CompareInsightRankProcessor {
                             instituteList.get((i + 1) % instituteSize));
                     if (StringUtils.isNotBlank(rankInsight)) {
                         result.add(rankInsight);
+                        break;
                     }
                 }
             }
