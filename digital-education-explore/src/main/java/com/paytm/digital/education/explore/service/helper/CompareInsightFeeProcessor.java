@@ -2,10 +2,10 @@ package com.paytm.digital.education.explore.service.helper;
 
 import static com.paytm.digital.education.explore.constants.CompareConstants.AND_STRING;
 import static com.paytm.digital.education.explore.constants.CompareConstants.ARE_ALMOST_SAME;
-import static com.paytm.digital.education.explore.constants.CompareConstants.ARE_THE_SAME;
 import static com.paytm.digital.education.explore.constants.CompareConstants.COURSE_FEES;
 import static com.paytm.digital.education.explore.constants.CompareConstants.FEES_FOR;
 import static com.paytm.digital.education.explore.constants.CompareConstants.LOWER_COMPARED_TO;
+import static com.paytm.digital.education.explore.constants.CompareConstants.NO_OF_INSTITUTES_WITH_MIN_FEE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
 
 import com.paytm.digital.education.explore.database.entity.Course;
@@ -19,10 +19,12 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,19 +53,22 @@ public class CompareInsightFeeProcessor {
         long minimumOfMinFee = Long.MAX_VALUE;
         long maximumOfMinFee = Long.MIN_VALUE;
         for (Institute institute : instituteList) {
-            instituteIdNameMap.put(institute.getInstituteId(), institute.getOfficialName());
             List<Course> courses = instituteCoursesMap.get(institute.getInstituteId().intValue());
             if (!CollectionUtils.isEmpty(courses)) {
                 Long minFee = CompareUtil.getMinCourseFee(courses);
                 if (Objects.nonNull(minFee)) {
+                    instituteIdNameMap.put(institute.getInstituteId(), institute.getOfficialName());
                     instituteIdFeeMap.put(institute.getInstituteId(), minFee);
                     minimumOfMinFee = minimumOfMinFee > minFee ? minFee : minimumOfMinFee;
                     maximumOfMinFee = maximumOfMinFee < minFee ? minFee : maximumOfMinFee;
                 }
             }
         }
-
-        return getInsightMessages(instituteIdNameMap, instituteIdFeeMap, maximumOfMinFee, minimumOfMinFee);
+        if (instituteIdFeeMap.keySet().size() > 1) {
+            return getInsightMessages(instituteIdNameMap, instituteIdFeeMap, maximumOfMinFee,
+                    minimumOfMinFee);
+        }
+        return null;
     }
 
     private List<String> getInsightMessages(Map<Long, String> instituteIdNameMap,
@@ -74,9 +79,12 @@ public class CompareInsightFeeProcessor {
             if (areFeesAlmostSame(maxFee, minFee)) {
                 result.add(getAlmostSameFeeInsight(instituteNames));
             } else {
-                Long minFeeInstituteId = getMinFeeInstituteId(instituteIdFeeMap);
-                if (Objects.nonNull(minFeeInstituteId)) {
-                    result.add(getMinFeeInsightMessage(minFeeInstituteId, instituteIdNameMap));
+                Map<String,Long> minFeeInstituteInfo = getMinFeeInfo(instituteIdFeeMap);
+                Long minFeeInstituteId = minFeeInstituteInfo.get(INSTITUTE_ID);
+                Long minFeeInstituteCount = minFeeInstituteInfo.get(NO_OF_INSTITUTES_WITH_MIN_FEE);
+                if (minFeeInstituteCount == 1 && Objects.nonNull(minFeeInstituteId)) {
+                    Set<Long> instituteIds = instituteIdNameMap.keySet();
+                    result.add(getMinFeeInsightMessage(minFeeInstituteId, instituteIdNameMap, instituteIds));
                 }  else {
                     result.addAll(getMultipleInsightsForFee(instituteIdNameMap, instituteIdFeeMap));
                 }
@@ -85,31 +93,38 @@ public class CompareInsightFeeProcessor {
         return result;
     }
 
-    //This function is used to find multiple insights(sam fees, almost same fees) between every two institute
+    /*This function is used to find multiple insights(same fees, almost same fees) between every
+    ** two institute
+    */
     private List<String> getMultipleInsightsForFee(Map<Long, String> instituteIdNameMap,
             Map<Long, Long> instituteIdFeeMap) {
         List<Long> instituteIds = new ArrayList<>(instituteIdFeeMap.keySet());
         int instituteSize = instituteIds.size();
         List<String> result = new ArrayList<>();
         for (int i = 0; i < instituteSize; i++) {
+            int next = (i + 1) % instituteSize;
             if (areFeesAlmostSame(instituteIdFeeMap.get(instituteIds.get(i)),
-                    instituteIdFeeMap.get(instituteIds.get((i + 1) % instituteSize)))) {
+                    instituteIdFeeMap.get(instituteIds.get(next)))) {
                 result.add(getAlmostSameFeeInsight(Arrays.asList(instituteIdNameMap.get(instituteIds.get(i)),
-                        instituteIdNameMap.get(instituteIds.get((i + 1) % instituteSize)))));
-            } else if (areFeesSame(instituteIdFeeMap.get(instituteIds.get(i)),
-                    instituteIdFeeMap.get(instituteIds.get((i + 1) % instituteSize)))) {
-                result.add(getSameFeesInsight(Arrays.asList(instituteIdNameMap.get(instituteIds.get(i)),
-                        instituteIdNameMap.get(instituteIds.get((i + 1) % instituteSize)))));
+                        instituteIdNameMap.get(instituteIds.get(next)))));
+            } else  {
+                long minFeeInstituteId = 0;
+                minFeeInstituteId = instituteIdFeeMap.get(instituteIds.get(i))
+                        > instituteIdFeeMap.get(instituteIds.get(next)) ? instituteIds.get(next)
+                        : instituteIds.get(i);
+                List<Long> ids = Arrays.asList(instituteIds.get(i), instituteIds.get(next));
+                result.add(getMinFeeInsightMessage(minFeeInstituteId, instituteIdNameMap, ids));
             }
         }
         return result;
     }
 
-    private String getMinFeeInsightMessage(Long minFeeInstituteId, Map<Long, String> instituteIdNameMap) {
+    private String getMinFeeInsightMessage(Long minFeeInstituteId,
+            Map<Long, String> instituteIdNameMap, Collection<Long> instituteIds) {
         StringBuilder message = new StringBuilder();
         message.append(FEES_FOR).append(instituteIdNameMap.get(minFeeInstituteId)).append(LOWER_COMPARED_TO);
-        for (Long instituteId : instituteIdNameMap.keySet()) {
-            if (instituteId != minFeeInstituteId) {
+        for (Long instituteId : instituteIds) {
+            if (!instituteId.equals(minFeeInstituteId)) {
                 message.append(instituteIdNameMap.get(instituteId)).append(AND_STRING);
             }
         }
@@ -128,39 +143,25 @@ public class CompareInsightFeeProcessor {
         return message.toString();
     }
 
-    private String getSameFeesInsight(List<String> instituteNames) {
-        StringBuilder message = new StringBuilder();
-        if (!CollectionUtils.isEmpty(instituteNames)) {
-            message.append(FEES_FOR).append(instituteNames.get(0));
-            for (int i = 1; i < instituteNames.size(); i++) {
-                message.append(AND_STRING).append(instituteNames.get(i));
-            }
-            message.append(ARE_THE_SAME);
-        }
-        return message.toString();
-    }
-
-    private Long getMinFeeInstituteId(Map<Long, Long> instituteIdFeeMap) {
+    private Map<String,Long> getMinFeeInfo(Map<Long, Long> instituteIdFeeMap) {
         Long minFee = null;
         Long minFeeInstituteId = null;
+        int noOfInstituteWithMinFee = 0;
         for (Long instituteId : instituteIdFeeMap.keySet()) {
-            if (minFee == null || (minFee > instituteIdFeeMap.get(instituteId) && !areFeesAlmostSame(minFee,
-                    instituteIdFeeMap.get(instituteId)))) {
-                minFee = instituteIdFeeMap.get(instituteId);
-                minFeeInstituteId = instituteId;
+            if (minFee == null || minFee >= instituteIdFeeMap.get(instituteId)) {
+                if (minFee == null || !areFeesAlmostSame(minFee, instituteIdFeeMap.get(instituteId))) {
+                    minFee = instituteIdFeeMap.get(instituteId);
+                    minFeeInstituteId = instituteId;
+                    noOfInstituteWithMinFee = 1;
+                } else {
+                    noOfInstituteWithMinFee++;
+                }
             }
         }
-        return minFeeInstituteId;
-    }
-
-    // This function checks if difference of fees among institutes are <= 10% - almost same
-    private boolean areFeesAlmostSame(List<Long> fees) {
-        int size = fees.size();
-        boolean flag = true;
-        for (int i = 0; i < size; i++) {
-            flag = flag && areFeesAlmostSame(fees.get(i), fees.get((i + 1) % size));
-        }
-        return flag;
+        Map<String, Long> minFeeInstitutesInfo = new HashMap<>();
+        minFeeInstitutesInfo.put(INSTITUTE_ID, minFeeInstituteId);
+        minFeeInstitutesInfo.put(NO_OF_INSTITUTES_WITH_MIN_FEE, (long)noOfInstituteWithMinFee);
+        return minFeeInstitutesInfo;
     }
 
     //This function checks if difference of fees between two institutes are 10 percent
