@@ -29,6 +29,14 @@ public class CommonUtil {
         return ConfigProperties.getBaseUrl() + ConfigProperties.getLogoImagePrefix() + logo;
     }
 
+    public String getHighLightBaseUrl() {
+        return ConfigProperties.getBaseUrl() + ConfigProperties.getHighlightsIconPrefix();
+    }
+
+    public String getFacilitiesIconLink(String logo) {
+        return ConfigProperties.getBaseUrl() + ConfigProperties.getFacilitiesIconPrefix() + logo;
+    }
+
     public OfficialAddress getOfficialAddress(String state, String city, String phone, String url,
             com.paytm.digital.education.explore.database.entity.OfficialAddress officialAddress) {
         OfficialAddress address = new OfficialAddress();

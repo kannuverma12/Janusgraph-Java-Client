@@ -181,6 +181,7 @@ public interface ExploreConstants {
     String COURSE_PREFIX       = "course.";
     String INSTITUTE_PREFIX    = "institute.";
     String HIGHLIGHTS_TEMPLATE = "highlights";
+    String HIGHLIGHTS_BASE_URL = "highlight_base_url";
     String OVERALL_RANKING     = "overall";
 
     String MAXIMUM_PACKAGE_LABEL = "Maximum Package";
