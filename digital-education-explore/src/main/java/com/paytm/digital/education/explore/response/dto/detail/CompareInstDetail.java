@@ -68,4 +68,7 @@ public class CompareInstDetail {
     @JsonProperty("official_address")
     private OfficialAddress officialAddress;
 
+    @JsonProperty("shortlisted")
+    private boolean shortlisted;
+
 }

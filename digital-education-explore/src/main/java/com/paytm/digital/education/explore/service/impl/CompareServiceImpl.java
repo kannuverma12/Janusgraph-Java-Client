@@ -20,12 +20,14 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EXA
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SUBEXAM_ID;
+import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
 
 import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.entity.Placement;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import com.paytm.digital.education.explore.response.dto.detail.CompareDetail;
 import com.paytm.digital.education.explore.response.dto.detail.CompareInstDetail;
@@ -34,6 +36,7 @@ import com.paytm.digital.education.explore.response.dto.detail.Ranking;
 import com.paytm.digital.education.explore.service.CompareService;
 import com.paytm.digital.education.explore.service.helper.FacilityDataHelper;
 import com.paytm.digital.education.explore.service.helper.StreamDataHelper;
+import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.explore.utility.CompareUtil;
 import lombok.AllArgsConstructor;
@@ -65,10 +68,11 @@ public class CompareServiceImpl implements CompareService {
     private        StreamDataHelper           streamDataHelper;
     private        FacilityDataHelper         facilityDataHelper;
     private        CompareInsightsServiceImpl compareInsightsService;
+    private        SubscriptionDetailHelper   subscriptionDetailHelper;
 
     @Override
     public CompareDetail compareInstitutes(List<Long> instList, String fieldGroup,
-            List<String> fields) throws IOException, TimeoutException {
+            List<String> fields, Long userId) throws IOException, TimeoutException {
 
         CompareDetail compareDetail = new CompareDetail();
         List<CompareInstDetail> instituteDetailsList = new ArrayList<>();
@@ -103,6 +107,7 @@ public class CompareServiceImpl implements CompareService {
         if (!CollectionUtils.isEmpty(instituteDetailsList)) {
             updateRankings(instituteDetailsList);
             updatePlacememnts(instituteDetailsList);
+            updateShortist(instituteDetailsList, INSTITUTE, userId);
 
             Map<String, List<String>> keyInsights = compareInsightsService.getInstituteKeyInsights(dbInstituteList);
             if (!CollectionUtils.isEmpty(keyInsights)) {
@@ -409,5 +414,21 @@ public class CompareServiceImpl implements CompareService {
             return facMap;
         }
         return null;
+    }
+
+    private void updateShortist(List<CompareInstDetail> instDetailList,
+            EducationEntity educationEntity, Long userId) {
+        List<Long> instituteIds =
+                instDetailList.stream().map(instDetail -> instDetail.getInstituteId())
+                        .collect(Collectors.toList());
+        List<Long> subscribedEntities = subscriptionDetailHelper
+                .getSubscribedEntities(educationEntity, userId, instituteIds);
+        if (!CollectionUtils.isEmpty(subscribedEntities)) {
+            for (CompareInstDetail compareInstDetail : instDetailList) {
+                if (subscribedEntities.contains(compareInstDetail.getInstituteId())) {
+                    compareInstDetail.setShortlisted(true);
+                }
+            }
+        }
     }
 }
