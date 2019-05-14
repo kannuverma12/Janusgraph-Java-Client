@@ -70,12 +70,6 @@ public class CompareInsightRankProcessor {
                                 rankingDataMap2, rankingDataMap3);
                 if (!nirfmultipleInsights.isEmpty()) {
                     rankingInsights.addAll(nirfmultipleInsights);
-                } else {
-                    String nirfSingleInsight = getSingleInsightBySource(NIRF, instituteSize,
-                            instituteList, rankingDataMap1, rankingDataMap2, rankingDataMap3);
-                    if (StringUtils.isNotBlank(nirfSingleInsight)) {
-                        rankingInsights.add(nirfSingleInsight);
-                    }
                 }
             }
             return rankingInsights;
@@ -104,7 +98,7 @@ public class CompareInsightRankProcessor {
         } else if (Objects.nonNull(rankingDataMap1.get(rankingSource).getScore())
                 && Objects.nonNull(rankingDataMap2.get(rankingSource).getScore())) {
             if (Double.compare(rankingDataMap1.get(rankingSource).getScore(),
-                    rankingDataMap2.get(rankingSource).getScore()) < 0) {
+                    rankingDataMap2.get(rankingSource).getScore()) > 0) {
                 return institute1.getOfficialName() + IS_RANKED_HIGHER + institute2
                         .getOfficialName() + BY + rankingSource;
             } else {
@@ -160,12 +154,12 @@ public class CompareInsightRankProcessor {
                     } else if (scorePresent
                             &&
                             Double.compare(maxScore, rankingDataMaps[i].get(commonKey).getScore())
-                                    < 0) {
+                                    > 0) {
                         maxScore = rankingDataMaps[i].get(commonKey).getScore();
                     }
                 } else if (scorePresent && rankingDataMaps[i].get(commonKey).getScore() != null) {
                     if (Double.compare(maxScore, rankingDataMaps[i].get(commonKey).getScore())
-                            < 0) {
+                            > 0) {
                         maxScore = rankingDataMaps[i].get(commonKey).getScore();
                         maxIndex = i;
                         rankPresent = false;
@@ -199,13 +193,12 @@ public class CompareInsightRankProcessor {
         for (int i = 1; i < instituteSize; i++) {
             commonKeys.retainAll(rankingDataMaps[i].keySet());
         }
-        return null;
+        return commonKeys;
     }
 
     private List<String> getMultipleInsights(int instituteSize, List<Institute> instituteList,
             Map<String, Ranking>... rankingDataMaps) {
         List<String> result = new ArrayList<>();
-        boolean nirfIncluded = false;
         for (int i = 0; i < instituteSize; i++) {
             Set<String> rankingKeys = new HashSet<>(rankingDataMaps[i].keySet());
             Set<String> instituteKeys = rankingDataMaps[(i + 1) % instituteSize].keySet();
@@ -213,9 +206,6 @@ public class CompareInsightRankProcessor {
             List<String> commonKeys = new ArrayList<>(rankingKeys);
             if (!CollectionUtils.isEmpty(commonKeys)) {
                 Collections.sort(commonKeys, rankingSourceComparator);
-                if (commonKeys.contains(NIRF)) {
-                    nirfIncluded = true;
-                }
                 for (String rankingSource : commonKeys) {
                     String rankInsight = getInsightBetweenTwoInstitutes(rankingSource, rankingDataMaps[i],
                             rankingDataMaps[(i + 1) % instituteSize], instituteList.get(i),
@@ -225,14 +215,6 @@ public class CompareInsightRankProcessor {
                         break;
                     }
                 }
-            }
-        }
-        if (nirfIncluded == false) {
-            String nirfSingleInsight = getSingleInsightBySource(NIRF, instituteSize, instituteList,
-                    rankingDataMaps[0],
-                    rankingDataMaps[1], rankingDataMaps[2]);
-            if (StringUtils.isNotBlank(nirfSingleInsight)) {
-                result.add(nirfSingleInsight);
             }
         }
         return result;
@@ -255,25 +237,5 @@ public class CompareInsightRankProcessor {
             }
         }
         return result;
-    }
-
-    //This method checks for single insights for given source
-    private String getSingleInsightBySource(String source, int instituteSize,
-            List<Institute> instituteList,
-            Map<String, Ranking>... rankingDataMaps) {
-        for (int i = 0; i < instituteSize; i++) {
-            if (rankingDataMaps[i].containsKey(source)) {
-                if (Objects.nonNull(rankingDataMaps[i].get(source).getRank())) {
-                    return instituteList.get(i).getOfficialName() + IS_RANKED
-                            + rankingDataMaps[i].get(source)
-                            .getRank() + AS_PER + source;
-                } else if (StringUtils.isNotBlank(rankingDataMaps[i].get(source).getRating())) {
-                    return instituteList.get(i).getOfficialName() + IS_RATED
-                            + rankingDataMaps[i].get(source)
-                            .getRating() + AS_PER + source;
-                }
-            }
-        }
-        return null;
     }
 }
