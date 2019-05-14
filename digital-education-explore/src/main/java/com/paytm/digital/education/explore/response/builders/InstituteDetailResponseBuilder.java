@@ -113,7 +113,9 @@ public class InstituteDetailResponseBuilder {
         instituteDetail.setPlacements(placementDataHelper.getSalariesPlacements(institute));
         instituteDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName));
         instituteDetail.setBanners(bannerDataHelper.getBannerData(entityName));
-        instituteDetail.setClient(institute.isClient());
+        if (institute.getIsClient() == 1) {
+            instituteDetail.setClient(true);
+        }
         instituteDetail.setWidgets(similarInstituteService.getSimilarInstitutes(institute));
         if ((!CollectionUtils.isEmpty(institute.getNotableAlumni()))) {
             instituteDetail.setNotableAlumni(getNotableAlumni(institute.getNotableAlumni()));

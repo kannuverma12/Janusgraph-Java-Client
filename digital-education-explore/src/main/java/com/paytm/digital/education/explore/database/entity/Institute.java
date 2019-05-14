@@ -124,7 +124,7 @@ public class Institute {
     private Integer totalEnrollments;
 
     @Field("is_client")
-    private boolean isClient;
+    private int isClient;
 
     public Institute(String commonName, Long instituteId) {
         this.commonName = commonName;
