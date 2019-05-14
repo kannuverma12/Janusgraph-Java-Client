@@ -380,7 +380,7 @@ public class CompareServiceImpl implements CompareService {
 
     private Set<String> getCourseLevel(List<Course> courses) {
         Set<String> courseLevel = courses.stream().filter(c -> Objects.nonNull(c.getCourseLevel()))
-                .map(c -> c.getCourseLevel().name())
+                .map(c -> c.getCourseLevel().getDisplayName())
                 .collect(Collectors.toSet());
         return courseLevel;
     }
