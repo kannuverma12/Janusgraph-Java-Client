@@ -106,7 +106,7 @@ public class FormData {
     private String merchantId;
 
     @Field("status")
-    private String status;
+    private String status; // todo: add list of status supported
 
     @Field("formFulfilment")
     private FormFulfilment formFulfilment;

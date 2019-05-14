@@ -84,7 +84,7 @@ public class CandidateDetails {
 
     private String maritalStatus;
 
-    private String amount;
+    private Float amount;
 
     private CandidateDocument photo;
 
