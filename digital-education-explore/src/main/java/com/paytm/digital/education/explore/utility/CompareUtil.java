@@ -7,8 +7,10 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.OVE
 
 import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.CourseFee;
+import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.response.dto.detail.Ranking;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.HashMap;
@@ -93,6 +95,13 @@ public class CompareUtil {
         r.setYear(dbRanking.getYear());
         r.setRating(dbRanking.getRating());
         return r;
+    }
+
+    public static String getInstituteName(Institute institute) {
+        if (StringUtils.isNotBlank(institute.getCommonName())) {
+            return institute.getCommonName();
+        }
+        return institute.getOfficialName();
     }
 
 }

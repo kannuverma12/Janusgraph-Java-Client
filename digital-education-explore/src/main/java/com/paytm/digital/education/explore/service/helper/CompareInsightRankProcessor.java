@@ -4,15 +4,13 @@ import static com.paytm.digital.education.enums.Number.ONE;
 import static com.paytm.digital.education.enums.Number.THREE;
 import static com.paytm.digital.education.enums.Number.TWO;
 import static com.paytm.digital.education.explore.constants.CompareConstants.AND_STRING;
-import static com.paytm.digital.education.explore.constants.CompareConstants.AS_PER;
 import static com.paytm.digital.education.explore.constants.CompareConstants.BY;
 import static com.paytm.digital.education.explore.constants.CompareConstants.CAREERS360;
 import static com.paytm.digital.education.explore.constants.CompareConstants.COMPARE_CACHE_NAMESPACE;
 import static com.paytm.digital.education.explore.constants.CompareConstants.HAS_BEEN_RANKED;
-import static com.paytm.digital.education.explore.constants.CompareConstants.IS_RANKED;
 import static com.paytm.digital.education.explore.constants.CompareConstants.IS_RANKED_HIGHER;
-import static com.paytm.digital.education.explore.constants.CompareConstants.IS_RATED;
 import static com.paytm.digital.education.explore.constants.CompareConstants.NIRF;
+import static com.paytm.digital.education.explore.utility.CompareUtil.getInstituteName;
 
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.enums.RankingSource;
@@ -85,25 +83,23 @@ public class CompareInsightRankProcessor {
     public String getInsightBetweenTwoInstitutes(String rankingSource,
             Map<String, Ranking> rankingDataMap1,
             Map<String, Ranking> rankingDataMap2, Institute institute1, Institute institute2) {
+        String instituteName1 = getInstituteName(institute1);
+        String instituteName2 = getInstituteName(institute2);
         if (Objects.nonNull(rankingDataMap1.get(rankingSource).getRank())
                 && Objects.nonNull(rankingDataMap2.get(rankingSource).getRank())) {
             if (rankingDataMap1.get(rankingSource).getRank() < rankingDataMap2.get(rankingSource)
                     .getRank()) {
-                return institute1.getOfficialName() + IS_RANKED_HIGHER + institute2
-                        .getOfficialName() + BY + rankingSource;
+                return instituteName1 + IS_RANKED_HIGHER + instituteName2 + BY + rankingSource;
             } else {
-                return institute2.getOfficialName() + IS_RANKED_HIGHER + institute1
-                        .getOfficialName() + BY + rankingSource;
+                return instituteName2 + IS_RANKED_HIGHER + instituteName1 + BY + rankingSource;
             }
         } else if (Objects.nonNull(rankingDataMap1.get(rankingSource).getScore())
                 && Objects.nonNull(rankingDataMap2.get(rankingSource).getScore())) {
             if (Double.compare(rankingDataMap1.get(rankingSource).getScore(),
                     rankingDataMap2.get(rankingSource).getScore()) > 0) {
-                return institute1.getOfficialName() + IS_RANKED_HIGHER + institute2
-                        .getOfficialName() + BY + rankingSource;
+                return instituteName1 + IS_RANKED_HIGHER + instituteName2 + BY + rankingSource;
             } else {
-                return institute2.getOfficialName() + IS_RANKED_HIGHER + institute1
-                        .getOfficialName() + BY + rankingSource;
+                return instituteName2 + IS_RANKED_HIGHER + instituteName1 + BY + rankingSource;
             }
         }
         return null;
@@ -113,12 +109,12 @@ public class CompareInsightRankProcessor {
     public List<String> getRankingInsightForOneInstitute(Map<String, Ranking> rankingDataMap,
             Institute institute) {
         List<String> result = new ArrayList<>();
+        String instituteName = getInstituteName(institute);
         if (rankingDataMap.containsKey(NIRF)) {
-            result.add(institute.getOfficialName() + HAS_BEEN_RANKED + rankingDataMap.get(NIRF)
+            result.add(instituteName + HAS_BEEN_RANKED + rankingDataMap.get(NIRF)
                     .getRank() + BY + NIRF);
         } else if (rankingDataMap.containsKey(CAREERS360)) {
-            result.add(
-                    institute.getOfficialName() + HAS_BEEN_RANKED + rankingDataMap.get(CAREERS360)
+            result.add(instituteName + HAS_BEEN_RANKED + rankingDataMap.get(CAREERS360)
                             .getRank()
                             + BY + CAREERS360);
         }
@@ -130,8 +126,8 @@ public class CompareInsightRankProcessor {
             Map<String, Ranking>... rankingDataMaps) {
         List<String> result = new ArrayList<>();
         List<String> instituteNames =
-                instituteList.stream().map(institute -> institute.getOfficialName()).collect(
-                        Collectors.toList());
+                instituteList.stream().map(institute -> getInstituteName(institute))
+                        .collect(Collectors.toList());
         List<String> commonKeys = new ArrayList<>(rankingKeys);
         Collections.sort(commonKeys, rankingSourceComparator);
         for (String commonKey : commonKeys) {

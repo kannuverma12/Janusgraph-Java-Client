@@ -15,6 +15,7 @@ import static com.paytm.digital.education.explore.constants.CompareConstants.MAX
 import static com.paytm.digital.education.explore.constants.CompareConstants.MEDIAN;
 import static com.paytm.digital.education.explore.constants.CompareConstants.MINIMUM;
 import static com.paytm.digital.education.explore.constants.CompareConstants.PLACEMENTS_OF;
+import static com.paytm.digital.education.explore.utility.CompareUtil.getInstituteName;
 
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.entity.Placement;
@@ -59,7 +60,7 @@ public class CompareInsightPlacementProcessor {
         Pair<Integer, String> commonMaxIndex = getIndexForCommonData(size, placementMap1, placementMap2, placementMap3);
 
         List<String> instituteNames =
-                instituteList.stream().map(institute -> institute.getOfficialName()).collect(Collectors.toList());
+                instituteList.stream().map(institute -> getInstituteName(institute)).collect(Collectors.toList());
         if (commonMaxIndex.getKey() != -1) {
             return Arrays.asList(getCommonInsightMessage(commonMaxIndex.getKey(), size, commonMaxIndex.getValue(),
                     instituteNames));
@@ -71,17 +72,18 @@ public class CompareInsightPlacementProcessor {
     public String getPlacementInsightForOneInstitute(
             Map<String, Placement> placementDataMap,
             Institute institute) {
+        String instituteName = getInstituteName(institute);
         if (placementDataMap.containsKey(MEDIAN)) {
-            return institute.getOfficialName() + HAS_MEDIAN_PLACEMENT_OF + placementDataMap
+            return instituteName + HAS_MEDIAN_PLACEMENT_OF + placementDataMap
                     .get(MEDIAN).getMedian();
         } else if (placementDataMap.containsKey(AVERAGE)) {
-            return institute.getOfficialName() + HAS_AVERAGE_PLACEMENT_OF + placementDataMap
+            return instituteName + HAS_AVERAGE_PLACEMENT_OF + placementDataMap
                     .get(AVERAGE).getAverage();
         } else if (placementDataMap.containsKey(MAXIMUM)) {
-            return institute.getOfficialName() + HAS_MAXIMUM_PLACEMENT_OF + placementDataMap
+            return instituteName + HAS_MAXIMUM_PLACEMENT_OF + placementDataMap
                     .get(MAXIMUM).getMaximum();
         } else if (placementDataMap.containsKey(MINIMUM)) {
-            return institute.getOfficialName() + HAS_MINIMUM_PLACEMENT_OF + placementDataMap
+            return instituteName + HAS_MINIMUM_PLACEMENT_OF + placementDataMap
                     .get(MINIMUM).getMinimum();
         }
         return null;
@@ -92,8 +94,8 @@ public class CompareInsightPlacementProcessor {
     public String getPlacementInsightsBetweenTwoInstitutes(Set<String> commonKeys,
             Map<String, Placement> placementDataMap1, Map<String, Placement> placementDataMap2, Institute institute1,
             Institute institute2) {
-        String firstInstitute = institute1.getOfficialName();
-        String secondInstitute = institute2.getOfficialName();
+        String firstInstitute = getInstituteName(institute1);
+        String secondInstitute = getInstituteName(institute2);
         if (commonKeys.contains(MEDIAN)) {
             return getInsightMessageForTwoInstitutes(MEDIAN, placementDataMap1.get(MEDIAN).getMedian(),
                     placementDataMap2.get(MEDIAN).getMedian(), firstInstitute, secondInstitute);

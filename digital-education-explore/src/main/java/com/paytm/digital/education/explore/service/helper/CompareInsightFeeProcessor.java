@@ -7,6 +7,7 @@ import static com.paytm.digital.education.explore.constants.CompareConstants.FEE
 import static com.paytm.digital.education.explore.constants.CompareConstants.LOWER_COMPARED_TO;
 import static com.paytm.digital.education.explore.constants.CompareConstants.NO_OF_INSTITUTES_WITH_MIN_FEE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.explore.utility.CompareUtil.getInstituteName;
 
 import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Institute;
@@ -57,7 +58,7 @@ public class CompareInsightFeeProcessor {
             if (!CollectionUtils.isEmpty(courses)) {
                 Long minFee = CompareUtil.getMinCourseFee(courses);
                 if (Objects.nonNull(minFee)) {
-                    instituteIdNameMap.put(institute.getInstituteId(), institute.getOfficialName());
+                    instituteIdNameMap.put(institute.getInstituteId(), getInstituteName(institute));
                     instituteIdFeeMap.put(institute.getInstituteId(), minFee);
                     minimumOfMinFee = minimumOfMinFee > minFee ? minFee : minimumOfMinFee;
                     maximumOfMinFee = maximumOfMinFee < minFee ? minFee : maximumOfMinFee;
