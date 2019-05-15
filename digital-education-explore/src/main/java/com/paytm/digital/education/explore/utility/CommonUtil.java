@@ -226,4 +226,16 @@ public class CommonUtil {
         }
         return true;
     }
+
+    public boolean areAllDoubleEqual(List<Double> doubleValues) {
+        if (!CollectionUtils.isEmpty(doubleValues)) {
+            Double val = doubleValues.get(0);
+            for (int i = 1; i < doubleValues.size(); i++) {
+                if (Double.compare(val, doubleValues.get(i)) != 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }

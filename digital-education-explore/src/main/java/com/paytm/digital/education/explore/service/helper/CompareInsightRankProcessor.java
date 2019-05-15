@@ -15,6 +15,7 @@ import static com.paytm.digital.education.explore.utility.CompareUtil.getInstitu
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.enums.RankingSource;
 import com.paytm.digital.education.explore.response.dto.detail.Ranking;
+import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.explore.utility.CompareUtil;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -130,7 +131,13 @@ public class CompareInsightRankProcessor {
                         .collect(Collectors.toList());
         List<String> commonKeys = new ArrayList<>(rankingKeys);
         Collections.sort(commonKeys, rankingSourceComparator);
+        List<String> skipKeyList = new ArrayList<>();
         for (String commonKey : commonKeys) {
+            if (areAllRanksEqual(instituteSize, commonKey, rankingDataMaps)) {
+                skipKeyList.add(commonKey);
+                continue;
+            }
+
             if (!CollectionUtils.isEmpty(result)) {
                 break;
             }
@@ -163,6 +170,9 @@ public class CompareInsightRankProcessor {
                 }
             }
             result.add(getCommonInsightMessage(instituteSize, maxIndex, instituteNames, commonKey));
+        }
+        if (skipKeyList.size() > 0) {
+            commonKeys.removeAll(skipKeyList);
         }
         return result;
     }
@@ -233,5 +243,25 @@ public class CompareInsightRankProcessor {
             }
         }
         return result;
+    }
+
+    private boolean areAllRanksEqual(int instituteSize, String source, Map<String, Ranking>... rankingDataMaps) {
+        List<Integer> rankingData = new ArrayList<>();
+        List<Double> scoreValues = new ArrayList<>();
+        for (int i = 0; i < instituteSize; i++) {
+            if (Objects.nonNull(rankingDataMaps[i].get(source).getRank())) {
+                rankingData.add(rankingDataMaps[i].get(source).getRank());
+            }
+            if (Objects.nonNull(rankingDataMaps[i].get(source).getScore())) {
+                scoreValues.add(rankingDataMaps[i].get(source).getScore());
+            }
+        }
+        if ((rankingData.size() != instituteSize) && (scoreValues.size() != instituteSize)) {
+            return false;
+        }
+        if (CommonUtil.areAllEqual(rankingData)) {
+            return CommonUtil.areAllDoubleEqual(scoreValues);
+        }
+        return false;
     }
 }
