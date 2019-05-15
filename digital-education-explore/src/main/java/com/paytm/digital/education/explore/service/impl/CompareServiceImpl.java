@@ -76,7 +76,6 @@ public class CompareServiceImpl implements CompareService {
 
         CompareDetail compareDetail = new CompareDetail();
         List<CompareInstDetail> instituteDetailsList = new ArrayList<>();
-        List<Institute> dbInstituteList = new ArrayList<>();
         List<String> fieldGroupList = getFieldGroups(fieldGroup);
 
         if (!CollectionUtils.isEmpty(instList)) {
@@ -97,9 +96,13 @@ public class CompareServiceImpl implements CompareService {
                 }
             }
 
+            Map<String, List<String>> keyInsights = compareInsightsService.getInstituteKeyInsights(finalInstituteList);
+            if (!CollectionUtils.isEmpty(keyInsights)) {
+                compareDetail.setKeyInsights(keyInsights);
+            }
+
             for (Institute institute : finalInstituteList) {
                 CompareInstDetail instDetail = getCompareInstDetail(institute);
-                dbInstituteList.add(institute);
                 instituteDetailsList.add(instDetail);
             }
         }
@@ -108,11 +111,6 @@ public class CompareServiceImpl implements CompareService {
             updateRankings(instituteDetailsList);
             updatePlacememnts(instituteDetailsList);
             updateShortist(instituteDetailsList, INSTITUTE, userId);
-
-            Map<String, List<String>> keyInsights = compareInsightsService.getInstituteKeyInsights(dbInstituteList);
-            if (!CollectionUtils.isEmpty(keyInsights)) {
-                compareDetail.setKeyInsights(keyInsights);
-            }
 
             compareDetail.setInstitutes(instituteDetailsList);
         }
