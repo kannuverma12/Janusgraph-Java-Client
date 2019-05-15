@@ -69,6 +69,9 @@ public class InstituteSearch {
     @JsonProperty("max_rank")
     private long maxRank;
 
+    @JsonProperty("is_client")
+    private boolean isClient;
+
     @JsonProperty("courses")
     private List<NestedCourseSearch> courses;
 }

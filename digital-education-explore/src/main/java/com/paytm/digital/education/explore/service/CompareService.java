@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 public interface CompareService {
-    CompareDetail compareInstitutes(List<Long> instList, String fieldGroup, List<String> fields)
-            throws IOException, TimeoutException;
+    CompareDetail compareInstitutes(List<Long> instList, String fieldGroup, List<String> fields,
+            Long userId) throws IOException, TimeoutException;
 }

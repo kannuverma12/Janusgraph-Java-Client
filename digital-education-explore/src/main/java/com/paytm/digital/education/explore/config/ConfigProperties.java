@@ -10,6 +10,8 @@ public class ConfigProperties {
 
     private static String mediaBaseUrl;
     private static String logoImagePrefix;
+    private static String facilitiesIconPrefix;
+    private static String highlightsIconPrefix;
     
     @Value("${education.asset.baseurl}")
     public void setBaseUrl(String baseUrl) {
@@ -20,6 +22,16 @@ public class ConfigProperties {
     public void setLogoImagePrefix(String logoPrefix) {
         logoImagePrefix = logoPrefix;
     }
+
+    @Value("${institute.facilities.icon.prefix}")
+    public void setFacilitiesIconPrefix(String iconPrefix) {
+        facilitiesIconPrefix = iconPrefix;
+    }
+
+    @Value("${highlights.icon.prefix}")
+    public void setHighlightsIconPrefix(String iconPrefix) {
+        highlightsIconPrefix = iconPrefix;
+    }
     
     public static String getBaseUrl() {
         return mediaBaseUrl;
@@ -27,6 +39,14 @@ public class ConfigProperties {
     
     public static String getLogoImagePrefix() {
         return logoImagePrefix;
+    }
+
+    public static String getFacilitiesIconPrefix() {
+        return facilitiesIconPrefix;
+    }
+
+    public static String getHighlightsIconPrefix() {
+        return highlightsIconPrefix;
     }
 
 }

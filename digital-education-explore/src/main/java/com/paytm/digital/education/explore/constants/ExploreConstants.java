@@ -1,26 +1,31 @@
 package com.paytm.digital.education.explore.constants;
 
+import com.paytm.digital.education.explore.enums.RankingSource;
 import freemarker.template.Configuration;
 import freemarker.template.Version;
 
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 
 public interface ExploreConstants {
 
     ////// Common constants /////////////
-    String INSTITUTE_ID             = "institute_id";
-    String EXAM_ID                  = "exam_id";
-    String COURSE_ID                = "course_id";
-    String ENTITY_TYPE              = "entity_type";
-    int    DEFAULT_OFFSET           = 0;
-    int    DEFAULT_SIZE             = 10;
-    int    DEFAULT_AUTOSUGGEST_SIZE = 4;
+    String INSTITUTE_ID                = "institute_id";
+    String EXAM_ID                     = "exam_id";
+    String COURSE_ID                   = "course_id";
+    String ENTITY_TYPE                 = "entity_type";
+    int    DEFAULT_OFFSET              = 0;
+    int    DEFAULT_SIZE                = 10;
+    int    DEFAULT_AUTOSUGGEST_SIZE    = 4;
+    int    DEFAULT_AUTOSUGGEST_COMPARE = 10;
 
     ///// Exam Detail//////////
     String TENTATIVE     = "tentative";
     String NON_TENTATIVE = "non_tentative";
     String APPLICATION   = "APPLICATION";
     String EXAM          = "EXAM";
+    String PRECEDENCE    = "precedence";
+    String DEFAULT       = "DEFAULT";
 
     String GROUP_NAME   = "name";
     String GROUP_ENTITY = "entity";
@@ -36,7 +41,7 @@ public interface ExploreConstants {
     int    AUTOSUGGEST_MIN_CHARS     = 3;
     int    AUTOSUGGEST_MAX_CHARS     = 200;
     int    SEARCH_REQUEST_MAX_OFFSET = 9950;
-    int    SEARCH_REQUEST_MAX_LIMIT  = 50;
+    int    SEARCH_REQUEST_MAX_LIMIT  = 500;
     String AUTOSUGGEST_OFFICIAL_NAME = "official_name";
     String AUTOSUGGEST_NAMES         = "names";
     String RESULT                    = "results";
@@ -153,6 +158,7 @@ public interface ExploreConstants {
     String RANKING_STREAM_NAMESPACE    = "ranking_stream";
     String FACILITIES_MASTER_LIST      = "master_list";
 
+    String COURSE_ALPHABETICAL_SORT_KEY     = "alphabetical";
     String STREAM_COURSE                    = "domain_name";
     String DEGREE_COURSE                    = "degree";
     String BRANCH_COURSE                    = "branch";
@@ -160,6 +166,7 @@ public interface ExploreConstants {
     String INSTITUTE_NAME_COURSE            = "institute_official_name";
     String SEATS_COURSE                     = "seats";
     String FEE_COURSE                       = "fees";
+    String NAME_COURSE                      = "name";
     String DURATION_COURSE                  = "duration_in_months";
     String PARENT_INSTITUTE_ID_COURSE       = "parent_institute_id";
     String INSTITUTE_ID_COURSE              = "institute_id";
@@ -175,6 +182,7 @@ public interface ExploreConstants {
     String COURSE_PREFIX       = "course.";
     String INSTITUTE_PREFIX    = "institute.";
     String HIGHLIGHTS_TEMPLATE = "highlights";
+    String HIGHLIGHTS_BASE_URL = "highlight_base_url";
     String OVERALL_RANKING     = "overall";
 
     String MAXIMUM_PACKAGE_LABEL = "Maximum Package";
@@ -222,6 +230,18 @@ public interface ExploreConstants {
     String CONSTITUENT_OF       = "Constituent Of";
     String GOVERNED_BY          = "Governed By";
     String INSTITUTE_TYPE       = "Institute Governance";
+
+    String EQ_OPERATOR               = "$eq";
+    String IN_OPERATOR               = "$in";
+    String EMPTY_SQUARE_BRACKETS     = "[]";
+    String STREAMS                   = "streams";
+    String SIMILAR_COLLEGES          = "Similar Colleges";
+    String SIMILAR_COLLEGE_NAMESPACE = "similar_colleges";
+    int    TOTAL_SIMILAR_COLLEGE     = 4;
+    int    NO_OF_LOWER_RANK_COLLEGE  = 2;
+    int    NO_OF_HIGHER_RANK_COLLEGE = 2;
+    int    MAX_STREAMS               = 2;
+    int    COLLEGES_PER_STREAM       = 2;
 
     String COLLEGE_FOCUS = "colleges_focus";
     String TOP_COLLEGES  = "top_colleges";

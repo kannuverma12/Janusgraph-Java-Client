@@ -29,6 +29,14 @@ public class CommonUtil {
         return ConfigProperties.getBaseUrl() + ConfigProperties.getLogoImagePrefix() + logo;
     }
 
+    public String getHighLightBaseUrl() {
+        return ConfigProperties.getBaseUrl() + ConfigProperties.getHighlightsIconPrefix();
+    }
+
+    public String getFacilitiesIconLink(String logo) {
+        return ConfigProperties.getBaseUrl() + ConfigProperties.getFacilitiesIconPrefix() + logo;
+    }
+
     public OfficialAddress getOfficialAddress(String state, String city, String phone, String url,
             com.paytm.digital.education.explore.database.entity.OfficialAddress officialAddress) {
         OfficialAddress address = new OfficialAddress();
@@ -205,5 +213,29 @@ public class CommonUtil {
             }
         }
         return maxIndex;
+    }
+
+    public boolean areAllEqual(List<Integer> data) {
+        if (!CollectionUtils.isEmpty(data)) {
+            int val = data.get(0);
+            for (int i = 1; i < data.size(); i++) {
+                if (data.get(i) != val) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public boolean areAllDoubleEqual(List<Double> doubleValues) {
+        if (!CollectionUtils.isEmpty(doubleValues)) {
+            Double val = doubleValues.get(0);
+            for (int i = 1; i < doubleValues.size(); i++) {
+                if (Double.compare(val, doubleValues.get(i)) != 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

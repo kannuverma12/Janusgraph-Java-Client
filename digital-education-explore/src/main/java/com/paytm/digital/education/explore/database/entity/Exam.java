@@ -20,64 +20,67 @@ public class Exam {
 
     @Id
     @Field("_id")
-    private String             id;
+    private String id;
 
     @Field("conducting_body")
-    private String             conductingBody;
+    private String conductingBody;
 
     @Field("exam_category")
-    private String             examCategory;
+    private String examCategory;
 
     @Field("about_exam")
-    private String             aboutExam;
+    private String aboutExam;
 
     @Field("documents_counselling")
-    private List<String>       documentsCounselling;
+    private List<String> documentsCounselling;
 
     @Field("documents_exam")
-    private List<String>       documentsExam;
+    private List<String> documentsExam;
 
     @Field("frequency_of_conduct")
-    private Integer            frequencyOfConduct;
+    private Integer frequencyOfConduct;
 
     @Field("exam_id")
-    private Long               examId;
+    private Long examId;
 
     @Field("instances")
-    private List<Instance>     instances;
+    private List<Instance> instances;
 
     @Field("linguistic_medium_exam")
-    private List<String>       linguisticMediumExam;
+    private List<String> linguisticMediumExam;
 
     @Field("level_of_exam")
-    private String             levelOfExam;
+    private String levelOfExam;
 
     @Field("exam_full_name")
-    private String             examFullName;
+    private String examFullName;
 
     @Field("exam_short_name")
-    private String             examShortName;
+    private String examShortName;
 
     @Field("synonyms")
-    private List<String>       synonyms;
+    private List<String> synonyms;
 
     @Field("contact_number")
-    private String             contactNumber;
+    private String contactNumber;
 
     @Field("published_status")
-    private PublishStatus      publishedStatus;
+    private PublishStatus publishedStatus;
 
     @Field("subexams")
     private ArrayList<SubExam> subExams;
 
     @Field("official_url")
-    private String             officialUrl;
+    private String officialUrl;
 
     @Field("exam_duration")
-    private Float              examDuration;
+    private Float examDuration;
 
     @Field("syllabus")
-    private List<Syllabus>     syllabus;
+    private List<Syllabus> syllabus;
+
+    @Field("domains")
+    private List<String> domains;
 
     public Exam(long examId) {
         this.examId = examId;
