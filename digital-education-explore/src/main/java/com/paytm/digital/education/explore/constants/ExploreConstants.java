@@ -10,13 +10,14 @@ import java.util.Comparator;
 public interface ExploreConstants {
 
     ////// Common constants /////////////
-    String INSTITUTE_ID             = "institute_id";
-    String EXAM_ID                  = "exam_id";
-    String COURSE_ID                = "course_id";
-    String ENTITY_TYPE              = "entity_type";
-    int    DEFAULT_OFFSET           = 0;
-    int    DEFAULT_SIZE             = 10;
-    int    DEFAULT_AUTOSUGGEST_SIZE = 4;
+    String INSTITUTE_ID                = "institute_id";
+    String EXAM_ID                     = "exam_id";
+    String COURSE_ID                   = "course_id";
+    String ENTITY_TYPE                 = "entity_type";
+    int    DEFAULT_OFFSET              = 0;
+    int    DEFAULT_SIZE                = 10;
+    int    DEFAULT_AUTOSUGGEST_SIZE    = 4;
+    int    DEFAULT_AUTOSUGGEST_COMPARE = 10;
 
     ///// Exam Detail//////////
     String TENTATIVE     = "tentative";

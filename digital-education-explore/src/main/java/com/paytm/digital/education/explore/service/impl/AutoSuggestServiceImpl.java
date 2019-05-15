@@ -4,6 +4,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.AUT
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTOSUGGEST_INDEX;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTOSUGGEST_NAMES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_AUTOSUGGEST_SIZE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_AUTOSUGGEST_COMPARE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_OFFSET;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE_CITY;
@@ -65,15 +66,21 @@ public class AutoSuggestServiceImpl {
 
     public AutoSuggestResponse getSuggestions(String searchTerm, List<EducationEntity> entities,
             List<UserAction> actions, Long userId) {
-        AutoSuggestResponse autoSuggestResponse = getSuggestResults(searchTerm, entities);
+        AutoSuggestResponse autoSuggestResponse = null;
+        if (!CollectionUtils.isEmpty(actions) && actions.contains(UserAction.SHORTLIST)) {
+            autoSuggestResponse =
+                    getSuggestResults(searchTerm, entities, DEFAULT_AUTOSUGGEST_COMPARE);
+        } else {
+            autoSuggestResponse = getSuggestResults(searchTerm, entities, DEFAULT_AUTOSUGGEST_SIZE);
+        }
         groupEntityBasedOnActions(autoSuggestResponse, actions, userId);
         return autoSuggestResponse;
     }
 
     @Cacheable(value = "autosuggest")
     public AutoSuggestResponse getSuggestResults(String searchTerm,
-            List<EducationEntity> entities) {
-        ElasticRequest elasticRequest = buildAutoSuggestRequest(searchTerm, entities);
+            List<EducationEntity> entities, int size) {
+        ElasticRequest elasticRequest = buildAutoSuggestRequest(searchTerm, entities, size);
         ElasticResponse<AutoSuggestEsData> response = null;
         try {
             response =
@@ -86,13 +93,14 @@ public class AutoSuggestServiceImpl {
         return buildAutoSuggestResponse(response);
     }
 
-    private ElasticRequest buildAutoSuggestRequest(String term, List<EducationEntity> entities) {
+    private ElasticRequest buildAutoSuggestRequest(String term, List<EducationEntity> entities,
+            int size) {
         ElasticRequest elasticRequest = new ElasticRequest();
         elasticRequest.setIndex(AUTOSUGGEST_INDEX);
         elasticRequest.setAnalyzer(AUTOSUGGEST_ANALYZER);
         elasticRequest.setQueryTerm(term);
         elasticRequest.setOffSet(DEFAULT_OFFSET);
-        elasticRequest.setLimit(DEFAULT_AUTOSUGGEST_SIZE);
+        elasticRequest.setLimit(size);
         elasticRequest.setAggregationRequest(true);
         String filterFieldPath = suggestClassLevelMap.get(ENTITY_TYPE);
         boolean alphabeticalSorting = true;
