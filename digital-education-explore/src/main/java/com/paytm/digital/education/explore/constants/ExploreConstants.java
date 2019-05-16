@@ -246,4 +246,7 @@ public interface ExploreConstants {
     String COLLEGE_FOCUS = "colleges_focus";
     String TOP_COLLEGES  = "top_colleges";
     String ICON          = "icon";
+    String LOCATIONS     = "locations";
+    String BANNER_MID    = "banner_mid";
+    String IMAGE_URL     = "image_url";
 }
