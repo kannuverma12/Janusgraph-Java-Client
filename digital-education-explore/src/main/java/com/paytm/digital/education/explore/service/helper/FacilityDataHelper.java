@@ -37,8 +37,8 @@ public class FacilityDataHelper {
                 if (!CollectionUtils.isEmpty(propertyMap) && propertyMap.containsKey(facilityKey)
                         && propertyMap.get(facilityKey).containsKey(DISPLAY_NAME)) {
                     facilityData.setName(propertyMap.get(facilityKey).get(DISPLAY_NAME).toString());
-                    facilityData.setLogoUrl(CommonUtil.getFacilitiesIconLink(
-                            propertyMap.get(facilityKey).get(LOGO).toString()));
+                    facilityData.setLogoUrl(CommonUtil.getAbsoluteUrl(
+                            propertyMap.get(facilityKey).get(LOGO).toString(), FACILITIES));
                     facilityList.add(facilityData);
                 }
             }

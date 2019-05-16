@@ -236,7 +236,7 @@ public class AutoSuggestServiceImpl {
                         AutoSuggestData autoSuggestData = new AutoSuggestData();
                         autoSuggestData.setEntityType(UserAction.SHORTLIST.name().toLowerCase());
                         autoSuggestData.setResults(shortListData);
-                        autoSuggestResponse.getData().add(autoSuggestData);
+                        autoSuggestResponse.getData().add(0, autoSuggestData);
                     }
                 }
             }

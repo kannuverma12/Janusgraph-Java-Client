@@ -4,11 +4,15 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.AFF
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AFFILIATED_TO;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.APPROVED_BY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTONOMOUS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.BANNER_MID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CONSTITUENT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CONSTITUENT_OF;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.FACILITIES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.IGNORE_VALUES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_TYPE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.LOCATIONS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STANDALONE_INSTITUTE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAMS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.UGC;
 
 import com.paytm.digital.education.explore.config.ConfigProperties;
@@ -29,12 +33,30 @@ public class CommonUtil {
         return ConfigProperties.getBaseUrl() + ConfigProperties.getLogoImagePrefix() + logo;
     }
 
-    public String getHighLightBaseUrl() {
-        return ConfigProperties.getBaseUrl() + ConfigProperties.getHighlightsIconPrefix();
+    public String getAbsoluteUrl(String relativeUrl, String type) {
+        StringBuilder urlBuilder = new StringBuilder(ConfigProperties.getBaseUrl());
+        switch (type) {
+            case FACILITIES:
+                urlBuilder.append(ConfigProperties.getFacilitiesIconPrefix());
+                break;
+            case STREAMS:
+                urlBuilder.append(ConfigProperties.getStreamIconPrefix());
+                break;
+            case LOCATIONS:
+                urlBuilder.append(ConfigProperties.getLocationIconPrefix());
+                break;
+            case BANNER_MID:
+                urlBuilder.append(ConfigProperties.getBannerPrefix());
+                break;
+            default:
+                urlBuilder.append(ConfigProperties.getLogoImagePrefix());
+        }
+        urlBuilder.append(relativeUrl);
+        return urlBuilder.toString();
     }
 
-    public String getFacilitiesIconLink(String logo) {
-        return ConfigProperties.getBaseUrl() + ConfigProperties.getFacilitiesIconPrefix() + logo;
+    public String getHighLightBaseUrl() {
+        return ConfigProperties.getBaseUrl() + ConfigProperties.getHighlightsIconPrefix();
     }
 
     public OfficialAddress getOfficialAddress(String state, String city, String phone, String url,
