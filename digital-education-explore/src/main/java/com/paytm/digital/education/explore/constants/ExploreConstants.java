@@ -151,7 +151,7 @@ public interface ExploreConstants {
     String SEARCH_EXAM_LEVEL           = "level";
     String IGNORE_VALUES               = "ignore";
     String RANKING_STREAM_NAMESPACE    = "ranking_stream";
-    String FACILITIES_MASTER_LIST       = "master_list";
+    String FACILITIES_MASTER_LIST      = "master_list";
 
     String STREAM_COURSE                    = "domain_name";
     String DEGREE_COURSE                    = "degree";
@@ -206,19 +206,19 @@ public interface ExploreConstants {
     String EXAM_CUTOFF_CASTEGROUP = "exam_cutoff_castegroup";
     String CUTOFF                 = "cutoffs";
     String SUBEXAM_ID             = "subexams.id";
-    
+
     //S3 constants
     String S3_BUCKET_PATH = "assets.paytm.com/educationwebassets/education/explore/college/images/";
-    
+
     //CRON KEYS
     String IMAGE_UPLOAD_CRON_KEY = "isImageUploadCronEnabled";
     String FAILED_IMAGE_CRON_KEY = "isFailedImageCronEnabled";
    
-    
-    String EXAMS_ACCEPTED         = "exams_accepted";
-    String OTHER_CATEGORIES       = "OTHERS";
-    String GENDER                 = "gender";
-    String CASTEGROUP             = "caste_group";
+
+    String EXAMS_ACCEPTED   = "exams_accepted";
+    String OTHER_CATEGORIES = "OTHERS";
+    String GENDER           = "gender";
+    String CASTEGROUP       = "caste_group";
 
     String AFFILIATED           = "affiliated";
     String UGC                  = "ugc";
@@ -231,12 +231,12 @@ public interface ExploreConstants {
     String CONSTITUENT_OF       = "Constituent Of";
     String GOVERNED_BY          = "Governed By";
     String INSTITUTE_TYPE       = "Institute Governance";
-    
-    
-    String ALUMNI               = "alumni";
-    String CAREERS_360          = "careers360";
-    
-    String HTTP_AGENT ="http.agent";
+
+
+    String ALUMNI      = "alumni";
+    String CAREERS_360 = "careers360";
+
+    String HTTP_AGENT        = "http.agent";
     String CHROME_HTTP_AGENT = "Chrome";
 
     String S3_PATH = "/{0}/{1}";

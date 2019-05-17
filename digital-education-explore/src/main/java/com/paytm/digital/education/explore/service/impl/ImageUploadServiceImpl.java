@@ -1,10 +1,12 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.LinkedHashMap;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,15 +26,15 @@ import lombok.extern.slf4j.Slf4j;
 public class ImageUploadServiceImpl {
 
     @Autowired
-    private InstituteRepository   instituteRepository;
+    private InstituteRepository instituteRepository;
 
     @Autowired
     private FailedImageRepository failedImageRepository;
 
     @Autowired
-    private S3Service             s3Service;
-    
-    int count = 1;
+    private S3Service s3Service;
+
+    int count    = 1;
     int maxTries = 2;
 
     public void uploadImages() {
@@ -47,16 +49,16 @@ public class ImageUploadServiceImpl {
                     Map<String, List<String>> s3ImagesMap =
                             new LinkedHashMap<String, List<String>>();
                     //Upload gallery images
-                    if (institute.getGallery().getImages() != null
-                            && institute.getGallery().getS3Images() == null) {
-                    uploadGalleryImages(institute, s3ImagesMap);
+                    if (!CollectionUtils.isEmpty(institute.getGallery().getImages())
+                            && CollectionUtils.isEmpty(institute.getGallery().getS3Images())) {
+                        uploadGalleryImages(institute, s3ImagesMap);
                     }
-                    
+
                     //Upload logo
                     String s3Logo = "";
-                    if (institute.getGallery() != null
+                    if (Objects.nonNull(institute.getGallery())
                             && StringUtils.isNotBlank(institute.getGallery().getLogo())
-                            && institute.getGallery().getS3Logo() == null) {
+                            && Objects.isNull(institute.getGallery().getS3Logo())) {
                         s3Logo = uploadLogo(institute);
                     }
                     Gallery gallery = institute.getGallery();
@@ -90,13 +92,14 @@ public class ImageUploadServiceImpl {
     private void uploadGalleryImages(Institute institute, Map<String, List<String>> s3ImagesMap) {
         Map<String, List<String>> imagesMap = institute.getGallery().getImages();
         for (String key : imagesMap.keySet()) {
-            if (s3ImagesMap.get(key) == null) {
+            if (Objects.isNull(s3ImagesMap.get(key))) {
                 s3ImagesMap.put(key, new ArrayList<String>());
             }
             if (!CollectionUtils.isEmpty(imagesMap.get(key))) {
                 List<String> imagesUrls = new ArrayList<String>();
                 for (String imageUrl : imagesMap.get(key)) {
-                    if (imageUrl == null || !imageUrl.contains("/")) {
+                    // why does this check of / siginifies?
+                    if (Objects.isNull(imageUrl) || !imageUrl.contains("/")) {
                         log.error(
                                 "In uploadImages with imageUrl is null or incorrect with institute id"
                                         + " {} and imageurl {} ",
@@ -104,8 +107,9 @@ public class ImageUploadServiceImpl {
                         continue;
                     }
                     String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
-                   String s3FilePath = uploadImageToS3(institute.getInstituteId(), key, imageUrl,
+                    String s3FilePath = uploadImageToS3(institute.getInstituteId(), key, imageUrl,
                             fileName);
+                    // What happens when s3FilePath is null??
                     imagesUrls.add(s3FilePath);
                 }
                 s3ImagesMap.put(key, imagesUrls);
@@ -115,6 +119,7 @@ public class ImageUploadServiceImpl {
 
     private String uploadLogo(Institute institute) {
         String s3Logo;
+        // ??
         if (!StringUtils.containsIgnoreCase(institute.getGallery().getLogo(),
                 ExploreConstants.CAREERS_360)) {
             s3Logo = institute.getGallery().getLogo();
@@ -132,12 +137,12 @@ public class ImageUploadServiceImpl {
         List<Alumni> alumnis = institute.getNotableAlumni();
         for (Alumni alumni : alumnis) {
             String s3FilePath = "";
-            if (alumni != null && StringUtils.isNotBlank(alumni.getAlumniPhoto())
-                    && alumni.getS3AlumniPhoto() == null) {
+            if (Objects.nonNull(alumni) && StringUtils.isNotBlank(alumni.getAlumniPhoto())
+                    && Objects.isNull(alumni.getS3AlumniPhoto())) {
                 String fileName = alumni.getAlumniPhoto()
                         .substring(alumni.getAlumniPhoto().lastIndexOf("/") + 1);
                 s3FilePath = uploadImageToS3(institute.getInstituteId(), ExploreConstants.ALUMNI,
-                         alumni.getAlumniPhoto(), fileName);
+                        alumni.getAlumniPhoto(), fileName);
             }
             alumni.setS3AlumniPhoto(s3FilePath);
             institute.setNotableAlumni(alumnis);
@@ -146,7 +151,7 @@ public class ImageUploadServiceImpl {
 
     private String uploadImageToS3(Long instituteId, String key,
             String imageUrl, String fileName) {
-     
+
         String s3FilePath = null;
         while (true) {
             try {
@@ -158,7 +163,7 @@ public class ImageUploadServiceImpl {
                     log.error(
                             "Error caught while uploading image in"
                                     + " uploadImages with id {} count {} maxTries {} exception  : {}",
-                                    instituteId, count, maxTries,
+                            instituteId, count, maxTries,
                             e);
                     count++;
                 } else {
