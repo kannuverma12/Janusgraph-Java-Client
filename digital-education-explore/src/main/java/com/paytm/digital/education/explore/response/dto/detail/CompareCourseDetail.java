@@ -25,7 +25,7 @@ public class CompareCourseDetail {
     private Integer totalIntake;
 
     @JsonProperty("course_level")
-    private CourseLevel courseLevel;
+    private String courseLevel;
 
     @JsonProperty("course_duration_in_months")
     private Integer courseDurationInMonths;

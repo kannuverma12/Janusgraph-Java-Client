@@ -28,7 +28,7 @@ resume = false # data is kept in mongodb to resume
 direct-read-namespaces = ["digital_education.institute"]
 exit-after-direct-reads = true
 
-#workers = ["A", "B", "C", "D"]
+workers = ["A", "B", "C", "D"]
 
 #[gtm-settings]
 #channel-size = 2048

@@ -23,16 +23,16 @@ module.exports = function(doc) {
 	if (doc.exam_short_name) {
 		targetExam.exam_short_name = doc.exam_short_name;
 	}
-        var tags = {};
+        var tags = [];
         if(doc.domains) {
                 if(doc.domains === 'MANAGEMENT_AND_BUSINESS_ADMINISTRATION') {
-                     tags.concat('mba');
+                     tags.push('mba');
                 }
                 if(doc.domains === 'ENGINEERING_AND_ARCHITECTURE') {
-                     tags.concat('engineering');
+                     tags.push('engineering');
                 }
                 if(doc.domains === 'COMPETITION') {
-                     tags.concat('government');
+                     tags.push('government');
                 }
                 targetExam.tags = tags;
         }

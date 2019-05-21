@@ -1,6 +1,7 @@
 package com.paytm.digital.education.explore.service.helper;
 
 import com.paytm.digital.education.explore.response.dto.detail.Facility;
+import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -36,7 +37,8 @@ public class FacilityDataHelper {
                 if (!CollectionUtils.isEmpty(propertyMap) && propertyMap.containsKey(facilityKey)
                         && propertyMap.get(facilityKey).containsKey(DISPLAY_NAME)) {
                     facilityData.setName(propertyMap.get(facilityKey).get(DISPLAY_NAME).toString());
-                    facilityData.setLogoUrl(propertyMap.get(facilityKey).get(LOGO).toString());
+                    facilityData.setLogoUrl(CommonUtil.getAbsoluteUrl(
+                            propertyMap.get(facilityKey).get(LOGO).toString(), FACILITIES));
                     facilityList.add(facilityData);
                 }
             }

@@ -69,7 +69,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public NotificationFlags unsubscribe(long userId, SubscribableEntityType entity, long entityId) {
+    public NotificationFlags unsubscribe(long userId, SubscribableEntityType entity,
+            long entityId) {
         Date currentDate = new java.util.Date();
 
         Subscription subscriptionObj =
@@ -86,6 +87,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             subscriptionRepository.save(subscriptionObj);
             return decrementShortlistCount(userId);
         }
+        log.info("Unsubscribe Response : {}", DEFAULT_SUCCESS_MESSAGE);
         return DEFAULT_SUCCESS_MESSAGE;
     }
 
@@ -151,7 +153,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private NotificationFlags createOrUpdateUserFlag(long userId) {
         NotificationFlags notificationFlags = new NotificationFlags(SUCCESS);
-        UserFlags userFlags = userFlagRepository.incrementCounter(userId, UNREAD_SHORTLIST_COUNT, 1);
+        UserFlags userFlags =
+                userFlagRepository.incrementCounter(userId, UNREAD_SHORTLIST_COUNT, 1);
         if (userFlags == null) {
             userFlags = new UserFlags();
             userFlags.setUserId(userId);
@@ -168,7 +171,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     private NotificationFlags decrementShortlistCount(long userId) {
-        UserFlags userFlags = userFlagRepository.decrementCounterIfPositive(userId, UNREAD_SHORTLIST_COUNT, 1);
+        UserFlags userFlags =
+                userFlagRepository.decrementCounterIfPositive(userId, UNREAD_SHORTLIST_COUNT, 1);
         NotificationFlags notificationFlags = new NotificationFlags(SUCCESS);
         if (userFlags != null) {
             notificationFlags.setUnreadShortlist(userFlags.getShortlistFlag());

@@ -20,6 +20,7 @@ import com.paytm.digital.education.explore.database.repository.CommonMongoReposi
 import com.paytm.digital.education.explore.response.dto.detail.CourseDetail;
 import com.paytm.digital.education.explore.response.dto.detail.CourseFee;
 import com.paytm.digital.education.explore.response.dto.detail.CourseInstituteDetail;
+import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.explore.utility.FieldsRetrievalUtil;
@@ -41,8 +42,10 @@ import java.util.Map;
 @Service
 public class CourseDetailServiceImpl {
 
-    private CommonMongoRepository   commonMongoRepository;
-    private DerivedAttributesHelper derivedAttributesHelper;
+    private CommonMongoRepository       commonMongoRepository;
+    private DerivedAttributesHelper     derivedAttributesHelper;
+    private SimilarInstituteServiceImpl similarInstituteService;
+    private BannerDataHelper            bannerDataHelper;
 
     /*
      ** Method to get the course details and institute details
@@ -126,13 +129,16 @@ public class CourseDetailServiceImpl {
         highlights.put(EXAM.name().toLowerCase(), examDetails);
         courseDetail.setDerivedAttributes(derivedAttributesHelper
                 .getDerivedAttributes(highlights, COURSE.name().toLowerCase()));
+        courseDetail.setWidgets(similarInstituteService.getSimilarInstitutes(institute));
+        courseDetail.setBanners(bannerDataHelper.getBannerData(COURSE.name().toLowerCase()));
         if (institute != null) {
             CourseInstituteDetail courseInstituteDetail = new CourseInstituteDetail();
             courseInstituteDetail.setOfficialName(institute.getOfficialName());
-            courseInstituteDetail.setOfficialAddress(CommonUtil.getOfficialAddress(institute.getInstitutionState(),
-                    institute.getInstitutionCity(), institute.getPhone(),
-                    institute.getUrl(),
-                    institute.getOfficialAddress()));
+            courseInstituteDetail.setOfficialAddress(
+                    CommonUtil.getOfficialAddress(institute.getInstitutionState(),
+                            institute.getInstitutionCity(), institute.getPhone(),
+                            institute.getUrl(),
+                            institute.getOfficialAddress()));
             courseDetail.setInstitute(courseInstituteDetail);
         }
         return courseDetail;

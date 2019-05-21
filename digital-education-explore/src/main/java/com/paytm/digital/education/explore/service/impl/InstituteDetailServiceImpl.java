@@ -49,7 +49,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -79,7 +78,7 @@ public class InstituteDetailServiceImpl {
         InstituteDetail instituteDetail = getinstituteDetail(entityId, fieldGroup);
         if (userId != null && userId > 0) {
             updateShortist(instituteDetail, INSTITUTE, userId);
-            updateGetInTouch(instituteDetail, INSTITUTE, userId);
+            updateInterested(instituteDetail, INSTITUTE, userId);
         }
         return instituteDetail;
     }
@@ -273,13 +272,13 @@ public class InstituteDetailServiceImpl {
         }
     }
 
-    private void updateGetInTouch(InstituteDetail instituteDetail, EducationEntity educationEntity,
+    private void updateInterested(InstituteDetail instituteDetail, EducationEntity educationEntity,
             Long userId) {
         List<Long> leadEntities = leadDetailHelper
                 .getLeadEntities(educationEntity, userId,
                         Arrays.asList(instituteDetail.getInstituteId()));
         if (!CollectionUtils.isEmpty(leadEntities)) {
-            instituteDetail.setGetInTouch(true);
+            instituteDetail.setInterested(true);
         }
     }
 }

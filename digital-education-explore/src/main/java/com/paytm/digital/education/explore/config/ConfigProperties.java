@@ -10,23 +10,72 @@ public class ConfigProperties {
 
     private static String mediaBaseUrl;
     private static String logoImagePrefix;
-    
+    private static String facilitiesIconPrefix;
+    private static String highlightsIconPrefix;
+    private static String streamIconPrefix;
+    private static String locationIconPrefix;
+    private static String bannerPrefix;
+
     @Value("${education.asset.baseurl}")
     public void setBaseUrl(String baseUrl) {
         mediaBaseUrl = baseUrl;
     }
-    
+
     @Value("${institute.gallery.image.prefix}")
     public void setLogoImagePrefix(String logoPrefix) {
         logoImagePrefix = logoPrefix;
     }
-    
+
+    @Value("${institute.facilities.icon.prefix}")
+    public void setFacilitiesIconPrefix(String iconPrefix) {
+        facilitiesIconPrefix = iconPrefix;
+    }
+
+    @Value("${highlights.icon.prefix}")
+    public void setHighlightsIconPrefix(String iconPrefix) {
+        highlightsIconPrefix = iconPrefix;
+    }
+
+    @Value("${streams.icon.prefix}")
+    public void setStreamIconPrefix(String iconPrefix) {
+        streamIconPrefix = iconPrefix;
+    }
+
+    @Value("${banner.prefix}")
+    public void setBannerPrefix(String iconPrefix) {
+        bannerPrefix = iconPrefix;
+    }
+
+    @Value("${locations.icon.prefix}")
+    public void setLocationIconPrefix(String iconPrefix) {
+        locationIconPrefix = iconPrefix;
+    }
+
     public static String getBaseUrl() {
         return mediaBaseUrl;
     }
-    
+
     public static String getLogoImagePrefix() {
         return logoImagePrefix;
     }
 
+    public static String getFacilitiesIconPrefix() {
+        return facilitiesIconPrefix;
+    }
+
+    public static String getHighlightsIconPrefix() {
+        return highlightsIconPrefix;
+    }
+
+    public static String getStreamIconPrefix() {
+        return streamIconPrefix;
+    }
+
+    public static String getLocationIconPrefix() {
+        return locationIconPrefix;
+    }
+
+    public static String getBannerPrefix() {
+        return bannerPrefix;
+    }
 }
