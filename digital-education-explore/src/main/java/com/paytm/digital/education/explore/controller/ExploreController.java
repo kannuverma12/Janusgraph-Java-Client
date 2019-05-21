@@ -63,6 +63,7 @@ public class ExploreController {
     public NotificationFlags subscribe(
             @RequestHeader(name = "x-user-id") @Min(1) long userId,
             @Valid @RequestBody SubscriptionRequest request) {
+        log.info("Subscribe Request : {}", JsonUtils.toJson(request));
         return subscriptionService.subscribe(userId, request.getSubscriptionEntity(),
                 request.getSubscriptionEntityId());
     }
@@ -72,6 +73,7 @@ public class ExploreController {
     public NotificationFlags unsubscribe(
             @RequestHeader(name = "x-user-id") @Min(1) long userId,
             @RequestBody @Valid SubscriptionRequest request) {
+        log.info("Unsubscribe Request : {}", JsonUtils.toJson(request));
         return subscriptionService.unsubscribe(userId, request.getSubscriptionEntity(),
                 request.getSubscriptionEntityId());
     }

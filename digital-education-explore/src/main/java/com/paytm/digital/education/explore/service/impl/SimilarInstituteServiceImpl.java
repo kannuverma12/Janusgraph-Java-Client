@@ -102,7 +102,8 @@ public class SimilarInstituteServiceImpl {
             int mainRank = nirfRanking.containsKey(OVERALL_RANKING) ? nirfRanking.get(OVERALL_RANKING).getRank()
                     : nirfRanking.get(UNIVERSITIES).getRank();
             List<Institute> resultList =
-                    getTopSimilarInstitutes(institute, instituteList, NIRF, null, true, mainRank);
+                    getTopSimilarInstitutes(institute, instituteList, NIRF, null, true, mainRank,
+                            TOTAL_SIMILAR_COLLEGE);
             return buildWidgetResponse(resultList);
         }
 
@@ -120,8 +121,17 @@ public class SimilarInstituteServiceImpl {
                 int mainRank = rankingMap.get(stream).getRank();
                 List<Institute> instituteList =
                         instituteRepository.findAllBySourceAndStream(rankingSource, stream);
+                if (!CollectionUtils.isEmpty(instituteList)) {
+                    Collections.sort(instituteList, (institute1, institute2) -> {
+                        int rank1 = getRankingBySourceAndStream(institute1.getRankings(),
+                            rankingSource, stream, false).getRank();
+                        int rank2 = getRankingBySourceAndStream(institute2.getRankings(),
+                            rankingSource, stream, false).getRank();
+                        return rank1 - rank2;
+                    });
+                }
                 instituteList = getTopSimilarInstitutes(institute, instituteList,
-                        rankingSource, stream, false, mainRank);
+                        rankingSource, stream, false, mainRank, limitPerStream);
                 if (!CollectionUtils.isEmpty(instituteList)) {
                     instituteResultList.addAll(instituteList);
                 }
@@ -340,26 +350,28 @@ public class SimilarInstituteServiceImpl {
     }
 
     private List<Institute> getTopSimilarInstitutes(Institute institute, List<Institute> instituteList,
-            String source, String stream, boolean isOverAllRank, int mainRank) {
+            String source, String stream, boolean isOverAllRank, int mainRank, int noOfInstitutes) {
         List<Institute> resultList = new ArrayList<>();
         int nextGreaterRankIndex = getNextGreaterRankIndex(instituteList, source, stream, isOverAllRank, mainRank);
+        int noOfLowerRankInstitutes = noOfInstitutes / 2;
+        int noOfHigherRankInstitutes = noOfInstitutes - noOfLowerRankInstitutes;
         if (nextGreaterRankIndex != -1 && nextGreaterRankIndex < instituteList.size()) {
             for (int i = nextGreaterRankIndex;
-                 resultList.size() < NO_OF_HIGHER_RANK_COLLEGE && i < instituteList.size(); i++) {
+                 resultList.size() < noOfHigherRankInstitutes && i < instituteList.size(); i++) {
                 if (!instituteList.get(i).getInstituteId().equals(institute.getInstituteId())) {
                     resultList.add(instituteList.get(i));
                 }
             }
-            for (int i = nextGreaterRankIndex - 1; i > 0 && resultList.size() < TOTAL_SIMILAR_COLLEGE; i--) {
+            for (int i = nextGreaterRankIndex - 1; i > 0 && resultList.size() < noOfInstitutes; i--) {
                 if (!instituteList.get(i).getInstituteId().equals(institute.getInstituteId())) {
                     resultList.add(instituteList.get(i));
                 }
             }
             //If lower rank institutes not found fill all higher rank institutes
-            if (resultList.size() < TOTAL_SIMILAR_COLLEGE) {
+            if (resultList.size() < noOfInstitutes) {
                 resultList.clear();
                 for (int i = nextGreaterRankIndex;
-                     resultList.size() < TOTAL_SIMILAR_COLLEGE && i < instituteList.size(); i++) {
+                     resultList.size() < noOfInstitutes && i < instituteList.size(); i++) {
                     if (!instituteList.get(i).getInstituteId().equals(institute.getInstituteId())) {
                         resultList.add(instituteList.get(i));
                     }
@@ -367,7 +379,7 @@ public class SimilarInstituteServiceImpl {
             }
         } else {
             //if higher rank colleges not found, get same or lower rank colleges
-            for (int i = instituteList.size() - 1; i > 0 && resultList.size() < TOTAL_SIMILAR_COLLEGE; i--) {
+            for (int i = instituteList.size() - 1; i > 0 && resultList.size() < noOfInstitutes; i--) {
                 if (!instituteList.get(i).getInstituteId().equals(institute.getInstituteId())) {
                     resultList.add(instituteList.get(i));
                 }
