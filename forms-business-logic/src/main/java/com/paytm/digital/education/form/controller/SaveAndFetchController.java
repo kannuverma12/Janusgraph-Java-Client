@@ -3,9 +3,7 @@ package com.paytm.digital.education.form.controller;
 import com.paytm.digital.education.form.model.FormData;
 import com.paytm.digital.education.form.service.SaveAndFetchService;
 import com.paytm.digital.education.utility.JsonUtils;
-import com.sun.istack.internal.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,14 +20,14 @@ public class SaveAndFetchController {
 
     private SaveAndFetchService saveAndFetchService;
 
-    private final String ARG_MESSAGE = "Either refId or combination of customer id, merchant id, candidate id required";
+    private final String argMessage = "Either refId or combination of customer id, merchant id, candidate id required";
 
     @PostMapping("/v1/save")
     public ResponseEntity<Object> saveData(
             @RequestParam(name = "confirm_flag", defaultValue = "false") boolean confirmFlag,
             @RequestBody FormData data) {
         if (!saveAndFetchService.validateFormDataRequest(data)) {
-            return new ResponseEntity<>("{\"message\": \"" + ARG_MESSAGE + "\"}", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("{\"message\": \"" + argMessage + "\"}", HttpStatus.BAD_REQUEST);
         }
         String id = saveAndFetchService.saveData(data, confirmFlag);
         if (id != null) {
@@ -43,7 +41,7 @@ public class SaveAndFetchController {
     @PostMapping("/v1/save-addons")
     public ResponseEntity<Object> saveAddonData(@RequestBody FormData data) {
         if (!saveAndFetchService.validateFormDataRequest(data)) {
-            return new ResponseEntity<>("{\"message\": \"" + ARG_MESSAGE + "\"}", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("{\"message\": \"" + argMessage + "\"}", HttpStatus.BAD_REQUEST);
         }
         String id = saveAndFetchService.saveDataWithAddon(data);
 
@@ -58,9 +56,9 @@ public class SaveAndFetchController {
 
     @GetMapping("/v1/get-form-data")
     public ResponseEntity<Object> getFormData(
-            @RequestParam("merchantId") @NonNull String merchantId,
-            @RequestParam("customerId") @NotNull String customerId,
-            @RequestParam("candidateId") @NotNull String candidateId) {
+            @RequestParam("merchantId") String merchantId,
+            @RequestParam("customerId") String customerId,
+            @RequestParam("candidateId") String candidateId) {
 
         FormData formData = saveAndFetchService.getLatestRecord(merchantId, customerId, candidateId);
 
@@ -74,7 +72,7 @@ public class SaveAndFetchController {
     }
 
     @GetMapping("/v1/get-form-data-by-id")
-    public ResponseEntity<Object> getFormData(@RequestParam("refId") @NotNull String refId) {
+    public ResponseEntity<Object> getFormData(@RequestParam("refId") String refId) {
 
         FormData formData = saveAndFetchService.getRecord(refId);
 

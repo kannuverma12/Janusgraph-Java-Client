@@ -26,6 +26,9 @@ public class FormData {
     @JsonProperty("refId")
     private String id;
 
+    @Field("formEditMode")
+    private String formEditMode;
+
     @Field("fullName")
     private String fullName;
 
