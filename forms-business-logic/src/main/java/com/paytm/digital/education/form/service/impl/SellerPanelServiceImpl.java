@@ -29,7 +29,8 @@ public class SellerPanelServiceImpl implements SellerPanelService {
     }
 
     @Override
-    public ResponseData<FormData> getInfoOnDate(String merchantId, Date startDate, Date endDate, int offset, int limit) {
+    public ResponseData<FormData> getInfoOnDate(String merchantId, Date startDate, Date endDate,
+                                                int offset, int limit) {
 
         Query query = new Query();
         Criteria criteria = Criteria.where("createdAt")

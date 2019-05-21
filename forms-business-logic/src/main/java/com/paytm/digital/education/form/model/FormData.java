@@ -1,18 +1,29 @@
 package com.paytm.digital.education.form.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 import javax.validation.constraints.NotEmpty;
 
+@Data
+@Document
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class FormData {
+
+    @Id
+    @JsonProperty("refId")
     private String id;
 
     @Field("fullName")
@@ -79,9 +90,11 @@ public class FormData {
     private String merchant;
 
     @Field("createdAt")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createdAt;
 
     @Field("updatedAt")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updatedAt;
 
     @Field("expiryDate")
@@ -106,7 +119,7 @@ public class FormData {
     private String merchantId;
 
     @Field("status")
-    private String status; // todo: add list of status supported
+    private FormStatus status;
 
     @Field("formFulfilment")
     private FormFulfilment formFulfilment;
@@ -116,6 +129,9 @@ public class FormData {
 
     @Field("merchantCandidateId")
     private String merchantCandidateId;
+
+    @Field("additionalData")
+    private Map<String, Object> additionalData;
 
     @Field("dmsDocs")
     private Set<DMSDoc> dmsDocs;

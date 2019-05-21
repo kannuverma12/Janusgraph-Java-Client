@@ -1,0 +1,90 @@
+package com.paytm.digital.education.form.controller;
+
+import com.paytm.digital.education.form.model.FormData;
+import com.paytm.digital.education.form.service.SaveAndFetchService;
+import com.paytm.digital.education.utility.JsonUtils;
+import com.sun.istack.internal.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/formfbl/")
+@AllArgsConstructor
+public class SaveAndFetchController {
+
+    private SaveAndFetchService saveAndFetchService;
+
+    private final String ARG_MESSAGE = "Either refId or combination of customer id, merchant id, candidate id required";
+
+    @PostMapping("/v1/save")
+    public ResponseEntity<Object> saveData(
+            @RequestParam(name = "confirm_flag", defaultValue = "false") boolean confirmFlag,
+            @RequestBody FormData data) {
+        if (!saveAndFetchService.validateFormDataRequest(data)) {
+            return new ResponseEntity<>("{\"message\": \"" + ARG_MESSAGE + "\"}", HttpStatus.BAD_REQUEST);
+        }
+        String id = saveAndFetchService.saveData(data, confirmFlag);
+        if (id != null) {
+            return new ResponseEntity<>("{\"refId\": \"" + id + "\"}", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("{\"message\": \"Some error occurred, please try again later\"}",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/v1/save-addons")
+    public ResponseEntity<Object> saveAddonData(@RequestBody FormData data) {
+        if (!saveAndFetchService.validateFormDataRequest(data)) {
+            return new ResponseEntity<>("{\"message\": \"" + ARG_MESSAGE + "\"}", HttpStatus.BAD_REQUEST);
+        }
+        String id = saveAndFetchService.saveDataWithAddon(data);
+
+        if (id != null) {
+            return new ResponseEntity<>("{\"refId\": \"" + id + "\"}", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("{\"message\": \"Some error occurred, please try again later\"}",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    @GetMapping("/v1/get-form-data")
+    public ResponseEntity<Object> getFormData(
+            @RequestParam("merchantId") @NonNull String merchantId,
+            @RequestParam("customerId") @NotNull String customerId,
+            @RequestParam("candidateId") @NotNull String candidateId) {
+
+        FormData formData = saveAndFetchService.getLatestRecord(merchantId, customerId, candidateId);
+
+        if (formData == null) {
+            return new ResponseEntity<>("{\"message\": \"No record found for the given Ids\" }",
+                    HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>("{\"form_data\": " + JsonUtils.toJson(formData) + "}",
+                    HttpStatus.OK);
+        }
+    }
+
+    @GetMapping("/v1/get-form-data-by-id")
+    public ResponseEntity<Object> getFormData(@RequestParam("refId") @NotNull String refId) {
+
+        FormData formData = saveAndFetchService.getRecord(refId);
+
+        if (formData == null) {
+            return new ResponseEntity<>("{\"message\": \"No record found for the given Ids\" }",
+                    HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>("{\"form_data\": " + JsonUtils.toJson(formData) + "}",
+                    HttpStatus.OK);
+        }
+    }
+
+}

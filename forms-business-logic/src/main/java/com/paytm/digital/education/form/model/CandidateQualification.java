@@ -9,7 +9,7 @@ public class CandidateQualification {
 
     private String percentage;
 
-    private String result;
+    private String resultStatus;
 
     private String college;
 

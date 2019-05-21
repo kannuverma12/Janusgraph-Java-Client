@@ -18,7 +18,7 @@ public class SellerPanelResponse {
     private Float amount;
 
     @JsonProperty("status")
-    private String status;
+    private FormStatus status;
 
     public SellerPanelResponse(FormData formData) {
         orderId = formData.getFormFulfilment().getOrderId();
