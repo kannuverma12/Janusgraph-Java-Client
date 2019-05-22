@@ -126,7 +126,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
     @Cacheable(value = "institute_search")
     public SearchResponse search(SearchRequest searchRequest) throws IOException, TimeoutException {
         validateRequest(searchRequest, filterQueryTypeMap);
-        if (StringUtils.isNotBlank(searchRequest.getTerm())) {
+        if (!searchRequest.isClearFilters() && StringUtils.isNotBlank(searchRequest.getTerm())) {
             Map<String, Object> stopWords = propertyReader
                     .getPropertiesAsMapByKey(EXPLORE_COMPONENT, INSTITUTE_NAMESPACE, STOPWORDS_KEY);
             String refinedTerm =
@@ -264,6 +264,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
                         CommonUtil.getOfficialAddress(instituteSearch.getState(),
                                 instituteSearch.getCity(), null, null, null);
                 instituteData.setOfficialAddress(officialAddress);
+                instituteData.setClient(instituteSearch.isClient());
                 instituteDataMap.put(instituteSearch.getInstituteId(), instituteData);
                 instituteDataList.add(instituteData);
             });

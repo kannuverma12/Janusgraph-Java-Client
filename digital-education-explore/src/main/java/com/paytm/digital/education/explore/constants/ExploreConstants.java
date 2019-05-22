@@ -8,19 +8,22 @@ import java.text.SimpleDateFormat;
 public interface ExploreConstants {
 
     ////// Common constants /////////////
-    String INSTITUTE_ID             = "institute_id";
-    String EXAM_ID                  = "exam_id";
-    String COURSE_ID                = "course_id";
-    String ENTITY_TYPE              = "entity_type";
-    int    DEFAULT_OFFSET           = 0;
-    int    DEFAULT_SIZE             = 10;
-    int    DEFAULT_AUTOSUGGEST_SIZE = 4;
+    String INSTITUTE_ID                = "institute_id";
+    String EXAM_ID                     = "exam_id";
+    String COURSE_ID                   = "course_id";
+    String ENTITY_TYPE                 = "entity_type";
+    int    DEFAULT_OFFSET              = 0;
+    int    DEFAULT_SIZE                = 10;
+    int    DEFAULT_AUTOSUGGEST_SIZE    = 4;
+    int    DEFAULT_AUTOSUGGEST_COMPARE = 10;
 
     ///// Exam Detail//////////
     String TENTATIVE     = "tentative";
     String NON_TENTATIVE = "non_tentative";
     String APPLICATION   = "APPLICATION";
     String EXAM          = "EXAM";
+    String PRECEDENCE    = "precedence";
+    String DEFAULT       = "DEFAULT";
 
     String GROUP_NAME   = "name";
     String GROUP_ENTITY = "entity";
@@ -31,12 +34,12 @@ public interface ExploreConstants {
     String EXPLORE_COMPONENT = "explore";
 
     ////// AutoSuggest Constants ////////////
-    String AUTOSUGGEST_INDEX         = "education_autosuggestion_v1";
+    String AUTOSUGGEST_INDEX         = "education_autosuggestion_v2";
     String AUTOSUGGEST_ANALYZER      = "words_with_spaces_analyzer";
     int    AUTOSUGGEST_MIN_CHARS     = 3;
     int    AUTOSUGGEST_MAX_CHARS     = 200;
     int    SEARCH_REQUEST_MAX_OFFSET = 9950;
-    int    SEARCH_REQUEST_MAX_LIMIT  = 50;
+    int    SEARCH_REQUEST_MAX_LIMIT  = 500;
     String AUTOSUGGEST_OFFICIAL_NAME = "official_name";
     String AUTOSUGGEST_NAMES         = "names";
     String RESULT                    = "results";
@@ -44,7 +47,7 @@ public interface ExploreConstants {
     String ENTITY_TYPE_CITY          = "city";
 
     ///////// Institute search Constatnts ///////////
-    String SEARCH_INDEX_COURSE        = "education_search_course_v1";
+    String SEARCH_INDEX_COURSE        = "education_search_course_v2";
     String SEARCH_ANALYZER_COURSE     = "word_delimiter_analyzer";
     String SEARCH_NAMES_INSTITUTE     = "names";
     String MAX_RANK_INSTITUTE         = "max_rank";
@@ -121,7 +124,7 @@ public interface ExploreConstants {
     Float  EXAM_OFFICIAL_NAME_NGRAM_BOOST = 0.00001F;
     String DATE_TAB                       = "dates";
     String SYLLABUS_TAB                   = "syllabus";
-    String SEARCH_INDEX_INSTITUTE         = "education_search_institute_v3";
+    String SEARCH_INDEX_INSTITUTE         = "education_search_institute_v2";
     String SEARCH_ANALYZER_INSTITUTE      = "word_delimiter_analyzer";
     String SEARCH_NAMES                   = "names";
     String MAX_RANK                       = "max_rank";
@@ -153,6 +156,7 @@ public interface ExploreConstants {
     String RANKING_STREAM_NAMESPACE    = "ranking_stream";
     String FACILITIES_MASTER_LIST      = "master_list";
 
+    String COURSE_ALPHABETICAL_SORT_KEY     = "alphabetical";
     String STREAM_COURSE                    = "domain_name";
     String DEGREE_COURSE                    = "degree";
     String BRANCH_COURSE                    = "branch";
@@ -160,6 +164,7 @@ public interface ExploreConstants {
     String INSTITUTE_NAME_COURSE            = "institute_official_name";
     String SEATS_COURSE                     = "seats";
     String FEE_COURSE                       = "fees";
+    String NAME_COURSE                      = "name";
     String DURATION_COURSE                  = "duration_in_months";
     String PARENT_INSTITUTE_ID_COURSE       = "parent_institute_id";
     String INSTITUTE_ID_COURSE              = "institute_id";
@@ -175,6 +180,7 @@ public interface ExploreConstants {
     String COURSE_PREFIX       = "course.";
     String INSTITUTE_PREFIX    = "institute.";
     String HIGHLIGHTS_TEMPLATE = "highlights";
+    String HIGHLIGHTS_BASE_URL = "highlight_base_url";
     String OVERALL_RANKING     = "overall";
 
     String MAXIMUM_PACKAGE_LABEL = "Maximum Package";
@@ -213,12 +219,10 @@ public interface ExploreConstants {
     //CRON KEYS
     String IMAGE_UPLOAD_CRON_KEY = "isImageUploadCronEnabled";
     String FAILED_IMAGE_CRON_KEY = "isFailedImageCronEnabled";
-   
-
-    String EXAMS_ACCEPTED   = "exams_accepted";
-    String OTHER_CATEGORIES = "OTHERS";
-    String GENDER           = "gender";
-    String CASTEGROUP       = "caste_group";
+    String EXAMS_ACCEPTED        = "exams_accepted";
+    String OTHER_CATEGORIES      = "OTHERS";
+    String GENDER                = "gender";
+    String CASTEGROUP            = "caste_group";
 
     String AFFILIATED           = "affiliated";
     String UGC                  = "ugc";
@@ -231,30 +235,26 @@ public interface ExploreConstants {
     String CONSTITUENT_OF       = "Constituent Of";
     String GOVERNED_BY          = "Governed By";
     String INSTITUTE_TYPE       = "Institute Governance";
+    String HTTP_AGENT           = "http.agent";
+    String CHROME_HTTP_AGENT    = "Chrome";
 
+    String S3_PATH                   = "/{0}/{1}";
+    String EQ_OPERATOR               = "$eq";
+    String IN_OPERATOR               = "$in";
+    String EMPTY_SQUARE_BRACKETS     = "[]";
+    String STREAMS                   = "streams";
+    String SIMILAR_COLLEGES          = "Similar Colleges";
+    String SIMILAR_COLLEGE_NAMESPACE = "similar_colleges";
+    int    TOTAL_SIMILAR_COLLEGE     = 4;
+    int    NO_OF_LOWER_RANK_COLLEGE  = 2;
+    int    NO_OF_HIGHER_RANK_COLLEGE = 2;
+    int    MAX_STREAMS               = 2;
+    int    COLLEGES_PER_STREAM       = 2;
 
-    String ALUMNI      = "alumni";
-    String CAREERS_360 = "careers360";
-
-    String HTTP_AGENT        = "http.agent";
-    String CHROME_HTTP_AGENT = "Chrome";
-
-    String S3_PATH = "/{0}/{1}";
-
-    String  MEDIAN           = "Median";
-    String  AVERAGE          = "Average";
-    String  MAX              = "Maximum";
-    String  MIN              = "Minimum";
-    String  NIRF             = "NIRF";
-    String  CAREERS360       = "CAREERS360";
-    String  RANKED           = "Ranked ";
-    String  AS_PER           = "as per ";
-    String  RANKINGS         = " Rankings";
-    String  GENERAL          = "general";
-    String  DETAILS          = "details";
-    String  YES              = "yes";
-    String  HIPHEN           = "-";
-    Integer INST_LATEST_YEAR = 1990;
-    String  ACRES            = " Acres";
-    String  UNIVERSITIES     = "UNIVERSITIES";
+    String COLLEGE_FOCUS = "colleges_focus";
+    String TOP_COLLEGES  = "top_colleges";
+    String ICON          = "icon";
+    String LOCATIONS     = "locations";
+    String BANNER_MID    = "banner_mid";
+    String IMAGE_URL     = "image_url";
 }

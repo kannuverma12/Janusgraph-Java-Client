@@ -22,7 +22,7 @@ public class Alumni {
     @Field("alumni_photo")
     @JsonProperty("alumni_photo")
     private String alumniPhoto;
-    
+
     @Field("s3_alumni_photo")
     @JsonProperty("s3_alumni_photo")
     private String s3AlumniPhoto;

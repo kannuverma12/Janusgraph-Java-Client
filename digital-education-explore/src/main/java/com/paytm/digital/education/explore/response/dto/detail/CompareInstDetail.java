@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.explore.database.entity.Placement;
+
+import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -13,11 +15,14 @@ import java.util.Set;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties( { "fake_rankings", "fake_placements" })
+@JsonIgnoreProperties({"fake_rankings", "fake_placements"})
 public class CompareInstDetail {
 
     @JsonProperty("institute_id")
     private Long instituteId;
+
+    @JsonProperty("institute_name")
+    private String instituteName;
 
     @JsonProperty("fake_rankings")
     private Map<String, Ranking> fakeRankings;
@@ -58,4 +63,12 @@ public class CompareInstDetail {
     @JsonProperty("courses")
     private Map<Long, String> courses;
 
+    @JsonProperty("logo")
+    private String logo;
+
+    @JsonProperty("official_address")
+    private OfficialAddress officialAddress;
+
+    @JsonProperty("shortlisted")
+    private boolean shortlisted;
 }

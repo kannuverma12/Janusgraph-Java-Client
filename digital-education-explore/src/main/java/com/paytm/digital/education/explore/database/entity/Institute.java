@@ -2,7 +2,7 @@ package com.paytm.digital.education.explore.database.entity;
 
 import java.util.Date;
 import java.util.List;
-import org.springframework.data.annotation.Id;
+
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -126,10 +126,11 @@ public class Institute {
     @Field("total_enrollments")
     private Integer totalEnrollments;
 
+    @Field("is_client")
+    private int isClient;
+
     public Institute(String commonName, Long instituteId) {
         this.commonName = commonName;
         this.instituteId = instituteId;
     }
-
-
 }

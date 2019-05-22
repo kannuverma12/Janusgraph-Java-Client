@@ -23,10 +23,21 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EDU
 public class AutoSuggestController {
 
     private AutoSuggestServiceImpl autoSuggestServiceImpl;
-    private AutoSuggestValidator autoSuggestValidator;
+    private AutoSuggestValidator   autoSuggestValidator;
 
     @RequestMapping(method = RequestMethod.GET, path = "/v1/autosuggest")
     public @ResponseBody AutoSuggestResponse autosuggest(@RequestParam("query") String query,
+            @RequestParam(value = "entities") List<EducationEntity> entities,
+            @RequestParam(value = "actions", required = false) List<UserAction> actions,
+            @RequestHeader(value = "x-user-id", required = false) Long userId) {
+
+        autoSuggestValidator.validate(query);
+
+        return autoSuggestServiceImpl.getSuggestions(query, entities, actions, userId);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/autosuggest")
+    public @ResponseBody AutoSuggestResponse autosuggestCompare(@RequestParam("query") String query,
             @RequestParam(value = "entities") List<EducationEntity> entities,
             @RequestParam(value = "actions", required = false) List<UserAction> actions,
             @RequestHeader(value = "x-user-id", required = false) Long userId) {

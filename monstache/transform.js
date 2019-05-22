@@ -8,7 +8,7 @@ var database_name = "digital-education";
 var college_collection = "institute";
 var course_collection = "course";
 var exam_collection = "exam";
-var target_collection = "education_search_institute_v1";
+var target_collection = "education_search_institute_v2";
 var target_doc_type = "education";
 
 /**
@@ -250,6 +250,7 @@ function transformCollege(superDoc) {
 
   transformedCollege.year_of_estd = superDoc.established_year;
   transformedCollege.institute_type = superDoc.entity_type;
+  transformedCollege.is_client = superDoc.is_client;
   //transformedCollege.institute_gender = superDoc.genders_accepted; //array
 
 
@@ -367,7 +368,16 @@ function transformCollege(superDoc) {
     transformedCollege.courses[i].level = ConvertInCamelCase(course.course_level);
     transformedCollege.courses[i].study_mode = course.study_mode;
     transformedCollege.courses[i].duration_in_months = course.course_duration;
-    transformedCollege.courses[i].domain_name = course.streams; // array
+    transformedCollege.courses[i].domain_name = [];
+    for (var k = 0; k < course.streams.length; k++) {
+        if(course.streams[k].toLowerCase() === 'education' ||
+            course.streams[k].toLowerCase() === 'sciences' ||
+            course.streams[k].toLowerCase() === 'arts_humanities_and_social_sciences' ){
+            transformedCollege.courses[i].domain_name.push('Humanities and Sciences');
+        } else {
+            transformedCollege.courses[i].domain_name.push(course.streams[k]);
+        }
+    }
     transformedCollege.courses[i].branch = course.master_branch;
     transformedCollege.courses[i].seats = course.seats_available;
 

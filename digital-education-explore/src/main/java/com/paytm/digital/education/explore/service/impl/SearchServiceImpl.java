@@ -35,7 +35,7 @@ public class SearchServiceImpl {
         log.debug("Starting search at : " + startTime);
         SearchResponse response = handler(searchRequest.getEntity()).search(searchRequest);
         log.debug("Search Response : {}", JsonUtils.toJson(response));
-
+        
         if (userId != null && userId > 0 && response.isSearchResponse()
                 && !CollectionUtils.isEmpty(response.getEntityDataMap())) {
             Map<Long, SearchBaseData> searchBaseDataMap = response.getEntityDataMap();
@@ -46,7 +46,7 @@ public class SearchServiceImpl {
             } else {
                 updateShortlist(entity, userId, searchBaseDataMap, entityIds);
             }
-            updateGetInTouch(searchRequest.getEntity(), userId, searchBaseDataMap, entityIds);
+            updateInterested(searchRequest.getEntity(), userId, searchBaseDataMap, entityIds);
             response.getEntityDataMap().clear();
         }
         log.debug("Time taken in search : " + (System.currentTimeMillis() - startTime));
@@ -76,12 +76,12 @@ public class SearchServiceImpl {
         }
     }
 
-    private void updateGetInTouch(EducationEntity educationEntity, Long userId,
+    private void updateInterested(EducationEntity educationEntity, Long userId,
             Map<Long, SearchBaseData> searchBaseDataMap, List<Long> entityIds) {
         List<Long> leadEntities =
                 leadDetailHelper.getLeadEntities(educationEntity, userId, entityIds);
         if (!CollectionUtils.isEmpty(leadEntities)) {
-            leadEntities.forEach(entityId -> searchBaseDataMap.get(entityId).setGetInTouch(true));
+            leadEntities.forEach(entityId -> searchBaseDataMap.get(entityId).setInterested(true));
         }
     }
 }

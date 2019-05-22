@@ -24,15 +24,37 @@ public class WidgetsDataHelper {
     private PropertyReader propertyReader;
 
     public List<Widget> getWidgets(String entity, long excludeEntity) {
-        Map<String, Object> widgetsDataMap = propertyReader.getPropertiesAsMapByKey(EXPLORE_COMPONENT, entity, WIDGETS);
+        Map<String, Object> widgetsDataMap =
+                propertyReader.getPropertiesAsMapByKey(EXPLORE_COMPONENT, entity, WIDGETS);
         List<Widget> widgetList =
-                JsonUtils.convertValue(widgetsDataMap.get(DATA_STRING), new TypeReference<List<Widget>>() {
-                });
-        ;
+                JsonUtils.convertValue(widgetsDataMap.get(DATA_STRING),
+                        new TypeReference<List<Widget>>() {
+                        });
         if (!CollectionUtils.isEmpty(widgetsDataMap)) {
             for (Widget widget : widgetList) {
                 List<WidgetData> widgetDataList =
-                        widget.getData().stream().filter(widgetData -> widgetData.getEntityId() != excludeEntity)
+                        widget.getData().stream()
+                                .filter(widgetData -> widgetData.getEntityId() != excludeEntity)
+                                .collect(Collectors.toList());
+                widget.setData(widgetDataList);
+            }
+        }
+        return widgetList;
+    }
+
+    public List<Widget> getWidgets(String entity, long excludeEntity, String domain) {
+        Map<String, Object> widgetsDataMap =
+                propertyReader.getPropertiesAsMapByKey(EXPLORE_COMPONENT, entity, WIDGETS);
+        List<Widget> widgetList =
+                JsonUtils.convertValue(widgetsDataMap.get(DATA_STRING),
+                        new TypeReference<List<Widget>>() {
+                        });
+        if (!CollectionUtils.isEmpty(widgetsDataMap)) {
+            for (Widget widget : widgetList) {
+                List<WidgetData> widgetDataList =
+                        widget.getData().stream()
+                                .filter(widgetData -> (widgetData.getEntityId() != excludeEntity
+                                        && widgetData.getStream().equals(domain)))
                                 .collect(Collectors.toList());
                 widget.setData(widgetDataList);
             }

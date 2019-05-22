@@ -6,6 +6,8 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.COU
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DEGREE_COURSE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DURATION_COURSE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_ID;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_ALPHABETICAL_SORT_KEY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.FEE_COURSE;
@@ -66,7 +68,9 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
 
     private static Map<String, FilterQueryType>         filterQueryTypeMap;
     private static Map<String, Float>                   searchFieldKeys;
-    private static LinkedHashMap<String, DataSortOrder> sortKeysInOrder;
+    private static LinkedHashMap<String, DataSortOrder> defaultSortKeysInOrder;
+    private static LinkedHashMap<String, DataSortOrder> alphabeticalSortKeysAsc;
+    private static LinkedHashMap<String, DataSortOrder> alphabeticalSortKeysDesc;
     private        SearchAggregateHelper                searchAggregateHelper;
     private        CommonMongoRepository                commonMongoRepository;
     private        PropertyReader                       propertyReader;
@@ -82,10 +86,14 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
         filterQueryTypeMap.put(LEVEL_COURSE, TERMS);
         filterQueryTypeMap.put(PARENT_INSTITUTE_ID_COURSE, TERMS);
         filterQueryTypeMap.put(INSTITUTE_ID_COURSE, TERMS);
-        sortKeysInOrder = new LinkedHashMap<>();
-        sortKeysInOrder.put(SEATS_COURSE, DataSortOrder.DESC);
-        sortKeysInOrder.put(DURATION_COURSE, DataSortOrder.ASC);
-        sortKeysInOrder.put(FEE_COURSE, DataSortOrder.ASC);
+        defaultSortKeysInOrder = new LinkedHashMap<>();
+        defaultSortKeysInOrder.put(SEATS_COURSE, DataSortOrder.DESC);
+        defaultSortKeysInOrder.put(DURATION_COURSE, DataSortOrder.ASC);
+        defaultSortKeysInOrder.put(FEE_COURSE, DataSortOrder.ASC);
+        alphabeticalSortKeysAsc = new LinkedHashMap<>();
+        alphabeticalSortKeysAsc.put(NAME_COURSE, DataSortOrder.ASC);
+        alphabeticalSortKeysDesc = new LinkedHashMap<>();
+        alphabeticalSortKeysDesc.put(NAME_COURSE, DataSortOrder.DESC);
     }
 
     @Override
@@ -164,7 +172,19 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
                 filterQueryTypeMap);
         populateAggregateFields(searchRequest, elasticRequest,
                 searchAggregateHelper.getCourseAggregateData(), CourseSearch.class);
-        searchRequest.setSortOrder(sortKeysInOrder);
+        LinkedHashMap<String, DataSortOrder> sortOrder = new LinkedHashMap<>();
+        if (!CollectionUtils.isEmpty(searchRequest.getSortOrder())) {
+            if (searchRequest.getSortOrder().containsKey(COURSE_ALPHABETICAL_SORT_KEY)) {
+                if (searchRequest.getSortOrder().get(COURSE_ALPHABETICAL_SORT_KEY)
+                        .equals(DataSortOrder.ASC)) {
+                    sortOrder.putAll(alphabeticalSortKeysAsc);
+                } else {
+                    sortOrder.putAll(alphabeticalSortKeysDesc);
+                }
+            }
+        }
+        sortOrder.putAll(defaultSortKeysInOrder);
+        searchRequest.setSortOrder(sortOrder);
         populateSortFields(searchRequest, elasticRequest, CourseSearch.class);
         return elasticRequest;
     }

@@ -46,10 +46,10 @@ import lombok.extern.slf4j.Slf4j;
 public class ExploreController {
     private static final SubscriptionStatus SUBSCRIBED_STATUS = SubscriptionStatus.SUBSCRIBED;
 
-    private SubscriptionService subscriptionService;
-    private CutoffService       cutoffService;
-    private ExploreValidator    exploreValidator;
-    private ExamListServiceImpl examListService;
+    private SubscriptionService     subscriptionService;
+    private CutoffService           cutoffService;
+    private ExploreValidator        exploreValidator;
+    private ExamListServiceImpl     examListService;
     private NotificationServiceImpl notificationServiceImpl;
 
     @GetMapping("/ping")
@@ -71,7 +71,6 @@ public class ExploreController {
     public NotificationFlags unsubscribe(
             @RequestHeader(name = "x-user-id") @Min(1) long userId,
             @RequestBody @Valid SubscriptionRequest request) {
-
         return subscriptionService.unsubscribe(userId, request.getSubscriptionEntity(),
                 request.getSubscriptionEntityId());
     }
@@ -137,7 +136,8 @@ public class ExploreController {
 
     @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/user_flags")
     @ResponseBody
-    public NotificationFlags getUserFlags(@RequestHeader(value = "x-user-id") @Min(1) @NotNull Long userId) {
+    public NotificationFlags getUserFlags(
+            @RequestHeader(value = "x-user-id") @Min(1) @NotNull Long userId) {
         return notificationServiceImpl.getNotificationFlags(userId);
     }
 }

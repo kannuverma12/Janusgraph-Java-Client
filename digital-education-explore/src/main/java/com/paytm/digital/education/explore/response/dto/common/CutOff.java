@@ -18,6 +18,9 @@ public class CutOff {
     @JsonProperty("exam_id")
     private long examId;
 
+    @JsonProperty("exam_short_name")
+    private String examShortName;
+
     @JsonProperty("value")
     private double value;
 

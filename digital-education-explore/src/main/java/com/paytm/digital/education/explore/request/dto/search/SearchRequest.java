@@ -5,7 +5,6 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.DEF
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_REQUEST_MAX_LIMIT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_REQUEST_MAX_OFFSET;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
@@ -47,6 +46,9 @@ public class SearchRequest extends FieldsAndFieldGroupRequest {
     @Max(SEARCH_REQUEST_MAX_LIMIT)
     @NotNull
     private Integer limit = DEFAULT_SIZE;
+
+    @JsonProperty("clear_filter")
+    private boolean clearFilters = false;
 
     @JsonProperty("fetch_filter")
     @NotNull

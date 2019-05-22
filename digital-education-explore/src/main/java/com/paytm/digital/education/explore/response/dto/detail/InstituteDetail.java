@@ -2,7 +2,6 @@ package com.paytm.digital.education.explore.response.dto.detail;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.explore.database.entity.Alumni;
 import com.paytm.digital.education.explore.response.dto.common.BannerData;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import com.paytm.digital.education.explore.response.dto.common.Widget;
@@ -43,8 +42,8 @@ public class InstituteDetail {
     @JsonProperty("shortlisted")
     private boolean shortlisted;
 
-    @JsonProperty("get_in_touch")
-    private boolean getInTouch;
+    @JsonProperty("interested")
+    private boolean interested;
 
     @JsonProperty("title")
     private String title;
@@ -54,7 +53,7 @@ public class InstituteDetail {
 
     @JsonProperty("courses")
     private List<Course> courses;
-    
+
     @JsonProperty("total_courses")
     private long totalCourses;
 
@@ -87,4 +86,7 @@ public class InstituteDetail {
 
     @JsonProperty("degree_offered")
     private Map<String, Set<String>> degreeOffered;
+
+    @JsonProperty("is_client")
+    private boolean client;
 }
