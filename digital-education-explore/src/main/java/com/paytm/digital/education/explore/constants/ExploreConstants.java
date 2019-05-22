@@ -257,4 +257,7 @@ public interface ExploreConstants {
     String LOCATIONS     = "locations";
     String BANNER_MID    = "banner_mid";
     String IMAGE_URL     = "image_url";
+    //s3 constants
+    String CAREERS_360 = "careers360";
+    String ALUMNI = "notable_alumni";
 }
