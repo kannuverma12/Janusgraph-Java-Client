@@ -39,7 +39,9 @@ public enum ErrorEnum {
     GENDER_PARAMETER_MISSING(4018, "Gender parameter is missing in request.",
             HttpStatus.BAD_REQUEST, 0),
     CASTE_CATEGORY_PARAMETER_MISSING(4019, "Caste category parameter is missing in request.",
-            HttpStatus.BAD_REQUEST, 0);
+            HttpStatus.BAD_REQUEST, 0),
+    ENTITY_ID_NOT_PRESENT(4020, "%s is missing in the request.",
+            HttpStatus.BAD_REQUEST, 1);
 
     private final int        internalCode;
     private final String     externalMessage;

@@ -12,4 +12,21 @@
     <artifactId>digital-education-coaching</artifactId>
 
 
+    <dependencies>
+
+        <!-- Databases dependency -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.paytm.digital.education</groupId>
+            <artifactId>digital-education-utilities</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
+    </dependencies>
+
 </project>
