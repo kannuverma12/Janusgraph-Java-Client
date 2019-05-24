@@ -19,8 +19,16 @@ import com.paytm.digital.education.explore.config.ConfigProperties;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.util.CollectionUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -259,5 +267,38 @@ public class CommonUtil {
             }
         }
         return true;
+    }
+
+    public Map<String, Object> readDataFromExcel(final String filePath) throws IOException,
+            InvalidFormatException {
+        Workbook workbook = WorkbookFactory.create(new File(filePath));
+        System.out.println("Workbook has " + workbook.getNumberOfSheets() + " Sheets : ");
+        DataFormatter dataFormatter = new DataFormatter();
+        Map<String, Object> map = new HashMap<>();
+        workbook.forEach(sheet -> {
+            System.out.println("=> " + sheet.getSheetName());
+            boolean start = true;
+            List<String> headers = new ArrayList<>();
+            List<Object> dataList = new ArrayList<>();
+            for (Row row : sheet) {
+                Map<String, Object> data = new HashMap<>();
+                for (Cell cell : row) {
+                    String cellValue = dataFormatter.formatCellValue(cell);
+                    if (start == true) {
+                        headers.add(cellValue.replace(" ", "_").toLowerCase());
+                    } else {
+                        data.put(headers.get(cell.getColumnIndex()), cellValue);
+                    }
+                }
+                if (start == true) {
+                    start = false;
+                } else {
+                    dataList.add(data);
+                }
+            }
+            map.put(sheet.getSheetName().toLowerCase(), dataList);
+        });
+        workbook.close();
+        return map;
     }
 }
