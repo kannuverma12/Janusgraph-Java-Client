@@ -200,6 +200,7 @@ public interface ExploreConstants {
     String WIDGETS                   = "widgets";
     String DATA_STRING               = "data";
     String PARENT_INSTITUTION        = "parent_institution";
+    String NOTABLE_ALUMNI_PLACEHOLDER = "/notable_alumni_placeholder.png";
 
     // Other Constants
     Version FTL_CURRENT_VERSION = Configuration.VERSION_2_3_23;
