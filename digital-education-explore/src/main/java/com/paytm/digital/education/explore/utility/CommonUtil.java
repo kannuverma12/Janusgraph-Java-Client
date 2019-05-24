@@ -1,5 +1,6 @@
 package com.paytm.digital.education.explore.utility;
 
+import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.XLS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AFFILIATED;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AFFILIATED_TO;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.APPROVED_BY;
@@ -19,14 +20,18 @@ import com.paytm.digital.education.explore.config.ConfigProperties;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -269,36 +274,47 @@ public class CommonUtil {
         return true;
     }
 
-    public Map<String, Object> readDataFromExcel(final String filePath) throws IOException,
-            InvalidFormatException {
-        Workbook workbook = WorkbookFactory.create(new File(filePath));
-        System.out.println("Workbook has " + workbook.getNumberOfSheets() + " Sheets : ");
-        DataFormatter dataFormatter = new DataFormatter();
-        Map<String, Object> map = new HashMap<>();
-        workbook.forEach(sheet -> {
-            System.out.println("=> " + sheet.getSheetName());
-            boolean start = true;
-            List<String> headers = new ArrayList<>();
-            List<Object> dataList = new ArrayList<>();
-            for (Row row : sheet) {
-                Map<String, Object> data = new HashMap<>();
-                for (Cell cell : row) {
-                    String cellValue = dataFormatter.formatCellValue(cell);
+    public Map<String, Object> readDataFromExcel(MultipartFile file) throws IOException {
+        ByteArrayInputStream bis = new ByteArrayInputStream(file.getBytes());
+        Workbook workbook;
+        try {
+            if (file.getOriginalFilename().endsWith(XLS)) {
+                workbook = new HSSFWorkbook(bis);
+            } else  {
+                workbook = new XSSFWorkbook(bis);
+            }
+            System.out.println("Workbook has " + workbook.getNumberOfSheets() + " Sheets : ");
+            DataFormatter dataFormatter = new DataFormatter();
+            Map<String, Object> dataMap = new HashMap<>();
+            workbook.forEach(sheet -> {
+                System.out.println("=> " + sheet.getSheetName());
+                boolean start = true;
+                List<String> headers = new ArrayList<>();
+                List<Object> sheetDataList = new ArrayList<>();
+                for (Row row : sheet) {
+                    Map<String, Object> sheetData = new HashMap<>();
+                    for (Cell cell : row) {
+                        String cellValue = dataFormatter.formatCellValue(cell);
+                        if (start == true) {
+                            headers.add(cellValue.trim().replace(" ", "_").toLowerCase());
+                        } else {
+                            sheetData.put(headers.get(cell.getColumnIndex()), cellValue);
+                        }
+                    }
                     if (start == true) {
-                        headers.add(cellValue.replace(" ", "_").toLowerCase());
+                        start = false;
                     } else {
-                        data.put(headers.get(cell.getColumnIndex()), cellValue);
+                        sheetDataList.add(sheetData);
                     }
                 }
-                if (start == true) {
-                    start = false;
-                } else {
-                    dataList.add(data);
-                }
-            }
-            map.put(sheet.getSheetName().toLowerCase(), dataList);
-        });
-        workbook.close();
-        return map;
+                dataMap.put(sheet.getSheetName().toLowerCase(), sheetDataList);
+            });
+            workbook.close();
+            return dataMap;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
