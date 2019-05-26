@@ -26,71 +26,9 @@ public class FormData {
     @JsonProperty("refId")
     private String id;
 
-    @Field("formEditMode")
-    private String formEditMode;
+    @Field("transactionType")
+    private String transactionType;
 
-    @Field("fullName")
-    private String fullName;
-
-    @Field("email")
-    private String email;
-
-    @Field("mobileNumber")
-    private String mobileNumber;
-
-    @Field("dateOfBirth")
-    private String dateOfBirth;
-
-    @Field("password")
-    private String password;
-
-    @Field("salutation")
-    private String salutation;
-
-    @Field("username")
-    private String username;
-
-    @Field("firstName")
-    private String firstName;
-
-    @Field("middleName")
-    private String middleName;
-
-    @Field("lastName")
-    private String lastName;
-
-    @Field("mothersName")
-    private String mothersName;
-
-    @Field("fathersName")
-    private String fathersName;
-
-    @Field("gender")
-    private String gender;
-
-    @Field("age")
-    private Integer age;
-
-    @Field("landLineNumber")
-    private String landLineNumber;
-
-    @Field("isMarried")
-    private Boolean isMarried;
-
-    @Field("isPwd")
-    private Boolean isPwd;
-
-    @Field("religion")
-    private String religion;
-
-    @Field("category")
-    private String category;
-
-    @Field("nationality")
-    private String nationality;
-
-    @Field("merchant")
-    private String merchant;
 
     @Field("createdAt")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

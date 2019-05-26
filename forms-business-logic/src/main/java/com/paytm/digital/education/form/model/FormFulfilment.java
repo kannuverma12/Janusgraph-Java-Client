@@ -11,19 +11,19 @@ import java.util.Date;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FormFulfilment {
     @Field("orderId")
-    private String orderId;
+    private Long orderId;
 
     @Field("itemId")
-    private String itemId;
+    private Long itemId;
 
     @Field("fulfilmentId")
-    private String fulfilmentId;
+    private Long fulfilmentId;
 
     @Field("productId")
-    private String productId;
+    private Long productId;
 
     @Field("statusCheckAttempts")
-    private int statusCheckAttempts;
+    private Integer statusCheckAttempts;
 
     @Field("paymentStatus")
     private String paymentStatus;
@@ -36,4 +36,7 @@ public class FormFulfilment {
 
     @Field("merchantTxnId")
     private String merchantTxnId;
+
+    @Field("amount")
+    private Float amount;
 }

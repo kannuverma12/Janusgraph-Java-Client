@@ -21,7 +21,7 @@ public class SellerPanelResponse {
     private FormStatus status;
 
     public SellerPanelResponse(FormData formData) {
-        orderId = formData.getFormFulfilment().getOrderId();
+        orderId = formData.getFormFulfilment().getOrderId().toString();
         date = formData.getFormFulfilment().getCreatedDate();
         amount = formData.getCandidateDetails().getAmount();
         status = formData.getStatus();

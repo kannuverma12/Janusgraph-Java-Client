@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 import java.util.List;
 
@@ -12,23 +11,22 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CandidateDetails {
 
-    private String username;
+    // Common
 
-    @NotEmpty
+    private String fullName;
+
     private String email;
 
-    @NotEmpty
     private String mobileNumber;
 
-    @NotEmpty
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    private Date dob;
+    private Date dateOfBirth;
 
     private String password;
 
     private String salutation;
 
-    private String fullName;
+    private String username;
 
     private String firstName;
 
@@ -36,19 +34,27 @@ public class CandidateDetails {
 
     private String lastName;
 
-    private Integer age;
-
-    private String gender;
-
     private String motherName;
 
     private String fatherName;
 
+    private String gender;
+
+    private Integer age;
+
     private String landLineNumber;
+
+    private Boolean isMarried;
+
+    private Boolean isPwd;
+
+    private String religion;
+
+    private String category;
 
     private String nationality;
 
-    private String stateDomicile;
+    private String merchant;
 
     private String motherTongue;
 
@@ -62,6 +68,8 @@ public class CandidateDetails {
 
     private String employmentExchangeNumber;
 
+    private String stateDomicile;
+
     private String disability;              // Person with Disability (YES/NO)
 
     private String disabilityType;
@@ -69,10 +77,6 @@ public class CandidateDetails {
     private String scribeRequired;
 
     private String scribeArrangedBySelf;
-
-    private String religion;
-
-    private String category;
 
     private String subCaste;
 
@@ -156,5 +160,24 @@ public class CandidateDetails {
 
     private String interestedInLowerQualificationPosts;
 
+    private String examOptedId;
+
     private List<CandidateEmployment> employment;
+
+    // AIMA
+
+    private String pbtCenter1;
+
+    private String pbtCenter2;
+
+    private String cbtCenter1;
+
+    private String cbtCenter2;
+
+    private String pbtExamDate;
+
+    private String cbtExamDate;
+
+    private String miCode;
+
 }
