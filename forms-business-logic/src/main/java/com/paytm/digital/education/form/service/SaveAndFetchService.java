@@ -2,6 +2,9 @@ package com.paytm.digital.education.form.service;
 
 import com.paytm.digital.education.form.model.FormData;
 import com.paytm.digital.education.form.model.FormStatus;
+import com.paytm.digital.education.form.model.LatestFormData;
+
+import java.util.List;
 
 public interface SaveAndFetchService {
 
@@ -16,4 +19,7 @@ public interface SaveAndFetchService {
     String saveDataWithAddon(FormData formData);
 
     boolean validateFormDataRequest(FormData formData);
+
+    LatestFormData getCurrentOpenAndLastPaidFormDetails(String merchantId, String customerId,
+                                                        String candidateId, List<String> keys);
 }

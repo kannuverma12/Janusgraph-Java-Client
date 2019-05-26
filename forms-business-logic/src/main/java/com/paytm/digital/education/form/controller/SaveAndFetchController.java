@@ -1,6 +1,7 @@
 package com.paytm.digital.education.form.controller;
 
 import com.paytm.digital.education.form.model.FormData;
+import com.paytm.digital.education.form.model.LatestFormData;
 import com.paytm.digital.education.form.service.SaveAndFetchService;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
@@ -13,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/formfbl/")
+@RequestMapping("/formfbl/form-data")
 @AllArgsConstructor
 public class SaveAndFetchController {
 
@@ -83,6 +86,15 @@ public class SaveAndFetchController {
             return new ResponseEntity<>("{\"form_data\": " + JsonUtils.toJson(formData) + "}",
                     HttpStatus.OK);
         }
+    }
+
+    @GetMapping("/v1/form-entries")
+    public LatestFormData getCurrentOpenAndLastPaidFormDetails(
+            @RequestParam("merchant_id") String merchantId,
+            @RequestParam("customer_id") String customerId,
+            @RequestParam("candidate_id") String candidateId,
+            @RequestParam("keys") List<String> keys) {
+        return saveAndFetchService.getCurrentOpenAndLastPaidFormDetails(merchantId, customerId, candidateId, keys);
     }
 
 }

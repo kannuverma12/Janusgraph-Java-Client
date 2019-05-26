@@ -2,6 +2,7 @@ package com.paytm.digital.education.form.service.impl;
 
 import com.paytm.digital.education.form.model.FormData;
 import com.paytm.digital.education.form.model.FormStatus;
+import com.paytm.digital.education.form.model.LatestFormData;
 import com.paytm.digital.education.form.service.SaveAndFetchService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -9,9 +10,14 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @AllArgsConstructor
 @Service
@@ -236,6 +242,52 @@ public class SaveAndFetchServiceImpl implements SaveAndFetchService {
                 || (formData.getMerchantId() != null
                 && formData.getCustomerId() != null
                 && formData.getCandidateId() != null);
+    }
+
+    private FormData getFormDataBasedOnCriteriaAndSort(
+            Criteria criteria, List<String> projectionKeys, String sortField) {
+        Query query = new Query();
+        query.addCriteria(criteria);
+        if (sortField != null) {
+            query.with(new Sort(Sort.Direction.DESC, sortField));
+        }
+        projectionKeys.forEach(k -> query.fields().include(k));
+        query.limit(1);
+        List<FormData> formData = mongoOperations.find(query, FormData.class);
+        return formData.isEmpty() ? null : formData.get(0);
+    }
+
+    private Criteria createBaseCriteria(
+            @NonNull String merchantId,
+            @NonNull String customerId,
+            @NonNull String candidateId) {
+        return Criteria
+                .where("merchantId").is(merchantId)
+                .and("customerId").is(customerId)
+                .and("candidateId").is(candidateId);
+    }
+
+    @Override
+    public LatestFormData getCurrentOpenAndLastPaidFormDetails(
+            @NonNull String merchantId, @NonNull String customerId,
+            @NonNull String candidateId, @NonNull List<String> keys) {
+
+        String paymentFieldName = "formFulfilment.orderId";
+
+        Criteria lastOrderCriteria = createBaseCriteria(merchantId, customerId, candidateId)
+                .where(paymentFieldName).exists(true)
+                .where(paymentFieldName).ne(null);
+
+        Criteria unpaidOrderCriteria = createBaseCriteria(merchantId, customerId, candidateId)
+                .orOperator(
+                        Criteria.where(paymentFieldName).exists(false),
+                        Criteria.where(paymentFieldName).is(null)
+                );
+
+        return new LatestFormData(
+                getFormDataBasedOnCriteriaAndSort( unpaidOrderCriteria, keys, "updatedAt"),
+                getFormDataBasedOnCriteriaAndSort( lastOrderCriteria, keys, "formFulfilment.createdDate")
+        );
     }
 
 }
