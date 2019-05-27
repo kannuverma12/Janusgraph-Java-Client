@@ -66,10 +66,16 @@
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.google.oauth-client/google-oauth-client-jetty -->
+        <!--<dependency>-->
+            <!--<groupId>com.google.oauth-client</groupId>-->
+            <!--<artifactId>google-oauth-client-jetty</artifactId>-->
+            <!--<version>1.29.0</version>-->
+        <!--</dependency>-->
+
         <dependency>
-            <groupId>com.google.oauth-client</groupId>
-            <artifactId>google-oauth-client-jetty</artifactId>
-            <version>1.29.0</version>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>1.11.538</version>
         </dependency>
 
     </dependencies>
