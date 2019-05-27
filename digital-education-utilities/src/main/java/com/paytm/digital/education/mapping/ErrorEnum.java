@@ -39,6 +39,10 @@ public enum ErrorEnum {
     GENDER_PARAMETER_MISSING(4018, "Gender parameter is missing in request.",
             HttpStatus.BAD_REQUEST, 0),
     CASTE_CATEGORY_PARAMETER_MISSING(4019, "Caste category parameter is missing in request.",
+            HttpStatus.BAD_REQUEST, 0),
+    INVALID_EXCEL_FILE_EXTENSION(4020, "Received file does not have a standard excel extension.",
+            HttpStatus.BAD_REQUEST, 0),
+    INVALID_FILE_NAME(4021, "Sorry! Filename contains invalid path sequence ",
             HttpStatus.BAD_REQUEST, 0);
 
     private final int        internalCode;
