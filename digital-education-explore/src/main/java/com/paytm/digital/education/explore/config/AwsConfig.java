@@ -1,6 +1,7 @@
 package com.paytm.digital.education.explore.config;
 
-import org.springframework.context.annotation.Bean;
+import com.amazonaws.client.builder.AwsClientBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
@@ -13,14 +14,26 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 public class AwsConfig {
 
-    @Bean
-    public static AmazonS3 func() {
-        String clientRegion = "ap-southeast-1";
+    private static String clientRegion;
+    private static String serviceEndPoint;
 
+    @Value("${aws.s3.region}")
+    public void setClientRegion(String region) {
+        clientRegion = region;
+    }
+
+    @Value("${aws.s3.endpoint}")
+    public void setServiceEndPoint(String endPoint) {
+        serviceEndPoint = endPoint;
+    }
+
+    public static AmazonS3 func() {
         try {
             AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
-                    .withRegion(clientRegion)
                     .withCredentials(new ProfileCredentialsProvider())
+                    .withEndpointConfiguration(
+                            new AwsClientBuilder.EndpointConfiguration(serviceEndPoint,
+                                    clientRegion))
                     .build();
             return s3Client;
         } catch (AmazonServiceException e) {
