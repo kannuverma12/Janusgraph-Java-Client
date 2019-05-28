@@ -8,6 +8,7 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXCEL_FILE_E
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FILE_NAME;
 
 import com.paytm.digital.education.exception.BadRequestException;
+import com.paytm.digital.education.explore.database.entity.CampusAmbassador;
 import com.paytm.digital.education.explore.service.ImportDataService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -33,7 +35,7 @@ public class CampusEngagementController {
     private ImportDataService importDataService;
 
     @RequestMapping(method = RequestMethod.POST, path = "/v1/campus-engagement-data/upload")
-    public @ResponseBody Map<String, Object> upload(@RequestParam("file") MultipartFile file)
+    public @ResponseBody Map<Long, List<CampusAmbassador>> upload(@RequestParam("file") MultipartFile file)
             throws IOException, GeneralSecurityException {
         String fileName = file.getOriginalFilename();
         if (!fileName.endsWith(XLS) && !fileName.endsWith(XLSX)) {
