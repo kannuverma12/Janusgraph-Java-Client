@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import javax.validation.constraints.NotNull;
 
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.explore.database.entity.Lead.Constants.COURSE_ID;
@@ -26,12 +28,17 @@ public class LeadServiceImpl implements LeadService {
     private LeadRepository        leadRepository;
     private CommonMongoRepository commonMongoRepository;
     private LeadCareer360Service  leadCareer360Service;
+    ExecutorService myExecutor = Executors..newCachedThreadPool();
 
     private void sendLead(Lead lead) {
-        Lead c360Lead = new Lead();
-        BeanUtils.copyProperties(lead, c360Lead);
-        leadCareer360Service.send(c360Lead);
-        leadRepository.upsertLead(c360Lead);
+        myExecutor.execute(new Runnable() {
+            public void run() {
+                Lead c360Lead = new Lead();
+                BeanUtils.copyProperties(lead, c360Lead);
+                leadCareer360Service.send(c360Lead);
+                leadRepository.upsertLead(c360Lead);
+            }
+        });
     }
 
     @Override
