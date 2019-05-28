@@ -26,5 +26,5 @@ public abstract class BaseHandler<T> {
         }
     }
 
-    public abstract void handle(T pojo);
+    public abstract void handle(T pojo) throws Exception;
 }

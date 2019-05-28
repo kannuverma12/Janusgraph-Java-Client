@@ -1,5 +1,6 @@
 package com.paytm.digital.education.form.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -9,21 +10,28 @@ import java.util.Date;
 public class SellerPanelResponse {
 
     @JsonProperty("order_id")
-    private String orderId;
+    private Long orderId;
 
+    @JsonIgnore
     @JsonProperty("date")
     private Date date;
 
+    @JsonIgnore
     @JsonProperty("amount")
     private Float amount;
 
+    @JsonIgnore
     @JsonProperty("status")
     private FormStatus status;
 
     public SellerPanelResponse(FormData formData) {
-        orderId = formData.getFormFulfilment().getOrderId().toString();
-        date = formData.getFormFulfilment().getCreatedDate();
-        amount = formData.getCandidateDetails().getAmount();
-        status = formData.getStatus();
+        try {
+            orderId = formData.getFormFulfilment().getOrderId();
+            date = formData.getFormFulfilment().getCreatedDate();
+            amount = formData.getCandidateDetails().getAmount();
+            status = formData.getStatus();
+        } catch (Exception e) {
+            throw e;
+        }
     }
 }

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 
 @RestController
-@RequestMapping("/v1/form")
+@RequestMapping("/formfbl/v1")
 @AllArgsConstructor
 public class ConfigurationController {
 

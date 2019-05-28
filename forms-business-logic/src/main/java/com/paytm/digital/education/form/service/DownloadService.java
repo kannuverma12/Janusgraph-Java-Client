@@ -1,8 +1,18 @@
 package com.paytm.digital.education.form.service;
 
-public interface DownloadService {
-    
-    byte[] getPdfByteArray(String id, String type);
+import java.io.IOException;
+import java.util.Map;
 
-    byte[] getTempAimaResponse(String id, String type);
+import com.paytm.digital.education.form.model.FormData;
+
+public interface DownloadService {
+
+    byte[] getTempAimaResponse(Long orderId, Map<String, Object> url,String customerId);
+
+    FormData getFormDataByUserIdAndOrderId(String userId, Long orderId);
+
+    FormData getFormDataByMerchantIdAndOrderId(String merchantId, Long orderId);
+
+    byte[] getPdfByteArray(FormData model, String type) throws IOException;
+
 }

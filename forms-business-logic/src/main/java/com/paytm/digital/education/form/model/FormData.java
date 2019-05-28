@@ -32,7 +32,7 @@ public class FormData {
 
     @Field("createdAt")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date createdAt;
+    private Date createdAt = new Date();
 
     @Field("updatedAt")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -58,6 +58,10 @@ public class FormData {
     @NotEmpty
     @Field("merchantId")
     private String merchantId;
+
+    @NotEmpty
+    @Field("merchantName")
+    private String merchantName;
 
     @Field("status")
     private FormStatus status;

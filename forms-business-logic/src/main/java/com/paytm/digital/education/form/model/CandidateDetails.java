@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 import java.util.List;
 
@@ -12,11 +13,12 @@ import java.util.List;
 public class CandidateDetails {
 
     // Common
+    private String username;
 
-    private String fullName;
-
+    @NotEmpty
     private String email;
 
+    @NotEmpty
     private String mobileNumber;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
@@ -26,7 +28,7 @@ public class CandidateDetails {
 
     private String salutation;
 
-    private String username;
+    private String fullName;
 
     private String firstName;
 
@@ -34,13 +36,13 @@ public class CandidateDetails {
 
     private String lastName;
 
-    private String motherName;
-
-    private String fatherName;
+    private Integer age;
 
     private String gender;
 
-    private Integer age;
+    private String motherName;
+
+    private String fatherName;
 
     private String landLineNumber;
 
@@ -54,7 +56,7 @@ public class CandidateDetails {
 
     private String nationality;
 
-    private String merchant;
+    private String stateDomicile;
 
     private String motherTongue;
 
@@ -67,8 +69,6 @@ public class CandidateDetails {
     private String employmentExchangeName;
 
     private String employmentExchangeNumber;
-
-    private String stateDomicile;
 
     private String disability;              // Person with Disability (YES/NO)
 
@@ -165,6 +165,8 @@ public class CandidateDetails {
     private List<CandidateEmployment> employment;
 
     // AIMA
+
+    private String examType;
 
     private String pbtCenter1;
 

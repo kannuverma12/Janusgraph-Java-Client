@@ -1,7 +1,6 @@
 package com.paytm.digital.education.form.consumer;
 
 import com.paytm.digital.education.form.handler.BaseHandler;
-import com.paytm.digital.education.form.handler.NotifyFulfilmentHandler;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -30,12 +29,15 @@ public class KafkaConsumer {
     @Qualifier("notifyFulfilmentHandler")
     private final BaseHandler notifyFulfilmentHandler;
 
+    @Qualifier("downloadOrderHandler")
+    private final BaseHandler downloadOrderHandler;
+
     @KafkaListener(topics = "${app.topic.fillForm.images}")
     public void listenForImages(@Payload String message,
                        @Header(RECEIVED_PARTITION_ID) int partition,
                        @Header(RECEIVED_TOPIC) String topic,
                        @Header(RECEIVED_TIMESTAMP) long ts) {
-        log.debug("Received Message {} {} {} {}", message, partition, topic, ts);
+        log.info("Received Message image - {} {} {} {}", message, partition, topic, ts);
         imageHandler.processMessage(message);
     }
 
@@ -46,6 +48,15 @@ public class KafkaConsumer {
                        @Header(RECEIVED_TIMESTAMP) long ts) {
         log.debug("Received Message {} {} {} {}", message, partition, topic, ts);
         notifyFulfilmentHandler.processMessage(message);
+    }
+
+    @KafkaListener(topics = "${app.topic.order.filecenter}")
+    public void listenForOrderIds(@Payload String message,
+                       @Header(RECEIVED_PARTITION_ID) int partition,
+                       @Header(RECEIVED_TOPIC) String topic,
+                       @Header(RECEIVED_TIMESTAMP) long ts) {
+        log.info("Received Message orderId - {} {} {} {}", message, partition, topic, ts);
+        downloadOrderHandler.processMessage(message);
     }
 
 }

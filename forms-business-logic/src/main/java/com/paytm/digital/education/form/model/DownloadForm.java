@@ -13,7 +13,7 @@ import java.util.Map;
 public class DownloadForm {
 
     //TODO: Discuss about orderId
-    private String orderId;
+    private Long orderId;
 
     // TODO: Add CDN for paytm logon
     private String paytmLogo;
