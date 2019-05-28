@@ -250,6 +250,7 @@ function transformCollege(superDoc) {
 
   transformedCollege.year_of_estd = superDoc.established_year;
   transformedCollege.institute_type = superDoc.entity_type;
+  transformedCollege.is_client = superDoc.is_client;
   //transformedCollege.institute_gender = superDoc.genders_accepted; //array
 
 

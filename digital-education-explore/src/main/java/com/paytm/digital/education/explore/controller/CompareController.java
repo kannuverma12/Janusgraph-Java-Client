@@ -47,7 +47,7 @@ public class CompareController {
         List<Long> instList = new ArrayList<Long>(Arrays.asList(inst1, inst2, inst3));
         exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
 
-        return compareService.compareInstitutes(instList, fieldGroup, fields);
+        return compareService.compareInstitutes(instList, fieldGroup, fields, userId);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/compare/courses")

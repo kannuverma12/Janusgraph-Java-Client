@@ -264,6 +264,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
                         CommonUtil.getOfficialAddress(instituteSearch.getState(),
                                 instituteSearch.getCity(), null, null, null);
                 instituteData.setOfficialAddress(officialAddress);
+                instituteData.setClient(instituteSearch.isClient());
                 instituteDataMap.put(instituteSearch.getInstituteId(), instituteData);
                 instituteDataList.add(instituteData);
             });
