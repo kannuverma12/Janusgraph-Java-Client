@@ -20,6 +20,9 @@ public class MerchantConfiguration {
     @Field("merchantId")
     private String merchantId;
 
+    @Field("screenConfig")
+    private Map<String, Object> postOrderScreenConfig;
+
     @Field("createdDate")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private Date createdDate;

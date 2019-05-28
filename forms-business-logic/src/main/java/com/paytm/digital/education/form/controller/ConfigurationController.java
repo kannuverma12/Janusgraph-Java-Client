@@ -3,6 +3,7 @@ package com.paytm.digital.education.form.controller;
 import com.paytm.digital.education.form.service.MerchantConfigService;
 import com.paytm.digital.education.form.model.MerchantConfiguration;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,10 +15,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/formfbl/v1")
+@RequestMapping("/formfbl")
 @AllArgsConstructor
+@Slf4j
 public class ConfigurationController {
 
     private MerchantConfigService merchantConfigService;
@@ -47,6 +50,36 @@ public class ConfigurationController {
     public String saveConfiguration(@RequestBody MerchantConfiguration merchantConfiguration) {
         merchantConfigService.saveOrUpdateMerchantConfiguration(merchantConfiguration);
         return "{\"message\": \"Details are saved for : " + merchantConfiguration.getMerchantId() + "\"}";
+    }
+
+    @GetMapping("/v1/post-order-screen-config")
+    public ResponseEntity<Object> getPostOrderScreenConfig(
+            @RequestParam(value = "merchant_id", required = false) String merchantId,
+            @RequestParam(value = "order_id") Long orderId
+    ) {
+        Map<String, Object> data = merchantConfigService.getPostScreenData(merchantId, orderId);
+
+        if (data == null) {
+            log.error("No data found for orderId = " + orderId + " & merchantId " + merchantId);
+            return new ResponseEntity<>(
+                    "{\"status_code\": 404,"
+                            + "\"message\": \"No data for the provided merchant_id, order_id found\"}",
+                    HttpStatus.OK
+            );
+        }
+
+        String formDownloadLink = (String) data.get("form_download_link");
+        if (formDownloadLink != null) {
+            formDownloadLink += "?order_id=" + orderId + "&type=form";
+            data.put("form_download_link", formDownloadLink);
+        }
+
+        String invoiceDownloadLink = (String) data.get("invoice_download_link");
+        if (invoiceDownloadLink != null) {
+            invoiceDownloadLink += "?order_id=" + orderId + "&type=invoice";
+            data.put("invoice_download_link", invoiceDownloadLink);
+        }
+        return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
 }

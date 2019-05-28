@@ -1,5 +1,6 @@
 package com.paytm.digital.education.form.service.impl;
 
+import com.paytm.digital.education.form.model.FormData;
 import com.paytm.digital.education.form.model.MerchantConfiguration;
 import com.paytm.digital.education.form.service.MerchantConfigService;
 import lombok.AllArgsConstructor;
@@ -64,6 +65,37 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
             Update updateQuery = Update.fromDocument(dbDoc);
 
             mongoOperations.upsert(query, updateQuery, MerchantConfiguration.class);
+        }
+    }
+
+    @Override
+    public Map<String, Object> getPostScreenData(String merchantId, Long orderId) {
+        Map<String, Object> data = null;
+        if (merchantId != null) {
+            data = getScreenConfig(merchantId);
+        } else if (orderId != null) {
+            Query query = new Query();
+            query.addCriteria(Criteria.where("formFulfilment.orderId").is(orderId));
+
+            FormData formData = mongoOperations.findOne(query, FormData.class);
+            if (formData != null) {
+                data = getScreenConfig(formData.getMerchantId());
+            }
+        }
+        return data;
+    }
+
+
+    private Map<String, Object> getScreenConfig(String merchantId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(merchantId));
+        query.fields().include("screenConfig");
+
+        MerchantConfiguration merchantConfiguration = mongoOperations.findOne(query, MerchantConfiguration.class);
+        if (merchantConfiguration != null) {
+            return merchantConfiguration.getPostOrderScreenConfig();
+        } else {
+            return null;
         }
     }
 }
