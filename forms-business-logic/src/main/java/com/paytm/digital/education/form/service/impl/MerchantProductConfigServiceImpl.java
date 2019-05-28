@@ -10,9 +10,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -26,16 +26,13 @@ public class MerchantProductConfigServiceImpl implements MerchantProductConfigSe
     private MongoTemplate mongoTemplate;
 
     @Override
-    public MerchantProductConfig getConfig(String merchantId, String productId, ArrayList<String> keys) {
+    public MerchantProductConfig getConfig(String merchantId, String productId, List<String> keys) {
         Query query = new Query();
         query.addCriteria(Criteria.where("_id").is(productId));
         query.addCriteria(Criteria.where("merchantId").is(merchantId));
         keys.forEach(key -> query.fields().include(key));
 
-        MerchantProductConfig merchantProductConfig = null;
-        merchantProductConfig = mongoOperations.findOne(query, MerchantProductConfig.class);
-
-        return merchantProductConfig;
+        return mongoOperations.findOne(query, MerchantProductConfig.class);
     }
 
     @Override

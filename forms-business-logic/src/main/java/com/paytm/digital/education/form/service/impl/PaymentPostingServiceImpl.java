@@ -46,6 +46,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 
 
 /*
@@ -78,7 +80,7 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
     @Autowired
     private KafkaProducer kafkaProducer;
 
-    private final String[] paymentStatus = new String[]{"00", "07", "08"};
+    private final Set<String> paymentStatus = new HashSet<>(Arrays.asList("success", "pending", "failure"));
 
     @Value("${app.topic.order.status.update}")
     private String topic;
@@ -93,6 +95,7 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
             // validate price
             Float minPrice = 0.0f;
             if (paymentPostingItemRequest.getPrice().compareTo(minPrice) < 0) {
+                // todo: send metrics
                 log.error("Negative price found: " + paymentPostingItemRequest.getPrice());
                 return false;
             }
@@ -102,12 +105,14 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
             try {
                 metadata = JsonUtils.fromJson(paymentPostingItemRequest.getMetaData(), PaymentUserMetaData.class);
             } catch (Exception e) {
+                // todo: send metrics
                 log.error("Error parsing metadata: " + paymentPostingItemRequest.getMetaData());
                 return false;
             }
 
             String refId = metadata.getRefId();
             if (refId == null || refId.isEmpty()) {
+                // todo: send metrics
                 log.error("refId not found in metadata: " + paymentPostingItemRequest.getMetaData());
                 return false;
             }
@@ -116,7 +121,13 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
             FormData formData = fetchDataFromFormDataCollection(refId);
 
             // validate amount
+            if (formData == null || formData.getCandidateDetails().getAmount() == null) {
+                // todo: send metrics
+                log.error("amount not found for refId: " + refId);
+                return false;
+            }
             if (!(paymentPostingItemRequest.getPrice().equals(formData.getCandidateDetails().getAmount()))) {
+                // todo: send metrics
                 log.error("amount validation failed for refId: " + refId + " " + paymentPostingItemRequest.getPrice()
                         + " " + formData.getCandidateDetails().getAmount());
                 return false;
@@ -124,6 +135,7 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
 
             // check for txn type
             if (formData.getTransactionType() == null || formData.getTransactionType().isEmpty()) {
+                // todo: send metrics
                 log.error("transaction type not present for refId: " + refId);
                 return false;
             }
@@ -131,6 +143,7 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
 
             // insert order data in formData collection
             if (!insertInFormDataCollection(refId, paymentPostingItemRequest)) {
+                // todo: send metrics
                 log.error("Order already exists for refId " + refId);
                 return false;
             }
@@ -138,6 +151,8 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
             // fetch fulfilment id
             Long fulfilmentId = fetchFulfilmentId(paymentPostingItemRequest, refId);
             if (fulfilmentId == null) {
+                // todo: send metrics
+                log.error("Fulfilment id was not created for refId " + refId);
                 return false;
             }
             log.info("Fulfilment id for " + refId + " created is " + fulfilmentId.toString());
@@ -153,20 +168,23 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
             if (formIoMerchantResponse == null) {
                 log.error("Response from formio API found null for refId " + refId + ", setting it as PENDING");
                 formIoMerchantResponse = new FormIoMerchantResponse();
-                formIoMerchantResponse.setPaymentStatus("07");  // PENDING
+                formIoMerchantResponse.setPaymentStatus("pending");  // PENDING
             }
 
             // check if payment status fetched is null
             if (formIoMerchantResponse.getPaymentStatus() == null) {
                 log.error("Payment status from formio API found null for refId " + refId + ", setting it as PENDING");
-                formIoMerchantResponse.setPaymentStatus("07");  // PENDING
+                formIoMerchantResponse.setPaymentStatus("pending");  // PENDING
             }
 
+            // converting paymentStatus to lowercase
+            formIoMerchantResponse.setPaymentStatus(formIoMerchantResponse.getPaymentStatus().toLowerCase());
+
             // check if unrecognized status is found
-            if (!Arrays.asList(paymentStatus).contains(formIoMerchantResponse.getPaymentStatus())) {
+            if (!paymentStatus.contains(formIoMerchantResponse.getPaymentStatus())) {
                 log.error("Unrecognized payment status found from formio API for refId " + refId
                         + ", setting it as PENDING");
-                formIoMerchantResponse.setPaymentStatus("07");  // PENDING
+                formIoMerchantResponse.setPaymentStatus("pending");  // PENDING
             }
             log.info("Setting payment status as " + formIoMerchantResponse.getPaymentStatus() + " for refId" + refId);
 
@@ -182,7 +200,8 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
             log.info("Payment posting workflow completed for refId " + refId + " and order id "
                     + paymentPostingItemRequest.getOrderId());
         } catch (Exception e) {
-            log.error("Error in processPaymentPosting", e);
+            // todo: send metrics
+            log.error("Error in processPaymentPosting" + paymentPostingRequest.getItems(), e);
         }
         return true;
     }
@@ -228,7 +247,7 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         formFulfilment.setProductId(paymentPostingItemRequest.getProductId());
         formFulfilment.setAmount(paymentPostingItemRequest.getPrice());
         formFulfilment.setStatusCheckAttempts(0);
-        formFulfilment.setPaymentStatus("07"); // setting status as PENDING
+        formFulfilment.setPaymentStatus("pending"); // setting status as PENDING
         Date currentDate = new Date();
         formFulfilment.setCreatedDate(currentDate);
         formFulfilment.setUpdatedDate(currentDate);
@@ -317,7 +336,10 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         // close connection
         httpClient.getConnectionManager().shutdown();
 
-        return formIoMerchantResultResponse.getResult();
+        if (formIoMerchantResultResponse != null) {
+            return formIoMerchantResultResponse.getResult();
+        }
+        return null;
     }
 
     private void updateFulfilmentIdInFormDataCollection(String id, Long fulfilmentId) {

@@ -17,7 +17,7 @@ public class StatusCheckController {
 
     @GetMapping("/v1/order/statuscheck")
     public ResponseEntity statusCheck(@RequestParam("order_id") String orderId) {
-        statusCheckService.processStatusCheck(orderId);
+        statusCheckService.updateStatusToFulfilment(orderId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

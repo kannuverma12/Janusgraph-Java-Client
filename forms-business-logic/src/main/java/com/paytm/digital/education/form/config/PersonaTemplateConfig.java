@@ -47,7 +47,7 @@ public class PersonaTemplateConfig {
                 notRedirect.booleanValue(), responseType, grantType);
     }
 
-    @Bean
+    @Bean(name = "personaRedisOptions")
     public RedisOptions redisOptions() {
         return new RedisOptions(null, REDIS_MEMORY_KEY, StoreAuthtokenIn.MEMORY);
 

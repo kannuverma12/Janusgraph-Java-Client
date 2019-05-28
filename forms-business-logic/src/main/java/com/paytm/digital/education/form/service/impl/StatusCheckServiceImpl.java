@@ -18,6 +18,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Data
@@ -37,20 +39,20 @@ public class StatusCheckServiceImpl implements StatusCheckService {
     @Value("${app.topic.order.status.update}")
     private String topic;
 
-    private final String[] terminatedStatus = new String[]{"00", "08"};
+    private final Set<String> terminatedStatus = new HashSet<>(Arrays.asList("success", "failure"));
 
     @Override
-    public void processStatusCheck(String orderId) {
+    public void updateStatusToFulfilment(String orderId) {
         try {
             // fetch order data from formData collection
             FormData formData = fetchDataFromFormDataCollection(orderId);
 
             //update fulfilment in case of terminated order status
-            if (formData != null && Arrays.asList(terminatedStatus)
-                    .contains(formData.getFormFulfilment().getPaymentStatus())) {
+            if (formData != null && terminatedStatus.contains(formData.getFormFulfilment().getPaymentStatus())) {
                 notifyOrderStatusToFulfilment(formData);
             }
         } catch (Exception e) {
+            // todo: send metrics
             log.error("StatusCheckServiceImpl :: processStatusCheck", e);
         }
 

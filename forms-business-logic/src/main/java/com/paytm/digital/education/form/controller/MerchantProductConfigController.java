@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/formfbl")
@@ -27,7 +27,7 @@ public class MerchantProductConfigController {
     public ResponseEntity<Object> getConfig(
             @RequestParam(value = "merchantId") String merchantId,
             @RequestParam(value = "productId") String productId,
-            @RequestParam(value = "keys", defaultValue = "") ArrayList<String> keys) {
+            @RequestParam(value = "keys", defaultValue = "") List<String> keys) {
 
         MerchantProductConfig value = merchantProductConfigService.getConfig(merchantId, productId, keys);
 
