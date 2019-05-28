@@ -66,11 +66,24 @@
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.google.oauth-client/google-oauth-client-jetty -->
-        <!--<dependency>-->
-            <!--<groupId>com.google.oauth-client</groupId>-->
-            <!--<artifactId>google-oauth-client-jetty</artifactId>-->
-            <!--<version>1.29.0</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>com.google.oauth-client</groupId>
+            <artifactId>google-oauth-client-jetty</artifactId>
+            <version>1.29.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.mortbay.jetty</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.google.apis/google-api-services-sheets -->
+        <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-sheets</artifactId>
+            <version>v4-rev1-1.21.0</version>
+        </dependency>
 
         <dependency>
             <groupId>com.amazonaws</groupId>
