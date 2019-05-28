@@ -20,9 +20,20 @@ public enum EducationEntity {
 
     @JsonProperty("city")
     CITY,
-    
+
     @JsonProperty("stream")
     STREAM;
+
+    public static Career360EntityType convertToCareer360entity(EducationEntity educationEntity) {
+        switch (educationEntity) {
+            case EXAM:
+                return Career360EntityType.EXAM;
+            case COURSE:
+                return Career360EntityType.COURSE;
+            default:
+                return null;
+        }
+    }
 
     public static SubscribableEntityType convertToSubscribableEntity(
             EducationEntity educationEntity) {

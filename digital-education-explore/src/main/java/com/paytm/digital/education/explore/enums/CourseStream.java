@@ -1,6 +1,6 @@
 package com.paytm.digital.education.explore.enums;
 
-public enum InstituteStream {
+public enum CourseStream {
     ENGINEERING(0),
     ENGINEERING_AND_ARCHITECTURE(0),
     COMPUTER_APPLICATIONS_AND_IT(1),
@@ -21,7 +21,7 @@ public enum InstituteStream {
     private String key;
     private int value;
 
-    InstituteStream(int value) {
+    CourseStream(int value) {
         this.value = value;
     }
 
@@ -29,8 +29,8 @@ public enum InstituteStream {
         return this.value;
     }
 
-    public InstituteStream convert(String data) {
-        for (InstituteStream instituteStream : InstituteStream.values()) {
+    public CourseStream convert(String data) {
+        for (CourseStream instituteStream : CourseStream.values()) {
             if (instituteStream.name().equalsIgnoreCase(data)) {
                 return instituteStream;
             }

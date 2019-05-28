@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.explore.enums.CourseStream;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.enums.LeadAction;
+import com.paytm.digital.education.explore.enums.LeadPartner;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -44,6 +46,11 @@ public class Lead {
     @JsonProperty(Constants.USER_ID)
     @Field(Constants.USER_ID)
     private Long userId;
+
+    @JsonProperty("stream")
+    @Field(Constants.STREAM)
+    //@NotBlank
+    private CourseStream stream;
 
     @Field(Constants.CONTACT_NAME)
     @JsonProperty(Constants.CONTACT_NAME)
@@ -85,8 +92,23 @@ public class Lead {
 
     @Field(Constants.ENTITY_TYPE)
     @JsonProperty(Constants.ENTITY_TYPE)
-    @NotNull
+    //@NotNull
     private EducationEntity entityType;
+
+    @Field(Constants.STATE_ID)
+    @JsonProperty("state_id")
+    //@NotNull
+    private Long stateId;
+
+    @Field(Constants.REQUEST_TYPE)
+    //@NotNull
+    @JsonProperty("request_type")
+    private Long requestType;
+
+    @Field(Constants.CITY_ID)
+    @JsonProperty("city_id")
+    //@NotNull
+    private Long cityId;
 
     @JsonIgnore
     @Field(Constants.CREATED_AT)
@@ -96,26 +118,42 @@ public class Lead {
     @Field(Constants.UPDATED_AT)
     private Date updatedAt;
 
+    @JsonIgnore
+    @Field(Constants.PARTNER)
+    private LeadPartner leadPartner;
+
+    @JsonIgnore
+    @Field(Constants.PUBLISHED)
+    private boolean published;
+
 
     public static class Constants {
-        public static final String ACTION                   = "action";
-        public static final String STATUS                   = "status";
-        public static final String USER_ID                  = "user_id";
-        public static final String CONTACT_NAME             = "contact_name";
-        public static final String CONTACT_EMAIL            = "contact_email";
-        public static final String CONTACT_NUMBER           = "contact_number";
-        public static final String ACTION_COUNT             = "action_count";
-        public static final String ENTITY_ID                = "entity_id";
-        public static final String COURSE_ID                = "course_id";
-        public static final String ENTITY_TYPE              = "entity_type";
-        public static final String CREATED_AT               = "created_at";
-        public static final String UPDATED_AT               = "updated_at";
-        public static final String PHONE_REGEX              = "^\\(?(\\d{3})\\)?[- ]?(\\d{3})[- ]?(\\d{4})$";
-        public static final String NAME_REGEX               = "^[\\p{L} .'-]+$";
-        public static final String PHONE_VALIDATION_MESSAGE = "Invalid phone number.";
-        public static final String NAME_VALIDATION_MESSAGE  = "Name must only contain Alphabets & Spaces.";
-        public static final String BLANK_NAME_VALIDATION_MESSAGE = "Name cannot be left Blank.";
+        public static final String ACTION                         = "action";
+        public static final String STATUS                         = "status";
+        public static final String USER_ID                        = "user_id";
+        public static final String CONTACT_NAME                   = "contact_name";
+        public static final String CONTACT_EMAIL                  = "contact_email";
+        public static final String CONTACT_NUMBER                 = "contact_number";
+        public static final String ACTION_COUNT                   = "action_count";
+        public static final String STATE_ID                       = "state_id";
+        public static final String CITY_ID                        = "city_id";
+        public static final String ENTITY_ID                      = "entity_id";
+        public static final String STREAM                         = "stream";
+        public static final String COURSE_ID                      = "course_id";
+        public static final String REQUEST_TYPE                   = "request_type";
+        public static final String ENTITY_TYPE                    = "entity_type";
+        public static final String PARTNER                        = "partner";
+        public static final String CREATED_AT                     = "created_at";
+        public static final String UPDATED_AT                     = "updated_at";
+        public static final String PUBLISHED                      = "published";
+        public static final String PHONE_REGEX                    =
+                "^\\(?(\\d{3})\\)?[- ]?(\\d{3})[- ]?(\\d{4})$";
+        public static final String NAME_REGEX                     = "^[\\p{L} .'-]+$";
+        public static final String PHONE_VALIDATION_MESSAGE       = "Invalid phone number.";
+        public static final String NAME_VALIDATION_MESSAGE        =
+                "Name must only contain Alphabets & Spaces.";
+        public static final String BLANK_NAME_VALIDATION_MESSAGE  = "Name cannot be left Blank.";
         public static final String BLANK_EMAIL_VALIDATION_MESSAGE = "Enter a Valid Email Id.";
-        public static final String EMAIL_VALIDATION_MESSAGE = "Email cannot be left Blank.";
+        public static final String EMAIL_VALIDATION_MESSAGE       = "Email cannot be left Blank.";
     }
 }
