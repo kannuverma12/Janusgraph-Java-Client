@@ -23,7 +23,7 @@ public class Career360LeadRequest {
     private Long stateId;
 
     @JsonProperty("request_type")
-    private Long requestType;
+    private Integer requestType;
 
     @JsonProperty("paytm_customer_id")
     private Long paytmCustomerId;

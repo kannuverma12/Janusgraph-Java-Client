@@ -7,5 +7,16 @@ public enum Career360EntityType {
     EXAM,
 
     @JsonProperty("course")
-    COURSE
+    COURSE;
+
+    public static EducationEntity convertToEducationEntity(Career360EntityType educationEntity) {
+        switch (educationEntity) {
+            case EXAM:
+                return EducationEntity.EXAM;
+            case COURSE:
+                return EducationEntity.COURSE;
+            default:
+                return null;
+        }
+    }
 }

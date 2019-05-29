@@ -103,7 +103,7 @@ public class Lead {
     @Field(Constants.REQUEST_TYPE)
     //@NotNull
     @JsonProperty("request_type")
-    private Long requestType;
+    private Integer requestType;
 
     @Field(Constants.CITY_ID)
     @JsonProperty("city_id")
