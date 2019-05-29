@@ -32,8 +32,11 @@ public class FormConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/formfbl/v1/order/statuscheck").permitAll()
                 .antMatchers(HttpMethod.POST, "/formfbl/v1/saveMerchantProductConfig").permitAll()
                 .antMatchers(HttpMethod.GET, "/formfbl/v1/getMerchantProductConfig").permitAll()
+                .antMatchers("/explore/**").permitAll()
                 .antMatchers("/formfbl/form-data/**").permitAll()
                 .antMatchers("/formfbl/v1/user/**").permitAll()
+                .antMatchers("/formfbl/v1/orders/download").authenticated()
+                .antMatchers("/formfbl/v1/orders/bulk-download").authenticated()
                 .antMatchers("/formfbl/**").authenticated()
                 .anyRequest()
                 .permitAll();

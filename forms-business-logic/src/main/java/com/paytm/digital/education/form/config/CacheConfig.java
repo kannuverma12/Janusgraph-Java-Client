@@ -17,8 +17,8 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-@Configuration
-@EnableCaching
+//@Configuration
+//@EnableCaching
 public class CacheConfig implements CachingConfigurer {
 
     private static final String AUTO_EXPIRE_CACHE = "AutoExpireCache";
