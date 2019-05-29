@@ -1,6 +1,5 @@
 package com.paytm.digital.education.application.advice;
 
-import static com.paytm.digital.education.application.constant.Constant.EDUCATION_BASE_PACKAGE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.USER_UNAUTHORIZED_MESSAGE;
 import static com.paytm.digital.education.utility.ArrayUtils.padArray;
 

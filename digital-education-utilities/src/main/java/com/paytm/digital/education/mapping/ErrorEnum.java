@@ -40,12 +40,6 @@ public enum ErrorEnum {
             HttpStatus.BAD_REQUEST, 0),
     CASTE_CATEGORY_PARAMETER_MISSING(4019, "Caste category parameter is missing in request.",
             HttpStatus.BAD_REQUEST, 0),
-    ORDER_ID_OR_START_DATE(9000, "Either Order Id or start date must be present.",
-            HttpStatus.BAD_REQUEST, 10),
-    EITHER_OF_ORDER_ID_OR_START_DATE(9001, "Either of Order Id or start date must be present.",
-            HttpStatus.BAD_REQUEST, 10),
-    USER_IS_NOT_MERCHANT(9002, "User is not Merchant",
-            HttpStatus.UNAUTHORIZED, 0),
     ENTITY_ID_NOT_PRESENT(4020, "%s is missing in the request.",
             HttpStatus.BAD_REQUEST, 1);
 

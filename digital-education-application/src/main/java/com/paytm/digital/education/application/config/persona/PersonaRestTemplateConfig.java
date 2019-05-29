@@ -3,11 +3,9 @@ package com.paytm.digital.education.application.config.persona;
 import com.paytm.digital.education.application.config.metric.DataDogClient;
 import com.paytm.digital.education.application.constant.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import paytm.auth.personaaclclient.authorized_request_handler.PersonaRestTemplate;
@@ -34,7 +32,6 @@ public class PersonaRestTemplateConfig {
     private DataDogClient dataDogClient;
 
     @Bean
-    @Primary
     public RequestOptions requestOptionsQS() {
         return new RequestOptions(AuthTokenLocation.QS, "authtoken");
     }
@@ -58,7 +55,7 @@ public class PersonaRestTemplateConfig {
 
     @Bean(name = Constant.SAMPLE_API)
     public PersonaRestTemplate sampleApiPersonaRestTemplateQS(
-            @Qualifier("requestOptionsQS") final RequestOptions requestOptions,
+            final RequestOptions requestOptions,
             final PersonaAccount personaAccount,
             final RedisOptions redisOptions) {
 
