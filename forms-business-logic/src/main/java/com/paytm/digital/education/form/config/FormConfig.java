@@ -8,6 +8,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+
 import paytm.auth.personaaclclient.infrastructure.security.CookieAuthenticationProvider;
 import paytm.auth.personaaclclient.infrastructure.security.DomainUsernamePasswordAuthenticationProvider;
 
@@ -28,7 +30,7 @@ public class FormConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/formfbl/v1/paymentPosting").permitAll()
                 .antMatchers(HttpMethod.GET, "/formfbl/v1/order/statuscheck").permitAll()
-                .antMatchers(HttpMethod.GET, "/formfbl/v1/saveMerchantProductConfig").permitAll()
+                .antMatchers(HttpMethod.POST, "/formfbl/v1/saveMerchantProductConfig").permitAll()
                 .antMatchers(HttpMethod.GET, "/formfbl/v1/getMerchantProductConfig").permitAll()
                 .antMatchers("/formfbl/form-data/**").permitAll()
                 .antMatchers("/formfbl/v1/user/**").permitAll()
@@ -38,8 +40,8 @@ public class FormConfig extends WebSecurityConfigurerAdapter {
 
         http.headers().frameOptions().disable();
 
-/*        http.addFilterBefore(new FormAuthenticationFilter(authenticationManager()),
-                BasicAuthenticationFilter.class);*/
+        http.addFilterBefore(new FormAuthenticationFilter(authenticationManager()),
+                BasicAuthenticationFilter.class);
     }
 
     @Override
