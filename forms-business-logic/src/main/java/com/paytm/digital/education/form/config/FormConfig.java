@@ -5,6 +5,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -32,7 +33,6 @@ public class FormConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/formfbl/v1/order/statuscheck").permitAll()
                 .antMatchers(HttpMethod.POST, "/formfbl/v1/saveMerchantProductConfig").permitAll()
                 .antMatchers(HttpMethod.GET, "/formfbl/v1/getMerchantProductConfig").permitAll()
-                .antMatchers("/explore/**").permitAll()
                 .antMatchers("/formfbl/form-data/**").permitAll()
                 .antMatchers("/formfbl/v1/user/**").permitAll()
                 .antMatchers("/formfbl/v1/orders/download").authenticated()
@@ -45,6 +45,11 @@ public class FormConfig extends WebSecurityConfigurerAdapter {
 
         http.addFilterBefore(new FormAuthenticationFilter(authenticationManager()),
                 BasicAuthenticationFilter.class);
+    }
+    
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers("/explore");
     }
 
     @Override
