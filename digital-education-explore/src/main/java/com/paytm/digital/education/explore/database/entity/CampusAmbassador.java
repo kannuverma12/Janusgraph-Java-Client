@@ -3,8 +3,6 @@ package com.paytm.digital.education.explore.database.entity;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.util.Date;
-
 @Data
 public class CampusAmbassador {
     @Field("name")

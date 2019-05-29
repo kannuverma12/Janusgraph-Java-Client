@@ -36,22 +36,22 @@ public class S3Util {
         log.info("In S3Service.uploadFile with imageUrl {} fileName {} instituteId {} ", imageUrl,
                 fileName, instituteId);
         System.setProperty(HTTP_AGENT, CHROME_HTTP_AGENT);
-//        if (Objects.nonNull(imageUrl)) {
-//            imageUrl = encodeString(imageUrl, fileName);
-//            URL url = new URL(imageUrl);
-//            inputStream = url.openStream();
-//        }
-//        ObjectMetadata metadata = new ObjectMetadata();
-//        byte[] bytes1 = IOUtils.toByteArray(inputStream);
-//        metadata.setContentLength(bytes1.length);
-//        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes1);
-//        PutObjectRequest saveRequest =
-//                new PutObjectRequest(
-//                        bucketPath,
-//                        fileName, byteArrayInputStream, metadata);
-//        s3Client.putObject(saveRequest);
-//        inputStream.close();
+        if (Objects.nonNull(imageUrl)) {
+            imageUrl = encodeString(imageUrl, fileName);
+            URL url = new URL(imageUrl);
+            inputStream = url.openStream();
+        }
         String s3Path = MessageFormat.format(s3ImagePath, instituteId, fileName);
+        //        ObjectMetadata metadata = new ObjectMetadata();
+        //        byte[] bytes1 = IOUtils.toByteArray(inputStream);
+        //        metadata.setContentLength(bytes1.length);
+        //        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes1);
+        //        PutObjectRequest saveRequest =
+        //                new PutObjectRequest(
+        //                        bucketPath + s3Path,
+        //                        fileName, byteArrayInputStream, metadata);
+        //        s3Client.putObject(saveRequest);
+        inputStream.close();
         log.info(
                 "Exited from S3Service.uploadFile with imageUrl {} fileName {} instituteId {} s3Path {} ",
                 imageUrl, fileName, instituteId, s3Path);

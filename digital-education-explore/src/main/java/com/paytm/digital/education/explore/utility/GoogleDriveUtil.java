@@ -13,7 +13,6 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
-import com.google.api.services.drive.model.FileList;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import javafx.util.Pair;
@@ -33,15 +32,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.FILENAME;
+import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.GOOGLE_API_CREDENTIAL_FOLDER;
+import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.GOOGLE_CLIENT_SECRET_FILE_NAME;
+import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.HOME_PATH;
+import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.INPUTSTREAM;
+import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.MIMETYPE;
+
 @UtilityClass
 public class GoogleDriveUtil {
 
-    private static final String       APPLICATION_NAME        = "Google Drive API Java Quickstart";
+    private static final String       APPLICATION_NAME        = "Education";
     private static final JsonFactory  JSON_FACTORY            = JacksonFactory.getDefaultInstance();
     // Directory to store user credentials for this application.
     private static final java.io.File CREDENTIALS_FOLDER      =
-            new java.io.File(System.getProperty("user.home"), "credentials");
-    private static final String       CLIENT_SECRET_FILE_NAME = "client_secret.json";
+            new java.io.File(System.getProperty(HOME_PATH), GOOGLE_API_CREDENTIAL_FOLDER);
+    private static final String       CLIENT_SECRET_FILE_NAME = GOOGLE_CLIENT_SECRET_FILE_NAME;
     /*
      ** Global instance of the scopes required by this quickstart. If modifying these
      ** scopes, delete your previously saved credentials/ folder.
@@ -49,9 +55,8 @@ public class GoogleDriveUtil {
     private static final List<String> SCOPES                  =
             Collections.singletonList(DriveScopes.DRIVE);
 
-    private  Credential getCredentials(final NetHttpTransport httpTransport) throws
+    private Credential getCredentials(final NetHttpTransport httpTransport) throws
             IOException {
-
         java.io.File clientSecretFilePath =
                 new java.io.File(CREDENTIALS_FOLDER, CLIENT_SECRET_FILE_NAME);
 
@@ -73,63 +78,44 @@ public class GoogleDriveUtil {
         return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
     }
 
-    private Drive createGoogleDriveService() throws IOException, GeneralSecurityException{
-        // create parent directory (if necessary)
-        System.out.println("CREDENTIALS_FOLDER: " + CREDENTIALS_FOLDER.getAbsolutePath());
-        // 1: Create CREDENTIALS_FOLDER
-        if (!CREDENTIALS_FOLDER.exists()) {
-            CREDENTIALS_FOLDER.mkdirs();
-            System.out.println("Created Folder: " + CREDENTIALS_FOLDER.getAbsolutePath());
-            System.out.println("Copy file " + CLIENT_SECRET_FILE_NAME
-                    + " into folder above.. and rerun this class!!");
-            return null;
-        }
-        // 2: Build a new authorized API client service.
+    private Drive createGoogleDriveService() throws IOException, GeneralSecurityException {
+        // 1: Build a new authorized API client service.
         final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-        // 3: Read client_secret.json file & create Credential object.
+        // 2: Read client_secret.json file & create Credential object.
         Credential credential = getCredentials(httpTransport);
-        // 5: Create Google Drive Service.
-        return new Drive.Builder(httpTransport, JSON_FACTORY, credential) //
+        // 3: Create Google Drive Service.
+        return new Drive.Builder(httpTransport, JSON_FACTORY, credential)
                 .setApplicationName(APPLICATION_NAME).build();
     }
 
     private Sheets createSheetService() throws IOException, GeneralSecurityException {
-        // create parent directory (if necessary)
-        System.out.println("CREDENTIALS_FOLDER: " + CREDENTIALS_FOLDER.getAbsolutePath());
-        // 1: Create CREDENTIALS_FOLDER
-        if (!CREDENTIALS_FOLDER.exists()) {
-            CREDENTIALS_FOLDER.mkdirs();
-            System.out.println("Created Folder: " + CREDENTIALS_FOLDER.getAbsolutePath());
-            System.out.println("Copy file " + CLIENT_SECRET_FILE_NAME
-                    + " into folder above.. and rerun this class!!");
-            return null;
-        }
-        // 2: Build a new authorized API client service.
         final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-        // 3: Read client_secret.json file & create Credential object.
         Credential credential = getCredentials(httpTransport);
-        // 5: Create Google Drive Service.
-        return new Sheets.Builder(httpTransport, JSON_FACTORY, credential) //
+        return new Sheets.Builder(httpTransport, JSON_FACTORY, credential)
                 .setApplicationName(APPLICATION_NAME).build();
     }
 
 
-    public Pair<String, InputStream> downloadFile(boolean useDirectDownload, String fileUrl)
+    public Map<String, Object> downloadFile(boolean useDirectDownload, String fileUrl)
             throws IOException, GeneralSecurityException {
         Drive service = createGoogleDriveService();
         URL url = new URL(fileUrl);
         String fileId = getQueryMap(url.getQuery()).get("id");
         File file = service.files().get(fileId).execute();
         String fileName = file.getName();
-        return new Pair<>(fileName, service.files().get(fileId).executeMediaAsInputStream());
+        String mimeType = file.getMimeType();
+        InputStream is = service.files().get(fileId).executeMediaAsInputStream();
+        Map<String, Object> fileData = new HashMap<>();
+        fileData.put(FILENAME, fileName);
+        fileData.put(MIMETYPE, mimeType);
+        fileData.put(INPUTSTREAM, is);
+        return fileData;
     }
 
-    private Map<String, String> getQueryMap(String query)
-    {
+    private Map<String, String> getQueryMap(String query) {
         String[] params = query.split("&");
         Map<String, String> map = new HashMap<String, String>();
-        for (String param : params)
-        {
+        for (String param : params) {
             String name = param.split("=")[0];
             String value = param.split("=")[1];
             map.put(name, value);
@@ -137,38 +123,40 @@ public class GoogleDriveUtil {
         return map;
     }
 
-    public List<Object> readGoogleSheet(String sheetId, String range) throws GeneralSecurityException,
-            IOException{
+    private List<List<Object>> readGoogleSheet(String sheetId, String range)
+            throws GeneralSecurityException,
+            IOException {
         Sheets sheetsService = createSheetService();
         ValueRange response = sheetsService.spreadsheets().values()
                 .get(sheetId, range)
                 .execute();
-        List<List<Object>> data = response.getValues();
+        return response.getValues();
+    }
+
+    public List<Object> getDataFromSheet(String sheetId, String range, String headerRange)
+            throws GeneralSecurityException, IOException {
+        List<List<Object>> data = readGoogleSheet(sheetId, range);
         if (Objects.nonNull(data)) {
-            boolean start = true;
+            List<List<Object>> headerData =
+                    readGoogleSheet(sheetId, headerRange);
             List<String> headers = new ArrayList<>();
+            for (List row : headerData) {
+                for (Object column : row) {
+                    headers.add(column.toString().trim().replace(" ", "_").toLowerCase());
+                }
+            }
             List<Object> sheetDataList = new ArrayList<>();
             for (List row : data) {
                 Map<String, Object> sheetData = new HashMap<>();
                 int index = 0;
                 for (Object column : row) {
-                    if (start == true) {
-                        headers.add(column.toString().trim().replace(" ", "_").toLowerCase());
-                    } else {
-                        sheetData.put(headers.get(index), column);
-                    }
+                    sheetData.put(headers.get(index), column);
                     index++;
                 }
-                if (start == true) {
-                    start = false;
-                } else {
-                    sheetDataList.add(sheetData);
-                }
+                sheetDataList.add(sheetData);
             }
             return sheetDataList;
         }
         return null;
     }
-
-
 }
