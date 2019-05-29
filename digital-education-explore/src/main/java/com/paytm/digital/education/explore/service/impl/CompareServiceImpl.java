@@ -45,14 +45,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.List;
+import java.util.HashMap;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
@@ -96,7 +98,8 @@ public class CompareServiceImpl implements CompareService {
                 }
             }
 
-            Map<String, List<String>> keyInsights = compareInsightsService.getInstituteKeyInsights(finalInstituteList);
+            Map<String, List<String>> keyInsights =
+                    compareInsightsService.getInstituteKeyInsights(finalInstituteList);
             if (!CollectionUtils.isEmpty(keyInsights)) {
                 compareDetail.setKeyInsights(keyInsights);
             }
@@ -210,7 +213,11 @@ public class CompareServiceImpl implements CompareService {
                         cr.setSource(ranking.getSource());
                         cr.setSubtitle(AS_PER + ranking.getSource() + RANKINGS);
 
-                        Set<CompareRanking> crList = c.getRankings();
+                        Set<CompareRanking> crList =
+                                new TreeSet<>((c1, c2) -> c2.getSource().compareTo(c1.getSource()));
+                        if (!CollectionUtils.isEmpty(c.getRankings())) {
+                            crList.addAll(c.getRankings());
+                        }
                         if (Objects.isNull(crList)) {
                             crList = new HashSet<>();
                         }
@@ -267,17 +274,17 @@ public class CompareServiceImpl implements CompareService {
             cDetail.setLogo(CommonUtil.getLogoLink(inst.getGallery().getLogo()));
         }
         OfficialAddress officialAddress =
-            CommonUtil.getOfficialAddress(inst.getInstitutionState(),
-                    inst.getInstitutionCity(), inst.getPhone(), inst.getUrl(),
-                    inst.getOfficialAddress());
+                CommonUtil.getOfficialAddress(inst.getInstitutionState(),
+                        inst.getInstitutionCity(), inst.getPhone(), inst.getUrl(),
+                        inst.getOfficialAddress());
         cDetail.setOfficialAddress(officialAddress);
         return cDetail;
     }
 
     private Map<Long, String> getCourseMap(List<Course> courses) {
         return courses.stream().filter(c -> Objects.nonNull(c.getCourseNameOfficial()))
-            .collect(Collectors.toMap(c -> c.getCourseId(), c -> c.getCourseNameOfficial(),
-                (a1, a2) -> a2));
+                .collect(Collectors.toMap(c -> c.getCourseId(), c -> c.getCourseNameOfficial(),
+                    (a1, a2) -> a2));
     }
 
     private Map<String, Placement> getPlacements(List<Placement> placements) {

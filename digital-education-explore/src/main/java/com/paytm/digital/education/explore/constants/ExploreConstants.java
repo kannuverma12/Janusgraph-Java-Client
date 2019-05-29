@@ -36,7 +36,7 @@ public interface ExploreConstants {
     String EXPLORE_COMPONENT = "explore";
 
     ////// AutoSuggest Constants ////////////
-    String AUTOSUGGEST_INDEX         = "education_autosuggestion_v3";
+    String AUTOSUGGEST_INDEX         = "education_autosuggestion_v2";
     String AUTOSUGGEST_ANALYZER      = "words_with_spaces_analyzer";
     int    AUTOSUGGEST_MIN_CHARS     = 3;
     int    AUTOSUGGEST_MAX_CHARS     = 200;
@@ -111,7 +111,7 @@ public interface ExploreConstants {
 
     ///////// Explore search Constatnts ///////////
     // Exam
-    String SEARCH_INDEX_EXAM              = "education_search_exam_v3";
+    String SEARCH_INDEX_EXAM              = "education_search_exam_v2";
     String SEARCH_ANALYZER_EXAM           = "word_delimiter_analyzer_search";
     String SEARCH_NAMES_EXAM              = "names";
     String EXAM_FULL_NAME_SEARCH          = "exam_full_name";
@@ -200,6 +200,7 @@ public interface ExploreConstants {
     String WIDGETS                   = "widgets";
     String DATA_STRING               = "data";
     String PARENT_INSTITUTION        = "parent_institution";
+    String NOTABLE_ALUMNI_PLACEHOLDER = "/notable_alumni_placeholder.png";
 
     // Other Constants
     Version FTL_CURRENT_VERSION = Configuration.VERSION_2_3_23;

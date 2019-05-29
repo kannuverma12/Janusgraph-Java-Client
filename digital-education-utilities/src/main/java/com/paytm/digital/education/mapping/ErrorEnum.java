@@ -45,7 +45,9 @@ public enum ErrorEnum {
     EITHER_OF_ORDER_ID_OR_START_DATE(9001, "Either of Order Id or start date must be present.",
             HttpStatus.BAD_REQUEST, 10),
     USER_IS_NOT_MERCHANT(9002, "User is not Merchant",
-            HttpStatus.UNAUTHORIZED, 0);
+            HttpStatus.UNAUTHORIZED, 0),
+    ENTITY_ID_NOT_PRESENT(4020, "%s is missing in the request.",
+            HttpStatus.BAD_REQUEST, 1);
 
     private final int        internalCode;
     private final String     externalMessage;

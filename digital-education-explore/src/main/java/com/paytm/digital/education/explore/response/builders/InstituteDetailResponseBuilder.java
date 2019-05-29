@@ -3,6 +3,7 @@ package com.paytm.digital.education.explore.response.builders;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_PREFIX;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.APPROVALS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OVERALL_RANKING;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.NOTABLE_ALUMNI_PLACEHOLDER;
 import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
 
 import com.paytm.digital.education.explore.database.entity.Alumni;
@@ -37,6 +38,7 @@ import java.util.TreeMap;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
+import com.paytm.digital.education.property.reader.PropertyReader;
 import javafx.util.Pair;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -56,6 +58,7 @@ public class InstituteDetailResponseBuilder {
     private PlacementDataHelper         placementDataHelper;
     private CourseDetailHelper          courseDetailHelper;
     private GalleryDataHelper           galleryDataHelper;
+    private PropertyReader              propertyReader;
     private FacilityDataHelper          facilityDataHelper;
     private DetailPageSectionHelper     detailPageSectionHelper;
     private BannerDataHelper            bannerDataHelper;
@@ -130,12 +133,22 @@ public class InstituteDetailResponseBuilder {
             List<Alumni> notableAlumni) {
         List<com.paytm.digital.education.explore.response.dto.detail.Alumni> alumniList =
                 new ArrayList<>();
+        List<Alumni> alumnWithoutImageList = new ArrayList<>();
         for (Alumni alumni : notableAlumni) {
             String alumniPhoto = alumni.getAlumniPhoto();
             if (Objects.nonNull(alumniPhoto)) {
                 alumniPhoto = CommonUtil.getLogoLink(alumniPhoto);
                 alumni.setAlumniPhoto(alumniPhoto);
+                com.paytm.digital.education.explore.response.dto.detail.Alumni responseAlumni =
+                        new com.paytm.digital.education.explore.response.dto.detail.Alumni();
+                BeanUtils.copyProperties(alumni, responseAlumni);
+                alumniList.add(responseAlumni);
+            } else {
+                alumnWithoutImageList.add(alumni);
             }
+        }
+        for (Alumni alumni : alumnWithoutImageList) {
+            alumni.setAlumniPhoto(CommonUtil.getLogoLink(NOTABLE_ALUMNI_PLACEHOLDER));
             com.paytm.digital.education.explore.response.dto.detail.Alumni responseAlumni =
                     new com.paytm.digital.education.explore.response.dto.detail.Alumni();
             BeanUtils.copyProperties(alumni, responseAlumni);
