@@ -12,7 +12,7 @@ public class ExamData extends SearchBaseData {
     @JsonProperty("exam_id")
     private int          examId;
 
-    @JsonProperty("url_display_name")
+    @JsonProperty("url_display_key")
     private String urlDisplayName;
 
     @JsonProperty("official_name")

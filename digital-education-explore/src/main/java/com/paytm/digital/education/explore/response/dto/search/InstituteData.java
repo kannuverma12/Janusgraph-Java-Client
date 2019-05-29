@@ -27,7 +27,7 @@ public class InstituteData extends SearchBaseData {
     @JsonProperty("official_address")
     private OfficialAddress officialAddress;
 
-    @JsonProperty("url_display_name")
+    @JsonProperty("url_display_key")
     private String urlDisplayName;
 
 }

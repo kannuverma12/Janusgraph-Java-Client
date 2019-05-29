@@ -17,7 +17,7 @@ public class CourseSearchResponse extends SearchBaseData {
     @JsonProperty("institute_id")
     private Long instituteId;
 
-    @JsonProperty("url_display_name")
+    @JsonProperty("url_display_key")
     private String urlDisplayName;
 
     @JsonProperty("courses")

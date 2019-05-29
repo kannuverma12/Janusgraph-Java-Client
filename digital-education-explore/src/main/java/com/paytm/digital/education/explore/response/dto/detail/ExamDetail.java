@@ -19,7 +19,7 @@ public class ExamDetail {
     @JsonProperty("exam_full_name")
     private String         examFullName;
 
-    @JsonProperty("url_display_name")
+    @JsonProperty("url_display_key")
     private String          urlDisplayName;
 
     @JsonProperty("exam_short_name")
