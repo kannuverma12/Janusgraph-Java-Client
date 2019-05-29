@@ -58,7 +58,6 @@ public class InstituteDetailResponseBuilder {
     private PlacementDataHelper         placementDataHelper;
     private CourseDetailHelper          courseDetailHelper;
     private GalleryDataHelper           galleryDataHelper;
-    private PropertyReader              propertyReader;
     private FacilityDataHelper          facilityDataHelper;
     private DetailPageSectionHelper     detailPageSectionHelper;
     private BannerDataHelper            bannerDataHelper;
@@ -81,6 +80,8 @@ public class InstituteDetailResponseBuilder {
         }
         instituteDetail.setEstablishedYear(institute.getEstablishedYear());
         instituteDetail.setOfficialName(institute.getOfficialName());
+        instituteDetail.setUrlDisplayName(
+                CommonUtil.convertNameToUrlDisplayName(institute.getOfficialName()));
         instituteDetail.setBrochureUrl(institute.getOfficialUrlBrochure());
         instituteDetail
                 .setFacilities(

@@ -62,7 +62,8 @@ public class SimilarInstituteServiceImpl {
     private InstituteRepository   instituteRepository;
     private WidgetsDataHelper     widgetsDataHelper;
 
-    private static List<String> projectionFields = Arrays.asList(INSTITUTE_ID, OFFICIAL_NAME, GALLERY_LOGO);
+    private static List<String> projectionFields =
+            Arrays.asList(INSTITUTE_ID, OFFICIAL_NAME, GALLERY_LOGO);
 
     @Cacheable(value = "similar_institutes", key = "'similar_'+#institute.instituteId")
     public List<Widget> getSimilarInstitutes(Institute institute) {
@@ -71,7 +72,8 @@ public class SimilarInstituteServiceImpl {
                 Map<String, Map<String, Ranking>> rankingDataMap =
                         getRankingMap(institute.getRankings());
                 if (!CollectionUtils.isEmpty(rankingDataMap) && rankingDataMap.containsKey(NIRF)) {
-                    Widget widget = getSimilarCollegesByNirfRanking(institute, rankingDataMap.get(NIRF));
+                    Widget widget =
+                            getSimilarCollegesByNirfRanking(institute, rankingDataMap.get(NIRF));
                     if (Objects.nonNull(widget)) {
                         return Arrays.asList(widget);
                     }
@@ -84,23 +86,28 @@ public class SimilarInstituteServiceImpl {
                 log.error("Error caught while getting similar colleges for the instituteId : "
                         + institute.getInstituteId(), ex);
             }
-            return widgetsDataHelper.getWidgets(INSTITUTE.name().toLowerCase(), institute.getInstituteId());
+            return widgetsDataHelper
+                    .getWidgets(INSTITUTE.name().toLowerCase(), institute.getInstituteId());
         }
         return null;
     }
 
 
-    private Widget getSimilarCollegesByNirfRanking(Institute institute, Map<String, Ranking> nirfRanking) {
+    private Widget getSimilarCollegesByNirfRanking(Institute institute,
+            Map<String, Ranking> nirfRanking) {
         //If Only one stream is present, show similar colleges based on the streams present
         Set<String> streams = getRankingStreams(nirfRanking);
         if (Objects.nonNull(streams) && streams.size() == ONE.getValue()) {
-            return getSimilarCollegesByStreams(institute, NIRF, TOTAL_SIMILAR_COLLEGE, streams, nirfRanking);
+            return getSimilarCollegesByStreams(institute, NIRF, TOTAL_SIMILAR_COLLEGE, streams,
+                    nirfRanking);
         }
         //otherwise show similar colleges based on the OVERALL rankings
         if (nirfRanking.containsKey(OVERALL_RANKING) || nirfRanking.containsKey(UNIVERSITIES)) {
             List<Institute> instituteList = getByOverAllRankings();
-            int mainRank = nirfRanking.containsKey(OVERALL_RANKING) ? nirfRanking.get(OVERALL_RANKING).getRank()
-                    : nirfRanking.get(UNIVERSITIES).getRank();
+            int mainRank = nirfRanking.containsKey(OVERALL_RANKING)
+                    ?
+                    nirfRanking.get(OVERALL_RANKING).getRank() :
+                    nirfRanking.get(UNIVERSITIES).getRank();
             List<Institute> resultList =
                     getTopSimilarInstitutes(institute, instituteList, NIRF, null, true, mainRank,
                             TOTAL_SIMILAR_COLLEGE);
@@ -124,9 +131,9 @@ public class SimilarInstituteServiceImpl {
                 if (!CollectionUtils.isEmpty(instituteList)) {
                     Collections.sort(instituteList, (institute1, institute2) -> {
                         int rank1 = getRankingBySourceAndStream(institute1.getRankings(),
-                            rankingSource, stream, false).getRank();
+                                rankingSource, stream, false).getRank();
                         int rank2 = getRankingBySourceAndStream(institute2.getRankings(),
-                            rankingSource, stream, false).getRank();
+                                rankingSource, stream, false).getRank();
                         return rank1 - rank2;
                     });
                 }
@@ -148,6 +155,8 @@ public class SimilarInstituteServiceImpl {
                 WidgetData widgetData = new WidgetData();
                 widgetData.setEntityId(institute.getInstituteId());
                 widgetData.setOfficialName(institute.getOfficialName());
+                widgetData.setUrlDisplayKey(
+                        CommonUtil.convertNameToUrlDisplayName(institute.getOfficialName()));
                 if (Objects.nonNull(institute.getGallery())) {
                     widgetData.setLogoUrl(CommonUtil.getLogoLink(institute.getGallery().getLogo()));
                 }
@@ -197,8 +206,10 @@ public class SimilarInstituteServiceImpl {
             if (CollectionUtils.isEmpty(institute2.getRankings())) {
                 return -1;
             }
-            Ranking ranking1 = getRankingBySourceAndStream(institute1.getRankings(), NIRF, null, true);
-            Ranking ranking2 = getRankingBySourceAndStream(institute2.getRankings(), NIRF, null, true);
+            Ranking ranking1 =
+                    getRankingBySourceAndStream(institute1.getRankings(), NIRF, null, true);
+            Ranking ranking2 =
+                    getRankingBySourceAndStream(institute2.getRankings(), NIRF, null, true);
 
             if (Objects.nonNull(ranking1) && Objects.nonNull(ranking2)) {
                 return ranking1.getRank() - ranking2.getRank();
@@ -218,9 +229,11 @@ public class SimilarInstituteServiceImpl {
                         institute.getInstitutionCity(), selectTopTwoStreams(streams));
         List<Institute> instituteList = commonMongoRepository
                 .findAll(instituteQueryMap, Institute.class, projectionFields, AND);
-        if (!CollectionUtils.isEmpty(instituteList) && instituteList.size() > TOTAL_SIMILAR_COLLEGE) {
+        if (!CollectionUtils.isEmpty(instituteList)
+                && instituteList.size() > TOTAL_SIMILAR_COLLEGE) {
             instituteList = instituteList.stream()
-                    .filter(institute1 -> !institute1.getInstituteId().equals(institute.getInstituteId()))
+                    .filter(institute1 -> !institute1.getInstituteId()
+                            .equals(institute.getInstituteId()))
                     .limit(TOTAL_SIMILAR_COLLEGE)
                     .collect(Collectors.toList());
         }
@@ -231,7 +244,8 @@ public class SimilarInstituteServiceImpl {
                     .findAll(instituteQueryMap, Institute.class, projectionFields, AND);
             if (!CollectionUtils.isEmpty(instituteList)) {
                 instituteList = instituteList.stream()
-                        .filter(institute1 -> !institute1.getInstituteId().equals(institute.getInstituteId()))
+                        .filter(institute1 -> !institute1.getInstituteId()
+                                .equals(institute.getInstituteId()))
                         .limit(TOTAL_SIMILAR_COLLEGE)
                         .collect(Collectors.toList());
             }
@@ -255,7 +269,8 @@ public class SimilarInstituteServiceImpl {
         return instituteQueryMap;
     }
 
-    private Ranking getRankingBySourceAndStream(List<Ranking> rankings, String source, String rankingStream,
+    private Ranking getRankingBySourceAndStream(List<Ranking> rankings, String source,
+            String rankingStream,
             boolean isOverall) {
         if (!CollectionUtils.isEmpty(rankings)) {
             Optional<Ranking> rankingOptional = null;
@@ -286,7 +301,8 @@ public class SimilarInstituteServiceImpl {
         rankingDataMap.put(CAREERS360, new HashMap<>());
         if (!CollectionUtils.isEmpty(rankingList)) {
             for (Ranking ranking : rankingList) {
-                if (StringUtils.isNotBlank(ranking.getSource()) && Objects.nonNull(ranking.getRank())) {
+                if (StringUtils.isNotBlank(ranking.getSource()) && Objects
+                        .nonNull(ranking.getRank())) {
                     if (StringUtils.isNotBlank(ranking.getRankingType()) && OVERALL_RANKING
                             .equalsIgnoreCase(ranking.getRankingType())) {
                         rankingDataMap.get(ranking.getSource()).put(OVERALL_RANKING, ranking);
@@ -349,10 +365,12 @@ public class SimilarInstituteServiceImpl {
         return instituteStreams.stream().limit(MAX_STREAMS).collect(Collectors.toList());
     }
 
-    private List<Institute> getTopSimilarInstitutes(Institute institute, List<Institute> instituteList,
+    private List<Institute> getTopSimilarInstitutes(Institute institute,
+            List<Institute> instituteList,
             String source, String stream, boolean isOverAllRank, int mainRank, int noOfInstitutes) {
         List<Institute> resultList = new ArrayList<>();
-        int nextGreaterRankIndex = getNextGreaterRankIndex(instituteList, source, stream, isOverAllRank, mainRank);
+        int nextGreaterRankIndex =
+                getNextGreaterRankIndex(instituteList, source, stream, isOverAllRank, mainRank);
         int noOfLowerRankInstitutes = noOfInstitutes / 2;
         int noOfHigherRankInstitutes = noOfInstitutes - noOfLowerRankInstitutes;
         if (nextGreaterRankIndex != -1 && nextGreaterRankIndex < instituteList.size()) {
@@ -362,7 +380,8 @@ public class SimilarInstituteServiceImpl {
                     resultList.add(instituteList.get(i));
                 }
             }
-            for (int i = nextGreaterRankIndex - 1; i > 0 && resultList.size() < noOfInstitutes; i--) {
+            for (int i = nextGreaterRankIndex - 1;
+                 i > 0 && resultList.size() < noOfInstitutes; i--) {
                 if (!instituteList.get(i).getInstituteId().equals(institute.getInstituteId())) {
                     resultList.add(instituteList.get(i));
                 }
@@ -379,7 +398,8 @@ public class SimilarInstituteServiceImpl {
             }
         } else {
             //if higher rank colleges not found, get same or lower rank colleges
-            for (int i = instituteList.size() - 1; i > 0 && resultList.size() < noOfInstitutes; i--) {
+            for (int i = instituteList.size() - 1;
+                 i > 0 && resultList.size() < noOfInstitutes; i--) {
                 if (!instituteList.get(i).getInstituteId().equals(institute.getInstituteId())) {
                     resultList.add(instituteList.get(i));
                 }

@@ -12,6 +12,9 @@ public class CourseInstituteDetail {
     @JsonProperty("official_name")
     private String officialName;
 
+    @JsonProperty("url_display_name")
+    private String urlDisplayName;
+
     @JsonProperty("official_address")
     private OfficialAddress officialAddress;
 }

@@ -1,6 +1,8 @@
 package com.paytm.digital.education.explore.validators;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_ID;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_NAME;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import com.paytm.digital.education.exception.BadRequestException;
@@ -18,9 +20,10 @@ public class CourseSearchValidator {
                     ErrorEnum.QUERY_TERM_MUST_BE_EMPTY.getExternalMessage());
         }
 
-        if (!searchRequest.getFilter().containsKey(ENTITY_ID)) {
-            throw new BadRequestException(ErrorEnum.ENTITY_ID_IS_MANDATORY,
-                    ErrorEnum.ENTITY_ID_IS_MANDATORY.getExternalMessage());
+        if (!searchRequest.getFilter().containsKey(ENTITY_ID) || !searchRequest.getFilter()
+                .containsKey(ENTITY_NAME)) {
+            throw new BadRequestException(ErrorEnum.ENTITY_ID_AND_ENTITY_NAME_IS_MANDATORY,
+                    ErrorEnum.ENTITY_ID_AND_ENTITY_NAME_IS_MANDATORY.getExternalMessage());
         }
 
         if (CollectionUtils.isEmpty(searchRequest.getFilter().get(ENTITY_ID))

@@ -11,6 +11,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.GRO
 import static com.paytm.digital.education.explore.constants.ExploreConstants.GROUP_NAME;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.IN_OPERATOR;
 
+import com.mongodb.DBCursor;
 import com.paytm.digital.education.explore.database.entity.FieldGroup;
 import com.paytm.digital.education.explore.database.entity.FtlTemplate;
 import lombok.AllArgsConstructor;
@@ -161,9 +162,11 @@ public class CommonMongoRepository {
                     Criteria elemMatchCriteria = null;
                     for (Object nestedKey : nestedFieldsMap.keySet()) {
                         if (Objects.isNull(elemMatchCriteria)) {
-                            elemMatchCriteria = Criteria.where(nestedKey.toString()).is(nestedFieldsMap.get(nestedKey));
+                            elemMatchCriteria = Criteria.where(nestedKey.toString())
+                                    .is(nestedFieldsMap.get(nestedKey));
                         } else {
-                            elemMatchCriteria.and(nestedKey.toString()).is(nestedFieldsMap.get(nestedKey));
+                            elemMatchCriteria.and(nestedKey.toString())
+                                    .is(nestedFieldsMap.get(nestedKey));
                         }
                     }
                     criteria.elemMatch(elemMatchCriteria);

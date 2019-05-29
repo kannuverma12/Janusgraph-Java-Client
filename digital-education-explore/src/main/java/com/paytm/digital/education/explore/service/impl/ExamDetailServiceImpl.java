@@ -17,6 +17,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.YYY
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ZERO;
 import static com.paytm.digital.education.explore.enums.EducationEntity.EXAM;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
 
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.database.entity.Exam;
@@ -36,7 +37,6 @@ import com.paytm.digital.education.explore.service.helper.DetailPageSectionHelpe
 import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
 import com.paytm.digital.education.explore.service.helper.WidgetsDataHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
-import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.DateUtil;
 import lombok.AllArgsConstructor;
@@ -66,7 +66,7 @@ public class ExamDetailServiceImpl {
 
     //TODO - modularize methods for caching as. Its fine as of now as userId is not being used As of now.
     @Cacheable(value = "exam_detail")
-    public ExamDetail getDetail(Long entityId, Long userId,
+    public ExamDetail getDetail(Long entityId, String examUrlKey, Long userId,
             String fieldGroup, List<String> fields) throws ParseException {
 
         // TODO: fields are not being supported currently. Part of discussion
@@ -87,9 +87,14 @@ public class ExamDetailServiceImpl {
                         examFields);
 
         if (exam != null) {
+            if (!examUrlKey
+                    .equals(CommonUtil.convertNameToUrlDisplayName(exam.getExamFullName()))) {
+                throw new BadRequestException(INVALID_EXAM_NAME,
+                        INVALID_EXAM_NAME.getExternalMessage());
+            }
             return processExamDetail(exam, examFields, userId);
         }
-        throw new BadRequestException(ErrorEnum.INVALID_EXAM_ID,
+        throw new BadRequestException(INVALID_EXAM_ID,
                 INVALID_EXAM_ID.getExternalMessage());
     }
 
@@ -236,6 +241,8 @@ public class ExamDetailServiceImpl {
         examDetail.setExamId(exam.getExamId());
         examDetail.setAbout(exam.getAboutExam());
         examDetail.setExamId(exam.getExamId());
+        examDetail
+                .setUrlDisplayName(CommonUtil.convertNameToUrlDisplayName(exam.getExamFullName()));
         examDetail.setExamFullName(exam.getExamFullName());
         examDetail.setExamShortName(exam.getExamShortName());
         if (!CollectionUtils.isEmpty(exam.getLinguisticMediumExam())) {

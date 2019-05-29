@@ -12,6 +12,9 @@ public class SuggestResult {
     @JsonProperty("entity_id")
     private long entityId;
 
+    @JsonProperty("url_display_name")
+    private String urlDisplayName;
+
     @JsonProperty("official_name")
     private String officialName;
 

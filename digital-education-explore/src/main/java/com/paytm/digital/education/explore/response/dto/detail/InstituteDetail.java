@@ -27,6 +27,9 @@ public class InstituteDetail {
     @JsonProperty("brochure_url")
     private String brochureUrl;
 
+    @JsonProperty("url_display_name")
+    private String urlDisplayName;
+
     @JsonProperty("official_address")
     private OfficialAddress officialAddress;
 

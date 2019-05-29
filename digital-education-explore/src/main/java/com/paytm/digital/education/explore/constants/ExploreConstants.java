@@ -173,6 +173,7 @@ public interface ExploreConstants {
     String GALLERY_LOGO                     = "gallery.logo";
     String OFFICIAL_ADDRESS                 = "official_address";
     String ENTITY_ID                        = "entity_id";
+    String ENTITY_NAME                      = "entity_name";
     int    COURSE_SIZE_FOR_INSTITUTE_DETAIL = 6;
     String COMPARE                          = "compare";
 
