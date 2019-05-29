@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Date;
+import java.util.List;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -47,9 +48,8 @@ public class Lead {
     @Field(Constants.USER_ID)
     private Long userId;
 
-    @JsonProperty("stream")
+    @JsonProperty(Constants.STREAM)
     @Field(Constants.STREAM)
-    //@NotBlank
     private CourseStream stream;
 
     @Field(Constants.CONTACT_NAME)
@@ -92,23 +92,27 @@ public class Lead {
 
     @Field(Constants.ENTITY_TYPE)
     @JsonProperty(Constants.ENTITY_TYPE)
-    //@NotNull
+    @NotNull
     private EducationEntity entityType;
 
-    @Field(Constants.STATE_ID)
-    @JsonProperty("state_id")
-    //@NotNull
+    @Field(Constants.STREAM)
+    @JsonProperty(Constants.STREAM)
+    @NotNull
     private Long stateId;
 
     @Field(Constants.REQUEST_TYPE)
-    //@NotNull
-    @JsonProperty("request_type")
+    @NotNull
+    @JsonProperty(Constants.REQUEST_TYPE)
     private Integer requestType;
 
     @Field(Constants.CITY_ID)
-    @JsonProperty("city_id")
-    //@NotNull
+    @JsonProperty(Constants.CITY_ID)
+    @NotNull
     private Long cityId;
+
+    @JsonIgnore
+    @Field(Constants.INTERESTED)
+    private boolean interested;
 
     @JsonIgnore
     @Field(Constants.CREATED_AT)
@@ -119,8 +123,8 @@ public class Lead {
     private Date updatedAt;
 
     @JsonIgnore
-    @Field(Constants.PARTNER)
-    private LeadPartner leadPartner;
+    @Field(Constants.LEAD_RESPONSES)
+    private List<BaseLeadResponse> baseLeadResponse;
 
     @JsonIgnore
     @Field(Constants.PUBLISHED)
@@ -142,9 +146,10 @@ public class Lead {
         public static final String COURSE_ID                      = "course_id";
         public static final String REQUEST_TYPE                   = "request_type";
         public static final String ENTITY_TYPE                    = "entity_type";
-        public static final String PARTNER                        = "partner";
         public static final String CREATED_AT                     = "created_at";
         public static final String UPDATED_AT                     = "updated_at";
+        public static final String LEAD_RESPONSES                 = "lead_responses";
+        public static final String INTERESTED                     = "interested";
         public static final String PUBLISHED                      = "published";
         public static final String PHONE_REGEX                    =
                 "^\\(?(\\d{3})\\)?[- ]?(\\d{3})[- ]?(\\d{4})$";

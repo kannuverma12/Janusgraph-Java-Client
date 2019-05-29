@@ -1,7 +1,9 @@
-package com.paytm.digital.education.explore.request.thirdparty;
+package com.paytm.digital.education.explore.thirdparty.lead;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.explore.enums.Career360EntityType;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.Data;
 
 @Data
@@ -36,5 +38,4 @@ public class Career360LeadRequest {
 
     @JsonProperty("api_key")
     private String apiKey = "Pekfrtyuyuyerwdghjhff#54555hhfghfghfh";
-
 }

@@ -27,13 +27,6 @@ public class LeadServiceImpl implements LeadService {
     private CommonMongoRepository commonMongoRepository;
     private LeadCareer360Service  leadCareer360Service;
 
-    private void sendLead(Lead lead) {
-        Lead c360Lead = new Lead();
-        BeanUtils.copyProperties(lead, c360Lead);
-        leadCareer360Service.send(c360Lead);
-        leadRepository.upsertLead(c360Lead);
-
-    }
 
     @Override
     public void captureLead(@NotNull Lead lead) {
@@ -53,9 +46,11 @@ public class LeadServiceImpl implements LeadService {
             }
         }
         sendLead(lead);
+        leadRepository.upsertLead(lead);
     }
 
-    private void updateLeadRequest(Course course){
-        Integer instituteId = course.getInstitutionId();
+    private void sendLead(Lead lead) {
+        leadCareer360Service.send(lead);
     }
+
 }
