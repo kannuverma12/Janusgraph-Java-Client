@@ -49,6 +49,8 @@ public class StatusCheckServiceImpl implements StatusCheckService {
 
             //update fulfilment in case of terminated order status
             if (formData != null && terminatedStatus.contains(formData.getFormFulfilment().getPaymentStatus())) {
+                log.info("Updating order status at Fulfilment: " + formData.getFormFulfilment().getPaymentStatus()
+                        + " for " + orderId);
                 notifyOrderStatusToFulfilment(formData);
             }
         } catch (Exception e) {

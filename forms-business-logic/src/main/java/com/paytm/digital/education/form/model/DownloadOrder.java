@@ -12,6 +12,4 @@ import java.util.Date;
 public class DownloadOrder {
     private String userId;
     private Long orderId;
-    private Date startDate;
-    private Date endDate;
 }

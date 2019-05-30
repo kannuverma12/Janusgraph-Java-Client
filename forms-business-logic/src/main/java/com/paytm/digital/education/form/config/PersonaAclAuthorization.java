@@ -99,7 +99,7 @@ public class PersonaAclAuthorization implements AuthorizationService {
         return isToSkipAuthorization;
     }
 
-    @Cacheable(value = CacheConfig.PERSONA_CACHE, key = "#token", unless = "#result == null")
+    @Cacheable(value = "personaCache", key = "#token", unless = "#result == null")
     public Authentication authenticate(String token,
                                        Authentication authentication,
                                        ExternalServiceAuthenticator externalServiceAuthenticator) {

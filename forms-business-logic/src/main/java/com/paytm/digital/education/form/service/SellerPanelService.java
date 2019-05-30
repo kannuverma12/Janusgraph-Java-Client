@@ -14,4 +14,7 @@ public interface SellerPanelService {
     ResponseData<FormData> getInfoOnDate(String merchantId, Date startDate, Date endDate, int offset, int limit);
 
     void submitDownloadOrderRequest(DownloadOrder downloadOrder);
+
+    ResponseData<FormData> getBulkOrders(String merchantId, List<Long> orderIds, Date startDate, Date endDate,
+                                         int offset, int limit);
 }

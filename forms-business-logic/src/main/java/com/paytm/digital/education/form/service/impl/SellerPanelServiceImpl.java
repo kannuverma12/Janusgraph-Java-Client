@@ -70,6 +70,34 @@ public class SellerPanelServiceImpl implements SellerPanelService {
     }
 
     @Override
+    public ResponseData<FormData> getBulkOrders(String merchantId, List<Long> orderIds, Date startDate,
+                                                Date endDate, int offset, int limit) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("merchantId").is(merchantId));
+
+        if (orderIds != null && !orderIds.isEmpty()) {
+            query.addCriteria(Criteria.where("formFulfilment.orderId").in(orderIds));
+        }
+
+        if (startDate != null) {
+            Criteria criteria = Criteria.where("formFulfilment.createdDate")
+                    .gte(getStartOfDay(startDate)).lte(getEndOfDay(endDate));
+            query.addCriteria(criteria);
+        }
+
+        if (startDate == null) {
+            Criteria criteria = Criteria.where("formFulfilment.createdDate")
+                    .lte(getEndOfDay(endDate));
+            query.addCriteria(criteria);
+        }
+
+        query.skip(limit * offset);
+        query.limit(limit);
+
+        return new ResponseData<FormData>(mongoOperations.find(query, FormData.class));
+    }
+
+    @Override
     public void submitDownloadOrderRequest(DownloadOrder downloadOrder) {
         kafkaProducer.sendMessage(orderFileCenterTopicName, JsonUtils.toJson(downloadOrder));
     }

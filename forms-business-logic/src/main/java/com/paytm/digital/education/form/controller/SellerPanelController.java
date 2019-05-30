@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -90,7 +91,7 @@ public class SellerPanelController {
                                 }).collect(Collectors.toList()))
                 );
 
-                return new ResponseEntity<>(responseData, headers,HttpStatus.OK);
+                return new ResponseEntity<>(responseData, headers, HttpStatus.OK);
 
             } else {
                 return new ResponseEntity<>(
@@ -147,7 +148,7 @@ public class SellerPanelController {
 
     @GetMapping(value = "/v1/orders/bulk-download", produces = "application/json")
     public ResponseEntity<Object> bulkDownloadOrders(
-            @RequestParam(name = "order_ids") List<Long> orderIds,
+            @RequestParam(name = "order_ids", required = false) List<Long> orderIds,
 
             @RequestParam(name = "start_date", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
@@ -161,31 +162,45 @@ public class SellerPanelController {
         if (authService.getMerchantId() == null) {
             throw new EducationException(ErrorEnum.USER_IS_NOT_MERCHANT, "Incorrect Request");
         }
+        if (endDate == null) {
+            endDate = new Date();
+        }
 
         String merchantId = authService.getMerchantId().toString();
 
         ValidationResult result = validateRequestOrderStartDate(orderIds, startDate);
-        
+
         HttpHeaders headers = new HttpHeaders();
         headers.add("Access-Control-Allow-Credentials", "true");
 
-        if (result == ValidationResult.ONLY_DATE_RANGE) {
-            orderIds = sellerPanelService
-                    .getInfoOnDate(merchantId, startDate, endDate, offset, limit)
+        List<Long> claculatedOrderIds = new ArrayList<>();
+        if (result == ValidationResult.ONLY_DATE_RANGE || result == ValidationResult.ONLY_ORDER) {
+            claculatedOrderIds = sellerPanelService.getBulkOrders(merchantId, orderIds, startDate, endDate,
+                    offset, limit)
                     .getData()
                     .stream()
                     .map(formData -> formData.getFormFulfilment().getOrderId())
                     .collect(Collectors.toList());
+        } else {
+            return new ResponseEntity<>(
+                    "{\"statusCode:\": 400 , \"error:\" \"Enter either orderIds or startDate.\"}",
+                    headers, HttpStatus.BAD_REQUEST);
         }
 
-        for (Long orderId : orderIds) {
+        if (orderIds != null && claculatedOrderIds.size() != orderIds.size() || claculatedOrderIds.isEmpty()) {
+            return new ResponseEntity<>(
+                    "{\"statusCode:\": 404, \"error\": \"Order data not exist.\"}",
+                    headers, HttpStatus.NOT_FOUND);
+        }
+
+        for (Long orderId : claculatedOrderIds) {
             sellerPanelService.submitDownloadOrderRequest(
-                    new DownloadOrder(merchantId, orderId, startDate, endDate)
+                    new DownloadOrder(merchantId, orderId)
             );
         }
-      
+
         return new ResponseEntity<>(
-                "{\"status\": \"File will be available on File center to download.\"}",headers,
+                "{\"status\": \"File will be available on File center to download.\"}", headers,
                 HttpStatus.OK
         );
     }
@@ -202,10 +217,6 @@ public class SellerPanelController {
 
         if (!isOrderPresent && !isDatePresent) {
             throw new EducationException(ErrorEnum.ORDER_ID_OR_START_DATE, "Incorrect Request");
-        }
-
-        if (isOrderPresent && isDatePresent) {
-            throw new EducationException(ErrorEnum.EITHER_OF_ORDER_ID_OR_START_DATE, "Incorrect Request");
         }
 
         return isOrderPresent ? ValidationResult.ONLY_ORDER : ValidationResult.ONLY_DATE_RANGE;

@@ -5,9 +5,12 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+
 import paytm.auth.personaaclclient.infrastructure.security.CookieAuthenticationProvider;
 import paytm.auth.personaaclclient.infrastructure.security.DomainUsernamePasswordAuthenticationProvider;
 
@@ -23,23 +26,25 @@ public class FormConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().sessionManagement()
+        http.cors().and().csrf().disable().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/formfbl/v1/paymentPosting").permitAll()
-                .antMatchers(HttpMethod.GET, "/formfbl/v1/order/statuscheck").permitAll()
-                .antMatchers(HttpMethod.GET, "/formfbl/v1/saveMerchantProductConfig").permitAll()
-                .antMatchers(HttpMethod.GET, "/formfbl/v1/getMerchantProductConfig").permitAll()
-                .antMatchers("/formfbl/form-data/**").permitAll()
-                .antMatchers("/formfbl/v1/user/**").permitAll()
-                .antMatchers("/formfbl/**").authenticated()
+                .antMatchers("/formfbl/v1/orders").authenticated()
+                .antMatchers("/formfbl/v1/orders/download").authenticated()
+                .antMatchers("/formfbl/v1/orders/bulk-download").authenticated()
+                .antMatchers("/formfbl/v1/download").authenticated()
                 .anyRequest()
                 .permitAll();
 
         http.headers().frameOptions().disable();
 
-/*        http.addFilterBefore(new FormAuthenticationFilter(authenticationManager()),
-                BasicAuthenticationFilter.class);*/
+        http.addFilterBefore(new FormAuthenticationFilter(authenticationManager()),
+                BasicAuthenticationFilter.class);
+    }
+    
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers("/explore");
     }
 
     @Override
