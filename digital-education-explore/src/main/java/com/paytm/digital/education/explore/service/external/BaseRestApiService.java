@@ -76,6 +76,7 @@ public class BaseRestApiService {
             throw new BadRequestException(ErrorEnum.HTTP_REQUEST_FAILED,
                     ErrorEnum.HTTP_REQUEST_FAILED.getExternalMessage());
         }
+        log.info(responseEntity.toString());
         return responseEntity.getBody();
     }
 

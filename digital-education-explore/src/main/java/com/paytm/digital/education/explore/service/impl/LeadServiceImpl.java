@@ -40,6 +40,7 @@ public class LeadServiceImpl implements LeadService {
         }
         Course course = commonMongoRepository
                 .getEntityByFields(COURSE_ID, lead.getEntityId(), Course.class, fieldGroup);
+        System.out.println(course);
         if (Objects.isNull(course)) {
             throw new BadRequestException(ErrorEnum.INVALID_COURSE_ID,
                     ErrorEnum.INVALID_COURSE_ID.getExternalMessage());

@@ -9,6 +9,7 @@ import com.paytm.digital.education.explore.thirdparty.lead.Career360LeadResponse
 import com.paytm.digital.education.explore.thirdparty.lead.Career360UnfollowRequest;
 import com.paytm.digital.education.explore.thirdparty.lead.Career360UnfollowResponse;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -16,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@Slf4j
 @AllArgsConstructor
 public class LeadCareer360Service {
 
@@ -50,7 +52,7 @@ public class LeadCareer360Service {
                     .post("https://www.careers360.net/dj-api/paytm-user",
                             Career360LeadResponse.class,
                             career360LeadRequest, getHeaders());
-            System.out.println(response.toString());
+            log.info("_++++++++++++___" + response.toString());
             return buildResponse(response);
         } catch (Exception e) {
             e.printStackTrace();
