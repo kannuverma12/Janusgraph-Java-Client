@@ -15,6 +15,9 @@ public class CourseData {
     @JsonProperty("official_name")
     private String       officialName;
 
+    @JsonProperty("url_display_key")
+    private String       urlDisplayKey;
+
     @JsonProperty("duration_in_months")
     private Integer      durationInMonths;
 

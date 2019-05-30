@@ -176,6 +176,7 @@ public interface ExploreConstants {
     String OFFICIAL_ADDRESS                 = "official_address";
     String ENTITY_ID                        = "entity_id";
     float  NAME_COURSE_BOOST                = 1f;
+    String ENTITY_NAME                      = "entity_name";
     int    COURSE_SIZE_FOR_INSTITUTE_DETAIL = 6;
     String COMPARE                          = "compare";
 

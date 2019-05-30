@@ -1,8 +1,34 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.TERMS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.*;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.BRANCH_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_FILTER_NAMESPACE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.DEGREE_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.DURATION_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_ID;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_NAME;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_ALPHABETICAL_SORT_KEY;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.FEE_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.GALLERY_LOGO;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_NAME_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTION_CITY;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTION_STATE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.LEVEL_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.PARENT_INSTITUTE_ID_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_ANALYZER_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_INDEX_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SEATS_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME_COURSE_BOOST;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.ACCEPTING_APPLICATION;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM_COURSE;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_NAME;
 
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
@@ -31,12 +57,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.PostConstruct;
 
@@ -81,6 +108,8 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
     @Cacheable(value = "course_search")
     public SearchResponse search(SearchRequest searchRequest) throws IOException, TimeoutException {
         CourseSearchResponse courseSearchResponse = new CourseSearchResponse();
+        /*
+         * Filter map containing entity_id means this request is coming from outer world*/
         if (searchRequest.getFilter().containsKey(ENTITY_ID)) {
             populatetInstituteDetails(searchRequest, courseSearchResponse);
         }
@@ -115,14 +144,26 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
         List<String> fields =
                 Arrays.asList(GALLERY_LOGO, INSTITUTION_STATE, INSTITUTION_CITY, INSTITUTE_ID,
                         OFFICIAL_NAME, ENTITY_TYPE);
+
         Integer instituteId = (Integer) searchRequest.getFilter().get(ENTITY_ID).get(0);
         searchRequest.getFilter().remove(ENTITY_ID);
+        String instituteUrlKey = (String) searchRequest.getFilter().get(ENTITY_NAME).get(0);
+        searchRequest.getFilter().remove(ENTITY_NAME);
         Institute institute =
                 commonMongoRepository.getEntityByFields(INSTITUTE_ID, instituteId, Institute.class,
                         fields);
         if (institute == null) {
             throw new BadRequestException(INVALID_INSTITUTE_ID,
                     INVALID_INSTITUTE_ID.getExternalMessage());
+        }
+        /*
+         * null institute URL means that this is an internal request.
+         * There is a validator for all other requests.
+         * */
+        if (Objects.nonNull(instituteUrlKey) && !instituteUrlKey
+                .equals(CommonUtil.convertNameToUrlDisplayName(institute.getOfficialName()))) {
+            throw new BadRequestException(INVALID_INSTITUTE_NAME,
+                    INVALID_INSTITUTE_NAME.getExternalMessage());
         }
         String filterField;
         if (institute.getEntityType().equals(CollegeEntityType.UNIVERSITY)) {
@@ -140,6 +181,8 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
                 .setOfficialAddress(CommonUtil.getOfficialAddress(institute.getInstitutionState(),
                         institute.getInstitutionCity(), null, null, null));
         courseSearchResponse.setInstituteName(institute.getOfficialName());
+        courseSearchResponse.setUrlDisplayName(
+                CommonUtil.convertNameToUrlDisplayName(institute.getOfficialName()));
         courseSearchResponse.setInstituteId(institute.getInstituteId());
     }
 
@@ -185,6 +228,8 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
                 courseData.setFee(courseSearch.getFees());
                 courseData.setSeatsAvailable(courseSearch.getSeats());
                 courseData.setOfficialName(courseSearch.getName());
+                courseData.setUrlDisplayKey(
+                        CommonUtil.convertNameToUrlDisplayName(courseSearch.getName()));
                 courseData.setInstituteName(courseSearch.getInstituteName());
                 courseDataList.add(courseData);
             }

@@ -22,6 +22,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.OFF
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SUBEXAM_ID;
 import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
 
+import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
@@ -39,6 +40,7 @@ import com.paytm.digital.education.explore.service.helper.StreamDataHelper;
 import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.explore.utility.CompareUtil;
+import com.paytm.digital.education.mapping.ErrorEnum;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -54,7 +56,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Arrays;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
@@ -64,7 +65,7 @@ import java.util.stream.Collectors;
 public class CompareServiceImpl implements CompareService {
 
     private static Map<Long, String>          parentInstituteNameMap = new HashMap<>();
-    private static Map<Integer, List<Course>> instituteCoursesMap    = new HashMap<>();
+    private static Map<Long, List<Course>>    instituteCoursesMap    = new HashMap<>();
     private        InstituteDetailServiceImpl instituteDetailService;
     private        CommonMongoRepository      commonMongoRepository;
     private        StreamDataHelper           streamDataHelper;
@@ -73,21 +74,25 @@ public class CompareServiceImpl implements CompareService {
     private        SubscriptionDetailHelper   subscriptionDetailHelper;
 
     @Override
-    public CompareDetail compareInstitutes(List<Long> instList, String fieldGroup,
+    public CompareDetail compareInstitutes(Map<Long, String> instKeyMap, String fieldGroup,
             List<String> fields, Long userId) throws IOException, TimeoutException {
 
         CompareDetail compareDetail = new CompareDetail();
         List<CompareInstDetail> instituteDetailsList = new ArrayList<>();
         List<String> fieldGroupList = getFieldGroups(fieldGroup);
-
-        if (!CollectionUtils.isEmpty(instList)) {
-            instList =
-                    instList.stream().filter(i -> Objects.nonNull(i)).collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(instKeyMap)) {
+            List<Long> instList = new ArrayList<>(instKeyMap.keySet());
             List<Institute> institutes =
                     instituteDetailService.getInstitutes(instList, fieldGroupList);
+            for (Institute institute : institutes) {
+                if (!instKeyMap.get(institute.getInstituteId()).equals(CommonUtil
+                        .convertNameToUrlDisplayName(institute.getOfficialName()))) {
+                    throw new BadRequestException(ErrorEnum.INVALID_INSTITUTE_NAME,
+                            ErrorEnum.INVALID_INSTITUTE_NAME.getExternalMessage());
+                }
+            }
             updateParentInstituteNameMap(institutes);
             updateInstituteCoursesMap(instList);
-
             Map<Long, Institute> instituteMap =
                     institutes.stream().collect(Collectors.toMap(i -> i.getInstituteId(), i -> i));
 

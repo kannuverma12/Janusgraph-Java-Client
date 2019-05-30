@@ -7,6 +7,8 @@ import com.paytm.digital.education.explore.database.entity.SubExam;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.response.dto.detail.ExamInfo;
 import com.paytm.digital.education.explore.service.ExamListService;
+import com.paytm.digital.education.explore.utility.CommonUtil;
+import com.paytm.digital.education.explore.validators.UrlParamsValidator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -14,11 +16,11 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.List;
+import java.util.HashMap;
+import java.util.Arrays;
+import java.util.ArrayList;
 
 import static com.mongodb.QueryOperators.EXISTS;
 import static com.mongodb.QueryOperators.OR;
@@ -35,7 +37,9 @@ import static com.paytm.digital.education.mapping.ErrorEnum.NO_EXAM_LIST_EXISTS;
 @AllArgsConstructor
 @Service
 public class ExamListServiceImpl implements ExamListService {
+    private UrlParamsValidator    urlParamsValidator;
     private CommonMongoRepository commonMongoRepository;
+
 
     @Cacheable(value = "exam_list")
     public List<ExamInfo> getExamList(long instituteId) {
@@ -95,6 +99,7 @@ public class ExamListServiceImpl implements ExamListService {
         } else {
             examInfo.setExamName(examShortName);
         }
+        examInfo.setUrlDisplayKey(CommonUtil.convertNameToUrlDisplayName(examFullName));
         return examInfo;
     }
 }

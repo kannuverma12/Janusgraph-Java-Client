@@ -64,7 +64,7 @@ public class Course {
     private String feesUrlOfficial;
 
     @Field("institute_id")
-    private Integer institutionId;
+    private Long institutionId;
 
     @Field("form_application_url_officail")
     private String formApplicationUrlOfficail;
