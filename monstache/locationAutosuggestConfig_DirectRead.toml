@@ -24,11 +24,11 @@ stats = true
 verbose = false
 resume = false # data is kept in mongodb to resume
 
-# on every start reindex every exam docs
-direct-read-namespaces = ["test.location"]
+# on every start reindex every institute docs
+direct-read-namespaces = ["digital_education.location"]
 exit-after-direct-reads = true
 
-#workers = ["A", "B", "C", "D"]
+workers = ["A", "B", "C", "D"]
 
 #[gtm-settings]
 #channel-size = 2048
@@ -37,8 +37,8 @@ exit-after-direct-reads = true
 
 
 [[mapping]]  #index mapping
-namespace = "test.location"
-index = "education_autosuggestion_v5"
+namespace = "digital_education.institute"
+index = "education_search_location_test"
 type = "education"
 
 
@@ -48,8 +48,8 @@ namespace = "digital_education.location"
 path = '/var/www/monstache/transformLocation.js'
 
 [logs]
-info =  '/var/www/monstache/logs/location/info.log'
-warn =  '/var/www/monstache/logs/location/warn.log'
-error = '/var/www/monstache/logs/location/error.log'
-trace = '/var/www/monstache/logs/location/trace.log'
-stats = '/var/www/monstache/logs/location/stats.log'
+info =  '/var/www/monstache/logs/institute/info.log'
+warn =  '/var/www/monstache/logs/institute/warn.log'
+error = '/var/www/monstache/logs/institute/error.log'
+trace = '/var/www/monstache/logs/institute/trace.log'
+stats = '/var/www/monstache/logs/institute/stats.log'
