@@ -41,7 +41,14 @@ public enum ErrorEnum {
     CASTE_CATEGORY_PARAMETER_MISSING(4019, "Caste category parameter is missing in request.",
             HttpStatus.BAD_REQUEST, 0),
     ENTITY_ID_NOT_PRESENT(4020, "%s is missing in the request.",
-            HttpStatus.BAD_REQUEST, 1);
+            HttpStatus.BAD_REQUEST, 1),
+    VALID_INSTITUTE_ID_FOR_COURSE_LEAD(4021, "Provide valid institute id for course lead",
+            HttpStatus.BAD_REQUEST, 0),
+    COURSE_IS_NOT_ACCEPTING_APPLICATION(4023, "Provided course is not accepting application",
+            HttpStatus.BAD_REQUEST, 0),
+    ENTITY_NOT_SUPPORTED_FOR_LEAD(4024, "Provided entity is not supported to send lead",
+            HttpStatus.BAD_REQUEST, 0);
+
 
     private final int        internalCode;
     private final String     externalMessage;

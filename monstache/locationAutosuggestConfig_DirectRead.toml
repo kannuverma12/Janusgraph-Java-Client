@@ -1,0 +1,55 @@
+#Staging
+mongo-url = "mongodb://apptestuser:LKJSDL%40Fjrpw%404sjfqoAFsq23rr@10.20.41.254:27017/?replicaSet=edurs0"
+elasticsearch-urls = ["http://10.20.41.254:9200"]
+
+#Prod
+#mongo-url = "mongodb://app_education:UJQ#%401w%402cD@10.4.33.152:27017/?replicaSet=rs_0"
+#elasticsearch-urls = ["http://10.20.33.122:9200","http://10.20.33.133:9200","http://10.20.33.242:9200"]
+
+gzip = true
+
+#elasticsearch-max-seconds = 5
+#elasticsearch-max-bytes = 83886080
+
+namespace-regex = '^digital_education\..*'
+
+# write stats to log file or console
+stats = true
+# index-stats = false # whether to write stats in ES
+
+# embedded server to host stats and debug info
+#enable-http-server = true
+#http-server-addr = ":8081"
+
+verbose = false
+resume = false # data is kept in mongodb to resume
+
+# on every start reindex every exam docs
+direct-read-namespaces = ["test.location"]
+exit-after-direct-reads = true
+
+#workers = ["A", "B", "C", "D"]
+
+#[gtm-settings]
+#channel-size = 2048
+#buffer-size = 128
+#buffer-duration = "1000ms"
+
+
+[[mapping]]  #index mapping
+namespace = "test.location"
+index = "education_autosuggestion_v5"
+type = "education"
+
+
+#to parse below env variables run monstache with "-tpl" flag
+[[script]]
+namespace = "digital_education.location"
+path = '/var/www/monstache/transformLocation.js'
+
+[logs]
+info =  '/var/www/monstache/logs/location/info.log'
+warn =  '/var/www/monstache/logs/location/warn.log'
+error = '/var/www/monstache/logs/location/error.log'
+trace = '/var/www/monstache/logs/location/trace.log'
+stats = '/var/www/monstache/logs/location/stats.log'

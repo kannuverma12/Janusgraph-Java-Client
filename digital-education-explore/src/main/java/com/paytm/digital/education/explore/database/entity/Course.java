@@ -93,6 +93,9 @@ public class Course {
     @Field("publishing_status")
     private PublishStatus publishingStatus;
 
+    @Field("is_accepting_applications")
+    private boolean acceptingApplication;
+
     @Field("streams")
     private List<String> streams;
 

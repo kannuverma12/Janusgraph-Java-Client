@@ -34,12 +34,6 @@ public class Lead {
     @JsonIgnore
     private boolean status = true;
 
-    @JsonProperty(Constants.COURSE_ID)
-    @Field(Constants.COURSE_ID)
-    @NotNull
-    @Min(1)
-    private Long courseId;
-
     /**
      * Id of the current logged In user
      */
@@ -51,6 +45,10 @@ public class Lead {
     @JsonProperty(Constants.STREAM)
     @Field(Constants.STREAM)
     private CourseStream stream;
+
+    @JsonProperty(Constants.INSTITUTE_ID)
+    @Field(Constants.INSTITUTE_ID)
+    private Integer instituteId;
 
     @Field(Constants.CONTACT_NAME)
     @JsonProperty(Constants.CONTACT_NAME)
@@ -95,14 +93,13 @@ public class Lead {
     @NotNull
     private EducationEntity entityType;
 
-    @Field(Constants.STREAM)
-    @JsonProperty(Constants.STREAM)
+    @Field(Constants.STATE_ID)
+    @JsonProperty(Constants.STATE_ID)
     @NotNull
     private Long stateId;
 
     @Field(Constants.REQUEST_TYPE)
-    @NotNull
-    @JsonProperty(Constants.REQUEST_TYPE)
+    @JsonIgnore
     private Integer requestType;
 
     @Field(Constants.CITY_ID)
@@ -138,6 +135,7 @@ public class Lead {
         public static final String CONTACT_NAME                   = "contact_name";
         public static final String CONTACT_EMAIL                  = "contact_email";
         public static final String CONTACT_NUMBER                 = "contact_number";
+        public static final String INSTITUTE_ID                   = "institute_id";
         public static final String ACTION_COUNT                   = "action_count";
         public static final String STATE_ID                       = "state_id";
         public static final String CITY_ID                        = "city_id";

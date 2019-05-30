@@ -10,15 +10,18 @@ import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.service.LeadService;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
+import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_ID;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.IS_ACCEPTING_APPLICATION;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
-import static com.paytm.digital.education.explore.database.entity.Lead.Constants.COURSE_ID;
 
 @Service
 @AllArgsConstructor
@@ -27,25 +30,50 @@ public class LeadServiceImpl implements LeadService {
     private CommonMongoRepository commonMongoRepository;
     private LeadCareer360Service  leadCareer360Service;
 
+    public void validateCourseLead(Lead lead) {
+        List<String> fieldGroup = Arrays.asList(COURSE_ID, INSTITUTE_ID, IS_ACCEPTING_APPLICATION);
+        if (Objects.isNull(lead.getInstituteId())) {
+            throw new BadRequestException(ErrorEnum.VALID_INSTITUTE_ID_FOR_COURSE_LEAD,
+                    ErrorEnum.VALID_INSTITUTE_ID_FOR_COURSE_LEAD.getExternalMessage());
+        }
+        Course course = commonMongoRepository
+                .getEntityByFields(COURSE_ID, lead.getEntityId(), Course.class, fieldGroup);
+        if (Objects.isNull(course)) {
+            throw new BadRequestException(ErrorEnum.INVALID_COURSE_ID,
+                    ErrorEnum.INVALID_COURSE_ID.getExternalMessage());
+        }
+        if (lead.getInstituteId() != course.getInstitutionId()) {
+            throw new BadRequestException(ErrorEnum.VALID_INSTITUTE_ID_FOR_COURSE_LEAD,
+                    ErrorEnum.VALID_INSTITUTE_ID_FOR_COURSE_LEAD.getExternalMessage());
+        }
+        if (!course.isAcceptingApplication()) {
+            throw new BadRequestException(ErrorEnum.COURSE_IS_NOT_ACCEPTING_APPLICATION,
+                    ErrorEnum.COURSE_IS_NOT_ACCEPTING_APPLICATION.getExternalMessage());
+        }
+    }
+
+    private void validateExamLead(Lead lead) {
+        List<String> fieldGroup = Arrays.asList(EXAM_ID);
+        Exam exam = commonMongoRepository
+                .getEntityByFields(EXAM_ID, lead.getEntityId(), Exam.class, fieldGroup);
+        if (Objects.isNull(exam)) {
+            throw new BadRequestException(ErrorEnum.INVALID_EXAM_ID,
+                    ErrorEnum.INVALID_EXAM_ID.getExternalMessage());
+        }
+    }
+
 
     @Override
     public void captureLead(@NotNull Lead lead) {
         if (EducationEntity.COURSE.equals(lead.getEntityType())) {
-            Course course = commonMongoRepository
-                    .getEntityByFields(COURSE_ID, lead.getEntityId(), Course.class, null);
-            if (Objects.isNull(course)) {
-                throw new BadRequestException(ErrorEnum.INVALID_COURSE_ID,
-                        ErrorEnum.INVALID_COURSE_ID.getExternalMessage());
-            }
+            validateCourseLead(lead);
         } else if (EducationEntity.EXAM.equals(lead.getEntityType())) {
-            Exam exam = commonMongoRepository
-                    .getEntityByFields(EXAM_ID, lead.getEntityId(), Exam.class, null);
-            if (Objects.isNull(exam)) {
-                throw new BadRequestException(ErrorEnum.INVALID_EXAM_ID,
-                        ErrorEnum.INVALID_EXAM_ID.getExternalMessage());
-            }
+            validateExamLead(lead);
+        } else {
+            throw new BadRequestException(ErrorEnum.ENTITY_NOT_SUPPORTED_FOR_LEAD,
+                    ErrorEnum.ENTITY_NOT_SUPPORTED_FOR_LEAD.getExternalMessage());
         }
-        sendLead(lead);
+        //sendLead(lead);
         leadRepository.upsertLead(lead);
     }
 

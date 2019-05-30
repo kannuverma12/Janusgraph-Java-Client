@@ -1,13 +1,18 @@
 package com.paytm.digital.education.explore.database.repository;
 
 import static com.paytm.digital.education.explore.database.entity.Lead.Constants.ACTION;
-import static com.paytm.digital.education.explore.database.entity.Lead.Constants.CONTACT_EMAIL;
-import static com.paytm.digital.education.explore.database.entity.Lead.Constants.CONTACT_NAME;
-import static com.paytm.digital.education.explore.database.entity.Lead.Constants.COURSE_ID;
 import static com.paytm.digital.education.explore.database.entity.Lead.Constants.ENTITY_ID;
 import static com.paytm.digital.education.explore.database.entity.Lead.Constants.ENTITY_TYPE;
 import static com.paytm.digital.education.explore.database.entity.Lead.Constants.STATUS;
 import static com.paytm.digital.education.explore.database.entity.Lead.Constants.USER_ID;
+import static com.paytm.digital.education.explore.database.entity.Lead.Constants.STREAM;
+import static com.paytm.digital.education.explore.database.entity.Lead.Constants.CITY_ID;
+import static com.paytm.digital.education.explore.database.entity.Lead.Constants.STATE_ID;
+import static com.paytm.digital.education.explore.database.entity.Lead.Constants.LEAD_RESPONSES;
+import static com.paytm.digital.education.explore.database.entity.Lead.Constants.INTERESTED;
+import static com.paytm.digital.education.explore.database.entity.Lead.Constants.UPDATED_AT;
+import static com.paytm.digital.education.explore.database.entity.Lead.Constants.CREATED_AT;
+import static com.paytm.digital.education.explore.database.entity.Lead.Constants.ACTION_COUNT;
 
 import com.paytm.digital.education.explore.database.entity.Lead;
 import com.paytm.digital.education.explore.enums.EducationEntity;
@@ -37,21 +42,27 @@ public class LeadRepository {
      */
     public void upsertLead(@NotNull Lead lead) {
         Query query =
-                new Query(Criteria.where(Lead.Constants.CONTACT_NUMBER).is(lead.getContactNumber())
-                        .and(COURSE_ID).is(lead.getCourseId())
-                        .and(CONTACT_NAME).is(lead.getContactName())
-                        .and(CONTACT_EMAIL).is(lead.getContactEmail())
+                new Query(Criteria.where(USER_ID).is(lead.getContactNumber())
+                        .and(CITY_ID).is(lead.getCityId())
+                        .and(STATE_ID).is(lead.getStateId())
                         .and(ENTITY_ID).is(lead.getEntityId())
                         .and(ENTITY_TYPE).is(lead.getEntityType())
                         .and(USER_ID).is(lead.getUserId())
-                        .and(ACTION).is(lead.getAction()));
+                        .and(ACTION).is(lead.getAction())
+                        .and(STREAM).is(lead.getStream())
+                        .and(LEAD_RESPONSES).is(lead.getBaseLeadResponse())
+                        .and(INTERESTED).is(lead.isInterested()));
 
         Date currentDate = new Date();
 
         Update update = new Update().set(Lead.Constants.STATUS, lead.isStatus())
-                .setOnInsert(Lead.Constants.CREATED_AT, currentDate)
-                .set(Lead.Constants.UPDATED_AT, currentDate)
-                .inc(Lead.Constants.ACTION_COUNT, 1);
+                .setOnInsert(CREATED_AT, currentDate)
+                .set(UPDATED_AT, currentDate)
+                .set(CITY_ID, lead.getCityId())
+                .set(STATE_ID, lead.getStateId())
+                .set(EN)
+                .inc(ACTION_COUNT, 1);
+        System.out.println(update.toString());
 
         mongoTemplate
                 .findAndModify(query, update, new FindAndModifyOptions().upsert(true), Lead.class);

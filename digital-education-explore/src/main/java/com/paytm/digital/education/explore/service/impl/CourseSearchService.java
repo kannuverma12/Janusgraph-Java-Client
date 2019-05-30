@@ -1,29 +1,7 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.TERMS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.BRANCH_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_FILTER_NAMESPACE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DEGREE_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DURATION_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_ALPHABETICAL_SORT_KEY;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.FEE_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.GALLERY_LOGO;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_NAME_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTION_CITY;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTION_STATE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.LEVEL_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.PARENT_INSTITUTE_ID_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_ANALYZER_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_INDEX_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SEATS_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.*;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
 
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
@@ -78,12 +56,15 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
 
     @PostConstruct
     private void init() {
+        searchFieldKeys = new HashMap<>();
+        searchFieldKeys.put(NAME_COURSE, NAME_COURSE_BOOST);
         filterQueryTypeMap = new HashMap<String, FilterQueryType>();
         filterQueryTypeMap.put(BRANCH_COURSE, TERMS);
         filterQueryTypeMap.put(DEGREE_COURSE, TERMS);
         filterQueryTypeMap.put(STREAM_COURSE, TERMS);
         filterQueryTypeMap.put(INSTITUTE_NAME_COURSE, TERMS);
         filterQueryTypeMap.put(LEVEL_COURSE, TERMS);
+        filterQueryTypeMap.put(ACCEPTING_APPLICATION, TERMS);
         filterQueryTypeMap.put(PARENT_INSTITUTE_ID_COURSE, TERMS);
         filterQueryTypeMap.put(INSTITUTE_ID_COURSE, TERMS);
         defaultSortKeysInOrder = new LinkedHashMap<>();

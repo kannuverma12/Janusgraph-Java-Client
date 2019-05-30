@@ -3,7 +3,7 @@ package com.paytm.digital.education.explore.enums;
 public enum LeadAction {
     GetUpdate, Follow, StopUpdate, Unfollow;
 
-    public static LeadAction getNextAction(LeadAction action){
+    public static LeadAction getNextAction(LeadAction action) {
         switch (action) {
             case GetUpdate:
                 return StopUpdate;
@@ -15,7 +15,6 @@ public enum LeadAction {
                 return Follow;
             default:
                 return null;
-
         }
     }
 
