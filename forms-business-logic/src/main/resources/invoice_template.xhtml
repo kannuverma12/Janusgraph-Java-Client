@@ -44,7 +44,7 @@
     <!--Header End-->
     <!--Transaction Start-->
     <div style="margin-top:50px;overflow: hidden">
-        <div  style="width:50%; float:left; color:#222; font-size:12px; font-weight:600;">Transaction Receipt <span style="display:block; font-size:10px; font-weight:400">Order No. ${formFulfilment.orderId}</span></div>
+        <div  style="width:50%; float:left; color:#222; font-size:12px; font-weight:600;">Transaction Receipt <span style="display:block; font-size:10px; font-weight:400">Order No. ${formFulfilment.orderId?c}</span></div>
         <div  style="width:50%; float:left; text-align:right; font-size:10px; padding-top:16px;	">${formFulfilment.createdDate?datetime}  </div> 
     </div>
     <!--Transaction End-->
@@ -54,8 +54,8 @@
         <div style="width:25%; float:left; padding:10px 10px 10px 8px; font-size:10px; color:#000;    margin: 10px;"> Name <span style="font-size:14px; font-weight:600; display:block; padding-top:10px;">
       ${candidateDetails.fullName!"-"}</span> </div>
         <div style="width:30%; float:left; padding:10px 0 10px 30px; font-size:10px; color:#000;  margin: 10px; border-right:1px solid #f4f4f4;  border-left:1px solid #f4f4f4;"> 
-        Exam <span  style="font-size:14px; font-weight:600; display:block;padding-top:10px;">${merchant!"-"}</span>  </div>
-        <div style="width:25%; float:left; padding:10px; font-size:10px; margin: 10px;color:#000;"> Amount Paid <span  style="font-size:14px; font-weight:600; display:block; padding-top:10px;">${candidateDetails.amount!"-"}</span> </div>
+        Exam <span  style="font-size:14px; font-weight:600; display:block;padding-top:10px;">${merchantName!"-"}</span>  </div>
+        <div style="width:25%; float:left; padding:10px; font-size:10px; margin: 10px;color:#000;"> Amount Paid <span  style="font-size:14px; font-weight:600; display:block; padding-top:10px;">Rs. ${candidateDetails.amount!"-"}</span> </div>
     </div>
     <!--Name End-->
 
@@ -64,7 +64,7 @@
         <div style="background:#f4f4f4;padding: 15px; font-size:9px; font-weight:600;">STUDENT DETAILS</div>
         <div style="padding:15px;overflow:hidden; border-bottom:1px solid #f4f4f4; font-size:10px;">
             <div style="width:50%; float:left;">Exam Type</div>
-            <div  style="width:50%; float:left; text-align:right;">${candidateDetails.examType}</div>
+            <div  style="width:50%; float:left; text-align:right;">${candidateDetails.examType!"-"}</div>
         </div>
         <div style="overflow:hidden;padding:15px; border-bottom:1px solid #f4f4f4; font-size:10px;">
             <div style="width:50%; float:left;">Registration ID</div>
@@ -73,7 +73,7 @@
 
         <div style="overflow:hidden;background:#f4f4f4;padding:15px;font-size:10px;">
             <div style="width:50%; float:left;">Amount Paid</div>
-            <div  style="width:50%; float:left; text-align:right; font-weight:600;">${candidateDetails.amount!"-"}</div>
+            <div  style="width:50%; float:left; text-align:right; font-weight:600;">Rs. ${candidateDetails.amount!"-"}</div>
         </div>
 
     </div>
