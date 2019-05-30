@@ -31,4 +31,6 @@ public interface CampusEngagementConstants {
     String VIDEO                                 = "video";
     String EVENTS                                = "events";
     String ARTICLES                              = "articles";
+    String MEDIA                                 = "media";
+    String DOCS                                  = "docs";
 }

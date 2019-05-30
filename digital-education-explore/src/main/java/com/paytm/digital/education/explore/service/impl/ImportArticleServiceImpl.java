@@ -29,12 +29,12 @@ import java.util.Set;
 import static com.mongodb.QueryOperators.OR;
 import static com.paytm.digital.education.explore.constants.AWSConstants.S3_BUCKET_PATH;
 import static com.paytm.digital.education.explore.constants.AWSConstants.S3_PATH_FOR_ARTICLE;
+import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.ARTICLES;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.ARTICLE_DATA_RANGE_TEMPLATE;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.ARTICLE_HEADER_RANGE;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.ARTICLE_SHEET_ID;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.ARTICLE_START_ROW;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.ATTRIBUTES;
-import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.EVENT_START_ROW;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
 
 @Slf4j
@@ -107,7 +107,7 @@ public class ImportArticleServiceImpl implements ImportDataService {
         Set<Long> instituteIdSet = articleInstituteMap.keySet();
         Map<String, Object> queryObject = new HashMap<>();
         queryObject.put(INSTITUTE_ID, new ArrayList<>(instituteIdSet));
-        List<String> instituteFields = Arrays.asList(INSTITUTE_ID, "articles");
+        List<String> instituteFields = Arrays.asList(INSTITUTE_ID, ARTICLES);
         List<Institute> institutes = commonMongoRepository.findAll(queryObject, Institute.class,
                 instituteFields, OR);
         Update update = new Update();
@@ -122,7 +122,7 @@ public class ImportArticleServiceImpl implements ImportDataService {
                 articleList.add(article);
                 count++;
             }
-            update.set("articles", articleList);
+            update.set(ARTICLES, articleList);
             queryObject.put(INSTITUTE_ID, institute.getInstituteId());
             commonMongoRepository.updateFirst(queryObject, instituteFields, update,
                     Institute.class);

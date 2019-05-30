@@ -64,7 +64,7 @@ public class ImportAmbassadorServiceImpl implements ImportDataService {
             if (insertedCount > 0) {
                 double updatedCount = startRow + insertedCount;
                 propertyMap.put(CAMPUS_AMBASSADOR_START_ROW, updatedCount);
-                campusEngagementHelper.updatePropertyMap(ATTRIBUTES+"."+CAMPUS_AMBASSADOR_START_ROW, updatedCount);
+                campusEngagementHelper.updatePropertyMap(ATTRIBUTES + "." + CAMPUS_AMBASSADOR_START_ROW, updatedCount);
             }
         }
         return null;
