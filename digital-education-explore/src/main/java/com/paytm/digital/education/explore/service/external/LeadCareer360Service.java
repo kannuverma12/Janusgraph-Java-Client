@@ -38,6 +38,7 @@ public class LeadCareer360Service {
                     .post("https://www.careers360.net/dj-api/paytm-unfollow",
                             Career360UnfollowResponse.class, career360UnfollowRequest,
                             getHeaders());
+            log.info(response.toString());
             return buildUnfollowResponse(response);
         } catch (Exception e) {
             e.printStackTrace();
@@ -52,7 +53,7 @@ public class LeadCareer360Service {
                     .post("https://www.careers360.net/dj-api/paytm-user",
                             Career360LeadResponse.class,
                             career360LeadRequest, getHeaders());
-            log.info("_++++++++++++___" + response.toString());
+            log.info(response.toString());
             return buildResponse(response);
         } catch (Exception e) {
             e.printStackTrace();
@@ -94,6 +95,7 @@ public class LeadCareer360Service {
     private Map<String, String> getHeaders() {
         Map<String, String> headers = new HashMap<>();
         headers.put("content-type", "application/json");
+        headers.put("x-api-token", "Pekfrtyuyuyerwdghjhff#54555hhfghfghfh");
         return headers;
     }
 
