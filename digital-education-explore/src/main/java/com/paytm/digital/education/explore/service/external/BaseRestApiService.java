@@ -5,6 +5,7 @@ import com.paytm.digital.education.explore.client.RestConfig;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -23,6 +24,7 @@ import java.util.Objects;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class BaseRestApiService {
 
     RestTemplate restTemplate;
@@ -69,7 +71,7 @@ public class BaseRestApiService {
             httpHeaders.add(entry.getKey(), entry.getValue());
         }
         HttpEntity<Object> httpEntity = new HttpEntity<Object>(requestBody, httpHeaders);
-        System.out.println(httpEntity.toString());
+        log.info(httpEntity.toString());
         ResponseEntity<T> responseEntity =
                 restTemplate.exchange(url, HttpMethod.POST, httpEntity, clazz);
         if (responseEntity.getStatusCodeValue() != 200) {
