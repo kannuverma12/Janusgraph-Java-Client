@@ -1,16 +1,20 @@
-package com.paytm.digital.education.explore.client;
+package com.paytm.digital.education.explore.config;
 
+import lombok.Data;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
+
 @Configuration
+@Data
 public class RestConfig {
 
     private RestTemplate restTemplate;
 
-    public RestTemplate getRestTemplate() {
+    @PostConstruct
+    public void init() {
         restTemplate = new RestTemplate();
-        return restTemplate;
     }
 
 }
