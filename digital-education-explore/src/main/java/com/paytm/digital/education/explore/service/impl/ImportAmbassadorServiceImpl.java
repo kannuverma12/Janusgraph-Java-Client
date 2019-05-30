@@ -112,7 +112,7 @@ public class ImportAmbassadorServiceImpl implements ImportDataService {
             Long instituteId = Long.parseLong(ambassador.getInstituteId());
             campusAmbassador.setInstituteId(instituteId);
             if (ambassador.getImage() != null) {
-                campusAmbassador.setImageUrl(CommonUtil.uploadToS3(ambassador.getImage(), null,
+                campusAmbassador.setImageUrl(campusEngagementHelper.uploadToS3(ambassador.getImage(), null,
                         instituteId,
                         S3_BUCKET_PATH, S3_PATH_FOR_AMBASSADOR).getKey());
             }

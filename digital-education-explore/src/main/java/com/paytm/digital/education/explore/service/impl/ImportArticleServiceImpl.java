@@ -85,7 +85,7 @@ public class ImportArticleServiceImpl implements ImportDataService {
             article.setStudentPaytmMobileNumber(xcelArticle.getStudentPaytmMobileNumber());
             article.setSubmittedBy(xcelArticle.getSubmittedBy());
             if (Objects.nonNull(xcelArticle.getArticlePdf())) {
-                article.setArticlePdf(CommonUtil.uploadToS3(xcelArticle.getArticlePdf(), null,
+                article.setArticlePdf(campusEngagementHelper.uploadToS3(xcelArticle.getArticlePdf(), null,
                         instituteId,
                         S3_BUCKET_PATH, S3_PATH_FOR_ARTICLE).getKey());
             }

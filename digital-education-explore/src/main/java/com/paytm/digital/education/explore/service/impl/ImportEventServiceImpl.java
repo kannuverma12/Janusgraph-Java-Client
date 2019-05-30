@@ -6,7 +6,6 @@ import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.service.ImportDataService;
 import com.paytm.digital.education.explore.service.helper.CampusEngagementHelper;
-import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.explore.utility.GoogleDriveUtil;
 import com.paytm.digital.education.explore.xcel.model.XcelEvent;
 import javafx.util.Pair;
@@ -116,7 +115,7 @@ public class ImportEventServiceImpl implements ImportDataService {
         List<String> imageUrlList = new ArrayList<>();
         List<String> videoUrlList = new ArrayList<>();
         for (String url : googleMediaUrl) {
-            Pair<String, String> mediaInfo = CommonUtil.uploadToS3(url, null, instituteId,
+            Pair<String, String> mediaInfo = campusEngagementHelper.uploadToS3(url, null, instituteId,
                     S3_BUCKET_PATH,
                     S3_PATH_FOR_EVENT);
             if (mediaInfo.getValue().startsWith(IMAGE)) {

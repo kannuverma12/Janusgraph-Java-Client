@@ -268,25 +268,7 @@ public class CommonUtil {
         }
         return true;
     }
-    /*
-     ** Upload to S3
-     */
-    public Pair<String, String> uploadToS3(String fileUrl, String fileName, Long instituteId,
-            String s3bucketPath, String s3ImagePath) throws IOException,
-            GeneralSecurityException {
-        InputStream inputStream = null;
-        String mimeType = null;
-        if (fileUrl.startsWith(GOOGLE_DRIVE_BASE_URL)) {
-            Map<String, Object> fileData = GoogleDriveUtil.downloadFile(true, fileUrl);
-            inputStream = (InputStream) fileData.get(INPUTSTREAM);
-            fileName = (String) fileData.get(FILENAME);
-            mimeType = (String) fileData.get(MIMETYPE);
-        }
-        String imageUrl =
-                S3Util.uploadFile(fileUrl, inputStream, fileName, s3bucketPath, instituteId,
-                        s3ImagePath);
-        return new Pair<>(imageUrl, mimeType);
-    }
+
     public String convertNameToUrlDisplayName(String name) {
         return name.replaceAll("[^a-zA-Z0-9]+", "-").toLowerCase();
     }
