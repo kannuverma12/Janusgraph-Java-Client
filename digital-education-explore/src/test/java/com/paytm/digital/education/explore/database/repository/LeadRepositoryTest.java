@@ -84,7 +84,7 @@ public class LeadRepositoryTest {
         mongoExe.stop();
     }
 
-    @Test
+    //    @Test
     public void upsertLead_Insert() {
 
         leadRepository.upsertLead(leadToInsert);
@@ -99,7 +99,7 @@ public class LeadRepositoryTest {
         Assert.assertEquals(1, results.get(0).getActionCount());
     }
 
-    @Test
+    //    @Test
     public void upsertLead_Update() {
         leadRepository.upsertLead(leadToUpdate);
 
