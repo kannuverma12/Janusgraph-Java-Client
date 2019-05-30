@@ -57,6 +57,7 @@ public class CourseDetailHelper {
                     course.setCourseId(courseData.getCourseId());
                     course.setDurationInMonth(courseData.getDurationInMonths());
                     course.setName(courseData.getOfficialName());
+                    course.setUrlDisplayKey(courseData.getUrlDisplayKey());
                     course.setSeats(courseData.getSeatsAvailable());
                     course.setFee(courseData.getFee());
                     courses.add(course);

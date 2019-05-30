@@ -177,6 +177,8 @@ public class AutoSuggestServiceImpl {
                 documents.forEach(esDocument -> {
                     SuggestResult responseDoc = new SuggestResult(esDocument.getEntityId(),
                             esDocument.getOfficialName());
+                    responseDoc.setUrlDisplayName(
+                            CommonUtil.convertNameToUrlDisplayName(esDocument.getOfficialName()));
                     if (StringUtils.isNotBlank(esDocument.getLogo())) {
                         responseDoc.setLogo(CommonUtil.getLogoLink(esDocument.getLogo()));
                     }

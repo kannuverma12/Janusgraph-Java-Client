@@ -24,7 +24,9 @@ public enum ErrorEnum {
             0),
     INVALID_COURSE_ID(4011, "Invalid course ID. Please provide a valid course ID.",
             HttpStatus.BAD_REQUEST, 0),
-    ENTITY_ID_IS_MANDATORY(4012, "entity id is mandatory for course search", HttpStatus.BAD_REQUEST,
+    ENTITY_ID_AND_ENTITY_NAME_IS_MANDATORY(4012,
+            "entity id and entity name both are mandatory for course search",
+            HttpStatus.BAD_REQUEST,
             0),
     INVALID_ENTITY_ID_LIST_SIZE(4013, "entity id must contain one and only one value",
             HttpStatus.BAD_REQUEST, 0),
@@ -40,10 +42,17 @@ public enum ErrorEnum {
             HttpStatus.BAD_REQUEST, 0),
     CASTE_CATEGORY_PARAMETER_MISSING(4019, "Caste category parameter is missing in request.",
             HttpStatus.BAD_REQUEST, 0),
-    INVALID_EXCEL_FILE_EXTENSION(4020, "Received file does not have a standard excel extension.",
+    ENTITY_ID_NOT_PRESENT(4020, "%s is missing in the request.",
+            HttpStatus.BAD_REQUEST, 1),
+    INVALID_INSTITUTE_NAME(4021, "Provided name doesnot match with actual institute name",
             HttpStatus.BAD_REQUEST, 0),
-    INVALID_FILE_NAME(4021, "Sorry! Filename contains invalid path sequence ",
+    INVALID_EXAM_NAME(4022, "Provided name doesnot match with actual exam name",
+            HttpStatus.BAD_REQUEST, 0),
+    INVALID_COURSE_NAME(4023, "Provided name doesnot match with actual course name",
+            HttpStatus.BAD_REQUEST, 0),
+    INSTITUTE_NAME_OR_ID_MISSING(4024, "Institute name and id both should be present",
             HttpStatus.BAD_REQUEST, 0);
+
 
     private final int        internalCode;
     private final String     externalMessage;

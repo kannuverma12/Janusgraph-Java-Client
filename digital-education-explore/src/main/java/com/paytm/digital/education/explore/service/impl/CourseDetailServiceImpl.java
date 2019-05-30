@@ -10,6 +10,7 @@ import static com.paytm.digital.education.explore.enums.EducationEntity.COURSE;
 import static com.paytm.digital.education.explore.enums.EducationEntity.EXAM;
 import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_COURSE_ID;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_COURSE_NAME;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 
 import com.paytm.digital.education.exception.BadRequestException;
@@ -31,11 +32,10 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
-
+import java.util.HashMap;
 
 @Slf4j
 @AllArgsConstructor
@@ -51,7 +51,8 @@ public class CourseDetailServiceImpl {
      ** Method to get the course details and institute details
      */
     @Cacheable(value = "course_detail")
-    public CourseDetail getCourseDetails(long entityId, String fieldGroup, List<String> fields) {
+    public CourseDetail getCourseDetails(long entityId, String courseUrlKey, String fieldGroup,
+            List<String> fields) {
         List<String> queryFields = null;
         if (StringUtils.isNotBlank(fieldGroup)) {
             queryFields = commonMongoRepository.getFieldsByGroup(Course.class, fieldGroup);
@@ -62,14 +63,19 @@ public class CourseDetailServiceImpl {
             Map<String, ArrayList<String>> allFields =
                     FieldsRetrievalUtil.getFormattedFields(queryFields, COURSE_CLASS);
             ArrayList<String> courseQueryFields = allFields.get(COURSE.name().toLowerCase());
-            ArrayList<String> instituteQueryFields = allFields.get(INSTITUTE.name().toLowerCase());
             courseQueryFields.add(INSTITUTE_ID);
             Course course =
                     commonMongoRepository.getEntityByFields(COURSE_ID, entityId, Course.class,
                             courseQueryFields);
+            ArrayList<String> instituteQueryFields = allFields.get(INSTITUTE.name().toLowerCase());
             if (course == null) {
                 throw new BadRequestException(INVALID_COURSE_ID,
                         INVALID_COURSE_ID.getExternalMessage());
+            }
+            if (!courseUrlKey.equals(CommonUtil
+                    .convertNameToUrlDisplayName(course.getCourseNameOfficial()))) {
+                throw new BadRequestException(INVALID_COURSE_NAME,
+                        INVALID_COURSE_NAME.getExternalMessage());
             }
             Institute instituteDetails = null;
             if (course.getInstitutionId() != null && !CollectionUtils
@@ -134,6 +140,8 @@ public class CourseDetailServiceImpl {
         if (institute != null) {
             CourseInstituteDetail courseInstituteDetail = new CourseInstituteDetail();
             courseInstituteDetail.setOfficialName(institute.getOfficialName());
+            courseInstituteDetail.setUrlDisplayName(
+                    CommonUtil.convertNameToUrlDisplayName(institute.getOfficialName()));
             courseInstituteDetail.setOfficialAddress(
                     CommonUtil.getOfficialAddress(institute.getInstitutionState(),
                             institute.getInstitutionCity(), institute.getPhone(),

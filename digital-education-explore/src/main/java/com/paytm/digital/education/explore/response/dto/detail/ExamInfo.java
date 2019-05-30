@@ -12,4 +12,7 @@ public class ExamInfo {
 
     @JsonProperty("exam_name")
     private String examName;
+
+    @JsonProperty("url_display_key")
+    private String urlDisplayKey;
 }

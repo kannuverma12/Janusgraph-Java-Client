@@ -49,7 +49,7 @@ public interface ExploreConstants {
     String ENTITY_TYPE_CITY          = "city";
 
     ///////// Institute search Constatnts ///////////
-    String SEARCH_INDEX_COURSE        = "education_search_course_v2";
+    String SEARCH_INDEX_COURSE        = "education_search_course_v3";
     String SEARCH_ANALYZER_COURSE     = "word_delimiter_analyzer";
     String SEARCH_NAMES_INSTITUTE     = "names";
     String MAX_RANK_INSTITUTE         = "max_rank";
@@ -173,6 +173,7 @@ public interface ExploreConstants {
     String GALLERY_LOGO                     = "gallery.logo";
     String OFFICIAL_ADDRESS                 = "official_address";
     String ENTITY_ID                        = "entity_id";
+    String ENTITY_NAME                      = "entity_name";
     int    COURSE_SIZE_FOR_INSTITUTE_DETAIL = 6;
     String COMPARE                          = "compare";
 
@@ -200,6 +201,7 @@ public interface ExploreConstants {
     String WIDGETS                   = "widgets";
     String DATA_STRING               = "data";
     String PARENT_INSTITUTION        = "parent_institution";
+    String NOTABLE_ALUMNI_PLACEHOLDER = "/notable_alumni_placeholder.png";
 
     // Other Constants
     Version FTL_CURRENT_VERSION = Configuration.VERSION_2_3_23;

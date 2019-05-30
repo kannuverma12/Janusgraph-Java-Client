@@ -5,6 +5,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EDU
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import com.paytm.digital.education.dto.NotificationFlags;
@@ -15,6 +16,7 @@ import com.paytm.digital.education.explore.response.dto.search.CutoffSearchRespo
 import com.paytm.digital.education.explore.service.CutoffService;
 import com.paytm.digital.education.explore.service.impl.ExamListServiceImpl;
 
+import com.paytm.digital.education.explore.validators.UrlParamsValidator;
 import com.paytm.digital.education.service.notification.NotificationServiceImpl;
 import com.paytm.digital.education.utility.JsonUtils;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +49,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ExploreController {
     private static final SubscriptionStatus SUBSCRIBED_STATUS = SubscriptionStatus.SUBSCRIBED;
 
+    private UrlParamsValidator      urlParamsValidator;
     private SubscriptionService     subscriptionService;
     private CutoffService           cutoffService;
     private ExploreValidator        exploreValidator;
@@ -117,23 +120,34 @@ public class ExploreController {
     @RequestMapping(method = RequestMethod.GET, path = "/v1/cutoffs/search")
     public List<CutoffSearchResponse> searchCutOffs(
             @RequestParam(value = "institute_id") @Min(1) long instituteId,
+            @RequestParam(value = "institute_name") @NotBlank String instituteName,
             @RequestParam(value = "exam_id") @Min(1) long examId,
+            @RequestParam(value = "exam_name") @NotBlank String examName,
             @RequestParam(value = "gender", required = false) Gender gender,
             @RequestParam(value = "caste_group", required = false) String casteGroup,
             @RequestParam(value = "field_group") @NotNull String fieldGroup) {
+        urlParamsValidator.validateInstuteUrlKey(instituteId, instituteName);
+        urlParamsValidator.validateExamUrlKey(examId, examName);
         exploreValidator.validateFieldAndFieldGroup(null, fieldGroup);
-        return cutoffService.searchCutOffs(instituteId, examId, gender, casteGroup, fieldGroup);
+        return cutoffService
+                .searchCutOffs(instituteId, examId, gender, casteGroup, fieldGroup);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/v1/cutoffs/search_list")
     public ExamAndCutOff getList(
             @RequestParam(value = "institute_id") @Min(1) long instituteId,
-            @RequestParam(value = "exam_id") @Min(1) long examId) {
+            @RequestParam(value = "institute_name") @NotBlank String instituteName,
+            @RequestParam(value = "exam_id") @Min(1) long examId,
+            @RequestParam(value = "exam_name") @NotBlank String examName) {
+        urlParamsValidator.validateInstuteUrlKey(instituteId, instituteName);
+        urlParamsValidator.validateExamUrlKey(examId, examName);
         return cutoffService.getSearchList(instituteId, examId);
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "/v1/institute/exam_list/{instituteId}")
-    public List<ExamInfo> getExamList(@PathVariable("instituteId") @Min(1) long instituteId) {
+    @RequestMapping(method = RequestMethod.GET, path = "/v1/institute/exam_list/{instituteId}/{instituteName}")
+    public List<ExamInfo> getExamList(@PathVariable("instituteId") @Min(1) long instituteId,
+            @PathVariable("instituteName") @NotBlank String instituteName) {
+        urlParamsValidator.validateInstuteUrlKey(instituteId, instituteName);
         return examListService.getExamList(instituteId);
     }
 

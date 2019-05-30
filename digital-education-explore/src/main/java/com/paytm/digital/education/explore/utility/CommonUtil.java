@@ -268,7 +268,6 @@ public class CommonUtil {
         }
         return true;
     }
-
     /*
      ** Upload to S3
      */
@@ -287,5 +286,8 @@ public class CommonUtil {
                 S3Util.uploadFile(fileUrl, inputStream, fileName, s3bucketPath, instituteId,
                         s3ImagePath);
         return new Pair<>(imageUrl, mimeType);
+    }
+    public String convertNameToUrlDisplayName(String name) {
+        return name.replaceAll("[^a-zA-Z0-9]+", "-").toLowerCase();
     }
 }
