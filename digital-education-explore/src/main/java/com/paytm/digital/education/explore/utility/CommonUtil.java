@@ -1,9 +1,5 @@
 package com.paytm.digital.education.explore.utility;
 
-import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.FILENAME;
-import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.GOOGLE_DRIVE_BASE_URL;
-import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.INPUTSTREAM;
-import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.MIMETYPE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AFFILIATED;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AFFILIATED_TO;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.APPROVED_BY;
@@ -21,14 +17,10 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.UGC
 
 import com.paytm.digital.education.explore.config.ConfigProperties;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
-import javafx.util.Pair;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

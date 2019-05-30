@@ -36,7 +36,7 @@ public class AwsConfig {
     public static String getS3path() {
         return s3BucketPath;
     }
-    
+
     public static AmazonS3 func() {
         try {
             AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
