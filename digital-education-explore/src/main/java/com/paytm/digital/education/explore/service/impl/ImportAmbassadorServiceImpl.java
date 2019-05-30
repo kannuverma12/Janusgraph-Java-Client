@@ -6,6 +6,7 @@ import com.paytm.digital.education.explore.database.entity.CampusEvent;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.service.ImportDataService;
+import com.paytm.digital.education.explore.service.helper.CampusEngagementHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.explore.utility.GoogleDriveUtil;
 import com.paytm.digital.education.explore.xcel.model.XcelCampusAmbassador;
@@ -25,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.Set;
 
 import static com.mongodb.QueryOperators.OR;
@@ -37,12 +37,6 @@ import static com.paytm.digital.education.explore.constants.CampusEngagementCons
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.CAMPUS_AMBASSADOR_HEADER_RANGE;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.CAMPUS_AMBASSADOR_SHEET_ID;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.CAMPUS_AMBASSADOR_START_ROW;
-import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.CAMPUS_ENGAGEMENT;
-import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.COMPONENT;
-import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.GOOGLE_SHEETS_INFO;
-import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.KEY;
-import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.NAMESPACE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
 
 @Slf4j
@@ -52,12 +46,11 @@ public class ImportAmbassadorServiceImpl implements ImportDataService {
 
     private CommonMongoRepository commonMongoRepository;
     private PropertyReader        propertyReader;
+    private CampusEngagementHelper campusEngagementHelper;
 
     public Map<Long, List<CampusEvent>> importData()
             throws IOException, GeneralSecurityException, ParseException {
-        Map<String, Object> propertyMap = propertyReader
-                .getPropertiesAsMapByKey(EXPLORE_COMPONENT, GOOGLE_SHEETS_INFO,
-                        CAMPUS_ENGAGEMENT);
+        Map<String, Object> propertyMap = campusEngagementHelper.getCampusEngagementProperties();
         String sheetId = (String) propertyMap.get(CAMPUS_AMBASSADOR_SHEET_ID);
         String headerRange = (String) propertyMap.get(CAMPUS_AMBASSADOR_HEADER_RANGE);
         double startRow = (double) propertyMap.get(CAMPUS_AMBASSADOR_START_ROW);
@@ -69,23 +62,12 @@ public class ImportAmbassadorServiceImpl implements ImportDataService {
                     buildCampusAmbassadorInstituteMap(sheetAmbassadorData);
             int insertedCount = addCampusAmbassadors(campusAmbassadorInstituteMap);
             if (insertedCount > 0) {
-                propertyMap.put(CAMPUS_AMBASSADOR_START_ROW, (startRow + insertedCount));
-                updatePropertyMap(propertyMap);
+                double updatedCount = startRow + insertedCount;
+                propertyMap.put(CAMPUS_AMBASSADOR_START_ROW, updatedCount);
+                campusEngagementHelper.updatePropertyMap(ATTRIBUTES+"."+CAMPUS_AMBASSADOR_START_ROW, updatedCount);
             }
         }
         return null;
-    }
-
-    private void updatePropertyMap(Map<String, Object> propertyMap) {
-        Map<String, Object> queryObject = new HashMap<>();
-        queryObject.put(COMPONENT, EXPLORE_COMPONENT);
-        queryObject.put(NAMESPACE, GOOGLE_SHEETS_INFO);
-        queryObject.put(KEY, CAMPUS_ENGAGEMENT);
-        List<String> fields = Arrays.asList(ATTRIBUTES);
-        Update update = new Update();
-        update.set(ATTRIBUTES, propertyMap);
-        commonMongoRepository.updateFirst(queryObject, fields, update,
-                Properties.class);
     }
 
     private int addCampusAmbassadors(

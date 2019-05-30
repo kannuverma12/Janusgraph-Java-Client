@@ -5,10 +5,10 @@ import com.paytm.digital.education.explore.database.entity.CampusEvent;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.service.ImportDataService;
+import com.paytm.digital.education.explore.service.helper.CampusEngagementHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.explore.utility.GoogleDriveUtil;
 import com.paytm.digital.education.explore.xcel.model.XcelEvent;
-import com.paytm.digital.education.property.reader.PropertyReader;
 import javafx.util.Pair;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,47 +18,37 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.text.MessageFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.Set;
 
 import static com.mongodb.QueryOperators.OR;
 import static com.paytm.digital.education.explore.constants.AWSConstants.S3_BUCKET_PATH;
 import static com.paytm.digital.education.explore.constants.AWSConstants.S3_PATH_FOR_EVENT;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.ATTRIBUTES;
-import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.CAMPUS_ENGAGEMENT;
-import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.COMPONENT;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.EVENTS;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.EVENT_DATA_RANGE_TEMPLATE;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.EVENT_HEADER_RANGE;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.EVENT_SHEET_ID;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.EVENT_START_ROW;
-import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.GOOGLE_SHEETS_INFO;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.IMAGE;
-import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.KEY;
-import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.NAMESPACE;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.VIDEO;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
 
 @Slf4j
 @Service
 @AllArgsConstructor
 public class ImportEventServiceImpl implements ImportDataService {
-    private CommonMongoRepository commonMongoRepository;
-    private PropertyReader        propertyReader;
+    private CommonMongoRepository  commonMongoRepository;
+    private CampusEngagementHelper campusEngagementHelper;
 
     public Map<Long, List<CampusEvent>> importData()
-            throws IOException, GeneralSecurityException, ParseException {
-        Map<String, Object> propertyMap = propertyReader
-                .getPropertiesAsMapByKey(EXPLORE_COMPONENT, GOOGLE_SHEETS_INFO,
-                        CAMPUS_ENGAGEMENT);
+            throws IOException, GeneralSecurityException {
+        Map<String, Object> propertyMap = campusEngagementHelper.getCampusEngagementProperties();
         String sheetId = (String) propertyMap.get(EVENT_SHEET_ID);
         String headerRange = (String) propertyMap.get(EVENT_HEADER_RANGE);
         double startRow = (double) propertyMap.get(EVENT_START_ROW);
@@ -70,23 +60,13 @@ public class ImportEventServiceImpl implements ImportDataService {
                     buildEventInstituteMap(eventData);
             int insertedCount = addEvents(articleInstituteMap);
             if (insertedCount > 0) {
-                propertyMap.put(EVENT_START_ROW, (startRow + insertedCount));
-                updatePropertyMap(propertyMap);
+                double updatedCount = startRow + insertedCount;
+                propertyMap.put(EVENT_START_ROW, updatedCount);
+                campusEngagementHelper
+                        .updatePropertyMap(ATTRIBUTES + "." + EVENT_START_ROW, updatedCount);
             }
         }
         return null;
-    }
-
-    private void updatePropertyMap(Map<String, Object> propertyMap) {
-        Map<String, Object> queryObject = new HashMap<>();
-        queryObject.put(COMPONENT, EXPLORE_COMPONENT);
-        queryObject.put(NAMESPACE, GOOGLE_SHEETS_INFO);
-        queryObject.put(KEY, CAMPUS_ENGAGEMENT);
-        List<String> fields = Arrays.asList(ATTRIBUTES);
-        Update update = new Update();
-        update.set(ATTRIBUTES, propertyMap);
-        commonMongoRepository.updateFirst(queryObject, fields, update,
-                Properties.class);
     }
 
     /*
