@@ -1,6 +1,8 @@
-package com.paytm.digital.education.explore.service.impl;
+package com.paytm.digital.education.explore.service.external;
 
+import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.client.RestConfig;
+import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +13,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.lang.reflect.Type;
@@ -22,7 +25,7 @@ import java.util.Objects;
 @AllArgsConstructor
 public class BaseRestApiService {
 
-    RestConfig restConfig;
+    RestTemplate restTemplate;
 
     public <T> T get(String url, Map<String, ?> queryParams, HttpHeaders httpHeaders,
             Type responseClassType) {
@@ -31,7 +34,7 @@ public class BaseRestApiService {
         URI uri = getURI(url, queryParams);
         try {
             responseEntity =
-                    restConfig.getRestTemplate().exchange(uri, HttpMethod.GET, requestEntity,
+                    restTemplate.exchange(uri, HttpMethod.GET, requestEntity,
                             new ParameterizedTypeReference<T>() {
                                 @Override
                                 public Type getType() {
@@ -68,7 +71,11 @@ public class BaseRestApiService {
         HttpEntity<Object> httpEntity = new HttpEntity<Object>(requestBody, httpHeaders);
         System.out.println(httpEntity.toString());
         ResponseEntity<T> responseEntity =
-                restConfig.getRestTemplate().exchange(url, HttpMethod.POST, httpEntity, clazz);
+                restTemplate.exchange(url, HttpMethod.POST, httpEntity, clazz);
+        if (responseEntity.getStatusCodeValue() != 200) {
+            throw new BadRequestException(ErrorEnum.HTTP_REQUEST_FAILED,
+                    ErrorEnum.HTTP_REQUEST_FAILED.getExternalMessage());
+        }
         return responseEntity.getBody();
     }
 

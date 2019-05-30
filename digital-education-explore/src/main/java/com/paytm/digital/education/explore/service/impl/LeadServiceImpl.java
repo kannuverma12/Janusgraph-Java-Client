@@ -1,6 +1,7 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import com.paytm.digital.education.exception.BadRequestException;
+import com.paytm.digital.education.explore.database.entity.BaseLeadResponse;
 import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Lead;
@@ -8,6 +9,7 @@ import com.paytm.digital.education.explore.database.repository.CommonMongoReposi
 import com.paytm.digital.education.explore.database.repository.LeadRepository;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.service.LeadService;
+import com.paytm.digital.education.explore.service.external.LeadCareer360Service;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -64,7 +66,8 @@ public class LeadServiceImpl implements LeadService {
 
 
     @Override
-    public void captureLead(@NotNull Lead lead) {
+    public com.paytm.digital.education.explore.response.dto.common.Lead captureLead(
+            @NotNull Lead lead) {
         if (EducationEntity.COURSE.equals(lead.getEntityType())) {
             validateCourseLead(lead);
         } else if (EducationEntity.EXAM.equals(lead.getEntityType())) {
@@ -73,12 +76,11 @@ public class LeadServiceImpl implements LeadService {
             throw new BadRequestException(ErrorEnum.ENTITY_NOT_SUPPORTED_FOR_LEAD,
                     ErrorEnum.ENTITY_NOT_SUPPORTED_FOR_LEAD.getExternalMessage());
         }
-        //sendLead(lead);
+        BaseLeadResponse c360LeadRespose = leadCareer360Service.send(lead);
+        com.paytm.digital.education.explore.response.dto.common.Lead leadResponse =
+                new com.paytm.digital.education.explore.response.dto.common.Lead();
+        leadResponse.setInterested(c360LeadRespose.getInterested());
         leadRepository.upsertLead(lead);
+        return leadResponse;
     }
-
-    private void sendLead(Lead lead) {
-        leadCareer360Service.send(lead);
-    }
-
 }

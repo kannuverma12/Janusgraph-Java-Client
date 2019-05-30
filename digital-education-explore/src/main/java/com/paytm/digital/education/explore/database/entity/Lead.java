@@ -48,7 +48,7 @@ public class Lead {
 
     @JsonProperty(Constants.INSTITUTE_ID)
     @Field(Constants.INSTITUTE_ID)
-    private Integer instituteId;
+    private Long instituteId;
 
     @Field(Constants.CONTACT_NAME)
     @JsonProperty(Constants.CONTACT_NAME)
@@ -68,6 +68,25 @@ public class Lead {
     @Pattern(regexp = Constants.PHONE_REGEX, message = Constants.PHONE_VALIDATION_MESSAGE)
     private String contactNumber;
 
+
+    @Field(Constants.CITY_ID)
+    @JsonProperty(Constants.CITY_ID)
+    @NotNull
+    private Long cityId;
+
+
+    @Field(Constants.ENTITY_ID)
+    @JsonProperty(Constants.ENTITY_ID)
+    @NotNull
+    @Min(1)
+    private Long entityId;
+
+
+    @Field(Constants.STATE_ID)
+    @JsonProperty(Constants.STATE_ID)
+    @NotNull
+    private Long stateId;
+
     /**
      * action the user took to mark itself as a lead
      */
@@ -82,30 +101,15 @@ public class Lead {
     @Field(Constants.ACTION_COUNT)
     private int actionCount;
 
-    @Field(Constants.ENTITY_ID)
-    @JsonProperty(Constants.ENTITY_ID)
-    @NotNull
-    @Min(1)
-    private Long entityId;
-
     @Field(Constants.ENTITY_TYPE)
     @JsonProperty(Constants.ENTITY_TYPE)
     @NotNull
     private EducationEntity entityType;
 
-    @Field(Constants.STATE_ID)
-    @JsonProperty(Constants.STATE_ID)
-    @NotNull
-    private Long stateId;
 
     @Field(Constants.REQUEST_TYPE)
     @JsonIgnore
     private Integer requestType;
-
-    @Field(Constants.CITY_ID)
-    @JsonProperty(Constants.CITY_ID)
-    @NotNull
-    private Long cityId;
 
     @JsonIgnore
     @Field(Constants.INTERESTED)
@@ -122,11 +126,6 @@ public class Lead {
     @JsonIgnore
     @Field(Constants.LEAD_RESPONSES)
     private List<BaseLeadResponse> baseLeadResponse;
-
-    @JsonIgnore
-    @Field(Constants.PUBLISHED)
-    private boolean published;
-
 
     public static class Constants {
         public static final String ACTION                         = "action";

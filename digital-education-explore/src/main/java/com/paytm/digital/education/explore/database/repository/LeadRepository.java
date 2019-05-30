@@ -60,7 +60,6 @@ public class LeadRepository {
                 .set(UPDATED_AT, currentDate)
                 .set(CITY_ID, lead.getCityId())
                 .set(STATE_ID, lead.getStateId())
-                .set(EN)
                 .inc(ACTION_COUNT, 1);
         System.out.println(update.toString());
 
