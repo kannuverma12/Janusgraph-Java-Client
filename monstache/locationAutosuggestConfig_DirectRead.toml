@@ -28,7 +28,7 @@ resume = false # data is kept in mongodb to resume
 direct-read-namespaces = ["digital_education.location"]
 exit-after-direct-reads = true
 
-workers = ["A", "B", "C", "D"]
+#workers = ["A", "B", "C", "D"]
 
 #[gtm-settings]
 #channel-size = 2048
@@ -37,7 +37,7 @@ workers = ["A", "B", "C", "D"]
 
 
 [[mapping]]  #index mapping
-namespace = "digital_education.institute"
+namespace = "digital_education.location"
 index = "education_search_location_test"
 type = "education"
 
