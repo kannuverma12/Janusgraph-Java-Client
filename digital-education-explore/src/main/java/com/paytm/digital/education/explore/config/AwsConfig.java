@@ -16,6 +16,7 @@ public class AwsConfig {
 
     private static String clientRegion;
     private static String serviceEndPoint;
+    private static String s3BucketPath;
 
     @Value("${aws.s3.region}")
     public void setClientRegion(String region) {
@@ -27,6 +28,14 @@ public class AwsConfig {
         serviceEndPoint = endPoint;
     }
 
+    @Value("${aws.s3.bucketpath}")
+    public void setS3BucketPath(String endPoint) {
+        s3BucketPath = endPoint;
+    }
+
+    public static String getS3path() {
+        return s3BucketPath;
+    }
     public static AmazonS3 func() {
         try {
             AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
