@@ -1,5 +1,6 @@
 package com.paytm.digital.education.explore.service.external;
 
+import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.database.entity.BaseLeadResponse;
 import com.paytm.digital.education.explore.database.entity.Lead;
 import com.paytm.digital.education.explore.enums.EducationEntity;
@@ -8,6 +9,8 @@ import com.paytm.digital.education.explore.thirdparty.lead.Career360LeadRequest;
 import com.paytm.digital.education.explore.thirdparty.lead.Career360LeadResponse;
 import com.paytm.digital.education.explore.thirdparty.lead.Career360UnfollowRequest;
 import com.paytm.digital.education.explore.thirdparty.lead.Career360UnfollowResponse;
+import com.paytm.digital.education.mapping.ErrorEnum;
+import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,9 +37,10 @@ public class LeadCareer360Service {
     private BaseLeadResponse sendUnfollow(Lead lead) {
         Career360UnfollowRequest career360UnfollowRequest = buildUnfollowRequest(lead);
         try {
+            String jsonStr = JsonUtils.toJson(career360UnfollowRequest);
             Career360UnfollowResponse response = restApiService
                     .post("https://www.careers360.net/dj-api/paytm-unfollow",
-                            Career360UnfollowResponse.class, career360UnfollowRequest,
+                            Career360UnfollowResponse.class, jsonStr,
                             getHeaders());
             log.info(response.toString());
             return buildUnfollowResponse(response);
@@ -49,10 +53,11 @@ public class LeadCareer360Service {
     private BaseLeadResponse sendLead(Lead lead) {
         Career360LeadRequest career360LeadRequest = buildRequest(lead);
         try {
+            String jsonStr = JsonUtils.toJson(career360LeadRequest);
             Career360LeadResponse response = restApiService
                     .post("https://www.careers360.net/dj-api/paytm-user",
                             Career360LeadResponse.class,
-                            career360LeadRequest, getHeaders());
+                            jsonStr, getHeaders());
             log.info(response.toString());
             return buildResponse(response);
         } catch (Exception e) {
@@ -73,6 +78,9 @@ public class LeadCareer360Service {
                             || c360response.getCtaStatus() == 3
                             || c360response.getCtaStatus() == 4)) {
                 baseLeadResponse.setInterested(true);
+            } else {
+                throw new BadRequestException(ErrorEnum.HTTP_REQUEST_FAILED,
+                        ErrorEnum.HTTP_REQUEST_FAILED.getExternalMessage());
             }
             return baseLeadResponse;
         }
@@ -109,7 +117,7 @@ public class LeadCareer360Service {
         career360LeadRequest
                 .setEntityType(EducationEntity.convertToCareer360entity(lead.getEntityType()));
         career360LeadRequest.setEntityId(lead.getEntityId());
-        career360LeadRequest.setRequestType(lead.getRequestType());
+        career360LeadRequest.setRequestType(LeadAction.getCareers360RequestType(lead.getAction()));
         career360LeadRequest.setPaytmCustomerId(lead.getUserId());
         return career360LeadRequest;
     }

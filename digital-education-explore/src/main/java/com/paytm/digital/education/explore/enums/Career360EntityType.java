@@ -4,16 +4,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public enum Career360EntityType {
     @JsonProperty("exam")
-    EXAM,
+    exam,
 
     @JsonProperty("course")
-    COURSE;
+    course;
 
     public static EducationEntity convertToEducationEntity(Career360EntityType educationEntity) {
         switch (educationEntity) {
-            case EXAM:
+            case exam:
                 return EducationEntity.EXAM;
-            case COURSE:
+            case course:
                 return EducationEntity.COURSE;
             default:
                 return null;

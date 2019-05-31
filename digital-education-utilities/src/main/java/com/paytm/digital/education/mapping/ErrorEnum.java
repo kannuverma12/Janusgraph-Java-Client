@@ -58,8 +58,8 @@ public enum ErrorEnum {
             HttpStatus.BAD_REQUEST, 0),
     ENTITY_NOT_SUPPORTED_FOR_LEAD(4027, "Provided entity is not supported to send lead",
             HttpStatus.BAD_REQUEST, 0),
-    HTTP_REQUEST_FAILED(4028, "Http request failed",
-            HttpStatus.BAD_REQUEST, 0);
+    HTTP_REQUEST_FAILED(4028, "Http request failed %s",
+            HttpStatus.BAD_REQUEST, 1);
 
 
     private final int        internalCode;

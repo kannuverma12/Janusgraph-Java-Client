@@ -27,9 +27,9 @@ public enum EducationEntity {
     public static Career360EntityType convertToCareer360entity(EducationEntity educationEntity) {
         switch (educationEntity) {
             case EXAM:
-                return Career360EntityType.EXAM;
+                return Career360EntityType.exam;
             case COURSE:
-                return Career360EntityType.COURSE;
+                return Career360EntityType.course;
             default:
                 return null;
         }

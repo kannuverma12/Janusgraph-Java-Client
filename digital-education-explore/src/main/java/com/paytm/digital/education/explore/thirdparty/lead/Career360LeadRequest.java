@@ -36,6 +36,4 @@ public class Career360LeadRequest {
     @JsonProperty("entity_id")
     private Long entityId;
 
-    @JsonProperty("api_key")
-    private String apiKey = "Pekfrtyuyuyerwdghjhff#54555hhfghfghfh";
 }
