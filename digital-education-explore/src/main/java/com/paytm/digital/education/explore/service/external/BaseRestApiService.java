@@ -48,8 +48,8 @@ public class BaseRestApiService {
     }
 
     public <T> T post(
-            final String url, Class<T> clazz, String requestBody, final Map<String, String> headers)
-            throws Exception {
+            final String url, Class<T> clazz, String requestBody,
+            final Map<String, String> headers) {
         if (Objects.isNull(headers) || headers.isEmpty()) {
             throw new IllegalArgumentException("Headers Can't be null or empty");
         }

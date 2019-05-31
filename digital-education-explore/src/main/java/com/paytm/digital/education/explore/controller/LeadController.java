@@ -28,7 +28,7 @@ public class LeadController {
     @PostMapping("/auth/v1/lead")
     public com.paytm.digital.education.explore.response.dto.common.Lead captureLead(
             @Valid @RequestBody Lead lead,
-            @RequestHeader("x-user-id") long userId) throws Exception {
+            @RequestHeader("x-user-id") long userId) {
         log.info("Lead Request : {}", JsonUtils.toJson(lead));
         lead.setUserId(userId);
         return leadService.captureLead(lead);

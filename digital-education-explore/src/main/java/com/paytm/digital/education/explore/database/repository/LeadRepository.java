@@ -48,7 +48,6 @@ public class LeadRepository {
                 .set(Lead.Constants.CITY_ID, lead.getCityId())
                 .set(Lead.Constants.STATE_ID, lead.getStateId())
                 .inc(Lead.Constants.ACTION_COUNT, 1);
-        System.out.println(update.toString());
 
         mongoTemplate
                 .findAndModify(query, update, new FindAndModifyOptions().upsert(true), Lead.class);

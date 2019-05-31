@@ -59,7 +59,8 @@ public enum ErrorEnum {
     ENTITY_NOT_SUPPORTED_FOR_LEAD(4027, "Provided entity is not supported to send lead",
             HttpStatus.BAD_REQUEST, 0),
     HTTP_REQUEST_FAILED(4028, "Http request failed %s",
-            HttpStatus.BAD_REQUEST, 1);
+            HttpStatus.BAD_REQUEST, 1),
+    STREAM_IS_MANDATORY_FOR_COURSE_LEAD(4029, "Stream is mandatory", HttpStatus.BAD_REQUEST, 0);
 
 
     private final int        internalCode;

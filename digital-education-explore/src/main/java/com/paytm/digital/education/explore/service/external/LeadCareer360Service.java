@@ -1,6 +1,5 @@
 package com.paytm.digital.education.explore.service.external;
 
-import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.database.entity.BaseLeadResponse;
 import com.paytm.digital.education.explore.database.entity.Lead;
 import com.paytm.digital.education.explore.enums.EducationEntity;
@@ -9,13 +8,12 @@ import com.paytm.digital.education.explore.thirdparty.lead.Career360LeadRequest;
 import com.paytm.digital.education.explore.thirdparty.lead.Career360LeadResponse;
 import com.paytm.digital.education.explore.thirdparty.lead.Career360UnfollowRequest;
 import com.paytm.digital.education.explore.thirdparty.lead.Career360UnfollowResponse;
-import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,9 +22,17 @@ import java.util.Map;
 @AllArgsConstructor
 public class LeadCareer360Service {
 
+    @Value("${thirdparty.explore.career360.lead.follow}")
+    private String c360LeadFollow;
+
+    @Value("${thirdparty.explore.career360.lead.unfollow}")
+    private String c360LeadUnfollow;
+    @Value("${thirdparty.explore.career360.lead.apikey}")
+    private String apiKey;
+
     private BaseRestApiService restApiService;
 
-    public BaseLeadResponse send(Lead lead) throws Exception {
+    public BaseLeadResponse send(Lead lead) {
         if (LeadAction.Unfollow.equals(lead.getAction())) {
             return sendUnfollow(lead);
         } else {
@@ -34,24 +40,19 @@ public class LeadCareer360Service {
         }
     }
 
-    private BaseLeadResponse sendUnfollow(Lead lead) throws Exception {
+    private BaseLeadResponse sendUnfollow(Lead lead) {
         Career360UnfollowRequest career360UnfollowRequest = buildUnfollowRequest(lead);
         String jsonStr = JsonUtils.toJson(career360UnfollowRequest);
         Career360UnfollowResponse response = restApiService
-                .post("https://www.careers360.net/dj-api/paytm-unfollow",
-                        Career360UnfollowResponse.class, jsonStr,
-                        getHeaders());
-        log.info(response.toString());
+                .post(c360LeadUnfollow, Career360UnfollowResponse.class, jsonStr, getHeaders());
         return buildUnfollowResponse(response);
     }
 
-    private BaseLeadResponse sendLead(Lead lead) throws Exception {
+    private BaseLeadResponse sendLead(Lead lead) {
         Career360LeadRequest career360LeadRequest = buildRequest(lead);
         String jsonStr = JsonUtils.toJson(career360LeadRequest);
         Career360LeadResponse response = restApiService
-                .post("https://www.careers360.net/dj-api/paytm-user",
-                        Career360LeadResponse.class,
-                        jsonStr, getHeaders());
+                .post(c360LeadFollow, Career360LeadResponse.class, jsonStr, getHeaders());
         return buildResponse(response);
     }
 
@@ -84,7 +85,7 @@ public class LeadCareer360Service {
     private Map<String, String> getHeaders() {
         Map<String, String> headers = new HashMap<>();
         headers.put("content-type", "application/json");
-        headers.put("x-api-token", "Pekfrtyuyuyerwdghjhff#54555hhfghfghfh");
+        headers.put("x-api-token", apiKey);
         return headers;
     }
 

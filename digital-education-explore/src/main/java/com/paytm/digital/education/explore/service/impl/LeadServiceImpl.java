@@ -36,7 +36,7 @@ public class LeadServiceImpl implements LeadService {
 
     @Override
     public com.paytm.digital.education.explore.response.dto.common.Lead captureLead(
-            @NotNull Lead lead) throws Exception {
+            @NotNull Lead lead) {
         if (EducationEntity.COURSE.equals(lead.getEntityType())) {
             validateCourseLead(lead);
         } else if (EducationEntity.EXAM.equals(lead.getEntityType())) {
@@ -72,6 +72,10 @@ public class LeadServiceImpl implements LeadService {
 
     private void validateCourseLead(Lead lead) {
         List<String> fieldGroup = Arrays.asList(COURSE_ID, INSTITUTE_ID, IS_ACCEPTING_APPLICATION);
+        if (Objects.isNull(lead.getStream())) {
+            throw new BadRequestException(ErrorEnum.STREAM_IS_MANDATORY_FOR_COURSE_LEAD,
+                    ErrorEnum.STREAM_IS_MANDATORY_FOR_COURSE_LEAD.getExternalMessage());
+        }
         if (Objects.isNull(lead.getInstituteId())) {
             throw new BadRequestException(ErrorEnum.VALID_INSTITUTE_ID_FOR_COURSE_LEAD,
                     ErrorEnum.VALID_INSTITUTE_ID_FOR_COURSE_LEAD.getExternalMessage());
