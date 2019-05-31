@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @ToString
 @Data
@@ -116,6 +117,15 @@ public class Institute {
 
     @Field("notable_alumni")
     private List<Alumni> notableAlumni;
+
+    @Field("campus_ambassadors")
+    private Map<String, CampusAmbassador> campusAmbassadors;
+
+    @Field("articles")
+    private List<Article> articles;
+
+    @Field("events")
+    private List<CampusEvent> events;
 
     @Field("campus_size")
     private Integer campusSize;
