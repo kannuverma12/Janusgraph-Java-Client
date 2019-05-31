@@ -42,16 +42,9 @@ public class LeadRepository {
      */
     public void upsertLead(@NotNull Lead lead) {
         Query query =
-                new Query(Criteria.where(USER_ID).is(lead.getContactNumber())
-                        .and(CITY_ID).is(lead.getCityId())
-                        .and(STATE_ID).is(lead.getStateId())
+                new Query(Criteria.where(USER_ID).is(lead.getUserId())
                         .and(ENTITY_ID).is(lead.getEntityId())
-                        .and(ENTITY_TYPE).is(lead.getEntityType())
-                        .and(USER_ID).is(lead.getUserId())
-                        .and(ACTION).is(lead.getAction())
-                        .and(STREAM).is(lead.getStream())
-                        .and(LEAD_RESPONSES).is(lead.getBaseLeadResponse())
-                        .and(INTERESTED).is(lead.isInterested()));
+                        .and(ENTITY_TYPE).is(lead.getEntityType()));
 
         Date currentDate = new Date();
 

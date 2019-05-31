@@ -34,6 +34,30 @@ public class LeadServiceImpl implements LeadService {
     private CommonMongoRepository commonMongoRepository;
     private LeadCareer360Service  leadCareer360Service;
 
+    @Override
+    public com.paytm.digital.education.explore.response.dto.common.Lead captureLead(
+            @NotNull Lead lead) throws Exception {
+        if (EducationEntity.COURSE.equals(lead.getEntityType())) {
+            validateCourseLead(lead);
+        } else if (EducationEntity.EXAM.equals(lead.getEntityType())) {
+            validateExamLead(lead);
+        } else {
+            throw new BadRequestException(ErrorEnum.ENTITY_NOT_SUPPORTED_FOR_LEAD,
+                    ErrorEnum.ENTITY_NOT_SUPPORTED_FOR_LEAD.getExternalMessage());
+        }
+        BaseLeadResponse c360LeadRespose = leadCareer360Service.send(lead);
+        log.info(c360LeadRespose.toString());
+        com.paytm.digital.education.explore.response.dto.common.Lead leadResponse =
+                new com.paytm.digital.education.explore.response.dto.common.Lead();
+        if (Objects.isNull(c360LeadRespose.getInterested())) {
+            leadResponse.setError(true);
+        } else {
+            leadResponse.setInterested(c360LeadRespose.getInterested());
+        }
+        leadRepository.upsertLead(lead);
+        return leadResponse;
+    }
+
     public void validateCourseLead(Lead lead) {
         List<String> fieldGroup = Arrays.asList(COURSE_ID, INSTITUTE_ID, IS_ACCEPTING_APPLICATION);
         if (Objects.isNull(lead.getInstituteId())) {
@@ -42,7 +66,6 @@ public class LeadServiceImpl implements LeadService {
         }
         Course course = commonMongoRepository
                 .getEntityByFields(COURSE_ID, lead.getEntityId(), Course.class, fieldGroup);
-        System.out.println(course);
         if (Objects.isNull(course)) {
             throw new BadRequestException(ErrorEnum.INVALID_COURSE_ID,
                     ErrorEnum.INVALID_COURSE_ID.getExternalMessage());
@@ -65,32 +88,5 @@ public class LeadServiceImpl implements LeadService {
             throw new BadRequestException(ErrorEnum.INVALID_EXAM_ID,
                     ErrorEnum.INVALID_EXAM_ID.getExternalMessage());
         }
-    }
-
-
-    @Override
-    public com.paytm.digital.education.explore.response.dto.common.Lead captureLead(
-            @NotNull Lead lead) throws Exception {
-        if (EducationEntity.COURSE.equals(lead.getEntityType())) {
-            validateCourseLead(lead);
-        } else if (EducationEntity.EXAM.equals(lead.getEntityType())) {
-            validateExamLead(lead);
-        } else {
-            throw new BadRequestException(ErrorEnum.ENTITY_NOT_SUPPORTED_FOR_LEAD,
-                    ErrorEnum.ENTITY_NOT_SUPPORTED_FOR_LEAD.getExternalMessage());
-        }
-        BaseLeadResponse c360LeadRespose = leadCareer360Service.send(lead);
-        log.info(c360LeadRespose.toString());
-        com.paytm.digital.education.explore.response.dto.common.Lead leadResponse =
-                new com.paytm.digital.education.explore.response.dto.common.Lead();
-        if (Objects.isNull(c360LeadRespose.getInterested())) {
-            leadRepository.upsertLead(lead);
-            throw new BadRequestException(ErrorEnum.HTTP_REQUEST_FAILED,
-                    ErrorEnum.HTTP_REQUEST_FAILED.getExternalMessage());
-
-        }
-        leadResponse.setInterested(c360LeadRespose.getInterested());
-        leadRepository.upsertLead(lead);
-        return leadResponse;
     }
 }

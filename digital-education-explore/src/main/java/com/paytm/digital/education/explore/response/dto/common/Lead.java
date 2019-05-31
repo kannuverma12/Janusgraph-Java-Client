@@ -9,4 +9,7 @@ public class Lead {
     @JsonProperty("interested")
     private Boolean interested;
 
+    @JsonProperty("error")
+    private boolean error;
+
 }

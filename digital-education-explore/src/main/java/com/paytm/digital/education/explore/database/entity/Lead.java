@@ -68,12 +68,15 @@ public class Lead {
     //@Pattern(regexp = Constants.PHONE_REGEX, message = Constants.PHONE_VALIDATION_MESSAGE)
     private String contactNumber = "9811223344";
 
+    @Field(Constants.STATE_ID)
+    @JsonProperty(Constants.STATE_ID)
+    @NotNull
+    private Long stateId;
 
     @Field(Constants.CITY_ID)
     @JsonProperty(Constants.CITY_ID)
     @NotNull
     private Long cityId;
-
 
     @Field(Constants.ENTITY_ID)
     @JsonProperty(Constants.ENTITY_ID)
@@ -81,11 +84,10 @@ public class Lead {
     @Min(1)
     private Long entityId;
 
-
-    @Field(Constants.STATE_ID)
-    @JsonProperty(Constants.STATE_ID)
+    @Field(Constants.ENTITY_TYPE)
+    @JsonProperty(Constants.ENTITY_TYPE)
     @NotNull
-    private Long stateId;
+    private EducationEntity entityType;
 
     /**
      * action the user took to mark itself as a lead
@@ -100,12 +102,6 @@ public class Lead {
     @JsonProperty(Constants.ACTION_COUNT)
     @Field(Constants.ACTION_COUNT)
     private int actionCount;
-
-    @Field(Constants.ENTITY_TYPE)
-    @JsonProperty(Constants.ENTITY_TYPE)
-    @NotNull
-    private EducationEntity entityType;
-
 
     @Field(Constants.REQUEST_TYPE)
     @JsonIgnore
@@ -127,7 +123,6 @@ public class Lead {
     @Field(Constants.LEAD_RESPONSES)
     private List<BaseLeadResponse> baseLeadResponse;
 
-
     public static class Constants {
         public static final String ACTION                         = "action";
         public static final String STATUS                         = "status";
@@ -141,14 +136,12 @@ public class Lead {
         public static final String CITY_ID                        = "city_id";
         public static final String ENTITY_ID                      = "entity_id";
         public static final String STREAM                         = "stream";
-        public static final String COURSE_ID                      = "course_id";
         public static final String REQUEST_TYPE                   = "request_type";
         public static final String ENTITY_TYPE                    = "entity_type";
         public static final String CREATED_AT                     = "created_at";
         public static final String UPDATED_AT                     = "updated_at";
         public static final String LEAD_RESPONSES                 = "lead_responses";
         public static final String INTERESTED                     = "interested";
-        public static final String PUBLISHED                      = "published";
         public static final String PHONE_REGEX                    =
                 "^\\(?(\\d{3})\\)?[- ]?(\\d{3})[- ]?(\\d{4})$";
         public static final String NAME_REGEX                     = "^[\\p{L} .'-]+$";
