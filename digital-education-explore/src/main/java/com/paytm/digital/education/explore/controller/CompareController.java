@@ -56,11 +56,12 @@ public class CompareController {
         Map<Long, String> instKeyMap = new HashMap<>();
         instKeyMap.put(inst1, instName1);
         instKeyMap.put(inst2, instName2);
-        if (Objects.nonNull(inst3) && Objects.nonNull(instName3)) {
+        if (Objects.nonNull(inst3) || Objects.nonNull(instName3)) {
+            if (Objects.isNull(inst3) || Objects.isNull(instName3)) {
+                throw new BadRequestException(ErrorEnum.INSTITUTE_NAME_OR_ID_MISSING,
+                        ErrorEnum.INSTITUTE_NAME_OR_ID_MISSING.getExternalMessage());
+            }
             instKeyMap.put(inst3, instName3);
-        } else {
-            throw new BadRequestException(ErrorEnum.INSTITUTE_NAME_OR_ID_MISSING,
-                    ErrorEnum.INSTITUTE_NAME_OR_ID_MISSING.getExternalMessage());
         }
         return compareService.compareInstitutes(instKeyMap, fieldGroup, fields, userId);
     }
