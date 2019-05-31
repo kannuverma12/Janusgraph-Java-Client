@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class BaseLeadResponse {
 
     @Field("interested")
-    private Boolean interested;
+    private boolean interested;
 
     @Field("error_code")
     private Integer errorCode;

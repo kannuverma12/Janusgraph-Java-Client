@@ -12,6 +12,7 @@ import com.paytm.digital.education.explore.service.LeadService;
 import com.paytm.digital.education.explore.service.external.LeadCareer360Service;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
@@ -27,6 +28,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EXA
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class LeadServiceImpl implements LeadService {
     private LeadRepository        leadRepository;
     private CommonMongoRepository commonMongoRepository;
@@ -78,9 +80,10 @@ public class LeadServiceImpl implements LeadService {
                     ErrorEnum.ENTITY_NOT_SUPPORTED_FOR_LEAD.getExternalMessage());
         }
         BaseLeadResponse c360LeadRespose = leadCareer360Service.send(lead);
+        log.info(c360LeadRespose.toString());
         com.paytm.digital.education.explore.response.dto.common.Lead leadResponse =
                 new com.paytm.digital.education.explore.response.dto.common.Lead();
-        leadResponse.setInterested(c360LeadRespose.getInterested());
+        leadResponse.setInterested(c360LeadRespose.isInterested());
         leadRepository.upsertLead(lead);
         return leadResponse;
     }
