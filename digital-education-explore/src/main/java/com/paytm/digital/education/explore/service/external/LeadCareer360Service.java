@@ -11,6 +11,7 @@ import com.paytm.digital.education.explore.thirdparty.lead.Career360UnfollowResp
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,6 @@ import java.util.Map;
 
 @Service
 @Slf4j
-@AllArgsConstructor
 public class LeadCareer360Service {
 
     @Value("${thirdparty.explore.career360.lead.follow}")
@@ -27,12 +27,17 @@ public class LeadCareer360Service {
 
     @Value("${thirdparty.explore.career360.lead.unfollow}")
     private String c360LeadUnfollow;
+
     @Value("${thirdparty.explore.career360.lead.apikey}")
     private String apiKey;
 
+    @Autowired
     private BaseRestApiService restApiService;
 
     public BaseLeadResponse send(Lead lead) {
+        System.out.println(c360LeadFollow);
+        System.out.println(c360LeadUnfollow);
+        System.out.println(apiKey);
         if (LeadAction.Unfollow.equals(lead.getAction())) {
             return sendUnfollow(lead);
         } else {
