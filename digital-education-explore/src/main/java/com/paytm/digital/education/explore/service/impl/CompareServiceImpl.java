@@ -397,8 +397,8 @@ public class CompareServiceImpl implements CompareService {
 
     private List<Course> getCourses(Long instId) {
         List<Course> courses = new ArrayList<>();
-        if (Objects.nonNull(instituteCoursesMap.get(instId.intValue()))) {
-            courses = instituteCoursesMap.get(instId.intValue());
+        if (Objects.nonNull(instituteCoursesMap.get(instId))) {
+            courses = instituteCoursesMap.get(instId);
         }
         return courses;
     }
