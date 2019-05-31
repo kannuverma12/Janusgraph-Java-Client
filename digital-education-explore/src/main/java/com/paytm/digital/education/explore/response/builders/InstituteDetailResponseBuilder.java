@@ -14,6 +14,7 @@ import com.paytm.digital.education.explore.enums.CourseLevel;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
 import com.paytm.digital.education.explore.response.dto.detail.Ranking;
+import com.paytm.digital.education.explore.service.helper.CampusEngagementHelper;
 import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.service.helper.PlacementDataHelper;
@@ -63,6 +64,7 @@ public class InstituteDetailResponseBuilder {
     private BannerDataHelper            bannerDataHelper;
     private SimilarInstituteServiceImpl similarInstituteService;
     private StreamDataHelper            streamDataHelper;
+    private CampusEngagementHelper      campusEngagementHelper;
 
     public InstituteDetail buildResponse(Institute institute, List<Course> courses,
             List<Exam> examList, Map<String, Object> examRelatedData, Set<Long> examIds,
@@ -127,6 +129,18 @@ public class InstituteDetailResponseBuilder {
             instituteDetail.setRankings(getRankingDetails(institute.getRankings()));
         }
         instituteDetail.setDegreeOffered(getDegreeMap(courses));
+        if (Objects.nonNull(institute.getCampusAmbassadors())) {
+            instituteDetail.setCampusAmbassadors(campusEngagementHelper
+                    .getCampusAmbassadorData(institute.getCampusAmbassadors()));
+        }
+        if (Objects.nonNull(institute.getArticles())) {
+            instituteDetail.setArticles(campusEngagementHelper
+                    .getCampusArticleData(institute.getArticles()));
+        }
+        if (Objects.nonNull(institute.getEvents())) {
+            instituteDetail.setEvents(campusEngagementHelper
+                    .getCampusEventsData(institute.getEvents()));
+        }
         return instituteDetail;
     }
 

@@ -21,6 +21,7 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
@@ -111,6 +112,11 @@ public class CommonMongoRepository {
 
     public void saveOrUpdate(Object obj) {
         mongoOperation.save(obj);
+    }
+
+    public void updateFirst(Map<String, Object> searchRequest, List<String> fields, Update update,
+            Class<?> type) {
+        mongoOperation.updateFirst(createMongoQuery(searchRequest, fields), update, type);
     }
 
     private <T> T executeQuery(Query mongoQuery, Class<T> type) {
