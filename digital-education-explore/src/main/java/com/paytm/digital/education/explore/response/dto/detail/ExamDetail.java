@@ -22,6 +22,9 @@ public class ExamDetail {
     @JsonProperty("url_display_key")
     private String          urlDisplayName;
 
+    @JsonProperty("interested")
+    private Boolean        interested;
+
     @JsonProperty("exam_short_name")
     private String         examShortName;
 

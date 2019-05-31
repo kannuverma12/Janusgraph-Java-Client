@@ -3,6 +3,8 @@ package com.paytm.digital.education.explore.database.repository;
 import com.paytm.digital.education.explore.database.entity.Lead;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import lombok.AllArgsConstructor;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -59,6 +61,25 @@ public class LeadRepository {
                 Criteria.where(Lead.Constants.ENTITY_TYPE).is(entityType)
                         .and(Lead.Constants.ENTITY_ID).in(entityIds).and(Lead.Constants.USER_ID)
                         .is(userId).and(Lead.Constants.STATUS).is(true));
+        return mongoTemplate.find(mongoQuery, Lead.class);
+    }
+
+    public List<Lead> fetchInterestedLeadByInstituteIdANdUserId(Long usedId,
+            List<Long> instituteIds) {
+        Query mongoQuery = new Query(
+                Criteria.where(Lead.Constants.INSTITUTE_ID).in(instituteIds)
+                        .and(Lead.Constants.USER_ID).is(usedId).and(Lead.Constants.INTERESTED)
+                        .is(true));
+        return mongoTemplate.find(mongoQuery, Lead.class);
+    }
+
+    public List<Lead> fetchInterestedLeadByEntityIdAndUserId(EducationEntity educationEntity,
+            Long userId, Long entityId) {
+        Query mongoQuery = new Query(
+                Criteria.where(Lead.Constants.ENTITY_TYPE).is(educationEntity)
+                        .and(Lead.Constants.ENTITY_ID).is(entityId)
+                        .and(Lead.Constants.USER_ID).is(userId).and(Lead.Constants.INTERESTED)
+                        .is(true));
         return mongoTemplate.find(mongoQuery, Lead.class);
     }
 }

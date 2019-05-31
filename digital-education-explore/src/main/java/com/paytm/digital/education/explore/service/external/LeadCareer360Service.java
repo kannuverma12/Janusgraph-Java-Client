@@ -38,7 +38,7 @@ public class LeadCareer360Service {
         System.out.println(c360LeadFollow);
         System.out.println(c360LeadUnfollow);
         System.out.println(apiKey);
-        if (LeadAction.Unfollow.equals(lead.getAction())) {
+        if (LeadAction.StopUpdates.equals(lead.getAction())) {
             return sendUnfollow(lead);
         } else {
             return sendLead(lead);

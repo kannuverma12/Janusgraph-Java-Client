@@ -61,12 +61,13 @@ public class DetailsApiController {
                 .getDetail(instituteId, instituteName, userId, fieldGroup, fields);
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "/v1/course/{courseId}/{courseName}")
+    @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/course/{courseId}/{courseName}")
     public @ResponseBody CourseDetail getCourseById(@PathVariable("courseId") @Min(1) long courseId,
             @PathVariable @NotBlank String courseName,
             @RequestParam(name = "field_group", required = false) String fieldGroup,
-            @RequestParam(name = "fields", required = false) List<String> fields) {
+            @RequestParam(name = "fields", required = false) List<String> fields,
+            @RequestHeader(value = "x-user-id", required = false) Long userId) {
         exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
-        return courseDetailService.getCourseDetails(courseId, courseName, fieldGroup, fields);
+        return courseDetailService.getDetail(courseId, courseName, userId, fieldGroup, fields);
     }
 }

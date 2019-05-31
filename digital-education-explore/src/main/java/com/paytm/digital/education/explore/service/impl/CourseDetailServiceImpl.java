@@ -18,11 +18,13 @@ import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.detail.CourseDetail;
 import com.paytm.digital.education.explore.response.dto.detail.CourseFee;
 import com.paytm.digital.education.explore.response.dto.detail.CourseInstituteDetail;
 import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
+import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.explore.utility.FieldsRetrievalUtil;
 import lombok.AllArgsConstructor;
@@ -34,8 +36,8 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @AllArgsConstructor
@@ -46,6 +48,16 @@ public class CourseDetailServiceImpl {
     private DerivedAttributesHelper     derivedAttributesHelper;
     private SimilarInstituteServiceImpl similarInstituteService;
     private BannerDataHelper            bannerDataHelper;
+    private LeadDetailHelper            leadDetailHelper;
+
+    public CourseDetail getDetail(Long entityId, String courseUrlKey, Long userId,
+            String fieldGroup, List<String> fields) {
+        CourseDetail courseDetail = getCourseDetails(entityId, courseUrlKey, fieldGroup, fields);
+        if (userId != null && userId > 0) {
+            updateInterested(courseDetail, userId);
+        }
+        return courseDetail;
+    }
 
     /*
      ** Method to get the course details and institute details
@@ -147,9 +159,23 @@ public class CourseDetailServiceImpl {
                             institute.getInstitutionCity(), institute.getPhone(),
                             institute.getUrl(),
                             institute.getOfficialAddress()));
+            if (institute.getIsClient() == 1) {
+                courseInstituteDetail.setIsClient(true);
+            } else {
+                courseInstituteDetail.setIsClient(false);
+            }
             courseDetail.setInstitute(courseInstituteDetail);
         }
         return courseDetail;
+    }
+
+    private void updateInterested(CourseDetail courseDetail, Long userId) {
+        List<Long> leadEntities = leadDetailHelper
+                .getInterestedLeadByEntity(EducationEntity.COURSE, userId,
+                        courseDetail.getCourseId());
+        if (!CollectionUtils.isEmpty(leadEntities)) {
+            courseDetail.setInterested(true);
+        }
     }
 
     private List<CourseFee> getAllCourseFees(

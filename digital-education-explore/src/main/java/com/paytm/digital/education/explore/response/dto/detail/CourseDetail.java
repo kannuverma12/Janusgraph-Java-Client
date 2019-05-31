@@ -59,6 +59,12 @@ public class CourseDetail {
     @JsonProperty("institute_id")
     private Long instituteId;
 
+    @JsonProperty("interested")
+    private Boolean interested;
+
+    @JsonProperty("is_client")
+    private Boolean isClient;
+
     @JsonProperty("institute")
     private CourseInstituteDetail institute;
 

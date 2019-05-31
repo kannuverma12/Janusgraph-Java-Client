@@ -24,18 +24,20 @@ import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Instance;
 import com.paytm.digital.education.explore.database.entity.SubExam;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.explore.response.dto.detail.Event;
+import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.detail.ExamDetail;
-import com.paytm.digital.education.explore.response.dto.detail.Location;
 import com.paytm.digital.education.explore.response.dto.detail.Section;
+import com.paytm.digital.education.explore.response.dto.detail.Event;
+import com.paytm.digital.education.explore.response.dto.detail.Unit;
 import com.paytm.digital.education.explore.response.dto.detail.Syllabus;
 import com.paytm.digital.education.explore.response.dto.detail.Topic;
-import com.paytm.digital.education.explore.response.dto.detail.Unit;
-import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
+import com.paytm.digital.education.explore.response.dto.detail.Location;
+import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.service.helper.DetailPageSectionHelper;
-import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
+import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
 import com.paytm.digital.education.explore.service.helper.WidgetsDataHelper;
+import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.DateUtil;
@@ -61,13 +63,25 @@ public class ExamDetailServiceImpl {
     private DetailPageSectionHelper detailPageSectionHelper;
     private BannerDataHelper        bannerDataHelper;
     private WidgetsDataHelper       widgetsDataHelper;
+    private LeadDetailHelper        leadDetailHelper;
 
     private static int EXAM_PREFIX_LENGTH = EXAM_PREFIX.length();
 
-    //TODO - modularize methods for caching as. Its fine as of now as userId is not being used As of now.
-    @Cacheable(value = "exam_detail")
     public ExamDetail getDetail(Long entityId, String examUrlKey, Long userId,
             String fieldGroup, List<String> fields) throws ParseException {
+        // fields are not being supported currently. Part of discussion
+
+        ExamDetail examDetail = getExamDetail(entityId, examUrlKey, fieldGroup, fields);
+        if (userId != null && userId > 0) {
+            updateInterested(examDetail, userId);
+        }
+        return examDetail;
+    }
+
+    //TODO - modularize methods for caching as. Its fine as of now as userId is not being used As of now.
+    @Cacheable(value = "exam_detail")
+    public ExamDetail getExamDetail(Long entityId, String examUrlKey, String fieldGroup,
+            List<String> fields) throws ParseException {
 
         // TODO: fields are not being supported currently. Part of discussion
         List<String> groupFields =
@@ -92,13 +106,13 @@ public class ExamDetailServiceImpl {
                 throw new BadRequestException(INVALID_EXAM_NAME,
                         INVALID_EXAM_NAME.getExternalMessage());
             }
-            return processExamDetail(exam, examFields, userId);
+            return processExamDetail(exam, examFields);
         }
         throw new BadRequestException(INVALID_EXAM_ID,
                 INVALID_EXAM_ID.getExternalMessage());
     }
 
-    private ExamDetail processExamDetail(Exam exam, List<String> examFields, Long userId)
+    private ExamDetail processExamDetail(Exam exam, List<String> examFields)
             throws ParseException {
         ExamDetail examDetail = buildResponse(exam);
         return examDetail;
@@ -356,6 +370,14 @@ public class ExamDetailServiceImpl {
                 .getPropertiesAsMapByKey(EXPLORE_COMPONENT, EXAM.name().toLowerCase(),
                         PRECEDENCE);
         return (List<String>) propertyMap.get(DATA);
+    }
+
+    private void updateInterested(ExamDetail examDetail, Long userId) {
+        List<Long> leadEntities = leadDetailHelper
+                .getInterestedLeadByEntity(EducationEntity.EXAM, userId, examDetail.getExamId());
+        if (!CollectionUtils.isEmpty(leadEntities)) {
+            examDetail.setInterested(true);
+        }
     }
 
     private List<Location> getExamCenters(List<Instance> instances) {

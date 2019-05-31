@@ -1,13 +1,13 @@
 package com.paytm.digital.education.explore.enums;
 
 public enum LeadAction {
-    GetUpdate, Follow, StopUpdate, Unfollow;
+    GetUpdates, GetInTouch, StopUpdates;
 
     public static int getCareers360RequestType(LeadAction action) {
         switch (action) {
-            case GetUpdate:
+            case GetUpdates:
                 return 1;
-            case Follow:
+            case GetInTouch:
                 return 2;
             default:
                 return 0;
