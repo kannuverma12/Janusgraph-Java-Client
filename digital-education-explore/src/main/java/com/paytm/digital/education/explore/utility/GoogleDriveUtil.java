@@ -17,8 +17,7 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.paytm.digital.education.explore.config.GoogleConfig;
 import lombok.experimental.UtilityClass;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
+import org.springframework.util.ResourceUtils;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -60,8 +59,8 @@ public class GoogleDriveUtil {
 
     private Credential getCredentials(final NetHttpTransport httpTransport) throws
             IOException {
-        Resource resource = new ClassPathResource("/credentials/client_secret.json");
-        java.io.File file = resource.getFile();
+        java.io.File file = ResourceUtils.getFile("classpath:credentials/client_secret.json");
+        //java.io.File file = resource.getFile();
         InputStream in = new FileInputStream(file);
         //        java.io.File clientSecretFilePath =
         //                new java.io.File(CREDENTIALS_FOLDER, CLIENT_SECRET_FILE_NAME);
