@@ -245,6 +245,7 @@ public class CompareServiceImpl implements CompareService {
 
         cDetail.setInstituteId(inst.getInstituteId());
         cDetail.setInstituteName(inst.getOfficialName());
+        cDetail.setUrlDisplayKey(CommonUtil.convertNameToUrlDisplayName(inst.getOfficialName()));
         if (Objects.nonNull(inst.getCampusSize())) {
             cDetail.setCampusArea(inst.getCampusSize() + ACRES);
         }
