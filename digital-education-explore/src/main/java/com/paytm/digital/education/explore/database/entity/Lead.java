@@ -64,9 +64,9 @@ public class Lead {
 
     @Field(Constants.CONTACT_NUMBER)
     @JsonProperty(Constants.CONTACT_NUMBER)
-    //@NotBlank
-    //@Pattern(regexp = Constants.PHONE_REGEX, message = Constants.PHONE_VALIDATION_MESSAGE)
-    private String contactNumber = "9811223344";
+    @NotBlank
+    @Pattern(regexp = Constants.PHONE_REGEX, message = Constants.PHONE_VALIDATION_MESSAGE)
+    private String contactNumber;
 
     @Field(Constants.STATE_ID)
     @JsonProperty(Constants.STATE_ID)

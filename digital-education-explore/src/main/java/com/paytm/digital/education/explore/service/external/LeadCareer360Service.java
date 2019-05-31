@@ -58,6 +58,7 @@ public class LeadCareer360Service {
     private BaseLeadResponse buildResponse(Career360LeadResponse c360response) {
         BaseLeadResponse baseLeadResponse = new BaseLeadResponse();
         baseLeadResponse.setCtaMessage(c360response.getCtaMessage());
+        baseLeadResponse.setLeadId(c360response.getLeadId());
         baseLeadResponse.setCtaCode(c360response.getCtaStatus());
         baseLeadResponse.setErrorCode(c360response.getErrorCode());
         baseLeadResponse.setMessage(c360response.getMessage());

@@ -13,7 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class BaseLeadResponse {
 
     @Field("lead_id")
-    private String leadId;
+    private Long leadId;
 
     @Field("interested")
     private Boolean interested;
