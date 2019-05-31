@@ -52,7 +52,6 @@ public class LeadCareer360Service {
                 .post("https://www.careers360.net/dj-api/paytm-user",
                         Career360LeadResponse.class,
                         jsonStr, getHeaders());
-        log.info(response.toString());
         return buildResponse(response);
     }
 

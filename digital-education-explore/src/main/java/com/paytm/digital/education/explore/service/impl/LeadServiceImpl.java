@@ -46,19 +46,31 @@ public class LeadServiceImpl implements LeadService {
                     ErrorEnum.ENTITY_NOT_SUPPORTED_FOR_LEAD.getExternalMessage());
         }
         BaseLeadResponse c360LeadRespose = leadCareer360Service.send(lead);
-        log.info(c360LeadRespose.toString());
         com.paytm.digital.education.explore.response.dto.common.Lead leadResponse =
-                new com.paytm.digital.education.explore.response.dto.common.Lead();
-        if (Objects.isNull(c360LeadRespose.getInterested())) {
-            leadResponse.setError(true);
-        } else {
-            leadResponse.setInterested(c360LeadRespose.getInterested());
-        }
+                buildResponse(lead, c360LeadRespose);
         leadRepository.upsertLead(lead);
         return leadResponse;
     }
 
-    public void validateCourseLead(Lead lead) {
+    private com.paytm.digital.education.explore.response.dto.common.Lead buildResponse(Lead lead,
+            BaseLeadResponse thirdPartyResponse) {
+        if (Objects.isNull(lead.getBaseLeadResponse())) {
+            lead.setBaseLeadResponse(Arrays.asList(thirdPartyResponse));
+        } else {
+            lead.getBaseLeadResponse().add(thirdPartyResponse);
+        }
+        com.paytm.digital.education.explore.response.dto.common.Lead leadResponse =
+                new com.paytm.digital.education.explore.response.dto.common.Lead();
+        if (Objects.isNull(thirdPartyResponse.getInterested())) {
+            leadResponse.setError(true);
+        } else {
+            lead.setInterested(thirdPartyResponse.getInterested());
+            leadResponse.setInterested(thirdPartyResponse.getInterested());
+        }
+        return leadResponse;
+    }
+
+    private void validateCourseLead(Lead lead) {
         List<String> fieldGroup = Arrays.asList(COURSE_ID, INSTITUTE_ID, IS_ACCEPTING_APPLICATION);
         if (Objects.isNull(lead.getInstituteId())) {
             throw new BadRequestException(ErrorEnum.VALID_INSTITUTE_ID_FOR_COURSE_LEAD,

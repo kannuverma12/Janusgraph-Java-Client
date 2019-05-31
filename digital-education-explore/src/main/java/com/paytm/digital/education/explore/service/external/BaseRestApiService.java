@@ -50,7 +50,6 @@ public class BaseRestApiService {
     public <T> T post(
             final String url, Class<T> clazz, String requestBody, final Map<String, String> headers)
             throws Exception {
-        log.info("Entered Rest template post");
         if (Objects.isNull(headers) || headers.isEmpty()) {
             throw new IllegalArgumentException("Headers Can't be null or empty");
         }
@@ -69,10 +68,8 @@ public class BaseRestApiService {
             httpHeaders.add(entry.getKey(), entry.getValue());
         }
         HttpEntity<Object> httpEntity = new HttpEntity<Object>(requestBody, httpHeaders);
-        //log.info(httpEntity.toString());
         ResponseEntity<T> responseEntity =
                 rest.getRestTemplate().exchange(url, HttpMethod.POST, httpEntity, clazz);
-        log.info(responseEntity.toString());
         if (responseEntity.getStatusCodeValue() != 200) {
             throw new BadRequestException(ErrorEnum.HTTP_REQUEST_FAILED,
                     ErrorEnum.HTTP_REQUEST_FAILED.getExternalMessage());

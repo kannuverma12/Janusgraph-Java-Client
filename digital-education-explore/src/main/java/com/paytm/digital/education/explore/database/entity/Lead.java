@@ -123,6 +123,7 @@ public class Lead {
     @Field(Constants.LEAD_RESPONSES)
     private List<BaseLeadResponse> baseLeadResponse;
 
+
     public static class Constants {
         public static final String ACTION                         = "action";
         public static final String STATUS                         = "status";
@@ -142,6 +143,8 @@ public class Lead {
         public static final String UPDATED_AT                     = "updated_at";
         public static final String LEAD_RESPONSES                 = "lead_responses";
         public static final String INTERESTED                     = "interested";
+        public static final String LAST_ACTION                    = "last_action";
+        public static final String THIRD_PARTY_RESPONSES          = "third_party_response";
         public static final String PHONE_REGEX                    =
                 "^\\(?(\\d{3})\\)?[- ]?(\\d{3})[- ]?(\\d{4})$";
         public static final String NAME_REGEX                     = "^[\\p{L} .'-]+$";
