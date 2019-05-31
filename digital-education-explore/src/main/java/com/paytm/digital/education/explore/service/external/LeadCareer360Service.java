@@ -26,7 +26,7 @@ public class LeadCareer360Service {
 
     private BaseRestApiService restApiService;
 
-    public BaseLeadResponse send(Lead lead) {
+    public BaseLeadResponse send(Lead lead) throws Exception {
         if (LeadAction.Unfollow.equals(lead.getAction())) {
             return sendUnfollow(lead);
         } else {
@@ -34,36 +34,26 @@ public class LeadCareer360Service {
         }
     }
 
-    private BaseLeadResponse sendUnfollow(Lead lead) {
+    private BaseLeadResponse sendUnfollow(Lead lead) throws Exception {
         Career360UnfollowRequest career360UnfollowRequest = buildUnfollowRequest(lead);
-        try {
-            String jsonStr = JsonUtils.toJson(career360UnfollowRequest);
-            Career360UnfollowResponse response = restApiService
-                    .post("https://www.careers360.net/dj-api/paytm-unfollow",
-                            Career360UnfollowResponse.class, jsonStr,
-                            getHeaders());
-            log.info(response.toString());
-            return buildUnfollowResponse(response);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        String jsonStr = JsonUtils.toJson(career360UnfollowRequest);
+        Career360UnfollowResponse response = restApiService
+                .post("https://www.careers360.net/dj-api/paytm-unfollow",
+                        Career360UnfollowResponse.class, jsonStr,
+                        getHeaders());
+        log.info(response.toString());
+        return buildUnfollowResponse(response);
     }
 
-    private BaseLeadResponse sendLead(Lead lead) {
+    private BaseLeadResponse sendLead(Lead lead) throws Exception {
         Career360LeadRequest career360LeadRequest = buildRequest(lead);
-        try {
-            String jsonStr = JsonUtils.toJson(career360LeadRequest);
-            Career360LeadResponse response = restApiService
-                    .post("https://www.careers360.net/dj-api/paytm-user",
-                            Career360LeadResponse.class,
-                            jsonStr, getHeaders());
-            log.info(response.toString());
-            return buildResponse(response);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        String jsonStr = JsonUtils.toJson(career360LeadRequest);
+        Career360LeadResponse response = restApiService
+                .post("https://www.careers360.net/dj-api/paytm-user",
+                        Career360LeadResponse.class,
+                        jsonStr, getHeaders());
+        log.info(response.toString());
+        return buildResponse(response);
     }
 
     private BaseLeadResponse buildResponse(Career360LeadResponse c360response) {

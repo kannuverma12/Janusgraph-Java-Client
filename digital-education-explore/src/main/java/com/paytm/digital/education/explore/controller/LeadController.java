@@ -27,7 +27,7 @@ public class LeadController {
 
     @PostMapping("/auth/v1/lead")
     public void captureLead(@Valid @RequestBody Lead lead,
-            @RequestHeader("x-user-id") long userId) {
+            @RequestHeader("x-user-id") long userId) throws Exception {
         log.info("Lead Request : {}", JsonUtils.toJson(lead));
         lead.setUserId(userId);
         leadService.captureLead(lead);

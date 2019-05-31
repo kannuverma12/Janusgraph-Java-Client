@@ -70,7 +70,7 @@ public class LeadServiceImpl implements LeadService {
 
     @Override
     public com.paytm.digital.education.explore.response.dto.common.Lead captureLead(
-            @NotNull Lead lead) {
+            @NotNull Lead lead) throws Exception {
         if (EducationEntity.COURSE.equals(lead.getEntityType())) {
             validateCourseLead(lead);
         } else if (EducationEntity.EXAM.equals(lead.getEntityType())) {

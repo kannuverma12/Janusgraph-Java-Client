@@ -50,6 +50,7 @@ public class BaseRestApiService {
     public <T> T post(
             final String url, Class<T> clazz, String requestBody, final Map<String, String> headers)
             throws Exception {
+        log.info("Entered Rest template post");
         if (Objects.isNull(headers) || headers.isEmpty()) {
             throw new IllegalArgumentException("Headers Can't be null or empty");
         }
@@ -63,7 +64,6 @@ public class BaseRestApiService {
         if (Objects.isNull(requestBody)) {
             throw new IllegalArgumentException("RequestBody cant be null");
         }
-
         HttpHeaders httpHeaders = new HttpHeaders();
         for (Map.Entry<String, String> entry : headers.entrySet()) {
             httpHeaders.add(entry.getKey(), entry.getValue());
