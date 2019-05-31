@@ -17,6 +17,8 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.paytm.digital.education.explore.config.GoogleConfig;
 import lombok.experimental.UtilityClass;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -47,7 +49,8 @@ public class GoogleDriveUtil {
     // Directory to store user credentials for this application.
     private static final java.io.File CREDENTIALS_FOLDER      =
             new java.io.File(GoogleConfig.getCredentialFolderPath());
-    private static final String CLIENT_SECRET_FILE_NAME = GoogleConfig.getCredentialFileName();
+    private static final String       CLIENT_SECRET_FILE_NAME =
+            GoogleConfig.getCredentialFileName();
     /*
      ** Global instance of the scopes required by this quickstart. If modifying these
      ** scopes, delete your previously saved credentials/ folder.
@@ -57,20 +60,23 @@ public class GoogleDriveUtil {
 
     private Credential getCredentials(final NetHttpTransport httpTransport) throws
             IOException {
-        java.io.File clientSecretFilePath =
-                new java.io.File(CREDENTIALS_FOLDER, CLIENT_SECRET_FILE_NAME);
-
-        if (!clientSecretFilePath.exists()) {
-            CREDENTIALS_FOLDER.mkdirs();
-
-            System.out.println("Created Folder: " + CREDENTIALS_FOLDER.getAbsolutePath());
-            System.out.println("Copy file " + CLIENT_SECRET_FILE_NAME
-                    + " into folder above.. and rerun this class!!");
-            throw new FileNotFoundException("Please copy " + CLIENT_SECRET_FILE_NAME
-                    + " to folder: " + CREDENTIALS_FOLDER.getAbsolutePath());
-        }
-        // Load client secrets.
-        InputStream in = new FileInputStream(clientSecretFilePath);
+        Resource resource = new ClassPathResource("/credentials/client_secret.json");
+        java.io.File file = resource.getFile();
+        InputStream in = new FileInputStream(file);
+        //        java.io.File clientSecretFilePath =
+        //                new java.io.File(CREDENTIALS_FOLDER, CLIENT_SECRET_FILE_NAME);
+        //
+        //        if (!clientSecretFilePath.exists()) {
+        //            CREDENTIALS_FOLDER.mkdirs();
+        //
+        //            System.out.println("Created Folder: " + CREDENTIALS_FOLDER.getAbsolutePath());
+        //            System.out.println("Copy file " + CLIENT_SECRET_FILE_NAME
+        //                    + " into folder above.. and rerun this class!!");
+        //            throw new FileNotFoundException("Please copy " + CLIENT_SECRET_FILE_NAME
+        //                    + " to folder: " + CREDENTIALS_FOLDER.getAbsolutePath());
+        //        }
+        //        // Load client secrets.
+        //        InputStream in = new FileInputStream(clientSecretFilePath);
         GoogleClientSecrets clientSecrets =
                 GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
         // Build flow and trigger user authorization request.
