@@ -51,7 +51,7 @@ public class LeadRepositoryTest {
 
         Lead leadToAdd = new Lead();
         leadToAdd.setUserId(1234L);
-        leadToAdd.setAction(LeadAction.GetUpdate);
+        leadToAdd.setAction(LeadAction.GetUpdates);
         leadToAdd.setContactName("New Name");
         leadToAdd.setContactNumber("NewNumber");
         leadToAdd.setContactEmail("dummy-new@email.com");
@@ -66,7 +66,7 @@ public class LeadRepositoryTest {
         existingLead.setContactEmail("existing@email.com");
         existingLead.setEntityId(13L);
         existingLead.setEntityType(EducationEntity.COURSE);
-        existingLead.setAction(LeadAction.GetUpdate);
+        existingLead.setAction(LeadAction.GetUpdates);
         existingLead.setActionCount(1);
 
         // add existing lead to DB
