@@ -31,6 +31,6 @@ public class LeadController {
             @RequestHeader("x-user-id") long userId) throws Exception {
         log.info("Lead Request : {}", JsonUtils.toJson(lead));
         lead.setUserId(userId);
-        leadService.captureLead(lead);
+        return leadService.captureLead(lead);
     }
 }
