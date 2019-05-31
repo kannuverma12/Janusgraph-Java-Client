@@ -15,7 +15,6 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.INS
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTION_STATE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.IN_OPERATOR;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.MAX_STREAMS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.NO_OF_HIGHER_RANK_COLLEGE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OVERALL_RANKING;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SIMILAR_COLLEGES;
@@ -29,7 +28,7 @@ import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.entity.Ranking;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.database.repository.InstituteRepository;
-import com.paytm.digital.education.explore.enums.InstituteStream;
+import com.paytm.digital.education.explore.enums.CourseStream;
 import com.paytm.digital.education.explore.response.dto.common.Widget;
 import com.paytm.digital.education.explore.response.dto.common.WidgetData;
 import com.paytm.digital.education.explore.service.helper.WidgetsDataHelper;
@@ -358,8 +357,8 @@ public class SimilarInstituteServiceImpl {
     private List<String> selectTopTwoStreams(Set<String> streams) {
         List<String> instituteStreams = new ArrayList<>(streams);
         Collections.sort(instituteStreams, (st1, st2) -> {
-            InstituteStream stream1 = InstituteStream.valueOf(st1);
-            InstituteStream stream2 = InstituteStream.valueOf(st2);
+            CourseStream stream1 = CourseStream.valueOf(st1);
+            CourseStream stream2 = CourseStream.valueOf(st2);
             return stream1.getValue() - stream2.getValue();
         });
         return instituteStreams.stream().limit(MAX_STREAMS).collect(Collectors.toList());

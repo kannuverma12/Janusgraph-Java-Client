@@ -24,8 +24,8 @@ stats = true
 verbose = false
 resume = false # data is kept in mongodb to resume
 
-# on every start reindex every exam docs
-direct-read-namespaces = ["digital_education.exam"]
+# on every start reindex every institute docs
+direct-read-namespaces = ["digital_education.location"]
 exit-after-direct-reads = true
 
 #workers = ["A", "B", "C", "D"]
@@ -37,19 +37,19 @@ exit-after-direct-reads = true
 
 
 [[mapping]]  #index mapping
-namespace = "digital_education.exam"
-index = "education_search_exam_test"
+namespace = "digital_education.location"
+index = "education_search_location_test"
 type = "education"
 
 
 #to parse below env variables run monstache with "-tpl" flag
 [[script]]
-namespace = "digital_education.exam"
-path = '/var/www/monstache/transformExam.js'
+namespace = "digital_education.location"
+path = '/var/www/monstache/transformLocation.js'
 
 [logs]
-info =  '/var/www/monstache/logs/exam/info.log'
-warn =  '/var/www/monstache/logs/exam/warn.log'
-error = '/var/www/monstache/logs/exam/error.log'
-trace = '/var/www/monstache/logs/exam/trace.log'
-stats = '/var/www/monstache/logs/exam/stats.log'
+info =  '/var/www/monstache/logs/institute/info.log'
+warn =  '/var/www/monstache/logs/institute/warn.log'
+error = '/var/www/monstache/logs/institute/error.log'
+trace = '/var/www/monstache/logs/institute/trace.log'
+stats = '/var/www/monstache/logs/institute/stats.log'

@@ -24,6 +24,8 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.PAR
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_ANALYZER_COURSE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_INDEX_COURSE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEATS_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME_COURSE_BOOST;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.ACCEPTING_APPLICATION;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM_COURSE;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_NAME;
@@ -81,12 +83,15 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
 
     @PostConstruct
     private void init() {
+        searchFieldKeys = new HashMap<>();
+        searchFieldKeys.put(NAME_COURSE, NAME_COURSE_BOOST);
         filterQueryTypeMap = new HashMap<String, FilterQueryType>();
         filterQueryTypeMap.put(BRANCH_COURSE, TERMS);
         filterQueryTypeMap.put(DEGREE_COURSE, TERMS);
         filterQueryTypeMap.put(STREAM_COURSE, TERMS);
         filterQueryTypeMap.put(INSTITUTE_NAME_COURSE, TERMS);
         filterQueryTypeMap.put(LEVEL_COURSE, TERMS);
+        filterQueryTypeMap.put(ACCEPTING_APPLICATION, TERMS);
         filterQueryTypeMap.put(PARENT_INSTITUTE_ID_COURSE, TERMS);
         filterQueryTypeMap.put(INSTITUTE_ID_COURSE, TERMS);
         defaultSortKeysInOrder = new LinkedHashMap<>();

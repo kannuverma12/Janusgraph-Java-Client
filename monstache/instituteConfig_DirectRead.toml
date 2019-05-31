@@ -1,10 +1,10 @@
 #Staging
-#mongo-url = "mongodb://apptestuser:LKJSDL%40Fjrpw%404sjfqoAFsq23rr@10.20.41.254:27017/?replicaSet=edurs0"
-#elasticsearch-urls = ["http://10.20.41.254:9200"]
+mongo-url = "mongodb://apptestuser:LKJSDL%40Fjrpw%404sjfqoAFsq23rr@10.20.41.254:27017/?replicaSet=edurs0"
+elasticsearch-urls = ["http://10.20.41.254:9200"]
 
 #Prod
-mongo-url = "mongodb://app_education:UJQ#%401w%402cD@10.4.33.152:27017/?replicaSet=rs_0"
-elasticsearch-urls = ["http://10.20.33.122:9200","http://10.20.33.133:9200","http://10.20.33.242:9200"]
+#mongo-url = "mongodb://app_education:UJQ#%401w%402cD@10.4.33.152:27017/?replicaSet=rs_0"
+#elasticsearch-urls = ["http://10.20.33.122:9200","http://10.20.33.133:9200","http://10.20.33.242:9200"]
 
 gzip = true
 
@@ -38,7 +38,7 @@ workers = ["A", "B", "C", "D"]
 
 [[mapping]]  #index mapping
 namespace = "digital_education.institute"
-index = "education_search_institute_v2"
+index = "education_search_institute_test"
 type = "education"
 
 

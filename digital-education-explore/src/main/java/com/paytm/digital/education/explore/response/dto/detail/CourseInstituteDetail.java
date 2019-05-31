@@ -17,4 +17,7 @@ public class CourseInstituteDetail {
 
     @JsonProperty("official_address")
     private OfficialAddress officialAddress;
+
+    @JsonProperty("is_client")
+    private Boolean isClient;
 }

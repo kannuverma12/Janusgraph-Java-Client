@@ -13,6 +13,7 @@ public interface ExploreConstants {
     String INSTITUTE_ID                = "institute_id";
     String EXAM_ID                     = "exam_id";
     String COURSE_ID                   = "course_id";
+    String IS_ACCEPTING_APPLICATION    = "is_accepting_applications";
     String ENTITY_TYPE                 = "entity_type";
     int    DEFAULT_OFFSET              = 0;
     int    DEFAULT_SIZE                = 10;
@@ -49,7 +50,7 @@ public interface ExploreConstants {
     String ENTITY_TYPE_CITY          = "city";
 
     ///////// Institute search Constatnts ///////////
-    String SEARCH_INDEX_COURSE        = "education_search_course_v3";
+    String SEARCH_INDEX_COURSE        = "education_search_course_v4";
     String SEARCH_ANALYZER_COURSE     = "word_delimiter_analyzer";
     String SEARCH_NAMES_INSTITUTE     = "names";
     String MAX_RANK_INSTITUTE         = "max_rank";
@@ -163,6 +164,7 @@ public interface ExploreConstants {
     String DEGREE_COURSE                    = "degree";
     String BRANCH_COURSE                    = "branch";
     String LEVEL_COURSE                     = "level";
+    String ACCEPTING_APPLICATION            = "is_accepting_application";
     String INSTITUTE_NAME_COURSE            = "institute_official_name";
     String SEATS_COURSE                     = "seats";
     String FEE_COURSE                       = "fees";
@@ -173,6 +175,7 @@ public interface ExploreConstants {
     String GALLERY_LOGO                     = "gallery.logo";
     String OFFICIAL_ADDRESS                 = "official_address";
     String ENTITY_ID                        = "entity_id";
+    float  NAME_COURSE_BOOST                = 1f;
     String ENTITY_NAME                      = "entity_name";
     int    COURSE_SIZE_FOR_INSTITUTE_DETAIL = 6;
     String COMPARE                          = "compare";
@@ -193,14 +196,14 @@ public interface ExploreConstants {
     String EVENT_TYPE_EXAM       = "EXAM";
     String ZERO                  = "0";
 
-    String DISPLAY_NAME              = "display_name";
-    String LOGO                      = "logo";
-    String SECTION_ORDER_NAMESPACE   = "section_order";
-    String DETAIL_PAGE_SECTION_ORDER = "detail_page_section_order";
-    String BANNER                    = "banner";
-    String WIDGETS                   = "widgets";
-    String DATA_STRING               = "data";
-    String PARENT_INSTITUTION        = "parent_institution";
+    String DISPLAY_NAME               = "display_name";
+    String LOGO                       = "logo";
+    String SECTION_ORDER_NAMESPACE    = "section_order";
+    String DETAIL_PAGE_SECTION_ORDER  = "detail_page_section_order";
+    String BANNER                     = "banner";
+    String WIDGETS                    = "widgets";
+    String DATA_STRING                = "data";
+    String PARENT_INSTITUTION         = "parent_institution";
     String NOTABLE_ALUMNI_PLACEHOLDER = "/notable_alumni_placeholder.png";
 
     // Other Constants

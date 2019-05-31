@@ -2,8 +2,10 @@ package com.paytm.digital.education.explore.service.impl;
 
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
+import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
 import com.paytm.digital.education.explore.response.dto.search.SearchBaseData;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
+import com.paytm.digital.education.explore.service.LeadService;
 import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
 import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import com.paytm.digital.education.utility.JsonUtils;
@@ -35,7 +37,7 @@ public class SearchServiceImpl {
         log.debug("Starting search at : " + startTime);
         SearchResponse response = handler(searchRequest.getEntity()).search(searchRequest);
         log.debug("Search Response : {}", JsonUtils.toJson(response));
-        
+
         if (userId != null && userId > 0 && response.isSearchResponse()
                 && !CollectionUtils.isEmpty(response.getEntityDataMap())) {
             Map<Long, SearchBaseData> searchBaseDataMap = response.getEntityDataMap();
@@ -78,8 +80,13 @@ public class SearchServiceImpl {
 
     private void updateInterested(EducationEntity educationEntity, Long userId,
             Map<Long, SearchBaseData> searchBaseDataMap, List<Long> entityIds) {
-        List<Long> leadEntities =
-                leadDetailHelper.getLeadEntities(educationEntity, userId, entityIds);
+        List<Long> leadEntities;
+        if (EducationEntity.INSTITUTE.equals(educationEntity)) {
+            leadEntities =
+                    leadDetailHelper.getInterestedLeadEntitiesForInstitutes(userId, entityIds);
+        } else {
+            leadEntities = leadDetailHelper.getLeadEntities(educationEntity, userId, entityIds);
+        }
         if (!CollectionUtils.isEmpty(leadEntities)) {
             leadEntities.forEach(entityId -> searchBaseDataMap.get(entityId).setInterested(true));
         }

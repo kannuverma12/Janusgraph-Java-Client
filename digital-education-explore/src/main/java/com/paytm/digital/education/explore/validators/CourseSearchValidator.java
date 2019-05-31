@@ -15,11 +15,6 @@ public class CourseSearchValidator {
 
     public void validateRequest(SearchRequest searchRequest) {
 
-        if (StringUtils.isNotBlank(searchRequest.getTerm())) {
-            throw new BadRequestException(ErrorEnum.QUERY_TERM_MUST_BE_EMPTY,
-                    ErrorEnum.QUERY_TERM_MUST_BE_EMPTY.getExternalMessage());
-        }
-
         if (!searchRequest.getFilter().containsKey(ENTITY_ID) || !searchRequest.getFilter()
                 .containsKey(ENTITY_NAME)) {
             throw new BadRequestException(ErrorEnum.ENTITY_ID_AND_ENTITY_NAME_IS_MANDATORY,
