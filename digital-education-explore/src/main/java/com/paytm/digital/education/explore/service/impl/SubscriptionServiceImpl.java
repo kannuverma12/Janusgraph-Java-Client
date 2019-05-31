@@ -134,6 +134,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 List<String> formattedValues = CommonUtil.formatValues(propertyMap, APPROVALS,
                         subscriptionWithInstitute.getEntityDetails().getApprovals());
                 subscriptionWithInstitute.getEntityDetails().setApprovals(formattedValues);
+                subscriptionWithInstitute.getEntityDetails().setUrlDisplayKey(CommonUtil
+                        .convertNameToUrlDisplayName(
+                                subscriptionWithInstitute.getEntityDetails().getOfficialName()));
                 String logoLink = CommonUtil.getLogoLink(
                         subscriptionWithInstitute.getEntityDetails().getGallery().getLogo());
                 if (StringUtils.isNotBlank(logoLink)) {

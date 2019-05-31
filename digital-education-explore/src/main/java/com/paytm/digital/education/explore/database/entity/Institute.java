@@ -61,6 +61,9 @@ public class Institute {
     @JsonProperty("official_name")
     private String officialName;
 
+    @JsonProperty("url_display_key")
+    private String urlDisplayKey;
+
     @Field("ownership")
     private String ownership;
 
