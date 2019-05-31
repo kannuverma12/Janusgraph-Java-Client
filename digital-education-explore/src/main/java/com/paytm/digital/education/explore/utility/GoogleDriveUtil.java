@@ -61,6 +61,11 @@ public class GoogleDriveUtil {
                 new java.io.File(CREDENTIALS_FOLDER, CLIENT_SECRET_FILE_NAME);
 
         if (!clientSecretFilePath.exists()) {
+            CREDENTIALS_FOLDER.mkdirs();
+
+            System.out.println("Created Folder: " + CREDENTIALS_FOLDER.getAbsolutePath());
+            System.out.println("Copy file " + CLIENT_SECRET_FILE_NAME
+                    + " into folder above.. and rerun this class!!");
             throw new FileNotFoundException("Please copy " + CLIENT_SECRET_FILE_NAME
                     + " to folder: " + CREDENTIALS_FOLDER.getAbsolutePath());
         }
