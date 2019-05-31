@@ -57,37 +57,28 @@ public class LeadCareer360Service {
     }
 
     private BaseLeadResponse buildResponse(Career360LeadResponse c360response) {
-        if (Objects.nonNull(c360response)) {
-            BaseLeadResponse baseLeadResponse = new BaseLeadResponse();
-            baseLeadResponse.setCtaMessage(c360response.getCtaMessage());
-            baseLeadResponse.setCtaCode(c360response.getCtaStatus());
-            baseLeadResponse.setErrorCode(c360response.getErrorCode());
-            baseLeadResponse.setMessage(c360response.getMessage());
-            if ((c360response.getErrorCode() == 0 || c360response.getErrorCode() == 1) && (
-                    c360response.getCtaStatus() == 0 || c360response.getCtaStatus() == 2
-                            || c360response.getCtaStatus() == 3
-                            || c360response.getCtaStatus() == 4)) {
-                baseLeadResponse.setInterested(true);
-            } else {
-                throw new BadRequestException(ErrorEnum.HTTP_REQUEST_FAILED,
-                        ErrorEnum.HTTP_REQUEST_FAILED.getExternalMessage());
-            }
-            return baseLeadResponse;
+        BaseLeadResponse baseLeadResponse = new BaseLeadResponse();
+        baseLeadResponse.setCtaMessage(c360response.getCtaMessage());
+        baseLeadResponse.setCtaCode(c360response.getCtaStatus());
+        baseLeadResponse.setErrorCode(c360response.getErrorCode());
+        baseLeadResponse.setMessage(c360response.getMessage());
+        if ((c360response.getErrorCode() == 0 || c360response.getErrorCode() == 1) && (
+                c360response.getCtaStatus() == 0 || c360response.getCtaStatus() == 2
+                        || c360response.getCtaStatus() == 3
+                        || c360response.getCtaStatus() == 4)) {
+            baseLeadResponse.setInterested(true);
         }
-        return null;
+        return baseLeadResponse;
     }
 
     private BaseLeadResponse buildUnfollowResponse(Career360UnfollowResponse c360response) {
-        if (Objects.nonNull(c360response)) {
-            BaseLeadResponse baseLeadResponse = new BaseLeadResponse();
-            baseLeadResponse.setErrorCode(c360response.getErrorCode());
-            baseLeadResponse.setMessage(c360response.getErrorMessage());
-            if (c360response.getErrorCode() == 0 || c360response.getErrorCode() == 3) {
-                baseLeadResponse.setInterested(false);
-            }
-            return baseLeadResponse;
+        BaseLeadResponse baseLeadResponse = new BaseLeadResponse();
+        baseLeadResponse.setErrorCode(c360response.getErrorCode());
+        baseLeadResponse.setMessage(c360response.getErrorMessage());
+        if (c360response.getErrorCode() == 0 || c360response.getErrorCode() == 3) {
+            baseLeadResponse.setInterested(false);
         }
-        return null;
+        return baseLeadResponse;
     }
 
     private Map<String, String> getHeaders() {

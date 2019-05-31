@@ -83,7 +83,13 @@ public class LeadServiceImpl implements LeadService {
         log.info(c360LeadRespose.toString());
         com.paytm.digital.education.explore.response.dto.common.Lead leadResponse =
                 new com.paytm.digital.education.explore.response.dto.common.Lead();
-        leadResponse.setInterested(c360LeadRespose.isInterested());
+        if (Objects.isNull(c360LeadRespose.getInterested())) {
+            leadRepository.upsertLead(lead);
+            throw new BadRequestException(ErrorEnum.HTTP_REQUEST_FAILED,
+                    ErrorEnum.HTTP_REQUEST_FAILED.getExternalMessage());
+
+        }
+        leadResponse.setInterested(c360LeadRespose.getInterested());
         leadRepository.upsertLead(lead);
         return leadResponse;
     }
