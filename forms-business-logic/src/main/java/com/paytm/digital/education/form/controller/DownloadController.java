@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/formfbl")
+@RequestMapping("/formfbl/auth")
 @Slf4j
 public class DownloadController {
 
@@ -64,7 +64,7 @@ public class DownloadController {
         return downloadForm(orderId, type, formData, headers);
     }
 
-    @GetMapping("/v1/user/download")
+    @GetMapping("/v1/user/form/download")
     public ResponseEntity<Object> downloadFormByUser(
             @RequestParam("order_id") Long orderId,
             @RequestParam("type") String type,
