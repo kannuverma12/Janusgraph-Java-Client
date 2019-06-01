@@ -56,9 +56,15 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
             mongoOperations.insert(merchantConfiguration);
         } else {
             Map<String, Object> map = null;
+
             map = foundMerchantConfiguration.getData() != null ? foundMerchantConfiguration.getData() : new HashMap<>();
             map.putAll(merchantConfiguration.getData());
             foundMerchantConfiguration.setData(map);
+
+            map = foundMerchantConfiguration.getPostOrderScreenConfig() != null
+                    ? foundMerchantConfiguration.getPostOrderScreenConfig() : new HashMap<>();
+            map.putAll(merchantConfiguration.getPostOrderScreenConfig());
+            foundMerchantConfiguration.setPostOrderScreenConfig(map);
 
             foundMerchantConfiguration.setUpdatedDate(new Date());
 
@@ -77,7 +83,7 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
         if (merchantId != null) {
             data = getScreenConfig(merchantId);
             log.debug("Data found for merchant id {} is {}", merchantId, data);
-            if(data == null) {
+            if (data == null) {
                 log.error("No data found for provided merchant id = {}", merchantId);
                 data = getScreenConfigByOrderId(orderId);
             }

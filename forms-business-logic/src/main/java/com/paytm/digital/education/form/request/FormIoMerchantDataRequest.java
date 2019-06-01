@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.form.model.CandidateDetails;
 import lombok.Data;
 
+import java.util.Map;
+
 @Data
 public class FormIoMerchantDataRequest {
 
@@ -24,4 +26,8 @@ public class FormIoMerchantDataRequest {
 
     @JsonProperty("candidateDetails")
     CandidateDetails candidateDetails;
+
+    @JsonProperty("additionalData")
+    private Map<String, Object> additionalData;
+
 }

@@ -2,6 +2,7 @@ package com.paytm.digital.education.form.service.impl;
 
 
 import com.paytm.digital.education.form.model.FormData;
+import com.paytm.digital.education.form.model.FormFulfilment;
 import com.paytm.digital.education.form.producer.KafkaProducer;
 import com.paytm.digital.education.form.request.FulfilmentKafkaObject;
 import com.paytm.digital.education.form.request.FulfilmentKafkaPostDataObject;
@@ -68,19 +69,23 @@ public class StatusCheckServiceImpl implements StatusCheckService {
     }
 
     private void notifyOrderStatusToFulfilment(FormData formData) {
+
+        FormFulfilment formFulfilment = formData.getFormFulfilment();
+        String postAction = env.getProperty("fulfilment.postaction." + formFulfilment.getPaymentStatus());
+        String fulfilmentStatus = env.getProperty("fulfilment.status." + formFulfilment.getPaymentStatus());
+
+        // construct kafka message
+        FulfilmentKafkaPostDataObject fulfilmentKafkaPostDataObject = new FulfilmentKafkaPostDataObject();
+        fulfilmentKafkaPostDataObject.setPostActions(postAction);
+        fulfilmentKafkaPostDataObject.setStatus(fulfilmentStatus);
+
         // construct URL
         String url = env.getProperty("fulfilment.host.url") + '/' + formData.getMerchantId()
                 + env.getProperty("fulfilment.path.update") + '/' + formData.getFormFulfilment().getFulfilmentId()
                 + "?order_id=" + formData.getFormFulfilment().getOrderId();
 
-        // construct kafka message
-        FulfilmentKafkaPostDataObject fulfilmentKafkaPostDataObject = new FulfilmentKafkaPostDataObject();
-        fulfilmentKafkaPostDataObject.setPostActions(env.getProperty("fulfilment.postaction."
-                + formData.getFormFulfilment().getPaymentStatus()));
-        fulfilmentKafkaPostDataObject.setStatus(env.getProperty("fulfilment.status."
-                + formData.getFormFulfilment().getPaymentStatus()));
-
         FulfilmentKafkaObject fulfilmentKafkaObject = new FulfilmentKafkaObject();
+        fulfilmentKafkaObject.setRefId(formData.getId());
         fulfilmentKafkaObject.setUrl(url);
         fulfilmentKafkaObject.setOrderId(formData.getFormFulfilment().getOrderId());
         fulfilmentKafkaObject.setFulfilmentId(formData.getFormFulfilment().getFulfilmentId());

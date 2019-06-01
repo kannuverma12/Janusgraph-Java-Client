@@ -5,6 +5,8 @@ import lombok.Data;
 @Data
 public class FulfilmentKafkaObject {
 
+    String refId;
+
     Long fulfilmentId;
 
     Long orderId;

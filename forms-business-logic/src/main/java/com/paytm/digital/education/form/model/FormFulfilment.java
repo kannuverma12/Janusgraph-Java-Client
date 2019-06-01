@@ -30,6 +30,9 @@ public class FormFulfilment {
     @Field("paymentStatus")
     private String paymentStatus;
 
+    @Field("fulfilmentStatus")
+    private Integer fulfilmentStatus;
+
     @Field("createdDate")
     private Date createdDate;
 
