@@ -5,6 +5,7 @@ import com.paytm.digital.education.form.model.MerchantConfiguration;
 import com.paytm.digital.education.form.service.MerchantConfigService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -22,6 +23,7 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 @Service
+@Slf4j
 public class MerchantConfigServiceImpl implements MerchantConfigService {
 
     private MongoOperations mongoOperations;
@@ -71,20 +73,33 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
     @Override
     public Map<String, Object> getPostScreenData(String merchantId, Long orderId) {
         Map<String, Object> data = null;
+
         if (merchantId != null) {
             data = getScreenConfig(merchantId);
-        } else if (orderId != null) {
-            Query query = new Query();
-            query.addCriteria(Criteria.where("formFulfilment.orderId").is(orderId));
-
-            FormData formData = mongoOperations.findOne(query, FormData.class);
-            if (formData != null) {
-                data = getScreenConfig(formData.getMerchantId());
+            log.debug("Data found for merchant id {} is {}", merchantId, data);
+            if(data == null) {
+                log.error("No data found for provided merchant id = {}", merchantId);
+                data = getScreenConfigByOrderId(orderId);
             }
+        } else if (orderId != null) {
+            data = getScreenConfigByOrderId(orderId);
         }
         return data;
     }
 
+    private Map<String, Object> getScreenConfigByOrderId(Long orderId) {
+        Map<String, Object> data = null;
+        Query query = new Query();
+        query.addCriteria(Criteria.where("formFulfilment.orderId").is(orderId));
+
+        FormData formData = mongoOperations.findOne(query, FormData.class);
+        if (formData != null) {
+            data = getScreenConfig(formData.getMerchantId());
+        }
+
+        log.debug("Data found for order id = {} is {}", orderId, data);
+        return data;
+    }
 
     private Map<String, Object> getScreenConfig(String merchantId) {
         Query query = new Query();

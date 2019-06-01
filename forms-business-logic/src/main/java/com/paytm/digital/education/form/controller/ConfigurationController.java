@@ -1,5 +1,6 @@
 package com.paytm.digital.education.form.controller;
 
+import com.paytm.digital.education.form.response.PostOrderScreenConfigResponse;
 import com.paytm.digital.education.form.service.MerchantConfigService;
 import com.paytm.digital.education.form.model.MerchantConfiguration;
 import lombok.AllArgsConstructor;
@@ -79,7 +80,14 @@ public class ConfigurationController {
             invoiceDownloadLink += "?order_id=" + orderId + "&type=invoice";
             data.put("invoice_download_link", invoiceDownloadLink);
         }
-        return new ResponseEntity<>(data, HttpStatus.OK);
+
+        PostOrderScreenConfigResponse postOrderScreenConfigResponse
+                = new PostOrderScreenConfigResponse(200, data);
+
+        log.debug("Response to be sent for order id = {} and merchant id = {} is -> {}",
+                orderId, merchantId, postOrderScreenConfigResponse);
+
+        return new ResponseEntity<>(postOrderScreenConfigResponse, HttpStatus.OK);
     }
 
 }
