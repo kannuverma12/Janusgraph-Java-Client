@@ -285,8 +285,8 @@ public class SaveAndFetchServiceImpl implements SaveAndFetchService {
                 );
 
         return new LatestFormData(
-                getFormDataBasedOnCriteriaAndSort( unpaidOrderCriteria, keys, "updatedAt"),
-                getFormDataBasedOnCriteriaAndSort( lastOrderCriteria, keys, "formFulfilment.createdDate")
+                getFormDataBasedOnCriteriaAndSort(unpaidOrderCriteria, keys, "updatedAt"),
+                getFormDataBasedOnCriteriaAndSort(lastOrderCriteria, keys, "formFulfilment.createdDate")
         );
     }
 

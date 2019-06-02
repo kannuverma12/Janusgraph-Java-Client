@@ -23,15 +23,22 @@ public class SaveAndFetchController {
 
     private SaveAndFetchService saveAndFetchService;
 
-    private final String argMessage = "Either refId or combination of customer id, merchant id, candidate id required";
+    private final String argMessage =
+            "Either refId or combination of customer id, merchant id, candidate id are required";
 
     @PostMapping("/v1/save")
     public ResponseEntity<Object> saveData(
             @RequestParam(name = "confirm_flag", defaultValue = "false") boolean confirmFlag,
             @RequestBody FormData data) {
         if (!saveAndFetchService.validateFormDataRequest(data)) {
-            return new ResponseEntity<>("{\"message\": \"" + argMessage + "\"}", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(
+                    "{\"message\": \"" + argMessage + "\"}", HttpStatus.BAD_REQUEST);
         }
+
+        //todo: Add merchant candidate id to case sensitive check on the basis of merchant config
+        data.setCandidateId(data.getCandidateId().toLowerCase());
+        data.getCandidateDetails().setEmail(data.getCandidateDetails().getEmail().toLowerCase());
+
         String id = saveAndFetchService.saveData(data, confirmFlag);
         if (id != null) {
             return new ResponseEntity<>("{\"refId\": \"" + id + "\"}", HttpStatus.OK);

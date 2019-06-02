@@ -15,10 +15,8 @@ public class CandidateDetails {
     // Common
     private String username;
 
-    @NotEmpty
     private String email;
 
-    @NotEmpty
     private String mobileNumber;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)

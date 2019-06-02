@@ -13,7 +13,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
-import javax.validation.constraints.NotEmpty;
 
 @Data
 @Document
@@ -29,7 +28,6 @@ public class FormData {
     @Field("transactionType")
     private String transactionType;
 
-
     @Field("createdAt")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createdAt = new Date();
@@ -41,7 +39,6 @@ public class FormData {
     @Field("expiryDate")
     private Date expiryDate;
 
-    @NotEmpty
     @Field("candidateId")
     private String candidateId;
 
@@ -51,15 +48,12 @@ public class FormData {
     @Field("emailVerified")
     private Boolean emailVerified;
 
-    @NotEmpty
     @Field("customerId")
     private String customerId;
 
-    @NotEmpty
     @Field("merchantId")
     private String merchantId;
 
-    @NotEmpty
     @Field("merchantName")
     private String merchantName;
 
