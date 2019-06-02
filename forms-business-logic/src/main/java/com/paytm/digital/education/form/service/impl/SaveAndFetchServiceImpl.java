@@ -76,6 +76,9 @@ public class SaveAndFetchServiceImpl implements SaveAndFetchService {
                     data.setCandidateDetails(formData.getCandidateDetails());
                     data.setUpdatedAt(new Date());
                     data.setStatus(FormStatus.PARTIAL);
+                    if (formData.getTransactionType() != null) {
+                        data.setTransactionType(formData.getTransactionType());
+                    }
 
                     // todo: what if id is null ?
 
@@ -87,6 +90,9 @@ public class SaveAndFetchServiceImpl implements SaveAndFetchService {
                     if (!confirmFlag) {
                         data.setCandidateDetails(formData.getCandidateDetails());
                         data.setUpdatedAt(new Date());
+                        if (formData.getTransactionType() != null) {
+                            data.setTransactionType(formData.getTransactionType());
+                        }
 
                         updateData(data, false);
                         id = data.getId();
@@ -164,6 +170,9 @@ public class SaveAndFetchServiceImpl implements SaveAndFetchService {
         Update update = new Update();
         update.set("status", formData.getStatus());
         update.set("updatedAt", formData.getUpdatedAt());
+        if (formData.getTransactionType() != null) {
+            update.set("transactionType", formData.getTransactionType());
+        }
 
         if (fulfilmentFlag) {
             update.set("formFulfilment", formData.getFormFulfilment());
@@ -275,14 +284,22 @@ public class SaveAndFetchServiceImpl implements SaveAndFetchService {
         String paymentFieldName = "formFulfilment.orderId";
 
         Criteria lastOrderCriteria = createBaseCriteria(merchantId, customerId, candidateId)
-                .where(paymentFieldName).exists(true)
-                .where(paymentFieldName).ne(null);
+                .and(paymentFieldName).exists(true);
+        //                .and(paymentFieldName).ne(null);
+
+        //                .andOperator(
+        //                        Criteria.where(paymentFieldName).exists(true),
+        //                        Criteria.where(paymentFieldName).ne(null)
+        //                );
 
         Criteria unpaidOrderCriteria = createBaseCriteria(merchantId, customerId, candidateId)
-                .orOperator(
-                        Criteria.where(paymentFieldName).exists(false),
-                        Criteria.where(paymentFieldName).is(null)
-                );
+                .and(paymentFieldName).exists(false);
+
+        // todo: check this flow
+        //                .orOperator(
+        //                        Criteria.where(paymentFieldName).exists(false),
+        //                        Criteria.where(paymentFieldName).is(null)
+        //                );
 
         return new LatestFormData(
                 getFormDataBasedOnCriteriaAndSort(unpaidOrderCriteria, keys, "updatedAt"),

@@ -95,7 +95,7 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         try {
             // fetch item from request
             // todo: handle multiple items
-            log.info("Received payment posting: ", JsonUtils.toJson(paymentPostingRequest));
+            log.info("Received payment posting: {}", JsonUtils.toJson(paymentPostingRequest));
             PaymentPostingItemRequest paymentPostingItemRequest = paymentPostingRequest.getItems().get(0);
 
             // validate price
@@ -251,7 +251,10 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
     private Boolean insertInFormDataCollection(String id, PaymentPostingItemRequest paymentPostingItemRequest) {
         Query query = new Query();
         query.addCriteria(Criteria.where("id").is(id)
-                .orOperator(Criteria.where("formFulfilment").exists(false), Criteria.where("formFulfilment").is(null)));
+                .orOperator(
+                        Criteria.where("formFulfilment.orderId").exists(false),
+                        Criteria.where("formFulfilment.orderId").is(null)
+                ));
 
         // Creating model object
         FormFulfilment formFulfilment = new FormFulfilment();
@@ -269,6 +272,7 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         update.set("updatedAt", currentDate);
         update.set("formFulfilment", formFulfilment);
 
+        // todo: why is this failing when already exist ?
         UpdateResult updateResult = mongoOperations.updateFirst(query, update, FormData.class);
 
         return (updateResult.getModifiedCount() > 0);
