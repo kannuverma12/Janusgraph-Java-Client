@@ -19,11 +19,7 @@ import com.paytm.digital.education.explore.config.GoogleConfig;
 import lombok.experimental.UtilityClass;
 import org.springframework.util.ResourceUtils;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
@@ -59,7 +55,27 @@ public class GoogleDriveUtil {
 
     private Credential getCredentials(final NetHttpTransport httpTransport) throws
             IOException {
-        java.io.File file = ResourceUtils.getFile("classpath:credentials/client_secret.json");
+        String json = "{\"installed\":{\"client_id\":\"90783202314"
+                + "-th98ev2966rcrhok2pdt0tb26to75t27.apps.googleusercontent.com\",\"project_id\":\"campusengagement\",\"auth_uri\":\"https://accounts.google.com/o/oauth2/auth\",\"token_uri\":\"https://oauth2.googleapis.com/token\",\"auth_provider_x509_cert_url\":\"https://www.googleapis.com/oauth2/v1/certs\",\"client_secret\":\"GL7xBP4SJti3aGmvYDFm0hGs\",\"redirect_uris\":[\"urn:ietf:wg:oauth:2.0:oob\",\"http://localhost\"]}}";
+
+
+        //java.io.File file = ResourceUtils.getFile("classpath:credentials/client_secret.json");
+
+        java.io.File file = null;
+        String text = json;
+        BufferedWriter output = null;
+        try {
+            file = new java.io.File("example.txt");
+            output = new BufferedWriter(new FileWriter(file));
+            output.write(text);
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        } finally {
+            if ( output != null ) {
+                output.close();
+            }
+        }
+
         //java.io.File file = resource.getFile();
         InputStream in = new FileInputStream(file);
         //        java.io.File clientSecretFilePath =
