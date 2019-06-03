@@ -1,6 +1,12 @@
 package com.paytm.digital.education.explore.config;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
+import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
+import com.amazonaws.services.securitytoken.model.AssumeRoleRequest;
+import com.amazonaws.services.securitytoken.model.Credentials;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import com.amazonaws.AmazonServiceException;
@@ -18,6 +24,9 @@ public class AwsConfig {
     private static String serviceEndPoint;
     private static String s3BucketPath;
     private static String relativePathPrefix;
+    private static String s3IamRole;
+    private static String s3BucketName;
+    private static String s3RegionName;
 
     @Value("${aws.s3.region}")
     public void setClientRegion(String region) {
@@ -37,6 +46,21 @@ public class AwsConfig {
     @Value("${aws.s3.relativepath.prefix}")
     public void setRelativePathPrefix(String prefix) {
         relativePathPrefix = prefix;
+    }
+
+    @Value("${s3.iam.role}")
+    public void setS3IamRole(String iamRole) {
+        s3IamRole = iamRole;
+    }
+
+    @Value("${s3.bucket.name}")
+    public void setS3BucketName(String bucketName) {
+        s3BucketName = bucketName;
+    }
+
+    @Value("${s3.region.name}")
+    public void setS3RegionName(String regionName) {
+        s3RegionName = regionName;
     }
 
     public static String getS3path() {
@@ -67,5 +91,29 @@ public class AwsConfig {
             log.error("Error In AWS.func() with SdkClientException ", e);
         }
         return null;
+    }
+
+    public static AmazonS3 getS3Client() {
+
+        final AssumeRoleRequest assumeRole =
+                new AssumeRoleRequest()
+                        .withRoleArn(s3IamRole)
+                        .withRoleSessionName("digital-education");
+
+        final AWSSecurityTokenService sts =
+                AWSSecurityTokenServiceClientBuilder.standard().withRegion(s3RegionName).build();
+
+        final Credentials credentials = sts.assumeRole(assumeRole).getCredentials();
+
+        final BasicSessionCredentials sessionCredentials =
+                new BasicSessionCredentials(
+                        credentials.getAccessKeyId(),
+                        credentials.getSecretAccessKey(),
+                        credentials.getSessionToken());
+
+        return AmazonS3ClientBuilder.standard()
+                .withRegion(s3RegionName)
+                .withCredentials(new AWSStaticCredentialsProvider(sessionCredentials))
+                .build();
     }
 }

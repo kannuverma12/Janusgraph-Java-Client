@@ -24,7 +24,8 @@ import static com.paytm.digital.education.explore.constants.AWSConstants.HTTP_AG
 @Slf4j
 @UtilityClass
 public class S3Util {
-    private final AmazonS3 s3Client = AwsConfig.func();
+    //private final AmazonS3 s3Client = AwsConfig.func();
+    private final AmazonS3 s3Client = AwsConfig.getS3Client();
 
     public String uploadFile(String mediaUrl, InputStream inputStream, String fileName,
             String bucketPath,
