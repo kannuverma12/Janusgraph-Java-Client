@@ -5,6 +5,7 @@ import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInsta
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -17,6 +18,7 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.paytm.digital.education.explore.config.GoogleConfig;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ResourceUtils;
 
 import java.io.BufferedWriter;
@@ -24,6 +26,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.security.GeneralSecurityException;
@@ -42,6 +45,7 @@ import static com.paytm.digital.education.explore.constants.CampusEngagementCons
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.USER;
 
 @UtilityClass
+@Slf4j
 public class GoogleDriveUtil {
 
     private static final String       APPLICATION_NAME        = "Education";
@@ -60,52 +64,37 @@ public class GoogleDriveUtil {
 
     private Credential getCredentials(final NetHttpTransport httpTransport) throws
             IOException {
-        String json = "{\"installed\":{\"client_id\":\"90783202314"
-                + "-th98ev2966rcrhok2pdt0tb26to75t27.apps.googleusercontent.com\",\"project_id\":\"campusengagement\",\"auth_uri\":\"https://accounts.google.com/o/oauth2/auth\",\"token_uri\":\"https://oauth2.googleapis.com/token\",\"auth_provider_x509_cert_url\":\"https://www.googleapis.com/oauth2/v1/certs\",\"client_secret\":\"GL7xBP4SJti3aGmvYDFm0hGs\",\"redirect_uris\":[\"urn:ietf:wg:oauth:2.0:oob\",\"http://localhost\"]}}";
-
 
         //java.io.File file = ResourceUtils.getFile("classpath:credentials/client_secret.json");
 
-        java.io.File file = null;
-        String text = json;
-        BufferedWriter output = null;
-        try {
-            file = new java.io.File("example.txt");
-            output = new BufferedWriter(new FileWriter(file));
-            output.write(text);
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        } finally {
-            if ( output != null ) {
-                output.close();
-            }
-        }
-
         //java.io.File file = resource.getFile();
-        InputStream in = new FileInputStream(file);
-        //        java.io.File clientSecretFilePath =
-        //                new java.io.File(CREDENTIALS_FOLDER, CLIENT_SECRET_FILE_NAME);
-        //
-        //        if (!clientSecretFilePath.exists()) {
-        //            CREDENTIALS_FOLDER.mkdirs();
-        //
-        //            System.out.println("Created Folder: " + CREDENTIALS_FOLDER.getAbsolutePath());
-        //            System.out.println("Copy file " + CLIENT_SECRET_FILE_NAME
-        //                    + " into folder above.. and rerun this class!!");
-        //            throw new FileNotFoundException("Please copy " + CLIENT_SECRET_FILE_NAME
-        //                    + " to folder: " + CREDENTIALS_FOLDER.getAbsolutePath());
-        //        }
-        //        // Load client secrets.
-        //        InputStream in = new FileInputStream(clientSecretFilePath);
+        //InputStream in = new FileInputStream(file);
+        java.io.File clientSecretFilePath =
+                new java.io.File(CREDENTIALS_FOLDER, CLIENT_SECRET_FILE_NAME);
+
+        if (!clientSecretFilePath.exists()) {
+            CREDENTIALS_FOLDER.mkdirs();
+            CREDENTIALS_FOLDER.setExecutable(true, false);
+            CREDENTIALS_FOLDER.setReadable(true, false);
+
+            System.out.println("Created Folder: " + CREDENTIALS_FOLDER.getAbsolutePath());
+            System.out.println("Copy file " + CLIENT_SECRET_FILE_NAME
+                    + " into folder above.. and rerun this class!!");
+            throw new FileNotFoundException("Please copy " + CLIENT_SECRET_FILE_NAME
+                    + " to folder: " + CREDENTIALS_FOLDER.getAbsolutePath());
+        }
+        // Load client secrets.
+        InputStream in = new FileInputStream(clientSecretFilePath);
         GoogleClientSecrets clientSecrets =
                 GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
         // Build flow and trigger user authorization request.
+        log.info("Reading system folder");
         GoogleAuthorizationCodeFlow
                 flow = new GoogleAuthorizationCodeFlow.Builder(httpTransport, JSON_FACTORY,
                 clientSecrets, SCOPES)
                 .setDataStoreFactory(new FileDataStoreFactory(CREDENTIALS_FOLDER))
                 .setAccessType(OFFLINE).build();
-
+        log.info("Done with Reading system folder");
         return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize(USER);
     }
 
@@ -122,6 +111,7 @@ public class GoogleDriveUtil {
     private Sheets createSheetService() throws IOException, GeneralSecurityException {
         final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
         Credential credential = getCredentials(httpTransport);
+
         return new Sheets.Builder(httpTransport, JSON_FACTORY, credential)
                 .setApplicationName(APPLICATION_NAME).build();
     }
