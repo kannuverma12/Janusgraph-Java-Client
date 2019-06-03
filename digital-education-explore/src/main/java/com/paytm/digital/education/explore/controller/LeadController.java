@@ -33,4 +33,13 @@ public class LeadController {
         lead.setUserId(userId);
         return leadService.captureLead(lead);
     }
+
+    @PostMapping("/auth/v1/unfollow")
+    public com.paytm.digital.education.explore.response.dto.common.Lead unfollowLead(
+            @RequestBody Lead lead, @RequestHeader("x-user-id") long userId) {
+        log.info("Unfollow Request : {}", JsonUtils.toJson(lead));
+        lead.setUserId(userId);
+        return leadService.unfollowLead(lead);
+    }
+
 }

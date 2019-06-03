@@ -34,15 +34,7 @@ public class LeadCareer360Service {
     @Autowired
     private BaseRestApiService restApiService;
 
-    public BaseLeadResponse send(Lead lead) {
-        if (LeadAction.StopUpdates.equals(lead.getAction())) {
-            return sendUnfollow(lead);
-        } else {
-            return sendLead(lead);
-        }
-    }
-
-    private BaseLeadResponse sendUnfollow(Lead lead) {
+    public BaseLeadResponse sendUnfollow(Lead lead) {
         Career360UnfollowRequest career360UnfollowRequest = buildUnfollowRequest(lead);
         String jsonStr = JsonUtils.toJson(career360UnfollowRequest);
         Career360UnfollowResponse response = restApiService
@@ -50,7 +42,7 @@ public class LeadCareer360Service {
         return buildUnfollowResponse(response);
     }
 
-    private BaseLeadResponse sendLead(Lead lead) {
+    public BaseLeadResponse sendLead(Lead lead) {
         Career360LeadRequest career360LeadRequest = buildRequest(lead);
         String jsonStr = JsonUtils.toJson(career360LeadRequest);
         Career360LeadResponse response = restApiService
@@ -98,6 +90,7 @@ public class LeadCareer360Service {
         career360LeadRequest.setStateId(lead.getStateId());
         career360LeadRequest.setCityId(lead.getCityId());
         career360LeadRequest.setMobile(lead.getContactNumber());
+        career360LeadRequest.setActionLocation("");
         career360LeadRequest
                 .setEntityType(EducationEntity.convertToCareer360entity(lead.getEntityType()));
         career360LeadRequest.setEntityId(lead.getEntityId());
@@ -109,8 +102,6 @@ public class LeadCareer360Service {
     private Career360UnfollowRequest buildUnfollowRequest(Lead lead) {
         Career360UnfollowRequest career360UnfollowRequest = new Career360UnfollowRequest();
         career360UnfollowRequest.setEntityId(lead.getEntityId());
-        career360UnfollowRequest
-                .setEntityType(EducationEntity.convertToCareer360entity(lead.getEntityType()));
         career360UnfollowRequest.setPaytmCustomerId(lead.getUserId());
         return career360UnfollowRequest;
     }

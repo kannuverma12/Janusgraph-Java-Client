@@ -60,7 +60,12 @@ public enum ErrorEnum {
             HttpStatus.BAD_REQUEST, 0),
     HTTP_REQUEST_FAILED(4028, "Http request failed %s",
             HttpStatus.BAD_REQUEST, 1),
-    STREAM_IS_MANDATORY_FOR_COURSE_LEAD(4029, "Stream is mandatory", HttpStatus.BAD_REQUEST, 0);
+    STREAM_IS_MANDATORY_FOR_COURSE_LEAD(4029, "Stream is mandatory",
+            HttpStatus.BAD_REQUEST, 0),
+    ACTION_NOT_SUPPORTED(4030, "Requested action is not supported for given entity",
+            HttpStatus.BAD_REQUEST, 0),
+    INSTITUTE_ID_AND_ENTITY_IS_MANDATORY_FOR_UNFOLLOW(4031,
+            "Institute id and entity type is mandatory", HttpStatus.BAD_REQUEST, 0);
 
 
     private final int        internalCode;

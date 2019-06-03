@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
 @Repository
@@ -41,7 +42,6 @@ public class LeadRepository {
                 .set(Lead.Constants.UPDATED_AT, currentDate)
                 .set(Lead.Constants.THIRD_PARTY_RESPONSES, lead.getBaseLeadResponse())
                 .set(Lead.Constants.LAST_ACTION, lead.getAction())
-                .set(Lead.Constants.INTERESTED, lead.isInterested())
                 .set(Lead.Constants.STREAM, lead.getStream())
                 .set(Lead.Constants.ENTITY_ID, lead.getEntityId())
                 .set(Lead.Constants.ENTITY_TYPE, lead.getEntityType())
@@ -50,6 +50,10 @@ public class LeadRepository {
                 .set(Lead.Constants.CITY_ID, lead.getCityId())
                 .set(Lead.Constants.STATE_ID, lead.getStateId())
                 .inc(Lead.Constants.ACTION_COUNT, 1);
+
+        if (Objects.nonNull(lead.getInterested())) {
+            update.set(Lead.Constants.INTERESTED, lead.getInterested());
+        }
 
         mongoTemplate
                 .findAndModify(query, update, new FindAndModifyOptions().upsert(true), Lead.class);

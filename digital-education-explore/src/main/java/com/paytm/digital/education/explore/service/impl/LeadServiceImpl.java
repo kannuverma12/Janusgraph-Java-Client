@@ -14,8 +14,7 @@ import com.paytm.digital.education.mapping.ErrorEnum;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import javax.validation.constraints.NotNull;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,17 +34,19 @@ public class LeadServiceImpl implements LeadService {
     private LeadCareer360Service  leadCareer360Service;
 
     @Override
-    public com.paytm.digital.education.explore.response.dto.common.Lead captureLead(
-            @NotNull Lead lead) {
-        if (EducationEntity.COURSE.equals(lead.getEntityType())) {
-            validateCourseLead(lead);
-        } else if (EducationEntity.EXAM.equals(lead.getEntityType())) {
-            validateExamLead(lead);
-        } else {
-            throw new BadRequestException(ErrorEnum.ENTITY_NOT_SUPPORTED_FOR_LEAD,
-                    ErrorEnum.ENTITY_NOT_SUPPORTED_FOR_LEAD.getExternalMessage());
-        }
-        BaseLeadResponse c360LeadRespose = leadCareer360Service.send(lead);
+    public com.paytm.digital.education.explore.response.dto.common.Lead captureLead(Lead lead) {
+        validateLeadRequest(lead);
+        BaseLeadResponse c360LeadRespose = leadCareer360Service.sendLead(lead);
+        com.paytm.digital.education.explore.response.dto.common.Lead leadResponse =
+                buildResponse(lead, c360LeadRespose);
+        leadRepository.upsertLead(lead);
+        return leadResponse;
+    }
+
+    @Override
+    public com.paytm.digital.education.explore.response.dto.common.Lead unfollowLead(Lead lead) {
+        validateUnfollowRequest(lead);
+        BaseLeadResponse c360LeadRespose = leadCareer360Service.sendUnfollow(lead);
         com.paytm.digital.education.explore.response.dto.common.Lead leadResponse =
                 buildResponse(lead, c360LeadRespose);
         leadRepository.upsertLead(lead);
@@ -70,8 +71,41 @@ public class LeadServiceImpl implements LeadService {
         return leadResponse;
     }
 
+    private void validateUnfollowRequest(Lead lead) {
+        if (Objects.isNull(lead.getEntityType()) || Objects.isNull(lead.getInstituteId())) {
+            throw new BadRequestException(
+                    ErrorEnum.INSTITUTE_ID_AND_ENTITY_IS_MANDATORY_FOR_UNFOLLOW,
+                    ErrorEnum.INSTITUTE_ID_AND_ENTITY_IS_MANDATORY_FOR_UNFOLLOW
+                            .getExternalMessage());
+        }
+        if (!EducationEntity.COURSE.equals(lead.getEntityType())) {
+            throw new BadRequestException(ErrorEnum.ACTION_NOT_SUPPORTED,
+                    ErrorEnum.ACTION_NOT_SUPPORTED.getExternalMessage());
+        }
+        List<Lead> leads = leadRepository
+                .fetchInterestedLeadByInstituteIdANdUserId(lead.getUserId(),
+                        Arrays.asList(lead.getInstituteId()));
+        if (CollectionUtils.isEmpty(leads)) {
+            throw new BadRequestException(ErrorEnum.ACTION_NOT_SUPPORTED,
+                    ErrorEnum.ACTION_NOT_SUPPORTED.getExternalMessage());
+        }
+        lead.setEntityId(leads.get(0).getEntityId());
+    }
+
+    private void validateLeadRequest(Lead lead) {
+        if (EducationEntity.COURSE.equals(lead.getEntityType())) {
+            validateCourseLead(lead);
+        } else if (EducationEntity.EXAM.equals(lead.getEntityType())) {
+            validateExamLead(lead);
+        } else {
+            throw new BadRequestException(ErrorEnum.ENTITY_NOT_SUPPORTED_FOR_LEAD,
+                    ErrorEnum.ENTITY_NOT_SUPPORTED_FOR_LEAD.getExternalMessage());
+        }
+    }
+
     private void validateCourseLead(Lead lead) {
-        List<String> fieldGroup = Arrays.asList(COURSE_ID, INSTITUTE_ID, IS_ACCEPTING_APPLICATION);
+        List<String> fieldGroup =
+                Arrays.asList(COURSE_ID, INSTITUTE_ID, IS_ACCEPTING_APPLICATION);
         if (Objects.isNull(lead.getStream())) {
             throw new BadRequestException(ErrorEnum.STREAM_IS_MANDATORY_FOR_COURSE_LEAD,
                     ErrorEnum.STREAM_IS_MANDATORY_FOR_COURSE_LEAD.getExternalMessage());

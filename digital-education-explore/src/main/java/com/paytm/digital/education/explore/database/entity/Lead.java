@@ -109,7 +109,7 @@ public class Lead {
 
     @JsonIgnore
     @Field(Constants.INTERESTED)
-    private boolean interested;
+    private Boolean interested;
 
     @JsonIgnore
     @Field(Constants.CREATED_AT)

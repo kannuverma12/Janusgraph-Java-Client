@@ -1,7 +1,7 @@
 package com.paytm.digital.education.explore.enums;
 
 public enum LeadAction {
-    GetUpdates, GetInTouch, StopUpdates;
+    GetUpdates, GetInTouch;
 
     public static int getCareers360RequestType(LeadAction action) {
         switch (action) {

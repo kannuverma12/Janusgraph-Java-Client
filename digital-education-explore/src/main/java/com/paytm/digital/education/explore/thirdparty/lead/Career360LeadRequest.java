@@ -36,4 +36,7 @@ public class Career360LeadRequest {
     @JsonProperty("entity_id")
     private Long entityId;
 
+    @JsonProperty("action_location")
+    private String actionLocation;
+
 }
