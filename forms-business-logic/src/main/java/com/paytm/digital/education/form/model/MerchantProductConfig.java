@@ -1,5 +1,6 @@
 package com.paytm.digital.education.form.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -14,6 +15,7 @@ import java.util.Map;
 @Data
 @Document("merchantProductConfig")
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MerchantProductConfig {
 
     @Field("merchantId")

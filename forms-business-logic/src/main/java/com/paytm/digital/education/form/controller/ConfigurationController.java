@@ -1,6 +1,5 @@
 package com.paytm.digital.education.form.controller;
 
-import com.paytm.digital.education.form.response.PostOrderScreenConfigResponse;
 import com.paytm.digital.education.form.service.MerchantConfigService;
 import com.paytm.digital.education.form.model.MerchantConfiguration;
 import lombok.AllArgsConstructor;
@@ -8,12 +7,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -69,25 +68,7 @@ public class ConfigurationController {
             );
         }
 
-        String formDownloadLink = (String) data.get("form_download_link");
-        if (formDownloadLink != null) {
-            formDownloadLink += "?order_id=" + orderId + "&type=form";
-            data.put("form_download_link", formDownloadLink);
-        }
-
-        String invoiceDownloadLink = (String) data.get("invoice_download_link");
-        if (invoiceDownloadLink != null) {
-            invoiceDownloadLink += "?order_id=" + orderId + "&type=invoice";
-            data.put("invoice_download_link", invoiceDownloadLink);
-        }
-
-        PostOrderScreenConfigResponse postOrderScreenConfigResponse
-                = new PostOrderScreenConfigResponse(200, data);
-
-        log.debug("Response to be sent for order id = {} and merchant id = {} is -> {}",
-                orderId, merchantId, postOrderScreenConfigResponse);
-
-        return new ResponseEntity<>(postOrderScreenConfigResponse, HttpStatus.OK);
+        return merchantConfigService.getResponseForPostOrderScreenConfig(data, orderId, merchantId);
     }
 
 }

@@ -1,7 +1,9 @@
 package com.paytm.digital.education.form.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paytm.digital.education.form.model.FormData;
 import com.paytm.digital.education.form.model.MerchantConfiguration;
+import com.paytm.digital.education.form.response.PostOrderScreenConfigResponse;
 import com.paytm.digital.education.form.service.MerchantConfigService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,13 +14,14 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
 
 @Data
 @AllArgsConstructor
@@ -28,10 +31,11 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
 
     private MongoOperations mongoOperations;
     private MongoTemplate mongoTemplate;
+    private ObjectMapper objectMapper;
 
     @Override
     public MerchantConfiguration getMerchantById(String merchantId, ArrayList<String> keys) {
-        MerchantConfiguration merchantConfiguration = null;
+        MerchantConfiguration merchantConfiguration;
 
         Query query = new Query(Criteria.where("_id").is(merchantId));
         keys.forEach(key -> query.fields().include(key));
@@ -56,15 +60,19 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
             mongoOperations.insert(merchantConfiguration);
         } else {
             Map<String, Object> map = null;
+            if (merchantConfiguration.getData() != null) {
+                map = foundMerchantConfiguration.getData() != null
+                        ? foundMerchantConfiguration.getData() : new HashMap<>();
+                map.putAll(merchantConfiguration.getData());
+                foundMerchantConfiguration.setData(map);
+            }
 
-            map = foundMerchantConfiguration.getData() != null ? foundMerchantConfiguration.getData() : new HashMap<>();
-            map.putAll(merchantConfiguration.getData());
-            foundMerchantConfiguration.setData(map);
-
-            map = foundMerchantConfiguration.getPostOrderScreenConfig() != null
-                    ? foundMerchantConfiguration.getPostOrderScreenConfig() : new HashMap<>();
-            map.putAll(merchantConfiguration.getPostOrderScreenConfig());
-            foundMerchantConfiguration.setPostOrderScreenConfig(map);
+            if (merchantConfiguration.getPostOrderScreenConfig() != null) {
+                map = foundMerchantConfiguration.getPostOrderScreenConfig() != null
+                        ? foundMerchantConfiguration.getPostOrderScreenConfig() : new HashMap<>();
+                map.putAll(merchantConfiguration.getPostOrderScreenConfig());
+                foundMerchantConfiguration.setPostOrderScreenConfig(map);
+            }
 
             foundMerchantConfiguration.setUpdatedDate(new Date());
 
@@ -93,6 +101,48 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
         return data;
     }
 
+    @Override
+    public ResponseEntity<Object> getResponseForPostOrderScreenConfig(
+            Map<String, Object> data, Long orderId, String merchantId) {
+
+        Map<String, Object> responseData = new HashMap<>();
+
+        if (orderId != null) {
+            Query query = new Query(Criteria.where("formFulfilment.orderId").is(orderId));
+            query.fields().include("merchantCandidateId");
+
+            FormData formData = mongoOperations.findOne(query, FormData.class);
+
+            if (formData.getMerchantCandidateId() != null) {
+                responseData.put("registration_id", formData.getMerchantCandidateId());
+            }
+        }
+
+        if (data.get("fill_form_id") != null) {
+            responseData.put("fill_form_id", data.get("fill_form_id"));
+        }
+
+        String formDownloadLink = (String) data.get("form_download_link");
+        if (formDownloadLink != null) {
+            formDownloadLink += "?order_id=" + orderId + "&type=form";
+            responseData.put("form_download_link", formDownloadLink);
+        }
+
+        String invoiceDownloadLink = (String) data.get("invoice_download_link");
+        if (invoiceDownloadLink != null) {
+            invoiceDownloadLink += "?order_id=" + orderId + "&type=invoice";
+            responseData.put("invoice_download_link", invoiceDownloadLink);
+        }
+
+        PostOrderScreenConfigResponse postOrderScreenConfigResponse
+                = new PostOrderScreenConfigResponse(200, responseData);
+
+        log.debug("Response to be sent for order id = {} and merchant id = {} is -> {}",
+                orderId, merchantId, postOrderScreenConfigResponse);
+
+        return new ResponseEntity<>(postOrderScreenConfigResponse, HttpStatus.OK);
+    }
+
     private Map<String, Object> getScreenConfigByOrderId(Long orderId) {
         Map<String, Object> data = null;
         Query query = new Query();
@@ -107,6 +157,7 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
         return data;
     }
 
+
     private Map<String, Object> getScreenConfig(String merchantId) {
         Query query = new Query();
         query.addCriteria(Criteria.where("_id").is(merchantId));
@@ -119,4 +170,5 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
             return null;
         }
     }
+
 }

@@ -81,6 +81,9 @@ public class SaveAndFetchServiceImpl implements SaveAndFetchService {
                     }
 
                     // todo: what if id is null ?
+                    if (formData.getMerchantCandidateId() != null) {
+                        data.setMerchantCandidateId(formData.getMerchantCandidateId());
+                    }
 
                     updateData(data, false);
                     id = data.getId();
@@ -90,8 +93,14 @@ public class SaveAndFetchServiceImpl implements SaveAndFetchService {
                     if (!confirmFlag) {
                         data.setCandidateDetails(formData.getCandidateDetails());
                         data.setUpdatedAt(new Date());
+                        data.setStatus(FormStatus.REGISTERED);
+
                         if (formData.getTransactionType() != null) {
                             data.setTransactionType(formData.getTransactionType());
+                        }
+
+                        if (formData.getMerchantCandidateId() != null) {
+                            data.setMerchantCandidateId(formData.getMerchantCandidateId());
                         }
 
                         updateData(data, false);
@@ -172,6 +181,10 @@ public class SaveAndFetchServiceImpl implements SaveAndFetchService {
         update.set("updatedAt", formData.getUpdatedAt());
         if (formData.getTransactionType() != null) {
             update.set("transactionType", formData.getTransactionType());
+        }
+
+        if (formData.getMerchantCandidateId() != null) {
+            update.set("merchantCandidateId", formData.getMerchantCandidateId());
         }
 
         if (fulfilmentFlag) {

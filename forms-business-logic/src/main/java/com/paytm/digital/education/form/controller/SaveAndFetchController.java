@@ -36,8 +36,12 @@ public class SaveAndFetchController {
         }
 
         //todo: Add merchant candidate id to case sensitive check on the basis of merchant config
-        data.setCandidateId(data.getCandidateId().toLowerCase());
-        data.getCandidateDetails().setEmail(data.getCandidateDetails().getEmail().toLowerCase());
+        if (data.getCandidateId() != null) {
+            data.setCandidateId(data.getCandidateId().toLowerCase());
+            if (data.getCandidateDetails() != null && data.getCandidateDetails().getEmail() != null) {
+                data.getCandidateDetails().setEmail(data.getCandidateDetails().getEmail().toLowerCase());
+            }
+        }
 
         String id = saveAndFetchService.saveData(data, confirmFlag);
         if (id != null) {
