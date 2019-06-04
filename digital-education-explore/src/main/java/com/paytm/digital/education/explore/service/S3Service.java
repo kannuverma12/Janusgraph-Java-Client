@@ -1,6 +1,10 @@
 package com.paytm.digital.education.explore.service;
 
+import com.amazonaws.services.s3.model.AccessControlList;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.GroupGrantee;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.Permission;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
@@ -37,13 +41,14 @@ public class S3Service {
         byte[] bytes1 = IOUtils.toByteArray(inputStream);
         metadata.setContentLength(bytes1.length);
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes1);
-        PutObjectResult result = s3Provider.getAmazonS3()
-                .putObject(new PutObjectRequest(AwsConfig.getS3BucketPath() + relativePath, fileName,
-                        byteArrayInputStream, metadata));
+        PutObjectRequest objectRequest = new PutObjectRequest(AwsConfig.getS3BucketPath() + relativePath, fileName,
+                byteArrayInputStream, metadata);
+        objectRequest.withCannedAcl(CannedAccessControlList.PublicReadWrite);
+        PutObjectResult result = s3Provider.getAmazonS3().putObject(objectRequest);
         inputStream.close();
         log.info(
                 "Exited from S3Service.uploadFile with fileName {} instituteId {} s3Path {} ",
                 fileName, instituteId, relativePath);
-        return relativePath + fileName;
+        return relativePath + "/" + fileName;
     }
 }
