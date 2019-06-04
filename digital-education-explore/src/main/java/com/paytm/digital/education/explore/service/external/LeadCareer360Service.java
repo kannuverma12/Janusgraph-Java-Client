@@ -102,6 +102,8 @@ public class LeadCareer360Service {
     private Career360UnfollowRequest buildUnfollowRequest(Lead lead) {
         Career360UnfollowRequest career360UnfollowRequest = new Career360UnfollowRequest();
         career360UnfollowRequest.setEntityId(lead.getEntityId());
+        career360UnfollowRequest
+                .setEntityType(EducationEntity.convertToCareer360entity(lead.getEntityType()));
         career360UnfollowRequest.setPaytmCustomerId(lead.getUserId());
         return career360UnfollowRequest;
     }
