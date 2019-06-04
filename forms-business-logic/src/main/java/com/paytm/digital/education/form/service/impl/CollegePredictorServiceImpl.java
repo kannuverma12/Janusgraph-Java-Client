@@ -76,7 +76,6 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
                 }
                 dbFormData.setUpdatedAt(new Date());
                 dbFormData = formDataRepository.save(dbFormData);
-                formData.setMerchantProductId(dbFormData.getMerchantProductId());
             }
         } else {
             formData.setCreatedAt(new Date());
@@ -93,7 +92,7 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
         }
         if (Objects.nonNull(dbFormData) && StringUtils.isNotBlank(dbFormData.getId())) {
             responseDataMap.put(REFERENCE_ID, dbFormData.getId());
-            processResponseData(formData, responseDataMap);
+            processResponseData(dbFormData, responseDataMap);
         }
         return responseDataMap;
     }
@@ -140,23 +139,35 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
                 .getFormsDataByPaymentStatus(formData.getCustomerId(), formData.getMerchantId(),
                         formData.getMerchantProductId(), SUCCESS_STRING);
         if (CollectionUtils.isEmpty(paymentMadeFormsData)) {
-            String catalogProductId = String.valueOf(formData.getFormFulfilment().getProductId());
-            String merchantId = formData.getMerchantId();
-            MerchantProductConfig merchantProductConfig = merchantProductConfigService
-                    .getConfig(merchantId, catalogProductId, new ArrayList<>());
-            if (Objects.isNull(merchantProductConfig)) {
+            Float amountToPay = getPaymentAmount(formData);
+            if (Objects.isNull(amountToPay)) {
                 throw new EducationException(PAYMENT_CONFIGURATION_NOT_FOUND,
                         PAYMENT_CONFIGURATION_NOT_FOUND.getExternalMessage(),
-                        new Object[] {merchantId, catalogProductId});
+                        new Object[] {formData.getMerchantId(), formData.getFormFulfilment().getProductId()});
             }
-            Map<String, Object> paymentConfig =
-                    (Map<String, Object>) merchantProductConfig.getData().get(PAYMENT);
-            String merchantProductId = String.valueOf(
-                    formData.getCandidateDetails().getRequestData().get(0).get(PRODUCT_ID));
-            Map<String, Object> productPaymentConfig = (Map<String, Object>) paymentConfig.get(merchantProductId);
-            return Float.valueOf(productPaymentConfig.get(PAYMENT_AMOUNT).toString());
+            return amountToPay;
         }
         return 0f;
+    }
+
+    private Float getPaymentAmount(FormData formData) {
+        String catalogProductId = String.valueOf(formData.getFormFulfilment().getProductId());
+        String merchantId = formData.getMerchantId();
+        MerchantProductConfig merchantProductConfig = merchantProductConfigService
+                .getConfig(merchantId, catalogProductId, new ArrayList<>());
+        if (Objects.nonNull(merchantProductConfig) && Objects
+                .nonNull(merchantProductConfig.getData().get(PAYMENT))) {
+            Map<String, Object> paymentConfig =
+                    (Map<String, Object>) merchantProductConfig.getData().get(PAYMENT);
+            String merchantProductId = formData.getMerchantProductId();
+            Map<String, Object> productPaymentConfig =
+                    (Map<String, Object>) paymentConfig.get(merchantProductId);
+            if (Objects.nonNull(productPaymentConfig) && Objects
+                    .nonNull(productPaymentConfig.get(PAYMENT_AMOUNT))) {
+                return Float.valueOf(productPaymentConfig.get(PAYMENT_AMOUNT).toString());
+            }
+        }
+        return null;
     }
 
     private boolean validateFormDataRequest(FormData formData) {
