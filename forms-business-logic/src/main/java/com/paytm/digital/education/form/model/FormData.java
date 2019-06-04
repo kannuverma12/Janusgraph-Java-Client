@@ -31,7 +31,7 @@ public class FormData {
     @Field("transactionType")
     private String transactionType;
 
-    @Field("form_type")
+    @Field("formType")
     private FormType formType;
 
     @Field("createdAt")
@@ -63,12 +63,12 @@ public class FormData {
     @Field("merchantId")
     private String merchantId;
 
+    @Field("merchantProductId")
+    private String merchantProductId;
+
     @NotEmpty
     @Field("merchantName")
     private String merchantName;
-
-    @Field("merchantRefNo")
-    private String merchantRefNo;
 
     @Field("status")
     private FormStatus status;

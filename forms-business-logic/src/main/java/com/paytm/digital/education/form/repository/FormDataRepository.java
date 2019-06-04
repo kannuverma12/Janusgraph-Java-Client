@@ -12,8 +12,10 @@ import java.util.List;
 @Repository
 public interface FormDataRepository extends MongoRepository<FormData, String> {
 
-    @Query(value = "{'customerId':'?0','merchantId':'?1','formFulfilment.paymentStatus':"
-            + "{$exists:true}, 'formFulfilment.paymentStatus':'?2', 'formFulfilment.amount':{$exists:true, $gt:0}}")
-    public List<FormData> getFormsDataByPaymentStatus(String customerId, String merchantId, String paymentStatus);
+    @Query(value = "{'customerId':'?0','merchantId':'?1', 'merchantProductId':'?2', "
+            + "'formFulfilment.paymentStatus':{$exists:true}, 'formFulfilment.paymentStatus':'?3', "
+            + "'formFulfilment.amount':{$exists:true, $gt:0}}")
+    public List<FormData> getFormsDataByPaymentStatus(String customerId, String merchantId,
+            String merchantProductId, String paymentStatus);
 
 }

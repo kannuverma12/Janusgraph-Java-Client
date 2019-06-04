@@ -3,7 +3,7 @@ package com.paytm.digital.education.form.constants;
 public interface FblConstants {
 
     String INVALID_REFERENCE_ID = "refId provided is invalid";
-    String REFERENCE_ID         = "refId";
+    String REFERENCE_ID         = "reference_id";
     String PRODUCT_ID           = "product_id";
     String STATUS               = "status";
     String UNAUTHORIZED         = "unauthorized";

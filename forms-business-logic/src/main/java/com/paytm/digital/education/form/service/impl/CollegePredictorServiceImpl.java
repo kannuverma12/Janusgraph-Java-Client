@@ -76,6 +76,7 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
                 }
                 dbFormData.setUpdatedAt(new Date());
                 dbFormData = formDataRepository.save(dbFormData);
+                formData.setMerchantProductId(dbFormData.getMerchantProductId());
             }
         } else {
             formData.setCreatedAt(new Date());
@@ -83,8 +84,11 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
             if (!CollectionUtils.isEmpty(formData.getCandidateDetails().getResponseData())) {
                 Map<String, Object> merchantResponse =
                         formData.getCandidateDetails().getResponseData().get(0);
-                formData.setMerchantRefNo(merchantResponse.get(RN_TOKEN).toString());
+                formData.setMerchantCandidateId(merchantResponse.get(RN_TOKEN).toString());
             }
+            String merchantProductId = String.valueOf(
+                    formData.getCandidateDetails().getRequestData().get(0).get(PRODUCT_ID));
+            formData.setMerchantProductId(merchantProductId);
             dbFormData = formDataRepository.save(formData);
         }
         if (Objects.nonNull(dbFormData) && StringUtils.isNotBlank(dbFormData.getId())) {
@@ -134,7 +138,7 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
     private Float getProductPrice(FormData formData) {
         List<FormData> paymentMadeFormsData = formDataRepository
                 .getFormsDataByPaymentStatus(formData.getCustomerId(), formData.getMerchantId(),
-                        SUCCESS_STRING);
+                        formData.getMerchantProductId(), SUCCESS_STRING);
         if (CollectionUtils.isEmpty(paymentMadeFormsData)) {
             String catalogProductId = String.valueOf(formData.getFormFulfilment().getProductId());
             String merchantId = formData.getMerchantId();
@@ -150,7 +154,8 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
                         (Map<String, Object>) merchantProductConfig.getData().get(PAYMENT);
                 String merchantProductId = String.valueOf(
                         formData.getCandidateDetails().getRequestData().get(0).get(PRODUCT_ID));
-                return Float.valueOf(paymentConfig.get(merchantProductId).toString());
+                Map<String, Object> productPaymentConfig = (Map<String, Object>) paymentConfig.get(merchantProductId);
+                return Float.valueOf(productPaymentConfig.get(PAYMENT_AMOUNT).toString());
             }
         }
         return 0f;
