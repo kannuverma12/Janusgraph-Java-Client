@@ -1,12 +1,15 @@
 package com.paytm.digital.education.form.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -181,5 +184,14 @@ public class CandidateDetails {
     private String cbtExamDate;
 
     private String miCode;
+
+    // CAREER360
+    @Field("requestData")
+    @JsonProperty("requestData")
+    private List<Map<String, Object>> requestData;
+
+    @Field("responseData")
+    @JsonProperty("responseData")
+    private List<Map<String, Object>> responseData;
 
 }

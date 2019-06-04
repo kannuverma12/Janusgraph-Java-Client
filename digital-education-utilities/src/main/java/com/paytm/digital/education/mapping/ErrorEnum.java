@@ -45,7 +45,13 @@ public enum ErrorEnum {
     EITHER_OF_ORDER_ID_OR_START_DATE(9001, "Order Id or start date both are not allowed together.",
             HttpStatus.BAD_REQUEST, 10),
     USER_IS_NOT_MERCHANT(9002, "User is not Merchant",
-            HttpStatus.UNAUTHORIZED, 0);
+            HttpStatus.UNAUTHORIZED, 0),
+    MISSING_FORM_DATA_PARAMS(9003,
+            "Bad request. Some mandatory params are missing", HttpStatus.BAD_REQUEST, 0),
+    UNAUTHORIZED_REQUEST(9004, "Unauthorized request.", HttpStatus.UNAUTHORIZED, 0),
+    PAYMENT_CONFIGURATION_NOT_FOUND(9005,
+            "Payment configuration doesn't exists for, productId : %s and merchantId : %s",
+            HttpStatus.INTERNAL_SERVER_ERROR, 2);
 
     private final int        internalCode;
     private final String     externalMessage;
