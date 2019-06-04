@@ -44,7 +44,7 @@ public class Lead {
 
     @JsonProperty(Constants.STREAM)
     @Field(Constants.STREAM)
-    private List<CourseStream> stream;
+    private List<String> stream;
 
     @JsonProperty(Constants.INSTITUTE_ID)
     @Field(Constants.INSTITUTE_ID)
