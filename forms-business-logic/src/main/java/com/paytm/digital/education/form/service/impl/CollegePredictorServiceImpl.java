@@ -52,7 +52,7 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
         }
         Map<String, Object> responseDataMap = new HashMap<>();
         FormData dbFormData = null;
-        if (Objects.nonNull(formData.getId())) {
+        if (StringUtils.isNotBlank(formData.getId())) {
             Optional<FormData> formDataOptional = formDataRepository.findById(formData.getId());
             if (formDataOptional.isPresent()) {
                 dbFormData = formDataOptional.get();
