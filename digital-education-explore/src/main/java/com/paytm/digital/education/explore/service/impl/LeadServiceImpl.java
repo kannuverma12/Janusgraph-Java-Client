@@ -106,7 +106,7 @@ public class LeadServiceImpl implements LeadService {
     private void validateCourseLead(Lead lead) {
         List<String> fieldGroup =
                 Arrays.asList(COURSE_ID, INSTITUTE_ID, IS_ACCEPTING_APPLICATION);
-        if (Objects.isNull(lead.getStream())) {
+        if (CollectionUtils.isEmpty(lead.getStream())) {
             throw new BadRequestException(ErrorEnum.STREAM_IS_MANDATORY_FOR_COURSE_LEAD,
                     ErrorEnum.STREAM_IS_MANDATORY_FOR_COURSE_LEAD.getExternalMessage());
         }
