@@ -59,7 +59,7 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
             }
             if (Objects.nonNull(dbFormData)) {
                 if (!CollectionUtils.isEmpty(formData.getCandidateDetails().getRequestData())) {
-                    if (CollectionUtils.isEmpty(formData.getCandidateDetails().getRequestData())) {
+                    if (CollectionUtils.isEmpty(dbFormData.getCandidateDetails().getRequestData())) {
                         dbFormData.getCandidateDetails().setRequestData(new ArrayList<>());
                     }
                     dbFormData.getCandidateDetails().getRequestData()
@@ -149,14 +149,12 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
                         PAYMENT_CONFIGURATION_NOT_FOUND.getExternalMessage(),
                         new Object[] {merchantId, catalogProductId});
             }
-            if (Objects.nonNull(merchantProductConfig)) {
-                Map<String, Object> paymentConfig =
-                        (Map<String, Object>) merchantProductConfig.getData().get(PAYMENT);
-                String merchantProductId = String.valueOf(
-                        formData.getCandidateDetails().getRequestData().get(0).get(PRODUCT_ID));
-                Map<String, Object> productPaymentConfig = (Map<String, Object>) paymentConfig.get(merchantProductId);
-                return Float.valueOf(productPaymentConfig.get(PAYMENT_AMOUNT).toString());
-            }
+            Map<String, Object> paymentConfig =
+                    (Map<String, Object>) merchantProductConfig.getData().get(PAYMENT);
+            String merchantProductId = String.valueOf(
+                    formData.getCandidateDetails().getRequestData().get(0).get(PRODUCT_ID));
+            Map<String, Object> productPaymentConfig = (Map<String, Object>) paymentConfig.get(merchantProductId);
+            return Float.valueOf(productPaymentConfig.get(PAYMENT_AMOUNT).toString());
         }
         return 0f;
     }
