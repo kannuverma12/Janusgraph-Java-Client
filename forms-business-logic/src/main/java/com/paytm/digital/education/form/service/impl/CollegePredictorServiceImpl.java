@@ -78,6 +78,7 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
                 dbFormData = formDataRepository.save(dbFormData);
             }
         } else {
+            formData.setId(null);
             formData.setCreatedAt(new Date());
             formData.setUpdatedAt(new Date());
             if (!CollectionUtils.isEmpty(formData.getCandidateDetails().getResponseData())) {
