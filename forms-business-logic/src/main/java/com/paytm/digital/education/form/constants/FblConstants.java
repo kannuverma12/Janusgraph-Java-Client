@@ -14,4 +14,5 @@ public interface FblConstants {
     String STATUS_CODE          = "code";
     String PAYMENT              = "payment";
     String RN_TOKEN             = "rn";
+    String PAY_AMOUNT           = "pay_amount";
 }

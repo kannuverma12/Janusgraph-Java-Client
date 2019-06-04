@@ -186,12 +186,12 @@ public class CandidateDetails {
     private String miCode;
 
     // CAREER360
-    @Field("request_data")
-    @JsonProperty("request_data")
+    @Field("requestData")
+    @JsonProperty("requestData")
     private List<Map<String, Object>> requestData;
 
-    @Field("response_data")
-    @JsonProperty("response_data")
+    @Field("responseData")
+    @JsonProperty("responseData")
     private List<Map<String, Object>> responseData;
 
 }

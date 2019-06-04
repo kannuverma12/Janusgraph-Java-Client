@@ -11,6 +11,7 @@ import static com.paytm.digital.education.form.constants.FblConstants.STATUS;
 import static com.paytm.digital.education.form.constants.FblConstants.STATUS_CODE;
 import static com.paytm.digital.education.form.constants.FblConstants.SUCCESS_STRING;
 import static com.paytm.digital.education.form.constants.FblConstants.UNAUTHORIZED;
+import static com.paytm.digital.education.form.constants.FblConstants.PAY_AMOUNT;
 import static com.paytm.digital.education.mapping.ErrorEnum.MISSING_FORM_DATA_PARAMS;
 import static com.paytm.digital.education.mapping.ErrorEnum.PAYMENT_CONFIGURATION_NOT_FOUND;
 import static com.paytm.digital.education.mapping.ErrorEnum.UNAUTHORIZED_REQUEST;
@@ -20,11 +21,14 @@ import com.paytm.digital.education.exception.EducationException;
 import com.paytm.digital.education.form.model.FormData;
 import com.paytm.digital.education.form.model.MerchantProductConfig;
 import com.paytm.digital.education.form.repository.FormDataRepository;
+import com.paytm.digital.education.form.model.CollegePredictor;
+import com.paytm.digital.education.form.repository.PredictorListRepository;
 import com.paytm.digital.education.form.service.CollegePredictorService;
 import com.paytm.digital.education.form.service.MerchantProductConfigService;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -38,11 +42,22 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-@AllArgsConstructor
 public class CollegePredictorServiceImpl implements CollegePredictorService {
 
+    @Value("${catalog.predictor.pid}")
+    private String paytmPid;
+
+    @Value("${catalog.predictor.mid}")
+    private String paytmMid;
+
+    @Autowired
     private FormDataRepository           formDataRepository;
+
+    @Autowired
     private MerchantProductConfigService merchantProductConfigService;
+
+    @Autowired
+    private PredictorListRepository      predictorListRepository;
 
     @Override
     public Map<String, Object> savePredictorFormData(FormData formData) {
@@ -95,6 +110,47 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
             processResponseData(dbFormData, responseDataMap);
         }
         return responseDataMap;
+    }
+
+    @Override
+    public List<CollegePredictor> getPredictorList() {
+        List<CollegePredictor> predictorList = predictorListRepository.findAll();
+        MerchantProductConfig merchantProductConfig = merchantProductConfigService
+                .getConfig(paytmMid, paytmPid, new ArrayList<>());
+        Map<Long, Integer> pidPriceMap = getPidPriceMap(merchantProductConfig);
+        if (Objects.nonNull(pidPriceMap)) {
+            for (CollegePredictor cp : predictorList) {
+                if (pidPriceMap.containsKey(cp.getId())) {
+                    cp.setPaytmPrice(pidPriceMap.get(cp.getId()));
+                }
+            }
+        }
+        if (!CollectionUtils.isEmpty(predictorList)) {
+            return predictorList;
+        }
+        return null;
+    }
+
+    private Map<Long, Integer> getPidPriceMap(MerchantProductConfig merchantProductConfig) {
+        Map<Long, Integer> pidPriceMap = new HashMap<>();
+        if (Objects.nonNull(merchantProductConfig) && Objects.nonNull(merchantProductConfig.getData())) {
+            Map<String, Object> data = merchantProductConfig.getData();
+            if (data.containsKey(PAYMENT)) {
+                Map<String, Object> payment = (Map<String, Object>) data.get("payment");
+                for (Map.Entry<String, Object> entry : payment.entrySet()) {
+                    String pid = entry.getKey();
+                    Map<String, Object> paymentData = (Map<String, Object>) entry.getValue();
+                    if (paymentData.containsKey(PAY_AMOUNT)) {
+                        Integer payAmount = (Integer) paymentData.get(PAY_AMOUNT);
+                        pidPriceMap.put(Long.valueOf(pid), payAmount);
+                    }
+                }
+            }
+        }
+        if (!CollectionUtils.isEmpty(pidPriceMap)) {
+            return pidPriceMap;
+        }
+        return null;
     }
 
     private void processResponseData(FormData formData, Map<String, Object> responseDataMap) {
