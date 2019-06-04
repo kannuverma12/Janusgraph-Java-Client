@@ -1,11 +1,13 @@
 package com.paytm.digital.education.explore.utility;
 
 import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.paytm.digital.education.explore.config.AwsConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
@@ -33,8 +35,10 @@ public class AmazonS3Provider {
             log.info("initialized s3 client for openstack server");
             amazonS3 = getLocalS3Client();
         } else {
-            log.info("created s3 client using IAMRole info from ec2");
-            amazonS3 = AmazonS3ClientBuilder.defaultClient();
+            log.info("created s3 client using IAMRole info from ec2 {}", AwsConfig.getClientRegion());
+            amazonS3 = AmazonS3ClientBuilder.standard().withRegion(Regions.AP_SOUTHEAST_1)
+                    .enableForceGlobalBucketAccess()
+                .build();
         }
     }
 
