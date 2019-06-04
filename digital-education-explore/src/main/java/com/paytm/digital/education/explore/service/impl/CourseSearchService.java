@@ -8,6 +8,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.DUR
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_NAME;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME_COURSE_SEARCH;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_ALPHABETICAL_SORT_KEY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
@@ -84,7 +85,7 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
     @PostConstruct
     private void init() {
         searchFieldKeys = new HashMap<>();
-        searchFieldKeys.put(NAME_COURSE, NAME_COURSE_BOOST);
+        searchFieldKeys.put(NAME_COURSE_SEARCH, NAME_COURSE_BOOST);
         filterQueryTypeMap = new HashMap<String, FilterQueryType>();
         filterQueryTypeMap.put(BRANCH_COURSE, TERMS);
         filterQueryTypeMap.put(DEGREE_COURSE, TERMS);
@@ -227,6 +228,7 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
                 courseData.setDurationInMonths(courseSearch.getDurationInMonths());
                 courseData.setFee(courseSearch.getFees());
                 courseData.setSeatsAvailable(courseSearch.getSeats());
+                courseData.setStream(courseSearch.getDomainName());
                 courseData.setOfficialName(courseSearch.getName());
                 courseData.setUrlDisplayKey(
                         CommonUtil.convertNameToUrlDisplayName(courseSearch.getName()));

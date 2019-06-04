@@ -24,6 +24,9 @@ public class CourseData {
     @JsonProperty("fee")
     private Long         fee;
 
+    @JsonProperty("stream")
+    private List<String> stream;
+
     @JsonProperty("seats_available")
     private Integer      seatsAvailable;
 
