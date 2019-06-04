@@ -3,6 +3,7 @@ package com.paytm.digital.education.form.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.form.enums.FormType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.validation.constraints.NotEmpty;
@@ -29,6 +31,8 @@ public class FormData {
     @Field("transactionType")
     private String transactionType;
 
+    @Field("form_type")
+    private FormType formType;
 
     @Field("createdAt")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -62,6 +66,9 @@ public class FormData {
     @NotEmpty
     @Field("merchantName")
     private String merchantName;
+
+    @Field("merchantRefNo")
+    private String merchantRefNo;
 
     @Field("status")
     private FormStatus status;
