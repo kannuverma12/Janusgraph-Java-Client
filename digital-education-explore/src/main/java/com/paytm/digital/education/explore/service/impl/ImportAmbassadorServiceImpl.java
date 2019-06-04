@@ -28,7 +28,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import static com.mongodb.QueryOperators.OR;
-import static com.paytm.digital.education.explore.constants.AWSConstants.S3_BUCKET_PATH;
 import static com.paytm.digital.education.explore.constants.AWSConstants.S3_RELATIVE_PATH_FOR_AMBASSADOR;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.ATTRIBUTES;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.CAMPUS_AMBASSADORS;
@@ -89,7 +88,12 @@ public class ImportAmbassadorServiceImpl implements ImportDataService {
             }
             for (CampusAmbassador campusAmbassador :
                     campusAmbassadorInstituteMap.get(institute.getInstituteId())) {
-                ambassadorMap.put(campusAmbassador.getPaytmMobileNumber(), campusAmbassador);
+                String mobileNumber = campusAmbassador.getPaytmMobileNumber();
+                CampusAmbassador existingAmbassadorData = ambassadorMap.get(mobileNumber);
+                if (Objects.nonNull(existingAmbassadorData)) {
+                    updateExistingData(existingAmbassadorData, campusAmbassador);
+                }
+                ambassadorMap.put(mobileNumber, campusAmbassador);
                 count++;
             }
             update.set(CAMPUS_AMBASSADORS, ambassadorMap);
@@ -98,6 +102,25 @@ public class ImportAmbassadorServiceImpl implements ImportDataService {
                     Institute.class);
         }
         return count;
+    }
+
+    private void updateExistingData(CampusAmbassador existingAmbassadorData,
+            CampusAmbassador newAmbassadorData) {
+        if (Objects.isNull(newAmbassadorData.getName())) {
+            newAmbassadorData.setName(existingAmbassadorData.getName());
+        }
+        if (Objects.isNull(newAmbassadorData.getCourse())) {
+            newAmbassadorData.setCourse(existingAmbassadorData.getCourse());
+        }
+        if (Objects.isNull(newAmbassadorData.getYearAndBatch())) {
+            newAmbassadorData.setYearAndBatch(existingAmbassadorData.getYearAndBatch());
+        }
+        if (Objects.isNull(newAmbassadorData.getImageUrl())) {
+            newAmbassadorData.setImageUrl(existingAmbassadorData.getImageUrl());
+        }
+        if (Objects.isNull(newAmbassadorData.getLastUpdated())) {
+            newAmbassadorData.setLastUpdated(existingAmbassadorData.getLastUpdated());
+        }
     }
 
     private Map<Long, List<CampusAmbassador>> buildCampusAmbassadorInstituteMap(
@@ -115,15 +138,16 @@ public class ImportAmbassadorServiceImpl implements ImportDataService {
             campusAmbassador.setInstituteId(instituteId);
             if (ambassador.getImage() != null) {
                 campusAmbassador
-                        .setImageUrl(campusEngagementHelper.uploadToS3(ambassador.getImage(), null,
-                                instituteId,
-                                S3_BUCKET_PATH, S3_RELATIVE_PATH_FOR_AMBASSADOR).getKey());
+                        .setImageUrl(campusEngagementHelper.uploadFile(ambassador.getImage(), null,
+                                instituteId, S3_RELATIVE_PATH_FOR_AMBASSADOR).getKey());
             }
             campusAmbassador.setPaytmMobileNumber(ambassador.getPaytmMobileNumber());
             campusAmbassador.setYearAndBatch(ambassador.getYearAndBatch());
             campusAmbassador.setCreatedAt(
                     campusEngagementHelper.convertDateFormat(XCEL_DATE_FORMAT,
                             DB_DATE_FORMAT, ambassador.getTimestamp()));
+            campusAmbassador.setLastUpdated(campusAmbassador.getCreatedAt());
+
             List<CampusAmbassador> instituteCampusAmbassasor =
                     campusAmbassadorsInstituteMap.get(campusAmbassador.getInstituteId());
             if (Objects.isNull(instituteCampusAmbassasor)) {

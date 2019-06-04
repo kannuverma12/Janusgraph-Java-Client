@@ -27,7 +27,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import static com.mongodb.QueryOperators.OR;
-import static com.paytm.digital.education.explore.constants.AWSConstants.S3_BUCKET_PATH;
 import static com.paytm.digital.education.explore.constants.AWSConstants.S3_RELATIVE_PATH_FOR_ARTICLE;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.ARTICLES;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.ARTICLE_DATA_RANGE_TEMPLATE;
@@ -89,9 +88,8 @@ public class ImportArticleServiceImpl implements ImportDataService {
             article.setSubmittedBy(xcelArticle.getSubmittedBy());
             if (Objects.nonNull(xcelArticle.getArticlePdf())) {
                 article.setArticlePdf(
-                        campusEngagementHelper.uploadToS3(xcelArticle.getArticlePdf(), null,
-                                instituteId,
-                                S3_BUCKET_PATH, S3_RELATIVE_PATH_FOR_ARTICLE).getKey());
+                        campusEngagementHelper.uploadFile(xcelArticle.getArticlePdf(), null,
+                                instituteId, S3_RELATIVE_PATH_FOR_ARTICLE).getKey());
             }
             article.setCreatedAt(campusEngagementHelper.convertDateFormat(XCEL_DATE_FORMAT,
                     DB_DATE_FORMAT, xcelArticle.getTimestamp()));

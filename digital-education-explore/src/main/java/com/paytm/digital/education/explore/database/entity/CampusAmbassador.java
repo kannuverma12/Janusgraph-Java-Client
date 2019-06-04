@@ -25,6 +25,9 @@ public class CampusAmbassador {
     @Field("created_at")
     private Date createdAt;
 
+    @Field("last_updated")
+    private Date lastUpdated;
+
     @Field("image_url")
     private String imageUrl;
 

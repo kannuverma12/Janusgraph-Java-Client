@@ -1,19 +1,7 @@
 package com.paytm.digital.education.explore.config;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicSessionCredentials;
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
-import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
-import com.amazonaws.services.securitytoken.model.AssumeRoleRequest;
-import com.amazonaws.services.securitytoken.model.Credentials;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.SdkClientException;
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -33,11 +21,6 @@ public class AwsConfig {
         clientRegion = region;
     }
 
-    @Value("${aws.s3.endpoint}")
-    public void setServiceEndPoint(String endPoint) {
-        serviceEndPoint = endPoint;
-    }
-
     @Value("${aws.s3.bucketpath}")
     public void setS3BucketPath(String bucketPath) {
         s3BucketPath = bucketPath;
@@ -48,72 +31,21 @@ public class AwsConfig {
         relativePathPrefix = prefix;
     }
 
-    @Value("${s3.iam.role}")
-    public void setS3IamRole(String iamRole) {
-        s3IamRole = iamRole;
-    }
-
     @Value("${s3.bucket.name}")
     public void setS3BucketName(String bucketName) {
         s3BucketName = bucketName;
-    }
-
-    @Value("${s3.region.name}")
-    public void setS3RegionName(String regionName) {
-        s3RegionName = regionName;
-    }
-
-    public static String getS3path() {
-        return s3BucketPath;
     }
 
     public static String getRelativePathPrefix() {
         return relativePathPrefix;
     }
 
-    public static AmazonS3 func() {
-        try {
-            AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
-                    .withCredentials(new ProfileCredentialsProvider())
-                    .disableChunkedEncoding()
-                    .withEndpointConfiguration(
-                            new AwsClientBuilder.EndpointConfiguration(serviceEndPoint,
-                                    clientRegion))
-                    .build();
-            return s3Client;
-        } catch (AmazonServiceException e) {
-            // The call was transmitted successfully, but Amazon S3 couldn't process
-            // it, so it returned an error response.
-            log.error("Error In AWS.func() with AmazonServiceException ", e);
-        } catch (SdkClientException e) {
-            // Amazon S3 couldn't be contacted for a response, or the client
-            // couldn't parse the response from Amazon S3.
-            log.error("Error In AWS.func() with SdkClientException ", e);
-        }
-        return null;
+    public static String getS3BucketPath() {
+        return s3BucketPath;
     }
 
-    public static AmazonS3 getS3Client() {
-
-        final AssumeRoleRequest assumeRole =
-                new AssumeRoleRequest()
-                        .withRoleArn(s3IamRole)
-                        .withRoleSessionName("digital-education");
-
-        final AWSSecurityTokenService sts =
-                AWSSecurityTokenServiceClientBuilder.standard().withRegion(s3RegionName).build();
-
-        final Credentials credentials = sts.assumeRole(assumeRole).getCredentials();
-
-        final BasicSessionCredentials sessionCredentials =
-                new BasicSessionCredentials(
-                        credentials.getAccessKeyId(),
-                        credentials.getSecretAccessKey(),
-                        credentials.getSessionToken());
-
-        return AmazonS3ClientBuilder.standard()
-                .withRegion(s3RegionName)
-                .withCredentials(new AWSStaticCredentialsProvider(sessionCredentials))
-                .build();
+    public static String getClientRegion() {
+        return clientRegion;
     }
+
 }

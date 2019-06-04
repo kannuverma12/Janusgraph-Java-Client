@@ -27,7 +27,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import static com.mongodb.QueryOperators.OR;
-import static com.paytm.digital.education.explore.constants.AWSConstants.S3_BUCKET_PATH;
 import static com.paytm.digital.education.explore.constants.AWSConstants.S3_RELATIVE_PATH_FOR_EVENT;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.ATTRIBUTES;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.DB_DATE_FORMAT;
@@ -120,8 +119,7 @@ public class ImportEventServiceImpl implements ImportDataService {
         List<String> videoUrlList = new ArrayList<>();
         for (String url : googleMediaUrl) {
             Pair<String, String> mediaInfo =
-                    campusEngagementHelper.uploadToS3(url, null, instituteId,
-                            S3_BUCKET_PATH, S3_RELATIVE_PATH_FOR_EVENT);
+                    campusEngagementHelper.uploadFile(url, null, instituteId, S3_RELATIVE_PATH_FOR_EVENT);
             if (mediaInfo.getValue().startsWith(IMAGE)) {
                 imageUrlList.add(mediaInfo.getKey());
             } else {

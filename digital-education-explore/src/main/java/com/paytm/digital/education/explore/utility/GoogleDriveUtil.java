@@ -5,7 +5,6 @@ import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInsta
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -19,10 +18,7 @@ import com.google.api.services.sheets.v4.model.ValueRange;
 import com.paytm.digital.education.explore.config.GoogleConfig;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.ResourceUtils;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.FileInputStream;
@@ -64,11 +60,6 @@ public class GoogleDriveUtil {
 
     private Credential getCredentials(final NetHttpTransport httpTransport) throws
             IOException {
-
-        //java.io.File file = ResourceUtils.getFile("classpath:credentials/client_secret.json");
-
-        //java.io.File file = resource.getFile();
-        //InputStream in = new FileInputStream(file);
         java.io.File clientSecretFilePath =
                 new java.io.File(CREDENTIALS_FOLDER, CLIENT_SECRET_FILE_NAME);
 

@@ -7,9 +7,9 @@ import com.paytm.digital.education.explore.database.repository.CommonMongoReposi
 import com.paytm.digital.education.explore.response.dto.detail.Ambassador;
 import com.paytm.digital.education.explore.response.dto.detail.CampusArticle;
 import com.paytm.digital.education.explore.response.dto.detail.CampusEventDetail;
+import com.paytm.digital.education.explore.service.S3Service;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.explore.utility.GoogleDriveUtil;
-import com.paytm.digital.education.explore.utility.S3Util;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import javafx.util.Pair;
 import lombok.AllArgsConstructor;
@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.text.DateFormat;
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.ATTRIBUTES;
@@ -53,6 +53,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EXP
 public class CampusEngagementHelper {
     private CommonMongoRepository commonMongoRepository;
     private PropertyReader        propertyReader;
+    private S3Service             s3Service;
 
     public void updatePropertyMap(String key, Object value) {
         Map<String, Object> queryObject = new HashMap<>();
@@ -80,7 +81,8 @@ public class CampusEngagementHelper {
             Ambassador ambassador = new Ambassador();
             BeanUtils.copyProperties(campusAmbassador, ambassador);
             if (Objects.nonNull(campusAmbassador.getImageUrl())) {
-                ambassador.setImageUrl(CommonUtil.getAbsoluteUrl(campusAmbassador.getImageUrl(), MEDIA));
+                ambassador.setImageUrl(
+                        CommonUtil.getAbsoluteUrl(campusAmbassador.getImageUrl(), MEDIA));
             }
             responseAmbassadorList.add(ambassador);
         }
@@ -121,20 +123,21 @@ public class CampusEngagementHelper {
     /*
      ** Upload to S3
      */
-    public Pair<String, String> uploadToS3(String fileUrl, String fileName, Long instituteId,
-            String s3bucketPath, String s3ImagePath) throws IOException,
+    public Pair<String, String> uploadFile(String fileUrl, String fileName, Long instituteId,
+            String s3ImagePath) throws IOException,
             GeneralSecurityException {
         InputStream inputStream = null;
         String mimeType = null;
         if (fileUrl.startsWith(GOOGLE_DRIVE_BASE_URL)) {
-            Map<String, Object> fileData = GoogleDriveUtil.downloadFile( fileUrl);
+            Map<String, Object> fileData = GoogleDriveUtil.downloadFile(fileUrl);
             inputStream = (InputStream) fileData.get(INPUTSTREAM);
             fileName = (String) fileData.get(FILENAME);
             mimeType = (String) fileData.get(MIMETYPE);
         }
+        String relativePath = MessageFormat.format(s3ImagePath, instituteId);
         String imageUrl =
-                S3Util.uploadFile(fileUrl, inputStream, fileName, s3bucketPath, instituteId,
-                        s3ImagePath);
+                s3Service.uploadFile(inputStream, fileName, instituteId,
+                        relativePath);
         return new Pair<>(imageUrl, mimeType);
     }
 
@@ -146,10 +149,11 @@ public class CampusEngagementHelper {
         return mediaList;
     }
 
-    public Date convertDateFormat(String currentPattern, String newPattern, String dateString) throws
+    public Date convertDateFormat(String currentPattern, String newPattern, String dateString)
+            throws
             ParseException {
         DateFormat formatter = new SimpleDateFormat(currentPattern);
-        Date date = (Date)formatter.parse(dateString);
+        Date date = (Date) formatter.parse(dateString);
         SimpleDateFormat newFormat = new SimpleDateFormat(newPattern);
         String finalString = newFormat.format(date);
         return newFormat.parse(finalString);
