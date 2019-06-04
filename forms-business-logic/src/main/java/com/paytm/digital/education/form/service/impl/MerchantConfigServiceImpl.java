@@ -113,12 +113,21 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
 
             FormData formData = mongoOperations.findOne(query, FormData.class);
 
-            if (formData.getMerchantCandidateId() != null) {
-                responseData.put("registration_id", formData.getMerchantCandidateId());
+            String registrationLabel = (String) data.get("registration_label");
+
+            if (registrationLabel != null) {
+                responseData.put("registration_label", registrationLabel);
+                registrationLabel += " "; // adding space for appending registration id
+            } else {
+                registrationLabel = "";
+            }
+
+            if (formData != null && formData.getMerchantCandidateId() != null) {
+                responseData.put("registration_id", registrationLabel + formData.getMerchantCandidateId());
             }
         }
 
-        if (data.get("fill_form_id") != null) {
+        if (data.containsKey("fill_form_id")) {
             responseData.put("fill_form_id", data.get("fill_form_id"));
         }
 
