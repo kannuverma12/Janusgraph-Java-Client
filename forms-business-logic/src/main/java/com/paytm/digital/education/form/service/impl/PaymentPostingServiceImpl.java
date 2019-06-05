@@ -340,6 +340,7 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
 
         postRequest.setEntity(new StringEntity(JsonUtils.toJson(formIoMerchantRequest)));
 
+        //log.info("Merchant API Request for refId {} : {}", refId, JsonUtils.toJson(postRequest));
         // execute post call
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpResponse response = httpClient.execute(postRequest);

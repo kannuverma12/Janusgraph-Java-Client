@@ -116,6 +116,9 @@ public class SaveAndFetchServiceImpl implements SaveAndFetchService {
             id = mongoOperations.save(formData).getId();
         } else {
             FormStatus status = data.getStatus();
+            if (Objects.isNull(status)) {
+                status = FormStatus.PARTIAL;
+            }
 
             switch (status) {
                 case SUCCESS:
@@ -325,7 +328,9 @@ public class SaveAndFetchServiceImpl implements SaveAndFetchService {
         dbData.setCandidateDetails(externalData.getCandidateDetails());
         dbData.setAdditionalData(externalData.getAdditionalData());
         dbData.setUpdatedAt(new Date());
-        dbData.setStatus(status);
+        if (Objects.nonNull(status)) {
+            dbData.setStatus(status);
+        }
         if (externalData.getTransactionType() != null) {
             dbData.setTransactionType(externalData.getTransactionType());
         }
