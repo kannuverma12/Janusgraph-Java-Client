@@ -69,8 +69,11 @@ public class SaveAndFetchServiceImpl implements SaveAndFetchService {
                 case PENDING:
                 case FAILURE:
                 case PG_PAYMENT_DONE:
-                    log.error("Form status of DB and external request is not consistent.");
-                    return null;
+                    formData.setId(null);
+                    formData.setCreatedAt(new Date());
+                    formData.setUpdatedAt(new Date());
+                    formData.setStatus(FormStatus.REGISTERED);
+                    return mongoOperations.save(formData).getId();
                 case REGISTERED:
                 case PAYMENT_PENDING:
                     id = validateAndUpdateFormData(data, formData, FormStatus.PARTIAL);
