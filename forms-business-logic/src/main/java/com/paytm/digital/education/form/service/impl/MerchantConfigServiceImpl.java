@@ -1,13 +1,22 @@
 package com.paytm.digital.education.form.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.paytm.digital.education.form.model.Component;
 import com.paytm.digital.education.form.model.FormData;
 import com.paytm.digital.education.form.model.MerchantConfiguration;
+import com.paytm.digital.education.form.model.PostOrderExtraKeys;
 import com.paytm.digital.education.form.response.PostOrderScreenConfigResponse;
 import com.paytm.digital.education.form.service.MerchantConfigService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -18,10 +27,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -52,7 +63,6 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
 
         MerchantConfiguration foundMerchantConfiguration = mongoOperations.findOne(query, MerchantConfiguration.class);
 
-        // todo: use mongo level upsert, rather than get and update, not thread safe
         if (foundMerchantConfiguration == null) {
             merchantConfiguration.setUpdatedDate(new Date());
             merchantConfiguration.setCreatedDate(new Date());
@@ -107,23 +117,42 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
 
         Map<String, Object> responseData = new HashMap<>();
 
-        if (orderId != null) {
-            Query query = new Query(Criteria.where("formFulfilment.orderId").is(orderId));
-            query.fields().include("merchantCandidateId");
+        Map<String, Object> formRequest = (Map<String, Object>) data.get("formRequest");
+        String responseString = null;
 
-            FormData formData = mongoOperations.findOne(query, FormData.class);
+        if (formRequest != null) {
+            responseString = formHttpCall(formRequest, orderId);
+        }
+
+        List<Component> components = null;
+        if (responseString != null) {
+            components = getKeys(responseString);
+        }
+
+        if (components != null) {
+            components.forEach(component -> responseData.put(component.getKey(), component.getDefaultValue()));
 
             String registrationLabel = (String) data.get("registration_label");
 
             if (registrationLabel != null) {
-                responseData.put("registration_label", registrationLabel);
                 registrationLabel += " "; // adding space for appending registration id
+                responseData.put("registration_label", registrationLabel.trim());
             } else {
                 registrationLabel = "";
             }
 
-            if (formData != null && formData.getMerchantCandidateId() != null) {
-                responseData.put("registration_id", registrationLabel + formData.getMerchantCandidateId());
+            if (responseData.containsKey("registration_id")) {
+                String registrationId = (String) responseData.get("registration_id");
+                responseData.put("registration_id", registrationLabel + registrationId);
+
+                if (orderId != null) {
+                    Query query = new Query(Criteria.where("formFulfilment.orderId").is(orderId));
+                    Update update = new Update();
+
+                    update.set("merchantCandidateId", registrationId);
+                    mongoOperations.updateFirst(query, update, FormData.class);
+                }
+
             }
         }
 
@@ -152,6 +181,52 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
         return new ResponseEntity<>(postOrderScreenConfigResponse, HttpStatus.OK);
     }
 
+    private String formHttpCall(Map<String, Object> data, Long orderId) {
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+            HttpPost httpPost = new HttpPost((String) data.get("form_url"));
+
+            if (orderId != null) {
+                Query query = new Query(Criteria.where("formFulfilment.orderId").is(orderId));
+                query.fields().include("customerId");
+
+                FormData formData = mongoOperations.findOne(query, FormData.class);
+                if (formData != null) {
+                    String customerId = formData.getCustomerId();
+
+                    if (customerId != null) {
+                        httpPost.setHeader("x-user-id", customerId);
+                    }
+                }
+            }
+
+            String json = "{\"data\":{\"submit\":true}}";
+            StringEntity entity = new StringEntity(json);
+            httpPost.setEntity(entity);
+
+            for (String key : data.keySet()) {
+                if (!"form_url".equals(key)) {
+                    httpPost.setHeader(key, (String) data.get(key));
+                }
+            }
+
+            try (CloseableHttpResponse response = client.execute(httpPost)) {
+                HttpEntity httpEntity = response.getEntity();
+                String responseString = EntityUtils.toString(httpEntity, "UTF-8");
+                if (response.getStatusLine().getStatusCode() == 200) {
+                    return responseString;
+                } else {
+                    log.error("Status: {}", response.getStatusLine().getStatusCode());
+                    log.error("Headers: {}", response.getAllHeaders());
+                    log.error("Body: {}", responseString);
+                    return null;
+                }
+            }
+
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     private Map<String, Object> getScreenConfigByOrderId(Long orderId) {
         Map<String, Object> data = null;
         Query query = new Query();
@@ -176,6 +251,18 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
         if (merchantConfiguration != null) {
             return merchantConfiguration.getPostOrderScreenConfig();
         } else {
+            return null;
+        }
+    }
+
+    private List<Component> getKeys(String responseString) {
+        try {
+            PostOrderExtraKeys postOrderExtraKeys =
+                    objectMapper.readValue(responseString, PostOrderExtraKeys.class);
+
+            return postOrderExtraKeys.getNextForm().getComponents();
+        } catch (IOException e) {
+            log.error("Error in parsing : {}", e.getStackTrace());
             return null;
         }
     }

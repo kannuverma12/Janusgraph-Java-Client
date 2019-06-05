@@ -2,7 +2,6 @@ package com.paytm.digital.education.form.controller;
 
 import com.paytm.digital.education.form.service.MerchantConfigService;
 import com.paytm.digital.education.form.model.MerchantConfiguration;
-import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -71,6 +70,7 @@ public class ConfigurationController {
         }
 
         return merchantConfigService.getResponseForPostOrderScreenConfig(data, orderId, merchantId);
+
     }
 
 }
