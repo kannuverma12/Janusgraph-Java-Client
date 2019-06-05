@@ -1,6 +1,7 @@
 package com.paytm.digital.education.form.service.impl;
 
 import com.paytm.digital.education.form.model.FormData;
+import com.paytm.digital.education.form.model.MerchantConfiguration;
 import com.paytm.digital.education.form.service.DownloadService;
 import com.paytm.digital.education.service.TemplateService;
 import com.paytm.digital.education.serviceimpl.FreeMarkerTemplateService;
@@ -46,6 +47,22 @@ public class DownloadServiceImpl implements DownloadService {
 
     @Override
     public byte[] getPdfByteArray(FormData model, String type) {
+        String merchantId = model.getMerchantId();
+
+        if (merchantId != null) {
+            Query query = new Query(Criteria.where("_id").is(merchantId));
+            query.fields().include("data");
+
+            MerchantConfiguration merchantConfiguration = mongoOperations.findOne(query, MerchantConfiguration.class);
+
+            if (merchantConfiguration != null) {
+                Map<String, Object> data = merchantConfiguration.getData();
+                if (data != null && data.containsKey("merchantName")) {
+                    model.setMerchantName((String) data.get("merchantName"));
+                }
+            }
+        }
+
         URI baseUri = FileUtility.getResourcePath(getTemplatePath(type));
         String html = freeMarkerTemplateService.renderTemplate(getTemplatePath(type), model);
         return OpenHtmlToPdfUtility.htmlToPdf(html, baseUri);

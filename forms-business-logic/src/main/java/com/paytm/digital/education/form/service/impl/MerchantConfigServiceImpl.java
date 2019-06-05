@@ -146,7 +146,7 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
         PostOrderScreenConfigResponse postOrderScreenConfigResponse
                 = new PostOrderScreenConfigResponse(200, responseData);
 
-        log.debug("Response to be sent for order id = {} and merchant id = {} is -> {}",
+        log.info("Response to be sent for order id = {} and merchant id = {} is -> {}",
                 orderId, merchantId, postOrderScreenConfigResponse);
 
         return new ResponseEntity<>(postOrderScreenConfigResponse, HttpStatus.OK);

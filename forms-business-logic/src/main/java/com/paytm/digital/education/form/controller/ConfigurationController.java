@@ -2,6 +2,7 @@ package com.paytm.digital.education.form.controller;
 
 import com.paytm.digital.education.form.service.MerchantConfigService;
 import com.paytm.digital.education.form.model.MerchantConfiguration;
+import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -57,6 +58,7 @@ public class ConfigurationController {
             @RequestParam(value = "merchant_id", required = false) String merchantId,
             @RequestParam(value = "order_id") Long orderId
     ) {
+        log.info("Post Order Screen Config merchant id : {}, order id : {}", merchantId, orderId);
         Map<String, Object> data = merchantConfigService.getPostScreenData(merchantId, orderId);
 
         if (data == null) {
