@@ -65,4 +65,8 @@ public class CollegePredictor {
     @JsonProperty("paytm_price")
     private Integer paytmPrice;
 
+    @Field("pid")
+    @JsonProperty("pid")
+    private Long pid;
+
 }

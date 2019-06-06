@@ -37,8 +37,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -115,13 +117,18 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
     @Override
     public List<CollegePredictor> getPredictorList() {
         List<CollegePredictor> predictorList = predictorListRepository.findAll();
-        MerchantProductConfig merchantProductConfig = merchantProductConfigService
-                .getConfig(paytmMid, paytmPid, new ArrayList<>());
-        Map<Long, Integer> pidPriceMap = getPidPriceMap(merchantProductConfig);
+
+        Set<String> pids = predictorList.stream().filter(p -> Objects.nonNull(p.getPid()))
+                .map(p -> String.valueOf(p.getPid())).collect(Collectors.toSet());
+
+        List<MerchantProductConfig> mpcList = merchantProductConfigService.getAllConfigs(paytmMid,
+                pids, new ArrayList<>());
+
+        Map<Long, Integer> pidPriceMap = getPidPriceMap(mpcList);
         if (Objects.nonNull(pidPriceMap)) {
             for (CollegePredictor cp : predictorList) {
-                if (pidPriceMap.containsKey(cp.getId())) {
-                    cp.setPaytmPrice(pidPriceMap.get(cp.getId()));
+                if (pidPriceMap.containsKey(cp.getPid())) {
+                    cp.setPaytmPrice(pidPriceMap.get(cp.getPid()));
                 }
             }
         }
@@ -147,6 +154,27 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
                 }
             }
         }
+        if (!CollectionUtils.isEmpty(pidPriceMap)) {
+            return pidPriceMap;
+        }
+        return null;
+    }
+
+    private Map<Long, Integer> getPidPriceMap(List<MerchantProductConfig> mpcList) {
+        Map<Long, Integer> pidPriceMap = new HashMap<>();
+
+        if (Objects.nonNull(mpcList)) {
+            for (MerchantProductConfig mpc : mpcList) {
+                if (Objects.nonNull(mpc.getData())) {
+                    Map<String, Object> data = mpc.getData();
+                    if (data.containsKey(PAY_AMOUNT)) {
+                        Double payAmount = (Double) data.get(PAY_AMOUNT);
+                        pidPriceMap.put(Long.valueOf(mpc.getProductId()), payAmount.intValue());
+                    }
+                }
+            }
+        }
+
         if (!CollectionUtils.isEmpty(pidPriceMap)) {
             return pidPriceMap;
         }
