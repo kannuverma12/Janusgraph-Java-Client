@@ -23,7 +23,7 @@ public class CollegePredictor {
 
     @Field("id")
     @JsonProperty("id")
-    private Long id;
+    private Long merchantSku;
 
     @Field("status")
     @JsonProperty("status")
