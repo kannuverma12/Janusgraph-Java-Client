@@ -20,4 +20,7 @@ public class CourseInstituteDetail {
 
     @JsonProperty("is_client")
     private Boolean isClient;
+
+    @JsonProperty("interested")
+    private Boolean interested;
 }
