@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -67,5 +67,16 @@ public class MerchantProductConfigServiceImpl implements MerchantProductConfigSe
         mongoOperations.save(foundMerchantConfig);
 
         return true;
+    }
+
+    @Override
+    public List<MerchantProductConfig> getAllConfigs(String merchantId, Set<String> pids,
+            List<String> keys) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").in(pids));
+        query.addCriteria(Criteria.where("merchantId").is(merchantId));
+        keys.forEach(key -> query.fields().include(key));
+
+        return mongoOperations.find(query, MerchantProductConfig.class);
     }
 }
