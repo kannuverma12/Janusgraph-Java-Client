@@ -114,6 +114,10 @@ public class CommonMongoRepository {
         mongoOperation.save(obj);
     }
 
+    public void saveMultipleObject(List<Object> objects) {
+        mongoOperation.insertAll(objects);
+    }
+
     public void updateFirst(Map<String, Object> searchRequest, List<String> fields, Update update,
             Class<?> type) {
         mongoOperation.updateFirst(createMongoQuery(searchRequest, fields), update, type);

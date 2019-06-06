@@ -18,7 +18,6 @@ import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.detail.CourseDetail;
 import com.paytm.digital.education.explore.response.dto.detail.CourseFee;
 import com.paytm.digital.education.explore.response.dto.detail.CourseInstituteDetail;
@@ -36,8 +35,9 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.Arrays;
 
 @Slf4j
 @AllArgsConstructor
@@ -171,10 +171,10 @@ public class CourseDetailServiceImpl {
 
     private void updateInterested(CourseDetail courseDetail, Long userId) {
         List<Long> leadEntities = leadDetailHelper
-                .getInterestedLeadByEntity(EducationEntity.COURSE, userId,
-                        courseDetail.getCourseId());
+                .getInterestedLeadEntitiesForInstitutes(userId,
+                        Arrays.asList(courseDetail.getInstituteId()));
         if (!CollectionUtils.isEmpty(leadEntities)) {
-            courseDetail.setInterested(true);
+            courseDetail.getInstitute().setInterested(true);
         }
     }
 

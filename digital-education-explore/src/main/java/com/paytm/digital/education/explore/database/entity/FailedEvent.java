@@ -1,13 +1,17 @@
 package com.paytm.digital.education.explore.database.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Date;
 import java.util.List;
 
 @Data
-public class CampusEvent {
+@Document(collection = "failed_event")
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class FailedEvent {
     @Field("event_type")
     private String eventType;
 
@@ -23,8 +27,14 @@ public class CampusEvent {
     @Field("institute_id")
     private Long instituteId;
 
-    @Field("created_at")
-    private Date createdAt;
+    @Field("timestamp")
+    private Date timestamp;
+
+    @Field("failed_date")
+    private Date failedDate;
+
+    @Field("failed_media")
+    private List<String> failedMedia;
 
     @Field("images")
     private List<String> images;
@@ -32,5 +42,9 @@ public class CampusEvent {
     @Field("videos")
     private List<String> videos;
 
-    private List<String> failedMedia;
+    @Field("has_imported")
+    private Boolean hasImported = false;
+
+    @Field("reason")
+    private String reason;
 }

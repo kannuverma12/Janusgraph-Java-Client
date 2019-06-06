@@ -26,6 +26,7 @@ public interface CampusEngagementConstants {
     String INPUTSTREAM                           = "input_stream";
     String IMAGE                                 = "image";
     String VIDEO                                 = "video";
+    String FAILED_MEDIA                          = "failed";
     String EVENTS                                = "events";
     String ARTICLES                              = "articles";
     String MEDIA                                 = "media";
@@ -35,5 +36,9 @@ public interface CampusEngagementConstants {
     String OFFLINE                               = "offline";
     String XCEL_DATE_FORMAT                      = "MM/dd/yyyy HH:mm:ss";
     String DB_DATE_FORMAT                        = "yyyy-MM-dd HH:mm:ss";
-    String XCEL_SUBMITTED_DATE_FORMAT                 = "yyyy-MM-dd";
+    String XCEL_SUBMITTED_DATE_FORMAT            = "yyyy-MM-dd";
+    String FILE_DOWNLOAD_UPLOAD_FAILURE          = "Unable to upload or download media or doc "
+            + "files";
+    String INVALID_INSTITUTE_IDS                 =
+            "Unable to import data due to invalid institute ids";
 }
