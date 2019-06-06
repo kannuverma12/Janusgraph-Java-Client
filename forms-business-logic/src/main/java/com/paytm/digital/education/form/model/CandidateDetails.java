@@ -194,4 +194,8 @@ public class CandidateDetails {
     @JsonProperty("responseData")
     private List<Map<String, Object>> responseData;
 
+    @Field("predictorName")
+    private String predictorName;
+
+    private String maskEmail;
 }

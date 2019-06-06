@@ -50,7 +50,7 @@ public enum ErrorEnum {
             "Bad request. Some mandatory params are missing", HttpStatus.BAD_REQUEST, 0),
     UNAUTHORIZED_REQUEST(9004, "Unauthorized request.", HttpStatus.UNAUTHORIZED, 0),
     PAYMENT_CONFIGURATION_NOT_FOUND(9005,
-            "Payment configuration doesn't exists for, productId : %s and merchantId : %s",
+            "Payment configuration doesn't exists for, merchantId : %s and merchantSku : %s",
             HttpStatus.INTERNAL_SERVER_ERROR, 2);
 
     private final int        internalCode;

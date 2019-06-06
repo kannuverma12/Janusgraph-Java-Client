@@ -1,8 +1,10 @@
 package com.paytm.digital.education.form.service.impl;
 
+import static com.paytm.digital.education.form.constants.FblConstants.DATA_MERCHANT_SKU;
 import static com.paytm.digital.education.form.constants.FblConstants.ERROR;
-import static com.paytm.digital.education.form.constants.FblConstants.PAYMENT;
 import static com.paytm.digital.education.form.constants.FblConstants.PAYMENT_AMOUNT;
+import static com.paytm.digital.education.form.constants.FblConstants.PAYTM_PRODUCT_ID;
+import static com.paytm.digital.education.form.constants.FblConstants.PAYTM_PRODUCT_NAME;
 import static com.paytm.digital.education.form.constants.FblConstants.PRODUCT_ID;
 import static com.paytm.digital.education.form.constants.FblConstants.REFERENCE_ID;
 import static com.paytm.digital.education.form.constants.FblConstants.RENDER_FORM2;
@@ -11,7 +13,6 @@ import static com.paytm.digital.education.form.constants.FblConstants.STATUS;
 import static com.paytm.digital.education.form.constants.FblConstants.STATUS_CODE;
 import static com.paytm.digital.education.form.constants.FblConstants.SUCCESS_STRING;
 import static com.paytm.digital.education.form.constants.FblConstants.UNAUTHORIZED;
-import static com.paytm.digital.education.form.constants.FblConstants.PAY_AMOUNT;
 import static com.paytm.digital.education.mapping.ErrorEnum.MISSING_FORM_DATA_PARAMS;
 import static com.paytm.digital.education.mapping.ErrorEnum.PAYMENT_CONFIGURATION_NOT_FOUND;
 import static com.paytm.digital.education.mapping.ErrorEnum.UNAUTHORIZED_REQUEST;
@@ -23,6 +24,7 @@ import com.paytm.digital.education.form.model.MerchantProductConfig;
 import com.paytm.digital.education.form.repository.FormDataRepository;
 import com.paytm.digital.education.form.model.CollegePredictor;
 import com.paytm.digital.education.form.repository.PredictorListRepository;
+import com.paytm.digital.education.form.response.PredictorListResponse;
 import com.paytm.digital.education.form.service.CollegePredictorService;
 import com.paytm.digital.education.form.service.MerchantProductConfigService;
 import lombok.extern.slf4j.Slf4j;
@@ -89,33 +91,61 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
                             .addAll(formData.getCandidateDetails().getResponseData());
                 }
                 dbFormData.setUpdatedAt(new Date());
-                dbFormData = formDataRepository.save(dbFormData);
             }
         } else {
             formData.setId(null);
             formData.setCreatedAt(new Date());
             formData.setUpdatedAt(new Date());
-            if (!CollectionUtils.isEmpty(formData.getCandidateDetails().getResponseData())) {
-                Map<String, Object> merchantResponse =
-                        formData.getCandidateDetails().getResponseData().get(0);
-                formData.setMerchantCandidateId(merchantResponse.get(RN_TOKEN).toString());
-            }
-            String merchantProductId = String.valueOf(
-                    formData.getCandidateDetails().getRequestData().get(0).get(PRODUCT_ID));
-            formData.setMerchantProductId(merchantProductId);
-            dbFormData = formDataRepository.save(formData);
+            dbFormData = formData;
         }
-        if (Objects.nonNull(dbFormData) && StringUtils.isNotBlank(dbFormData.getId())) {
+        updateOtherDetails(formData, responseDataMap);
+
+        dbFormData = formDataRepository.save(dbFormData);
+        if (StringUtils.isNotBlank(dbFormData.getId())) {
             responseDataMap.put(REFERENCE_ID, dbFormData.getId());
             processResponseData(dbFormData, responseDataMap);
         }
         return responseDataMap;
     }
 
-    @Override
-    public List<CollegePredictor> getPredictorList() {
-        List<CollegePredictor> predictorList = predictorListRepository.findAll();
+    private void updateOtherDetails(FormData formData, Map<String, Object> responseDataMap) {
+        Map<String, Object> merchantResponse =
+                formData.getCandidateDetails().getResponseData().get(0);
+        String merchantProductId = String.valueOf(
+                formData.getCandidateDetails().getRequestData().get(0).get(PRODUCT_ID));
+        formData.setMerchantCandidateId(merchantResponse.get(RN_TOKEN).toString());
+        formData.setMerchantProductId(merchantProductId);
 
+        Boolean renderForm2 = (boolean) merchantResponse.get(RENDER_FORM2);
+        if (Objects.isNull(renderForm2) || renderForm2 == false) {
+            MerchantProductConfig merchantProductConfig = merchantProductConfigService
+                    .getConfigByMerchantIdAndKey(formData.getMerchantId(), DATA_MERCHANT_SKU,
+                            merchantProductId, new ArrayList<>());
+            Float amountToPay = getProductPrice(formData, merchantProductConfig);
+            formData.getCandidateDetails().setAmount(amountToPay);
+            formData.getCandidateDetails().setPredictorName(
+                    merchantProductConfig.getData().get(PAYTM_PRODUCT_NAME).toString());
+            responseDataMap.put(PAYMENT_AMOUNT, amountToPay);
+            responseDataMap.put(PAYTM_PRODUCT_ID, merchantProductConfig.getProductId());
+            updateMaskedData(formData);
+        }
+    }
+
+    private void updateMaskedData(FormData formData) {
+        StringBuilder emailId = new StringBuilder(formData.getCandidateDetails().getEmail());
+        if (StringUtils.isNotBlank(emailId)) {
+            String emailUserId = emailId.substring(0, emailId.indexOf("@"));
+            int startLen = emailUserId.length() * 30 / 100;
+            for (int i = startLen; i < emailUserId.length(); i++) {
+                emailId.setCharAt(i, 'X');
+            }
+            formData.getCandidateDetails().setMaskEmail(emailId.toString());
+        }
+    }
+
+    @Override
+    public PredictorListResponse getPredictorList() {
+        List<CollegePredictor> predictorList = predictorListRepository.findAll();
         Set<String> pids = predictorList.stream().filter(p -> Objects.nonNull(p.getPid()))
                 .map(p -> String.valueOf(p.getPid())).collect(Collectors.toSet());
 
@@ -131,7 +161,7 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
             }
         }
         if (!CollectionUtils.isEmpty(predictorList)) {
-            return predictorList;
+            return new PredictorListResponse(200, predictorList);
         }
         return null;
     }
@@ -143,8 +173,8 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
             for (MerchantProductConfig mpc : mpcList) {
                 if (Objects.nonNull(mpc.getData())) {
                     Map<String, Object> data = mpc.getData();
-                    if (data.containsKey(PAY_AMOUNT)) {
-                        Double payAmount = (Double) data.get(PAY_AMOUNT);
+                    if (data.containsKey(PAYMENT_AMOUNT)) {
+                        Double payAmount = (Double) data.get(PAYMENT_AMOUNT);
                         pidPriceMap.put(Long.valueOf(mpc.getProductId()), payAmount.intValue());
                     }
                 }
@@ -173,61 +203,26 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
                         merchantResponseData.get(ERROR).toString());
             }
 
-            boolean renderForm2 = (boolean) merchantResponseData.get(RENDER_FORM2);
-            if (renderForm2 == false) {
-                updatePaymentStatus(formData, responseDataMap);
-            }
-
-
-            if (Objects.nonNull(formData.getFormFulfilment()) && Objects
-                    .nonNull(formData.getFormFulfilment().getProductId())) {
-                responseDataMap.put(PRODUCT_ID, formData.getFormFulfilment().getProductId());
-            }
             responseDataMap.put(STATUS_CODE, 200);
             responseDataMap.putAll(merchantResponseData);
         }
     }
 
-    private void updatePaymentStatus(FormData formData, Map<String, Object> responseDataMap) {
-        Float amountToPay = getProductPrice(formData);
-        responseDataMap.put(PAYMENT_AMOUNT, amountToPay);
-    }
-
-
-    private Float getProductPrice(FormData formData) {
+    private Float getProductPrice(FormData formData, MerchantProductConfig merchantProductConfig) {
         List<FormData> paymentMadeFormsData = formDataRepository
                 .getFormsDataByPaymentStatus(formData.getCustomerId(), formData.getMerchantId(),
                         formData.getMerchantProductId(), SUCCESS_STRING);
         if (CollectionUtils.isEmpty(paymentMadeFormsData)) {
-            Float amountToPay = getPaymentAmount(formData);
-            if (Objects.isNull(amountToPay)) {
+            if (Objects.isNull(merchantProductConfig) || Objects
+                    .isNull(merchantProductConfig.getData().get(PAYMENT_AMOUNT))) {
                 throw new EducationException(PAYMENT_CONFIGURATION_NOT_FOUND,
                         PAYMENT_CONFIGURATION_NOT_FOUND.getExternalMessage(),
-                        new Object[] {formData.getMerchantId(), formData.getFormFulfilment().getProductId()});
+                        new Object[] {formData.getMerchantId(),
+                                formData.getMerchantProductId()});
             }
-            return amountToPay;
+            return Float.valueOf(merchantProductConfig.getData().get(PAYMENT_AMOUNT).toString());
         }
         return 0f;
-    }
-
-    private Float getPaymentAmount(FormData formData) {
-        String catalogProductId = String.valueOf(formData.getFormFulfilment().getProductId());
-        String merchantId = formData.getMerchantId();
-        MerchantProductConfig merchantProductConfig = merchantProductConfigService
-                .getConfig(merchantId, catalogProductId, new ArrayList<>());
-        if (Objects.nonNull(merchantProductConfig) && Objects
-                .nonNull(merchantProductConfig.getData().get(PAYMENT))) {
-            Map<String, Object> paymentConfig =
-                    (Map<String, Object>) merchantProductConfig.getData().get(PAYMENT);
-            String merchantProductId = formData.getMerchantProductId();
-            Map<String, Object> productPaymentConfig =
-                    (Map<String, Object>) paymentConfig.get(merchantProductId);
-            if (Objects.nonNull(productPaymentConfig) && Objects
-                    .nonNull(productPaymentConfig.get(PAYMENT_AMOUNT))) {
-                return Float.valueOf(productPaymentConfig.get(PAYMENT_AMOUNT).toString());
-            }
-        }
-        return null;
     }
 
     private boolean validateFormDataRequest(FormData formData) {

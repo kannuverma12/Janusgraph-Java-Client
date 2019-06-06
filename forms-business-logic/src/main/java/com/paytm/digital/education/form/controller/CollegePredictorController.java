@@ -2,6 +2,7 @@ package com.paytm.digital.education.form.controller;
 
 import com.paytm.digital.education.form.model.FormData;
 import com.paytm.digital.education.form.model.CollegePredictor;
+import com.paytm.digital.education.form.response.PredictorListResponse;
 import com.paytm.digital.education.form.service.CollegePredictorService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,11 +43,11 @@ public class CollegePredictorController {
 
     @GetMapping("/v1/form/predictor-list")
     public ResponseEntity<Object> getPredictorList() {
-        List<CollegePredictor> collegePredictorList = collegePredictorService.getPredictorList();
-        if (Objects.isNull(collegePredictorList)) {
+        PredictorListResponse predictorResponse = collegePredictorService.getPredictorList();
+        if (Objects.isNull(predictorResponse)) {
             return new ResponseEntity<>("{\"message\": \"" + ERROR + "\"}",
                     HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(collegePredictorList, HttpStatus.OK);
+        return new ResponseEntity<>(predictorResponse, HttpStatus.OK);
     }
 }

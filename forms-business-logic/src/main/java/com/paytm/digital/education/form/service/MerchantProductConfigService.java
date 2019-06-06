@@ -9,6 +9,9 @@ public interface MerchantProductConfigService {
 
     MerchantProductConfig getConfig(String merchantId, String productId, List<String> keys);
 
+    public MerchantProductConfig getConfigByMerchantIdAndKey(String merchantId, String keyPath,
+            String keyVal, List<String> keys);
+
     boolean saveConfig(MerchantProductConfig merchantProductConfig);
 
     List<MerchantProductConfig> getAllConfigs(String paytmMid, Set<String> pids,

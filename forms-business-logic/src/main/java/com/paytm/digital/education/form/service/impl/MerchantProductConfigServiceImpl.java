@@ -36,6 +36,17 @@ public class MerchantProductConfigServiceImpl implements MerchantProductConfigSe
     }
 
     @Override
+    public MerchantProductConfig getConfigByMerchantIdAndKey(String merchantId, String keyPath,
+            String keyVal, List<String> keys) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(keyPath).is(keyVal));
+        query.addCriteria(Criteria.where("merchantId").is(merchantId));
+        keys.forEach(key -> query.fields().include(key));
+
+        return mongoOperations.findOne(query, MerchantProductConfig.class);
+    }
+
+    @Override
     public boolean saveConfig(MerchantProductConfig merchantProductConfig) {
         if (merchantProductConfig.getProductId() == null || merchantProductConfig.getMerchantId() == null) {
             return false;

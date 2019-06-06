@@ -9,10 +9,12 @@ public interface FblConstants {
     String UNAUTHORIZED         = "unauthorized";
     String ERROR                = "error";
     String RENDER_FORM2         = "render_form_2";
-    String PAYMENT_AMOUNT       = "pay_amount";
+    String PAYMENT_AMOUNT       = "payAmount";
     String SUCCESS_STRING       = "success";
     String STATUS_CODE          = "code";
-    String PAYMENT              = "payment";
     String RN_TOKEN             = "rn";
-    String PAY_AMOUNT           = "pay_amount";
+    String PAYTM_PRODUCT_ID     = "productId";
+    String PAYTM_PRODUCT_NAME   = "productName";
+    String DATA_MERCHANT_SKU    = "data.merchantSku";
+
 }
