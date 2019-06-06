@@ -123,6 +123,11 @@ public class CommonMongoRepository {
         mongoOperation.updateFirst(createMongoQuery(searchRequest, fields), update, type);
     }
 
+    public void updateMulti(Map<String, Object> searchRequest, List<String> fields, Update update,
+            Class<?> type) {
+        mongoOperation.updateMulti(createMongoQuery(searchRequest, fields), update, type);
+    }
+
     private <T> T executeQuery(Query mongoQuery, Class<T> type) {
         return mongoOperation.findOne(mongoQuery, type);
     }

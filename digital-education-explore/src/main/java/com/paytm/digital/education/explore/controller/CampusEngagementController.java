@@ -44,4 +44,19 @@ public class CampusEngagementController {
             throws IOException, GeneralSecurityException, ParseException {
         return importEventService.importData();
     }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/v1/re-import/failed-events")
+    public @ResponseBody boolean reimportEvents() {
+        return importEventService.reimportFailedEvents();
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/v1/re-import/failed-articles")
+    public @ResponseBody boolean reimportArticles() {
+        return importArticleService.reimportFailedArticles();
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/v1/re-import/failed-campus-ambassadors")
+    public @ResponseBody boolean reimportAmbassaor() {
+        return importAmbassadorService.reimportFailedAmbassador();
+    }
 }

@@ -30,6 +30,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.mongodb.QueryOperators.AND;
 import static com.mongodb.QueryOperators.OR;
 import static com.paytm.digital.education.explore.constants.AWSConstants.S3_RELATIVE_PATH_FOR_ARTICLE;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.ARTICLES;
@@ -40,6 +41,7 @@ import static com.paytm.digital.education.explore.constants.CampusEngagementCons
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.ATTRIBUTES;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.DB_DATE_FORMAT;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.FILE_DOWNLOAD_UPLOAD_FAILURE;
+import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.HAS_IMPORTED;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.INVALID_INSTITUTE_IDS;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.XCEL_DATE_FORMAT;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.XCEL_SUBMITTED_DATE_FORMAT;
@@ -52,6 +54,9 @@ public class ImportArticleServiceImpl implements ImportDataService {
     private CommonMongoRepository  commonMongoRepository;
     private CampusEngagementHelper campusEngagementHelper;
 
+    /*
+     ** Import the data from the spreadsheet
+     */
     public boolean importData()
             throws IOException, GeneralSecurityException, ParseException {
         Map<String, Object> propertyMap = campusEngagementHelper.getCampusEngagementProperties();
@@ -81,11 +86,37 @@ public class ImportArticleServiceImpl implements ImportDataService {
     }
 
     /*
-     ** Article related methods
+     ** Reimport the failed data
+     */
+    public boolean reimportFailedArticles() {
+        Map<String, Object> searchRequest = new HashMap<>();
+        searchRequest.put(HAS_IMPORTED, false);
+        List<FailedArticle> failedData = commonMongoRepository.findAll(searchRequest,
+                FailedArticle.class, new ArrayList<>(), AND);
+        if (!failedData.isEmpty()) {
+            List<Object> failedDataList = new ArrayList<>();
+            Map<Long, List<Article>> articleInstituteMap =
+                    buildArticleInstituteMapFromFailedData(failedData, failedDataList);
+            addArticle(articleInstituteMap, failedDataList);
+            Update update = new Update();
+            update.set(HAS_IMPORTED, true);
+            Map<String, Object> queryObject = new HashMap<>();
+            queryObject.put(HAS_IMPORTED, false);
+            List<String> projectionFields = Arrays.asList(HAS_IMPORTED);
+            commonMongoRepository.updateMulti(queryObject, projectionFields, update,
+                    FailedArticle.class);
+            if (!failedDataList.isEmpty()) {
+                campusEngagementHelper.saveMultipleFailedData(failedDataList);
+            }
+        }
+        return true;
+    }
+
+    /*
+     ** Build the institute Article Map when input data is from spreadsheet
      */
     private Map<Long, List<Article>> buildArticleInstituteMap(
-            List<Object> xcelArticles, List<Object> failedArticleList) throws IOException,
-            GeneralSecurityException, ParseException {
+            List<Object> xcelArticles, List<Object> failedArticleList) throws ParseException {
         Map<Long, List<Article>> articleInstituteMap = new HashMap<>();
         for (Object object : xcelArticles) {
             ObjectMapper mapper = new ObjectMapper();
@@ -103,18 +134,7 @@ public class ImportArticleServiceImpl implements ImportDataService {
                     campusEngagementHelper.convertDateFormat(XCEL_SUBMITTED_DATE_FORMAT,
                             DB_DATE_FORMAT, xcelArticle.getSubmittedDate()));
             if (Objects.nonNull(xcelArticle.getArticlePdf())) {
-                String pdfUrl = campusEngagementHelper.uploadFile(xcelArticle.getArticlePdf(), null,
-                        instituteId, S3_RELATIVE_PATH_FOR_ARTICLE).getKey();
-                if (Objects.nonNull(pdfUrl)) {
-                    article.setArticlePdf(pdfUrl);
-                } else {
-                    article.setArticlePdf(xcelArticle.getArticlePdf());
-                    FailedArticle failedArticle = new FailedArticle();
-                    BeanUtils.copyProperties(article, failedArticle);
-                    failedArticle.setReason(FILE_DOWNLOAD_UPLOAD_FAILURE);
-                    failedArticle.setTimestamp(article.getCreatedAt());
-                    failedArticle.setFailedDate(new Date());
-                    failedArticleList.add(failedArticle);
+                if (!setDocsFields(article, xcelArticle.getArticlePdf(), failedArticleList)) {
                     continue;
                 }
             }
@@ -129,6 +149,30 @@ public class ImportArticleServiceImpl implements ImportDataService {
         return articleInstituteMap;
     }
 
+    /*
+     ** Set the docs url when successfully uploaded and return true else false
+     */
+    private boolean setDocsFields(Article article, String pdfUrl, List<Object> failedDataList) {
+        String relativeUrl = campusEngagementHelper.uploadFile(pdfUrl, null,
+                article.getInstituteId(), S3_RELATIVE_PATH_FOR_ARTICLE).getKey();
+        if (Objects.nonNull(relativeUrl)) {
+            article.setArticlePdf(relativeUrl);
+            return true;
+        } else {
+            article.setArticlePdf(pdfUrl);
+            FailedArticle failedArticle = new FailedArticle();
+            BeanUtils.copyProperties(article, failedArticle);
+            failedArticle.setReason(FILE_DOWNLOAD_UPLOAD_FAILURE);
+            failedArticle.setTimestamp(article.getCreatedAt());
+            failedArticle.setFailedDate(new Date());
+            failedDataList.add(failedArticle);
+            return false;
+        }
+    }
+
+    /*
+     ** Insert the data into the db
+     */
     private int addArticle(
             Map<Long, List<Article>> articleInstituteMap, List<Object> failedArticleList) {
         Set<Long> instituteIdSet = articleInstituteMap.keySet();
@@ -177,5 +221,30 @@ public class ImportArticleServiceImpl implements ImportDataService {
         b.setTimestamp(a.getCreatedAt());
         b.setFailedDate(new Date());
         return b;
+    }
+
+    /*
+     ** Build the article institute Map when the input is failed article data
+     */
+    private Map<Long, List<Article>> buildArticleInstituteMapFromFailedData(
+            List<FailedArticle> failedArticles, List<Object> failedDataList) {
+        Map<Long, List<Article>> responseArticles = new HashMap<>();
+        for (FailedArticle failedArticle : failedArticles) {
+            Article campusArticle = new Article();
+            BeanUtils.copyProperties(failedArticle, campusArticle);
+            campusArticle.setCreatedAt(failedArticle.getTimestamp());
+            if (Objects.nonNull(failedArticle.getArticlePdf())) {
+                if (!setDocsFields(campusArticle, failedArticle.getArticlePdf(), failedDataList)) {
+                    continue;
+                }
+            }
+            List<Article> articleList = responseArticles.get(failedArticle.getInstituteId());
+            if (Objects.isNull(articleList)) {
+                articleList = new ArrayList<>();
+            }
+            articleList.add(campusArticle);
+            responseArticles.put(failedArticle.getInstituteId(), articleList);
+        }
+        return responseArticles;
     }
 }

@@ -1,6 +1,7 @@
 package com.paytm.digital.education.explore.database.entity;
 
 import lombok.Data;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Date;
@@ -32,5 +33,6 @@ public class CampusEvent {
     @Field("videos")
     private List<String> videos;
 
+    @Transient
     private List<String> failedMedia;
 }
