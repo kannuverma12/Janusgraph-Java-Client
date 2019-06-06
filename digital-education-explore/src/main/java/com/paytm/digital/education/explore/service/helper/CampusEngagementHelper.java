@@ -11,15 +11,15 @@ import com.paytm.digital.education.explore.service.S3Service;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.explore.utility.GoogleDriveUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
+import com.paytm.digital.education.utility.JsonUtils;
 import javafx.util.Pair;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.security.GeneralSecurityException;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.ParseException;
@@ -48,6 +48,7 @@ import static com.paytm.digital.education.explore.constants.CampusEngagementCons
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class CampusEngagementHelper {
@@ -124,21 +125,31 @@ public class CampusEngagementHelper {
      ** Upload to S3
      */
     public Pair<String, String> uploadFile(String fileUrl, String fileName, Long instituteId,
-            String s3ImagePath) throws IOException,
-            GeneralSecurityException {
+            String s3ImagePath) {
         InputStream inputStream = null;
         String mimeType = null;
-        if (fileUrl.startsWith(GOOGLE_DRIVE_BASE_URL)) {
-            Map<String, Object> fileData = GoogleDriveUtil.downloadFile(fileUrl);
-            inputStream = (InputStream) fileData.get(INPUTSTREAM);
-            fileName = (String) fileData.get(FILENAME);
-            mimeType = (String) fileData.get(MIMETYPE);
+        try {
+            if (fileUrl.startsWith(GOOGLE_DRIVE_BASE_URL)) {
+                Map<String, Object> fileData = GoogleDriveUtil.downloadFile(fileUrl);
+                inputStream = (InputStream) fileData.get(INPUTSTREAM);
+                fileName = (String) fileData.get(FILENAME);
+                mimeType = (String) fileData.get(MIMETYPE);
+            }
+        } catch (Exception e) {
+            log.info("Unable to download file from google drive url : {} and the error is :",
+                    fileUrl, JsonUtils.toJson(e.getMessage()));
         }
         String relativePath = MessageFormat.format(s3ImagePath, instituteId);
-        String imageUrl =
-                s3Service.uploadFile(inputStream, fileName, instituteId,
-                        relativePath);
-        return new Pair<>(imageUrl, mimeType);
+        try {
+            String imageUrl =
+                    s3Service.uploadFile(inputStream, fileName, instituteId,
+                            relativePath);
+            return new Pair<>(imageUrl, mimeType);
+        } catch (Exception e) {
+            log.info("Unable to upload file for file : {} and the error is {}",
+                    fileUrl, JsonUtils.toJson(e.getMessage()));
+        }
+        return new Pair<>(null, null);
     }
 
     private List<String> getAbsoluteUrlForAllTheMedia(List<String> mediaUrls) {
@@ -153,9 +164,15 @@ public class CampusEngagementHelper {
             throws
             ParseException {
         DateFormat formatter = new SimpleDateFormat(currentPattern);
-        Date date = (Date) formatter.parse(dateString);
+        Date date = formatter.parse(dateString);
         SimpleDateFormat newFormat = new SimpleDateFormat(newPattern);
         String finalString = newFormat.format(date);
         return newFormat.parse(finalString);
+    }
+
+    public void saveMultipleFailedData(List<Object> failedDataList) {
+        if (!failedDataList.isEmpty()) {
+            commonMongoRepository.saveMultipleObject(failedDataList);
+        }
     }
 }
