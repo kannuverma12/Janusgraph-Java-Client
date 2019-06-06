@@ -46,9 +46,6 @@ import java.util.stream.Collectors;
 @Service
 public class CollegePredictorServiceImpl implements CollegePredictorService {
 
-    @Value("${catalog.predictor.pid}")
-    private String paytmPid;
-
     @Value("${catalog.predictor.mid}")
     private String paytmMid;
 
@@ -134,28 +131,6 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
         }
         if (!CollectionUtils.isEmpty(predictorList)) {
             return predictorList;
-        }
-        return null;
-    }
-
-    private Map<Long, Integer> getPidPriceMap(MerchantProductConfig merchantProductConfig) {
-        Map<Long, Integer> pidPriceMap = new HashMap<>();
-        if (Objects.nonNull(merchantProductConfig) && Objects.nonNull(merchantProductConfig.getData())) {
-            Map<String, Object> data = merchantProductConfig.getData();
-            if (data.containsKey(PAYMENT)) {
-                Map<String, Object> payment = (Map<String, Object>) data.get("payment");
-                for (Map.Entry<String, Object> entry : payment.entrySet()) {
-                    String pid = entry.getKey();
-                    Map<String, Object> paymentData = (Map<String, Object>) entry.getValue();
-                    if (paymentData.containsKey(PAY_AMOUNT)) {
-                        Integer payAmount = (Integer) paymentData.get(PAY_AMOUNT);
-                        pidPriceMap.put(Long.valueOf(pid), payAmount);
-                    }
-                }
-            }
-        }
-        if (!CollectionUtils.isEmpty(pidPriceMap)) {
-            return pidPriceMap;
         }
         return null;
     }
