@@ -185,6 +185,10 @@ public class CandidateDetails {
 
     private String miCode;
 
+    private String predictorUrl;
+
+    private String predictorName;
+
     // CAREER360
     @Field("requestData")
     @JsonProperty("requestData")
