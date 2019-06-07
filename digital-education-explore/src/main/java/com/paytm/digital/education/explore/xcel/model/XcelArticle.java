@@ -28,4 +28,7 @@ public class XcelArticle {
 
     @JsonProperty("article_pdf")
     private String articlePdf;
+
+    @JsonProperty("email_address")
+    private String emailAddress;
 }

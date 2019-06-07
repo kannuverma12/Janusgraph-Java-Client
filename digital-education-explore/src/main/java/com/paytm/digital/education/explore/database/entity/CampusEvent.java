@@ -35,4 +35,7 @@ public class CampusEvent {
 
     @Transient
     private List<String> failedMedia;
+
+    @Field("email_address")
+    private String emailAddress;
 }

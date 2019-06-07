@@ -31,4 +31,7 @@ public class Article {
 
     @Field("article_pdf")
     private String articlePdf;
+
+    @Field("email_address")
+    private String emailAddress;
 }

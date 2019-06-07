@@ -128,6 +128,7 @@ public class ImportArticleServiceImpl implements ImportDataService {
             article.setArticleTitle(xcelArticle.getArticleTitle());
             article.setStudentPaytmMobileNumber(xcelArticle.getStudentPaytmMobileNumber());
             article.setSubmittedBy(xcelArticle.getSubmittedBy());
+            article.setEmailAddress(xcelArticle.getEmailAddress());
             article.setCreatedAt(campusEngagementHelper.convertDateFormat(XCEL_DATE_FORMAT,
                     DB_DATE_FORMAT, xcelArticle.getTimestamp()));
             article.setSubmittedDate(

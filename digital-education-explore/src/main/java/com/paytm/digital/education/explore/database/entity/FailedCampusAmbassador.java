@@ -35,6 +35,9 @@ public class FailedCampusAmbassador {
     @Field("image_url")
     private String imageUrl;
 
+    @Field("email_address")
+    private String emailAddress;
+
     @Field("has_imported")
     private Boolean hasImported = false;
 

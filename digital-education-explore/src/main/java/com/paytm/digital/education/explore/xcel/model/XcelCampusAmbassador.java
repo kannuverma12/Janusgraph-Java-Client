@@ -25,4 +25,7 @@ public class XcelCampusAmbassador {
 
     @JsonProperty("image")
     private String image;
+
+    @JsonProperty("email_address")
+    private String emailAddress;
 }

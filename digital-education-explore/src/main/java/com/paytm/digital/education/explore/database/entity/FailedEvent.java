@@ -47,4 +47,7 @@ public class FailedEvent {
 
     @Field("reason")
     private String reason;
+
+    @Field("email_address")
+    private String emailAddress;
 }

@@ -25,4 +25,7 @@ public class XcelEvent {
 
     @JsonProperty("event_media")
     private String eventMedia;
+
+    @JsonProperty("email_address")
+    private String emailAddress;
 }

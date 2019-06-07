@@ -31,6 +31,9 @@ public class CampusAmbassador {
     @Field("image_url")
     private String imageUrl;
 
+    @Field("email_address")
+    private String emailAddress;
+
     @Field("score")
     private Double score;
 }
