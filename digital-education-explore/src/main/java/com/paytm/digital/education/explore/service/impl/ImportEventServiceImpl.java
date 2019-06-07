@@ -133,6 +133,7 @@ public class ImportEventServiceImpl implements ImportDataService {
             event.setEventDescription(xcelEvent.getEventDescription());
             event.setEventType(xcelEvent.getEventType());
             event.setSubmittedBy(xcelEvent.getSubmittedBy());
+            event.setEmailAddress(xcelEvent.getEmailAddress());
             event.setCreatedAt(campusEngagementHelper.convertDateFormat(XCEL_DATE_FORMAT,
                     DB_DATE_FORMAT, xcelEvent.getTimestamp()));
             boolean isMediaEmpty = true;

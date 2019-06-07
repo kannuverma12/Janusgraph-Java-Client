@@ -38,6 +38,9 @@ public class FailedArticle {
     @Field("article_pdf")
     private String articlePdf;
 
+    @Field("email_address")
+    private String emailAddress;
+
     @Field("has_imported")
     private Boolean hasImported = false;
 

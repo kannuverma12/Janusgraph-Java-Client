@@ -182,6 +182,9 @@ public class ImportAmbassadorServiceImpl implements ImportDataService {
         if (Objects.isNull(newAmbassadorData.getLastUpdated())) {
             newAmbassadorData.setLastUpdated(existingAmbassadorData.getLastUpdated());
         }
+        if (Objects.isNull(newAmbassadorData.getEmailAddress())) {
+            newAmbassadorData.setEmailAddress(existingAmbassadorData.getEmailAddress());
+        }
     }
 
     /*
@@ -201,6 +204,7 @@ public class ImportAmbassadorServiceImpl implements ImportDataService {
             campusAmbassador.setInstituteId(instituteId);
             campusAmbassador.setPaytmMobileNumber(ambassador.getPaytmMobileNumber());
             campusAmbassador.setYearAndBatch(ambassador.getYearAndBatch());
+            campusAmbassador.setEmailAddress(ambassador.getEmailAddress());
             campusAmbassador.setCreatedAt(
                     campusEngagementHelper.convertDateFormat(XCEL_DATE_FORMAT,
                             DB_DATE_FORMAT, ambassador.getTimestamp()));
