@@ -89,34 +89,34 @@ public class DownloadController {
 
         return downloadForm(orderId, type, formData, headers);
     }
-    
-    @GetMapping("/auth/v1/user/form/downloadLink")
-    public ResponseEntity<Object> downloadForm(@RequestHeader("x-user-id") String userId){
-            Map<String,Object> pdfConfig = new HashMap<>();
-            
-            pdfConfig.put("url", env.getProperty("downloadpdf.url"));
-            HttpHeaders headers = new HttpHeaders();
-            
-            String filename ="Form.pdf";
-            headers.setContentDispositionFormData("filename", filename);
-            headers.setContentType(MediaType.APPLICATION_PDF);
-            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
 
-            
-            byte[] contents = null;
-            try {
-              contents = downloadService.getTempAimaResponse(null,pdfConfig, userId);       
-            } catch(Exception ex) {
-              log.error("ERROR OCCURRED IN PROCESSING PDF : {}", ex);
-            }
-            
-            if (contents == null) {
-                    return new ResponseEntity<>(
-                            "{\"status_code\":500, \"message\": \"Some error occurred, please try again later.\"}",
-                            HttpStatus.INTERNAL_SERVER_ERROR);
-                }
-            
-            return new ResponseEntity<>(contents,headers,HttpStatus.OK);
+    @GetMapping("/auth/v1/user/form/downloadLink")
+    public ResponseEntity<Object> downloadForm(@RequestHeader("x-user-id") String userId) {
+        Map<String, Object> pdfConfig = new HashMap<>();
+
+        pdfConfig.put("url", env.getProperty("downloadpdf.url"));
+        HttpHeaders headers = new HttpHeaders();
+
+        String filename = "Form.pdf";
+        headers.setContentDispositionFormData("filename", filename);
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+
+
+        byte[] contents = null;
+        try {
+            contents = downloadService.getTempAimaResponse(null, pdfConfig, userId);
+        } catch (Exception ex) {
+            log.error("ERROR OCCURRED IN PROCESSING PDF : {}", ex);
+        }
+
+        if (contents == null) {
+            return new ResponseEntity<>(
+                    "{\"status_code\":500, \"message\": \"Some error occurred, please try again later.\"}",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<>(contents, headers, HttpStatus.OK);
     }
 
     @SuppressWarnings("unchecked")
