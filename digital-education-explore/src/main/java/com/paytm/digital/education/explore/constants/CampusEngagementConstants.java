@@ -41,4 +41,5 @@ public interface CampusEngagementConstants {
             + "files";
     String INVALID_INSTITUTE_IDS                 =
             "Unable to import data due to invalid institute ids";
+    String HAS_IMPORTED                          = "has_imported";
 }
