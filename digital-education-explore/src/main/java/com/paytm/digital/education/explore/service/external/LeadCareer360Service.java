@@ -94,7 +94,8 @@ public class LeadCareer360Service {
         career360LeadRequest
                 .setEntityType(EducationEntity.convertToCareer360entity(lead.getEntityType()));
         career360LeadRequest.setEntityId(lead.getEntityId());
-        career360LeadRequest.setRequestType(LeadAction.getCareers360RequestType(lead.getAction()));
+        career360LeadRequest
+                .setRequestType(LeadAction.getCareers360RequestType(lead.getAction()));
         career360LeadRequest.setPaytmCustomerId(lead.getUserId());
         return career360LeadRequest;
     }

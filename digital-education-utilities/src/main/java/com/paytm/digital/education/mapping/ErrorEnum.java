@@ -65,7 +65,8 @@ public enum ErrorEnum {
     ACTION_NOT_SUPPORTED(4030, "Requested action is not supported for given entity",
             HttpStatus.BAD_REQUEST, 0),
     INSTITUTE_ID_AND_ENTITY_IS_MANDATORY_FOR_UNFOLLOW(4031,
-            "Institute id and entity type is mandatory", HttpStatus.BAD_REQUEST, 0);
+            "Institute id and entity type is mandatory", HttpStatus.BAD_REQUEST, 0),
+    ENTITY_TYPE_IS_MANDATORY_FOR_UNFOLLOW(4032,"Entity type is mandatory", HttpStatus.BAD_REQUEST, 0);
 
 
     private final int        internalCode;

@@ -5,9 +5,9 @@ public enum LeadAction {
 
     public static int getCareers360RequestType(LeadAction action) {
         switch (action) {
-            case GetUpdates:
-                return 1;
             case GetInTouch:
+                return 1;
+            case GetUpdates:
                 return 2;
             default:
                 return 0;
