@@ -72,15 +72,26 @@ public class LeadServiceImpl implements LeadService {
     }
 
     private void validateUnfollowRequest(Lead lead) {
-        if (Objects.isNull(lead.getEntityType()) || Objects.isNull(lead.getInstituteId())) {
-            throw new BadRequestException(
-                    ErrorEnum.INSTITUTE_ID_AND_ENTITY_IS_MANDATORY_FOR_UNFOLLOW,
-                    ErrorEnum.INSTITUTE_ID_AND_ENTITY_IS_MANDATORY_FOR_UNFOLLOW
-                            .getExternalMessage());
+        if (Objects.isNull(lead.getEntityType())) {
+            throw new BadRequestException(ErrorEnum.ENTITY_TYPE_IS_MANDATORY_FOR_UNFOLLOW,
+                    ErrorEnum.ENTITY_TYPE_IS_MANDATORY_FOR_UNFOLLOW.getExternalMessage());
         }
-        if (!EducationEntity.COURSE.equals(lead.getEntityType())) {
+        if (EducationEntity.COURSE.equals(lead.getEntityType())) {
+            if (Objects.isNull(lead.getInstituteId())) {
+                throw new BadRequestException(
+                        ErrorEnum.INSTITUTE_ID_AND_ENTITY_IS_MANDATORY_FOR_UNFOLLOW,
+                        ErrorEnum.INSTITUTE_ID_AND_ENTITY_IS_MANDATORY_FOR_UNFOLLOW
+                                .getExternalMessage());
+            }
+        } else if (EducationEntity.EXAM.equals(lead.getEntityType())) {
+            if (Objects.isNull(lead.getEntityId())) {
+                throw new BadRequestException(ErrorEnum.ENTITY_ID_NOT_PRESENT,
+                        ErrorEnum.ENTITY_ID_NOT_PRESENT.getExternalMessage());
+            }
+        } else {
             throw new BadRequestException(ErrorEnum.ACTION_NOT_SUPPORTED,
                     ErrorEnum.ACTION_NOT_SUPPORTED.getExternalMessage());
+
         }
         List<Lead> leads = leadRepository
                 .fetchInterestedLeadByInstituteIdANdUserId(lead.getUserId(),
@@ -120,7 +131,9 @@ public class LeadServiceImpl implements LeadService {
             throw new BadRequestException(ErrorEnum.INVALID_COURSE_ID,
                     ErrorEnum.INVALID_COURSE_ID.getExternalMessage());
         }
-        if (lead.getInstituteId() != course.getInstitutionId()) {
+        if (lead.getInstituteId().compareTo(course.getInstitutionId()) != 0) {
+            System.out.println(lead.getInstituteId());
+            System.out.println(course.getInstitutionId());
             throw new BadRequestException(ErrorEnum.VALID_INSTITUTE_ID_FOR_COURSE_LEAD,
                     ErrorEnum.VALID_INSTITUTE_ID_FOR_COURSE_LEAD.getExternalMessage());
         }
