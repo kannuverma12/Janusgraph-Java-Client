@@ -1,5 +1,6 @@
 package com.paytm.digital.education.form.controller;
 
+
 import com.paytm.digital.education.form.config.AuthorizationService;
 import com.paytm.digital.education.form.model.ErrorResponseBody;
 import com.paytm.digital.education.form.model.FormData;
@@ -11,8 +12,11 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,6 +36,7 @@ public class DownloadController {
     private AuthorizationService authService;
     private DownloadService downloadService;
     private MerchantConfigServiceImpl merchantConfigServiceImpl;
+    private Environment env;
 
     @GetMapping("/v1/download")
     public ResponseEntity<Object> downloadFormOrInvoice(
@@ -83,6 +88,35 @@ public class DownloadController {
         }
 
         return downloadForm(orderId, type, formData, headers);
+    }
+    
+    @GetMapping("/auth/v1/user/form/downloadLink")
+    public ResponseEntity<Object> downloadForm(@RequestHeader("x-user-id") String userId){
+            Map<String,Object> pdfConfig = new HashMap<>();
+            
+            pdfConfig.put("url", env.getProperty("downloadpdf.url"));
+            HttpHeaders headers = new HttpHeaders();
+            
+            String filename ="Form.pdf";
+            headers.setContentDispositionFormData("filename", filename);
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+
+            
+            byte[] contents = null;
+            try {
+              contents = downloadService.getTempAimaResponse(null,pdfConfig, userId);       
+            } catch(Exception ex) {
+              log.error("ERROR OCCURRED IN PROCESSING PDF : {}", ex);
+            }
+            
+            if (contents == null) {
+                    return new ResponseEntity<>(
+                            "{\"status_code\":500, \"message\": \"Some error occurred, please try again later.\"}",
+                            HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            
+            return new ResponseEntity<>(contents,headers,HttpStatus.OK);
     }
 
     @SuppressWarnings("unchecked")
