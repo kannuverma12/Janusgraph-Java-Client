@@ -28,8 +28,8 @@ public class CampusEngagementScheduler {
     private ImportAmbassadorServiceImpl importAmbassadorService;
     private CronPropertiesRepository    cronPropertiesRepository;
 
-    @Scheduled(fixedDelayString = "${failed-campus-engagement.import.cron.fixed.delay}")
-    @SchedulerLock(name = "importFailedCampusEngagementData")
+    //@Scheduled(fixedDelayString = "${failed-campus-engagement.import.cron.fixed.delay}")
+    //@SchedulerLock(name = "importFailedCampusEngagementData")
     public void importFailedArticleScheduler() {
         CronProperties campusEngagementCronPropety =
                 cronPropertiesRepository

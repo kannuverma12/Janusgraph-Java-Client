@@ -128,6 +128,7 @@ public class CampusEngagementHelper {
             String s3ImagePath) {
         InputStream inputStream = null;
         String mimeType = null;
+        fileUrl = fileUrl.trim();
         try {
             if (fileUrl.startsWith(GOOGLE_DRIVE_BASE_URL)) {
                 Map<String, Object> fileData = GoogleDriveUtil.downloadFile(fileUrl);
