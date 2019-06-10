@@ -202,7 +202,7 @@ public class ImportAmbassadorServiceImpl implements ImportDataService {
             campusAmbassador.setCourse(ambassador.getCourse());
             Long instituteId = Long.parseLong(ambassador.getInstituteId());
             campusAmbassador.setInstituteId(instituteId);
-            campusAmbassador.setPaytmMobileNumber(ambassador.getPaytmMobileNumber());
+            campusAmbassador.setPaytmMobileNumber(ambassador.getPaytmMobileNumber().trim());
             campusAmbassador.setYearAndBatch(ambassador.getYearAndBatch());
             campusAmbassador.setEmailAddress(ambassador.getEmailAddress());
             campusAmbassador.setCreatedAt(
