@@ -11,6 +11,7 @@ import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.enums.CourseLevel;
+import com.paytm.digital.education.explore.enums.PublishStatus;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
 import com.paytm.digital.education.explore.response.dto.detail.Ranking;
@@ -256,8 +257,10 @@ public class InstituteDetailResponseBuilder {
             degreeMap.put(CourseLevel.DOCTORATE.getDisplayName(), new HashSet<>());
             degreeMap.put(CourseLevel.DIPLOMA.getDisplayName(), new HashSet<>());
             for (Course course : courses) {
-                for (String degree : course.getMasterDegree()) {
-                    degreeMap.get(course.getCourseLevel().getDisplayName()).add(degree);
+                if (course.getPublishingStatus() == PublishStatus.PUBLISHED) {
+                    for (String degree : course.getMasterDegree()) {
+                        degreeMap.get(course.getCourseLevel().getDisplayName()).add(degree);
+                    }
                 }
             }
             List<String> emptyLevels = new ArrayList<>();

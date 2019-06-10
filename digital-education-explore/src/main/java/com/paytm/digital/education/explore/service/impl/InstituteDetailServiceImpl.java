@@ -27,6 +27,7 @@ import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.enums.Gender;
+import com.paytm.digital.education.explore.enums.PublishStatus;
 import com.paytm.digital.education.explore.response.builders.InstituteDetailResponseBuilder;
 import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
 import com.paytm.digital.education.explore.service.helper.GenderAndCasteGroupHelper;
@@ -221,7 +222,8 @@ public class InstituteDetailServiceImpl {
         if (!CollectionUtils.isEmpty(courses)) {
             //exclude child institute courses for the cutoffs
             courses.stream()
-                    .filter(course -> course.getInstitutionId().equals(instituteId.intValue()))
+                    .filter(course -> course.getInstitutionId().equals(instituteId)
+                            && course.getPublishingStatus() == PublishStatus.PUBLISHED)
                     .forEach(course -> {
                         if (!CollectionUtils.isEmpty(course.getExamsAccepted())) {
                             course.getExamsAccepted().forEach(examId -> {

@@ -124,16 +124,19 @@ public class ExamDetailServiceImpl {
         entitySyllabusList.forEach(entitySection -> {
             List<Unit> units = new ArrayList<>();
             entitySection.getUnits().forEach(entityUnit -> {
-                List<Topic> topics = new ArrayList<>();
-                entityUnit.getTopics().forEach(entityTopic -> {
-                    String topicName = entityTopic.getName();
-                    if (!topicName.equals(ZERO)) {
-                        Topic topic = new Topic(topicName);
-                        topics.add(topic);
-                    }
-                });
-                Unit unit = new Unit(entityUnit.getName(), topics);
-                units.add(unit);
+                String unitName = entityUnit.getName();
+                if (!unitName.equals(ZERO)) {
+                    List<Topic> topics = new ArrayList<>();
+                    entityUnit.getTopics().forEach(entityTopic -> {
+                        String topicName = entityTopic.getName();
+                        if (!topicName.equals(ZERO)) {
+                            Topic topic = new Topic(topicName);
+                            topics.add(topic);
+                        }
+                    });
+                    Unit unit = new Unit(unitName, topics);
+                    units.add(unit);
+                }
             });
             Section section = new Section(entitySection.getSubjectName(), units);
             sectionList.add(section);
