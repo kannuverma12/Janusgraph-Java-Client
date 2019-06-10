@@ -90,7 +90,8 @@ public class CampusEngagementHelper {
         return responseAmbassadorList;
     }
 
-    public List<CampusArticle> getCampusArticleData(List<Article> articles) {
+    public List<CampusArticle> getCampusArticleData(List<Article> articles,
+            Map<String, CampusAmbassador> campusAmbassadorMap) {
         List<CampusArticle> responseArticleList = new ArrayList<>();
         for (Article article : articles) {
             CampusArticle responseArticle = new CampusArticle();
@@ -99,6 +100,16 @@ public class CampusEngagementHelper {
                 responseArticle
                         .setArticlePdf(CommonUtil.getAbsoluteUrl(article.getArticlePdf(),
                                 DOCS));
+                String phoneNumber = responseArticle.getStudentPaytmMobileNumber();
+                if (Objects.nonNull(phoneNumber) && Objects.nonNull(campusAmbassadorMap)) {
+                    CampusAmbassador ambassador = campusAmbassadorMap.get(phoneNumber.trim());
+                    if (Objects.nonNull(ambassador)) {
+                        responseArticle.setSubmittedBy(ambassador.getName());
+                        responseArticle.setSubmitterImageUrl(
+                                CommonUtil.getAbsoluteUrl(ambassador.getImageUrl(), MEDIA));
+                        responseArticle.setSubmitterDesignation(ambassador.getYearAndBatch());
+                    }
+                }
             }
             responseArticleList.add(responseArticle);
         }

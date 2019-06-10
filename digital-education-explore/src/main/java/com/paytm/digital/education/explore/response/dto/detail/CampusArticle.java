@@ -19,6 +19,12 @@ public class CampusArticle {
     @JsonProperty("submitted_by")
     private String submittedBy;
 
+    @JsonProperty("submitter_designation")
+    private String submitterDesignation;
+
+    @JsonProperty("submitter_image_url")
+    private String submitterImageUrl;
+
     @JsonProperty("student_paytm_mobile_number")
     private String studentPaytmMobileNumber;
 
