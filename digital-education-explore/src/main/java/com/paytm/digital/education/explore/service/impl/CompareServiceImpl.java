@@ -22,6 +22,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.OFF
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SUBEXAM_ID;
 import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
 
+import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
@@ -39,20 +40,22 @@ import com.paytm.digital.education.explore.service.helper.StreamDataHelper;
 import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.explore.utility.CompareUtil;
+import com.paytm.digital.education.mapping.ErrorEnum;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.List;
+import java.util.HashMap;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
@@ -62,7 +65,7 @@ import java.util.stream.Collectors;
 public class CompareServiceImpl implements CompareService {
 
     private static Map<Long, String>          parentInstituteNameMap = new HashMap<>();
-    private static Map<Integer, List<Course>> instituteCoursesMap    = new HashMap<>();
+    private static Map<Long, List<Course>>    instituteCoursesMap    = new HashMap<>();
     private        InstituteDetailServiceImpl instituteDetailService;
     private        CommonMongoRepository      commonMongoRepository;
     private        StreamDataHelper           streamDataHelper;
@@ -71,21 +74,25 @@ public class CompareServiceImpl implements CompareService {
     private        SubscriptionDetailHelper   subscriptionDetailHelper;
 
     @Override
-    public CompareDetail compareInstitutes(List<Long> instList, String fieldGroup,
+    public CompareDetail compareInstitutes(Map<Long, String> instKeyMap, String fieldGroup,
             List<String> fields, Long userId) throws IOException, TimeoutException {
 
         CompareDetail compareDetail = new CompareDetail();
         List<CompareInstDetail> instituteDetailsList = new ArrayList<>();
         List<String> fieldGroupList = getFieldGroups(fieldGroup);
-
-        if (!CollectionUtils.isEmpty(instList)) {
-            instList =
-                    instList.stream().filter(i -> Objects.nonNull(i)).collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(instKeyMap)) {
+            List<Long> instList = new ArrayList<>(instKeyMap.keySet());
             List<Institute> institutes =
                     instituteDetailService.getInstitutes(instList, fieldGroupList);
+            for (Institute institute : institutes) {
+                if (!instKeyMap.get(institute.getInstituteId()).equals(CommonUtil
+                        .convertNameToUrlDisplayName(institute.getOfficialName()))) {
+                    throw new BadRequestException(ErrorEnum.INVALID_INSTITUTE_NAME,
+                            ErrorEnum.INVALID_INSTITUTE_NAME.getExternalMessage());
+                }
+            }
             updateParentInstituteNameMap(institutes);
             updateInstituteCoursesMap(instList);
-
             Map<Long, Institute> instituteMap =
                     institutes.stream().collect(Collectors.toMap(i -> i.getInstituteId(), i -> i));
 
@@ -96,7 +103,8 @@ public class CompareServiceImpl implements CompareService {
                 }
             }
 
-            Map<String, List<String>> keyInsights = compareInsightsService.getInstituteKeyInsights(finalInstituteList);
+            Map<String, List<String>> keyInsights =
+                    compareInsightsService.getInstituteKeyInsights(finalInstituteList);
             if (!CollectionUtils.isEmpty(keyInsights)) {
                 compareDetail.setKeyInsights(keyInsights);
             }
@@ -210,7 +218,11 @@ public class CompareServiceImpl implements CompareService {
                         cr.setSource(ranking.getSource());
                         cr.setSubtitle(AS_PER + ranking.getSource() + RANKINGS);
 
-                        Set<CompareRanking> crList = c.getRankings();
+                        Set<CompareRanking> crList =
+                                new TreeSet<>((c1, c2) -> c2.getSource().compareTo(c1.getSource()));
+                        if (!CollectionUtils.isEmpty(c.getRankings())) {
+                            crList.addAll(c.getRankings());
+                        }
                         if (Objects.isNull(crList)) {
                             crList = new HashSet<>();
                         }
@@ -233,6 +245,7 @@ public class CompareServiceImpl implements CompareService {
 
         cDetail.setInstituteId(inst.getInstituteId());
         cDetail.setInstituteName(inst.getOfficialName());
+        cDetail.setUrlDisplayKey(CommonUtil.convertNameToUrlDisplayName(inst.getOfficialName()));
         if (Objects.nonNull(inst.getCampusSize())) {
             cDetail.setCampusArea(inst.getCampusSize() + ACRES);
         }
@@ -267,17 +280,17 @@ public class CompareServiceImpl implements CompareService {
             cDetail.setLogo(CommonUtil.getLogoLink(inst.getGallery().getLogo()));
         }
         OfficialAddress officialAddress =
-            CommonUtil.getOfficialAddress(inst.getInstitutionState(),
-                    inst.getInstitutionCity(), inst.getPhone(), inst.getUrl(),
-                    inst.getOfficialAddress());
+                CommonUtil.getOfficialAddress(inst.getInstitutionState(),
+                        inst.getInstitutionCity(), inst.getPhone(), inst.getUrl(),
+                        inst.getOfficialAddress());
         cDetail.setOfficialAddress(officialAddress);
         return cDetail;
     }
 
     private Map<Long, String> getCourseMap(List<Course> courses) {
         return courses.stream().filter(c -> Objects.nonNull(c.getCourseNameOfficial()))
-            .collect(Collectors.toMap(c -> c.getCourseId(), c -> c.getCourseNameOfficial(),
-                (a1, a2) -> a2));
+                .collect(Collectors.toMap(c -> c.getCourseId(), c -> c.getCourseNameOfficial(),
+                    (a1, a2) -> a2));
     }
 
     private Map<String, Placement> getPlacements(List<Placement> placements) {
@@ -385,8 +398,8 @@ public class CompareServiceImpl implements CompareService {
 
     private List<Course> getCourses(Long instId) {
         List<Course> courses = new ArrayList<>();
-        if (Objects.nonNull(instituteCoursesMap.get(instId.intValue()))) {
-            courses = instituteCoursesMap.get(instId.intValue());
+        if (Objects.nonNull(instituteCoursesMap.get(instId))) {
+            courses = instituteCoursesMap.get(instId);
         }
         return courses;
     }

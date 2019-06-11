@@ -68,7 +68,7 @@ public class ExamInstanceHelper {
                     if (Objects.nonNull(exam.getSubExams())) {
                         for (SubExam subExam : exam.getSubExams()) {
                             examId = subExam.getId();
-                            if (examIds.contains(examId)) {
+                            if (examIds.contains(examId) && examCategoryGroup.containsKey(examId)) {
                                 examAndCutOff.setExamId(examId);
                                 setCasteGroupAndGender(examId, examGender, examCategoryGroup,
                                         examAndCutOff);

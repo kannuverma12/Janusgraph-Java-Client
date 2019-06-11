@@ -35,7 +35,7 @@ public class SearchServiceImpl {
         log.debug("Starting search at : " + startTime);
         SearchResponse response = handler(searchRequest.getEntity()).search(searchRequest);
         log.debug("Search Response : {}", JsonUtils.toJson(response));
-        
+
         if (userId != null && userId > 0 && response.isSearchResponse()
                 && !CollectionUtils.isEmpty(response.getEntityDataMap())) {
             Map<Long, SearchBaseData> searchBaseDataMap = response.getEntityDataMap();
@@ -78,8 +78,13 @@ public class SearchServiceImpl {
 
     private void updateInterested(EducationEntity educationEntity, Long userId,
             Map<Long, SearchBaseData> searchBaseDataMap, List<Long> entityIds) {
-        List<Long> leadEntities =
-                leadDetailHelper.getLeadEntities(educationEntity, userId, entityIds);
+        List<Long> leadEntities;
+        if (EducationEntity.EXAM.equals(educationEntity)) {
+            leadEntities = leadDetailHelper.getLeadEntities(educationEntity, userId, entityIds);
+        } else {
+            leadEntities =
+                    leadDetailHelper.getInterestedLeadInstituteIds(userId, entityIds);
+        }
         if (!CollectionUtils.isEmpty(leadEntities)) {
             leadEntities.forEach(entityId -> searchBaseDataMap.get(entityId).setInterested(true));
         }
