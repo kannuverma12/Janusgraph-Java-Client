@@ -91,8 +91,8 @@ public class SellerPanelController {
                                 }).collect(Collectors.toList()))
                 );
 
+                responseData.setCount(response.getCount());
                 return new ResponseEntity<>(responseData, headers, HttpStatus.OK);
-
             } else {
                 return new ResponseEntity<>(
                         "{\"statusCode:\": 400 , \"error:\" \"Enter either orderIds or startDate.\"}",
