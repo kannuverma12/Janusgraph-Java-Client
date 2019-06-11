@@ -42,6 +42,18 @@ public enum ErrorEnum {
             HttpStatus.BAD_REQUEST, 0),
     CASTE_CATEGORY_PARAMETER_MISSING(4019, "Caste category parameter is missing in request.",
             HttpStatus.BAD_REQUEST, 0),
+    ORDER_ID_OR_START_DATE(9000, "Either Order Id or start date must be present.",
+            HttpStatus.BAD_REQUEST, 10),
+    EITHER_OF_ORDER_ID_OR_START_DATE(9001, "Order Id or start date both are not allowed together.",
+            HttpStatus.BAD_REQUEST, 10),
+    USER_IS_NOT_MERCHANT(9002, "User is not Merchant",
+            HttpStatus.UNAUTHORIZED, 0),
+    MISSING_FORM_DATA_PARAMS(9003,
+            "Bad request. Some mandatory params are missing", HttpStatus.BAD_REQUEST, 0),
+    UNAUTHORIZED_REQUEST(9004, "Unauthorized request.", HttpStatus.UNAUTHORIZED, 0),
+    PAYMENT_CONFIGURATION_NOT_FOUND(9005,
+            "Payment configuration doesn't exists for, merchantId : %s and merchantSku : %s",
+            HttpStatus.INTERNAL_SERVER_ERROR, 2),
     ENTITY_ID_NOT_PRESENT(4020, "%s is missing in the request.",
             HttpStatus.BAD_REQUEST, 1),
     INVALID_INSTITUTE_NAME(4021, "Provided name doesnot match with actual institute name",
@@ -66,7 +78,8 @@ public enum ErrorEnum {
             HttpStatus.BAD_REQUEST, 0),
     INSTITUTE_ID_AND_ENTITY_IS_MANDATORY_FOR_UNFOLLOW(4031,
             "Institute id and entity type is mandatory", HttpStatus.BAD_REQUEST, 0),
-    ENTITY_TYPE_IS_MANDATORY_FOR_UNFOLLOW(4032,"Entity type is mandatory", HttpStatus.BAD_REQUEST, 0);
+    ENTITY_TYPE_IS_MANDATORY_FOR_UNFOLLOW(4032, "Entity type is mandatory", HttpStatus.BAD_REQUEST,
+            0);
 
 
     private final int        internalCode;
