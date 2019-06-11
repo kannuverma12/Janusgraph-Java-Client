@@ -68,7 +68,7 @@ public class ExamInstanceHelper {
                     if (Objects.nonNull(exam.getSubExams())) {
                         for (SubExam subExam : exam.getSubExams()) {
                             examId = subExam.getId();
-                            if (examIds.contains(examId)) {
+                            if (examIds.contains(examId) && examCategoryGroup.containsKey(examId)) {
                                 examAndCutOff.setExamId(examId);
                                 setCasteGroupAndGender(examId, examGender, examCategoryGroup,
                                         examAndCutOff);
@@ -91,14 +91,12 @@ public class ExamInstanceHelper {
             Map<Long, Map<String, String>> examCategoryGroup, ExamAndCutOff examAndCutOff) {
         Map<String, String> casteGroups = examCategoryGroup.get(examId);
         Map<Gender, String> genders = examGender.get(examId);
-        if (Objects.nonNull(casteGroups) && !casteGroups.isEmpty() && !(casteGroups.size() == 1
-                && casteGroups.entrySet().iterator()
+        if (!casteGroups.isEmpty() && !(casteGroups.size() == 1 && casteGroups.entrySet().iterator()
                 .next().getKey()
                 .equals(OTHER_CATEGORIES))) {
             examAndCutOff.setCasteGroups(casteGroups);
         }
-        if (Objects.nonNull(genders) && !genders.isEmpty() && !(genders.size() == 1 && genders
-                .entrySet().iterator().next()
+        if (!genders.isEmpty() && !(genders.size() == 1 && genders.entrySet().iterator().next()
                 .getKey()
                 .equals(OTHERS))) {
             examAndCutOff.setGenders(genders);

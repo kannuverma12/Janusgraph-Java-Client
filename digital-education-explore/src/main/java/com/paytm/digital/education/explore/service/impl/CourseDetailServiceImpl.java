@@ -171,7 +171,7 @@ public class CourseDetailServiceImpl {
 
     private void updateInterested(CourseDetail courseDetail, Long userId) {
         List<Long> leadEntities = leadDetailHelper
-                .getInterestedLeadEntitiesForInstitutes(userId,
+                .getInterestedLeadInstituteIds(userId,
                         Arrays.asList(courseDetail.getInstituteId()));
         if (!CollectionUtils.isEmpty(leadEntities)) {
             courseDetail.getInstitute().setInterested(true);

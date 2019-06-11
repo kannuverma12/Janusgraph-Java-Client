@@ -2,10 +2,8 @@ package com.paytm.digital.education.explore.service.impl;
 
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
-import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
 import com.paytm.digital.education.explore.response.dto.search.SearchBaseData;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
-import com.paytm.digital.education.explore.service.LeadService;
 import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
 import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import com.paytm.digital.education.utility.JsonUtils;
@@ -81,11 +79,11 @@ public class SearchServiceImpl {
     private void updateInterested(EducationEntity educationEntity, Long userId,
             Map<Long, SearchBaseData> searchBaseDataMap, List<Long> entityIds) {
         List<Long> leadEntities;
-        if (EducationEntity.INSTITUTE.equals(educationEntity)) {
-            leadEntities =
-                    leadDetailHelper.getInterestedLeadEntitiesForInstitutes(userId, entityIds);
-        } else {
+        if (EducationEntity.EXAM.equals(educationEntity)) {
             leadEntities = leadDetailHelper.getLeadEntities(educationEntity, userId, entityIds);
+        } else {
+            leadEntities =
+                    leadDetailHelper.getInterestedLeadInstituteIds(userId, entityIds);
         }
         if (!CollectionUtils.isEmpty(leadEntities)) {
             leadEntities.forEach(entityId -> searchBaseDataMap.get(entityId).setInterested(true));
