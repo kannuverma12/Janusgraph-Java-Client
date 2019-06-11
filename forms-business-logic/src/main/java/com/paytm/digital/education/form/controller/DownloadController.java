@@ -1,6 +1,10 @@
 package com.paytm.digital.education.form.controller;
 
 
+import static com.paytm.digital.education.form.constants.FblConstants.FORM;
+import static com.paytm.digital.education.form.constants.FblConstants.INVOICE;
+import static com.paytm.digital.education.form.constants.FblConstants.PREDICTOR_INVOICE;
+
 import com.paytm.digital.education.form.config.AuthorizationService;
 import com.paytm.digital.education.form.model.ErrorResponseBody;
 import com.paytm.digital.education.form.model.FormData;
@@ -14,8 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -90,6 +94,24 @@ public class DownloadController {
         return downloadForm(orderId, type, formData, headers);
     }
 
+    @GetMapping("/v1/download/predictor")
+    public ResponseEntity<Object> downloadPredictorOrInvoice(
+            @RequestParam("order_id") Long orderId,
+            @RequestParam("type") String type
+    ) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Access-Control-Allow-Credentials", "true");
+
+        FormData formData = downloadService.getFormDataByOrderId(orderId);
+        if (formData == null) {
+            return new ResponseEntity<>(
+                    new ErrorResponseBody(404, "data not found"), headers,
+                    HttpStatus.NOT_FOUND);
+        }
+
+        return downloadForm(orderId, type, formData, headers);
+    }
+
     @GetMapping("/auth/v1/user/form/downloadLink")
     public ResponseEntity<Object> downloadForm(@RequestHeader("x-user-id") String userId) {
         Map<String, Object> pdfConfig = new HashMap<>();
@@ -122,8 +144,9 @@ public class DownloadController {
     @SuppressWarnings("unchecked")
     private ResponseEntity<Object> downloadForm(Long orderId, String type, FormData formData, HttpHeaders headers) {
 
-        if (orderId != null && type != null
-                && (type.equalsIgnoreCase("form") || type.equalsIgnoreCase("invoice"))) {
+        if (orderId != null && type != null && (type.equalsIgnoreCase(FORM) || type
+                .equalsIgnoreCase(INVOICE) || type
+                .equalsIgnoreCase(PREDICTOR_INVOICE))) {
 
             String filename = type + "_" + orderId + ".pdf";
             headers.setContentDispositionFormData("filename", filename);
@@ -146,7 +169,8 @@ public class DownloadController {
 
             try {
                 if (config != null && config.get("isMerchantPdf").equals(false)
-                        || type.equalsIgnoreCase("invoice")) {
+                        || type.equalsIgnoreCase(INVOICE) || type.equalsIgnoreCase(
+                        PREDICTOR_INVOICE)) {
                     contents = downloadService.getPdfByteArray(formData, type);
 
                 } else if (config != null
@@ -168,6 +192,16 @@ public class DownloadController {
             }
             return new ResponseEntity<>(contents, headers, HttpStatus.OK);
 
+        } else if (orderId != null && type != null && type.equalsIgnoreCase("predictor")) {
+            String predictorUrl = formData.getCandidateDetails().getPredictorUrl();
+            if (Objects.nonNull(predictorUrl)) {
+                return new ResponseEntity<>(predictorUrl, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(
+                        "{\"status_code\":403, \"message\": \"Please enter the correct id or "
+                                + "type\"}",
+                        HttpStatus.NOT_FOUND);
+            }
         } else {
             return new ResponseEntity<>(
                     "{\"status_code\":400, \"message\": \"Please enter the correct id or type\"}",

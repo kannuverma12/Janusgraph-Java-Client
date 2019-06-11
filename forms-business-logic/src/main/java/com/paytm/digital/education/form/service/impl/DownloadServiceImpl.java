@@ -40,6 +40,8 @@ public class DownloadServiceImpl implements DownloadService {
     protected String getTemplatePath(String type) {
         if (type.equalsIgnoreCase("form")) {
             return "form_template.xhtml";
+        } else if (type.equalsIgnoreCase("predictor-invoice")) {
+            return "invoice_template_predictor.xhtml";
         } else {
             return "invoice_template.xhtml";
         }
@@ -123,6 +125,17 @@ public class DownloadServiceImpl implements DownloadService {
         try {
             Query query = new Query(Criteria.where("merchantId").is(merchantId));
             query.addCriteria(Criteria.where("formFulfilment.orderId").is(orderId));
+            return mongoOperations.findOne(query, FormData.class);
+        } catch (Exception e) {
+            log.error("ERROR IN FETCHING DATA FROM MONGO DB FOR MERCHANT", e);
+            return null;
+        }
+    }
+
+    @Override
+    public FormData getFormDataByOrderId(Long orderId) {
+        try {
+            Query query = new Query(Criteria.where("formFulfilment.orderId").is(orderId));
             return mongoOperations.findOne(query, FormData.class);
         } catch (Exception e) {
             log.error("ERROR IN FETCHING DATA FROM MONGO DB FOR MERCHANT", e);

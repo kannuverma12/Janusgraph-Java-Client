@@ -316,6 +316,8 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         formIoMerchantDataRequest.setOrderId(paymentPostingItemRequest.getOrderId().toString());
         formIoMerchantDataRequest.setItemId(paymentPostingItemRequest.getItemId().toString());
         formIoMerchantDataRequest.setAmount(paymentPostingItemRequest.getPrice().toString());
+        formIoMerchantDataRequest.setMerchantProductId(formData.getMerchantProductId());
+        formIoMerchantDataRequest.setMerchantCandidateId(formData.getMerchantCandidateId());
         formIoMerchantDataRequest.setSubmit(true);
         formIoMerchantDataRequest.setRefId(refId);
 
@@ -376,6 +378,8 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         query.addCriteria(Criteria.where("_id").is(id));
         query.fields().include("candidateDetails.amount");
         query.fields().include("transactionType");
+        query.fields().include("merchantProductId");
+        query.fields().include("merchantCandidateId");
 
         return mongoOperations.findOne(query, FormData.class);
     }
@@ -400,6 +404,12 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         update.set("formFulfilment.updatedDate", currentDate);
         update.set("updatedAt", currentDate);
         update.set("status", env.getProperty("formio.status." + formIoMerchantResponse.getPaymentStatus()));
+        // update response in candidateDetails
+        if (formIoMerchantResponse.getCandidateDetails() != null) {
+            for (Map.Entry<String, Object> entry : formIoMerchantResponse.getCandidateDetails().entrySet()) {
+                update.set("candidateDetails." + entry.getKey(), entry.getValue());
+            }
+        }
 
         mongoOperations.updateFirst(new Query(Criteria.where("_id").is(id)), update, FormData.class);
     }

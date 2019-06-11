@@ -15,4 +15,6 @@ public interface DownloadService {
 
     byte[] getPdfByteArray(FormData model, String type) throws IOException;
 
+    FormData getFormDataByOrderId(Long orderId);
+
 }

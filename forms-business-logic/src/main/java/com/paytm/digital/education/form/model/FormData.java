@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
+import javax.validation.constraints.NotEmpty;
 
 @Data
 @Document
@@ -55,6 +56,9 @@ public class FormData {
 
     @Field("merchantId")
     private String merchantId;
+
+    @Field("merchantProductId")
+    private String merchantProductId;
 
     @Field("merchantName")
     private String merchantName;
