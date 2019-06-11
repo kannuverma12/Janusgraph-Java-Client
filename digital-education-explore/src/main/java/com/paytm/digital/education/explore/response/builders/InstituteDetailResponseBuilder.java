@@ -7,6 +7,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.NOT
 import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
 
 import com.paytm.digital.education.explore.database.entity.Alumni;
+import com.paytm.digital.education.explore.database.entity.CampusAmbassador;
 import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
@@ -130,13 +131,14 @@ public class InstituteDetailResponseBuilder {
             instituteDetail.setRankings(getRankingDetails(institute.getRankings()));
         }
         instituteDetail.setDegreeOffered(getDegreeMap(courses));
-        if (Objects.nonNull(institute.getCampusAmbassadors())) {
+        Map<String, CampusAmbassador> campusAmbassadorMap = institute.getCampusAmbassadors();
+        if (Objects.nonNull(campusAmbassadorMap)) {
             instituteDetail.setCampusAmbassadors(campusEngagementHelper
-                    .getCampusAmbassadorData(institute.getCampusAmbassadors()));
+                    .getCampusAmbassadorData(campusAmbassadorMap));
         }
         if (Objects.nonNull(institute.getArticles())) {
             instituteDetail.setArticles(campusEngagementHelper
-                    .getCampusArticleData(institute.getArticles()));
+                    .getCampusArticleData(institute.getArticles(), campusAmbassadorMap));
         }
         if (Objects.nonNull(institute.getEvents())) {
             instituteDetail.setEvents(campusEngagementHelper
