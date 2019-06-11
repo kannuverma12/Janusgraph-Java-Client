@@ -29,7 +29,7 @@ public class LeadDetailHelper {
         return null;
     }
 
-    public List<Long> getInterestedLeadEntitiesForInstitutes(Long userId, List<Long> instituteId) {
+    public List<Long> getInterestedLeadInstituteIds(Long userId, List<Long> instituteId) {
         List<Lead> leads =
                 leadRepository.fetchInterestedLeadByInstituteIdANdUserId(userId, instituteId);
         if (!CollectionUtils.isEmpty(leads)) {

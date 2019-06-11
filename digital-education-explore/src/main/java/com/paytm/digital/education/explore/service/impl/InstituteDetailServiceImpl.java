@@ -287,7 +287,7 @@ public class InstituteDetailServiceImpl {
     private void updateInterested(InstituteDetail instituteDetail, EducationEntity educationEntity,
             Long userId) {
         List<Long> leadEntities = leadDetailHelper
-                .getInterestedLeadEntitiesForInstitutes(userId,
+                .getInterestedLeadInstituteIds(userId,
                         Arrays.asList(instituteDetail.getInstituteId()));
         if (!CollectionUtils.isEmpty(leadEntities)) {
             instituteDetail.setInterested(true);
