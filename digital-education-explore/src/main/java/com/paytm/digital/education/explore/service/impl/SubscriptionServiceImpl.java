@@ -6,6 +6,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EXP
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_SEARCH_NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SUCCESS;
 import static com.paytm.digital.education.mapping.ErrorEnum.ENTITY_NOT_SUBSCRIBED;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 
 import com.paytm.digital.education.database.entity.UserFlags;
 import com.paytm.digital.education.database.repository.UserFlagRepository;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -101,7 +103,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 ? fields
                 : commonMongoService.getFieldsByGroupAndCollectioName(
                 subscriptionEntity.getCorrespondingCollectionName(), fieldGroup);
-
+        if (Objects.isNull(toBeFetchedFieldList)) {
+            throw new BadRequestException(INVALID_FIELD_GROUP,
+                    INVALID_FIELD_GROUP.getExternalMessage());
+        }
         List<Subscription> subscriptions = subscriptionDao.getUserSubscriptions(
                 userId, subscriptionEntity, toBeFetchedFieldList, offset, limit,
                 subscriptionStatus);

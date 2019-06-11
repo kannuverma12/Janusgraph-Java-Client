@@ -91,12 +91,14 @@ public class ExamInstanceHelper {
             Map<Long, Map<String, String>> examCategoryGroup, ExamAndCutOff examAndCutOff) {
         Map<String, String> casteGroups = examCategoryGroup.get(examId);
         Map<Gender, String> genders = examGender.get(examId);
-        if (!casteGroups.isEmpty() && !(casteGroups.size() == 1 && casteGroups.entrySet().iterator()
+        if (Objects.nonNull(casteGroups) && !casteGroups.isEmpty() && !(casteGroups.size() == 1
+                && casteGroups.entrySet().iterator()
                 .next().getKey()
                 .equals(OTHER_CATEGORIES))) {
             examAndCutOff.setCasteGroups(casteGroups);
         }
-        if (!genders.isEmpty() && !(genders.size() == 1 && genders.entrySet().iterator().next()
+        if (Objects.nonNull(genders) && !genders.isEmpty() && !(genders.size() == 1 && genders
+                .entrySet().iterator().next()
                 .getKey()
                 .equals(OTHERS))) {
             examAndCutOff.setGenders(genders);
