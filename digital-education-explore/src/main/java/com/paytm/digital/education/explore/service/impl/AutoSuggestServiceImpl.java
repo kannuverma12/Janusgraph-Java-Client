@@ -177,7 +177,7 @@ public class AutoSuggestServiceImpl {
                 documents.forEach(esDocument -> {
                     SuggestResult responseDoc = new SuggestResult(esDocument.getEntityId(),
                             esDocument.getOfficialName());
-                    if (EducationEntity.CITY_STATE.equals(esDocument.getEntityType())) {
+                    if (EducationEntity.LOCATION.equals(esDocument.getEntityType())) {
                         responseDoc.setCityId(esDocument.getCityId());
                         responseDoc.setStateId(esDocument.getStateId());
                     }
