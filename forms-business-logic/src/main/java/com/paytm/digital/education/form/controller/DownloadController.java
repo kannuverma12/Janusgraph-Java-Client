@@ -10,6 +10,7 @@ import com.paytm.digital.education.form.model.ErrorResponseBody;
 import com.paytm.digital.education.form.model.FormData;
 import com.paytm.digital.education.form.model.MerchantConfiguration;
 import com.paytm.digital.education.form.service.DownloadService;
+import com.paytm.digital.education.form.service.external.DecryptionService;
 import com.paytm.digital.education.form.service.impl.MerchantConfigServiceImpl;
 
 import lombok.AllArgsConstructor;
@@ -37,10 +38,11 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class DownloadController {
 
-    private AuthorizationService authService;
-    private DownloadService downloadService;
+    private AuthorizationService      authService;
+    private DownloadService           downloadService;
     private MerchantConfigServiceImpl merchantConfigServiceImpl;
-    private Environment env;
+    private Environment               env;
+    private DecryptionService         decryptionService;
 
     @GetMapping("/v1/download")
     public ResponseEntity<Object> downloadFormOrInvoice(
@@ -73,13 +75,36 @@ public class DownloadController {
         return downloadForm(orderId, type, formData, headers);
     }
 
+    @GetMapping("/auth/v1/user/form/download/encrypted")
+    public ResponseEntity<Object> downloadFormByUserWithEncryptedOrderId(
+            @RequestParam("type") String type,
+            @RequestParam("eod") String eod,
+            @RequestHeader("x-user-id") String userId
+    ) {
+        Long orderId = decryptionService.decryptOrderId(eod);
+        System.out.println(orderId);
+        FormData formData = downloadService.getFormDataByUserIdAndOrderId(userId, orderId, eod);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Access-Control-Allow-Credentials", "true");
+
+        if (userId == null || formData == null) {
+
+            return new ResponseEntity<>(
+                    new ErrorResponseBody(404, "data not found"), headers,
+                    HttpStatus.NOT_FOUND);
+        }
+
+        return downloadForm(orderId, type, formData, headers);
+    }
+
     @GetMapping("/auth/v1/user/form/download")
     public ResponseEntity<Object> downloadFormByUser(
             @RequestParam("order_id") Long orderId,
             @RequestParam("type") String type,
             @RequestHeader("x-user-id") String userId
     ) {
-        FormData formData = downloadService.getFormDataByUserIdAndOrderId(userId, orderId);
+        FormData formData = downloadService.getFormDataByUserIdAndOrderId(userId, orderId, null);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Access-Control-Allow-Credentials", "true");
@@ -142,7 +167,8 @@ public class DownloadController {
     }
 
     @SuppressWarnings("unchecked")
-    private ResponseEntity<Object> downloadForm(Long orderId, String type, FormData formData, HttpHeaders headers) {
+    private ResponseEntity<Object> downloadForm(Long orderId, String type, FormData formData,
+            HttpHeaders headers) {
 
         if (orderId != null && type != null && (type.equalsIgnoreCase(FORM) || type
                 .equalsIgnoreCase(INVOICE) || type
@@ -174,9 +200,11 @@ public class DownloadController {
                     contents = downloadService.getPdfByteArray(formData, type);
 
                 } else if (config != null
-                        && config.get("isMerchantPdf").equals(true) && config.containsKey("pdfConfig")) {
+                        && config.get("isMerchantPdf").equals(true) && config
+                        .containsKey("pdfConfig")) {
                     contents = downloadService.getTempAimaResponse(
-                            orderId, (Map<String, Object>) config.get("pdfConfig"), formData.getCustomerId());
+                            orderId, (Map<String, Object>) config.get("pdfConfig"),
+                            formData.getCustomerId());
 
                 } else {
                     contents = downloadService.getPdfByteArray(formData, type);
