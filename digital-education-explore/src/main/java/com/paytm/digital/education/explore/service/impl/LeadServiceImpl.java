@@ -132,8 +132,6 @@ public class LeadServiceImpl implements LeadService {
                     ErrorEnum.INVALID_COURSE_ID.getExternalMessage());
         }
         if (lead.getInstituteId().compareTo(course.getInstitutionId()) != 0) {
-            System.out.println(lead.getInstituteId());
-            System.out.println(course.getInstitutionId());
             throw new BadRequestException(ErrorEnum.VALID_INSTITUTE_ID_FOR_COURSE_LEAD,
                     ErrorEnum.VALID_INSTITUTE_ID_FOR_COURSE_LEAD.getExternalMessage());
         }
