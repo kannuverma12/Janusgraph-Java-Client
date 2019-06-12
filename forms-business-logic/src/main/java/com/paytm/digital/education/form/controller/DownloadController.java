@@ -83,7 +83,7 @@ public class DownloadController {
     ) {
         Long orderId = decryptionService.decryptOrderId(eod);
         System.out.println(orderId);
-        FormData formData = downloadService.getFormDataByUserIdAndOrderId(userId, orderId, eod);
+        FormData formData = downloadService.getFormDataByUserIdAndOrderId(userId, orderId);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Access-Control-Allow-Credentials", "true");
@@ -104,7 +104,7 @@ public class DownloadController {
             @RequestParam("type") String type,
             @RequestHeader("x-user-id") String userId
     ) {
-        FormData formData = downloadService.getFormDataByUserIdAndOrderId(userId, orderId, null);
+        FormData formData = downloadService.getFormDataByUserIdAndOrderId(userId, orderId);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Access-Control-Allow-Credentials", "true");
