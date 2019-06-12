@@ -15,6 +15,7 @@ public interface ExploreConstants {
     String COURSE_ID                   = "course_id";
     String IS_ACCEPTING_APPLICATION    = "is_accepting_applications";
     String ENTITY_TYPE                 = "entity_type";
+    String IS_CLIENT                   = "is_client";
     int    DEFAULT_OFFSET              = 0;
     int    DEFAULT_SIZE                = 10;
     int    DEFAULT_AUTOSUGGEST_SIZE    = 4;

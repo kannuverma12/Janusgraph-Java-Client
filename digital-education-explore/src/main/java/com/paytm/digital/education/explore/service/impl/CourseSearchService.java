@@ -7,6 +7,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.DEG
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DURATION_COURSE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_NAME;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.IS_CLIENT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME_COURSE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME_COURSE_SEARCH;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_ALPHABETICAL_SORT_KEY;
@@ -144,7 +145,7 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
             CourseSearchResponse courseSearchResponse) {
         List<String> fields =
                 Arrays.asList(GALLERY_LOGO, INSTITUTION_STATE, INSTITUTION_CITY, INSTITUTE_ID,
-                        OFFICIAL_NAME, ENTITY_TYPE);
+                        OFFICIAL_NAME, ENTITY_TYPE, IS_CLIENT);
 
         Integer instituteId = (Integer) searchRequest.getFilter().get(ENTITY_ID).get(0);
         searchRequest.getFilter().remove(ENTITY_ID);
@@ -184,6 +185,9 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
         courseSearchResponse.setInstituteName(institute.getOfficialName());
         courseSearchResponse.setUrlDisplayName(
                 CommonUtil.convertNameToUrlDisplayName(institute.getOfficialName()));
+        if (institute.getIsClient() == 1) {
+            courseSearchResponse.setClient(true);
+        }
         courseSearchResponse.setInstituteId(institute.getInstituteId());
     }
 
