@@ -6,7 +6,7 @@ module.exports = function(doc) {
 	targetLocation.official_name = doc.loc_string;
 	targetLocation.state_id = doc.state_id;
 	targetLocation.city_id = doc.city_id;
-	targetLocation.entity_type = 'city_state';
+	targetLocation.entity_type = 'location';
 	console.log ("doc: " + targetLocation);
 	return targetLocation;
 }
