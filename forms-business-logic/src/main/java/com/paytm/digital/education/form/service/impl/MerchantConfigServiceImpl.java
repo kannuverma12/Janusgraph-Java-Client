@@ -172,6 +172,18 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
             responseData.put("invoice_download_link", invoiceDownloadLink);
         }
 
+        String predictorFormDownloadLink = (String) data.get("predictor_form_download_link");
+        if (predictorFormDownloadLink != null) {
+            predictorFormDownloadLink += "?order_id=" + orderId + "&type=predictor";
+            responseData.put("form_download_link", predictorFormDownloadLink);
+        }
+
+        String predictorInvoiceDownloadLink = (String) data.get("predictor_invoice_download_link");
+        if (predictorInvoiceDownloadLink != null) {
+            predictorInvoiceDownloadLink += "?order_id=" + orderId + "&type=predictor-invoice";
+            responseData.put("invoice_download_link", predictorInvoiceDownloadLink);
+        }
+
         PostOrderScreenConfigResponse postOrderScreenConfigResponse
                 = new PostOrderScreenConfigResponse(200, responseData);
 
