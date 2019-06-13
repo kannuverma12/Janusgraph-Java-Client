@@ -79,7 +79,7 @@ function transformCourse(doc) {
               doc.streams[k].toLowerCase() === 'arts_humanities_and_social_sciences' ){
               transformedCourse.domain_name.push('Humanities and Sciences');
           } else {
-              transformedCourse.domain_name.push(course.streams[k]);
+              transformedCourse.domain_name.push(doc.streams[k]);
           }
     }
     transformedCourse.seats = doc.seats_available;
