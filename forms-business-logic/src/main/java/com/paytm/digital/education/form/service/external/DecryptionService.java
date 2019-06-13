@@ -18,7 +18,7 @@ public class DecryptionService {
     @Value("${decryption.service.url}")
     private String decryptionServiceUrl;
 
-    public Long decryptOrderId(String eod){
+    public Long decryptOrderId(String eod) {
         String val = "{\"inputStr\":\"" + eod + "\"}";
         Map<String, String> params = new HashMap<>();
         params.put("options", val);

@@ -82,20 +82,7 @@ public class DownloadController {
             @RequestHeader("x-user-id") String userId
     ) {
         Long orderId = decryptionService.decryptOrderId(eod);
-        System.out.println(orderId);
-        FormData formData = downloadService.getFormDataByUserIdAndOrderId(userId, orderId);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Access-Control-Allow-Credentials", "true");
-
-        if (userId == null || formData == null) {
-
-            return new ResponseEntity<>(
-                    new ErrorResponseBody(404, "data not found"), headers,
-                    HttpStatus.NOT_FOUND);
-        }
-
-        return downloadForm(orderId, type, formData, headers);
+        return downloadFormByUser(orderId, type, userId);
     }
 
     @GetMapping("/auth/v1/user/form/download")
