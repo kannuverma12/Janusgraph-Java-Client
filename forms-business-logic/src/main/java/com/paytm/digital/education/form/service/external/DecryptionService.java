@@ -19,9 +19,8 @@ public class DecryptionService {
     private String decryptionServiceUrl;
 
     public Long decryptOrderId(String eod) {
-        String val = "{\"inputStr\":\"" + eod + "\"}";
         Map<String, String> params = new HashMap<>();
-        params.put("options", val);
+        params.put("inputStr", eod);
         String orderIdStr = baseRestApiService.get(decryptionServiceUrl, params, String.class);
         Long orderId = Long.parseLong(orderIdStr);
         return orderId;
