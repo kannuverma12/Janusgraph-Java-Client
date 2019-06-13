@@ -1,5 +1,7 @@
 package com.paytm.digital.education.predictor.service.impl;
 
+import static com.paytm.digital.education.form.constants.FblConstants.C360_API_TOKEN;
+import static com.paytm.digital.education.form.constants.FblConstants.CONTENT_TYPE;
 import static com.paytm.digital.education.form.constants.FblConstants.DATA_MERCHANT_SKU;
 import static com.paytm.digital.education.form.constants.FblConstants.ERROR;
 import static com.paytm.digital.education.form.constants.FblConstants.LOGO_URL;
@@ -24,17 +26,25 @@ import com.paytm.digital.education.exception.EducationException;
 import com.paytm.digital.education.form.model.FormData;
 import com.paytm.digital.education.form.model.MerchantProductConfig;
 import com.paytm.digital.education.form.repository.FormDataRepository;
+import com.paytm.digital.education.form.service.MerchantProductConfigService;
 import com.paytm.digital.education.predictor.model.CollegePredictor;
+import com.paytm.digital.education.predictor.model.PredictorAuditLogs;
 import com.paytm.digital.education.predictor.repository.PredictorAuditRepository;
 import com.paytm.digital.education.predictor.repository.PredictorListRepository;
-import com.paytm.digital.education.predictor.model.PredictorAuditLogs;
 import com.paytm.digital.education.predictor.response.PredictorListResponse;
 import com.paytm.digital.education.predictor.service.CollegePredictorService;
-import com.paytm.digital.education.form.service.MerchantProductConfigService;
+import com.paytm.digital.education.utility.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -43,9 +53,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -54,6 +64,12 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
 
     @Value("${catalog.predictor.mid}")
     private String paytmMid;
+
+    @Value("${c360.api.token}")
+    private String c360ApiToken;
+
+    @Value("${c360.api.create.form.url}")
+    private String c36CreateFormUrl;
 
     @Autowired
     private FormDataRepository           formDataRepository;
@@ -178,6 +194,38 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
             return new PredictorListResponse(200, predictorList);
         }
         return null;
+    }
+
+    @Override
+    public Map<String, Object> createForm(Map<String, Object> requestBody) {
+        try {
+            //create request
+            HttpPost postRequest = new HttpPost(c36CreateFormUrl);
+
+            // set headers
+            postRequest.addHeader(CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+            postRequest.addHeader(C360_API_TOKEN, c360ApiToken);
+
+            //set request body
+            postRequest.setEntity(new StringEntity(JsonUtils.toJson(requestBody)));
+
+            // execute post call
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpResponse response = httpClient.execute(postRequest);
+
+            //Parse response
+            HttpEntity httpEntity = response.getEntity();
+            String apiOutput = EntityUtils.toString(httpEntity);
+            Map<String, Object> responseData = JsonUtils.fromJson(apiOutput, HashMap.class);
+
+            // close connection
+            httpClient.getConnectionManager().shutdown();
+
+            return responseData;
+        } catch (Exception e) {
+            log.error("Error in calling careers360 create form api ", e);
+            return null;
+        }
     }
 
     private Map<Long, Integer> getPidPriceMap(List<MerchantProductConfig> mpcList) {

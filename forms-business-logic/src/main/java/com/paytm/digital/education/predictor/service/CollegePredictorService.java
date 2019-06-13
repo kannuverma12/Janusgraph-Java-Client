@@ -10,4 +10,6 @@ public interface CollegePredictorService {
     Map<String, Object> savePredictorFormData(FormData formData);
 
     PredictorListResponse getPredictorList();
+
+    Map<String, Object> createForm(Map<String, Object> requestBody);
 }

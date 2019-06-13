@@ -21,4 +21,7 @@ public interface FblConstants {
     String FORM                 = "form";
     String INVOICE              = "invoice";
     String PREDICTOR_INVOICE    = "predictor-invoice";
+    String C360_API_TOKEN       = "x-api-token";
+    String CONTENT_TYPE         = "Content-Type";
+
 }
