@@ -1,8 +1,10 @@
 package com.paytm.digital.education.form.handler;
 
+import com.paytm.digital.education.form.dao.FormDataDao;
 import com.paytm.digital.education.form.request.FulfilmentKafkaObject;
 import com.paytm.digital.education.form.request.FulfilmentKafkaPostDataObject;
 import com.paytm.digital.education.form.service.PersonaHttpClientService;
+import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
@@ -21,6 +23,8 @@ public class NotifyFulfilmentHandler extends BaseHandler<FulfilmentKafkaObject> 
 
     private PersonaHttpClientService personaHttpClientService;
 
+    private FormDataDao formDataDao;
+
     @Override
     public void handle(FulfilmentKafkaObject fulfilmentKafkaObject) {
         try {
@@ -33,12 +37,20 @@ public class NotifyFulfilmentHandler extends BaseHandler<FulfilmentKafkaObject> 
             ResponseEntity<HashMap> responseEntity = personaHttpClientService.makeHttpRequest(
                     url, HttpMethod.POST, headers, null, postData, HashMap.class);
 
+            log.info("Updated fulfilment :: {} Body: {}",
+                    JsonUtils.toJson(fulfilmentKafkaObject), responseEntity.getBody());
+
             // todo: failure handling, retries
 
-            log.info("Updated fulfilment :: " + responseEntity.getBody());
+            formDataDao.updateFulfilmentStatus(
+                    fulfilmentKafkaObject.getRefId(),
+                    Integer.parseInt(postData.getStatus())
+            );
         } catch (Exception e) {
             // todo: send metrics
-            log.error("Error updating order status to fulfilment", e);
+            log.error("Error updating order status to fulfilment:{}",
+                    JsonUtils.toJson(fulfilmentKafkaObject), e);
         }
     }
+
 }

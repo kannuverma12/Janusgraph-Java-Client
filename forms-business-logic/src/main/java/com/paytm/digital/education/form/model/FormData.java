@@ -1,6 +1,7 @@
 package com.paytm.digital.education.form.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,7 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FormData {
 
     @Id
@@ -28,7 +30,6 @@ public class FormData {
 
     @Field("transactionType")
     private String transactionType;
-
 
     @Field("createdAt")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -41,7 +42,6 @@ public class FormData {
     @Field("expiryDate")
     private Date expiryDate;
 
-    @NotEmpty
     @Field("candidateId")
     private String candidateId;
 
@@ -51,15 +51,15 @@ public class FormData {
     @Field("emailVerified")
     private Boolean emailVerified;
 
-    @NotEmpty
     @Field("customerId")
     private String customerId;
 
-    @NotEmpty
     @Field("merchantId")
     private String merchantId;
 
-    @NotEmpty
+    @Field("merchantProductId")
+    private String merchantProductId;
+
     @Field("merchantName")
     private String merchantName;
 

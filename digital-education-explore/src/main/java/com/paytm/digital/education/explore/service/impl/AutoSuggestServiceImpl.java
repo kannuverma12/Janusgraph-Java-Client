@@ -177,6 +177,12 @@ public class AutoSuggestServiceImpl {
                 documents.forEach(esDocument -> {
                     SuggestResult responseDoc = new SuggestResult(esDocument.getEntityId(),
                             esDocument.getOfficialName());
+                    if (EducationEntity.LOCATION.equals(esDocument.getEntityType())) {
+                        responseDoc.setCityId(esDocument.getCityId());
+                        responseDoc.setStateId(esDocument.getStateId());
+                    }
+                    responseDoc.setUrlDisplayName(
+                            CommonUtil.convertNameToUrlDisplayName(esDocument.getOfficialName()));
                     if (StringUtils.isNotBlank(esDocument.getLogo())) {
                         responseDoc.setLogo(CommonUtil.getLogoLink(esDocument.getLogo()));
                     }

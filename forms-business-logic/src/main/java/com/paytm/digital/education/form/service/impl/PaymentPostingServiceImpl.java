@@ -2,8 +2,10 @@ package com.paytm.digital.education.form.service.impl;
 
 
 import com.mongodb.client.result.UpdateResult;
+import com.paytm.digital.education.form.dao.FormDataDao;
 import com.paytm.digital.education.form.model.FormData;
 import com.paytm.digital.education.form.model.FormFulfilment;
+import com.paytm.digital.education.form.model.FormStatus;
 import com.paytm.digital.education.form.model.MerchantProductConfig;
 import com.paytm.digital.education.form.model.PaymentUserMetaData;
 import com.paytm.digital.education.form.producer.KafkaProducer;
@@ -80,6 +82,9 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
     @Autowired
     private KafkaProducer kafkaProducer;
 
+    @Autowired
+    private FormDataDao formDataDao;
+
     private final Set<String> paymentStatus = new HashSet<>(Arrays.asList("success", "pending", "failure"));
 
     @Value("${app.topic.order.status.update}")
@@ -90,6 +95,7 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         try {
             // fetch item from request
             // todo: handle multiple items
+            log.info("Received payment posting: {}", JsonUtils.toJson(paymentPostingRequest));
             PaymentPostingItemRequest paymentPostingItemRequest = paymentPostingRequest.getItems().get(0);
 
             // validate price
@@ -101,21 +107,27 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
             }
 
             // parse metadata
+            final String metaData = paymentPostingItemRequest.getMetaData();
             PaymentUserMetaData metadata = null;
             try {
-                metadata = JsonUtils.fromJson(paymentPostingItemRequest.getMetaData(), PaymentUserMetaData.class);
+                metadata = JsonUtils.fromJson(metaData, PaymentUserMetaData.class);
+                if (metadata == null) {
+                    log.error("Error parsing metadata: " + metaData);
+                }
             } catch (Exception e) {
                 // todo: send metrics
-                log.error("Error parsing metadata: " + paymentPostingItemRequest.getMetaData());
+                log.error("Error parsing metadata: " + metaData, e);
                 return false;
             }
 
             String refId = metadata.getRefId();
             if (refId == null || refId.isEmpty()) {
                 // todo: send metrics
-                log.error("refId not found in metadata: " + paymentPostingItemRequest.getMetaData());
+                log.error("refId not found in metadata: " + metaData);
                 return false;
             }
+
+            formDataDao.updateStatus(refId, FormStatus.PG_PAYMENT_DONE);
 
             // fetch data and status from formData collection using refId
             FormData formData = fetchDataFromFormDataCollection(refId);
@@ -193,6 +205,7 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
 
             // update fulfilment about the order status
             notifyOrderStatusToFulfilment(
+                    refId,
                     paymentPostingItemRequest,
                     fulfilmentId,
                     formIoMerchantResponse.getPaymentStatus());
@@ -238,7 +251,10 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
     private Boolean insertInFormDataCollection(String id, PaymentPostingItemRequest paymentPostingItemRequest) {
         Query query = new Query();
         query.addCriteria(Criteria.where("id").is(id)
-                .orOperator(Criteria.where("formFulfilment").exists(false), Criteria.where("formFulfilment").is(null)));
+                .orOperator(
+                        Criteria.where("formFulfilment.orderId").exists(false),
+                        Criteria.where("formFulfilment.orderId").is(null)
+                ));
 
         // Creating model object
         FormFulfilment formFulfilment = new FormFulfilment();
@@ -256,6 +272,7 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         update.set("updatedAt", currentDate);
         update.set("formFulfilment", formFulfilment);
 
+        // todo: why is this failing when already exist ?
         UpdateResult updateResult = mongoOperations.updateFirst(query, update, FormData.class);
 
         return (updateResult.getModifiedCount() > 0);
@@ -299,6 +316,8 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         formIoMerchantDataRequest.setOrderId(paymentPostingItemRequest.getOrderId().toString());
         formIoMerchantDataRequest.setItemId(paymentPostingItemRequest.getItemId().toString());
         formIoMerchantDataRequest.setAmount(paymentPostingItemRequest.getPrice().toString());
+        formIoMerchantDataRequest.setMerchantProductId(formData.getMerchantProductId());
+        formIoMerchantDataRequest.setMerchantCandidateId(formData.getMerchantCandidateId());
         formIoMerchantDataRequest.setSubmit(true);
         formIoMerchantDataRequest.setRefId(refId);
 
@@ -314,6 +333,7 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         if (requestFormFields != null && requestFormFields.size() > 0) {
             FormData requestFormData = fetchCustomFormData(refId, requestFormFields);
             formIoMerchantDataRequest.setCandidateDetails(requestFormData.getCandidateDetails());
+            formIoMerchantDataRequest.setAdditionalData(requestFormData.getAdditionalData());
         }
 
         FormIoMerchantRequest formIoMerchantRequest = new FormIoMerchantRequest();
@@ -322,6 +342,7 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
 
         postRequest.setEntity(new StringEntity(JsonUtils.toJson(formIoMerchantRequest)));
 
+        //log.info("Merchant API Request for refId {} : {}", refId, JsonUtils.toJson(postRequest));
         // execute post call
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpResponse response = httpClient.execute(postRequest);
@@ -357,6 +378,8 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         query.addCriteria(Criteria.where("_id").is(id));
         query.fields().include("candidateDetails.amount");
         query.fields().include("transactionType");
+        query.fields().include("merchantProductId");
+        query.fields().include("merchantCandidateId");
 
         return mongoOperations.findOne(query, FormData.class);
     }
@@ -365,7 +388,7 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         Query query = new Query();
         query.addCriteria(Criteria.where("_id").is(id));
         for (String key: inclusionList) {
-            query.fields().include("candidateDetails." + key);
+            query.fields().include(key);
         }
 
         return mongoOperations.findOne(query, FormData.class);
@@ -381,11 +404,18 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         update.set("formFulfilment.updatedDate", currentDate);
         update.set("updatedAt", currentDate);
         update.set("status", env.getProperty("formio.status." + formIoMerchantResponse.getPaymentStatus()));
+        // update response in candidateDetails
+        if (formIoMerchantResponse.getCandidateDetails() != null) {
+            for (Map.Entry<String, Object> entry : formIoMerchantResponse.getCandidateDetails().entrySet()) {
+                update.set("candidateDetails." + entry.getKey(), entry.getValue());
+            }
+        }
 
         mongoOperations.updateFirst(new Query(Criteria.where("_id").is(id)), update, FormData.class);
     }
 
-    private void notifyOrderStatusToFulfilment(PaymentPostingItemRequest paymentPostingItemRequest,
+    private void notifyOrderStatusToFulfilment(String refId,
+                                               PaymentPostingItemRequest paymentPostingItemRequest,
                                                Long fulfilmentId, String responsecode) {
         // construct URL
         String url = env.getProperty("fulfilment.host.url") + '/' + paymentPostingItemRequest.getMerchantId().toString()
@@ -398,6 +428,7 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         fulfilmentKafkaPostDataObject.setStatus(env.getProperty("fulfilment.status." + responsecode));
 
         FulfilmentKafkaObject fulfilmentKafkaObject = new FulfilmentKafkaObject();
+        fulfilmentKafkaObject.setRefId(refId);
         fulfilmentKafkaObject.setUrl(url);
         fulfilmentKafkaObject.setOrderId(paymentPostingItemRequest.getOrderId());
         fulfilmentKafkaObject.setFulfilmentId(fulfilmentId);

@@ -16,6 +16,7 @@ import com.paytm.digital.education.explore.database.entity.Instance;
 import com.paytm.digital.education.explore.database.entity.SubExam;
 import com.paytm.digital.education.explore.enums.Gender;
 import com.paytm.digital.education.explore.response.dto.detail.ExamAndCutOff;
+import com.paytm.digital.education.explore.utility.CommonUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -47,6 +48,8 @@ public class ExamInstanceHelper {
                 long examId = exam.getExamId();
                 ExamAndCutOff examAndCutOff = new ExamAndCutOff();
                 examAndCutOff.setExamId(examId);
+                examAndCutOff.setUrlDisplayKey(
+                        CommonUtil.convertNameToUrlDisplayName(exam.getExamFullName()));
                 examAndCutOff.setExamShortName(exam.getExamShortName());
                 examAndCutOff.setMasterDegree(examIdAndMasterDegrees.get(examId));
                 if (examCategoryGroup.containsKey(examId)) {
@@ -68,7 +71,7 @@ public class ExamInstanceHelper {
                     if (Objects.nonNull(exam.getSubExams())) {
                         for (SubExam subExam : exam.getSubExams()) {
                             examId = subExam.getId();
-                            if (examIds.contains(examId)) {
+                            if (examIds.contains(examId) && examCategoryGroup.containsKey(examId)) {
                                 examAndCutOff.setExamId(examId);
                                 setCasteGroupAndGender(examId, examGender, examCategoryGroup,
                                         examAndCutOff);

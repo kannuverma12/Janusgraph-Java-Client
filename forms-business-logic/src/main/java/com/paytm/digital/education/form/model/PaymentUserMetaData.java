@@ -9,4 +9,7 @@ public class PaymentUserMetaData {
     @JsonProperty("reference_id")
     String refId;
 
+    @JsonProperty("transactionId")
+    String transactionId;
+
 }

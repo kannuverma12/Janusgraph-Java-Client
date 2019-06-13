@@ -5,6 +5,8 @@ import com.paytm.digital.education.form.model.FormStatus;
 import com.paytm.digital.education.form.model.LatestFormData;
 import com.paytm.digital.education.form.service.SaveAndFetchService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -13,14 +15,14 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Objects;
 
 @AllArgsConstructor
 @Service
+@Slf4j
 public class SaveAndFetchServiceImpl implements SaveAndFetchService {
 
     private MongoOperations mongoOperations;
@@ -47,6 +49,60 @@ public class SaveAndFetchServiceImpl implements SaveAndFetchService {
     @Override
     public String saveData(FormData formData, boolean confirmFlag) {
 
+        FormData data = null;
+        if (Objects.nonNull(formData.getId())) {
+            data = getRecord(formData.getId());
+        } else {
+            data = getLatestRecord(formData.getMerchantId(), formData.getCustomerId(),
+                    formData.getCandidateId());
+        }
+        if (Objects.isNull(data)) {
+            formData.setCreatedAt(new Date());
+            formData.setUpdatedAt(new Date());
+            formData.setStatus(FormStatus.REGISTERED);
+            return mongoOperations.save(formData).getId();
+        } else {
+            FormStatus status = data.getStatus();
+            String id = null;
+            switch (status) {
+                case SUCCESS:
+                case PENDING:
+                case FAILURE:
+                case PG_PAYMENT_DONE:
+                    formData.setId(null);
+                    formData.setCreatedAt(new Date());
+                    formData.setUpdatedAt(new Date());
+                    formData.setStatus(FormStatus.REGISTERED);
+                    return mongoOperations.save(formData).getId();
+                case REGISTERED:
+                case PAYMENT_PENDING:
+                    id = validateAndUpdateFormData(data, formData, FormStatus.PARTIAL);
+                    break;
+                case PARTIAL:
+                    if (!confirmFlag) {
+                        id = validateAndUpdateFormData(data, formData, null);
+                    } else {
+                        // Originally we were not updating details in this case
+                        id = validateAndUpdateFormData(data, formData, FormStatus.PAYMENT_PENDING);
+                    }
+                    break;
+                case ADDONS:
+                    // Originally we were not updating details in this case
+                    id = validateAndUpdateFormData(data, formData, null);
+                    break;
+                default:
+                    id = data.getId();
+            }
+            if (Objects.isNull(id)) {
+                log.error("Form detail validation failed.");
+            }
+            return id;
+        }
+
+    }
+
+    public String saveDataOld(FormData formData, boolean confirmFlag) {
+
         FormData data = getFormDataFromDB(formData);
 
         String id = null;
@@ -60,11 +116,16 @@ public class SaveAndFetchServiceImpl implements SaveAndFetchService {
             id = mongoOperations.save(formData).getId();
         } else {
             FormStatus status = data.getStatus();
+            if (Objects.isNull(status)) {
+                status = FormStatus.PARTIAL;
+            }
 
             switch (status) {
                 case SUCCESS:
                 case FAILURE:
                 case PENDING:
+                    // throw exception bad request
+
                     formData.setCreatedAt(new Date());
                     formData.setUpdatedAt(new Date());
                     formData.setStatus(FormStatus.PARTIAL);
@@ -73,11 +134,20 @@ public class SaveAndFetchServiceImpl implements SaveAndFetchService {
                     break;
 
                 case REGISTERED:
+                    formData.setMerchantId(data.getMerchantId());
+
                     data.setCandidateDetails(formData.getCandidateDetails());
+                    data.setAdditionalData(formData.getAdditionalData());
                     data.setUpdatedAt(new Date());
                     data.setStatus(FormStatus.PARTIAL);
+                    if (formData.getTransactionType() != null) {
+                        data.setTransactionType(formData.getTransactionType());
+                    }
 
                     // todo: what if id is null ?
+                    if (formData.getMerchantCandidateId() != null) {
+                        data.setMerchantCandidateId(formData.getMerchantCandidateId());
+                    }
 
                     updateData(data, false);
                     id = data.getId();
@@ -86,13 +156,24 @@ public class SaveAndFetchServiceImpl implements SaveAndFetchService {
                 case PARTIAL:
                     if (!confirmFlag) {
                         data.setCandidateDetails(formData.getCandidateDetails());
+                        data.setAdditionalData(formData.getAdditionalData());
                         data.setUpdatedAt(new Date());
+                        data.setStatus(FormStatus.REGISTERED);
+
+                        if (formData.getTransactionType() != null) {
+                            data.setTransactionType(formData.getTransactionType());
+                        }
+
+                        if (formData.getMerchantCandidateId() != null) {
+                            data.setMerchantCandidateId(formData.getMerchantCandidateId());
+                        }
 
                         updateData(data, false);
                         id = data.getId();
                     } else {
                         data.setStatus(FormStatus.PAYMENT_PENDING);
-                        data.setUpdatedAt(new Date()); // todo: do mongo provide set current date on update ?
+                        data.setUpdatedAt(
+                                new Date()); // todo: do mongo provide set current date on update ?
 
                         updateData(data, false);
                         id = data.getId();
@@ -164,6 +245,13 @@ public class SaveAndFetchServiceImpl implements SaveAndFetchService {
         Update update = new Update();
         update.set("status", formData.getStatus());
         update.set("updatedAt", formData.getUpdatedAt());
+        if (formData.getTransactionType() != null) {
+            update.set("transactionType", formData.getTransactionType());
+        }
+
+        if (formData.getMerchantCandidateId() != null) {
+            update.set("merchantCandidateId", formData.getMerchantCandidateId());
+        }
 
         if (fulfilmentFlag) {
             update.set("formFulfilment", formData.getFormFulfilment());
@@ -202,7 +290,8 @@ public class SaveAndFetchServiceImpl implements SaveAndFetchService {
     }
 
     @Override
-    public FormData getLatestRecord(String merchantId, String customerId, String candidateId) {
+    public FormData getLatestRecord(@NotBlank String merchantId, @NotBlank String customerId,
+            @NotBlank String candidateId) {
         Query query = new Query();
         Criteria criteria = Criteria.where("merchantId").is(merchantId)
                 .and("customerId").is(customerId)
@@ -222,26 +311,59 @@ public class SaveAndFetchServiceImpl implements SaveAndFetchService {
         return mongoOperations.findOne(query, FormData.class);
     }
 
+    private String validateAndUpdateFormData(FormData dbData, FormData externalData,
+            FormStatus status) {
+        if (Objects.nonNull(externalData.getCandidateId())
+                && !externalData.getCandidateId().equals(dbData.getCandidateId())) {
+            return null;
+        }
+        if (Objects.nonNull(externalData.getMerchantId())
+                && !externalData.getMerchantId().equals(dbData.getMerchantId())) {
+            return null;
+        }
+        if (Objects.nonNull(externalData.getCustomerId())
+                && !externalData.getCustomerId().equals(dbData.getCustomerId())) {
+            return null;
+        }
+        dbData.setCandidateDetails(externalData.getCandidateDetails());
+        dbData.setAdditionalData(externalData.getAdditionalData());
+        dbData.setUpdatedAt(new Date());
+        if (Objects.nonNull(status)) {
+            dbData.setStatus(status);
+        }
+        if (externalData.getTransactionType() != null) {
+            dbData.setTransactionType(externalData.getTransactionType());
+        }
+
+        // todo: what if id is null ?
+        if (externalData.getMerchantCandidateId() != null) {
+            dbData.setMerchantCandidateId(externalData.getMerchantCandidateId());
+        }
+        updateData(dbData, false);
+        return dbData.getId();
+    }
+
     private FormData getFormDataFromDB(FormData formData) {
         FormData data = null;
 
-        if (formData.getId() != null) {
+        if (Objects.nonNull(formData.getId())) {
             data = getRecord(formData.getId());
 
-        } else if (formData.getCustomerId() != null
-                && formData.getMerchantId() != null
-                && formData.getCandidateId() != null) {
-            data = getLatestRecord(formData.getMerchantId(), formData.getCustomerId(), formData.getCandidateId());
+        } else if (StringUtils.isNotBlank(formData.getCustomerId())
+                && StringUtils.isNotBlank(formData.getMerchantId())
+                && StringUtils.isNotBlank(formData.getCandidateId())) {
+            data = getLatestRecord(formData.getMerchantId(), formData.getCustomerId(),
+                    formData.getCandidateId());
         }
 
         return data;
     }
 
     public boolean validateFormDataRequest(FormData formData) {
-        return formData.getId() != null
-                || (formData.getMerchantId() != null
-                && formData.getCustomerId() != null
-                && formData.getCandidateId() != null);
+        return Objects.nonNull(formData.getId())
+                || (StringUtils.isNotBlank(formData.getMerchantId())
+                && StringUtils.isNotBlank(formData.getCustomerId())
+                && StringUtils.isNotBlank(formData.getCandidateId()));
     }
 
     private FormData getFormDataBasedOnCriteriaAndSort(
@@ -269,24 +391,33 @@ public class SaveAndFetchServiceImpl implements SaveAndFetchService {
 
     @Override
     public LatestFormData getCurrentOpenAndLastPaidFormDetails(
-            @NonNull String merchantId, @NonNull String customerId,
-            @NonNull String candidateId, @NonNull List<String> keys) {
+            String merchantId, String customerId,
+            String candidateId, List<String> keys) {
 
         String paymentFieldName = "formFulfilment.orderId";
 
         Criteria lastOrderCriteria = createBaseCriteria(merchantId, customerId, candidateId)
-                .where(paymentFieldName).exists(true)
-                .where(paymentFieldName).ne(null);
+                .and(paymentFieldName).exists(true);
+        //                .and(paymentFieldName).ne(null);
+
+        //                .andOperator(
+        //                        Criteria.where(paymentFieldName).exists(true),
+        //                        Criteria.where(paymentFieldName).ne(null)
+        //                );
 
         Criteria unpaidOrderCriteria = createBaseCriteria(merchantId, customerId, candidateId)
-                .orOperator(
-                        Criteria.where(paymentFieldName).exists(false),
-                        Criteria.where(paymentFieldName).is(null)
-                );
+                .and(paymentFieldName).exists(false);
+
+        // todo: check this flow
+        //                .orOperator(
+        //                        Criteria.where(paymentFieldName).exists(false),
+        //                        Criteria.where(paymentFieldName).is(null)
+        //                );
 
         return new LatestFormData(
-                getFormDataBasedOnCriteriaAndSort( unpaidOrderCriteria, keys, "updatedAt"),
-                getFormDataBasedOnCriteriaAndSort( lastOrderCriteria, keys, "formFulfilment.createdDate")
+                getFormDataBasedOnCriteriaAndSort(unpaidOrderCriteria, keys, "updatedAt"),
+                getFormDataBasedOnCriteriaAndSort(lastOrderCriteria, keys,
+                        "formFulfilment.createdDate")
         );
     }
 

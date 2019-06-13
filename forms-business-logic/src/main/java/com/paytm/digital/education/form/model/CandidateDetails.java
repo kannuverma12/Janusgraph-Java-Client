@@ -1,24 +1,27 @@
 package com.paytm.digital.education.form.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CandidateDetails {
 
     // Common
     private String username;
 
-    @NotEmpty
     private String email;
 
-    @NotEmpty
     private String mobileNumber;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
@@ -182,4 +185,19 @@ public class CandidateDetails {
 
     private String miCode;
 
+    private String predictorUrl;
+
+    // CAREER360
+    @Transient
+    @JsonProperty("requestData")
+    private transient Map<String, Object> requestData;
+
+    @Transient
+    @JsonProperty("responseData")
+    private transient Map<String, Object> responseData;
+
+    @Field("predictorName")
+    private String predictorName;
+
+    private String maskEmail;
 }

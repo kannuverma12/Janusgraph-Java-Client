@@ -23,6 +23,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 
 @Slf4j
 @AllArgsConstructor
@@ -36,37 +37,37 @@ public class DetailsApiController {
     private ExamDetailServiceImpl      examDetailService;
     private ExploreValidator           exploreValidator;
 
-    @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/exam/{examId}")
+    @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/exam/{examId}/{examName}")
     public @ResponseBody ExamDetail getExamById(
-            @PathVariable("examId") @Min(1) long examId,
+            @PathVariable("examId") @Min(1) Long examId,
+            @PathVariable("examName") @NotBlank String examName,
             @RequestParam(name = "field_group", required = false) String fieldGroup,
             @RequestParam(name = "fields", required = false) List<String> fields,
             @RequestHeader(value = "x-user-id", required = false) Long userId) throws Exception {
-
         exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
-
         return examDetailService
-                .getDetail(examId, userId, fieldGroup, fields);
+                .getDetail(examId, examName, userId, fieldGroup, fields);
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/institute/{instituteId}")
+    @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/institute/{instituteId}/{instituteName}")
     public @ResponseBody InstituteDetail getInstituteById(
-            @PathVariable("instituteId") @Min(1) long instituteId,
+            @PathVariable("instituteId") @Min(1) Long instituteId,
+            @PathVariable("instituteName") @NotBlank String instituteName,
             @RequestParam(name = "field_group", required = false) String fieldGroup,
             @RequestParam(name = "fields", required = false) List<String> fields,
             @RequestHeader(value = "x-user-id", required = false) Long userId) throws Exception {
-
         exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
-
         return instituteDetailService
-                .getDetail(instituteId, userId, fieldGroup, fields);
+                .getDetail(instituteId, instituteName, userId, fieldGroup, fields);
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "/v1/course/{courseId}")
+    @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/course/{courseId}/{courseName}")
     public @ResponseBody CourseDetail getCourseById(@PathVariable("courseId") @Min(1) long courseId,
+            @PathVariable @NotBlank String courseName,
             @RequestParam(name = "field_group", required = false) String fieldGroup,
-            @RequestParam(name = "fields", required = false) List<String> fields) {
+            @RequestParam(name = "fields", required = false) List<String> fields,
+            @RequestHeader(value = "x-user-id", required = false) Long userId) {
         exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
-        return courseDetailService.getCourseDetails(courseId, fieldGroup, fields);
+        return courseDetailService.getDetail(courseId, courseName, userId, fieldGroup, fields);
     }
 }

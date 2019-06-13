@@ -7,12 +7,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -57,6 +57,7 @@ public class ConfigurationController {
             @RequestParam(value = "merchant_id", required = false) String merchantId,
             @RequestParam(value = "order_id") Long orderId
     ) {
+        log.info("Post Order Screen Config merchant id : {}, order id : {}", merchantId, orderId);
         Map<String, Object> data = merchantConfigService.getPostScreenData(merchantId, orderId);
 
         if (data == null) {
@@ -68,18 +69,8 @@ public class ConfigurationController {
             );
         }
 
-        String formDownloadLink = (String) data.get("form_download_link");
-        if (formDownloadLink != null) {
-            formDownloadLink += "?order_id=" + orderId + "&type=form";
-            data.put("form_download_link", formDownloadLink);
-        }
+        return merchantConfigService.getResponseForPostOrderScreenConfig(data, orderId, merchantId);
 
-        String invoiceDownloadLink = (String) data.get("invoice_download_link");
-        if (invoiceDownloadLink != null) {
-            invoiceDownloadLink += "?order_id=" + orderId + "&type=invoice";
-            data.put("invoice_download_link", invoiceDownloadLink);
-        }
-        return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
 }

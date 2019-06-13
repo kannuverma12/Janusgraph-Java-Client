@@ -1,5 +1,6 @@
 package com.paytm.digital.education.form.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
@@ -10,6 +11,7 @@ import java.util.Date;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FormFulfilment {
 
     @Field("orderId")
@@ -29,6 +31,9 @@ public class FormFulfilment {
 
     @Field("paymentStatus")
     private String paymentStatus;
+
+    @Field("fulfilmentStatus")
+    private Integer fulfilmentStatus;
 
     @Field("createdDate")
     private Date createdDate;
