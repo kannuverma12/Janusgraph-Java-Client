@@ -71,7 +71,8 @@ function transformCourse(doc) {
     transformedCourse.branch = doc.master_branch;
     transformedCourse.study_mode = doc.study_mode;
     transformedCourse.duration_in_months = doc.course_duration;
-    transformedCourse.is_accepting_application = doc.is_accepting_application;
+    console.log(doc.course_id + " " + doc.lead_enabled);
+    transformedCourse.is_accepting_application = doc.lead_enabled;
     transformedCourse.domain_name = [];
     for (var k = 0; k < doc.streams.length; k++) {
           if(doc.streams[k].toLowerCase() === 'education' ||
