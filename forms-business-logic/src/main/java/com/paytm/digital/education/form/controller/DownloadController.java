@@ -90,7 +90,13 @@ public class DownloadController {
                 throw new BadRequestException(ErrorEnum.ORDER_ID_AND_EOD_BOTH_CANNOT_BE_NULL,
                         ErrorEnum.ORDER_ID_AND_EOD_BOTH_CANNOT_BE_NULL.getExternalMessage());
             }
-            orderId = decryptionService.decryptOrderId(eod);
+            try {
+                orderId = decryptionService.decryptOrderId(eod);
+            } catch (Exception e) {
+                return new ResponseEntity<>(new ErrorResponseBody(500, "Something went wrong"),
+                        null,
+                        HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
         FormData formData = downloadService.getFormDataByUserIdAndOrderId(userId, orderId);
 
