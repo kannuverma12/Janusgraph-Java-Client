@@ -59,7 +59,7 @@ public class SellerPanelServiceImpl implements SellerPanelService {
         Criteria criteria = Criteria.where("formFulfilment.createdDate")
                 .gte(getStartOfDay(startDate)).lte(getEndOfDay(endDate)).and("merchantId").is(merchantId);
         query.addCriteria(criteria);
-        long count = mongoOperations.count(query, "formData");
+        Long count = mongoOperations.count(query, "formData");
 
         query.skip(limit * offset);
         query.limit(limit);
