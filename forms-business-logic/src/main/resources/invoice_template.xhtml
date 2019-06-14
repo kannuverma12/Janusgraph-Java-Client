@@ -1,311 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700,800" rel="stylesheet" />
-    <title>AIMA UIMA Form</title>
+    <!--    <meta http-equiv="X-UA-Compatible" content="ie=edge" />-->
+    <link
+            href="https://fonts.googleapis.com/css?family=Open+Sans:400,700,800"
+            rel="stylesheet"
+    />
+    <title>Title...</title>
     <style>
         * {
             margin: 0;
             padding: 0;
-            -webkit-box-sizing: border-box;
             box-sizing: border-box;
-            -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
-
-        body,
-        html {
-            zoom: 90%;
-            -webkit-transform: scale(0.95);
-            -ms-transform: scale(0.95);
-            transform: scale(0.95);
-            -webkit-transform-origin: 50% 0;
-            -ms-transform-origin: 50% 0;
-            transform-origin: 50% 0;
+        body, html {
+            margin: 20px;
             height: 100vh;
             background: #fff;
-            font-size: 13px;
-            margin: 15px 0 0;
             font-family: "Open Sans", sans-serif;
         }
-
         p {
             line-height: 1.2;
         }
-
-        .border-bottom {
-            border-bottom: 1px solid #eee;
-        }
-
-        .checkboxWrapper {
-            display: block;
-            position: relative;
-            padding-left: 35px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            font-size: 22px;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-
-        .checkboxWrapper input {
-            position: absolute;
-            opacity: 0;
-            cursor: pointer;
-            height: 0;
-            width: 0;
-        }
-
-        .checkmark {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 15px;
-            width: 15px;
-            background-color: #eee;
-            -webkit-print-color-adjust: exact;
-        }
-
-        .checkboxWrapper:hover input~.checkmark {
-            background-color: #ccc;
-        }
-
-        .checkboxWrapper input:checked~.checkmark {
-            background-color: #41d1f2;
-        }
-
-        .checkmark:after {
-            content: "";
-            position: absolute;
-            display: none;
-        }
-
-        .checkboxWrapper input:checked~.checkmark:after {
-            display: block;
-        }
-
-        .checkboxWrapper .checkmark:after {
-            left: 5px;
-            top: 3px;
-            width: 2px;
-            height: 6px;
-            border: solid white;
-            border-width: 0 2px 2px 0;
-            -webkit-transform: rotate(45deg);
-            -ms-transform: rotate(45deg);
-            transform: rotate(45deg);
-        }
-
         @page {
             size: A4;
             margin: 0;
         }
     </style>
-
 </head>
 
-<body style="page-break-after: avoid;">
-<div id="pageWrapper" style="width:100%; height:100%; background:#fff; page-break-after: auto;">
-    <!-- header start -->
-    <div id="header" style="width:100%; overflow: hidden; margin-bottom: 5px;">
-        <div id="col1" style="width:10%; display: inline-block; vertical-align: middle;">
-            <img style="width:65px; height:65px; padding:5px; border:2px solid #eee; border-radius:100px;"
-                 src="https://pbs.twimg.com/profile_images/951398339270008833/db_KmnZ9_400x400.jpg" alt="{{inst_name}}" />
-        </div>
-        <div id="col2" style="width:50%; padding:0 5%; display: inline-block; vertical-align: middle;">
-            <h2 style="font-size:14px; margin-bottom:5px;">
-                ${merchantName}
-            </h2>
-        </div>
-        <div id="col3" style="width:25%; display: inline-block; text-align:right; vertical-align: middle;">
-            <img style="width:65px;" src="https://seeklogo.net/wp-content/uploads/2018/10/paytm-logo.png" alt="Paytm logo" />
+<body>
+<div style="background:#fff;">
+    <!--Header Start-->
+    <div style="width:100%;overflow: hidden;">
+        <div style="width:50%; float:left;"><img src="https://seeklogo.net/wp-content/uploads/2018/10/paytm-logo.png" width="80px"></img></div>
+        <div style="width:50%; float:left; text-align:right;">
+            <h5 style="font-size:11px; text-transform:uppercase;">${candidateDetails.fullName!"-"}<span style="font-size:9px; display:block; font-weight:400">${candidateDetails.mobileNumber!"-"}, ${candidateDetails.email!"-"}</span></h5>
         </div>
     </div>
-    <!-- header end -->
-
-    <!-- profile start -->
-    <div id="profile" style="border:2px solid #eee; padding:10px; overflow: hidden;">
-        <div style="width:10%; vertical-align: middle; float: left;">
-            <img width="80px" height="88px" src="{{stuPic}}" alt="{{student_name}}"
-                 style="background-color:#eee;" />
-        </div>
-        <div style="width:50%; margin:0 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; vertical-align: middle; float: left; padding:0 5%;">
-            <h1 style="font-size: 16px;text-transform: uppercase;">${fullName}</h1>
-            <p style="margin-bottom:1px">Email Address: ${email}</p>
-            <p style="margin-bottom:1px">Phone Number: ${mobileNumber}</p>
-        </div>
-        <div style="width:20%; vertical-align: middle; float: right; text-align: right;">
-            <p>Application No.</p>
-            <h1 style="font-size: 16px; margin-top:5px;">{{reg_id}}</h1>
-        </div>
+    <!--Header End-->
+    <!--Transaction Start-->
+    <div style="margin-top:50px;overflow: hidden">
+        <div  style="width:50%; float:left; color:#222; font-size:12px; font-weight:600;">Transaction Receipt <span style="display:block; font-size:10px; font-weight:400">Order No. ${formFulfilment.orderId?c}</span></div>
+        <div  style="width:50%; float:left; text-align:right; font-size:10px; padding-top:16px;	">${formFulfilment.createdDate?datetime}  </div>
     </div>
-    <!-- profile end -->
+    <!--Transaction End-->
 
-    <!-- candidate Details start -->
-    <div id="candidateDetails" style="border:2px solid #eee; width:100%; float:left; margin-top: 10px;">
-        <h4 style="background:#eee; padding:8.5px 10px;font-size:12px;text-transform: uppercase">
-            Personal Information
-        </h4>
-        <div>
-            <div style="width:100%; float:left;" class="border-bottom">
-                <div style="padding:4px 4px;float: left; width:45%;">
-                    Father's Name
-                </div>
-                <div style="padding:4px 4px;float: right; width:45%;text-align: right;">
-                    ${fathersName}
-                </div>
-            </div>
-        </div>
-        <div style="width:100%; float:left;" class="border-bottom">
-            <div style="padding:4px 4px;float: left; width:45%;">
-                Mother's Name
-            </div>
-            <div style="padding:4px 4px;float: right; width:45%;text-align: right">
-                ${mothersName}
-            </div>
-        </div>
+    <!--Name Start-->
+    <div style="margin-top:12px;overflow: hidden; border:2px solid #f4f4f4;">
+        <div style="width:25%; float:left; padding:10px 10px 10px 8px; font-size:10px; color:#000;    margin: 10px;"> Name <span style="font-size:14px; font-weight:600; display:block; padding-top:10px;">
+      ${candidateDetails.fullName!"-"}</span> </div>
+        <div style="width:30%; float:left; padding:10px 0 10px 30px; font-size:10px; color:#000;  margin: 10px; border-right:1px solid #f4f4f4;  border-left:1px solid #f4f4f4;">
+            Exam <span  style="font-size:14px; font-weight:600; display:block;padding-top:10px;">${merchantName!"-"}</span>  </div>
+        <div style="width:25%; float:left; padding:10px; font-size:10px; margin: 10px;color:#000;"> Amount Paid <span  style="font-size:14px; font-weight:600; display:block; padding-top:10px;">Rs. ${candidateDetails.amount!"-"}</span> </div>
     </div>
-    <!-- candidate Details end -->
+    <!--Name End-->
 
-    <!-- address & contact details start -->
-    <div id="addressDetails" style="border:2px solid #eee;clear:both; width:100%; float:left; margin-top: 10px;">
-        <h4 style="background:#eee;  padding:8.5px 10px;font-size:12px;text-transform: uppercase;">
-            Address and Other Information
-        </h4>
-        <div style="border-top:1px solid #eee;">
-
-            {{#each addressDetails}}
-            <div style="width:100%; float:left; " class="border-bottom">
-                <div style="padding:8.5px 10px;float: left; width:50%;">
-                    {{this.keyName}}
-                </div>
-                <div style="padding:8.5px 10px;float: left; width:50%;text-align: right;">
-                    {{this.keyValue}}
-                </div>
-            </div>
+    <!--Table Start-->
+    <div style="margin-top:15px; border:3px solid #f4f4f4;">
+        <div style="background:#f4f4f4;padding: 15px; font-size:9px; font-weight:600;">STUDENT DETAILS</div>
+        <div style="padding:15px;overflow:hidden; border-bottom:1px solid #f4f4f4; font-size:10px;">
+            <div style="width:50%; float:left;">Exam Type</div>
+            <div  style="width:50%; float:left; text-align:right;">${candidateDetails.examType!"-"}</div>
         </div>
-    </div>
-    <!-- address & contact details end -->
-
-    <div id="educationDetails" style="border:2px solid #eee;clear:both; width:100%; float:left; margin-top: 10px;">
-        <h4 style="background:#eee; padding:9px 10px;font-size:12px;text-transform: uppercase;">
-            Qualification Information
-        </h4>
-
-        <div >
-
-            <div style="width:100%; border-bottom:none;float:left; background-color:#f9f9f9;  margin-bottom:-5px; ">
-                {{#each this.headers}}
-                <div
-                        style=" padding:8.5px 10px; float: left; width:20%;  border-right:1px solid #eee; text-transform: uppercase; text-align: center;  word-break:break-all;">
-                    {{this}}
-                </div>
-                {{/each}}
-            </div>
-
-            <div style="width:100%;float:left; border-bottom:1px solid #eee;">
-
-                {{#each this.data}}
-
-                <div
-                        style="padding:8.5px 10px; float: left; width:20%; border-right:1px solid #eee; text-align: center;  word-break:break-all;">
-                    {{this}}
-                </div>
-                {{/each}}
-
-
-            </div>
+        <div style="overflow:hidden;padding:15px; border-bottom:1px solid #f4f4f4; font-size:10px;">
+            <div style="width:50%; float:left;">MAT Registration Number</div>
+            <div  style="width:50%; float:left; text-align:right;">${merchantCandidateId!"-"} </div>
         </div>
 
-        <div id="section">
-            <div id="subSection" style="clear:both; width:100%; float:left; margin-top: 10px;">
-                <div>
-                    {{#each this.subDetail}}
-                    <div style="width:100%; float:left; border-bottom:1px solid #eee;">
-                        <div style="padding:8.5px 10px;float: left; width:50%;">
-                            {{this.keyName}}
-                        </div>
-                        <div style="padding:8.5px 10px;float: left; width:50%;text-align: right;">
-                            {{this.keyValue}}
-                        </div>
-                    </div>
-                    {{/each}}
-                </div>
-            </div>
+        <div style="overflow:hidden;background:#f4f4f4;padding:15px;font-size:10px;">
+            <div style="width:50%; float:left;">Amount Paid</div>
+            <div  style="width:50%; float:left; text-align:right; font-weight:600;">Rs. ${candidateDetails.amount!"-"}</div>
         </div>
-
 
     </div>
 
-    <!-- Additional Details start -->
-    <div id="docsDetails" style="border:2px solid #eee; width:100%; clear:both; float:left; margin-top: 10px;">
-        <h4 style="background:#eee; padding:8.5px 10px;font-size:12px;text-transform: uppercase">
-            Upload documents
-        </h4>
-        <div >
-            <div style="width:100%; float:left; " class="border-bottom">
-                <div style="padding:8.5px 10px;float: left; width:50%;">
-                    {{this.keyName}}
-                </div>
-                <div style="padding:8.5px 10px;float: left; width:50%;text-align: right;">
-                    {{this.keyValue}}
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Additional Details end -->
+    <!--Table End-->
 
-    <!-- Registration Details start -->
-    <div id="registrationDetails"
-         style="border:2px solid #eee; width:100%; clear:both; float:left; margin-top: 10px;">
-        <h4 style="background:#eee; padding:8.5px 10px;font-size:12px;text-transform: uppercase">
-            Payment information
-        </h4>
-        <div id="columnList">
-            <div style= "width:100%; float:left;">
-                <div style="padding:8.5px 10px;float: left; width:50%;">
-                    {{this.keyName}}
-                </div>
-                <div style="padding:8.5px 10px;float: left; width:50%;text-align: right;">
-                    {{this.keyValue}}
-                </div>
-            </div>
-        </div>
+    <!--Declaration Start-->
 
-    </div>
-    <!-- Registration Details end -->
-
-    <!-- certify details start -->
-    <div id="certify" style="width:100%; border:none; float:left; margin-top: 10px;">
-        <p style="width:3%; display: inline-block; vertical-align: top;">
-            <label class="checkboxWrapper"><input type="checkbox" checked="checked" />
-                <span class="checkmark"></span>
-            </label>
-        </p>
-        <p style="width:90%; display:inline-block;">
-            I certify that the information furnished above is true to the best of
-            my knowledge and belief. If at any stage, any information is found to be
-            false or incorrect, my application will be liable to be rejected and
-            admission will stand cancelled if offered.
-        </p>
-    </div>
-    <!-- certify details end -->
-
-    <!-- sign. start -->
-    <div id="sign" style="width:100%; text-align: right; border:none; float:right; margin-top: 8px;">
-        <p><img src="{{stuSignature}}" alt="sign" style="width:50px;" /></p>
-        <p style=" display: inline-block; vertical-align: top;">
-            ${fullName}
-        </p>
-    </div>
-    <!-- sign. end -->
-
+    <h3 style="margin-top: 40px; font-size:12px; font-weight:600;">Declaration</h3>
+    <ul style="list-style-type:none; font-size:11px;">
+        <li style="margin-top: 15px;"> This not an invoice but only a confirmation of the receipt ofthe amount paid against for the service as
+            described above. Subject to terms and conditions mentioned at paytm.com </li>
+        <li style="margin-top: 20px;"> Note : This is computer generated receipt and does not require physical signature. </li>
+        <li style="margin-top: 20px;"> One97 Communications Ltd. B-121, Sector 5,Noida,Uttar Pradesh-201301 <span style="display:block;"> GST Identification Number - 09AAAC04007A1Z3 </span> </li>
+    </ul>
+    <!--Declaration End-->
 </div>
 </body>
-
 </html>
