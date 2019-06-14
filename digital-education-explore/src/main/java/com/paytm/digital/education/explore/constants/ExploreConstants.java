@@ -13,7 +13,9 @@ public interface ExploreConstants {
     String INSTITUTE_ID                = "institute_id";
     String EXAM_ID                     = "exam_id";
     String COURSE_ID                   = "course_id";
+    String IS_ACCEPTING_APPLICATION    = "is_accepting_applications";
     String ENTITY_TYPE                 = "entity_type";
+    String IS_CLIENT                   = "is_client";
     int    DEFAULT_OFFSET              = 0;
     int    DEFAULT_SIZE                = 10;
     int    DEFAULT_AUTOSUGGEST_SIZE    = 4;
@@ -36,7 +38,7 @@ public interface ExploreConstants {
     String EXPLORE_COMPONENT = "explore";
 
     ////// AutoSuggest Constants ////////////
-    String AUTOSUGGEST_INDEX         = "education_autosuggestion_v3";
+    String AUTOSUGGEST_INDEX         = "education_autosuggestion_v2";
     String AUTOSUGGEST_ANALYZER      = "words_with_spaces_analyzer";
     int    AUTOSUGGEST_MIN_CHARS     = 3;
     int    AUTOSUGGEST_MAX_CHARS     = 200;
@@ -111,7 +113,7 @@ public interface ExploreConstants {
 
     ///////// Explore search Constatnts ///////////
     // Exam
-    String SEARCH_INDEX_EXAM              = "education_search_exam_v3";
+    String SEARCH_INDEX_EXAM              = "education_search_exam_v2";
     String SEARCH_ANALYZER_EXAM           = "word_delimiter_analyzer_search";
     String SEARCH_NAMES_EXAM              = "names";
     String EXAM_FULL_NAME_SEARCH          = "exam_full_name";
@@ -163,16 +165,20 @@ public interface ExploreConstants {
     String DEGREE_COURSE                    = "degree";
     String BRANCH_COURSE                    = "branch";
     String LEVEL_COURSE                     = "level";
+    String ACCEPTING_APPLICATION            = "is_accepting_application";
     String INSTITUTE_NAME_COURSE            = "institute_official_name";
     String SEATS_COURSE                     = "seats";
     String FEE_COURSE                       = "fees";
     String NAME_COURSE                      = "name";
+    String NAME_COURSE_SEARCH               = "name.search";
     String DURATION_COURSE                  = "duration_in_months";
     String PARENT_INSTITUTE_ID_COURSE       = "parent_institute_id";
     String INSTITUTE_ID_COURSE              = "institute_id";
     String GALLERY_LOGO                     = "gallery.logo";
     String OFFICIAL_ADDRESS                 = "official_address";
     String ENTITY_ID                        = "entity_id";
+    float  NAME_COURSE_BOOST                = 1f;
+    String ENTITY_NAME                      = "entity_name";
     int    COURSE_SIZE_FOR_INSTITUTE_DETAIL = 6;
     String COMPARE                          = "compare";
 
@@ -192,14 +198,15 @@ public interface ExploreConstants {
     String EVENT_TYPE_EXAM       = "EXAM";
     String ZERO                  = "0";
 
-    String DISPLAY_NAME              = "display_name";
-    String LOGO                      = "logo";
-    String SECTION_ORDER_NAMESPACE   = "section_order";
-    String DETAIL_PAGE_SECTION_ORDER = "detail_page_section_order";
-    String BANNER                    = "banner";
-    String WIDGETS                   = "widgets";
-    String DATA_STRING               = "data";
-    String PARENT_INSTITUTION        = "parent_institution";
+    String DISPLAY_NAME               = "display_name";
+    String LOGO                       = "logo";
+    String SECTION_ORDER_NAMESPACE    = "section_order";
+    String DETAIL_PAGE_SECTION_ORDER  = "detail_page_section_order";
+    String BANNER                     = "banner";
+    String WIDGETS                    = "widgets";
+    String DATA_STRING                = "data";
+    String PARENT_INSTITUTION         = "parent_institution";
+    String NOTABLE_ALUMNI_PLACEHOLDER = "/notable_alumni_placeholder.png";
 
     // Other Constants
     Version FTL_CURRENT_VERSION = Configuration.VERSION_2_3_23;

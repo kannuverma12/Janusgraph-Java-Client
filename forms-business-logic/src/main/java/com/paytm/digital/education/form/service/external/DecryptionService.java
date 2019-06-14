@@ -1,7 +1,6 @@
 package com.paytm.digital.education.form.service.external;
 
-import com.paytm.digital.education.form.service.impl.BaseRestApiService;
-import lombok.AllArgsConstructor;
+import com.paytm.digital.education.form.service.impl.RestApiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -13,7 +12,7 @@ import java.util.Map;
 public class DecryptionService {
 
     @Autowired
-    private BaseRestApiService baseRestApiService;
+    private RestApiService baseRestApiService;
 
     @Value("${decryption.service.url}")
     private String decryptionServiceUrl;

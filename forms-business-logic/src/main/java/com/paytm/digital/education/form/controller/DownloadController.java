@@ -5,6 +5,7 @@ import static com.paytm.digital.education.form.constants.FblConstants.FORM;
 import static com.paytm.digital.education.form.constants.FblConstants.INVOICE;
 import static com.paytm.digital.education.form.constants.FblConstants.PREDICTOR_INVOICE;
 
+import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.form.config.AuthorizationService;
 import com.paytm.digital.education.form.model.ErrorResponseBody;
 import com.paytm.digital.education.form.model.FormData;
@@ -13,6 +14,7 @@ import com.paytm.digital.education.form.service.DownloadService;
 import com.paytm.digital.education.form.service.external.DecryptionService;
 import com.paytm.digital.education.form.service.impl.MerchantConfigServiceImpl;
 
+import com.paytm.digital.education.mapping.ErrorEnum;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -75,22 +78,20 @@ public class DownloadController {
         return downloadForm(orderId, type, formData, headers);
     }
 
-    @GetMapping("/auth/v1/user/form/download/encrypted")
-    public ResponseEntity<Object> downloadFormByUserWithEncryptedOrderId(
-            @RequestParam("type") String type,
-            @RequestParam("eod") String eod,
-            @RequestHeader("x-user-id") String userId
-    ) {
-        Long orderId = decryptionService.decryptOrderId(eod);
-        return downloadFormByUser(orderId, type, userId);
-    }
-
     @GetMapping("/auth/v1/user/form/download")
     public ResponseEntity<Object> downloadFormByUser(
-            @RequestParam("order_id") Long orderId,
+            @RequestParam(name = "order_id", required = false) Long orderId,
+            @RequestParam(name = "eod", required = false) String eod,
             @RequestParam("type") String type,
             @RequestHeader("x-user-id") String userId
     ) {
+        if (orderId == null) {
+            if (StringUtils.isBlank(eod)) {
+                throw new BadRequestException(ErrorEnum.ORDER_ID_AND_EOD_BOTH_CANNOT_BE_NULL,
+                        ErrorEnum.ORDER_ID_AND_EOD_BOTH_CANNOT_BE_NULL.getExternalMessage());
+            }
+            orderId = decryptionService.decryptOrderId(eod);
+        }
         FormData formData = downloadService.getFormDataByUserIdAndOrderId(userId, orderId);
 
         HttpHeaders headers = new HttpHeaders();

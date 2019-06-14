@@ -64,7 +64,7 @@ public class Course {
     private String feesUrlOfficial;
 
     @Field("institute_id")
-    private Integer institutionId;
+    private Long institutionId;
 
     @Field("form_application_url_officail")
     private String formApplicationUrlOfficail;
@@ -92,6 +92,9 @@ public class Course {
 
     @Field("publishing_status")
     private PublishStatus publishingStatus;
+
+    @Field("is_accepting_applications")
+    private boolean acceptingApplication;
 
     @Field("streams")
     private List<String> streams;

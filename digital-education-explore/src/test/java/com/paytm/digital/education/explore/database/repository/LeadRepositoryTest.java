@@ -51,12 +51,12 @@ public class LeadRepositoryTest {
 
         Lead leadToAdd = new Lead();
         leadToAdd.setUserId(1234L);
-        leadToAdd.setAction(LeadAction.GetInTouch);
+        leadToAdd.setAction(LeadAction.GetUpdates);
         leadToAdd.setContactName("New Name");
         leadToAdd.setContactNumber("NewNumber");
         leadToAdd.setContactEmail("dummy-new@email.com");
         leadToAdd.setEntityId(12L);
-        leadToAdd.setEntityType(EducationEntity.INSTITUTE);
+        leadToAdd.setEntityType(EducationEntity.COURSE);
         leadToInsert = leadToAdd;
 
         Lead existingLead = new Lead();
@@ -65,8 +65,8 @@ public class LeadRepositoryTest {
         existingLead.setContactNumber("ExistingNumber");
         existingLead.setContactEmail("existing@email.com");
         existingLead.setEntityId(13L);
-        existingLead.setEntityType(EducationEntity.INSTITUTE);
-        existingLead.setAction(LeadAction.GetInTouch);
+        existingLead.setEntityType(EducationEntity.COURSE);
+        existingLead.setAction(LeadAction.GetUpdates);
         existingLead.setActionCount(1);
 
         // add existing lead to DB
@@ -95,8 +95,7 @@ public class LeadRepositoryTest {
         List<Lead> results = mongoTemplate.find(query, Lead.class);
 
         Assert.assertNotNull(results);
-        Assert.assertEquals(1, results.size());
-        Assert.assertEquals(1, results.get(0).getActionCount());
+        Assert.assertEquals(0, results.size());
     }
 
     @Test

@@ -12,6 +12,15 @@ public class CourseInstituteDetail {
     @JsonProperty("official_name")
     private String officialName;
 
+    @JsonProperty("url_display_key")
+    private String urlDisplayName;
+
     @JsonProperty("official_address")
     private OfficialAddress officialAddress;
+
+    @JsonProperty("is_client")
+    private Boolean isClient;
+
+    @JsonProperty("interested")
+    private Boolean interested;
 }

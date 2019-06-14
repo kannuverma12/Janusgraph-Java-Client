@@ -14,6 +14,9 @@ public class Course {
     @JsonProperty("name")
     private String name;
 
+    @JsonProperty("url_display_key")
+    private String urlDisplayKey;
+
     @JsonProperty("duration_in_month")
     private Integer durationInMonth;
 

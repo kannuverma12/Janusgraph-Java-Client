@@ -16,6 +16,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EXA
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_CUTOFF_CASTEGROUP;
 import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
 import static com.paytm.digital.education.explore.enums.Gender.OTHERS;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_NAME;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
 
@@ -26,11 +27,13 @@ import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.enums.Gender;
+import com.paytm.digital.education.explore.enums.PublishStatus;
 import com.paytm.digital.education.explore.response.builders.InstituteDetailResponseBuilder;
 import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
 import com.paytm.digital.education.explore.service.helper.GenderAndCasteGroupHelper;
 import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
 import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
+import com.paytm.digital.education.explore.utility.CommonUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -71,11 +74,12 @@ public class InstituteDetailServiceImpl {
         genderCategoryMap = genderAndCasteGroupHelper.getGenderAndCasteGroupMap();
     }
 
-    public InstituteDetail getDetail(Long entityId, Long userId,
-            String fieldGroup, List<String> fields) throws IOException, TimeoutException {
+    public InstituteDetail getDetail(Long entityId, String instituteUrlKey, Long userId,
+            String fieldGroup, List<String> fields)
+            throws IOException, TimeoutException {
         // fields are not being supported currently. Part of discussion
 
-        InstituteDetail instituteDetail = getinstituteDetail(entityId, fieldGroup);
+        InstituteDetail instituteDetail = getinstituteDetail(entityId, instituteUrlKey, fieldGroup);
         if (userId != null && userId > 0) {
             updateShortist(instituteDetail, INSTITUTE, userId);
             updateInterested(instituteDetail, INSTITUTE, userId);
@@ -84,7 +88,8 @@ public class InstituteDetailServiceImpl {
     }
 
     @Cacheable(value = "institute_detail")
-    public InstituteDetail getinstituteDetail(Long entityId, String fieldGroup)
+    public InstituteDetail getinstituteDetail(Long entityId, String instituteUrlKey,
+            String fieldGroup)
             throws IOException, TimeoutException {
         List<String> groupFields =
                 commonMongoRepository.getFieldsByGroup(Institute.class, fieldGroup);
@@ -127,6 +132,11 @@ public class InstituteDetailServiceImpl {
             }
         }
         if (institute != null) {
+            if (!instituteUrlKey
+                    .equals(CommonUtil.convertNameToUrlDisplayName(institute.getOfficialName()))) {
+                throw new BadRequestException(INVALID_INSTITUTE_NAME,
+                        INVALID_INSTITUTE_NAME.getExternalMessage());
+            }
             Long parentInstitutionId = institute.getParentInstitution();
             String parentInstitutionName = null;
             if (parentInstitutionId != null) {
@@ -211,48 +221,50 @@ public class InstituteDetailServiceImpl {
         Set<Long> examIds = new HashSet<>();
         if (!CollectionUtils.isEmpty(courses)) {
             //exclude child institute courses for the cutoffs
-            courses.stream().filter(course -> course.getInstitutionId().equals(instituteId.intValue()))
-                .forEach(course -> {
-                    if (!CollectionUtils.isEmpty(course.getExamsAccepted())) {
-                        course.getExamsAccepted().forEach(examId -> {
-                            examDegrees.put(examId,
-                                    StringUtils.join(course.getMasterDegree(), ','));
-                            examIds.add(examId);
-                        });
-                        if (!CollectionUtils.isEmpty(course.getCutoffs())) {
-                            course.getCutoffs().forEach(cutoff -> {
-                                long examId = cutoff.getExamId();
-                                Gender gender = cutoff.getGender();
-                                Map<Gender, String> genders = examGenders.get(examId);
-                                if (Objects.isNull(genders)) {
-                                    genders = new HashMap<>();
-                                }
-                                if (Objects.nonNull(gender)) {
-                                    genders.put(gender,
-                                            (String) genderMap.get(gender.toString()));
-                                } else {
-                                    genders.put(OTHERS,
-                                            (String) genderMap.get(OTHERS.toString()));
-                                }
-                                examGenders.put(examId, genders);
-
-                                Map<String, String> casteGroups = examCasteGroup.get(examId);
-                                String caste = cutoff.getCasteGroup();
-                                if (Objects.isNull(casteGroups)) {
-                                    casteGroups = new HashMap<>();
-                                }
-                                if (Objects.nonNull(caste)) {
-                                    casteGroups.put(caste, (String) casteGroupMap.get(caste));
-                                } else {
-                                    casteGroups.put(OTHER_CATEGORIES,
-                                            (String) casteGroupMap.get(OTHER_CATEGORIES));
-                                }
-                                examCasteGroup.put(examId, casteGroups);
+            courses.stream()
+                    .filter(course -> course.getInstitutionId().equals(instituteId)
+                            && course.getPublishingStatus() == PublishStatus.PUBLISHED)
+                    .forEach(course -> {
+                        if (!CollectionUtils.isEmpty(course.getExamsAccepted())) {
+                            course.getExamsAccepted().forEach(examId -> {
+                                examDegrees.put(examId,
+                                        StringUtils.join(course.getMasterDegree(), ','));
                                 examIds.add(examId);
                             });
+                            if (!CollectionUtils.isEmpty(course.getCutoffs())) {
+                                course.getCutoffs().forEach(cutoff -> {
+                                    long examId = cutoff.getExamId();
+                                    Gender gender = cutoff.getGender();
+                                    Map<Gender, String> genders = examGenders.get(examId);
+                                    if (Objects.isNull(genders)) {
+                                        genders = new HashMap<>();
+                                    }
+                                    if (Objects.nonNull(gender)) {
+                                        genders.put(gender,
+                                                (String) genderMap.get(gender.toString()));
+                                    } else {
+                                        genders.put(OTHERS,
+                                                (String) genderMap.get(OTHERS.toString()));
+                                    }
+                                    examGenders.put(examId, genders);
+
+                                    Map<String, String> casteGroups = examCasteGroup.get(examId);
+                                    String caste = cutoff.getCasteGroup();
+                                    if (Objects.isNull(casteGroups)) {
+                                        casteGroups = new HashMap<>();
+                                    }
+                                    if (Objects.nonNull(caste)) {
+                                        casteGroups.put(caste, (String) casteGroupMap.get(caste));
+                                    } else {
+                                        casteGroups.put(OTHER_CATEGORIES,
+                                                (String) casteGroupMap.get(OTHER_CATEGORIES));
+                                    }
+                                    examCasteGroup.put(examId, casteGroups);
+                                    examIds.add(examId);
+                                });
+                            }
                         }
-                    }
-                });
+                    });
         }
         Map<String, Object> examData = new HashMap<>();
         examData.put(EXAM_DEGREES, examDegrees);
@@ -275,7 +287,7 @@ public class InstituteDetailServiceImpl {
     private void updateInterested(InstituteDetail instituteDetail, EducationEntity educationEntity,
             Long userId) {
         List<Long> leadEntities = leadDetailHelper
-                .getLeadEntities(educationEntity, userId,
+                .getInterestedLeadInstituteIds(userId,
                         Arrays.asList(instituteDetail.getInstituteId()));
         if (!CollectionUtils.isEmpty(leadEntities)) {
             instituteDetail.setInterested(true);

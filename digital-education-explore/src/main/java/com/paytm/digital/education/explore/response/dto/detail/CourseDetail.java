@@ -57,7 +57,10 @@ public class CourseDetail {
     private String eligibilityUrlOfficial;
 
     @JsonProperty("institute_id")
-    private Integer instituteId;
+    private Long instituteId;
+
+    @JsonProperty("is_client")
+    private Boolean isClient;
 
     @JsonProperty("institute")
     private CourseInstituteDetail institute;

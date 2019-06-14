@@ -26,10 +26,20 @@ public class LeadController {
     private LeadService leadService;
 
     @PostMapping("/auth/v1/lead")
-    public void captureLead(@Valid @RequestBody Lead lead,
+    public com.paytm.digital.education.explore.response.dto.common.Lead captureLead(
+            @Valid @RequestBody Lead lead,
             @RequestHeader("x-user-id") long userId) {
         log.info("Lead Request : {}", JsonUtils.toJson(lead));
         lead.setUserId(userId);
-        leadService.captureLead(lead);
+        return leadService.captureLead(lead);
     }
+
+    @PostMapping("/auth/v1/unfollow")
+    public com.paytm.digital.education.explore.response.dto.common.Lead unfollowLead(
+            @RequestBody Lead lead, @RequestHeader("x-user-id") long userId) {
+        log.info("Unfollow Request : {}", JsonUtils.toJson(lead));
+        lead.setUserId(userId);
+        return leadService.unfollowLead(lead);
+    }
+
 }

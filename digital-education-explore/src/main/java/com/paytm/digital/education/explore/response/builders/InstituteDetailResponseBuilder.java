@@ -3,16 +3,20 @@ package com.paytm.digital.education.explore.response.builders;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_PREFIX;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.APPROVALS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OVERALL_RANKING;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.NOTABLE_ALUMNI_PLACEHOLDER;
 import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
 
 import com.paytm.digital.education.explore.database.entity.Alumni;
+import com.paytm.digital.education.explore.database.entity.CampusAmbassador;
 import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.enums.CourseLevel;
+import com.paytm.digital.education.explore.enums.PublishStatus;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
 import com.paytm.digital.education.explore.response.dto.detail.Ranking;
+import com.paytm.digital.education.explore.service.helper.CampusEngagementHelper;
 import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.service.helper.PlacementDataHelper;
@@ -37,6 +41,7 @@ import java.util.TreeMap;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
+import com.paytm.digital.education.property.reader.PropertyReader;
 import javafx.util.Pair;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -61,6 +66,7 @@ public class InstituteDetailResponseBuilder {
     private BannerDataHelper            bannerDataHelper;
     private SimilarInstituteServiceImpl similarInstituteService;
     private StreamDataHelper            streamDataHelper;
+    private CampusEngagementHelper      campusEngagementHelper;
 
     public InstituteDetail buildResponse(Institute institute, List<Course> courses,
             List<Exam> examList, Map<String, Object> examRelatedData, Set<Long> examIds,
@@ -78,6 +84,8 @@ public class InstituteDetailResponseBuilder {
         }
         instituteDetail.setEstablishedYear(institute.getEstablishedYear());
         instituteDetail.setOfficialName(institute.getOfficialName());
+        instituteDetail.setUrlDisplayName(
+                CommonUtil.convertNameToUrlDisplayName(institute.getOfficialName()));
         instituteDetail.setBrochureUrl(institute.getOfficialUrlBrochure());
         instituteDetail
                 .setFacilities(
@@ -123,6 +131,19 @@ public class InstituteDetailResponseBuilder {
             instituteDetail.setRankings(getRankingDetails(institute.getRankings()));
         }
         instituteDetail.setDegreeOffered(getDegreeMap(courses));
+        Map<String, CampusAmbassador> campusAmbassadorMap = institute.getCampusAmbassadors();
+        if (Objects.nonNull(campusAmbassadorMap)) {
+            instituteDetail.setCampusAmbassadors(campusEngagementHelper
+                    .getCampusAmbassadorData(campusAmbassadorMap));
+        }
+        if (Objects.nonNull(institute.getArticles())) {
+            instituteDetail.setArticles(campusEngagementHelper
+                    .getCampusArticleData(institute.getArticles(), campusAmbassadorMap));
+        }
+        if (Objects.nonNull(institute.getEvents())) {
+            instituteDetail.setEvents(campusEngagementHelper
+                    .getCampusEventsData(institute.getEvents()));
+        }
         return instituteDetail;
     }
 
@@ -130,12 +151,22 @@ public class InstituteDetailResponseBuilder {
             List<Alumni> notableAlumni) {
         List<com.paytm.digital.education.explore.response.dto.detail.Alumni> alumniList =
                 new ArrayList<>();
+        List<Alumni> alumnWithoutImageList = new ArrayList<>();
         for (Alumni alumni : notableAlumni) {
             String alumniPhoto = alumni.getAlumniPhoto();
             if (Objects.nonNull(alumniPhoto)) {
                 alumniPhoto = CommonUtil.getLogoLink(alumniPhoto);
                 alumni.setAlumniPhoto(alumniPhoto);
+                com.paytm.digital.education.explore.response.dto.detail.Alumni responseAlumni =
+                        new com.paytm.digital.education.explore.response.dto.detail.Alumni();
+                BeanUtils.copyProperties(alumni, responseAlumni);
+                alumniList.add(responseAlumni);
+            } else {
+                alumnWithoutImageList.add(alumni);
             }
+        }
+        for (Alumni alumni : alumnWithoutImageList) {
+            alumni.setAlumniPhoto(CommonUtil.getLogoLink(NOTABLE_ALUMNI_PLACEHOLDER));
             com.paytm.digital.education.explore.response.dto.detail.Alumni responseAlumni =
                     new com.paytm.digital.education.explore.response.dto.detail.Alumni();
             BeanUtils.copyProperties(alumni, responseAlumni);
@@ -228,8 +259,10 @@ public class InstituteDetailResponseBuilder {
             degreeMap.put(CourseLevel.DOCTORATE.getDisplayName(), new HashSet<>());
             degreeMap.put(CourseLevel.DIPLOMA.getDisplayName(), new HashSet<>());
             for (Course course : courses) {
-                for (String degree : course.getMasterDegree()) {
-                    degreeMap.get(course.getCourseLevel().getDisplayName()).add(degree);
+                if (course.getPublishingStatus() == PublishStatus.PUBLISHED) {
+                    for (String degree : course.getMasterDegree()) {
+                        degreeMap.get(course.getCourseLevel().getDisplayName()).add(degree);
+                    }
                 }
             }
             List<String> emptyLevels = new ArrayList<>();

@@ -1,17 +1,10 @@
 package com.paytm.digital.education.explore.database.repository;
 
-import static com.paytm.digital.education.explore.database.entity.Lead.Constants.ACTION;
-import static com.paytm.digital.education.explore.database.entity.Lead.Constants.CONTACT_EMAIL;
-import static com.paytm.digital.education.explore.database.entity.Lead.Constants.CONTACT_NAME;
-import static com.paytm.digital.education.explore.database.entity.Lead.Constants.COURSE_ID;
-import static com.paytm.digital.education.explore.database.entity.Lead.Constants.ENTITY_ID;
-import static com.paytm.digital.education.explore.database.entity.Lead.Constants.ENTITY_TYPE;
-import static com.paytm.digital.education.explore.database.entity.Lead.Constants.STATUS;
-import static com.paytm.digital.education.explore.database.entity.Lead.Constants.USER_ID;
-
 import com.paytm.digital.education.explore.database.entity.Lead;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import lombok.AllArgsConstructor;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -21,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
 @Repository
@@ -37,21 +31,29 @@ public class LeadRepository {
      */
     public void upsertLead(@NotNull Lead lead) {
         Query query =
-                new Query(Criteria.where(Lead.Constants.CONTACT_NUMBER).is(lead.getContactNumber())
-                        .and(COURSE_ID).is(lead.getCourseId())
-                        .and(CONTACT_NAME).is(lead.getContactName())
-                        .and(CONTACT_EMAIL).is(lead.getContactEmail())
-                        .and(ENTITY_ID).is(lead.getEntityId())
-                        .and(ENTITY_TYPE).is(lead.getEntityType())
-                        .and(USER_ID).is(lead.getUserId())
-                        .and(ACTION).is(lead.getAction()));
+                new Query(Criteria.where(Lead.Constants.USER_ID).is(lead.getUserId())
+                        .and(Lead.Constants.ENTITY_ID).is(lead.getEntityId())
+                        .and(Lead.Constants.ENTITY_TYPE).is(lead.getEntityType()));
 
         Date currentDate = new Date();
 
         Update update = new Update().set(Lead.Constants.STATUS, lead.isStatus())
                 .setOnInsert(Lead.Constants.CREATED_AT, currentDate)
                 .set(Lead.Constants.UPDATED_AT, currentDate)
+                .set(Lead.Constants.THIRD_PARTY_RESPONSES, lead.getBaseLeadResponse())
+                .set(Lead.Constants.LAST_ACTION, lead.getAction())
+                .set(Lead.Constants.STREAM, lead.getStream())
+                .set(Lead.Constants.ENTITY_ID, lead.getEntityId())
+                .set(Lead.Constants.ENTITY_TYPE, lead.getEntityType())
+                .set(Lead.Constants.INSTITUTE_ID, lead.getInstituteId())
+                .set(Lead.Constants.USER_ID, lead.getUserId())
+                .set(Lead.Constants.CITY_ID, lead.getCityId())
+                .set(Lead.Constants.STATE_ID, lead.getStateId())
                 .inc(Lead.Constants.ACTION_COUNT, 1);
+
+        if (Objects.nonNull(lead.getInterested())) {
+            update.set(Lead.Constants.INTERESTED, lead.getInterested());
+        }
 
         mongoTemplate
                 .findAndModify(query, update, new FindAndModifyOptions().upsert(true), Lead.class);
@@ -60,8 +62,28 @@ public class LeadRepository {
     public List<Lead> fetchLeadByEntityTypeAndUserIdAndEntityIdIn(EducationEntity entityType,
             Long userId, List<Long> entityIds) {
         Query mongoQuery = new Query(
-                Criteria.where(ENTITY_TYPE).is(entityType).and(ENTITY_ID).in(entityIds).and(USER_ID)
-                        .is(userId).and(STATUS).is(true));
+                Criteria.where(Lead.Constants.ENTITY_TYPE).is(entityType)
+                        .and(Lead.Constants.ENTITY_ID).in(entityIds).and(Lead.Constants.USER_ID)
+                        .is(userId).and(Lead.Constants.STATUS).is(true));
+        return mongoTemplate.find(mongoQuery, Lead.class);
+    }
+
+    public List<Lead> fetchInterestedLeadByInstituteIdANdUserId(Long usedId,
+            List<Long> instituteIds) {
+        Query mongoQuery = new Query(
+                Criteria.where(Lead.Constants.INSTITUTE_ID).in(instituteIds)
+                        .and(Lead.Constants.USER_ID).is(usedId).and(Lead.Constants.INTERESTED)
+                        .is(true));
+        return mongoTemplate.find(mongoQuery, Lead.class);
+    }
+
+    public List<Lead> fetchInterestedLeadByEntityIdAndUserId(EducationEntity educationEntity,
+            Long userId, Long entityId) {
+        Query mongoQuery = new Query(
+                Criteria.where(Lead.Constants.ENTITY_TYPE).is(educationEntity)
+                        .and(Lead.Constants.ENTITY_ID).is(entityId)
+                        .and(Lead.Constants.USER_ID).is(userId).and(Lead.Constants.INTERESTED)
+                        .is(true));
         return mongoTemplate.find(mongoQuery, Lead.class);
     }
 }

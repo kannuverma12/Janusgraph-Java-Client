@@ -14,7 +14,7 @@ import java.util.Set;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties( { "fake_rankings", "fake_placements" })
+@JsonIgnoreProperties({"fake_rankings", "fake_placements"})
 public class CompareInstDetail {
 
     @JsonProperty("institute_id")
@@ -22,6 +22,9 @@ public class CompareInstDetail {
 
     @JsonProperty("institute_name")
     private String instituteName;
+
+    @JsonProperty("url_display_key")
+    private String urlDisplayKey;
 
     @JsonProperty("fake_rankings")
     private Map<String, Ranking> fakeRankings;

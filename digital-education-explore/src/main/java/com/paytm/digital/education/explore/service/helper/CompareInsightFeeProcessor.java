@@ -40,7 +40,7 @@ public class CompareInsightFeeProcessor {
         List<String> courseQueryFields = Arrays.asList(COURSE_FEES, INSTITUTE_ID);
         List<Long> instituteIds =
                 instituteList.stream().map(institute -> institute.getInstituteId()).collect(Collectors.toList());
-        Map<Integer, List<Course>> instituteCoursesMap = new HashMap<>();
+        Map<Long, List<Course>> instituteCoursesMap = new HashMap<>();
         if (!CollectionUtils.isEmpty(courseQueryFields)) {
             List<Course> courses = commonMongoRepository
                     .getEntityFieldsByValuesIn(INSTITUTE_ID, instituteIds, Course.class,

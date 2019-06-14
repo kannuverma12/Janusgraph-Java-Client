@@ -27,6 +27,9 @@ public class InstituteDetail {
     @JsonProperty("brochure_url")
     private String brochureUrl;
 
+    @JsonProperty("url_display_key")
+    private String urlDisplayName;
+
     @JsonProperty("official_address")
     private OfficialAddress officialAddress;
 
@@ -89,4 +92,13 @@ public class InstituteDetail {
 
     @JsonProperty("is_client")
     private boolean client;
+
+    @JsonProperty("campus_ambassadors")
+    private List<Ambassador> campusAmbassadors;
+
+    @JsonProperty("articles")
+    private List<CampusArticle> articles;
+
+    @JsonProperty("events")
+    private List<CampusEventDetail> events;
 }

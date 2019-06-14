@@ -1,7 +1,7 @@
-package com.paytm.digital.education.form.service.impl;
+package com.paytm.digital.education.explore.service.external;
 
 import com.paytm.digital.education.exception.BadRequestException;
-import com.paytm.digital.education.form.config.RestConfig;
+import com.paytm.digital.education.explore.config.RestConfig;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,9 +27,10 @@ public class BaseRestApiService {
 
     private RestConfig rest;
 
-    public <T> T get(String url, Map<String, ?> queryParams, Type responseClassType) {
+    public <T> T get(String url, Map<String, ?> queryParams, HttpHeaders httpHeaders,
+            Type responseClassType) {
         ResponseEntity<T> responseEntity;
-        HttpEntity<Object> requestEntity = new HttpEntity<>(HttpHeaders.EMPTY);
+        HttpEntity<Object> requestEntity = new HttpEntity<>(httpHeaders);
         URI uri = getURI(url, queryParams);
         try {
             responseEntity =
@@ -69,7 +70,10 @@ public class BaseRestApiService {
         HttpEntity<Object> httpEntity = new HttpEntity<Object>(requestBody, httpHeaders);
         ResponseEntity<T> responseEntity =
                 rest.getRestTemplate().exchange(url, HttpMethod.POST, httpEntity, clazz);
-        System.out.println(responseEntity);
+        if (responseEntity.getStatusCodeValue() != 200) {
+            throw new BadRequestException(ErrorEnum.HTTP_REQUEST_FAILED,
+                    ErrorEnum.HTTP_REQUEST_FAILED.getExternalMessage());
+        }
         return responseEntity.getBody();
     }
 
@@ -84,6 +88,7 @@ public class BaseRestApiService {
     }
 
     private <T> T getResponseBody(ResponseEntity<T> responseEntity) {
+
         if (responseEntity != null) {
             return responseEntity.getBody();
         }
