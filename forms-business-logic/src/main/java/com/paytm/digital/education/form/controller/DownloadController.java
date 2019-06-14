@@ -91,6 +91,11 @@ public class DownloadController {
                         ErrorEnum.ORDER_ID_AND_EOD_BOTH_CANNOT_BE_NULL.getExternalMessage());
             }
             orderId = decryptionService.decryptOrderId(eod);
+            if (orderId == null) {
+                return new ResponseEntity<>(
+                        new ErrorResponseBody(417, "error in decrypting eod"), null,
+                        HttpStatus.EXPECTATION_FAILED);
+            }
         }
         FormData formData = downloadService.getFormDataByUserIdAndOrderId(userId, orderId);
 

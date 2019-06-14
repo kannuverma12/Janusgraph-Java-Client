@@ -33,8 +33,7 @@ public class DecryptionService {
         } catch (Exception e) {
             log.error("Some error occured in calling decryption service for eod: {} error : {}",
                     eod, e.getMessage());
-            throw new DependencyException(e.getCause(), ErrorCode.DP_RESOURCE_ACCESS_EXCEPTION,
-                    "Decryption failed", "oms decryption");
+            return null;
         }
         Long orderId = null;
         try {
