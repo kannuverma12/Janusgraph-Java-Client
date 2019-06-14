@@ -1,6 +1,7 @@
 package com.paytm.digital.education.predictor.service;
 
 import com.paytm.digital.education.form.model.FormData;
+import com.paytm.digital.education.predictor.response.CreateFormResponse;
 import com.paytm.digital.education.predictor.response.PredictorListResponse;
 
 import java.util.Map;
@@ -11,5 +12,5 @@ public interface CollegePredictorService {
 
     PredictorListResponse getPredictorList();
 
-    Map<String, Object> createForm(Map<String, Object> requestBody);
+    CreateFormResponse createForm(Map<String, Object> requestBody);
 }

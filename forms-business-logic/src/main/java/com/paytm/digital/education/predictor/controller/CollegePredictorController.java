@@ -1,6 +1,7 @@
 package com.paytm.digital.education.predictor.controller;
 
 import com.paytm.digital.education.form.model.FormData;
+import com.paytm.digital.education.predictor.response.CreateFormResponse;
 import com.paytm.digital.education.predictor.response.PredictorListResponse;
 import com.paytm.digital.education.predictor.service.CollegePredictorService;
 import lombok.AllArgsConstructor;
@@ -52,7 +53,7 @@ public class CollegePredictorController {
 
     @PostMapping("/v1/form/create-form")
     public ResponseEntity<Object> createForm(@RequestBody Map<String, Object> requestMap) {
-        Map<String, Object> responseData = collegePredictorService.createForm(requestMap);
+        CreateFormResponse responseData = collegePredictorService.createForm(requestMap);
         return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
 }

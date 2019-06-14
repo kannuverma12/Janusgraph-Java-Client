@@ -31,6 +31,7 @@ import com.paytm.digital.education.predictor.model.CollegePredictor;
 import com.paytm.digital.education.predictor.model.PredictorAuditLogs;
 import com.paytm.digital.education.predictor.repository.PredictorAuditRepository;
 import com.paytm.digital.education.predictor.repository.PredictorListRepository;
+import com.paytm.digital.education.predictor.response.CreateFormResponse;
 import com.paytm.digital.education.predictor.response.PredictorListResponse;
 import com.paytm.digital.education.predictor.service.CollegePredictorService;
 import com.paytm.digital.education.utility.JsonUtils;
@@ -197,7 +198,7 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
     }
 
     @Override
-    public Map<String, Object> createForm(Map<String, Object> requestBody) {
+    public CreateFormResponse createForm(Map<String, Object> requestBody) {
         try {
             //create request
             HttpPost postRequest = new HttpPost(c36CreateFormUrl);
@@ -221,7 +222,7 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
             // close connection
             httpClient.getConnectionManager().shutdown();
 
-            return responseData;
+            return new CreateFormResponse(responseData);
         } catch (Exception e) {
             log.error("Error in calling careers360 create form api ", e);
             return null;

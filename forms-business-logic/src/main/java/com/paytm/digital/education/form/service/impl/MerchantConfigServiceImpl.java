@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @AllArgsConstructor
@@ -174,8 +175,7 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
 
         String predictorFormDownloadLink = (String) data.get("predictor_form_download_link");
         if (predictorFormDownloadLink != null) {
-            predictorFormDownloadLink += "?order_id=" + orderId + "&type=predictor";
-            responseData.put("form_download_link", predictorFormDownloadLink);
+            responseData.put("invoice_download_link", getPredictorUrl(orderId));
         }
 
         String predictorInvoiceDownloadLink = (String) data.get("predictor_invoice_download_link");
@@ -277,6 +277,21 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
             log.error("Error in parsing : {}", e.getStackTrace());
             return null;
         }
+    }
+
+    private String getPredictorUrl(Long orderId) {
+        if (orderId != null) {
+            Query query = new Query(Criteria.where("formFulfilment.orderId").is(orderId));
+            query.fields().include("candidateDetails.predictorUrl");
+            FormData formData = mongoOperations
+                    .findOne(query, FormData.class);
+            if (Objects.nonNull(formData) && Objects.nonNull(formData.getCandidateDetails())) {
+                return formData.getCandidateDetails().getPredictorUrl();
+            }
+            log.error("Blank FormData/CandidateDetails found for Orderid : " + orderId);
+        }
+        log.error("Blank orderId received.");
+        return null;
     }
 
 }

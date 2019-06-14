@@ -185,8 +185,6 @@ public class CandidateDetails {
 
     private String miCode;
 
-    private String predictorUrl;
-
     // CAREER360
     @Transient
     @JsonProperty("requestData")
@@ -195,6 +193,9 @@ public class CandidateDetails {
     @Transient
     @JsonProperty("responseData")
     private transient Map<String, Object> responseData;
+
+    @Field("predictorUrl")
+    private String predictorUrl;
 
     @Field("predictorName")
     private String predictorName;
