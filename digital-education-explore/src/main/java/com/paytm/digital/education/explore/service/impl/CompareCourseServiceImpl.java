@@ -68,7 +68,7 @@ public class CompareCourseServiceImpl implements CompareCourseService {
             if (Objects.nonNull(courseFees) && !courseFees.isEmpty()) {
                 compareCourseDetail.setCourseFee(getCourseFeeForCompare(courseFees));
             }
-            compareCourseDetail.setCourseLevel(course.getCourseLevel());
+            compareCourseDetail.setCourseLevel(course.getCourseLevel().getDisplayName());
             List<Long> examsAcceptedIds = course.getExamsAccepted();
             if (Objects.nonNull(examsAcceptedIds)) {
                 compareCourseDetail

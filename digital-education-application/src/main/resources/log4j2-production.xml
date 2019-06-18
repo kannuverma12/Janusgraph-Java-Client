@@ -12,17 +12,22 @@
             <PatternLayout
                     pattern="%-5p | %X{ClientId} | %X{RequestId} | %d{yyyy-MM-dd HH:mm:ss} | [%t] %C - %m%n"/>
         </Console>
-        <RollingFile name="ApplicationLog"
-                     fileName="${path}/application.log"
-                     filePattern="${path}/archive/application-%d{yyyy-MM-dd}-%i.log.gz">
-            <PatternLayout
-                    pattern="%-5p | %X{ClientId} | %X{RequestId} | %d{yyyy-MM-dd HH:mm:ss} | [%t] %C{2} - %m%n"/>
+        <RollingRandomAccessFile name="ApplicationLog"
+                                 fileName="${path}/application.log"
+                                 filePattern="${path}/archive/application_log-%d{yyyy-MM-dd}-%i.log.gz">
+
+            <JSONLayout complete="false" compact="true" eventEol="true">
+                <KeyValuePair key="time"
+                              value="$${date:yyyy-MM-dd'T'HH:mm:ss.SSS'Z'}" />
+                <KeyValuePair key="hostname" value="${hostName}" />
+            </JSONLayout>
 
             <Policies>
-                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
-                <SizeBasedTriggeringPolicy size="500 MB"/>
+                <TimeBasedTriggeringPolicy interval="1"
+                                           modulate="true" />
+                <SizeBasedTriggeringPolicy size="500 MB" />
             </Policies>
-        </RollingFile>
+        </RollingRandomAccessFile>
         <RollingFile name="RequestLog"
                      fileName="${path}/request.log"
                      filePattern="${path}/archive/request-%d{yyyy-MM-dd}-%i.log.gz">

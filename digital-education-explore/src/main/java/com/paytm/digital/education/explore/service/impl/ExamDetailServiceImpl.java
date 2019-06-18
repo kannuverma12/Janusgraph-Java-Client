@@ -1,7 +1,9 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.APPLICATION;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.DATA;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DD_MMM_YYYY;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_FILTER_NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_PREFIX;
@@ -10,30 +12,33 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.LIN
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LINGUISTIC_MEDIUM_NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.MMM_YYYY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.NON_TENTATIVE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.PRECEDENCE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.YYYY_MM;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ZERO;
 import static com.paytm.digital.education.explore.enums.EducationEntity.EXAM;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
 
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Instance;
 import com.paytm.digital.education.explore.database.entity.SubExam;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.explore.response.dto.detail.Event;
+import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.detail.ExamDetail;
-import com.paytm.digital.education.explore.response.dto.detail.Location;
 import com.paytm.digital.education.explore.response.dto.detail.Section;
+import com.paytm.digital.education.explore.response.dto.detail.Event;
+import com.paytm.digital.education.explore.response.dto.detail.Unit;
 import com.paytm.digital.education.explore.response.dto.detail.Syllabus;
 import com.paytm.digital.education.explore.response.dto.detail.Topic;
-import com.paytm.digital.education.explore.response.dto.detail.Unit;
-import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
+import com.paytm.digital.education.explore.response.dto.detail.Location;
+import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.service.helper.DetailPageSectionHelper;
-import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
+import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
 import com.paytm.digital.education.explore.service.helper.WidgetsDataHelper;
+import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
-import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.DateUtil;
 import lombok.AllArgsConstructor;
@@ -58,13 +63,25 @@ public class ExamDetailServiceImpl {
     private DetailPageSectionHelper detailPageSectionHelper;
     private BannerDataHelper        bannerDataHelper;
     private WidgetsDataHelper       widgetsDataHelper;
+    private LeadDetailHelper        leadDetailHelper;
 
     private static int EXAM_PREFIX_LENGTH = EXAM_PREFIX.length();
 
+    public ExamDetail getDetail(Long entityId, String examUrlKey, Long userId,
+            String fieldGroup, List<String> fields) throws ParseException {
+        // fields are not being supported currently. Part of discussion
+
+        ExamDetail examDetail = getExamDetail(entityId, examUrlKey, fieldGroup, fields);
+        if (userId != null && userId > 0) {
+            updateInterested(examDetail, userId);
+        }
+        return examDetail;
+    }
+
     //TODO - modularize methods for caching as. Its fine as of now as userId is not being used As of now.
     @Cacheable(value = "exam_detail")
-    public ExamDetail getDetail(Long entityId, Long userId,
-            String fieldGroup, List<String> fields) throws ParseException {
+    public ExamDetail getExamDetail(Long entityId, String examUrlKey, String fieldGroup,
+            List<String> fields) throws ParseException {
 
         // TODO: fields are not being supported currently. Part of discussion
         List<String> groupFields =
@@ -84,13 +101,18 @@ public class ExamDetailServiceImpl {
                         examFields);
 
         if (exam != null) {
-            return processExamDetail(exam, examFields, userId);
+            if (!examUrlKey
+                    .equals(CommonUtil.convertNameToUrlDisplayName(exam.getExamFullName()))) {
+                throw new BadRequestException(INVALID_EXAM_NAME,
+                        INVALID_EXAM_NAME.getExternalMessage());
+            }
+            return processExamDetail(exam, examFields);
         }
-        throw new BadRequestException(ErrorEnum.INVALID_EXAM_ID,
+        throw new BadRequestException(INVALID_EXAM_ID,
                 INVALID_EXAM_ID.getExternalMessage());
     }
 
-    private ExamDetail processExamDetail(Exam exam, List<String> examFields, Long userId)
+    private ExamDetail processExamDetail(Exam exam, List<String> examFields)
             throws ParseException {
         ExamDetail examDetail = buildResponse(exam);
         return examDetail;
@@ -102,16 +124,19 @@ public class ExamDetailServiceImpl {
         entitySyllabusList.forEach(entitySection -> {
             List<Unit> units = new ArrayList<>();
             entitySection.getUnits().forEach(entityUnit -> {
-                List<Topic> topics = new ArrayList<>();
-                entityUnit.getTopics().forEach(entityTopic -> {
-                    String topicName = entityTopic.getName();
-                    if (!topicName.equals(ZERO)) {
-                        Topic topic = new Topic(topicName);
-                        topics.add(topic);
-                    }
-                });
-                Unit unit = new Unit(entityUnit.getName(), topics);
-                units.add(unit);
+                String unitName = entityUnit.getName();
+                if (!unitName.equals(ZERO)) {
+                    List<Topic> topics = new ArrayList<>();
+                    entityUnit.getTopics().forEach(entityTopic -> {
+                        String topicName = entityTopic.getName();
+                        if (!topicName.equals(ZERO)) {
+                            Topic topic = new Topic(topicName);
+                            topics.add(topic);
+                        }
+                    });
+                    Unit unit = new Unit(unitName, topics);
+                    units.add(unit);
+                }
             });
             Section section = new Section(entitySection.getSubjectName(), units);
             sectionList.add(section);
@@ -233,6 +258,8 @@ public class ExamDetailServiceImpl {
         examDetail.setExamId(exam.getExamId());
         examDetail.setAbout(exam.getAboutExam());
         examDetail.setExamId(exam.getExamId());
+        examDetail
+                .setUrlDisplayName(CommonUtil.convertNameToUrlDisplayName(exam.getExamFullName()));
         examDetail.setExamFullName(exam.getExamFullName());
         examDetail.setExamShortName(exam.getExamShortName());
         if (!CollectionUtils.isEmpty(exam.getLinguisticMediumExam())) {
@@ -292,8 +319,68 @@ public class ExamDetailServiceImpl {
         addDatesToResponse(examDetail, importantDates);
         examDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName));
         examDetail.setBanners(bannerDataHelper.getBannerData(entityName));
-        examDetail.setWidgets(widgetsDataHelper.getWidgets(entityName, exam.getExamId()));
+        examDetail.setWidgets(widgetsDataHelper.getWidgets(entityName, exam.getExamId(),
+                getDomainName(exam.getDomains())
+        ));
         return examDetail;
+    }
+
+    private String getDomainName(List<String> domains) {
+        int noOfDomains = domains.size();
+        if (noOfDomains == 0) {
+            // when exam is not associated with any domain
+            return DEFAULT;
+        } else if (noOfDomains == 1) {
+            // when exam is associated with only one domain
+            return ((isDomainExistInDefineList(domains.get(0))) ? domains.get(0) : DEFAULT);
+        } else {
+            // when exam is associated with multiple domains
+            return findHigherPrecedenceDomain(domains);
+        }
+    }
+
+    /*
+     ** Find the domain whose similar exams will be displayed when exam is associated with
+     ** multiple domains.
+     */
+    private String findHigherPrecedenceDomain(List<String> domains) {
+        List<String> domainList = getDefinedDomainList();
+        for (String domain : domainList) {
+            if (domains.contains(domain)) {
+                return domain;
+            }
+        }
+        return DEFAULT;
+    }
+
+    /*
+     ** Check whether the domain exists in the defined list of domains
+     */
+    private boolean isDomainExistInDefineList(String domain) {
+        List<String> domainList = getDefinedDomainList();
+        if (domainList.contains(domain)) {
+            return true;
+        }
+        return false;
+    }
+
+    /*
+     ** Get the defined exam domains list
+     */
+    @Cacheable(value = "exam_domain_list")
+    public List<String> getDefinedDomainList() {
+        Map<String, Object> propertyMap = propertyReader
+                .getPropertiesAsMapByKey(EXPLORE_COMPONENT, EXAM.name().toLowerCase(),
+                        PRECEDENCE);
+        return (List<String>) propertyMap.get(DATA);
+    }
+
+    private void updateInterested(ExamDetail examDetail, Long userId) {
+        List<Long> leadEntities = leadDetailHelper
+                .getInterestedLeadByEntity(EducationEntity.EXAM, userId, examDetail.getExamId());
+        if (!CollectionUtils.isEmpty(leadEntities)) {
+            examDetail.setInterested(true);
+        }
     }
 
     private List<Location> getExamCenters(List<Instance> instances) {

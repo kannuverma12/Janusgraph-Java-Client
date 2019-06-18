@@ -19,6 +19,10 @@ public class Alumni {
     @JsonProperty("current_designation")
     private String currentDesignation;
 
+    @Field("company_name")
+    @JsonProperty("company_name")
+    private String companyName;
+
     @Field("alumni_photo")
     @JsonProperty("alumni_photo")
     private String alumniPhoto;

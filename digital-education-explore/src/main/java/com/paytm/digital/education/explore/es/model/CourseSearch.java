@@ -1,6 +1,7 @@
 package com.paytm.digital.education.explore.es.model;
 
 import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,37 +13,37 @@ import lombok.Data;
 public class CourseSearch {
 
     @JsonProperty("institute_id")
-    private long         instituteId;
+    private long instituteId;
 
     @JsonProperty("parent_institute_id")
-    private long         parentInstituteId;
+    private long parentInstituteId;
 
     @JsonProperty("institute_official_name")
-    private String       instituteName;
+    private String instituteName;
 
     @JsonProperty("course_id")
-    private long         courseId;
+    private long courseId;
 
     @JsonProperty("name")
-    private String       name;
+    private String name;
 
     @JsonProperty("seats")
-    private Integer      seats;
+    private Integer seats;
 
     @JsonProperty("degree")
     private List<String> degree;
 
     @JsonProperty("branch")
-    private String       branch;
+    private String branch;
 
     @JsonProperty("level")
-    private String       level;
+    private String level;
 
     @JsonProperty("study_mode")
-    private String       studyMode;
+    private String studyMode;
 
     @JsonProperty("duration_in_months")
-    private int          durationInMonths;
+    private Integer durationInMonths;
 
     @JsonProperty("domain_name")
     private List<String> domainName;
@@ -51,6 +52,6 @@ public class CourseSearch {
     private List<String> exams;
 
     @JsonProperty("fees")
-    private long         fees;
+    private Long fees;
 
 }

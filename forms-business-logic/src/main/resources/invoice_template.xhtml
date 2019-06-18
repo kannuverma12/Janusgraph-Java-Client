@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--    <meta http-equiv="X-UA-Compatible" content="ie=edge" />-->
+    <link
+            href="https://fonts.googleapis.com/css?family=Open+Sans:400,700,800"
+            rel="stylesheet"
+    />
+    <title>Title...</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            print-color-adjust: exact !important;
+        }
+        body, html {
+            margin: 20px;
+            height: 100vh;
+            background: #fff;
+            font-family: "Open Sans", sans-serif;
+        }
+        p {
+            line-height: 1.2;
+        }
+        @page {
+            size: A4;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+<div style="background:#fff;">
+    <!--Header Start-->
+    <div style="width:100%;overflow: hidden;">
+        <div style="width:50%; float:left;"><img src="https://seeklogo.net/wp-content/uploads/2018/10/paytm-logo.png" width="80px"></img></div>
+        <div style="width:50%; float:left; text-align:right;">
+            <h5 style="font-size:11px; text-transform:uppercase;">${candidateDetails.fullName!"-"}<span style="font-size:9px; display:block; font-weight:400">${candidateDetails.mobileNumber!"-"}, ${candidateDetails.email!"-"}</span></h5>
+        </div>
+    </div>
+    <!--Header End-->
+    <!--Transaction Start-->
+    <div style="margin-top:50px;overflow: hidden">
+        <div  style="width:50%; float:left; color:#222; font-size:12px; font-weight:600;">Transaction Receipt <span style="display:block; font-size:10px; font-weight:400">Order No. ${formFulfilment.orderId?c}</span></div>
+        <div  style="width:50%; float:left; text-align:right; font-size:10px; padding-top:16px;	">${formFulfilment.createdDate?datetime}  </div> 
+    </div>
+    <!--Transaction End-->
+
+    <!--Name Start-->
+    <div style="margin-top:12px;overflow: hidden; border:2px solid #f4f4f4;">
+        <div style="width:25%; float:left; padding:10px 10px 10px 8px; font-size:10px; color:#000;    margin: 10px;"> Name <span style="font-size:14px; font-weight:600; display:block; padding-top:10px;">
+      ${candidateDetails.fullName!"-"}</span> </div>
+        <div style="width:30%; float:left; padding:10px 0 10px 30px; font-size:10px; color:#000;  margin: 10px; border-right:1px solid #f4f4f4;  border-left:1px solid #f4f4f4;"> 
+        Exam <span  style="font-size:14px; font-weight:600; display:block;padding-top:10px;">${merchantName!"-"}</span>  </div>
+        <div style="width:25%; float:left; padding:10px; font-size:10px; margin: 10px;color:#000;"> Amount Paid <span  style="font-size:14px; font-weight:600; display:block; padding-top:10px;">Rs. ${candidateDetails.amount!"-"}</span> </div>
+    </div>
+    <!--Name End-->
+
+    <!--Table Start-->
+    <div style="margin-top:15px; border:3px solid #f4f4f4;">
+        <div style="background:#f4f4f4;padding: 15px; font-size:9px; font-weight:600;">STUDENT DETAILS</div>
+        <div style="padding:15px;overflow:hidden; border-bottom:1px solid #f4f4f4; font-size:10px;">
+            <div style="width:50%; float:left;">Exam Type</div>
+            <div  style="width:50%; float:left; text-align:right;">${candidateDetails.examType!"-"}</div>
+        </div>
+        <div style="overflow:hidden;padding:15px; border-bottom:1px solid #f4f4f4; font-size:10px;">
+            <div style="width:50%; float:left;">MAT Registration Number</div>
+            <div  style="width:50%; float:left; text-align:right;">${merchantCandidateId!"-"} </div>
+        </div>
+
+        <div style="overflow:hidden;background:#f4f4f4;padding:15px;font-size:10px;">
+            <div style="width:50%; float:left;">Amount Paid</div>
+            <div  style="width:50%; float:left; text-align:right; font-weight:600;">Rs. ${candidateDetails.amount!"-"}</div>
+        </div>
+
+    </div>
+
+    <!--Table End-->
+
+    <!--Declaration Start-->
+
+    <h3 style="margin-top: 40px; font-size:12px; font-weight:600;">Declaration</h3>
+    <ul style="list-style-type:none; font-size:11px;">
+        <li style="margin-top: 15px;"> This is not an invoice but only a confirmation of the receipt of the amount paid against for the service as
+            described above. Subject to the terms and conditions mentioned at paytm.com </li>
+        <li style="margin-top: 20px;"> Note : This is computer generated receipt and does not require physical signature. </li>
+        <li style="margin-top: 20px;"> One97 Communications Ltd. B-121, Sector 5,Noida,Uttar Pradesh-201301 <span style="display:block;"> GST Identification Number - 09AAAC04007A1Z3 </span> </li>
+    </ul>
+    <!--Declaration End-->
+</div>
+</body>
+</html>

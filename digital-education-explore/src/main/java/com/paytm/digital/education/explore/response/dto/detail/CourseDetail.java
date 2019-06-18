@@ -3,6 +3,8 @@ package com.paytm.digital.education.explore.response.dto.detail;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.explore.response.dto.common.BannerData;
+import com.paytm.digital.education.explore.response.dto.common.Widget;
 import lombok.Data;
 
 import java.util.List;
@@ -55,10 +57,19 @@ public class CourseDetail {
     private String eligibilityUrlOfficial;
 
     @JsonProperty("institute_id")
-    private Integer instituteId;
+    private Long instituteId;
+
+    @JsonProperty("is_client")
+    private Boolean isClient;
 
     @JsonProperty("institute")
     private CourseInstituteDetail institute;
+
+    @JsonProperty("widgets")
+    private List<Widget> widgets;
+
+    @JsonProperty("banners")
+    private List<BannerData> banners;
 
     @JsonProperty("derived_attributes")
     private Map<String, List<Attribute>> derivedAttributes;

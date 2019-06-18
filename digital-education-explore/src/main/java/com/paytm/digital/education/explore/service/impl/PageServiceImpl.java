@@ -16,13 +16,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotBlank;
 
+import static com.paytm.digital.education.explore.constants.ExploreConstants.BANNER_MID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.COLLEGE_FOCUS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ICON;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.IMAGE_URL;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.LOCATIONS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LOGO;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAMS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP_COLLEGES;
 
 @Service
@@ -53,16 +58,29 @@ public class PageServiceImpl implements PageService {
         for (String sectionName : pageSectionNames) {
             Section section = sectionsByName.get(sectionName);
             if (section != null) {
-                if (sectionName.equals(COLLEGE_FOCUS) || sectionName.equals(
-                        TOP_COLLEGES)) {
-                    String logoFieldName = "";
-                    if (sectionName.equals(TOP_COLLEGES)) {
+                String logoFieldName = null;
+                switch (sectionName) {
+                    case TOP_COLLEGES:
                         logoFieldName = ICON;
-                    } else {
+                        break;
+                    case COLLEGE_FOCUS:
                         logoFieldName = LOGO;
-                    }
+                        break;
+                    case STREAMS:
+                        logoFieldName = ICON;
+                        break;
+                    case LOCATIONS:
+                        logoFieldName = ICON;
+                        break;
+                    case BANNER_MID:
+                        logoFieldName = IMAGE_URL;
+                        break;
+                    default:
+                }
+                if (Objects.nonNull(logoFieldName)) {
                     for (Map<String, Object> item : section.getItems()) {
-                        String logo = CommonUtil.getLogoLink((String) item.get(logoFieldName));
+                        String logo = CommonUtil.getAbsoluteUrl((String) item.get(logoFieldName),
+                                sectionName);
                         item.put(logoFieldName, logo);
                     }
                 }

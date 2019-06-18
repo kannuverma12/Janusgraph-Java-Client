@@ -27,6 +27,9 @@ public class InstituteDetail {
     @JsonProperty("brochure_url")
     private String brochureUrl;
 
+    @JsonProperty("url_display_key")
+    private String urlDisplayName;
+
     @JsonProperty("official_address")
     private OfficialAddress officialAddress;
 
@@ -42,8 +45,8 @@ public class InstituteDetail {
     @JsonProperty("shortlisted")
     private boolean shortlisted;
 
-    @JsonProperty("get_in_touch")
-    private boolean getInTouch;
+    @JsonProperty("interested")
+    private boolean interested;
 
     @JsonProperty("title")
     private String title;
@@ -86,4 +89,16 @@ public class InstituteDetail {
 
     @JsonProperty("degree_offered")
     private Map<String, Set<String>> degreeOffered;
+
+    @JsonProperty("is_client")
+    private boolean client;
+
+    @JsonProperty("campus_ambassadors")
+    private List<Ambassador> campusAmbassadors;
+
+    @JsonProperty("articles")
+    private List<CampusArticle> articles;
+
+    @JsonProperty("events")
+    private List<CampusEventDetail> events;
 }

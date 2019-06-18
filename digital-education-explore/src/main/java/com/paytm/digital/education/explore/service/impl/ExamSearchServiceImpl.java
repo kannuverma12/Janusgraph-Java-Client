@@ -42,6 +42,7 @@ import com.paytm.digital.education.explore.response.dto.search.SearchBaseData;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.response.dto.search.SearchResult;
 import com.paytm.digital.education.explore.service.helper.SearchAggregateHelper;
+import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.utility.DateUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -175,6 +176,8 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
                 ExamData examData = new ExamData();
                 examData.setExamId(examSearch.getExamId());
                 examData.setOfficialName(examSearch.getOfficialName());
+                examData.setUrlDisplayName(
+                        CommonUtil.convertNameToUrlDisplayName(examSearch.getOfficialName()));
                 examData.setLogoUrl(examSearch.getLogoUrl());
                 List<String> dataAvailable = new ArrayList<>();
                 if (!CollectionUtils.isEmpty(examSearch.getDataAvailable())) {

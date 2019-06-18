@@ -65,6 +65,7 @@ public class CutoffServiceImpl implements CutoffService {
     @Cacheable(value = "cutoff_search")
     public List<CutoffSearchResponse> searchCutOffs(long instituteId, long examId, Gender gender,
             String casteGroup, String fieldGroup) {
+
         List<String> projectionFields = commonMongoRepository
                 .getFieldsByGroup(Course.class, fieldGroup);
         if (projectionFields != null) {

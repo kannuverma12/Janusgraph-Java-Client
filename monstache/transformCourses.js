@@ -71,7 +71,18 @@ function transformCourse(doc) {
     transformedCourse.branch = doc.master_branch;
     transformedCourse.study_mode = doc.study_mode;
     transformedCourse.duration_in_months = doc.course_duration;
-    transformedCourse.domain_name = doc.streams;
+    console.log(doc.course_id + " " + doc.lead_enabled);
+    transformedCourse.is_accepting_application = doc.lead_enabled;
+    transformedCourse.domain_name = [];
+    for (var k = 0; k < doc.streams.length; k++) {
+          if(doc.streams[k].toLowerCase() === 'education' ||
+              doc.streams[k].toLowerCase() === 'sciences' ||
+              doc.streams[k].toLowerCase() === 'arts_humanities_and_social_sciences' ){
+              transformedCourse.domain_name.push('Humanities and Sciences');
+          } else {
+              transformedCourse.domain_name.push(doc.streams[k]);
+          }
+    }
     transformedCourse.seats = doc.seats_available;
 
     if (Array.isArray(doc.course_fees) && doc.course_fees.length > 0) {

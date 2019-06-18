@@ -17,6 +17,18 @@ public class AutoSuggestEsData {
     @JsonProperty("official_name")
     private String officialName;
 
+    @JsonProperty("city_id")
+    private Long cityId;
+
+    @JsonProperty("state_id")
+    private Long stateId;
+
+    @JsonProperty("logo")
+    private String logo;
+
+    @JsonProperty("official_address")
+    private OfficialAddress officialAddress;
+
     @JsonProperty("entity_type")
     private EducationEntity entityType;
 

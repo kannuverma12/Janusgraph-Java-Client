@@ -253,6 +253,8 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
                 InstituteData instituteData = new InstituteData();
                 instituteData.setInstituteId(instituteSearch.getInstituteId());
                 instituteData.setOfficialName(instituteSearch.getOfficialName());
+                instituteData.setUrlDisplayName(
+                        CommonUtil.convertNameToUrlDisplayName(instituteSearch.getOfficialName()));
                 instituteData.setApprovals(CommonUtil.getApprovals(instituteSearch.getApprovedBy(),
                         instituteSearch.getUniversityName()));
                 instituteData.setExams(instituteSearch.getExamsAccepted());
@@ -264,6 +266,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
                         CommonUtil.getOfficialAddress(instituteSearch.getState(),
                                 instituteSearch.getCity(), null, null, null);
                 instituteData.setOfficialAddress(officialAddress);
+                instituteData.setClient(instituteSearch.isClient());
                 instituteDataMap.put(instituteSearch.getInstituteId(), instituteData);
                 instituteDataList.add(instituteData);
             });

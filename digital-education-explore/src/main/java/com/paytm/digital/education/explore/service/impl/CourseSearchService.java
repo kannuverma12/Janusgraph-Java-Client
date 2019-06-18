@@ -6,6 +6,11 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.COU
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DEGREE_COURSE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DURATION_COURSE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_ID;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_NAME;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.IS_CLIENT;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME_COURSE_SEARCH;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_ALPHABETICAL_SORT_KEY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.FEE_COURSE;
@@ -21,8 +26,11 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.PAR
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_ANALYZER_COURSE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_INDEX_COURSE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEATS_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME_COURSE_BOOST;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.ACCEPTING_APPLICATION;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM_COURSE;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_NAME;
 
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
@@ -51,12 +59,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.PostConstruct;
 
@@ -66,7 +75,9 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
 
     private static Map<String, FilterQueryType>         filterQueryTypeMap;
     private static Map<String, Float>                   searchFieldKeys;
-    private static LinkedHashMap<String, DataSortOrder> sortKeysInOrder;
+    private static LinkedHashMap<String, DataSortOrder> defaultSortKeysInOrder;
+    private static LinkedHashMap<String, DataSortOrder> alphabeticalSortKeysAsc;
+    private static LinkedHashMap<String, DataSortOrder> alphabeticalSortKeysDesc;
     private        SearchAggregateHelper                searchAggregateHelper;
     private        CommonMongoRepository                commonMongoRepository;
     private        PropertyReader                       propertyReader;
@@ -74,24 +85,33 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
 
     @PostConstruct
     private void init() {
+        searchFieldKeys = new HashMap<>();
+        searchFieldKeys.put(NAME_COURSE_SEARCH, NAME_COURSE_BOOST);
         filterQueryTypeMap = new HashMap<String, FilterQueryType>();
         filterQueryTypeMap.put(BRANCH_COURSE, TERMS);
         filterQueryTypeMap.put(DEGREE_COURSE, TERMS);
         filterQueryTypeMap.put(STREAM_COURSE, TERMS);
         filterQueryTypeMap.put(INSTITUTE_NAME_COURSE, TERMS);
         filterQueryTypeMap.put(LEVEL_COURSE, TERMS);
+        filterQueryTypeMap.put(ACCEPTING_APPLICATION, TERMS);
         filterQueryTypeMap.put(PARENT_INSTITUTE_ID_COURSE, TERMS);
         filterQueryTypeMap.put(INSTITUTE_ID_COURSE, TERMS);
-        sortKeysInOrder = new LinkedHashMap<>();
-        sortKeysInOrder.put(SEATS_COURSE, DataSortOrder.DESC);
-        sortKeysInOrder.put(DURATION_COURSE, DataSortOrder.ASC);
-        sortKeysInOrder.put(FEE_COURSE, DataSortOrder.ASC);
+        defaultSortKeysInOrder = new LinkedHashMap<>();
+        defaultSortKeysInOrder.put(SEATS_COURSE, DataSortOrder.DESC);
+        defaultSortKeysInOrder.put(DURATION_COURSE, DataSortOrder.ASC);
+        defaultSortKeysInOrder.put(FEE_COURSE, DataSortOrder.ASC);
+        alphabeticalSortKeysAsc = new LinkedHashMap<>();
+        alphabeticalSortKeysAsc.put(NAME_COURSE, DataSortOrder.ASC);
+        alphabeticalSortKeysDesc = new LinkedHashMap<>();
+        alphabeticalSortKeysDesc.put(NAME_COURSE, DataSortOrder.DESC);
     }
 
     @Override
     @Cacheable(value = "course_search")
     public SearchResponse search(SearchRequest searchRequest) throws IOException, TimeoutException {
         CourseSearchResponse courseSearchResponse = new CourseSearchResponse();
+        /*
+         * Filter map containing entity_id means this request is coming from outer world*/
         if (searchRequest.getFilter().containsKey(ENTITY_ID)) {
             populatetInstituteDetails(searchRequest, courseSearchResponse);
         }
@@ -125,15 +145,27 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
             CourseSearchResponse courseSearchResponse) {
         List<String> fields =
                 Arrays.asList(GALLERY_LOGO, INSTITUTION_STATE, INSTITUTION_CITY, INSTITUTE_ID,
-                        OFFICIAL_NAME, ENTITY_TYPE);
+                        OFFICIAL_NAME, ENTITY_TYPE, IS_CLIENT);
+
         Integer instituteId = (Integer) searchRequest.getFilter().get(ENTITY_ID).get(0);
         searchRequest.getFilter().remove(ENTITY_ID);
+        String instituteUrlKey = (String) searchRequest.getFilter().get(ENTITY_NAME).get(0);
+        searchRequest.getFilter().remove(ENTITY_NAME);
         Institute institute =
                 commonMongoRepository.getEntityByFields(INSTITUTE_ID, instituteId, Institute.class,
                         fields);
         if (institute == null) {
             throw new BadRequestException(INVALID_INSTITUTE_ID,
                     INVALID_INSTITUTE_ID.getExternalMessage());
+        }
+        /*
+         * null institute URL means that this is an internal request.
+         * There is a validator for all other requests.
+         * */
+        if (Objects.nonNull(instituteUrlKey) && !instituteUrlKey
+                .equals(CommonUtil.convertNameToUrlDisplayName(institute.getOfficialName()))) {
+            throw new BadRequestException(INVALID_INSTITUTE_NAME,
+                    INVALID_INSTITUTE_NAME.getExternalMessage());
         }
         String filterField;
         if (institute.getEntityType().equals(CollegeEntityType.UNIVERSITY)) {
@@ -151,6 +183,11 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
                 .setOfficialAddress(CommonUtil.getOfficialAddress(institute.getInstitutionState(),
                         institute.getInstitutionCity(), null, null, null));
         courseSearchResponse.setInstituteName(institute.getOfficialName());
+        courseSearchResponse.setUrlDisplayName(
+                CommonUtil.convertNameToUrlDisplayName(institute.getOfficialName()));
+        if (institute.getIsClient() == 1) {
+            courseSearchResponse.setClient(true);
+        }
         courseSearchResponse.setInstituteId(institute.getInstituteId());
     }
 
@@ -164,7 +201,19 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
                 filterQueryTypeMap);
         populateAggregateFields(searchRequest, elasticRequest,
                 searchAggregateHelper.getCourseAggregateData(), CourseSearch.class);
-        searchRequest.setSortOrder(sortKeysInOrder);
+        LinkedHashMap<String, DataSortOrder> sortOrder = new LinkedHashMap<>();
+        if (!CollectionUtils.isEmpty(searchRequest.getSortOrder())) {
+            if (searchRequest.getSortOrder().containsKey(COURSE_ALPHABETICAL_SORT_KEY)) {
+                if (searchRequest.getSortOrder().get(COURSE_ALPHABETICAL_SORT_KEY)
+                        .equals(DataSortOrder.ASC)) {
+                    sortOrder.putAll(alphabeticalSortKeysAsc);
+                } else {
+                    sortOrder.putAll(alphabeticalSortKeysDesc);
+                }
+            }
+        }
+        sortOrder.putAll(defaultSortKeysInOrder);
+        searchRequest.setSortOrder(sortOrder);
         populateSortFields(searchRequest, elasticRequest, CourseSearch.class);
         return elasticRequest;
     }
@@ -183,7 +232,10 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
                 courseData.setDurationInMonths(courseSearch.getDurationInMonths());
                 courseData.setFee(courseSearch.getFees());
                 courseData.setSeatsAvailable(courseSearch.getSeats());
+                courseData.setStream(courseSearch.getDomainName());
                 courseData.setOfficialName(courseSearch.getName());
+                courseData.setUrlDisplayKey(
+                        CommonUtil.convertNameToUrlDisplayName(courseSearch.getName()));
                 courseData.setInstituteName(courseSearch.getInstituteName());
                 courseDataList.add(courseData);
             }

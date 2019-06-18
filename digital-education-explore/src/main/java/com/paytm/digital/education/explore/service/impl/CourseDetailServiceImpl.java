@@ -10,6 +10,7 @@ import static com.paytm.digital.education.explore.enums.EducationEntity.COURSE;
 import static com.paytm.digital.education.explore.enums.EducationEntity.EXAM;
 import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_COURSE_ID;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_COURSE_NAME;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 
 import com.paytm.digital.education.exception.BadRequestException;
@@ -20,7 +21,9 @@ import com.paytm.digital.education.explore.database.repository.CommonMongoReposi
 import com.paytm.digital.education.explore.response.dto.detail.CourseDetail;
 import com.paytm.digital.education.explore.response.dto.detail.CourseFee;
 import com.paytm.digital.education.explore.response.dto.detail.CourseInstituteDetail;
+import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
+import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.explore.utility.FieldsRetrievalUtil;
 import lombok.AllArgsConstructor;
@@ -30,25 +33,38 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
-
+import java.util.HashMap;
+import java.util.Arrays;
 
 @Slf4j
 @AllArgsConstructor
 @Service
 public class CourseDetailServiceImpl {
 
-    private CommonMongoRepository   commonMongoRepository;
-    private DerivedAttributesHelper derivedAttributesHelper;
+    private CommonMongoRepository       commonMongoRepository;
+    private DerivedAttributesHelper     derivedAttributesHelper;
+    private SimilarInstituteServiceImpl similarInstituteService;
+    private BannerDataHelper            bannerDataHelper;
+    private LeadDetailHelper            leadDetailHelper;
+
+    public CourseDetail getDetail(Long entityId, String courseUrlKey, Long userId,
+            String fieldGroup, List<String> fields) {
+        CourseDetail courseDetail = getCourseDetails(entityId, courseUrlKey, fieldGroup, fields);
+        if (userId != null && userId > 0) {
+            updateInterested(courseDetail, userId);
+        }
+        return courseDetail;
+    }
 
     /*
      ** Method to get the course details and institute details
      */
     @Cacheable(value = "course_detail")
-    public CourseDetail getCourseDetails(long entityId, String fieldGroup, List<String> fields) {
+    public CourseDetail getCourseDetails(long entityId, String courseUrlKey, String fieldGroup,
+            List<String> fields) {
         List<String> queryFields = null;
         if (StringUtils.isNotBlank(fieldGroup)) {
             queryFields = commonMongoRepository.getFieldsByGroup(Course.class, fieldGroup);
@@ -59,14 +75,19 @@ public class CourseDetailServiceImpl {
             Map<String, ArrayList<String>> allFields =
                     FieldsRetrievalUtil.getFormattedFields(queryFields, COURSE_CLASS);
             ArrayList<String> courseQueryFields = allFields.get(COURSE.name().toLowerCase());
-            ArrayList<String> instituteQueryFields = allFields.get(INSTITUTE.name().toLowerCase());
             courseQueryFields.add(INSTITUTE_ID);
             Course course =
                     commonMongoRepository.getEntityByFields(COURSE_ID, entityId, Course.class,
                             courseQueryFields);
+            ArrayList<String> instituteQueryFields = allFields.get(INSTITUTE.name().toLowerCase());
             if (course == null) {
                 throw new BadRequestException(INVALID_COURSE_ID,
                         INVALID_COURSE_ID.getExternalMessage());
+            }
+            if (!courseUrlKey.equals(CommonUtil
+                    .convertNameToUrlDisplayName(course.getCourseNameOfficial()))) {
+                throw new BadRequestException(INVALID_COURSE_NAME,
+                        INVALID_COURSE_NAME.getExternalMessage());
             }
             Institute instituteDetails = null;
             if (course.getInstitutionId() != null && !CollectionUtils
@@ -126,16 +147,35 @@ public class CourseDetailServiceImpl {
         highlights.put(EXAM.name().toLowerCase(), examDetails);
         courseDetail.setDerivedAttributes(derivedAttributesHelper
                 .getDerivedAttributes(highlights, COURSE.name().toLowerCase()));
+        courseDetail.setWidgets(similarInstituteService.getSimilarInstitutes(institute));
+        courseDetail.setBanners(bannerDataHelper.getBannerData(COURSE.name().toLowerCase()));
         if (institute != null) {
             CourseInstituteDetail courseInstituteDetail = new CourseInstituteDetail();
             courseInstituteDetail.setOfficialName(institute.getOfficialName());
-            courseInstituteDetail.setOfficialAddress(CommonUtil.getOfficialAddress(institute.getInstitutionState(),
-                    institute.getInstitutionCity(), institute.getPhone(),
-                    institute.getUrl(),
-                    institute.getOfficialAddress()));
+            courseInstituteDetail.setUrlDisplayName(
+                    CommonUtil.convertNameToUrlDisplayName(institute.getOfficialName()));
+            courseInstituteDetail.setOfficialAddress(
+                    CommonUtil.getOfficialAddress(institute.getInstitutionState(),
+                            institute.getInstitutionCity(), institute.getPhone(),
+                            institute.getUrl(),
+                            institute.getOfficialAddress()));
+            if (institute.getIsClient() == 1) {
+                courseInstituteDetail.setIsClient(true);
+            } else {
+                courseInstituteDetail.setIsClient(false);
+            }
             courseDetail.setInstitute(courseInstituteDetail);
         }
         return courseDetail;
+    }
+
+    private void updateInterested(CourseDetail courseDetail, Long userId) {
+        List<Long> leadEntities = leadDetailHelper
+                .getInterestedLeadInstituteIds(userId,
+                        Arrays.asList(courseDetail.getInstituteId()));
+        if (!CollectionUtils.isEmpty(leadEntities)) {
+            courseDetail.getInstitute().setInterested(true);
+        }
     }
 
     private List<CourseFee> getAllCourseFees(
