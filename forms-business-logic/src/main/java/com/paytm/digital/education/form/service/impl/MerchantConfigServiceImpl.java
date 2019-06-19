@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -108,24 +109,27 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
         Map<String, Object> responseData = new HashMap<>();
 
         String candidateId = null;
+        String registrationId = null;
         if (orderId != null) {
             Query query = new Query();
             query.addCriteria(Criteria.where("formFulfilment.orderId").is(orderId));
-            query.fields().include("merchantId").include("candidateId");
+            query.fields().include("merchantId").include("candidateId").include("merchantCandidateId");
 
             FormData formData = mongoOperations.findOne(query, FormData.class);
             candidateId = formData.getCandidateId();
             merchantId = formData.getMerchantId();
+            registrationId = formData.getMerchantCandidateId();
         }
 
-        String registrationId = null;
-        if (candidateId != null && merchantId != null) {
+
+        if (candidateId != null && merchantId != null && registrationId == null) {
             Query query = new Query();
             query.addCriteria(
                     Criteria.where("merchantId").is(merchantId)
                             .and("candidateId").is(candidateId)
-                            .and("transactionType").is("normal")
+                            .and("merchantCandidateId").exists(true)
             );
+            query.with(new Sort(Sort.Direction.DESC, "updatedAt"));
             query.fields().include("merchantCandidateId");
 
             FormData formData = mongoOperations.findOne(query, FormData.class);
