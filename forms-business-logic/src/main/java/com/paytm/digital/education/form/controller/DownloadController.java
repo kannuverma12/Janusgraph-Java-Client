@@ -29,6 +29,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,19 +49,15 @@ public class DownloadController {
     private DecryptionService         decryptionService;
 
     @GetMapping("/v1/download")
+    @CrossOrigin(origins = {"http://localhost:8080", "http://merchant-dev.paytm.com", "http://fe.paytm.com",
+                    "http://staging.paytm.com", "http://beta.paytm.com", "http://paytm.com","https://seller.paytm.com",
+                    "https://seller-dev.paytm.com"})
     public ResponseEntity<Object> downloadFormOrInvoice(
             @RequestParam("order_id") Long orderId,
             @RequestParam("type") String type
     ) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Access-Control-Allow-Credentials", "true");
-
-        //  String[] orderIds = orderId.split(",");
-        //  if (orderIds.length > 1) {
-        //      return new ResponseEntity<>(
-        //              "{\"status_code\":400, \"message\": \"Only one orderId are allowed.\"}",headers,
-        //              HttpStatus.BAD_REQUEST);
-        //  }
 
         if (authService.getMerchantId() == null) {
             return new ResponseEntity<>(new ErrorResponseBody(400, "User is not merchant"), headers,
@@ -209,7 +206,7 @@ public class DownloadController {
             if (contents == null) {
                 return new ResponseEntity<>(
                         "{\"status_code\":500, \"message\": \"Some error occurred, please try again later.\"}",
-                        HttpStatus.INTERNAL_SERVER_ERROR);
+                        headers,HttpStatus.INTERNAL_SERVER_ERROR);
             }
             return new ResponseEntity<>(contents, headers, HttpStatus.OK);
 
@@ -220,13 +217,13 @@ public class DownloadController {
             } else {
                 return new ResponseEntity<>(
                         "{\"status_code\":403, \"message\": \"Please enter the correct id or "
-                                + "type\"}",
+                                + "type\"}",headers,
                         HttpStatus.NOT_FOUND);
             }
         } else {
             return new ResponseEntity<>(
                     "{\"status_code\":400, \"message\": \"Please enter the correct id or type\"}",
-                    HttpStatus.BAD_REQUEST);
+                    headers,HttpStatus.BAD_REQUEST);
         }
 
     }
