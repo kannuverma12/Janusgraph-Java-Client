@@ -11,6 +11,7 @@ import com.paytm.digital.education.form.model.ErrorResponseBody;
 import com.paytm.digital.education.form.model.FormData;
 import com.paytm.digital.education.form.model.MerchantConfiguration;
 import com.paytm.digital.education.form.service.DownloadService;
+import com.paytm.digital.education.form.service.MerchantConfigService;
 import com.paytm.digital.education.form.service.external.DecryptionService;
 import com.paytm.digital.education.form.service.impl.MerchantConfigServiceImpl;
 
@@ -47,6 +48,7 @@ public class DownloadController {
     private MerchantConfigServiceImpl merchantConfigServiceImpl;
     private Environment               env;
     private DecryptionService         decryptionService;
+    private MerchantConfigService     merchantConfigService;
 
     @GetMapping("/v1/download")
     @CrossOrigin(origins = {"http://localhost:8080", "http://merchant-dev.paytm.com", "http://fe.paytm.com",
@@ -182,6 +184,11 @@ public class DownloadController {
             }
 
             byte[] contents = null;
+
+            String registrationId = merchantConfigService.getRegistrationNumber(orderId);
+            if (registrationId != null) {
+                formData.setMerchantCandidateId(registrationId);
+            }
 
             try {
                 if (config != null && config.get("isMerchantPdf").equals(false)
