@@ -18,6 +18,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,6 +42,9 @@ public class SellerPanelController {
 
 
     @GetMapping("/v1/orders")
+    @CrossOrigin(origins = {"http://localhost:8080", "http://merchant-dev.paytm.com", "http://fe.paytm.com",
+                    "http://staging.paytm.com", "http://beta.paytm.com", "http://paytm.com","https://seller.paytm.com",
+                    "https://seller-dev.paytm.com"})
     public ResponseEntity<Object> getInfo(
             @RequestParam(name = "order_ids", required = false) List<Long> orderIds,
 
@@ -76,7 +80,8 @@ public class SellerPanelController {
                         getSellerPanelResponse(sellerPanelService.getInfoOnOrderIds(
                                 merchantId, orderIds, startDate, endDate));
 
-                return new ResponseEntity<>(new ResponseData<SellerPanelResponse>(sellerPanelResponses), HttpStatus.OK);
+                return new ResponseEntity<>(new ResponseData<SellerPanelResponse>(sellerPanelResponses),
+                                headers, HttpStatus.OK);
 
             } else if (startDate != null) {
                 ResponseData<FormData> response = sellerPanelService
@@ -106,6 +111,9 @@ public class SellerPanelController {
     }
 
     @GetMapping("/v1/orders/download")
+    @CrossOrigin(origins = {"http://localhost:8080", "http://merchant-dev.paytm.com", "http://fe.paytm.com",
+                    "http://staging.paytm.com", "http://beta.paytm.com", "http://paytm.com","https://seller.paytm.com",
+                    "https://seller-dev.paytm.com"})
     public void downloadOrders(
             @RequestParam(name = "order_ids") List<Long> orderIds,
 
@@ -125,7 +133,6 @@ public class SellerPanelController {
         }
 
         validateRequestOrderStartDate(orderIds, startDate);
-
 
         PrintWriter writer = response.getWriter();
         response.setHeader("Content-disposition", "attachment; filename=response.csv");
@@ -147,6 +154,9 @@ public class SellerPanelController {
     }
 
     @GetMapping(value = "/v1/orders/bulk-download", produces = "application/json")
+    @CrossOrigin(origins = {"http://localhost:8080", "http://merchant-dev.paytm.com", "http://fe.paytm.com",
+                    "http://staging.paytm.com", "http://beta.paytm.com", "http://paytm.com","https://seller.paytm.com",
+                    "https://seller-dev.paytm.com"})
     public ResponseEntity<Object> bulkDownloadOrders(
             @RequestParam(name = "order_ids", required = false) List<Long> orderIds,
 
