@@ -15,6 +15,4 @@ public interface MerchantConfigService {
 
     ResponseEntity<Object> getResponseForPostOrderScreenConfig(
             Map<String, Object> data, Long orderId, String merchantId);
-
-    String getRegistrationNumber(Long orderId);
 }

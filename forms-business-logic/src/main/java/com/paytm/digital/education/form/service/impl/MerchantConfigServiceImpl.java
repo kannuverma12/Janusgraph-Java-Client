@@ -1,15 +1,23 @@
 package com.paytm.digital.education.form.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.paytm.digital.education.form.model.Component;
 import com.paytm.digital.education.form.model.FormData;
 import com.paytm.digital.education.form.model.MerchantConfiguration;
+import com.paytm.digital.education.form.model.PostOrderExtraKeys;
 import com.paytm.digital.education.form.response.PostOrderScreenConfigResponse;
 import com.paytm.digital.education.form.service.MerchantConfigService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.bson.Document;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -19,10 +27,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 import java.util.Objects;
 
 @Data
@@ -107,9 +117,22 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
             Map<String, Object> data, Long orderId, String merchantId) {
 
         Map<String, Object> responseData = new HashMap<>();
-        String registrationId = getRegistrationNumber(orderId);
 
-        if (registrationId != null) {
+        Map<String, Object> formRequest = (Map<String, Object>) data.get("formRequest");
+        String responseString = null;
+
+        if (formRequest != null) {
+            responseString = formHttpCall(formRequest, orderId);
+        }
+
+        List<Component> components = null;
+        if (responseString != null) {
+            components = getKeys(responseString);
+        }
+
+        if (components != null) {
+            components.forEach(component -> responseData.put(component.getKey(), component.getDefaultValue()));
+
             String registrationLabel = (String) data.get("registration_label");
 
             if (registrationLabel != null) {
@@ -119,7 +142,19 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
                 registrationLabel = "";
             }
 
-            responseData.put("registration_id", registrationLabel + registrationId);
+            if (responseData.containsKey("registration_id")) {
+                String registrationId = (String) responseData.get("registration_id");
+                responseData.put("registration_id", registrationLabel + registrationId);
+
+                if (orderId != null) {
+                    Query query = new Query(Criteria.where("formFulfilment.orderId").is(orderId));
+                    Update update = new Update();
+
+                    update.set("merchantCandidateId", registrationId);
+                    mongoOperations.updateFirst(query, update, FormData.class);
+                }
+
+            }
         }
 
         if (data.containsKey("fill_form_id")) {
@@ -158,6 +193,52 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
         return new ResponseEntity<>(postOrderScreenConfigResponse, HttpStatus.OK);
     }
 
+    private String formHttpCall(Map<String, Object> data, Long orderId) {
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+            HttpPost httpPost = new HttpPost((String) data.get("form_url"));
+
+            if (orderId != null) {
+                Query query = new Query(Criteria.where("formFulfilment.orderId").is(orderId));
+                query.fields().include("customerId");
+
+                FormData formData = mongoOperations.findOne(query, FormData.class);
+                if (formData != null) {
+                    String customerId = formData.getCustomerId();
+
+                    if (customerId != null) {
+                        httpPost.setHeader("x-user-id", customerId);
+                    }
+                }
+            }
+
+            String json = "{\"data\":{\"submit\":true}}";
+            StringEntity entity = new StringEntity(json);
+            httpPost.setEntity(entity);
+
+            for (String key : data.keySet()) {
+                if (!"form_url".equals(key)) {
+                    httpPost.setHeader(key, (String) data.get(key));
+                }
+            }
+
+            try (CloseableHttpResponse response = client.execute(httpPost)) {
+                HttpEntity httpEntity = response.getEntity();
+                String responseString = EntityUtils.toString(httpEntity, "UTF-8");
+                if (response.getStatusLine().getStatusCode() == 200) {
+                    return responseString;
+                } else {
+                    log.error("Status: {}", response.getStatusLine().getStatusCode());
+                    log.error("Headers: {}", response.getAllHeaders());
+                    log.error("Body: {}", responseString);
+                    return null;
+                }
+            }
+
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     private Map<String, Object> getScreenConfigByOrderId(Long orderId) {
         Map<String, Object> data = null;
         Query query = new Query();
@@ -172,41 +253,6 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
         return data;
     }
 
-    @Override
-    public String getRegistrationNumber(Long orderId) {
-        String merchantId = null;
-        String candidateId = null;
-        String registrationId = null;
-
-        if (orderId != null) {
-            Query query = new Query();
-            query.addCriteria(Criteria.where("formFulfilment.orderId").is(orderId));
-            query.fields().include("merchantId").include("candidateId").include("merchantCandidateId");
-
-            FormData formData = mongoOperations.findOne(query, FormData.class);
-            candidateId = formData.getCandidateId();
-            merchantId = formData.getMerchantId();
-            registrationId = formData.getMerchantCandidateId();
-        }
-
-        if (candidateId != null && merchantId != null && registrationId == null) {
-            Query query = new Query();
-            query.addCriteria(
-                    Criteria.where("merchantId").is(merchantId)
-                            .and("candidateId").is(candidateId)
-                            .and("merchantCandidateId").exists(true)
-            );
-            query.with(new Sort(Sort.Direction.DESC, "updatedAt"));
-            query.fields().include("merchantCandidateId");
-
-            FormData formData = mongoOperations.findOne(query, FormData.class);
-            if (formData != null) {
-                registrationId = formData.getMerchantCandidateId();
-            }
-        }
-
-        return registrationId;
-    }
 
     private Map<String, Object> getScreenConfig(String merchantId) {
         Query query = new Query();
@@ -217,6 +263,18 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
         if (merchantConfiguration != null) {
             return merchantConfiguration.getPostOrderScreenConfig();
         } else {
+            return null;
+        }
+    }
+
+    private List<Component> getKeys(String responseString) {
+        try {
+            PostOrderExtraKeys postOrderExtraKeys =
+                    objectMapper.readValue(responseString, PostOrderExtraKeys.class);
+
+            return postOrderExtraKeys.getNextForm().getComponents();
+        } catch (IOException e) {
+            log.error("Error in parsing : {}", e.getStackTrace());
             return null;
         }
     }

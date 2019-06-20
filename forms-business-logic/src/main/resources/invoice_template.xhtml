@@ -45,7 +45,7 @@
     <!--Transaction Start-->
     <div style="margin-top:50px;overflow: hidden">
         <div  style="width:50%; float:left; color:#222; font-size:12px; font-weight:600;">Transaction Receipt <span style="display:block; font-size:10px; font-weight:400">Order No. ${formFulfilment.orderId?c}</span></div>
-        <div  style="width:50%; float:left; text-align:right; font-size:10px; padding-top:16px;	">${formFulfilment.createdDate?datetime}  </div>
+        <div  style="width:50%; float:left; text-align:right; font-size:10px; padding-top:16px;	">${formFulfilment.createdDate?datetime}  </div> 
     </div>
     <!--Transaction End-->
 
@@ -53,8 +53,8 @@
     <div style="margin-top:12px;overflow: hidden; border:2px solid #f4f4f4;">
         <div style="width:25%; float:left; padding:10px 10px 10px 8px; font-size:10px; color:#000;    margin: 10px;"> Name <span style="font-size:14px; font-weight:600; display:block; padding-top:10px;">
       ${candidateDetails.fullName!"-"}</span> </div>
-        <div style="width:30%; float:left; padding:10px 0 10px 30px; font-size:10px; color:#000;  margin: 10px; border-right:1px solid #f4f4f4;  border-left:1px solid #f4f4f4;">
-            Exam <span  style="font-size:14px; font-weight:600; display:block;padding-top:10px;">${merchantName!"-"}</span>  </div>
+        <div style="width:30%; float:left; padding:10px 0 10px 30px; font-size:10px; color:#000;  margin: 10px; border-right:1px solid #f4f4f4;  border-left:1px solid #f4f4f4;"> 
+        Exam <span  style="font-size:14px; font-weight:600; display:block;padding-top:10px;">${merchantName!"-"}</span>  </div>
         <div style="width:25%; float:left; padding:10px; font-size:10px; margin: 10px;color:#000;"> Amount Paid <span  style="font-size:14px; font-weight:600; display:block; padding-top:10px;">Rs. ${candidateDetails.amount!"-"}</span> </div>
     </div>
     <!--Name End-->
@@ -84,8 +84,8 @@
 
     <h3 style="margin-top: 40px; font-size:12px; font-weight:600;">Declaration</h3>
     <ul style="list-style-type:none; font-size:11px;">
-        <li style="margin-top: 15px;"> This is not an invoice but only a confirmation of receipt of the amount paid for the service as
-            described above, subject to the terms and conditions mentioned at paytm.com </li>
+        <li style="margin-top: 15px;"> This is not an invoice but only a confirmation of the receipt of the amount paid against for the service as
+            described above. Subject to the terms and conditions mentioned at paytm.com </li>
         <li style="margin-top: 20px;"> Note : This is computer generated receipt and does not require physical signature. </li>
         <li style="margin-top: 20px;"> One97 Communications Ltd. B-121, Sector 5,Noida,Uttar Pradesh-201301 <span style="display:block;"> GST Identification Number - 09AAAC04007A1Z3 </span> </li>
     </ul>
