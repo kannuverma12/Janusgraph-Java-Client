@@ -107,34 +107,7 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
             Map<String, Object> data, Long orderId, String merchantId) {
 
         Map<String, Object> responseData = new HashMap<>();
-
-        String candidateId = null;
-        String registrationId = null;
-        if (orderId != null) {
-            Query query = new Query();
-            query.addCriteria(Criteria.where("formFulfilment.orderId").is(orderId));
-            query.fields().include("merchantId").include("candidateId").include("merchantCandidateId");
-
-            FormData formData = mongoOperations.findOne(query, FormData.class);
-            candidateId = formData.getCandidateId();
-            merchantId = formData.getMerchantId();
-            registrationId = formData.getMerchantCandidateId();
-        }
-
-
-        if (candidateId != null && merchantId != null && registrationId == null) {
-            Query query = new Query();
-            query.addCriteria(
-                    Criteria.where("merchantId").is(merchantId)
-                            .and("candidateId").is(candidateId)
-                            .and("merchantCandidateId").exists(true)
-            );
-            query.with(new Sort(Sort.Direction.DESC, "updatedAt"));
-            query.fields().include("merchantCandidateId");
-
-            FormData formData = mongoOperations.findOne(query, FormData.class);
-            registrationId = formData.getMerchantCandidateId();
-        }
+        String registrationId = getRegistrationNumber(orderId);
 
         if (registrationId != null) {
             String registrationLabel = (String) data.get("registration_label");
@@ -199,6 +172,39 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
         return data;
     }
 
+    @Override
+    public String getRegistrationNumber(Long orderId) {
+        String merchantId = null;
+        String candidateId = null;
+        String registrationId = null;
+
+        if (orderId != null) {
+            Query query = new Query();
+            query.addCriteria(Criteria.where("formFulfilment.orderId").is(orderId));
+            query.fields().include("merchantId").include("candidateId").include("merchantCandidateId");
+
+            FormData formData = mongoOperations.findOne(query, FormData.class);
+            candidateId = formData.getCandidateId();
+            merchantId = formData.getMerchantId();
+            registrationId = formData.getMerchantCandidateId();
+        }
+
+        if (candidateId != null && merchantId != null && registrationId == null) {
+            Query query = new Query();
+            query.addCriteria(
+                    Criteria.where("merchantId").is(merchantId)
+                            .and("candidateId").is(candidateId)
+                            .and("merchantCandidateId").exists(true)
+            );
+            query.with(new Sort(Sort.Direction.DESC, "updatedAt"));
+            query.fields().include("merchantCandidateId");
+
+            FormData formData = mongoOperations.findOne(query, FormData.class);
+            registrationId = formData.getMerchantCandidateId();
+        }
+
+        return registrationId;
+    }
 
     private Map<String, Object> getScreenConfig(String merchantId) {
         Query query = new Query();
