@@ -200,7 +200,9 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
             query.fields().include("merchantCandidateId");
 
             FormData formData = mongoOperations.findOne(query, FormData.class);
-            registrationId = formData.getMerchantCandidateId();
+            if (formData != null) {
+                registrationId = formData.getMerchantCandidateId();
+            }
         }
 
         return registrationId;
