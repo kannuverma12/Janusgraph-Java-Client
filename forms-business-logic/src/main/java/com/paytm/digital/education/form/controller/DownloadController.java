@@ -1,35 +1,35 @@
 package com.paytm.digital.education.form.controller;
 
 
-import static com.paytm.digital.education.form.constants.FblConstants.FORM;
-import static com.paytm.digital.education.form.constants.FblConstants.INVOICE;
-import static com.paytm.digital.education.form.constants.FblConstants.PREDICTOR_INVOICE;
-
 import com.paytm.digital.education.form.config.AuthorizationService;
 import com.paytm.digital.education.form.model.ErrorResponseBody;
 import com.paytm.digital.education.form.model.FormData;
 import com.paytm.digital.education.form.model.MerchantConfiguration;
 import com.paytm.digital.education.form.service.DownloadService;
 import com.paytm.digital.education.form.service.impl.MerchantConfigServiceImpl;
-
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import static com.paytm.digital.education.form.constants.FblConstants.INVOICE;
+import static com.paytm.digital.education.form.constants.FblConstants.FORM;
+import static com.paytm.digital.education.form.constants.FblConstants.PREDICTOR_INVOICE;
+
 
 @RestController
 @AllArgsConstructor
@@ -43,22 +43,17 @@ public class DownloadController {
     private Environment env;
 
     @GetMapping("/v1/download")
+    @CrossOrigin(origins = {"http://localhost:8080", "http://merchant-dev.paytm.com", "http://fe.paytm.com",
+            "http://staging.paytm.com", "http://beta.paytm.com", "http://paytm.com", "https://seller.paytm.com",
+            "https://seller-dev.paytm.com"}, allowCredentials = "true")
     public ResponseEntity<Object> downloadFormOrInvoice(
             @RequestParam("order_id") Long orderId,
             @RequestParam("type") String type
     ) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Access-Control-Allow-Credentials", "true");
-
-        //  String[] orderIds = orderId.split(",");
-        //  if (orderIds.length > 1) {
-        //      return new ResponseEntity<>(
-        //              "{\"status_code\":400, \"message\": \"Only one orderId are allowed.\"}",headers,
-        //              HttpStatus.BAD_REQUEST);
-        //  }
 
         if (authService.getMerchantId() == null) {
-            return new ResponseEntity<>(new ErrorResponseBody(400, "User is not merchant"), headers,
+            return new ResponseEntity<>(new ErrorResponseBody(400, "User is not merchant"),
                     HttpStatus.BAD_REQUEST);
         }
 
@@ -66,7 +61,7 @@ public class DownloadController {
         FormData formData = downloadService.getFormDataByMerchantIdAndOrderId(merchantId, orderId);
         if (formData == null) {
             return new ResponseEntity<>(
-                    new ErrorResponseBody(404, "data not found"), headers,
+                    new ErrorResponseBody(404, "data not found"),
                     HttpStatus.NOT_FOUND);
         }
 
@@ -82,8 +77,6 @@ public class DownloadController {
         FormData formData = downloadService.getFormDataByUserIdAndOrderId(userId, orderId);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Access-Control-Allow-Credentials", "true");
-
         if (userId == null || formData == null) {
 
             return new ResponseEntity<>(
@@ -188,7 +181,7 @@ public class DownloadController {
             if (contents == null) {
                 return new ResponseEntity<>(
                         "{\"status_code\":500, \"message\": \"Some error occurred, please try again later.\"}",
-                        HttpStatus.INTERNAL_SERVER_ERROR);
+                         HttpStatus.INTERNAL_SERVER_ERROR);
             }
             return new ResponseEntity<>(contents, headers, HttpStatus.OK);
 
@@ -205,7 +198,7 @@ public class DownloadController {
         } else {
             return new ResponseEntity<>(
                     "{\"status_code\":400, \"message\": \"Please enter the correct id or type\"}",
-                    HttpStatus.BAD_REQUEST);
+                     HttpStatus.BAD_REQUEST);
         }
 
     }
