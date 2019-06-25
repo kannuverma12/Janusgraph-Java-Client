@@ -14,9 +14,9 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import paytm.auth.personaaclclient.infrastructure.security.CookieAuthenticationProvider;
 import paytm.auth.personaaclclient.infrastructure.security.DomainUsernamePasswordAuthenticationProvider;
 
-@EnableWebSecurity
+//@EnableWebSecurity
 @AllArgsConstructor
-@Order(2)
+//@Order(2)
 public class FormConfig extends WebSecurityConfigurerAdapter {
     private LCPTokenAuthenticationProvider tokenAuthenticationProvider;
 
@@ -26,7 +26,7 @@ public class FormConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable().sessionManagement()
+        http.sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/formfbl/v1/orders").authenticated()
