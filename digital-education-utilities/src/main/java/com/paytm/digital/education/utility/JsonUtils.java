@@ -72,4 +72,16 @@ public class JsonUtils {
         }
         return null;
     }
+
+    public static <T> T convertValue(Object object, Class<T> type) {
+        try {
+            return objectMapper.convertValue(object, type);
+        } catch (IllegalArgumentException ex) {
+            log.error("Illegal argument : [ " + object.toString() + " ]", ex);
+        } catch (Exception ex) {
+            log.error("Error caught while converting object : [ " + object.toString() + " ] to object type: "
+                    + type, ex);
+        }
+        return null;
+    }
 }

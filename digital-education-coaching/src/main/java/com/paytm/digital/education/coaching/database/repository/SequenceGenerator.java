@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.Objects;
 
 @Repository
@@ -20,6 +20,7 @@ public class SequenceGenerator {
 
     private MongoOperations mongoOperations;
 
+    @Transactional
     protected long getNextSequenceId(String sequenceName) {
         Query mongoQuery = new Query(Criteria.where(KEY_STRING).is(sequenceName));
         Update update = new Update();

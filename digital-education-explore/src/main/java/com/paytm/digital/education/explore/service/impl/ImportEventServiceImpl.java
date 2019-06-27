@@ -1,15 +1,18 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.paytm.digital.education.config.AwsConfig;
+import com.paytm.digital.education.config.GoogleConfig;
 import com.paytm.digital.education.explore.database.entity.CampusEvent;
 import com.paytm.digital.education.explore.database.entity.FailedEvent;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.service.ImportDataService;
 import com.paytm.digital.education.explore.service.helper.CampusEngagementHelper;
-import com.paytm.digital.education.explore.utility.GoogleDriveUtil;
+import com.paytm.digital.education.utility.GoogleDriveUtil;
 import com.paytm.digital.education.explore.xcel.model.XcelEvent;
 import com.paytm.digital.education.utility.JsonUtils;
+import com.paytm.digital.education.utility.UploadUtil;
 import javafx.util.Pair;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,6 +59,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.INS
 public class ImportEventServiceImpl implements ImportDataService {
     private CommonMongoRepository  commonMongoRepository;
     private CampusEngagementHelper campusEngagementHelper;
+    private UploadUtil             uploadUtil;
 
     /*
      ** Method to import new event data
@@ -68,7 +72,8 @@ public class ImportEventServiceImpl implements ImportDataService {
         double startRow = (double) propertyMap.get(EVENT_START_ROW);
         String dataRangeTemplate = (String) propertyMap.get(EVENT_DATA_RANGE_TEMPLATE);
         List<Object> eventData = GoogleDriveUtil.getDataFromSheet(sheetId,
-                MessageFormat.format(dataRangeTemplate, startRow), headerRange);
+                MessageFormat.format(dataRangeTemplate, startRow), headerRange,
+                GoogleConfig.getCampusCredentialFileName());
         if (Objects.nonNull(eventData)) {
             int totalNumberOfData = eventData.size();
             List<Object> failedDataList = new ArrayList<>();
@@ -197,8 +202,10 @@ public class ImportEventServiceImpl implements ImportDataService {
         List<String> failedUrlList = new ArrayList<>();
         for (String url : mediaUrlList) {
             Pair<String, String> mediaInfo =
-                    campusEngagementHelper
-                            .uploadFile(url, null, instituteId, S3_RELATIVE_PATH_FOR_EVENT);
+                    uploadUtil.uploadFile(url, null, instituteId, S3_RELATIVE_PATH_FOR_EVENT,
+                            AwsConfig
+                                    .getS3ExploreBucketName(),
+                            GoogleConfig.getCampusCredentialFileName());
             if (Objects.nonNull(mediaInfo.getKey())) {
                 if (mediaInfo.getValue().startsWith(IMAGE)) {
                     imageUrlList.add(mediaInfo.getKey());

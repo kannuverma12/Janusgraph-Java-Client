@@ -1,6 +1,6 @@
 package com.paytm.digital.education.explore.constants;
 
-import com.paytm.digital.education.explore.config.AwsConfig;
+import com.paytm.digital.education.config.AwsConfig;
 
 public interface AWSConstants {
     String S3_RELATIVE_PATH_PREFIX         = AwsConfig.getRelativePathPrefix();

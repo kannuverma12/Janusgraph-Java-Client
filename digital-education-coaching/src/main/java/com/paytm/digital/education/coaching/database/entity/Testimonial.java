@@ -31,8 +31,8 @@ public class Testimonial {
     @JsonProperty("testimonial")
     private String testimonial;
 
-    @Field("college_obtained")
-    @JsonProperty("college_obtained")
+    @Field("college_achieved")
+    @JsonProperty("college_achieved")
     private String collegeObtained;
 
     @Field("rank_obtained")
