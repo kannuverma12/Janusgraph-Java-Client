@@ -58,7 +58,8 @@ public class ImportGalleryService {
         String dataRangeTemplate = (String) propertyMap.get(GALLERY_SHEET_RANGE_TEMPLATE);
         List<Object> gallerySheetData = GoogleDriveUtil.getDataFromSheet(sheetId,
                 MessageFormat.format(dataRangeTemplate, startRow), headerRange,
-                GoogleConfig.getCoachingCredentialFileName());
+                GoogleConfig.getCoachingCredentialFileName(),
+                GoogleConfig.getCoachingCredentialFolderPath());
         List<Long> instituteIds = new ArrayList<>();
         List<GalleryForm> galleryFormSheetData = new ArrayList<>();
         List<Object> failedDataList = new ArrayList<>();

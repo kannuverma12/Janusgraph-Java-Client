@@ -70,7 +70,8 @@ public class ImportArticleServiceImpl implements ImportDataService {
         String dataRangeTemplate = (String) propertyMap.get(ARTICLE_DATA_RANGE_TEMPLATE);
         List<Object> sheetArticleData = GoogleDriveUtil.getDataFromSheet(sheetId,
                 MessageFormat.format(dataRangeTemplate, startRow), headerRange,
-                GoogleConfig.getCampusCredentialFileName());
+                GoogleConfig.getCampusCredentialFileName(),
+                GoogleConfig.getExploreCredentialFolderPath());
         if (Objects.nonNull(sheetArticleData)) {
             int totalNumberOfData = sheetArticleData.size();
             List<Object> failedArticles = new ArrayList<>();
@@ -161,7 +162,8 @@ public class ImportArticleServiceImpl implements ImportDataService {
     private boolean setDocsFields(Article article, String pdfUrl, List<Object> failedDataList) {
         String relativeUrl = uploadUtil.uploadFile(pdfUrl, null,
                 article.getInstituteId(), S3_RELATIVE_PATH_FOR_ARTICLE,
-                AwsConfig.getS3ExploreBucketName(), GoogleConfig.getCampusCredentialFileName())
+                AwsConfig.getS3ExploreBucketName(), GoogleConfig.getCampusCredentialFileName(),
+                GoogleConfig.getExploreCredentialFolderPath())
                 .getKey();
         if (Objects.nonNull(relativeUrl)) {
             article.setArticlePdf(relativeUrl);

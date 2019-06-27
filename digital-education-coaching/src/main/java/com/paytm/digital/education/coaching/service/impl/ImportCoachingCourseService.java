@@ -65,7 +65,8 @@ public class ImportCoachingCourseService {
         String dataRangeTemplate = (String) propertyMap.get(COURSE_SHEET_RANGE_TEMPLATE);
         List<Object> courseSheetData = GoogleDriveUtil.getDataFromSheet(sheetId,
                 MessageFormat.format(dataRangeTemplate, startRow), headerRange,
-                GoogleConfig.getCoachingCredentialFileName());
+                GoogleConfig.getCoachingCredentialFileName(),
+                GoogleConfig.getCoachingCredentialFolderPath());
         List<Long> courseIds = new ArrayList<>();
         List<CoachingCourseForm> coachingCourseFormSheetData = new ArrayList<>();
         Map<Long, List<FailedData>> failedDataMap = new HashMap<>();
@@ -291,7 +292,8 @@ public class ImportCoachingCourseService {
             String relativeUrl = uploadUtil.uploadFile(classSchedule, null,
                     courseId, CoachingConstants.S3RelativePath.CLASS_SCHEDULE,
                     AwsConfig.getS3CoachingBucketName(),
-                    GoogleConfig.getCoachingCredentialFileName()).getKey();
+                    GoogleConfig.getCoachingCredentialFileName(),
+                    GoogleConfig.getCoachingCredentialFolderPath()).getKey();
             if (StringUtils.isNotBlank(relativeUrl)) {
                 coachingCourse.setClassSchedule(relativeUrl);
             } else {

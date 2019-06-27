@@ -73,7 +73,8 @@ public class ImportEventServiceImpl implements ImportDataService {
         String dataRangeTemplate = (String) propertyMap.get(EVENT_DATA_RANGE_TEMPLATE);
         List<Object> eventData = GoogleDriveUtil.getDataFromSheet(sheetId,
                 MessageFormat.format(dataRangeTemplate, startRow), headerRange,
-                GoogleConfig.getCampusCredentialFileName());
+                GoogleConfig.getCampusCredentialFileName(),
+                GoogleConfig.getExploreCredentialFolderPath());
         if (Objects.nonNull(eventData)) {
             int totalNumberOfData = eventData.size();
             List<Object> failedDataList = new ArrayList<>();
@@ -205,7 +206,8 @@ public class ImportEventServiceImpl implements ImportDataService {
                     uploadUtil.uploadFile(url, null, instituteId, S3_RELATIVE_PATH_FOR_EVENT,
                             AwsConfig
                                     .getS3ExploreBucketName(),
-                            GoogleConfig.getCampusCredentialFileName());
+                            GoogleConfig.getCampusCredentialFileName(),
+                            GoogleConfig.getExploreCredentialFolderPath());
             if (Objects.nonNull(mediaInfo.getKey())) {
                 if (mediaInfo.getValue().startsWith(IMAGE)) {
                     imageUrlList.add(mediaInfo.getKey());

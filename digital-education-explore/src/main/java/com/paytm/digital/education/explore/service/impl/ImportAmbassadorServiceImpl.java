@@ -70,7 +70,8 @@ public class ImportAmbassadorServiceImpl implements ImportDataService {
         String dataRangeTemplate = (String) propertyMap.get(CAMPUS_AMBASSADOR_DATA_RANGE_TEMPLATE);
         List<Object> sheetAmbassadorData = GoogleDriveUtil.getDataFromSheet(sheetId,
                 MessageFormat.format(dataRangeTemplate, startRow), headerRange,
-                GoogleConfig.getCampusCredentialFileName());
+                GoogleConfig.getCampusCredentialFileName(),
+                GoogleConfig.getExploreCredentialFolderPath());
         if (Objects.nonNull(sheetAmbassadorData)) {
             int totalNumberOfData = sheetAmbassadorData.size();
             List<Object> failedDataList = new ArrayList<>();
@@ -273,7 +274,8 @@ public class ImportAmbassadorServiceImpl implements ImportDataService {
             List<Object> failedDataList) {
         String imageUrl = uploadUtil.uploadFile(mediaUrl, null, ambassador.getInstituteId(),
                 S3_RELATIVE_PATH_FOR_AMBASSADOR, AwsConfig.getS3ExploreBucketName(),
-                GoogleConfig.getCampusCredentialFileName()).getKey();
+                GoogleConfig.getCampusCredentialFileName(),
+                GoogleConfig.getExploreCredentialFolderPath()).getKey();
         if (Objects.nonNull(imageUrl)) {
             ambassador.setImageUrl(imageUrl);
             return true;

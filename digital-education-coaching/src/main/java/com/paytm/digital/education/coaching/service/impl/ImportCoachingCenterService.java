@@ -56,7 +56,7 @@ public class ImportCoachingCenterService {
         String dataRangeTemplate = (String) propertyMap.get(CENTRE_SHEET_RANGE_TEMPLATE);
         List<Object> coachingCentreSheetData = GoogleDriveUtil.getDataFromSheet(sheetId,
                 MessageFormat.format(dataRangeTemplate, startRow), headerRange,
-                GoogleConfig.getCoachingCredentialFileName());
+                GoogleConfig.getCoachingCredentialFileName(), GoogleConfig.getCoachingCredentialFolderPath());
         List<Long> instituteIds = new ArrayList<>();
         List<Long> centerIds = new ArrayList<>();
         List<CoachingCentreForm> coachingCentreFormSheetData = new ArrayList<>();

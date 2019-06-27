@@ -58,7 +58,8 @@ public class ImportStudentSelectedService {
         String dataRangeTemplate = (String) propertyMap.get(STUDENT_SELECTED_SHEET_RANGE_TEMPLATE);
         List<Object> studentSelectedSheetData = GoogleDriveUtil.getDataFromSheet(sheetId,
                 MessageFormat.format(dataRangeTemplate, startRow), headerRange,
-                GoogleConfig.getCoachingCredentialFileName());
+                GoogleConfig.getCoachingCredentialFileName(),
+                GoogleConfig.getCoachingCredentialFolderPath());
         List<Long> instituteIds = new ArrayList<>();
         List<TopRankedAchievedForm> studentSelectedFormSheetData = new ArrayList<>();
         List<Object> failedDataList = new ArrayList<>();
@@ -167,7 +168,8 @@ public class ImportStudentSelectedService {
             String relativeUrl = uploadUtil.uploadFile(studentPhoto, null,
                     instituteId, CoachingConstants.S3RelativePath.STUDENT_SELECTED,
                     AwsConfig.getS3CoachingBucketName(),
-                    GoogleConfig.getCoachingCredentialFileName()).getKey();
+                    GoogleConfig.getCoachingCredentialFileName(),
+                    GoogleConfig.getCoachingCredentialFolderPath()).getKey();
             if (StringUtils.isNotBlank(relativeUrl)) {
                 studentSelected.setStudentPhoto(relativeUrl);
             } else {

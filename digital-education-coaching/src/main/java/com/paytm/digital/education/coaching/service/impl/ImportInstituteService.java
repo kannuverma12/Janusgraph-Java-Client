@@ -68,7 +68,8 @@ public class ImportInstituteService {
         String dataRangeTemplate = (String) propertyMap.get(INSTITUTE_SHEET_RANGE_TEMPLATE);
         List<Object> instituteSheetData = GoogleDriveUtil.getDataFromSheet(sheetId,
                 MessageFormat.format(dataRangeTemplate, startRow), headerRange,
-                GoogleConfig.getCoachingCredentialFileName());
+                GoogleConfig.getCoachingCredentialFileName(),
+                GoogleConfig.getCoachingCredentialFolderPath());
         List<Long> instituteIds = new ArrayList<>();
         List<CoachingInstituteForm> coachingInstituteFormSheetData = new ArrayList<>();
         Map<Long, List<FailedData>> failedDataMap = new HashMap<>();
@@ -395,7 +396,8 @@ public class ImportInstituteService {
             String relativeUrl = uploadUtil.uploadFile(logo, null,
                     instituteId, CoachingConstants.S3RelativePath.LOGO,
                     AwsConfig.getS3CoachingBucketName(),
-                    GoogleConfig.getCoachingCredentialFileName()).getKey();
+                    GoogleConfig.getCoachingCredentialFileName(),
+                    GoogleConfig.getCoachingCredentialFolderPath()).getKey();
             if (StringUtils.isNotBlank(relativeUrl)) {
                 coachingInstitute.setLogo(relativeUrl);
             } else {
@@ -407,7 +409,8 @@ public class ImportInstituteService {
             String relativeUrl = uploadUtil.uploadFile(coverImage, null,
                     instituteId, CoachingConstants.S3RelativePath.COVER_IMAGE,
                     AwsConfig.getS3CoachingBucketName(),
-                    GoogleConfig.getCoachingCredentialFileName()).getKey();
+                    GoogleConfig.getCoachingCredentialFileName(),
+                    GoogleConfig.getCoachingCredentialFolderPath()).getKey();
             if (StringUtils.isNotBlank(relativeUrl)) {
                 coachingInstitute.setCoverImage(relativeUrl);
             } else {
@@ -420,7 +423,8 @@ public class ImportInstituteService {
             String relativeUrl = uploadUtil.uploadFile(logo, null,
                     instituteId, CoachingConstants.S3RelativePath.SCHOLARMATRIX,
                     AwsConfig.getS3CoachingBucketName(),
-                    GoogleConfig.getCoachingCredentialFileName()).getKey();
+                    GoogleConfig.getCoachingCredentialFileName(),
+                    GoogleConfig.getCoachingCredentialFolderPath()).getKey();
             if (StringUtils.isNotBlank(relativeUrl)) {
                 coachingInstitute.setScholarshipMatrix(relativeUrl);
             } else {
@@ -433,7 +437,8 @@ public class ImportInstituteService {
             String relativeUrl = uploadUtil.uploadFile(brochure, null,
                     instituteId, CoachingConstants.S3RelativePath.BROCHURE,
                     AwsConfig.getS3CoachingBucketName(),
-                    GoogleConfig.getCoachingCredentialFileName()).getKey();
+                    GoogleConfig.getCoachingCredentialFileName(),
+                    GoogleConfig.getCoachingCredentialFolderPath()).getKey();
             if (StringUtils.isNotBlank(relativeUrl)) {
                 coachingInstitute.setScholarshipMatrix(relativeUrl);
             } else {

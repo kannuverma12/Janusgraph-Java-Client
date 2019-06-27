@@ -49,7 +49,8 @@ public class ImportFacilitiesService {
         String dataRangeTemplate = (String) propertyMap.get(FACILITY_SHEET_RANGE_TEMPLATE);
         List<Object> faciltySheetData = GoogleDriveUtil.getDataFromSheet(sheetId,
                 MessageFormat.format(dataRangeTemplate, startRow), headerRange,
-                GoogleConfig.getCoachingCredentialFileName());
+                GoogleConfig.getCoachingCredentialFileName(),
+                GoogleConfig.getCoachingCredentialFolderPath());
         List<Long> instituteIds = new ArrayList<>();
         List<CoachingFacilityForm> facilityFormSheetData = new ArrayList<>();
         List<Object> failedDataList = new ArrayList<>();

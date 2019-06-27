@@ -64,7 +64,8 @@ public class ImportExamService {
         String dataRangeTemplate = (String) propertyMap.get(EXAM_SHEET_RANGE_TEMPLATE);
         List<Object> examSheetData = GoogleDriveUtil.getDataFromSheet(sheetId,
                 MessageFormat.format(dataRangeTemplate, startRow), headerRange,
-                GoogleConfig.getCoachingCredentialFileName());
+                GoogleConfig.getCoachingCredentialFileName(),
+                GoogleConfig.getCoachingCredentialFolderPath());
         List<Long> examIds = new ArrayList<>();
         List<CoachingExamForm> coachingExamFormSheetData = new ArrayList<>();
         Map<Long, List<FailedData>> failedDataMap = new HashMap<>();

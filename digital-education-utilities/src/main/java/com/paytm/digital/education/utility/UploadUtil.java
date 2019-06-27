@@ -25,14 +25,14 @@ public class UploadUtil {
     private S3Service s3Service;
 
     public Pair<String, String> uploadFile(String fileUrl, String fileName, Long instituteId,
-            String s3ImagePath, String s3BucketName, String clientSecretFileName) {
+            String s3ImagePath, String s3BucketName, String clientSecretFileName, String clientSecretFolder) {
         InputStream inputStream = null;
         String mimeType = null;
         fileUrl = fileUrl.trim();
         try {
             if (fileUrl.startsWith(GOOGLE_DRIVE_BASE_URL)) {
                 Map<String, Object> fileData =
-                        GoogleDriveUtil.downloadFile(fileUrl, clientSecretFileName);
+                        GoogleDriveUtil.downloadFile(fileUrl, clientSecretFileName, clientSecretFolder);
                 inputStream = (InputStream) fileData.get(INPUTSTREAM);
                 fileName = (String) fileData.get(FILENAME);
                 mimeType = (String) fileData.get(MIMETYPE);

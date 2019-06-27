@@ -7,13 +7,19 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 @Configuration
 public class GoogleConfig {
-    private static String credentialFolderPath;
+    private static String exploreCredentialFolderPath;
+    private static String coachingCredentialFolderPath;
     private static String campusCredentialFileName;
     private static String coachingCredentialFileName;
 
-    @Value("${google.api.credential.folderpath}")
+    @Value("${google.api.explore.credential.folderpath}")
+    public void setExploreCredentialFolderPath(String path) {
+        exploreCredentialFolderPath = path;
+    }
+
+    @Value("${google.api.coaching.credential.folderpath}")
     public void setCredentialFolderPath(String path) {
-        credentialFolderPath = path;
+        coachingCredentialFolderPath = path;
     }
 
     @Value("${google.api.campus.credential.filename}")
@@ -26,8 +32,12 @@ public class GoogleConfig {
         coachingCredentialFileName = fileName;
     }
 
-    public static String getCredentialFolderPath() {
-        return credentialFolderPath;
+    public static String getExploreCredentialFolderPath() {
+        return exploreCredentialFolderPath;
+    }
+
+    public static String getCoachingCredentialFolderPath() {
+        return exploreCredentialFolderPath;
     }
 
     public static String getCampusCredentialFileName() {

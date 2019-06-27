@@ -82,7 +82,8 @@ public class IngestDataHelper {
             Pair<String, String> mediaInfo = uploadUtil
                     .uploadFile(url, null, instituteId, s3RelativePath,
                             AwsConfig.getS3CoachingBucketName(),
-                            GoogleConfig.getCoachingCredentialFileName());
+                            GoogleConfig.getCoachingCredentialFileName(),
+                            GoogleConfig.getCoachingCredentialFolderPath());
             if (Objects.nonNull(mediaInfo.getKey())) {
                 if (mediaInfo.getValue().startsWith(IMAGE)) {
                     imageUrlList.add(mediaInfo.getKey());
@@ -119,19 +120,21 @@ public class IngestDataHelper {
     }
 
     public void updatePropertyMap(String key, List<Object> sheetData, double startRow) {
-        double totalNumberOfData = sheetData.size();
-        double updatedCount = startRow;
-        if (totalNumberOfData > 0) {
-            updatedCount += totalNumberOfData;
-            Map<String, Object> queryObject = new HashMap<>();
-            queryObject.put(COMPONENT, COACHING_COMPONENT);
-            queryObject.put(NAMESPACE, GOOGLE_SHEETS_INFO);
-            queryObject.put(KEY, DATA_INGEST);
-            List<String> fields = Arrays.asList(ATTRIBUTES);
-            Update update = new Update();
-            update.set(ATTRIBUTES + "." + key, updatedCount);
-            commonCoachingMongoRepository
-                    .updateFirst(queryObject, fields, update, Properties.class);
+        if (Objects.nonNull(sheetData)) {
+            double totalNumberOfData = sheetData.size();
+            double updatedCount = startRow;
+            if (totalNumberOfData > 0) {
+                updatedCount += totalNumberOfData;
+                Map<String, Object> queryObject = new HashMap<>();
+                queryObject.put(COMPONENT, COACHING_COMPONENT);
+                queryObject.put(NAMESPACE, GOOGLE_SHEETS_INFO);
+                queryObject.put(KEY, DATA_INGEST);
+                List<String> fields = Arrays.asList(ATTRIBUTES);
+                Update update = new Update();
+                update.set(ATTRIBUTES + "." + key, updatedCount);
+                commonCoachingMongoRepository
+                        .updateFirst(queryObject, fields, update, Properties.class);
+            }
         }
     }
 }
