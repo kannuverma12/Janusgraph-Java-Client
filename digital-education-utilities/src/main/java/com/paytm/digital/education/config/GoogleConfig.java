@@ -18,7 +18,7 @@ public class GoogleConfig {
     }
 
     @Value("${google.api.coaching.credential.folderpath}")
-    public void setCredentialFolderPath(String path) {
+    public void setCoachingCredentialFolderPath(String path) {
         coachingCredentialFolderPath = path;
     }
 
@@ -37,7 +37,7 @@ public class GoogleConfig {
     }
 
     public static String getCoachingCredentialFolderPath() {
-        return exploreCredentialFolderPath;
+        return coachingCredentialFolderPath;
     }
 
     public static String getCampusCredentialFileName() {
