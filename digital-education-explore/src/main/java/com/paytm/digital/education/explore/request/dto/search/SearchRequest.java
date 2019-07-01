@@ -55,6 +55,8 @@ public class SearchRequest extends FieldsAndFieldGroupRequest {
     @NotNull
     private Boolean fetchFilter = true;
 
+    private Map<String, >
+
     @JsonProperty("meta")
     private Classification classificationData;
 

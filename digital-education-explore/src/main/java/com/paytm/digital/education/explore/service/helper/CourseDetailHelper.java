@@ -68,4 +68,35 @@ public class CourseDetailHelper {
         }
         return new Pair<>(0L, courses);
     }
+
+    public Pair<String, List<Course>> getCourseDataListPerDegree(List<Object> instituteIds, CollegeEntityType type){
+        SearchRequest searchRequest = new SearchRequest();
+        searchRequest.setEntity(EducationEntity.COURSE);
+        searchRequest.setLimit(0);
+        Map<String, List<Object>> filters = new HashMap<>();
+        if (type == CollegeEntityType.UNIVERSITY) {
+            filters.put(PARENT_INSTITUTE_ID_COURSE, instituteIds);
+        } else {
+            filters.put(INSTITUTE_ID_COURSE, instituteIds);
+        }
+        searchRequest.setFilter(filters);
+
+
+        AggregateField[] aggFields = new AggregateField[1];
+        aggFields[0] = new AggregateField();
+        aggFields[0].setName(ENTITY_TYPE);
+        aggFields[0].setType(AggregationType.TOP_HITS);
+        if (alphabeticalSorting) {
+            SortField[] sortFields = new SortField[1];
+            sortFields[0] = new SortField();
+            sortFields[0].setName(OFFICIAL_NAME);
+            sortFields[0].setOrder(DataSortOrder.ASC);
+            sortFields[0].setPath(suggestClassLevelMap.get(OFFICIAL_NAME));
+            aggFields[0].setSortFields(sortFields);
+        }
+        elasticRequest.setAggregateFields(aggFields);
+
+
+
+    }
 }
