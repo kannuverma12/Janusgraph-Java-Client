@@ -420,7 +420,7 @@ public class ImportInstituteService {
         String scholarshipMatrix = coachingInstitute.getScholarshipMatrix();
         if (StringUtils.isNotBlank(scholarshipMatrix) && scholarshipMatrix.startsWith(HTTPS)) {  //
             // S3 upload
-            String relativeUrl = uploadUtil.uploadFile(logo, null,
+            String relativeUrl = uploadUtil.uploadFile(scholarshipMatrix, null,
                     instituteId, CoachingConstants.S3RelativePath.SCHOLARMATRIX,
                     AwsConfig.getS3CoachingBucketName(),
                     GoogleConfig.getCoachingCredentialFileName(),
