@@ -8,6 +8,7 @@ import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUT
 
 import com.paytm.digital.education.explore.database.entity.Alumni;
 import com.paytm.digital.education.explore.database.entity.CampusAmbassador;
+import com.paytm.digital.education.explore.database.entity.CampusEngagement;
 import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
@@ -131,18 +132,22 @@ public class InstituteDetailResponseBuilder {
             instituteDetail.setRankings(getRankingDetails(institute.getRankings()));
         }
         instituteDetail.setDegreeOffered(getDegreeMap(courses));
-        Map<String, CampusAmbassador> campusAmbassadorMap = institute.getCampusAmbassadors();
-        if (Objects.nonNull(campusAmbassadorMap)) {
-            instituteDetail.setCampusAmbassadors(campusEngagementHelper
-                    .getCampusAmbassadorData(campusAmbassadorMap));
-        }
-        if (Objects.nonNull(institute.getArticles())) {
-            instituteDetail.setArticles(campusEngagementHelper
-                    .getCampusArticleData(institute.getArticles(), campusAmbassadorMap));
-        }
-        if (Objects.nonNull(institute.getEvents())) {
-            instituteDetail.setEvents(campusEngagementHelper
-                    .getCampusEventsData(institute.getEvents()));
+        CampusEngagement campusEngagement =
+                campusEngagementHelper.findCampusEngagementData(institute.getInstituteId());
+        if (Objects.nonNull(campusEngagement)) {
+            Map<String, CampusAmbassador> campusAmbassadorMap = campusEngagement.getCampusAmbassadors();
+            if (Objects.nonNull(campusAmbassadorMap)) {
+                instituteDetail.setCampusAmbassadors(campusEngagementHelper
+                        .getCampusAmbassadorData(campusAmbassadorMap));
+            }
+            if (Objects.nonNull(campusEngagement.getArticles())) {
+                instituteDetail.setArticles(campusEngagementHelper
+                        .getCampusArticleData(institute.getArticles(), campusAmbassadorMap));
+            }
+            if (Objects.nonNull(campusEngagement.getEvents())) {
+                instituteDetail.setEvents(campusEngagementHelper
+                        .getCampusEventsData(institute.getEvents()));
+            }
         }
         return instituteDetail;
     }

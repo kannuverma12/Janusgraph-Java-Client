@@ -10,7 +10,7 @@ import java.util.Map;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Document
+@Document("campus_engagement")
 public class CampusEngagement {
 
     @Field("institute_id")
