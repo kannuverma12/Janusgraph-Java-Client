@@ -112,7 +112,7 @@ public class SellerPanelController {
             "http://staging.paytm.com", "http://beta.paytm.com", "http://paytm.com", "https://seller.paytm.com",
             "https://seller-dev.paytm.com"}, allowCredentials = "true")
     public void downloadOrders(
-            @RequestParam(name = "order_ids") List<Long> orderIds,
+            @RequestParam(name = "order_ids", required = false) List<Long> orderIds,
 
             @RequestParam(name = "start_date", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
@@ -139,13 +139,27 @@ public class SellerPanelController {
                 .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
                 .build();
 
-        List<MerchantFormData> formDataList = sellerPanelService
-                .getInfoOnOrderIds(authService.getMerchantId().toString(), orderIds, startDate, endDate)
-                .stream()
-                .map(MerchantFormData::new)
-                .collect(Collectors.toList());
-
-        sbc.write(formDataList);
+        List<MerchantFormData> formDataList = null;
+        if (orderIds != null && orderIds.size() > 0) {
+            formDataList = sellerPanelService
+                    .getInfoOnOrderIds(authService.getMerchantId().toString(), orderIds, startDate, endDate)
+                    .stream()
+                    .map(MerchantFormData::new)
+                    .collect(Collectors.toList());
+        } else if (startDate != null) {
+            if (endDate == null) {
+                endDate = new Date();
+            }
+            formDataList = sellerPanelService
+                    .getInfoOnDate(authService.getMerchantId().toString(), startDate, endDate, offset, limit)
+                    .getData()
+                    .stream()
+                    .map(MerchantFormData::new)
+                    .collect(Collectors.toList());
+        }
+        if (formDataList != null) {
+            sbc.write(formDataList);
+        }
         writer.close();
     }
 
