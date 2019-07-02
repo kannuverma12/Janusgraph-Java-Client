@@ -200,7 +200,7 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
         populateFilterFields(searchRequest, elasticRequest, CourseSearch.class,
                 filterQueryTypeMap);
         populateAggregateFields(searchRequest, elasticRequest,
-                searchAggregateHelper.getCourseAggregateData(), CourseSearch.class);
+                searchAggregateHelper.getCourseAggregateData(searchRequest.getClient()), CourseSearch.class);
         LinkedHashMap<String, DataSortOrder> sortOrder = new LinkedHashMap<>();
         if (!CollectionUtils.isEmpty(searchRequest.getSortOrder())) {
             if (searchRequest.getSortOrder().containsKey(COURSE_ALPHABETICAL_SORT_KEY)) {
