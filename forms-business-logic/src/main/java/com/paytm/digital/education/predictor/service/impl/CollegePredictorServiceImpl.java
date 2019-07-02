@@ -9,6 +9,7 @@ import static com.paytm.digital.education.form.constants.FblConstants.PAYMENT_AM
 import static com.paytm.digital.education.form.constants.FblConstants.PAYTM_PRODUCT_ID;
 import static com.paytm.digital.education.form.constants.FblConstants.PAYTM_PRODUCT_NAME;
 import static com.paytm.digital.education.form.constants.FblConstants.PREDICTOR_NAME;
+import static com.paytm.digital.education.form.constants.FblConstants.MAX_USAGE;
 import static com.paytm.digital.education.form.constants.FblConstants.PRODUCT_ID;
 import static com.paytm.digital.education.form.constants.FblConstants.REFERENCE_ID;
 import static com.paytm.digital.education.form.constants.FblConstants.RENDER_FORM2;
@@ -29,8 +30,10 @@ import com.paytm.digital.education.form.repository.FormDataRepository;
 import com.paytm.digital.education.form.service.MerchantProductConfigService;
 import com.paytm.digital.education.predictor.model.CollegePredictor;
 import com.paytm.digital.education.predictor.model.PredictorAuditLogs;
+import com.paytm.digital.education.predictor.model.PredictorStats;
 import com.paytm.digital.education.predictor.repository.PredictorAuditRepository;
 import com.paytm.digital.education.predictor.repository.PredictorListRepository;
+import com.paytm.digital.education.predictor.repository.PredictorStatsRepository;
 import com.paytm.digital.education.predictor.response.CreateFormResponse;
 import com.paytm.digital.education.predictor.response.PredictorListResponse;
 import com.paytm.digital.education.predictor.service.CollegePredictorService;
@@ -83,6 +86,9 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
 
     @Autowired
     private PredictorAuditRepository predictorAuditRepository;
+
+    @Autowired
+    private PredictorStatsRepository predictorStatsRepository;
 
     @Override
     public Map<String, Object> savePredictorFormData(FormData formData) {
@@ -272,10 +278,16 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
     }
 
     private Float getProductPrice(FormData formData, MerchantProductConfig merchantProductConfig) {
-        List<FormData> paymentMadeFormsData = formDataRepository
-                .getFormsDataByPaymentStatus(formData.getCustomerId(), formData.getMerchantId(),
-                        formData.getMerchantProductId(), SUCCESS_STRING);
-        if (CollectionUtils.isEmpty(paymentMadeFormsData)) {
+
+        PredictorStats predictorStats = predictorStatsRepository
+                .findByCustomerIdAndMerchantProductId(formData.getCustomerId(),
+                        formData.getMerchantProductId());
+
+        if (Objects.isNull(predictorStats)
+                || (!CollectionUtils.isEmpty(merchantProductConfig.getData())
+                        && merchantProductConfig.getData().containsKey(MAX_USAGE)
+                        && merchantProductConfig.getData().get(MAX_USAGE) == predictorStats
+                                .getUseCount())) {
             if (Objects.isNull(merchantProductConfig) || Objects
                     .isNull(merchantProductConfig.getData().get(PAYMENT_AMOUNT))) {
                 throw new EducationException(PAYMENT_CONFIGURATION_NOT_FOUND,
