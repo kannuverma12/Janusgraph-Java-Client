@@ -94,7 +94,9 @@ public class DownloadController {
             }
         }
         FormData formData = downloadService.getFormDataByUserIdAndOrderId(userId, orderId);
-        log.info("Form Data : {}", formData.toString());
+        if (formData != null) {
+            log.info("Form Data : {}", formData.toString());
+        }
 
         HttpHeaders headers = new HttpHeaders();
         if (userId == null || formData == null) {
