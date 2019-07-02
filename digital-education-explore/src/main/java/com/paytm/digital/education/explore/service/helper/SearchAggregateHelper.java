@@ -31,9 +31,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.paytm.digital.education.explore.enums.Client;
-import lombok.experimental.UtilityClass;
+import org.springframework.stereotype.Service;
 
-@UtilityClass
+@Service
 public class SearchAggregateHelper {
 
     public AggregateField[] getInstituteAggregateData() {
@@ -90,6 +90,7 @@ public class SearchAggregateHelper {
 
         if (Client.APP.equals(client)) {
             AggregateField[] courseAggregateData = new AggregateField[1];
+            courseAggregateData[0] = new AggregateField();
             courseAggregateData[0].setName(LEVEL_COURSE);
             courseAggregateData[0].setType(TOP_HITS);
             return courseAggregateData;

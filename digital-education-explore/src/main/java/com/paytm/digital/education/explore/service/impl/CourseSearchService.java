@@ -1,44 +1,21 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.TERMS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.BRANCH_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_FILTER_NAMESPACE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DEGREE_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DURATION_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_NAME;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.IS_CLIENT;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME_COURSE_SEARCH;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_ALPHABETICAL_SORT_KEY;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.FEE_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.GALLERY_LOGO;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_NAME_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTION_CITY;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTION_STATE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.LEVEL_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.PARENT_INSTITUTE_ID_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_ANALYZER_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_INDEX_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SEATS_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME_COURSE_BOOST;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.ACCEPTING_APPLICATION;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.*;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_NAME;
 
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
+import com.paytm.digital.education.elasticsearch.models.AggregationResponse;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
+import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationResponse;
 import com.paytm.digital.education.exception.BadRequestException;
+import com.paytm.digital.education.explore.constants.ExploreConstants;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.CollegeEntityType;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.es.model.CourseSearch;
@@ -119,15 +96,21 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
         ElasticRequest elasticRequest = buildSearchRequest(searchRequest);
         ElasticResponse elasticResponse = initiateSearch(elasticRequest, CourseSearch.class);
         return buildSearchResponse(elasticResponse, elasticRequest, EXPLORE_COMPONENT,
-                COURSE_FILTER_NAMESPACE, courseSearchResponse);
+                COURSE_FILTER_NAMESPACE, courseSearchResponse, searchRequest.getClient());
     }
 
     private SearchResponse buildSearchResponse(ElasticResponse elasticResponse,
             ElasticRequest elasticRequest, String component, String namespace,
-            CourseSearchResponse courseSearchResponse) {
+            CourseSearchResponse courseSearchResponse, Client client) {
         SearchResponse searchResponse = new SearchResponse(elasticRequest.getQueryTerm());
         if (elasticRequest.isSearchRequest()) {
-            populateSearchResultsOfCourses(searchResponse, elasticResponse, courseSearchResponse);
+            if (Client.APP.equals(client)) {
+                populateSearchResultPerLevel(searchResponse, elasticResponse,
+                        courseSearchResponse);
+            } else {
+                populateSearchResultsOfCourses(searchResponse, elasticResponse,
+                        courseSearchResponse);
+            }
             long total = elasticResponse.getTotalSearchResultsCount();
             searchResponse.setTotal(total);
         }
@@ -200,7 +183,8 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
         populateFilterFields(searchRequest, elasticRequest, CourseSearch.class,
                 filterQueryTypeMap);
         populateAggregateFields(searchRequest, elasticRequest,
-                searchAggregateHelper.getCourseAggregateData(searchRequest.getClient()), CourseSearch.class);
+                searchAggregateHelper.getCourseAggregateData(searchRequest.getClient()),
+                CourseSearch.class);
         LinkedHashMap<String, DataSortOrder> sortOrder = new LinkedHashMap<>();
         if (!CollectionUtils.isEmpty(searchRequest.getSortOrder())) {
             if (searchRequest.getSortOrder().containsKey(COURSE_ALPHABETICAL_SORT_KEY)) {
@@ -217,6 +201,44 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
         populateSortFields(searchRequest, elasticRequest, CourseSearch.class);
         return elasticRequest;
     }
+
+    private void populateSearchResultPerLevel(SearchResponse searchResponse,
+            ElasticResponse elasticResponse, CourseSearchResponse courseSearchResponse) {
+        SearchResult searchResults = new SearchResult();
+        if (elasticResponse.getAggregationResponse().containsKey(ExploreConstants.COURSE_LEVEL)) {
+            TopHitsAggregationResponse<CourseSearch> topHitsAggregationResponse =
+                    (TopHitsAggregationResponse<CourseSearch>) elasticResponse
+                            .getAggregationResponse().get(COURSE_LEVEL);
+            Map<String, List<CourseData>> courseDataPerLevel = new HashMap<>();
+            topHitsAggregationResponse.getDocumentsPerEntity().forEach((key, documents) -> {
+                List<CourseData> courseDataList = new ArrayList<>();
+                documents.forEach(courseSearch -> {
+                    CourseData courseData = new CourseData();
+                    courseData.setCourseId(courseSearch.getCourseId());
+                    courseData.setDegrees(courseSearch.getDegree());
+                    courseData.setDurationInMonths(courseSearch.getDurationInMonths());
+                    courseData.setFee(courseSearch.getFees());
+                    courseData.setSeatsAvailable(courseSearch.getSeats());
+                    courseData.setStream(courseSearch.getDomainName());
+                    courseData.setOfficialName(courseSearch.getName());
+                    courseData.setUrlDisplayKey(
+                            CommonUtil.convertNameToUrlDisplayName(courseSearch.getName()));
+                    courseData.setInstituteName(courseSearch.getInstituteName());
+                    courseDataList.add(courseData);
+                });
+                courseDataPerLevel.put(key.getKey(), courseDataList);
+            });
+            courseSearchResponse.setCoursesPerLevel(courseDataPerLevel);
+            List<SearchBaseData> values = new ArrayList<>();
+            values.add(courseSearchResponse);
+            searchResults.setValues(values);
+            Map<Long, SearchBaseData> searchBaseDataMap = new HashMap<>();
+            searchBaseDataMap.put(courseSearchResponse.getInstituteId(), values.get(0));
+            searchResponse.setEntityDataMap(searchBaseDataMap);
+        }
+        searchResponse.setResults(searchResults);
+    }
+
 
     protected void populateSearchResultsOfCourses(SearchResponse searchResponse,
             ElasticResponse elasticResponse, CourseSearchResponse courseSearchResponse) {
