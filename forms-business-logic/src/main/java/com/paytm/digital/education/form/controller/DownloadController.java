@@ -37,10 +37,10 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class DownloadController {
 
-    private AuthorizationService authService;
-    private DownloadService downloadService;
+    private AuthorizationService      authService;
+    private DownloadService           downloadService;
     private MerchantConfigServiceImpl merchantConfigServiceImpl;
-    private Environment env;
+    private Environment               env;
 
     @GetMapping("/v1/download")
     public ResponseEntity<Object> downloadFormOrInvoice(
@@ -142,7 +142,8 @@ public class DownloadController {
     }
 
     @SuppressWarnings("unchecked")
-    private ResponseEntity<Object> downloadForm(Long orderId, String type, FormData formData, HttpHeaders headers) {
+    private ResponseEntity<Object> downloadForm(Long orderId, String type, FormData formData,
+            HttpHeaders headers) {
 
         if (orderId != null && type != null && (type.equalsIgnoreCase(FORM) || type
                 .equalsIgnoreCase(INVOICE) || type
@@ -174,9 +175,11 @@ public class DownloadController {
                     contents = downloadService.getPdfByteArray(formData, type);
 
                 } else if (config != null
-                        && config.get("isMerchantPdf").equals(true) && config.containsKey("pdfConfig")) {
+                        && config.get("isMerchantPdf").equals(true) && config
+                        .containsKey("pdfConfig")) {
                     contents = downloadService.getTempAimaResponse(
-                            orderId, (Map<String, Object>) config.get("pdfConfig"), formData.getCustomerId());
+                            orderId, (Map<String, Object>) config.get("pdfConfig"),
+                            formData.getCustomerId());
 
                 } else {
                     contents = downloadService.getPdfByteArray(formData, type);

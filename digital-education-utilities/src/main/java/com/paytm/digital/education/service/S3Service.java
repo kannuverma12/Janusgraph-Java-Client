@@ -9,11 +9,14 @@ import com.amazonaws.util.IOUtils;
 import com.paytm.digital.education.utility.AmazonS3Provider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.text.MessageFormat;
 
 @Slf4j
 @Service
@@ -32,7 +35,7 @@ public class S3Service {
     }
 
     public String uploadFile(InputStream inputStream, String fileName,
-            Long instituteId, String relativePath, String s3BucketName) throws IOException {
+            Object entityId, String relativePath, String s3BucketName) throws IOException {
 
         ObjectMetadata metadata = new ObjectMetadata();
         byte[] bytes1 = IOUtils.toByteArray(inputStream);
@@ -45,9 +48,10 @@ public class S3Service {
         PutObjectResult result = s3Provider.getAmazonS3().putObject(objectRequest);
         inputStream.close();
         log.info(
-                "Exited from S3Service.uploadFile with fileName {} instituteId {} s3Path {} ",
-                fileName, instituteId, relativePath);
+                "Exited from S3Service.uploadFile with fileName {} EntityId {} s3Path {} ",
+                fileName, entityId, relativePath);
         return relativePath + "/" + fileName;
     }
+
 }
 
