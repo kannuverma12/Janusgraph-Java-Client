@@ -4,6 +4,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.COU
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID_COURSE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.PARENT_INSTITUTE_ID_COURSE;
 
+import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.CollegeEntityType;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
@@ -39,7 +40,7 @@ public class CourseDetailHelper {
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.setEntity(EducationEntity.COURSE);
         searchRequest.setLimit(COURSE_SIZE_FOR_INSTITUTE_DETAIL);
-        searchRequest.setFetchFilter(false);
+        searchRequest.setFetchFilter(true);
         Map<String, List<Object>> filters = new HashMap<>();
         if (type == CollegeEntityType.UNIVERSITY) {
             filters.put(PARENT_INSTITUTE_ID_COURSE, instituteIds);
@@ -68,4 +69,46 @@ public class CourseDetailHelper {
         }
         return new Pair<>(0L, courses);
     }
+
+    public Pair<Long, Map<String, List<Course>>> getCourseDataPerLevel(List<Object> instituteIds,
+            CollegeEntityType type, Client client) throws IOException, TimeoutException {
+        SearchRequest searchRequest = new SearchRequest();
+        searchRequest.setEntity(EducationEntity.COURSE);
+        searchRequest.setLimit(COURSE_SIZE_FOR_INSTITUTE_DETAIL);
+        searchRequest.setFetchFilter(true);
+        searchRequest.setClient(client);
+        Map<String, List<Object>> filters = new HashMap<>();
+        if (type == CollegeEntityType.UNIVERSITY) {
+            filters.put(PARENT_INSTITUTE_ID_COURSE, instituteIds);
+        } else {
+            filters.put(INSTITUTE_ID_COURSE, instituteIds);
+        }
+        searchRequest.setFilter(filters);
+        SearchResponse response = courseSearchService.search(searchRequest);
+        Map<String, List<Course>> coursesPerLevel = new HashMap<>();
+        if (!CollectionUtils.isEmpty(response.getResults().getValues())) {
+            List<SearchBaseData> searchDataList = response.getResults().getValues();
+            for (SearchBaseData searchData : searchDataList) {
+                ((CourseSearchResponse) searchData).getCoursesPerLevel()
+                        .forEach((level, courseDataList) -> {
+                            List<Course> courses = new ArrayList<>();
+                            courseDataList.forEach(courseData -> {
+                                Course course = new Course();
+                                course.setCourseId(courseData.getCourseId());
+                                course.setDurationInMonth(courseData.getDurationInMonths());
+                                course.setName(courseData.getOfficialName());
+                                course.setUrlDisplayKey(courseData.getUrlDisplayKey());
+                                course.setSeats(courseData.getSeatsAvailable());
+                                course.setFee(courseData.getFee());
+                                courses.add(course);
+                            });
+                            coursesPerLevel.put(level, courses);
+                        });
+            }
+            long totalCourses = response.getTotal();
+            return new Pair<>(totalCourses, coursesPerLevel);
+        }
+        return new Pair<>(0L, coursesPerLevel);
+    }
+
 }

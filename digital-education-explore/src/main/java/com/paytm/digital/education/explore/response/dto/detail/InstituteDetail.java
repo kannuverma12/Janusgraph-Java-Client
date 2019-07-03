@@ -57,6 +57,9 @@ public class InstituteDetail {
     @JsonProperty("courses")
     private List<Course> courses;
 
+    @JsonProperty("courses_per_level")
+    private Map<String, List<Course>> coursesPerLevel;
+
     @JsonProperty("total_courses")
     private long totalCourses;
 

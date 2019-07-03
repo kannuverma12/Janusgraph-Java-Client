@@ -2,6 +2,7 @@ package com.paytm.digital.education.explore.service.helper;
 
 import static com.paytm.digital.education.elasticsearch.enums.AggregationType.MINMAX;
 import static com.paytm.digital.education.elasticsearch.enums.AggregationType.TERMS;
+import static com.paytm.digital.education.elasticsearch.enums.AggregationType.TOP_HITS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CITY_INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_LEVEL_INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ESTABLISHMENT_YEAR;
@@ -29,6 +30,7 @@ import com.paytm.digital.education.elasticsearch.models.BucketSort;
 import java.util.Arrays;
 import java.util.List;
 
+import com.paytm.digital.education.explore.enums.Client;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -84,7 +86,16 @@ public class SearchAggregateHelper {
         return examAggregateData;
     }
 
-    public AggregateField[] getCourseAggregateData() {
+    public AggregateField[] getCourseAggregateData(Client client) {
+
+        if (Client.APP.equals(client)) {
+            AggregateField[] courseAggregateData = new AggregateField[1];
+            courseAggregateData[0] = new AggregateField();
+            courseAggregateData[0].setName(LEVEL_COURSE);
+            courseAggregateData[0].setType(TOP_HITS);
+            return courseAggregateData;
+        }
+
         List<String> courseKeys =
                 Arrays.asList(DEGREE_COURSE, BRANCH_COURSE, INSTITUTE_NAME_COURSE, STREAM_COURSE,
                         LEVEL_COURSE);
@@ -96,6 +107,7 @@ public class SearchAggregateHelper {
         List<BucketSort> examSortOrder =
                 Arrays.asList(countDescSort, countDescSort, countDescSort, countDescSort,
                         countDescSort);
+
         AggregateField[] courseAggregateData = new AggregateField[courseKeys.size()];
 
         for (int i = 0; i < courseKeys.size(); i++) {

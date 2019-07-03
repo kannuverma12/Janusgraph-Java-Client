@@ -25,6 +25,7 @@ import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.enums.Gender;
 import com.paytm.digital.education.explore.enums.PublishStatus;
@@ -75,11 +76,12 @@ public class InstituteDetailServiceImpl {
     }
 
     public InstituteDetail getDetail(Long entityId, String instituteUrlKey, Long userId,
-            String fieldGroup, List<String> fields)
+            String fieldGroup, List<String> fields, Client client)
             throws IOException, TimeoutException {
         // fields are not being supported currently. Part of discussion
 
-        InstituteDetail instituteDetail = getinstituteDetail(entityId, instituteUrlKey, fieldGroup);
+        InstituteDetail instituteDetail =
+                getinstituteDetail(entityId, instituteUrlKey, fieldGroup, client);
         if (userId != null && userId > 0) {
             updateShortist(instituteDetail, INSTITUTE, userId);
             updateInterested(instituteDetail, INSTITUTE, userId);
@@ -89,7 +91,7 @@ public class InstituteDetailServiceImpl {
 
     @Cacheable(value = "institute_detail")
     public InstituteDetail getinstituteDetail(Long entityId, String instituteUrlKey,
-            String fieldGroup)
+            String fieldGroup, Client client)
             throws IOException, TimeoutException {
         List<String> groupFields =
                 commonMongoRepository.getFieldsByGroup(Institute.class, fieldGroup);
@@ -147,7 +149,7 @@ public class InstituteDetailServiceImpl {
                         parentInstitution != null ? parentInstitution.getOfficialName() : null;
             }
             return processInstituteDetail(institute, entityId, courseFields, examFields,
-                    parentInstitutionName, instituteIdList);
+                    parentInstitutionName, instituteIdList, client);
         }
         throw new BadRequestException(INVALID_INSTITUTE_ID,
                 INVALID_INSTITUTE_ID.getExternalMessage());
@@ -186,7 +188,7 @@ public class InstituteDetailServiceImpl {
 
     private InstituteDetail processInstituteDetail(Institute institute, Long entityId,
             List<String> courseFields, List<String> examFields, String parentInstitutionName,
-            List<Long> instituteIdList)
+            List<Long> instituteIdList, Client client)
             throws IOException, TimeoutException {
         List<Course> courses = null;
         if (!CollectionUtils.isEmpty(courseFields)) {
@@ -209,7 +211,7 @@ public class InstituteDetailServiceImpl {
         }
         return instituteDetailResponseBuilder
                 .buildResponse(institute, courses, examList, examData, examIds,
-                        parentInstitutionName);
+                        parentInstitutionName, client);
     }
 
     private Map<String, Object> getExamData(List<Course> courses, Long instituteId) {

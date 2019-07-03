@@ -12,6 +12,7 @@ import com.paytm.digital.education.explore.database.entity.CampusEngagement;
 import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
+import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.CourseLevel;
 import com.paytm.digital.education.explore.enums.PublishStatus;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
@@ -42,7 +43,6 @@ import java.util.TreeMap;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
-import com.paytm.digital.education.property.reader.PropertyReader;
 import javafx.util.Pair;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -71,7 +71,7 @@ public class InstituteDetailResponseBuilder {
 
     public InstituteDetail buildResponse(Institute institute, List<Course> courses,
             List<Exam> examList, Map<String, Object> examRelatedData, Set<Long> examIds,
-            String parentInstitutionName)
+            String parentInstitutionName, Client client)
             throws IOException, TimeoutException {
         InstituteDetail instituteDetail = new InstituteDetail();
         instituteDetail.setInstituteId(institute.getInstituteId());
@@ -94,13 +94,22 @@ public class InstituteDetailResponseBuilder {
                                 institute.getFacilities()));
         instituteDetail.setGallery(galleryDataHelper
                 .getGalleryData(institute.getInstituteId(), institute.getGallery()));
-        Pair<Long, List<com.paytm.digital.education.explore.response.dto.detail.Course>>
-                courseDetail =
-                courseDetailHelper
-                        .getCourseDataList(Arrays.asList((Object) institute.getInstituteId()),
-                                institute.getEntityType());
-        instituteDetail.setTotalCourses(courseDetail.getKey());
-        instituteDetail.setCourses(courseDetail.getValue());
+        if (Client.APP.equals(client)) {
+            Pair<Long, Map<String, List<com.paytm.digital.education.explore.response.dto.detail.Course>>>
+                    courseDetailPerLevel = courseDetailHelper
+                    .getCourseDataPerLevel(Arrays.asList((Object) institute.getInstituteId()),
+                            institute.getEntityType(), client);
+            instituteDetail.setTotalCourses(courseDetailPerLevel.getKey());
+            instituteDetail.setCoursesPerLevel(courseDetailPerLevel.getValue());
+        } else {
+            Pair<Long, List<com.paytm.digital.education.explore.response.dto.detail.Course>>
+                    courseDetail =
+                    courseDetailHelper
+                            .getCourseDataList(Arrays.asList((Object) institute.getInstituteId()),
+                                    institute.getEntityType());
+            instituteDetail.setTotalCourses(courseDetail.getKey());
+            instituteDetail.setCourses(courseDetail.getValue());
+        }
         instituteDetail
                 .setCutOffs(examInstanceHelper.getExamCutOffs(examList, examRelatedData, examIds));
         String entityName = INSTITUTE.name().toLowerCase();
@@ -135,7 +144,8 @@ public class InstituteDetailResponseBuilder {
         CampusEngagement campusEngagement =
                 campusEngagementHelper.findCampusEngagementData(institute.getInstituteId());
         if (Objects.nonNull(campusEngagement)) {
-            Map<String, CampusAmbassador> campusAmbassadorMap = campusEngagement.getCampusAmbassadors();
+            Map<String, CampusAmbassador> campusAmbassadorMap =
+                    campusEngagement.getCampusAmbassadors();
             if (Objects.nonNull(campusAmbassadorMap)) {
                 instituteDetail.setCampusAmbassadors(campusEngagementHelper
                         .getCampusAmbassadorData(campusAmbassadorMap));
