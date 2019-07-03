@@ -65,18 +65,8 @@ public class GoogleDriveUtil {
                 new java.io.File(credentialFolder, clientSecretFileName);
 
         if (!clientSecretFilePath.exists()) {
-            credentialFolder.mkdirs();
-            credentialFolder.setExecutable(true, false);
-            credentialFolder.setReadable(true, false);
-            java.io.File file = null;
-            if (credentialFolderPath.equals(GoogleConfig.getCoachingCredentialFolderPath())) {
-                file = ResourceUtils.getFile(GoogleConfig.getResourseCoachingCredentialLocation());
-            } else {
-                file = ResourceUtils.getFile(GoogleConfig.getResourseExploreCredentialLocation());
-            }
-            String content = new String(Files.readAllBytes(file.toPath()));
-            Files.write(Paths.get(credentialFolderPath + "/" + clientSecretFileName),
-                    content.getBytes(), StandardOpenOption.CREATE);
+            throw new FileNotFoundException("Please copy " + clientSecretFileName //
+                    + " to folder: " + credentialFolderPath);
         }
         // Load client secrets.
         InputStream in = new FileInputStream(clientSecretFilePath);
