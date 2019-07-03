@@ -32,7 +32,7 @@ public interface CampusEngagementConstants {
     String DOCS                                  = "docs";
     String XCEL_DATE_FORMAT                      = "MM/dd/yyyy HH:mm:ss";
     String DB_DATE_FORMAT                        = "yyyy-MM-dd HH:mm:ss";
-    String XCEL_SUBMITTED_DATE_FORMAT            = "yyyy-MM-dd";
+    String XCEL_SUBMITTED_DATE_FORMAT            = "MM/dd/yyyy";
     String FILE_DOWNLOAD_UPLOAD_FAILURE          = "Unable to upload or download media or doc "
             + "files";
     String INVALID_INSTITUTE_IDS                 =
