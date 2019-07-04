@@ -39,13 +39,16 @@ public class SellerPanelServiceImpl implements SellerPanelService {
         Query query = new Query();
         query.addCriteria(Criteria.where("formFulfilment.orderId").in(orderIds)
                 .and("merchantId").is(merchantId));
-        if (startDate != null) {
+        if (startDate != null && endDate != null) {
+            query.addCriteria(Criteria.where("formFulfilment.createdDate")
+                    .gte(getStartOfDay(startDate))
+                    .lte(getEndOfDay(endDate)));
+        } else if (startDate != null) {
             query.addCriteria(Criteria.where("formFulfilment.createdDate")
                     .gte(getStartOfDay(startDate)));
-        }
-
-        if (endDate != null) {
-            query.addCriteria(Criteria.where("formFulfilment.createdDate").lte(getEndOfDay(endDate)));
+        } else if (endDate != null) {
+            query.addCriteria(Criteria.where("formFulfilment.createdDate")
+                    .lte(getEndOfDay(endDate)));
         }
 
         return mongoOperations.find(query, FormData.class);

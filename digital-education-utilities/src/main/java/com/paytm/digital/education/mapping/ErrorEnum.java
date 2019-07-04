@@ -82,7 +82,10 @@ public enum ErrorEnum {
     ENTITY_TYPE_IS_MANDATORY_FOR_UNFOLLOW(4032, "Entity type is mandatory", HttpStatus.BAD_REQUEST,
             0),
     NO_SUCH_ENTITY_EXISTS(4033, "No such %s exists. Either %s ID %s is inactive or doesn't exists.",
-                    HttpStatus.BAD_REQUEST, 3);
+            HttpStatus.BAD_REQUEST, 3),
+    ORDER_ID_AND_EOD_BOTH_CANNOT_BE_NULL(4034, "Both order id and eod cannot be null",
+            HttpStatus.BAD_REQUEST, 0),
+    INVALID_EOD(4035, "provided eod is invalid", HttpStatus.BAD_REQUEST, 0);
 
     private final int        internalCode;
     private final String     externalMessage;
