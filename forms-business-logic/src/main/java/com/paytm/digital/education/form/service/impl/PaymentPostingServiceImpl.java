@@ -433,7 +433,8 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
                 URL url = new URL(urlStr);
                 InputStream stream = url.openStream();
                 String s3RelativeUrl = s3Service
-                        .uploadFile(stream, refId, refId, FblConstants.PREDICTOR_S3_RELATIVE_PATH,
+                        .uploadFile(stream, refId, refId + ".pdf",
+                                FblConstants.PREDICTOR_S3_RELATIVE_PATH,
                                 awsConfig.getS3ExploreBucketName());
                 if (StringUtils.isNotBlank(s3RelativeUrl)) {
                     formIoMerchantResponse.getCandidateDetails()

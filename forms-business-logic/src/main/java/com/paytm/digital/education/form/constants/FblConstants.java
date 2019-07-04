@@ -26,6 +26,6 @@ public interface FblConstants {
     String MAX_USAGE            = "maxUsage";
     String SERVICE              = "service";
     String PREDICTOR            = "predictor";
-    String PREDICTOR_S3_RELATIVE_PATH = "/predictor";
+    String PREDICTOR_S3_RELATIVE_PATH = "predictor";
 
 }
