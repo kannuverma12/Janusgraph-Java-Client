@@ -423,11 +423,12 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
             try {
                 URL url = new URL(urlStr);
                 InputStream stream = url.openStream();
-                String s3Url = s3Service
+                String s3RelativeUrl = s3Service
                         .uploadFile(stream, refId, refId, FblConstants.PREDICTOR_S3_RELATIVE_PATH,
                                 awsConfig.getS3ExploreBucketName());
-                if (StringUtils.isNotBlank(s3Url)) {
-                    formIoMerchantResponse.getCandidateDetails().put("predictorUrl", s3Url);
+                if (StringUtils.isNotBlank(s3RelativeUrl)) {
+                    formIoMerchantResponse.getCandidateDetails()
+                            .put("predictorUrl", AwsConfig.getMediaBaseUrl() + s3RelativeUrl);
                 }
             } catch (MalformedURLException e) {
                 log.error("Url building malformed for url string :{}", urlStr);
