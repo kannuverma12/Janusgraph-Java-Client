@@ -284,9 +284,10 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
 
         if (Objects.isNull(predictorStats)
                 || (!CollectionUtils.isEmpty(merchantProductConfig.getData())
-                        && merchantProductConfig.getData().containsKey(MAX_USAGE)
-                        && merchantProductConfig.getData().get(MAX_USAGE) == predictorStats
-                                .getUseCount())) {
+                && merchantProductConfig.getData().containsKey(MAX_USAGE)
+                && Integer.parseInt(merchantProductConfig.getData().get(MAX_USAGE).toString())
+                == predictorStats
+                .getUseCount().intValue())) {
             if (Objects.isNull(merchantProductConfig) || Objects
                     .isNull(merchantProductConfig.getData().get(PAYMENT_AMOUNT))) {
                 throw new EducationException(PAYMENT_CONFIGURATION_NOT_FOUND,

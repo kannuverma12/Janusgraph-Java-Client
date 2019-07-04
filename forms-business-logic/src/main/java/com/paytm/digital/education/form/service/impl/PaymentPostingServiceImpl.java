@@ -304,8 +304,12 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
                                                   FormData formData, String refId) throws Exception {
         // fetch URL from merchant configuration
         String urlKey = "data." + formData.getTransactionType().toLowerCase();
+        String service = "data." + FblConstants.SERVICE;
+        String maxUsage = "data." + FblConstants.MAX_USAGE;
         ArrayList<String> keys = new ArrayList<>();
         keys.add(urlKey);
+        keys.add(maxUsage);
+        keys.add(service);
         MerchantProductConfig merchantProductConfig = merchantProductConfigService.getConfig(paymentPostingItemRequest
                 .getMerchantId().toString(), paymentPostingItemRequest.getProductId().toString(), keys);
 
@@ -405,8 +409,10 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
             predictorStats.setCreatedAt(new Date());
         } else if (!CollectionUtils.isEmpty(merchantProductConfig.getData())
                 && merchantProductConfig.getData().containsKey(FblConstants.MAX_USAGE)
-                && merchantProductConfig.getData().get(FblConstants.MAX_USAGE) == predictorStats
-                        .getUseCount()) {
+                && (Integer.parseInt(
+                merchantProductConfig.getData().get(FblConstants.MAX_USAGE).toString())
+                == predictorStats
+                .getUseCount().intValue())) {
             predictorStats.setUseCount(1);
         } else {
             predictorStats.setUseCount(predictorStats.getUseCount() + 1);

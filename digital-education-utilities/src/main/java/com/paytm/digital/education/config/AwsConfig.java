@@ -39,7 +39,9 @@ public class AwsConfig {
         mediaBaseUrl = baseUrl;
     }
 
-    public static String getMediaBaseUrl() { return mediaBaseUrl; }
+    public static String getMediaBaseUrl() {
+        return mediaBaseUrl;
+    }
 
     public static String getRelativePathPrefix() {
         return relativePathPrefix;
