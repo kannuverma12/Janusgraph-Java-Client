@@ -376,17 +376,19 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         HttpEntity httpEntity = response.getEntity();
         String apiOutput = EntityUtils.toString(httpEntity);
         log.info("Merchant API Output for refId " + refId + ": " + apiOutput);
+        // close connection
+        log.info("Form Data : {} ", formData);
+        log.info("Merchant Product Config : {}", merchantProductConfig);
         FormIoMerchantResultResponse formIoMerchantResultResponse = JsonUtils
                 .fromJson(apiOutput, FormIoMerchantResultResponse.class);
-
-        // close connection
         httpClient.getConnectionManager().shutdown();
-
+        log.info("Form io merchant result response : {}", formIoMerchantResultResponse);
         if (formIoMerchantResultResponse != null) {
             if (!CollectionUtils.isEmpty(merchantProductConfig.getData()) && merchantProductConfig
                     .getData().containsKey(FblConstants.SERVICE) && merchantProductConfig.getData()
                     .get(FblConstants.SERVICE).toString()
                     .equalsIgnoreCase(FblConstants.PREDICTOR)) {
+
                 updatePredictorStats(formData, merchantProductConfig);
                 uploadAndUpdateS3Link(refId, formIoMerchantResultResponse.getResult());
             }
@@ -418,6 +420,7 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
             predictorStats.setUseCount(predictorStats.getUseCount() + 1);
         }
         predictorStats.setUpdatedAt(new Date());
+        log.info("Inserting predictor stats {}", predictorStats);
         predictorStatsRepository.save(predictorStats);
     }
 
@@ -430,11 +433,16 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
                 URL url = new URL(urlStr);
                 InputStream stream = url.openStream();
                 String s3RelativeUrl = s3Service
-                        .uploadFile(stream, refId, refId, FblConstants.PREDICTOR_S3_RELATIVE_PATH,
+                        .uploadFile(stream, refId + ".pdf", refId,
+                                FblConstants.PREDICTOR_S3_RELATIVE_PATH,
                                 awsConfig.getS3ExploreBucketName());
+                log.info("S3 relative url: {}", s3RelativeUrl);
                 if (StringUtils.isNotBlank(s3RelativeUrl)) {
                     formIoMerchantResponse.getCandidateDetails()
-                            .put("predictorUrl", AwsConfig.getMediaBaseUrl() + s3RelativeUrl);
+                            .put("predictorUrl",
+                                    AwsConfig.getMediaBaseUrl()
+                                            + "education/explore/college/images/"
+                                            + s3RelativeUrl);
                 }
             } catch (MalformedURLException e) {
                 log.error("Url building malformed for url string :{}", urlStr);
@@ -462,6 +470,8 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         query.fields().include("transactionType");
         query.fields().include("merchantProductId");
         query.fields().include("merchantCandidateId");
+        query.fields().include("customerId");
+        query.fields().include("merchantId");
 
         return mongoOperations.findOne(query, FormData.class);
     }
