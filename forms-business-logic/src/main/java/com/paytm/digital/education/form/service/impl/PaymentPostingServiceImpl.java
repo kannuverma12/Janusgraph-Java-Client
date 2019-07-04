@@ -377,11 +377,12 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         String apiOutput = EntityUtils.toString(httpEntity);
         log.info("Merchant API Output for refId " + refId + ": " + apiOutput);
         // close connection
+        log.info("Form Data : {} ", formData);
+        log.info("Merchant Product Config : {}", merchantProductConfig);
         FormIoMerchantResultResponse formIoMerchantResultResponse = JsonUtils
                 .fromJson(apiOutput, FormIoMerchantResultResponse.class);
         httpClient.getConnectionManager().shutdown();
-        log.info("Form Data : {} ", formData);
-        log.info("Merchant Product Config : {}", merchantProductConfig);
+        log.info("Form io merchant result response : {}", formIoMerchantResultResponse);
         if (formIoMerchantResultResponse != null) {
             if (!CollectionUtils.isEmpty(merchantProductConfig.getData()) && merchantProductConfig
                     .getData().containsKey(FblConstants.SERVICE) && merchantProductConfig.getData()
