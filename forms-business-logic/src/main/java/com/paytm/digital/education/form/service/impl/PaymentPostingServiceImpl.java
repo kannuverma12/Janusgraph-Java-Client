@@ -439,7 +439,10 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
                 log.info("S3 relative url: {}", s3RelativeUrl);
                 if (StringUtils.isNotBlank(s3RelativeUrl)) {
                     formIoMerchantResponse.getCandidateDetails()
-                            .put("predictorUrl", AwsConfig.getMediaBaseUrl() + s3RelativeUrl);
+                            .put("predictorUrl",
+                                    AwsConfig.getMediaBaseUrl()
+                                            + "education/explore/college/images/"
+                                            + s3RelativeUrl);
                 }
             } catch (MalformedURLException e) {
                 log.error("Url building malformed for url string :{}", urlStr);
