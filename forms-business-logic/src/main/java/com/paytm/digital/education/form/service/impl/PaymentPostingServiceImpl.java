@@ -381,12 +381,14 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
 
         // close connection
         httpClient.getConnectionManager().shutdown();
-
+        log.info("Form Data : {} ", formData);
+        log.info("Merchant Product Config : {}", merchantProductConfig);
         if (formIoMerchantResultResponse != null) {
             if (!CollectionUtils.isEmpty(merchantProductConfig.getData()) && merchantProductConfig
                     .getData().containsKey(FblConstants.SERVICE) && merchantProductConfig.getData()
                     .get(FblConstants.SERVICE).toString()
                     .equalsIgnoreCase(FblConstants.PREDICTOR)) {
+
                 updatePredictorStats(formData, merchantProductConfig);
                 uploadAndUpdateS3Link(refId, formIoMerchantResultResponse.getResult());
             }
@@ -418,6 +420,7 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
             predictorStats.setUseCount(predictorStats.getUseCount() + 1);
         }
         predictorStats.setUpdatedAt(new Date());
+        log.info("Inserting predictor stats {}", predictorStats);
         predictorStatsRepository.save(predictorStats);
     }
 

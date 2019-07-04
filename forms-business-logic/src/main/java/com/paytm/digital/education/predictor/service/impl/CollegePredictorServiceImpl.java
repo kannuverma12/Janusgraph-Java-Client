@@ -282,6 +282,8 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
                 .findByCustomerIdAndMerchantProductIdAndMerchantId(formData.getCustomerId(),
                         formData.getMerchantProductId(), formData.getMerchantId());
 
+        log.info("Predictor Stats : {}", predictorStats);
+
         if (Objects.isNull(predictorStats)
                 || (!CollectionUtils.isEmpty(merchantProductConfig.getData())
                 && merchantProductConfig.getData().containsKey(MAX_USAGE)
