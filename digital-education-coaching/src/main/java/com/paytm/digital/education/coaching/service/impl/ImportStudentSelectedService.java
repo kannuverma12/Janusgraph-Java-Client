@@ -86,6 +86,8 @@ public class ImportStudentSelectedService {
         if (!studentSelectedFormSheetData.isEmpty()) {
             buildInstituteStudentSelectedMap(studentSelectedFormSheetData, instituteMap,
                     failedDataList);
+        }
+        if (!instituteMap.isEmpty()) {
             ingestDataHelper.saveCoachingInstitutes(instituteMap);
         }
         if (!failedDataList.isEmpty()) {

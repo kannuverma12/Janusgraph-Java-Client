@@ -110,5 +110,4 @@ public class CourseDetailHelper {
         }
         return new Pair<>(0L, coursesPerLevel);
     }
-
 }

@@ -86,6 +86,8 @@ public class ImportGalleryService {
         if (!galleryFormSheetData.isEmpty()) {
             buildInstituteGalleryMap(galleryFormSheetData, instituteMap,
                     failedDataList);
+        }
+        if (!instituteMap.isEmpty()) {
             ingestDataHelper.saveCoachingInstitutes(instituteMap);
         }
         if (!failedDataList.isEmpty()) {

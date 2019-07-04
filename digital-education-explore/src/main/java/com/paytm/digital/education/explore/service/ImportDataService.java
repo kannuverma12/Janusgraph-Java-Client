@@ -5,6 +5,6 @@ import java.security.GeneralSecurityException;
 import java.text.ParseException;
 
 public interface ImportDataService {
-    public boolean importData(boolean isReimportOnly) throws IOException,
+    public boolean importData() throws IOException,
             GeneralSecurityException, ParseException;
 }

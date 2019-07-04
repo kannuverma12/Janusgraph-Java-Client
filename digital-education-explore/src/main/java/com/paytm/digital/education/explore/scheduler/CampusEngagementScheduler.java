@@ -39,15 +39,15 @@ public class CampusEngagementScheduler {
         } else {
             if (BooleanUtils.isTrue(campusEngagementCronPropety.getIsActive())) {
                 log.info("entered in reimport article scheduler");
-                //importArticleService.reimportFailedArticles();
+                importArticleService.reimportFailedArticles();
                 log.info("exited in reimport article scheduler");
 
                 log.info("entered in reimport ambassador scheduler scheduler");
-                //importAmbassadorService.reimportFailedAmbassador();
+                importAmbassadorService.reimportFailedAmbassador();
                 log.info("exited in reimport ambassador scheduler scheduler");
 
                 log.info("entered in reimport event scheduler scheduler");
-                //importEventService.reimportFailedEvents();
+                importEventService.reimportFailedEvents();
                 log.info("exited in reimport event scheduler scheduler");
             }
         }

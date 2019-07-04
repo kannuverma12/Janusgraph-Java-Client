@@ -30,36 +30,33 @@ public class CampusEngagementController {
     @RequestMapping(method = RequestMethod.GET, path = "/v1/import/campus-ambassadors")
     public @ResponseBody boolean importCampusAmbassadors()
             throws IOException, GeneralSecurityException, ParseException {
-        return importAmbassadorService.importData(false);
+        return importAmbassadorService.importData();
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/v1/import/articles")
     public @ResponseBody boolean importArticles()
             throws IOException, GeneralSecurityException, ParseException {
-        return importArticleService.importData(false);
+        return importArticleService.importData();
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/v1/import/events")
     public @ResponseBody boolean importEvents()
             throws IOException, GeneralSecurityException, ParseException {
-        return importEventService.importData(false);
-    }
-
-    @RequestMapping(method = RequestMethod.GET, path = "/v1/re-import/failed-campus-ambassadors")
-    public @ResponseBody boolean reImportCampusAmbassadors()
-            throws IOException, GeneralSecurityException, ParseException {
-        return importAmbassadorService.importData(true);
-    }
-
-    @RequestMapping(method = RequestMethod.GET, path = "/v1/re-import/failed-articles")
-    public @ResponseBody boolean reImportArticles()
-            throws IOException, GeneralSecurityException, ParseException {
-        return importArticleService.importData(true);
+        return importEventService.importData();
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/v1/re-import/failed-events")
-    public @ResponseBody boolean reImportEvents()
-            throws IOException, GeneralSecurityException, ParseException {
-        return importEventService.importData(true);
+    public @ResponseBody boolean reimportEvents() {
+        return importEventService.reimportFailedEvents();
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/v1/re-import/failed-articles")
+    public @ResponseBody boolean reimportArticles() {
+        return importArticleService.reimportFailedArticles();
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/v1/re-import/failed-campus-ambassadors")
+    public @ResponseBody boolean reimportAmbassaor() {
+        return importAmbassadorService.reimportFailedAmbassador();
     }
 }

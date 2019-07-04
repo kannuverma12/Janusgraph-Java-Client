@@ -21,9 +21,9 @@ import com.paytm.digital.education.form.response.FormIoMerchantResponse;
 import com.paytm.digital.education.form.response.FormIoMerchantResultResponse;
 import com.paytm.digital.education.form.service.PaymentPostingService;
 import com.paytm.digital.education.form.service.PersonaHttpClientService;
-import com.paytm.digital.education.service.S3Service;
 import com.paytm.digital.education.predictor.model.PredictorStats;
 import com.paytm.digital.education.predictor.repository.PredictorStatsRepository;
+import com.paytm.digital.education.service.S3Service;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -53,15 +53,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.Date;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Arrays;
+
 
 /*
     Payment posting flow:
@@ -72,7 +73,6 @@ import java.util.HashSet;
     > Update order status in formData collection
     > Update order status to fulfilment via kafka
 */
-
 
 @Data
 @Service
@@ -98,16 +98,15 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
     private FormDataDao formDataDao;
 
     @Autowired
+    private PredictorStatsRepository predictorStatsRepository;
+
+    @Autowired
     private S3Service s3Service;
 
     @Autowired
     private AwsConfig awsConfig;
 
-    private final Set<String> paymentStatus =
-            new HashSet<>(Arrays.asList("success", "pending", "failure"));
-
-    private PredictorStatsRepository predictorStatsRepository;
-
+    private final Set<String> paymentStatus = new HashSet<>(Arrays.asList("success", "pending", "failure"));
 
     @Value("${app.topic.order.status.update}")
     private String topic;
@@ -118,8 +117,7 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
             // fetch item from request
             // todo: handle multiple items
             log.info("Received payment posting: {}", JsonUtils.toJson(paymentPostingRequest));
-            PaymentPostingItemRequest paymentPostingItemRequest =
-                    paymentPostingRequest.getItems().get(0);
+            PaymentPostingItemRequest paymentPostingItemRequest = paymentPostingRequest.getItems().get(0);
 
             // validate price
             Float minPrice = 0.0f;
@@ -161,11 +159,9 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
                 log.error("amount not found for refId: " + refId);
                 return false;
             }
-            if (!(paymentPostingItemRequest.getPrice()
-                    .equals(formData.getCandidateDetails().getAmount()))) {
+            if (!(paymentPostingItemRequest.getPrice().equals(formData.getCandidateDetails().getAmount()))) {
                 // todo: send metrics
-                log.error("amount validation failed for refId: " + refId + " "
-                        + paymentPostingItemRequest.getPrice()
+                log.error("amount validation failed for refId: " + refId + " " + paymentPostingItemRequest.getPrice()
                         + " " + formData.getCandidateDetails().getAmount());
                 return false;
             }
@@ -176,8 +172,7 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
                 log.error("transaction type not present for refId: " + refId);
                 return false;
             }
-            log.info("Current transaction type found for refId " + refId + " is " + formData
-                    .getTransactionType());
+            log.info("Current transaction type found for refId " + refId + " is " + formData.getTransactionType());
 
             // insert order data in formData collection
             if (!insertInFormDataCollection(refId, paymentPostingItemRequest)) {
@@ -204,22 +199,19 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
                     paymentPostingItemRequest, formData, refId);
 
             if (formIoMerchantResponse == null) {
-                log.error("Response from formio API found null for refId " + refId
-                        + ", setting it as PENDING");
+                log.error("Response from formio API found null for refId " + refId + ", setting it as PENDING");
                 formIoMerchantResponse = new FormIoMerchantResponse();
                 formIoMerchantResponse.setPaymentStatus("pending");  // PENDING
             }
 
             // check if payment status fetched is null
             if (formIoMerchantResponse.getPaymentStatus() == null) {
-                log.error("Payment status from formio API found null for refId " + refId
-                        + ", setting it as PENDING");
+                log.error("Payment status from formio API found null for refId " + refId + ", setting it as PENDING");
                 formIoMerchantResponse.setPaymentStatus("pending");  // PENDING
             }
 
             // converting paymentStatus to lowercase
-            formIoMerchantResponse
-                    .setPaymentStatus(formIoMerchantResponse.getPaymentStatus().toLowerCase());
+            formIoMerchantResponse.setPaymentStatus(formIoMerchantResponse.getPaymentStatus().toLowerCase());
 
             // check if unrecognized status is found
             if (!paymentStatus.contains(formIoMerchantResponse.getPaymentStatus())) {
@@ -227,8 +219,7 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
                         + ", setting it as PENDING");
                 formIoMerchantResponse.setPaymentStatus("pending");  // PENDING
             }
-            log.info("Setting payment status as " + formIoMerchantResponse.getPaymentStatus()
-                    + " for refId" + refId);
+            log.info("Setting payment status as " + formIoMerchantResponse.getPaymentStatus() + " for refId" + refId);
 
             // update order status in formData
             updateOrderStatusInFormDataCollection(refId, formIoMerchantResponse);
@@ -250,22 +241,19 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
     }
 
     private Long fetchFulfilmentId(PaymentPostingItemRequest paymentPostingItemRequest,
-            String formFulfilmentCollectionId) {
+                                   String formFulfilmentCollectionId) {
         // construct URL
-        String url = env.getProperty("fulfilment.host.url") + '/' + paymentPostingItemRequest
-                .getMerchantId().toString()
-                + env.getProperty("fulfilment.path.create") + '/' + paymentPostingItemRequest
-                .getOrderId().toString();
+        String url = env.getProperty("fulfilment.host.url") + '/' + paymentPostingItemRequest.getMerchantId().toString()
+                + env.getProperty("fulfilment.path.create") + '/' + paymentPostingItemRequest.getOrderId().toString();
         log.info("Hitting fulfilment create: " + url);
         // construct request body
         Map<String, Object> map = new HashMap<>();
         map.put("merchant_id", paymentPostingItemRequest.getMerchantId());
         map.put("order_id", paymentPostingItemRequest.getOrderId());
         map.put("status", Integer.parseInt(env.getProperty("fulfilment.status.authorized")));
-        map.put("fulfillment_service_id",
-                Integer.parseInt(env.getProperty("fulfilment.service.id")));
+        map.put("fulfillment_service_id", Integer.parseInt(env.getProperty("fulfilment.service.id")));
         map.put("merchant_track_id", formFulfilmentCollectionId);
-        map.put("order_item_ids", new long[] {paymentPostingItemRequest.getItemId()});
+        map.put("order_item_ids", new long[]{paymentPostingItemRequest.getItemId()});
         // construct header
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
@@ -281,8 +269,7 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         }
     }
 
-    private Boolean insertInFormDataCollection(String id,
-            PaymentPostingItemRequest paymentPostingItemRequest) {
+    private Boolean insertInFormDataCollection(String id, PaymentPostingItemRequest paymentPostingItemRequest) {
         Query query = new Query();
         query.addCriteria(Criteria.where("id").is(id)
                 .orOperator(
@@ -313,16 +300,14 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
     }
 
     private FormIoMerchantResponse notifyMerchant(PaymentPostingRequest paymentPostingRequest,
-            PaymentPostingItemRequest paymentPostingItemRequest,
-            FormData formData, String refId) throws Exception {
+                                                  PaymentPostingItemRequest paymentPostingItemRequest,
+                                                  FormData formData, String refId) throws Exception {
         // fetch URL from merchant configuration
         String urlKey = "data." + formData.getTransactionType().toLowerCase();
         ArrayList<String> keys = new ArrayList<>();
         keys.add(urlKey);
-        MerchantProductConfig merchantProductConfig =
-                merchantProductConfigService.getConfig(paymentPostingItemRequest
-                                .getMerchantId().toString(),
-                        paymentPostingItemRequest.getProductId().toString(), keys);
+        MerchantProductConfig merchantProductConfig = merchantProductConfigService.getConfig(paymentPostingItemRequest
+                .getMerchantId().toString(), paymentPostingItemRequest.getProductId().toString(), keys);
 
         // parse url fetched
         String url;
@@ -330,17 +315,13 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
             url = (String) ((Map<String, Object>) merchantProductConfig.getData()
                     .get(formData.getTransactionType().toLowerCase())).get("postingUrl");
         } catch (Exception e) {
-            log.error("Error while parsing formio url from config for merchant id "
-                    + paymentPostingItemRequest
-                    .getMerchantId() + " and product id " + paymentPostingItemRequest
-                    .getProductId());
+            log.error("Error while parsing formio url from config for merchant id " + paymentPostingItemRequest
+                    .getMerchantId() + " and product id " + paymentPostingItemRequest.getProductId());
             return null;
         }
         if (url == null) {
-            log.error("postingUrl from config found is null for merchant id "
-                    + paymentPostingItemRequest
-                    .getMerchantId() + " and product id " + paymentPostingItemRequest
-                    .getProductId());
+            log.error("postingUrl from config found is null for merchant id " + paymentPostingItemRequest
+                    .getMerchantId() + " and product id " + paymentPostingItemRequest.getProductId());
             return null;
         }
         log.info("Merchant url fetched: " + url);
@@ -363,14 +344,11 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
 
         List<String> requestFormFields;
         try {
-            requestFormFields =
-                    (ArrayList<String>) ((Map<String, Object>) merchantProductConfig.getData()
-                            .get(formData.getTransactionType().toLowerCase()))
-                            .get("requestFormFields");
+            requestFormFields = (ArrayList<String>) ((Map<String, Object>) merchantProductConfig.getData()
+                    .get(formData.getTransactionType().toLowerCase())).get("requestFormFields");
         } catch (Exception e) {
             log.info("requestFormFields not found for merchant id " + paymentPostingItemRequest
-                    .getMerchantId() + " and product id " + paymentPostingItemRequest
-                    .getProductId());
+                    .getMerchantId() + " and product id " + paymentPostingItemRequest.getProductId());
             requestFormFields = null;
         }
         if (requestFormFields != null && requestFormFields.size() > 0) {
@@ -405,12 +383,36 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
                     .getData().containsKey(FblConstants.SERVICE) && merchantProductConfig.getData()
                     .get(FblConstants.SERVICE)
                     .equals(FblConstants.PREDICTOR)) {
-                uploadAndUpdateS3Link(refId, formIoMerchantResultResponse.getResult());
                 updatePredictorStats(formData, merchantProductConfig);
+                uploadAndUpdateS3Link(refId, formIoMerchantResultResponse.getResult());
             }
             return formIoMerchantResultResponse.getResult();
         }
         return null;
+    }
+
+    private void updatePredictorStats(FormData formData,
+            MerchantProductConfig merchantProductConfig) {
+        PredictorStats predictorStats = predictorStatsRepository
+                .findByCustomerIdAndMerchantProductId(formData.getCustomerId(),
+                        formData.getMerchantProductId());
+        if (Objects.isNull(predictorStats)) {
+            predictorStats = new PredictorStats();
+            predictorStats.setMerchantId(formData.getMerchantId());
+            predictorStats.setMerchantProductId(formData.getMerchantProductId());
+            predictorStats.setCustomerId(formData.getCustomerId());
+            predictorStats.setUseCount(1);
+            predictorStats.setCreatedAt(new Date());
+        } else if (!CollectionUtils.isEmpty(merchantProductConfig.getData())
+                && merchantProductConfig.getData().containsKey(FblConstants.MAX_USAGE)
+                && merchantProductConfig.getData().get(FblConstants.MAX_USAGE) == predictorStats
+                        .getUseCount()) {
+            predictorStats.setUseCount(1);
+        } else {
+            predictorStats.setUseCount(predictorStats.getUseCount() + 1);
+        }
+        predictorStats.setUpdatedAt(new Date());
+        predictorStatsRepository.save(predictorStats);
     }
 
     private void uploadAndUpdateS3Link(String refId,
@@ -435,29 +437,6 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         }
     }
 
-    private void updatePredictorStats(FormData formData,
-            MerchantProductConfig merchantProductConfig) {
-        PredictorStats predictorStats = predictorStatsRepository
-                .findByCustomerIdAndMerchantProductId(formData.getCustomerId(),
-                        formData.getMerchantProductId());
-        if (Objects.isNull(predictorStats)) {
-            predictorStats = new PredictorStats();
-            predictorStats.setMerchantId(formData.getMerchantId());
-            predictorStats.setMerchantProductId(formData.getMerchantProductId());
-            predictorStats.setCustomerId(formData.getCustomerId());
-            predictorStats.setUseCount(1);
-            predictorStats.setCreatedAt(new Date());
-        } else if (!CollectionUtils.isEmpty(merchantProductConfig.getData())
-                && merchantProductConfig.getData().containsKey(FblConstants.MAX_USAGE)
-                && merchantProductConfig.getData().get(FblConstants.MAX_USAGE) == predictorStats
-                .getUseCount()) {
-            predictorStats.setUseCount(1);
-        } else {
-            predictorStats.setUseCount(predictorStats.getUseCount() + 1);
-        }
-        predictorStats.setUpdatedAt(new Date());
-        predictorStatsRepository.save(predictorStats);
-    }
 
     private void updateFulfilmentIdInFormDataCollection(String id, Long fulfilmentId) {
         Update update = new Update();
@@ -466,8 +445,7 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         update.set("updatedAt", currentDate);
         update.set("formFulfilment.updatedDate", currentDate);
 
-        mongoOperations
-                .updateFirst(new Query(Criteria.where("_id").is(id)), update, FormData.class);
+        mongoOperations.updateFirst(new Query(Criteria.where("_id").is(id)), update, FormData.class);
     }
 
     private FormData fetchDataFromFormDataCollection(String id) {
@@ -484,55 +462,45 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
     private FormData fetchCustomFormData(String id, List<String> inclusionList) {
         Query query = new Query();
         query.addCriteria(Criteria.where("_id").is(id));
-        for (String key : inclusionList) {
+        for (String key: inclusionList) {
             query.fields().include(key);
         }
 
         return mongoOperations.findOne(query, FormData.class);
     }
 
-    private void updateOrderStatusInFormDataCollection(String id,
-            FormIoMerchantResponse formIoMerchantResponse) {
+    private void updateOrderStatusInFormDataCollection(String id, FormIoMerchantResponse formIoMerchantResponse) {
         Update update = new Update();
         update.set("formFulfilment.paymentStatus", formIoMerchantResponse.getPaymentStatus());
         if (formIoMerchantResponse.getMerchantTransactionId() != null) {
-            update.set("formFulfilment.merchantTransactionId",
-                    formIoMerchantResponse.getMerchantTransactionId());
+            update.set("formFulfilment.merchantTransactionId", formIoMerchantResponse.getMerchantTransactionId());
         }
         Date currentDate = new Date();
         update.set("formFulfilment.updatedDate", currentDate);
         update.set("updatedAt", currentDate);
-        update.set("status",
-                env.getProperty("formio.status." + formIoMerchantResponse.getPaymentStatus()));
+        update.set("status", env.getProperty("formio.status." + formIoMerchantResponse.getPaymentStatus()));
         // update response in candidateDetails
         if (formIoMerchantResponse.getCandidateDetails() != null) {
-            for (Map.Entry<String, Object> entry : formIoMerchantResponse.getCandidateDetails()
-                    .entrySet()) {
+            for (Map.Entry<String, Object> entry : formIoMerchantResponse.getCandidateDetails().entrySet()) {
                 update.set("candidateDetails." + entry.getKey(), entry.getValue());
             }
         }
 
-        mongoOperations
-                .updateFirst(new Query(Criteria.where("_id").is(id)), update, FormData.class);
+        mongoOperations.updateFirst(new Query(Criteria.where("_id").is(id)), update, FormData.class);
     }
 
     private void notifyOrderStatusToFulfilment(String refId,
-            PaymentPostingItemRequest paymentPostingItemRequest,
-            Long fulfilmentId, String responsecode) {
+                                               PaymentPostingItemRequest paymentPostingItemRequest,
+                                               Long fulfilmentId, String responsecode) {
         // construct URL
-        String url = env.getProperty("fulfilment.host.url") + '/' + paymentPostingItemRequest
-                .getMerchantId().toString()
-                + env.getProperty("fulfilment.path.update") + '/' + fulfilmentId.toString()
-                + "?order_id="
+        String url = env.getProperty("fulfilment.host.url") + '/' + paymentPostingItemRequest.getMerchantId().toString()
+                + env.getProperty("fulfilment.path.update") + '/' + fulfilmentId.toString() + "?order_id="
                 + paymentPostingItemRequest.getOrderId().toString();
         log.info("Created fulfilment update url: " + url);
         // construct kafka message
-        FulfilmentKafkaPostDataObject fulfilmentKafkaPostDataObject =
-                new FulfilmentKafkaPostDataObject();
-        fulfilmentKafkaPostDataObject
-                .setPostActions(env.getProperty("fulfilment.postaction." + responsecode));
-        fulfilmentKafkaPostDataObject
-                .setStatus(env.getProperty("fulfilment.status." + responsecode));
+        FulfilmentKafkaPostDataObject fulfilmentKafkaPostDataObject = new FulfilmentKafkaPostDataObject();
+        fulfilmentKafkaPostDataObject.setPostActions(env.getProperty("fulfilment.postaction." + responsecode));
+        fulfilmentKafkaPostDataObject.setStatus(env.getProperty("fulfilment.status." + responsecode));
 
         FulfilmentKafkaObject fulfilmentKafkaObject = new FulfilmentKafkaObject();
         fulfilmentKafkaObject.setRefId(refId);

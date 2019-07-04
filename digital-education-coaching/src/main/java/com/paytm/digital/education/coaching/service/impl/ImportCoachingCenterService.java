@@ -120,7 +120,7 @@ public class ImportCoachingCenterService {
                 coachingCenter.setCourseTypeAvailable(courseTypeList);
             }
             if (StringUtils.isNotBlank(sheetData.getStatus())) {
-                if (sheetData.getStatus().equals(ACTIVE)) {
+                if (sheetData.getStatus().toLowerCase().equals(ACTIVE)) {
                     coachingCenter.setActive(true);
                 } else {
                     coachingCenter.setActive(false);

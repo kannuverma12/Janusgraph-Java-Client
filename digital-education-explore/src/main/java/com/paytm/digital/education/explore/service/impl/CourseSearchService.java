@@ -1,35 +1,35 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.TERMS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME_COURSE_SEARCH;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME_COURSE_BOOST;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.BRANCH_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DEGREE_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.FEE_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.LEVEL_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.PARENT_INSTITUTE_ID_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SEATS_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_NAME_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_NAME;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.ACCEPTING_APPLICATION;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_FILTER_NAMESPACE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTION_CITY;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.GALLERY_LOGO;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.IS_CLIENT;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTION_STATE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_ANALYZER_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_ALPHABETICAL_SORT_KEY;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_INDEX_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DURATION_COURSE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_LEVEL;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.DEGREE_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.DURATION_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_ID;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_NAME;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.IS_CLIENT;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME_COURSE_SEARCH;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_ALPHABETICAL_SORT_KEY;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.FEE_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.GALLERY_LOGO;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_NAME_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTION_CITY;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTION_STATE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.LEVEL_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.PARENT_INSTITUTE_ID_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_ANALYZER_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_INDEX_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SEATS_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME_COURSE_BOOST;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.ACCEPTING_APPLICATION;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM_COURSE;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_NAME;
 
@@ -210,8 +210,7 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
         populateFilterFields(searchRequest, elasticRequest, CourseSearch.class,
                 filterQueryTypeMap);
         populateAggregateFields(searchRequest, elasticRequest,
-                searchAggregateHelper.getCourseAggregateData(searchRequest.getClient()),
-                CourseSearch.class);
+                searchAggregateHelper.getCourseAggregateData(searchRequest.getClient()), CourseSearch.class);
         LinkedHashMap<String, DataSortOrder> sortOrder = new LinkedHashMap<>();
         if (!CollectionUtils.isEmpty(searchRequest.getSortOrder())) {
             if (searchRequest.getSortOrder().containsKey(COURSE_ALPHABETICAL_SORT_KEY)) {
@@ -265,7 +264,6 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
         }
         searchResponse.setResults(searchResults);
     }
-
 
     protected void populateSearchResultsOfCourses(SearchResponse searchResponse,
             ElasticResponse elasticResponse, CourseSearchResponse courseSearchResponse) {

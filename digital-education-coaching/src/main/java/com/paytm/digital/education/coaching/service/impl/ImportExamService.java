@@ -184,6 +184,7 @@ public class ImportExamService {
             }
             String status = sheetData.getStatus();
             if (StringUtils.isNotBlank(status)) {
+                status = status.toLowerCase();
                 if (status.equals(ACTIVE)) {
                     coachingExam.setActive(true);
                 } else {

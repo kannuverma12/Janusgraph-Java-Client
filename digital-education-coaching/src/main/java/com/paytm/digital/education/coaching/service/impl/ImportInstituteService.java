@@ -216,8 +216,9 @@ public class ImportInstituteService {
             if (StringUtils.isNotBlank(brochure)) {
                 coachingInstitute.setBrochure(brochure);
             }
-            String status = sheetData.getStatus().toLowerCase();
+            String status = sheetData.getStatus();
             if (StringUtils.isNotBlank(status)) {
+                status = status.toLowerCase();
                 if (status.equals(ACTIVE)) {
                     coachingInstitute.setActive(true);
                 } else {
@@ -440,7 +441,7 @@ public class ImportInstituteService {
                     GoogleConfig.getCoachingCredentialFileName(),
                     GoogleConfig.getCoachingCredentialFolderPath()).getKey();
             if (StringUtils.isNotBlank(relativeUrl)) {
-                coachingInstitute.setScholarshipMatrix(relativeUrl);
+                coachingInstitute.setBrochure(relativeUrl);
             } else {
                 isFailed = true;
             }

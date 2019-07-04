@@ -80,8 +80,8 @@ public class InstituteDetailServiceImpl {
             throws IOException, TimeoutException {
         // fields are not being supported currently. Part of discussion
 
-        InstituteDetail instituteDetail =
-                getinstituteDetail(entityId, instituteUrlKey, fieldGroup, client);
+        InstituteDetail instituteDetail = getinstituteDetail(entityId, instituteUrlKey,
+                fieldGroup, client);
         if (userId != null && userId > 0) {
             updateShortist(instituteDetail, INSTITUTE, userId);
             updateInterested(instituteDetail, INSTITUTE, userId);

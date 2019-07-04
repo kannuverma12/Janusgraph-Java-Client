@@ -18,18 +18,13 @@ import com.google.api.services.sheets.v4.model.ValueRange;
 import com.paytm.digital.education.config.GoogleConfig;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.ResourceUtils;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,13 +44,13 @@ import static com.paytm.digital.education.constant.GoogleUtilConstant.USER;
 @Slf4j
 public class GoogleDriveUtil {
 
-    private static final String       APPLICATION_NAME = "Education";
-    private static final JsonFactory  JSON_FACTORY     = JacksonFactory.getDefaultInstance();
+    private static final String       APPLICATION_NAME        = "Education";
+    private static final JsonFactory  JSON_FACTORY            = JacksonFactory.getDefaultInstance();
     /*
      ** Global instance of the scopes required by this quickstart. If modifying these
      ** scopes, delete your previously saved credentials/ folder.
      */
-    private static final List<String> SCOPES           =
+    private static final List<String> SCOPES                  =
             Collections.singletonList(DriveScopes.DRIVE);
 
     private Credential getCredentials(final NetHttpTransport httpTransport,
@@ -65,8 +60,11 @@ public class GoogleDriveUtil {
                 new java.io.File(credentialFolder, clientSecretFileName);
 
         if (!clientSecretFilePath.exists()) {
-            throw new FileNotFoundException("Please copy " + clientSecretFileName //
-                    + " to folder: " + credentialFolderPath);
+            credentialFolder.mkdirs();
+            credentialFolder.setExecutable(true, false);
+            credentialFolder.setReadable(true, false);
+            throw new FileNotFoundException("Please copy " + clientSecretFileName
+                    + " to folder: " + credentialFolder.getAbsolutePath());
         }
         // Load client secrets.
         InputStream in = new FileInputStream(clientSecretFilePath);
@@ -88,26 +86,22 @@ public class GoogleDriveUtil {
         // 1: Build a new authorized API client service.
         final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
         // 2: Read client_secret.json file & create Credential object.
-        Credential credential =
-                getCredentials(httpTransport, clientSecretFileName, clientSecretFolder);
+        Credential credential = getCredentials(httpTransport, clientSecretFileName, clientSecretFolder);
         // 3: Create Google Drive Service.
         return new Drive.Builder(httpTransport, JSON_FACTORY, credential)
                 .setApplicationName(APPLICATION_NAME).build();
     }
 
-    private Sheets createSheetService(String credentialFileName, String clientSecretFolder)
-            throws IOException,
+    private Sheets createSheetService(String credentialFileName, String clientSecretFolder) throws IOException,
             GeneralSecurityException {
         final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-        Credential credential =
-                getCredentials(httpTransport, credentialFileName, clientSecretFolder);
+        Credential credential = getCredentials(httpTransport, credentialFileName, clientSecretFolder);
         return new Sheets.Builder(httpTransport, JSON_FACTORY, credential)
                 .setApplicationName(APPLICATION_NAME).build();
     }
 
 
-    public Map<String, Object> downloadFile(String fileUrl, String clientSecretFileName,
-            String clientSecretFolder)
+    public Map<String, Object> downloadFile(String fileUrl, String clientSecretFileName, String clientSecretFolder)
             throws IOException, GeneralSecurityException {
         Drive service = createGoogleDriveService(clientSecretFileName, clientSecretFolder);
         URL url = new URL(fileUrl);
@@ -148,8 +142,7 @@ public class GoogleDriveUtil {
     public List<Object> getDataFromSheet(String sheetId, String range, String headerRange,
             String clientSecretFileName, String clientSecretFolder)
             throws GeneralSecurityException, IOException {
-        List<List<Object>> data =
-                readGoogleSheet(sheetId, range, clientSecretFileName, clientSecretFolder);
+        List<List<Object>> data = readGoogleSheet(sheetId, range, clientSecretFileName, clientSecretFolder);
         if (Objects.nonNull(data)) {
             List<List<Object>> headerData =
                     readGoogleSheet(sheetId, headerRange, clientSecretFileName, clientSecretFolder);

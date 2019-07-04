@@ -95,7 +95,6 @@ public class SearchAggregateHelper {
             courseAggregateData[0].setType(TOP_HITS);
             return courseAggregateData;
         }
-
         List<String> courseKeys =
                 Arrays.asList(DEGREE_COURSE, BRANCH_COURSE, INSTITUTE_NAME_COURSE, STREAM_COURSE,
                         LEVEL_COURSE);
@@ -107,7 +106,6 @@ public class SearchAggregateHelper {
         List<BucketSort> examSortOrder =
                 Arrays.asList(countDescSort, countDescSort, countDescSort, countDescSort,
                         countDescSort);
-
         AggregateField[] courseAggregateData = new AggregateField[courseKeys.size()];
 
         for (int i = 0; i < courseKeys.size(); i++) {

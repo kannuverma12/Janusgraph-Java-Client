@@ -77,6 +77,8 @@ public class ImportFacilitiesService {
         if (!facilityFormSheetData.isEmpty()) {
             buildInstituteFacilityMap(facilityFormSheetData, instituteMap,
                     failedDataList);
+        }
+        if (!instituteMap.isEmpty()) {
             ingestDataHelper.saveCoachingInstitutes(instituteMap);
         }
         if (!failedDataList.isEmpty()) {

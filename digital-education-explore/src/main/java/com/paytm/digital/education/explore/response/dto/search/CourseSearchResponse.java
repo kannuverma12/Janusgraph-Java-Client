@@ -24,10 +24,10 @@ public class CourseSearchResponse extends SearchBaseData {
     @JsonProperty("courses")
     private List<CourseData> courses;
 
-    @JsonProperty("course_per_level")
-    private Map<String, List<CourseData>> coursesPerLevel;
-
     @JsonProperty("official_address")
     private OfficialAddress officialAddress;
+
+    @JsonProperty("course_per_level")
+    private Map<String, List<CourseData>> coursesPerLevel;
 
 }
