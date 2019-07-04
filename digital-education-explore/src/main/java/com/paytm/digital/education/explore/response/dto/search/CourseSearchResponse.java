@@ -1,6 +1,7 @@
 package com.paytm.digital.education.explore.response.dto.search;
 
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -25,5 +26,8 @@ public class CourseSearchResponse extends SearchBaseData {
 
     @JsonProperty("official_address")
     private OfficialAddress officialAddress;
+
+    @JsonProperty("course_per_level")
+    private Map<String, List<CourseData>> coursesPerLevel;
 
 }

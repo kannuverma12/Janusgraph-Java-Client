@@ -9,13 +9,13 @@ import static com.paytm.digital.education.form.constants.FblConstants.PAYMENT_AM
 import static com.paytm.digital.education.form.constants.FblConstants.PAYTM_PRODUCT_ID;
 import static com.paytm.digital.education.form.constants.FblConstants.PAYTM_PRODUCT_NAME;
 import static com.paytm.digital.education.form.constants.FblConstants.PREDICTOR_NAME;
+import static com.paytm.digital.education.form.constants.FblConstants.MAX_USAGE;
 import static com.paytm.digital.education.form.constants.FblConstants.PRODUCT_ID;
 import static com.paytm.digital.education.form.constants.FblConstants.REFERENCE_ID;
 import static com.paytm.digital.education.form.constants.FblConstants.RENDER_FORM2;
 import static com.paytm.digital.education.form.constants.FblConstants.RN_TOKEN;
 import static com.paytm.digital.education.form.constants.FblConstants.STATUS;
 import static com.paytm.digital.education.form.constants.FblConstants.STATUS_CODE;
-import static com.paytm.digital.education.form.constants.FblConstants.SUCCESS_STRING;
 import static com.paytm.digital.education.form.constants.FblConstants.UNAUTHORIZED;
 import static com.paytm.digital.education.mapping.ErrorEnum.MISSING_FORM_DATA_PARAMS;
 import static com.paytm.digital.education.mapping.ErrorEnum.PAYMENT_CONFIGURATION_NOT_FOUND;
@@ -29,8 +29,10 @@ import com.paytm.digital.education.form.repository.FormDataRepository;
 import com.paytm.digital.education.form.service.MerchantProductConfigService;
 import com.paytm.digital.education.predictor.model.CollegePredictor;
 import com.paytm.digital.education.predictor.model.PredictorAuditLogs;
+import com.paytm.digital.education.predictor.model.PredictorStats;
 import com.paytm.digital.education.predictor.repository.PredictorAuditRepository;
 import com.paytm.digital.education.predictor.repository.PredictorListRepository;
+import com.paytm.digital.education.predictor.repository.PredictorStatsRepository;
 import com.paytm.digital.education.predictor.response.CreateFormResponse;
 import com.paytm.digital.education.predictor.response.PredictorListResponse;
 import com.paytm.digital.education.predictor.service.CollegePredictorService;
@@ -83,6 +85,9 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
 
     @Autowired
     private PredictorAuditRepository predictorAuditRepository;
+
+    @Autowired
+    private PredictorStatsRepository predictorStatsRepository;
 
     @Override
     public Map<String, Object> savePredictorFormData(FormData formData) {
@@ -272,10 +277,17 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
     }
 
     private Float getProductPrice(FormData formData, MerchantProductConfig merchantProductConfig) {
-        List<FormData> paymentMadeFormsData = formDataRepository
-                .getFormsDataByPaymentStatus(formData.getCustomerId(), formData.getMerchantId(),
-                        formData.getMerchantProductId(), SUCCESS_STRING);
-        if (CollectionUtils.isEmpty(paymentMadeFormsData)) {
+
+        PredictorStats predictorStats = predictorStatsRepository
+                .findByCustomerIdAndMerchantProductIdAndMerchantId(formData.getCustomerId(),
+                        formData.getMerchantProductId(), formData.getMerchantId());
+
+        if (Objects.isNull(predictorStats)
+                || (!CollectionUtils.isEmpty(merchantProductConfig.getData())
+                && merchantProductConfig.getData().containsKey(MAX_USAGE)
+                && Integer.parseInt(merchantProductConfig.getData().get(MAX_USAGE).toString())
+                == predictorStats
+                .getUseCount().intValue())) {
             if (Objects.isNull(merchantProductConfig) || Objects
                     .isNull(merchantProductConfig.getData().get(PAYMENT_AMOUNT))) {
                 throw new EducationException(PAYMENT_CONFIGURATION_NOT_FOUND,
