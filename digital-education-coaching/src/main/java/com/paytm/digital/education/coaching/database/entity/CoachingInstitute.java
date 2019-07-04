@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.coaching.enums.CourseType;
+import com.paytm.digital.education.coaching.response.dto.ResponseDto;
 import lombok.Data;
 import lombok.ToString;
 import org.bson.types.ObjectId;
@@ -11,16 +13,17 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
 
 @Data
 @ToString
-@Document
+@Document("coaching_institute")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CoachingInstitute {
+public class CoachingInstitute extends ResponseDto {
 
     @Id
     @Field("_id")
@@ -31,17 +34,17 @@ public class CoachingInstitute {
     @JsonProperty("institute_id")
     private Long instituteId;
 
-    @NotNull
-    @Field("official_name")
-    @JsonProperty("official_name")
-    private String officialName;
+    @Field("institute_name")
+    @JsonProperty("institute_name")
+    private String instituteName;
+
+    @Field("brand_name")
+    @JsonProperty("brand_name")
+    private String brandName;
 
     @Field("about_institute")
     @JsonProperty("about_institute")
     private String aboutInstitute;
-
-    @JsonProperty("centers")
-    private List<CoachingCenter> coachingCenters;
 
     @Field("official_address")
     @JsonProperty("official_address")
@@ -49,11 +52,15 @@ public class CoachingInstitute {
 
     @Field("gallery")
     @JsonProperty("gallery")
-    private Gallery gallery;
+    private List<Media> gallery;
 
     @Field("cover_image")
     @JsonProperty("cover_image")
     private String coverImage;
+
+    @Field("logo")
+    @JsonProperty("logo")
+    private String logo;
 
     @Field("streams_prepared_for")
     @JsonProperty("streams_prepared_for")
@@ -67,17 +74,9 @@ public class CoachingInstitute {
     @JsonProperty("exams_prepared_for")
     private List<Long> examsPreparedFor;
 
-    @Field("courses_available")
-    @JsonProperty("courses_available")
-    private List<Long> coursesAvailable;
-
-    @Field("testimonials")
-    @JsonProperty("testimonials")
-    private List<Testimonial> testimonials;
-
-    @Field("faqs")
-    @JsonProperty("faqs")
-    private List<Faq> faqs;
+    @Field("courses_type_available")
+    @JsonProperty("courses_type_available")
+    private List<CourseType> coursesTypeAvailable;
 
     @Field("students_selected")
     @JsonProperty("students_selected")
@@ -87,44 +86,51 @@ public class CoachingInstitute {
     @JsonProperty("top_rank_achieved")
     private List<TopRankAchieved> topRankAchieved;
 
-    @Field("scholarships")
-    @JsonProperty("scholarships")
-    private List<Object> scholarships;
+    @Field("scholarship_matrix")
+    @JsonProperty("scholarship_matrix")
+    private String scholarshipMatrix;
+
+    @Field("scholarship_exam")
+    @JsonProperty("scholarship_exam")
+    private String scholarshipExam;
 
     @Field("exam_centers")
     @JsonProperty("exam_centers")
     private List<Integer> examCenters;
 
-    @Field("sample_papers")
-    @JsonProperty("sample_papers")
-    private List<SamplePaper> samplePapers;
-
-    @Field("daily_practice_tests")
-    @JsonProperty("daily_practice_tests")
-    private List<Integer> dailyPracticeTests;
-
     @Field("establishment_year")
     @JsonProperty("establishment_year")
     private Integer establishmentYear;
 
-    @Field("no_of_selected_student")
-    @JsonProperty("no_of_selected_student")
-    private Integer noOfSelectedStudent;
-
-    @Field("no_of_faculty")
-    @JsonProperty("no_of_faculty")
-    private Integer noOfFaculty;
-
-    @Field("media")
-    @JsonProperty("media")
-    private Map<String, String> media;
-
     @Field("facilities")
     @JsonProperty("facilities")
-    private List<String> facilities;
+    private Map<String, String> facilities;
 
     @JsonProperty("active")
     @Field("active")
-    private boolean active;
+    private Boolean active;
 
+    @Field("created_at")
+    @JsonProperty("created_at")
+    private Date createdAt;
+
+    @Field("updated_at")
+    @JsonProperty("updated_at")
+    private Date updatedAt;
+
+    @Field("brochure")
+    @JsonProperty("brochure")
+    private String brochure;
+
+    @Field("steps_to_apply")
+    @JsonProperty("steps_to_apply")
+    private String stepsToApply;
+
+    @Field("city_state_presence")
+    @JsonProperty("city_state_presence")
+    private String cityStatePresence;
+
+    @Field("keyhighlights")
+    @JsonProperty("keyhighlights")
+    private Map<Integer, KeyHighlight> keyhighlights;
 }

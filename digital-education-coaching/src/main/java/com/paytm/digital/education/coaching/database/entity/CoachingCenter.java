@@ -4,22 +4,25 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.coaching.enums.CourseType;
+import com.paytm.digital.education.coaching.response.dto.ResponseDto;
 import lombok.Data;
 import lombok.ToString;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Date;
 import java.util.List;
 
 @ToString
 @Data
-@Document
+@Document("coaching_center")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CoachingCenter {
-
+public class CoachingCenter extends ResponseDto {
     @Id
     @JsonIgnore
     @Field("_id")
@@ -45,6 +48,10 @@ public class CoachingCenter {
     @JsonProperty("street_address2")
     private String streetAddress2;
 
+    @Field("street_address3")
+    @JsonProperty("street_address3")
+    private String streetAddress3;
+
     @Field("city")
     @JsonProperty("city")
     private String city;
@@ -57,11 +64,27 @@ public class CoachingCenter {
     @JsonProperty("pincode")
     private Integer pincode;
 
-    @Field("courses")
-    @JsonProperty("courses")
-    private List<Long> courseIds;
+    @Field("course_type_available")
+    @JsonProperty("course_type_available")
+    private List<CourseType> courseTypeAvailable;
 
     @JsonProperty("active")
     @Field("active")
     private boolean active;
+
+    @JsonProperty("latitude")
+    @Field("latitude")
+    private String latitude;
+
+    @JsonProperty("longitude")
+    @Field("longitude")
+    private String longitude;
+
+    @Field("created_at")
+    @JsonProperty("created_at")
+    private Date createdAt;
+
+    @Field("updated_at")
+    @JsonProperty("updated_at")
+    private Date updatedAt;
 }

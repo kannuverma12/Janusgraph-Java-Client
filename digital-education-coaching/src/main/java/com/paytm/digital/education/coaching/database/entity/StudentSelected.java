@@ -11,21 +11,29 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class StudentSelected {
 
-    @Field("name")
-    @JsonProperty("name")
-    private String name;
+    @Field("institute_id")
+    @JsonProperty("institute_id")
+    private Long instituteId;
 
-    @Field("photo")
-    @JsonProperty("photo")
-    private String photo;
+    @Field("qualifying_exam_id")
+    @JsonProperty("qualifying_exam_id")
+    private Long qualifyingExamId;
+
+    @Field("exam_year")
+    @JsonProperty("exam_year")
+    private Integer examYear;
+
+    @Field("student_name")
+    @JsonProperty("student_name")
+    private String studentName;
+
+    @Field("student_photo")
+    @JsonProperty("student_photo")
+    private String studentPhoto;
 
     @Field("course_studied")
     @JsonProperty("course_studied")
     private String courseStudied;
-
-    @Field("year")
-    @JsonProperty("year")
-    private Integer year;
 
     @Field("batch")
     @JsonProperty("batch")
@@ -35,15 +43,7 @@ public class StudentSelected {
     @JsonProperty("rank_obtained")
     private Integer rankObtained;
 
-    @Field("qualified_exam")
-    @JsonProperty("qualified_exam")
-    private String qualifiedExam;
-
-    @Field("exam_year")
-    @JsonProperty("exam_year")
-    private Integer examYear;
-
-    @Field("college_obtained")
-    @JsonProperty("college_obtained")
-    private String collegeObtained;
+    @Field("college_admitted")
+    @JsonProperty("college_admitted")
+    private String collegeAdmitted;
 }

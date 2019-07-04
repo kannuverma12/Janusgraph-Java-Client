@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
+import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.sro.request.FieldsAndFieldGroupRequest;
 
@@ -54,6 +55,9 @@ public class SearchRequest extends FieldsAndFieldGroupRequest {
     @JsonProperty("fetch_filter")
     @NotNull
     private Boolean fetchFilter = true;
+
+    @JsonIgnore
+    private Client client;
 
     @JsonProperty("meta")
     private Classification classificationData;
