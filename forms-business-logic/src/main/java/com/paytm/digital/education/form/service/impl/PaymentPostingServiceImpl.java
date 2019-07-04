@@ -465,6 +465,8 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         query.fields().include("transactionType");
         query.fields().include("merchantProductId");
         query.fields().include("merchantCandidateId");
+        query.fields().include("customerId");
+        query.fields().include("merchantId");
 
         return mongoOperations.findOne(query, FormData.class);
     }
