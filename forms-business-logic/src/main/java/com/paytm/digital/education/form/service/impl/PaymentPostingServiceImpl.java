@@ -376,10 +376,9 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         HttpEntity httpEntity = response.getEntity();
         String apiOutput = EntityUtils.toString(httpEntity);
         log.info("Merchant API Output for refId " + refId + ": " + apiOutput);
+        // close connection
         FormIoMerchantResultResponse formIoMerchantResultResponse = JsonUtils
                 .fromJson(apiOutput, FormIoMerchantResultResponse.class);
-
-        // close connection
         httpClient.getConnectionManager().shutdown();
         log.info("Form Data : {} ", formData);
         log.info("Merchant Product Config : {}", merchantProductConfig);
