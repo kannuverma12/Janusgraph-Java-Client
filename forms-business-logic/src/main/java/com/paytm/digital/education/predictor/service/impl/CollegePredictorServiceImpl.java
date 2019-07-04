@@ -16,7 +16,6 @@ import static com.paytm.digital.education.form.constants.FblConstants.RENDER_FOR
 import static com.paytm.digital.education.form.constants.FblConstants.RN_TOKEN;
 import static com.paytm.digital.education.form.constants.FblConstants.STATUS;
 import static com.paytm.digital.education.form.constants.FblConstants.STATUS_CODE;
-import static com.paytm.digital.education.form.constants.FblConstants.SUCCESS_STRING;
 import static com.paytm.digital.education.form.constants.FblConstants.UNAUTHORIZED;
 import static com.paytm.digital.education.mapping.ErrorEnum.MISSING_FORM_DATA_PARAMS;
 import static com.paytm.digital.education.mapping.ErrorEnum.PAYMENT_CONFIGURATION_NOT_FOUND;
@@ -280,8 +279,8 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
     private Float getProductPrice(FormData formData, MerchantProductConfig merchantProductConfig) {
 
         PredictorStats predictorStats = predictorStatsRepository
-                .findByCustomerIdAndMerchantProductId(formData.getCustomerId(),
-                        formData.getMerchantProductId());
+                .findByCustomerIdAndMerchantProductIdAndMerchantId(formData.getCustomerId(),
+                        formData.getMerchantProductId(), formData.getMerchantId());
 
         if (Objects.isNull(predictorStats)
                 || (!CollectionUtils.isEmpty(merchantProductConfig.getData())

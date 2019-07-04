@@ -381,8 +381,8 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         if (formIoMerchantResultResponse != null) {
             if (!CollectionUtils.isEmpty(merchantProductConfig.getData()) && merchantProductConfig
                     .getData().containsKey(FblConstants.SERVICE) && merchantProductConfig.getData()
-                    .get(FblConstants.SERVICE)
-                    .equals(FblConstants.PREDICTOR)) {
+                    .get(FblConstants.SERVICE).toString()
+                    .equalsIgnoreCase(FblConstants.PREDICTOR)) {
                 updatePredictorStats(formData, merchantProductConfig);
                 uploadAndUpdateS3Link(refId, formIoMerchantResultResponse.getResult());
             }
@@ -394,8 +394,8 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
     private void updatePredictorStats(FormData formData,
             MerchantProductConfig merchantProductConfig) {
         PredictorStats predictorStats = predictorStatsRepository
-                .findByCustomerIdAndMerchantProductId(formData.getCustomerId(),
-                        formData.getMerchantProductId());
+                .findByCustomerIdAndMerchantProductIdAndMerchantId(formData.getCustomerId(),
+                        formData.getMerchantProductId(), formData.getMerchantId());
         if (Objects.isNull(predictorStats)) {
             predictorStats = new PredictorStats();
             predictorStats.setMerchantId(formData.getMerchantId());
