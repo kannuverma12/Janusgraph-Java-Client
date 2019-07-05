@@ -12,6 +12,7 @@ public class AwsConfig {
     private static String s3ExploreBucketName;
     private static String s3CoachingBucketName;
     private static String relativePathPrefix;
+    private static String mediaBaseUrl;
 
     @Value("${aws.s3.region}")
     public void setClientRegion(String region) {
@@ -31,6 +32,15 @@ public class AwsConfig {
     @Value("${aws.s3.relativepath.prefix}")
     public void setRelativePathPrefix(String prefix) {
         relativePathPrefix = prefix;
+    }
+
+    @Value("${education.asset.baseurl}")
+    public void setBaseUrl(String baseUrl) {
+        mediaBaseUrl = baseUrl;
+    }
+
+    public static String getMediaBaseUrl() {
+        return mediaBaseUrl;
     }
 
     public static String getRelativePathPrefix() {

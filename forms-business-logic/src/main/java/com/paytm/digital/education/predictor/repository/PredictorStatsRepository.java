@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PredictorStatsRepository extends MongoRepository<PredictorStats, String> {
 
-    public PredictorStats findByCustomerIdAndMerchantProductId(String customerId,
-            String merchantId);
+    public PredictorStats findByCustomerIdAndMerchantProductIdAndMerchantId(String customerId,
+            String merchantProductId, String merchantId);
 }

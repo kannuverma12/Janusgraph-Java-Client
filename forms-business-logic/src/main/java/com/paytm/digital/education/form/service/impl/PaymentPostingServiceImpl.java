@@ -304,8 +304,12 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
                                                   FormData formData, String refId) throws Exception {
         // fetch URL from merchant configuration
         String urlKey = "data." + formData.getTransactionType().toLowerCase();
+        String service = "data." + FblConstants.SERVICE;
+        String maxUsage = "data." + FblConstants.MAX_USAGE;
         ArrayList<String> keys = new ArrayList<>();
         keys.add(urlKey);
+        keys.add(maxUsage);
+        keys.add(service);
         MerchantProductConfig merchantProductConfig = merchantProductConfigService.getConfig(paymentPostingItemRequest
                 .getMerchantId().toString(), paymentPostingItemRequest.getProductId().toString(), keys);
 
@@ -372,17 +376,19 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         HttpEntity httpEntity = response.getEntity();
         String apiOutput = EntityUtils.toString(httpEntity);
         log.info("Merchant API Output for refId " + refId + ": " + apiOutput);
+        // close connection
+        log.info("Form Data : {} ", formData);
+        log.info("Merchant Product Config : {}", merchantProductConfig);
         FormIoMerchantResultResponse formIoMerchantResultResponse = JsonUtils
                 .fromJson(apiOutput, FormIoMerchantResultResponse.class);
-
-        // close connection
         httpClient.getConnectionManager().shutdown();
-
+        log.info("Form io merchant result response : {}", formIoMerchantResultResponse);
         if (formIoMerchantResultResponse != null) {
             if (!CollectionUtils.isEmpty(merchantProductConfig.getData()) && merchantProductConfig
                     .getData().containsKey(FblConstants.SERVICE) && merchantProductConfig.getData()
-                    .get(FblConstants.SERVICE)
-                    .equals(FblConstants.PREDICTOR)) {
+                    .get(FblConstants.SERVICE).toString()
+                    .equalsIgnoreCase(FblConstants.PREDICTOR)) {
+
                 updatePredictorStats(formData, merchantProductConfig);
                 uploadAndUpdateS3Link(refId, formIoMerchantResultResponse.getResult());
             }
@@ -394,8 +400,8 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
     private void updatePredictorStats(FormData formData,
             MerchantProductConfig merchantProductConfig) {
         PredictorStats predictorStats = predictorStatsRepository
-                .findByCustomerIdAndMerchantProductId(formData.getCustomerId(),
-                        formData.getMerchantProductId());
+                .findByCustomerIdAndMerchantProductIdAndMerchantId(formData.getCustomerId(),
+                        formData.getMerchantProductId(), formData.getMerchantId());
         if (Objects.isNull(predictorStats)) {
             predictorStats = new PredictorStats();
             predictorStats.setMerchantId(formData.getMerchantId());
@@ -405,13 +411,16 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
             predictorStats.setCreatedAt(new Date());
         } else if (!CollectionUtils.isEmpty(merchantProductConfig.getData())
                 && merchantProductConfig.getData().containsKey(FblConstants.MAX_USAGE)
-                && merchantProductConfig.getData().get(FblConstants.MAX_USAGE) == predictorStats
-                        .getUseCount()) {
+                && (Integer.parseInt(
+                merchantProductConfig.getData().get(FblConstants.MAX_USAGE).toString())
+                == predictorStats
+                .getUseCount().intValue())) {
             predictorStats.setUseCount(1);
         } else {
             predictorStats.setUseCount(predictorStats.getUseCount() + 1);
         }
         predictorStats.setUpdatedAt(new Date());
+        log.info("Inserting predictor stats {}", predictorStats);
         predictorStatsRepository.save(predictorStats);
     }
 
@@ -423,11 +432,17 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
             try {
                 URL url = new URL(urlStr);
                 InputStream stream = url.openStream();
-                String s3Url = s3Service
-                        .uploadFile(stream, refId, refId, FblConstants.PREDICTOR_S3_RELATIVE_PATH,
+                String s3RelativeUrl = s3Service
+                        .uploadFile(stream, refId + ".pdf", refId,
+                                FblConstants.PREDICTOR_S3_RELATIVE_PATH,
                                 awsConfig.getS3ExploreBucketName());
-                if (StringUtils.isNotBlank(s3Url)) {
-                    formIoMerchantResponse.getCandidateDetails().put("predictorUrl", s3Url);
+                log.info("S3 relative url: {}", s3RelativeUrl);
+                if (StringUtils.isNotBlank(s3RelativeUrl)) {
+                    formIoMerchantResponse.getCandidateDetails()
+                            .put("predictorUrl",
+                                    AwsConfig.getMediaBaseUrl()
+                                            + "education/explore/college/images/"
+                                            + s3RelativeUrl);
                 }
             } catch (MalformedURLException e) {
                 log.error("Url building malformed for url string :{}", urlStr);
@@ -455,6 +470,8 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         query.fields().include("transactionType");
         query.fields().include("merchantProductId");
         query.fields().include("merchantCandidateId");
+        query.fields().include("customerId");
+        query.fields().include("merchantId");
 
         return mongoOperations.findOne(query, FormData.class);
     }

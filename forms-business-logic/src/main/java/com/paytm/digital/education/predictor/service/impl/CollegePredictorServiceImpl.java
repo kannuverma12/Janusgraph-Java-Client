@@ -16,7 +16,6 @@ import static com.paytm.digital.education.form.constants.FblConstants.RENDER_FOR
 import static com.paytm.digital.education.form.constants.FblConstants.RN_TOKEN;
 import static com.paytm.digital.education.form.constants.FblConstants.STATUS;
 import static com.paytm.digital.education.form.constants.FblConstants.STATUS_CODE;
-import static com.paytm.digital.education.form.constants.FblConstants.SUCCESS_STRING;
 import static com.paytm.digital.education.form.constants.FblConstants.UNAUTHORIZED;
 import static com.paytm.digital.education.mapping.ErrorEnum.MISSING_FORM_DATA_PARAMS;
 import static com.paytm.digital.education.mapping.ErrorEnum.PAYMENT_CONFIGURATION_NOT_FOUND;
@@ -280,14 +279,17 @@ public class CollegePredictorServiceImpl implements CollegePredictorService {
     private Float getProductPrice(FormData formData, MerchantProductConfig merchantProductConfig) {
 
         PredictorStats predictorStats = predictorStatsRepository
-                .findByCustomerIdAndMerchantProductId(formData.getCustomerId(),
-                        formData.getMerchantProductId());
+                .findByCustomerIdAndMerchantProductIdAndMerchantId(formData.getCustomerId(),
+                        formData.getMerchantProductId(), formData.getMerchantId());
+
+        log.info("Predictor Stats : {}", predictorStats);
 
         if (Objects.isNull(predictorStats)
                 || (!CollectionUtils.isEmpty(merchantProductConfig.getData())
-                        && merchantProductConfig.getData().containsKey(MAX_USAGE)
-                        && merchantProductConfig.getData().get(MAX_USAGE) == predictorStats
-                                .getUseCount())) {
+                && merchantProductConfig.getData().containsKey(MAX_USAGE)
+                && Integer.parseInt(merchantProductConfig.getData().get(MAX_USAGE).toString())
+                == predictorStats
+                .getUseCount().intValue())) {
             if (Objects.isNull(merchantProductConfig) || Objects
                     .isNull(merchantProductConfig.getData().get(PAYMENT_AMOUNT))) {
                 throw new EducationException(PAYMENT_CONFIGURATION_NOT_FOUND,

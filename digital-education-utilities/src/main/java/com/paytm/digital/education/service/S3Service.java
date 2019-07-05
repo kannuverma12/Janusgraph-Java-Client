@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.util.IOUtils;
 import com.paytm.digital.education.utility.AmazonS3Provider;
+import com.paytm.digital.education.utility.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,11 +39,13 @@ public class S3Service {
         byte[] bytes1 = IOUtils.toByteArray(inputStream);
         metadata.setContentLength(bytes1.length);
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes1);
-        PutObjectRequest objectRequest = new PutObjectRequest(s3BucketName + relativePath,
+        PutObjectRequest objectRequest = new PutObjectRequest(s3BucketName + "/" + relativePath,
                 fileName,
                 byteArrayInputStream, metadata);
+        log.info("S3 upload path: {}", s3BucketName + relativePath + "/" + fileName);
         objectRequest.withCannedAcl(CannedAccessControlList.PublicReadWrite);
         PutObjectResult result = s3Provider.getAmazonS3().putObject(objectRequest);
+        log.info("S3 upload result {}", JsonUtils.toJson(result));
         inputStream.close();
         log.info("Exited from S3Service.uploadFile with fileName {} EntityId {} s3Path {} ",
                 fileName, entityId, relativePath);
