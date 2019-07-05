@@ -56,7 +56,7 @@ public class SellerPanelServiceImpl implements SellerPanelService {
 
     @Override
     public ResponseData<FormData> getInfoOnDate(
-            String merchantId, Date startDate, Date endDate, int offset, int limit) {
+            String merchantId, Date startDate, Date endDate, Integer offset, Integer limit) {
 
         Query query = new Query();
         Criteria criteria = Criteria.where("formFulfilment.createdDate")
@@ -64,12 +64,23 @@ public class SellerPanelServiceImpl implements SellerPanelService {
         query.addCriteria(criteria);
         Long count = mongoOperations.count(query, "formData");
 
-        query.skip(limit * offset);
-        query.limit(limit);
+        if (limit != null) {
+            if (offset != null) {
+                query.skip(limit * offset);
+            }
+            query.limit(limit);
+        }
 
         List<FormData> responses = mongoOperations.find(query, FormData.class);
 
         return new ResponseData<FormData>(count, responses);
+    }
+
+    @Override
+    public ResponseData<FormData> getInfoOnDate(
+            String merchantId, Date startDate, Date endDate) {
+
+        return getInfoOnDate(merchantId, startDate, endDate, null, null);
     }
 
     @Override

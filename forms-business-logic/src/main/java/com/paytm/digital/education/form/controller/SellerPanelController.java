@@ -120,9 +120,6 @@ public class SellerPanelController {
             @RequestParam(name = "end_date", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate,
 
-            @RequestParam(name = "offset", required = false, defaultValue = "0") int offset,
-            @RequestParam(name = "limit", required = false, defaultValue = "10") int limit,
-
             HttpServletResponse response) throws Exception {
 
         if (authService.getMerchantId() == null) {
@@ -151,7 +148,7 @@ public class SellerPanelController {
                 endDate = new Date();
             }
             formDataList = sellerPanelService
-                    .getInfoOnDate(authService.getMerchantId().toString(), startDate, endDate, offset, limit)
+                    .getInfoOnDate(authService.getMerchantId().toString(), startDate, endDate)
                     .getData()
                     .stream()
                     .map(MerchantFormData::new)
