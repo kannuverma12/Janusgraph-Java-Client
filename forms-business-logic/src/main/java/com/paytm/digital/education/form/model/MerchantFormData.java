@@ -44,7 +44,7 @@ public class MerchantFormData {
     private String examType;
 
     public MerchantFormData(FormData formData) {
-        String format = "dd-MM-yyyy hh:mm:ss";
+        String format = "dd-MM-yyyy HH:mm:ss";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
 
         if (formData.getFormFulfilment() != null) {
