@@ -1,5 +1,6 @@
 package com.paytm.digital.education.form.model;
 
+import com.paytm.digital.education.form.constants.FblConstants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -46,20 +47,28 @@ public class MerchantFormData {
         String format = "dd-MM-yyyy hh:mm:ss";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
 
-        this.orderId = formData.getFormFulfilment().getOrderId();
-        this.itemId = formData.getFormFulfilment().getItemId();
-        this.name = formData.getCandidateDetails().getFullName();
-        this.email = formData.getCandidateDetails().getEmail();
-        this.mobileNumber = formData.getCandidateDetails().getMobileNumber();
-        this.amount = formData.getCandidateDetails().getAmount();
-        if (formData.getFormFulfilment().getCreatedDate() != null) {
-            this.createdDate = simpleDateFormat.format(formData.getFormFulfilment().getCreatedDate());
+        if (formData.getFormFulfilment() != null) {
+            this.orderId = formData.getFormFulfilment().getOrderId();
+            this.itemId = formData.getFormFulfilment().getItemId();
+            if (formData.getFormFulfilment().getCreatedDate() != null) {
+                this.createdDate = simpleDateFormat.format(formData.getFormFulfilment().getCreatedDate());
+            }
+            if (formData.getFormFulfilment().getUpdatedDate() != null) {
+                this.updatedDate = simpleDateFormat.format(formData.getFormFulfilment().getUpdatedDate());
+            }
+            if (formData.getFormFulfilment().getPaymentStatus() == null
+                    || formData.getFormFulfilment().getPaymentStatus().isEmpty()) {
+                this.paymentStatus = FblConstants.PENDING_STRING.toUpperCase();
+            } else {
+                this.paymentStatus = formData.getFormFulfilment().getPaymentStatus().toUpperCase();
+            }
         }
-        if (formData.getFormFulfilment().getUpdatedDate() != null) {
-            this.updatedDate = simpleDateFormat.format(formData.getFormFulfilment().getUpdatedDate());
+        if (formData.getCandidateDetails() != null) {
+            this.name = formData.getCandidateDetails().getFullName();
+            this.email = formData.getCandidateDetails().getEmail();
+            this.mobileNumber = formData.getCandidateDetails().getMobileNumber();
+            this.amount = formData.getCandidateDetails().getAmount();
+            this.examType = formData.getCandidateDetails().getExamType();
         }
-        this.paymentStatus = formData.getFormFulfilment().getPaymentStatus();
-        this.examType = formData.getCandidateDetails().getExamType();
     }
-
 }
