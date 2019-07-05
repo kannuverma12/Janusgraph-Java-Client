@@ -3,6 +3,7 @@ package com.paytm.digital.education.form.controller;
 import static com.paytm.digital.education.form.constants.FblConstants.FORM;
 import static com.paytm.digital.education.form.constants.FblConstants.INVOICE;
 import static com.paytm.digital.education.form.constants.FblConstants.PREDICTOR_INVOICE;
+import static com.paytm.digital.education.form.constants.FblConstants.SUCCESS_STRING;
 
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.form.config.AuthorizationService;
@@ -41,11 +42,11 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class DownloadController {
 
-    private AuthorizationService      authService;
-    private DownloadService           downloadService;
+    private AuthorizationService authService;
+    private DownloadService downloadService;
     private MerchantConfigServiceImpl merchantConfigServiceImpl;
-    private Environment               env;
-    private DecryptionService         decryptionService;
+    private Environment env;
+    private DecryptionService decryptionService;
 
     @GetMapping("/v1/download")
     @CrossOrigin(origins = {"http://localhost:8080", "http://merchant-dev.paytm.com", "http://fe.paytm.com",
@@ -64,7 +65,8 @@ public class DownloadController {
 
         String merchantId = authService.getMerchantId().toString();
         FormData formData = downloadService.getFormDataByMerchantIdAndOrderId(merchantId, orderId);
-        if (formData == null) {
+        if (formData == null || formData.getFormFulfilment().getPaymentStatus() == null
+                || !formData.getFormFulfilment().getPaymentStatus().equalsIgnoreCase(SUCCESS_STRING)) {
             return new ResponseEntity<>(
                     new ErrorResponseBody(404, "data not found"),
                     HttpStatus.NOT_FOUND);
@@ -158,7 +160,7 @@ public class DownloadController {
 
     @SuppressWarnings("unchecked")
     private ResponseEntity<Object> downloadForm(Long orderId, String type, FormData formData,
-            HttpHeaders headers) {
+                                                HttpHeaders headers) {
 
         if (orderId != null && type != null && (type.equalsIgnoreCase(FORM) || type
                 .equalsIgnoreCase(INVOICE) || type
@@ -207,7 +209,7 @@ public class DownloadController {
             if (contents == null) {
                 return new ResponseEntity<>(
                         "{\"status_code\":500, \"message\": \"Some error occurred, please try again later.\"}",
-                         HttpStatus.INTERNAL_SERVER_ERROR);
+                        HttpStatus.INTERNAL_SERVER_ERROR);
             }
             log.info("Content : {}", contents.toString());
             return new ResponseEntity<>(contents, headers, HttpStatus.OK);
@@ -225,7 +227,7 @@ public class DownloadController {
         } else {
             return new ResponseEntity<>(
                     "{\"status_code\":400, \"message\": \"Please enter the correct id or type\"}",
-                     HttpStatus.BAD_REQUEST);
+                    HttpStatus.BAD_REQUEST);
         }
 
     }
