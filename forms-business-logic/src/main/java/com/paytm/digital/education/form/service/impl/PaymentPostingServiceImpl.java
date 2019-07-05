@@ -2,6 +2,8 @@ package com.paytm.digital.education.form.service.impl;
 
 
 import com.mongodb.client.result.UpdateResult;
+import com.paytm.digital.education.config.AwsConfig;
+import com.paytm.digital.education.form.constants.FblConstants;
 import com.paytm.digital.education.form.dao.FormDataDao;
 import com.paytm.digital.education.form.model.FormData;
 import com.paytm.digital.education.form.model.FormFulfilment;
@@ -19,9 +21,13 @@ import com.paytm.digital.education.form.response.FormIoMerchantResponse;
 import com.paytm.digital.education.form.response.FormIoMerchantResultResponse;
 import com.paytm.digital.education.form.service.PaymentPostingService;
 import com.paytm.digital.education.form.service.PersonaHttpClientService;
+import com.paytm.digital.education.predictor.model.PredictorStats;
+import com.paytm.digital.education.predictor.repository.PredictorStatsRepository;
+import com.paytm.digital.education.service.S3Service;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -39,17 +45,23 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.Date;
+import java.util.ArrayList;
+import java.util.Objects;
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Arrays;
 
 
 /*
@@ -84,6 +96,15 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
 
     @Autowired
     private FormDataDao formDataDao;
+
+    @Autowired
+    private PredictorStatsRepository predictorStatsRepository;
+
+    @Autowired
+    private S3Service s3Service;
+
+    @Autowired
+    private AwsConfig awsConfig;
 
     private final Set<String> paymentStatus = new HashSet<>(Arrays.asList("success", "pending", "failure"));
 
@@ -283,8 +304,12 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
                                                   FormData formData, String refId) throws Exception {
         // fetch URL from merchant configuration
         String urlKey = "data." + formData.getTransactionType().toLowerCase();
+        String service = "data." + FblConstants.SERVICE;
+        String maxUsage = "data." + FblConstants.MAX_USAGE;
         ArrayList<String> keys = new ArrayList<>();
         keys.add(urlKey);
+        keys.add(maxUsage);
+        keys.add(service);
         MerchantProductConfig merchantProductConfig = merchantProductConfigService.getConfig(paymentPostingItemRequest
                 .getMerchantId().toString(), paymentPostingItemRequest.getProductId().toString(), keys);
 
@@ -351,17 +376,82 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         HttpEntity httpEntity = response.getEntity();
         String apiOutput = EntityUtils.toString(httpEntity);
         log.info("Merchant API Output for refId " + refId + ": " + apiOutput);
+        // close connection
+        log.info("Form Data : {} ", formData);
+        log.info("Merchant Product Config : {}", merchantProductConfig);
         FormIoMerchantResultResponse formIoMerchantResultResponse = JsonUtils
                 .fromJson(apiOutput, FormIoMerchantResultResponse.class);
-
-        // close connection
         httpClient.getConnectionManager().shutdown();
-
+        log.info("Form io merchant result response : {}", formIoMerchantResultResponse);
         if (formIoMerchantResultResponse != null) {
+            if (!CollectionUtils.isEmpty(merchantProductConfig.getData()) && merchantProductConfig
+                    .getData().containsKey(FblConstants.SERVICE) && merchantProductConfig.getData()
+                    .get(FblConstants.SERVICE).toString()
+                    .equalsIgnoreCase(FblConstants.PREDICTOR)) {
+
+                updatePredictorStats(formData, merchantProductConfig);
+                uploadAndUpdateS3Link(refId, formIoMerchantResultResponse.getResult());
+            }
             return formIoMerchantResultResponse.getResult();
         }
         return null;
     }
+
+    private void updatePredictorStats(FormData formData,
+            MerchantProductConfig merchantProductConfig) {
+        PredictorStats predictorStats = predictorStatsRepository
+                .findByCustomerIdAndMerchantProductIdAndMerchantId(formData.getCustomerId(),
+                        formData.getMerchantProductId(), formData.getMerchantId());
+        if (Objects.isNull(predictorStats)) {
+            predictorStats = new PredictorStats();
+            predictorStats.setMerchantId(formData.getMerchantId());
+            predictorStats.setMerchantProductId(formData.getMerchantProductId());
+            predictorStats.setCustomerId(formData.getCustomerId());
+            predictorStats.setUseCount(1);
+            predictorStats.setCreatedAt(new Date());
+        } else if (!CollectionUtils.isEmpty(merchantProductConfig.getData())
+                && merchantProductConfig.getData().containsKey(FblConstants.MAX_USAGE)
+                && (Integer.parseInt(
+                merchantProductConfig.getData().get(FblConstants.MAX_USAGE).toString())
+                == predictorStats
+                .getUseCount().intValue())) {
+            predictorStats.setUseCount(1);
+        } else {
+            predictorStats.setUseCount(predictorStats.getUseCount() + 1);
+        }
+        predictorStats.setUpdatedAt(new Date());
+        log.info("Inserting predictor stats {}", predictorStats);
+        predictorStatsRepository.save(predictorStats);
+    }
+
+    private void uploadAndUpdateS3Link(String refId,
+            FormIoMerchantResponse formIoMerchantResponse) {
+        if (formIoMerchantResponse.getCandidateDetails().containsKey("predictorUrl")) {
+            String urlStr =
+                    (String) formIoMerchantResponse.getCandidateDetails().get("predictorUrl");
+            try {
+                URL url = new URL(urlStr);
+                InputStream stream = url.openStream();
+                String s3RelativeUrl = s3Service
+                        .uploadFile(stream, refId + ".pdf", refId,
+                                FblConstants.PREDICTOR_S3_RELATIVE_PATH,
+                                awsConfig.getS3ExploreBucketName());
+                log.info("S3 relative url: {}", s3RelativeUrl);
+                if (StringUtils.isNotBlank(s3RelativeUrl)) {
+                    formIoMerchantResponse.getCandidateDetails()
+                            .put("predictorUrl",
+                                    AwsConfig.getMediaBaseUrl()
+                                            + "education/explore/college/images/"
+                                            + s3RelativeUrl);
+                }
+            } catch (MalformedURLException e) {
+                log.error("Url building malformed for url string :{}", urlStr);
+            } catch (IOException e) {
+                log.error("IO Exception while downloading file for url :{}", urlStr);
+            }
+        }
+    }
+
 
     private void updateFulfilmentIdInFormDataCollection(String id, Long fulfilmentId) {
         Update update = new Update();
@@ -380,6 +470,8 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         query.fields().include("transactionType");
         query.fields().include("merchantProductId");
         query.fields().include("merchantCandidateId");
+        query.fields().include("customerId");
+        query.fields().include("merchantId");
 
         return mongoOperations.findOne(query, FormData.class);
     }

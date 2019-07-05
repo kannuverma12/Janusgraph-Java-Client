@@ -1,15 +1,18 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.paytm.digital.education.config.AwsConfig;
+import com.paytm.digital.education.config.GoogleConfig;
 import com.paytm.digital.education.explore.database.entity.CampusAmbassador;
 import com.paytm.digital.education.explore.database.entity.FailedCampusAmbassador;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.service.ImportDataService;
 import com.paytm.digital.education.explore.service.helper.CampusEngagementHelper;
-import com.paytm.digital.education.explore.utility.GoogleDriveUtil;
+import com.paytm.digital.education.utility.GoogleDriveUtil;
 import com.paytm.digital.education.explore.xcel.model.XcelCampusAmbassador;
 import com.paytm.digital.education.utility.JsonUtils;
+import com.paytm.digital.education.utility.UploadUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -53,6 +56,7 @@ public class ImportAmbassadorServiceImpl implements ImportDataService {
 
     private CommonMongoRepository  commonMongoRepository;
     private CampusEngagementHelper campusEngagementHelper;
+    private UploadUtil             uploadUtil;
 
     /*
      ** Import the new data from spreadsheet
@@ -65,7 +69,9 @@ public class ImportAmbassadorServiceImpl implements ImportDataService {
         double startRow = (double) propertyMap.get(CAMPUS_AMBASSADOR_START_ROW);
         String dataRangeTemplate = (String) propertyMap.get(CAMPUS_AMBASSADOR_DATA_RANGE_TEMPLATE);
         List<Object> sheetAmbassadorData = GoogleDriveUtil.getDataFromSheet(sheetId,
-                MessageFormat.format(dataRangeTemplate, startRow), headerRange);
+                MessageFormat.format(dataRangeTemplate, startRow), headerRange,
+                GoogleConfig.getCampusCredentialFileName(),
+                GoogleConfig.getExploreCredentialFolderPath());
         if (Objects.nonNull(sheetAmbassadorData)) {
             int totalNumberOfData = sheetAmbassadorData.size();
             List<Object> failedDataList = new ArrayList<>();
@@ -266,8 +272,10 @@ public class ImportAmbassadorServiceImpl implements ImportDataService {
      */
     private boolean setMediaFields(CampusAmbassador ambassador, String mediaUrl,
             List<Object> failedDataList) {
-        String imageUrl = campusEngagementHelper.uploadFile(mediaUrl, null,
-                ambassador.getInstituteId(), S3_RELATIVE_PATH_FOR_AMBASSADOR).getKey();
+        String imageUrl = uploadUtil.uploadFile(mediaUrl, null, ambassador.getInstituteId(),
+                S3_RELATIVE_PATH_FOR_AMBASSADOR, AwsConfig.getS3ExploreBucketName(),
+                GoogleConfig.getCampusCredentialFileName(),
+                GoogleConfig.getExploreCredentialFolderPath()).getKey();
         if (Objects.nonNull(imageUrl)) {
             ambassador.setImageUrl(imageUrl);
             return true;

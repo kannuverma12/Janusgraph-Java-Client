@@ -32,7 +32,9 @@ public class SellerPanelResponse {
         try {
             orderId = formData.getFormFulfilment().getOrderId();
             date = formData.getFormFulfilment().getCreatedDate();
-            amount = formData.getCandidateDetails().getAmount();
+            if (formData.getCandidateDetails() != null) {
+                amount = formData.getCandidateDetails().getAmount();
+            }
             status = formData.getStatus();
         } catch (Exception e) {
             throw e;

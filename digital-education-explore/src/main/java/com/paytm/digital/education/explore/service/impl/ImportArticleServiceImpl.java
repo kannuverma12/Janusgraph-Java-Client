@@ -1,15 +1,18 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.paytm.digital.education.config.AwsConfig;
+import com.paytm.digital.education.config.GoogleConfig;
 import com.paytm.digital.education.explore.database.entity.Article;
 import com.paytm.digital.education.explore.database.entity.FailedArticle;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.service.ImportDataService;
 import com.paytm.digital.education.explore.service.helper.CampusEngagementHelper;
-import com.paytm.digital.education.explore.utility.GoogleDriveUtil;
+import com.paytm.digital.education.utility.GoogleDriveUtil;
 import com.paytm.digital.education.explore.xcel.model.XcelArticle;
 import com.paytm.digital.education.utility.JsonUtils;
+import com.paytm.digital.education.utility.UploadUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -53,6 +56,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.INS
 public class ImportArticleServiceImpl implements ImportDataService {
     private CommonMongoRepository  commonMongoRepository;
     private CampusEngagementHelper campusEngagementHelper;
+    private UploadUtil             uploadUtil;
 
     /*
      ** Import the data from the spreadsheet
@@ -65,7 +69,9 @@ public class ImportArticleServiceImpl implements ImportDataService {
         double startRow = (double) propertyMap.get(ARTICLE_START_ROW);
         String dataRangeTemplate = (String) propertyMap.get(ARTICLE_DATA_RANGE_TEMPLATE);
         List<Object> sheetArticleData = GoogleDriveUtil.getDataFromSheet(sheetId,
-                MessageFormat.format(dataRangeTemplate, startRow), headerRange);
+                MessageFormat.format(dataRangeTemplate, startRow), headerRange,
+                GoogleConfig.getCampusCredentialFileName(),
+                GoogleConfig.getExploreCredentialFolderPath());
         if (Objects.nonNull(sheetArticleData)) {
             int totalNumberOfData = sheetArticleData.size();
             List<Object> failedArticles = new ArrayList<>();
@@ -154,8 +160,11 @@ public class ImportArticleServiceImpl implements ImportDataService {
      ** Set the docs url when successfully uploaded and return true else false
      */
     private boolean setDocsFields(Article article, String pdfUrl, List<Object> failedDataList) {
-        String relativeUrl = campusEngagementHelper.uploadFile(pdfUrl, null,
-                article.getInstituteId(), S3_RELATIVE_PATH_FOR_ARTICLE).getKey();
+        String relativeUrl = uploadUtil.uploadFile(pdfUrl, null,
+                article.getInstituteId(), S3_RELATIVE_PATH_FOR_ARTICLE,
+                AwsConfig.getS3ExploreBucketName(), GoogleConfig.getCampusCredentialFileName(),
+                GoogleConfig.getExploreCredentialFolderPath())
+                .getKey();
         if (Objects.nonNull(relativeUrl)) {
             article.setArticlePdf(relativeUrl);
             return true;

@@ -23,5 +23,9 @@ public interface FblConstants {
     String PREDICTOR_INVOICE    = "predictor-invoice";
     String C360_API_TOKEN       = "x-api-token";
     String CONTENT_TYPE         = "Content-Type";
+    String MAX_USAGE            = "maxUsage";
+    String SERVICE              = "service";
+    String PREDICTOR            = "predictor";
+    String PREDICTOR_S3_RELATIVE_PATH = "predictor";
 
 }

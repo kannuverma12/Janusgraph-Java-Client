@@ -1,6 +1,5 @@
 package com.paytm.digital.education.explore.database.entity;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -9,7 +8,6 @@ import java.util.Date;
 
 @Data
 @Document(collection = "failed_article")
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class FailedArticle {
     @Field("article_title")
     private String articleTitle;

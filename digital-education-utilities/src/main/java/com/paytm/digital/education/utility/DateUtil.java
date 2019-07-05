@@ -1,5 +1,6 @@
 package com.paytm.digital.education.utility;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -56,5 +57,20 @@ public class DateUtil {
 
     public static int getCurrentYear() {
         return Calendar.getInstance().get(Calendar.YEAR);
+    }
+
+    public static Date getCurrentDate() {
+        return new Date();
+    }
+
+    public static Date convertDateFormat(String currentPattern, String newPattern,
+            String dateString)
+            throws
+            ParseException {
+        DateFormat formatter = new SimpleDateFormat(currentPattern);
+        Date date = formatter.parse(dateString);
+        SimpleDateFormat newFormat = new SimpleDateFormat(newPattern);
+        String finalString = newFormat.format(date);
+        return newFormat.parse(finalString);
     }
 }

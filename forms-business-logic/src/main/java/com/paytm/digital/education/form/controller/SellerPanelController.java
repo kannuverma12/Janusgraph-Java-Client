@@ -15,21 +15,21 @@ import com.paytm.digital.education.form.service.SellerPanelService;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @AllArgsConstructor
@@ -41,6 +41,9 @@ public class SellerPanelController {
 
 
     @GetMapping("/v1/orders")
+    @CrossOrigin(origins = {"http://localhost:8080", "http://merchant-dev.paytm.com", "http://fe.paytm.com",
+            "http://staging.paytm.com", "http://beta.paytm.com", "http://paytm.com", "https://seller.paytm.com",
+            "https://seller-dev.paytm.com"}, allowCredentials = "true")
     public ResponseEntity<Object> getInfo(
             @RequestParam(name = "order_ids", required = false) List<Long> orderIds,
 
@@ -60,9 +63,6 @@ public class SellerPanelController {
 
         String merchantId = authService.getMerchantId().toString();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Access-Control-Allow-Credentials", "true");
-
         validateRequestOrderStartDate(orderIds, startDate);
 
         if (endDate == null) {
@@ -76,7 +76,8 @@ public class SellerPanelController {
                         getSellerPanelResponse(sellerPanelService.getInfoOnOrderIds(
                                 merchantId, orderIds, startDate, endDate));
 
-                return new ResponseEntity<>(new ResponseData<SellerPanelResponse>(sellerPanelResponses), HttpStatus.OK);
+                return new ResponseEntity<>(new ResponseData<SellerPanelResponse>(sellerPanelResponses),
+                        HttpStatus.OK);
 
             } else if (startDate != null) {
                 ResponseData<FormData> response = sellerPanelService
@@ -92,22 +93,26 @@ public class SellerPanelController {
                 );
 
                 responseData.setCount(response.getCount());
-                return new ResponseEntity<>(responseData, headers, HttpStatus.OK);
+                return new ResponseEntity<>(responseData, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(
                         "{\"statusCode:\": 400 , \"error:\" \"Enter either orderIds or startDate.\"}",
-                        headers, HttpStatus.BAD_REQUEST);
+                        HttpStatus.BAD_REQUEST);
             }
         } catch (Exception e) {
+
             return new ResponseEntity<>(
-                    "{\"statusCode:\": 500 , \"error:\" \"Some error occurred , please try again later.\"}",
-                    headers, HttpStatus.BAD_REQUEST);
+                    "{\"statusCode:\": 500 , \"error\" : \"Some error occurred , please try again later.\"}",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping("/v1/orders/download")
+    @CrossOrigin(origins = {"http://localhost:8080", "http://merchant-dev.paytm.com", "http://fe.paytm.com",
+            "http://staging.paytm.com", "http://beta.paytm.com", "http://paytm.com", "https://seller.paytm.com",
+            "https://seller-dev.paytm.com"}, allowCredentials = "true")
     public void downloadOrders(
-            @RequestParam(name = "order_ids") List<Long> orderIds,
+            @RequestParam(name = "order_ids", required = false) List<Long> orderIds,
 
             @RequestParam(name = "start_date", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
@@ -126,27 +131,42 @@ public class SellerPanelController {
 
         validateRequestOrderStartDate(orderIds, startDate);
 
-
         PrintWriter writer = response.getWriter();
         response.setHeader("Content-disposition", "attachment; filename=response.csv");
-        response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setContentType("text/csv");
 
         StatefulBeanToCsv<MerchantFormData> sbc = new StatefulBeanToCsvBuilder<MerchantFormData>(writer)
                 .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
                 .build();
 
-        List<MerchantFormData> formDataList = sellerPanelService
-                .getInfoOnOrderIds(authService.getMerchantId().toString(), orderIds, startDate, endDate)
-                .stream()
-                .map(MerchantFormData::new)
-                .collect(Collectors.toList());
-
-        sbc.write(formDataList);
+        List<MerchantFormData> formDataList = null;
+        if (orderIds != null && orderIds.size() > 0) {
+            formDataList = sellerPanelService
+                    .getInfoOnOrderIds(authService.getMerchantId().toString(), orderIds, startDate, endDate)
+                    .stream()
+                    .map(MerchantFormData::new)
+                    .collect(Collectors.toList());
+        } else if (startDate != null) {
+            if (endDate == null) {
+                endDate = new Date();
+            }
+            formDataList = sellerPanelService
+                    .getInfoOnDate(authService.getMerchantId().toString(), startDate, endDate, offset, limit)
+                    .getData()
+                    .stream()
+                    .map(MerchantFormData::new)
+                    .collect(Collectors.toList());
+        }
+        if (formDataList != null) {
+            sbc.write(formDataList);
+        }
         writer.close();
     }
 
     @GetMapping(value = "/v1/orders/bulk-download", produces = "application/json")
+    @CrossOrigin(origins = {"http://localhost:8080", "http://merchant-dev.paytm.com", "http://fe.paytm.com",
+            "http://staging.paytm.com", "http://beta.paytm.com", "http://paytm.com", "https://seller.paytm.com",
+            "https://seller-dev.paytm.com"}, allowCredentials = "true")
     public ResponseEntity<Object> bulkDownloadOrders(
             @RequestParam(name = "order_ids", required = false) List<Long> orderIds,
 
@@ -162,6 +182,7 @@ public class SellerPanelController {
         if (authService.getMerchantId() == null) {
             throw new EducationException(ErrorEnum.USER_IS_NOT_MERCHANT, "Incorrect Request");
         }
+
         if (endDate == null) {
             endDate = new Date();
         }
@@ -169,9 +190,6 @@ public class SellerPanelController {
         String merchantId = authService.getMerchantId().toString();
 
         ValidationResult result = validateRequestOrderStartDate(orderIds, startDate);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Access-Control-Allow-Credentials", "true");
 
         List<Long> claculatedOrderIds = new ArrayList<>();
         if (result == ValidationResult.ONLY_DATE_RANGE || result == ValidationResult.ONLY_ORDER) {
@@ -184,13 +202,13 @@ public class SellerPanelController {
         } else {
             return new ResponseEntity<>(
                     "{\"statusCode:\": 400 , \"error:\" \"Enter either orderIds or startDate.\"}",
-                    headers, HttpStatus.BAD_REQUEST);
+                    HttpStatus.BAD_REQUEST);
         }
 
         if (orderIds != null && claculatedOrderIds.size() != orderIds.size() || claculatedOrderIds.isEmpty()) {
             return new ResponseEntity<>(
                     "{\"statusCode:\": 404, \"error\": \"Order data not exist.\"}",
-                    headers, HttpStatus.NOT_FOUND);
+                    HttpStatus.NOT_FOUND);
         }
 
         for (Long orderId : claculatedOrderIds) {
@@ -200,7 +218,7 @@ public class SellerPanelController {
         }
 
         return new ResponseEntity<>(
-                "{\"status\": \"File will be available on File center to download.\"}", headers,
+                "{\"status\": \"File will be available on File center to download.\"}",
                 HttpStatus.OK
         );
     }

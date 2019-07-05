@@ -19,6 +19,7 @@ import com.paytm.digital.education.explore.service.impl.ExamListServiceImpl;
 import com.paytm.digital.education.explore.validators.UrlParamsValidator;
 import com.paytm.digital.education.service.notification.NotificationServiceImpl;
 import com.paytm.digital.education.utility.JsonUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -59,6 +60,11 @@ public class ExploreController {
     @GetMapping("/ping")
     public String ping() {
         return "pong";
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/health")
+    public ResponseEntity health() {
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.POST, path = "/auth/v1/subscribe")

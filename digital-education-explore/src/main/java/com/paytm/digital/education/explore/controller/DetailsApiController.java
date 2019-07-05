@@ -4,6 +4,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EDU
 
 import java.util.List;
 
+import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.response.dto.detail.CourseDetail;
 import com.paytm.digital.education.explore.service.impl.CourseDetailServiceImpl;
 import org.springframework.validation.annotation.Validated;
@@ -55,10 +56,12 @@ public class DetailsApiController {
             @PathVariable("instituteName") @NotBlank String instituteName,
             @RequestParam(name = "field_group", required = false) String fieldGroup,
             @RequestParam(name = "fields", required = false) List<String> fields,
-            @RequestHeader(value = "x-user-id", required = false) Long userId) throws Exception {
+            @RequestHeader(value = "x-user-id", required = false) Long userId,
+            @RequestHeader(value = "request-client", required = false) Client client)
+            throws Exception {
         exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
         return instituteDetailService
-                .getDetail(instituteId, instituteName, userId, fieldGroup, fields);
+                .getDetail(instituteId, instituteName, userId, fieldGroup, fields, client);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/course/{courseId}/{courseName}")
