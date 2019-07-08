@@ -29,6 +29,9 @@ public class Section {
     private Layout layout;
     private Action action;
 
+    @Field("sub_label")
+    private String subLabel;
+
     @Field("view_all_label") @JsonProperty("view_all_label")
     private String viewAllLabel;
 
