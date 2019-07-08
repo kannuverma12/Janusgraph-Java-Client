@@ -72,10 +72,8 @@ public class PageServiceImpl implements PageService {
                     case LOCATIONS:
                         logoFieldName = ICON;
                         break;
-                    case BANNER_MID:
-                        logoFieldName = IMAGE_URL;
-                        break;
                     default:
+                        logoFieldName = IMAGE_URL;
                 }
                 if (Objects.nonNull(logoFieldName)) {
                     for (Map<String, Object> item : section.getItems()) {
