@@ -57,7 +57,7 @@ public class DetailsApiController {
             @RequestParam(name = "field_group", required = false) String fieldGroup,
             @RequestParam(name = "fields", required = false) List<String> fields,
             @RequestHeader(value = "x-user-id", required = false) Long userId,
-            @RequestHeader(value = "request-client", required = false) Client client)
+            @RequestHeader(value = "fe_client", required = false) Client client)
             throws Exception {
         exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
         return instituteDetailService
