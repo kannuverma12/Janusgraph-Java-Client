@@ -32,10 +32,11 @@ import com.paytm.digital.education.explore.response.dto.detail.Unit;
 import com.paytm.digital.education.explore.response.dto.detail.Syllabus;
 import com.paytm.digital.education.explore.response.dto.detail.Topic;
 import com.paytm.digital.education.explore.response.dto.detail.Location;
+import com.paytm.digital.education.explore.service.helper.ExamLogoHelper;
 import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
-import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
-import com.paytm.digital.education.explore.service.helper.DetailPageSectionHelper;
 import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
+import com.paytm.digital.education.explore.service.helper.DetailPageSectionHelper;
+import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.service.helper.WidgetsDataHelper;
 import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
@@ -47,16 +48,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.HashMap;
 
 @AllArgsConstructor
 @Service
 public class ExamDetailServiceImpl {
 
     private CommonMongoRepository   commonMongoRepository;
+    private ExamLogoHelper          examLogoHelper;
     private ExamInstanceHelper      examInstanceHelper;
     private PropertyReader          propertyReader;
     private DerivedAttributesHelper derivedAttributesHelper;
@@ -117,7 +119,7 @@ public class ExamDetailServiceImpl {
         ExamDetail examDetail = buildResponse(exam);
         return examDetail;
     }
-
+    
     private List<Section> getSectionsFromEntitySyllabus(
             List<com.paytm.digital.education.explore.database.entity.Syllabus> entitySyllabusList) {
         List<Section> sectionList = new ArrayList<>();
@@ -273,6 +275,7 @@ public class ExamDetailServiceImpl {
         examDetail.setApplicationProcess("");
         examDetail.setCounselling("");
         examDetail.setResult("");
+        examDetail.setLogoUrl(examLogoHelper.getLogoUrl(exam.getExamId(), exam.getLogo()));
         examDetail.setExamCenters(getExamCenters(exam.getInstances()));
         List<Event> importantDates = new ArrayList<>();
         int instanceIndex = -1;
