@@ -43,6 +43,9 @@ public class MerchantFormData {
     @Field("examType")
     private String examType;
 
+    @Field("merchantCandidateId")
+    private String registrationNumber;
+
     public MerchantFormData(FormData formData) {
         String format = "dd-MM-yyyy HH:mm:ss";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
@@ -70,5 +73,6 @@ public class MerchantFormData {
             this.amount = formData.getCandidateDetails().getAmount();
             this.examType = formData.getCandidateDetails().getExamType();
         }
+        this.registrationNumber = formData.getMerchantCandidateId();
     }
 }
