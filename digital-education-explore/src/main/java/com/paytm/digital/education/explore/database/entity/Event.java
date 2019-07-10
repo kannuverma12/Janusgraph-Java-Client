@@ -2,6 +2,8 @@ package com.paytm.digital.education.explore.database.entity;
 
 import java.util.Date;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.data.mongodb.core.mapping.Field;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -16,34 +18,37 @@ import lombok.ToString;
 public class Event {
 
     @Field("month")
-    private String       monthDate;
+    private String monthDate;
 
-    @Field("eventId")
-    private long         eventId;
+    @Field("event_id")
+    private long eventId;
 
     @Field("modes")
     private List<String> modes;
 
     @Field("type")
-    private String       type;
+    private String type;
 
     @Field("other_event_label")
-    private String       otherEventLabel;
+    private String otherEventLabel;
 
     @Field("certainty")
     @JsonProperty("certainty")
-    private String       certainty;
+    private String certainty;
 
     @Field("date")
     @JsonProperty("date")
-    private Date         date;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date date;
 
     @Field("date_range_start")
     @JsonProperty("date_range_start")
-    private Date         dateRangeStart;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date dateRangeStart;
 
     @Field("date_range_end")
     @JsonProperty("date_range_end")
-    private Date         dateRangeEnd;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date dateRangeEnd;
 
 }

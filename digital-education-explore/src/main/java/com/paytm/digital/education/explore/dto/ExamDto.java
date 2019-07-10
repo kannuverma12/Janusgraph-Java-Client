@@ -1,20 +1,20 @@
 package com.paytm.digital.education.explore.dto;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.mongodb.core.mapping.Field;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.paytm.digital.education.explore.enums.PublishStatus;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Data
-@ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ExamDto {
 
     @JsonProperty("conducting_body")
@@ -62,13 +62,13 @@ public class ExamDto {
     @JsonProperty("published_status")
     private PublishStatus publishedStatus;
 
-    @JsonProperty("documents_counselling")
+    @JsonProperty("subexams")
     private ArrayList<SubExamDto> subExams;
 
     @JsonProperty("official_url")
     private String officialUrl;
 
-    @JsonProperty("exam_duration")
+    @JsonProperty("duration_hours")
     private Float examDuration;
 
     @JsonProperty("syllabus")
@@ -80,4 +80,14 @@ public class ExamDto {
 
     @JsonProperty("logo")
     private String logo;
+
+    @JsonProperty("application_fees")
+    private List<ApplicationFeeDto> applicationFees;
+
+    @JsonProperty("last_updated")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date lastUpdated;
+
+    @JsonProperty("status")
+    private String status;
 }

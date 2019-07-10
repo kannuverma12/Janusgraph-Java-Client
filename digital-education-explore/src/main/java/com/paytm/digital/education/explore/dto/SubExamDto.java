@@ -1,15 +1,15 @@
 package com.paytm.digital.education.explore.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import lombok.ToString;
 
 import java.util.List;
 
 @Data
-@ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SubExamDto {
 
     @JsonProperty("duration_hours")
@@ -26,5 +26,8 @@ public class SubExamDto {
 
     @JsonProperty("sub_exam_name")
     private String subExamName;
+
+    @JsonProperty("published_status")
+    private String publishedStatus;
 
 }

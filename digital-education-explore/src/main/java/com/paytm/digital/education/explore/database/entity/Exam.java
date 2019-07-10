@@ -1,8 +1,10 @@
 package com.paytm.digital.education.explore.database.entity;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -85,6 +87,16 @@ public class Exam {
     @Field("logo")
     @JsonProperty("logo")
     private String logo;
+
+    @Field("application_fees")
+    private List<ApplicationFee> applicationFees;
+
+    @Field("last_updated")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date lastUpdated;
+
+    @Field("status")
+    private String status;
 
     public Exam(long examId) {
         this.examId = examId;

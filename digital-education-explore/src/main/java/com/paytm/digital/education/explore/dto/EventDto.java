@@ -8,10 +8,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import lombok.ToString;
 
 @Data
-@ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EventDto {
@@ -19,7 +17,7 @@ public class EventDto {
     @JsonProperty("month")
     private String monthDate;
 
-    @JsonProperty("eventId")
+    @JsonProperty("event_id")
     private long eventId;
 
     @JsonProperty("modes")
