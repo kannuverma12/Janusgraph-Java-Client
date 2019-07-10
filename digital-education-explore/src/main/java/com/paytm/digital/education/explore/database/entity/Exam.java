@@ -82,6 +82,10 @@ public class Exam {
     @Field("domains")
     private List<String> domains;
 
+    @Field("logo")
+    @JsonProperty("logo")
+    private String logo;
+
     public Exam(long examId) {
         this.examId = examId;
     }

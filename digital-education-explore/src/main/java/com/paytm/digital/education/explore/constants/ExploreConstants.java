@@ -250,10 +250,11 @@ public interface ExploreConstants {
     int    MAX_STREAMS               = 2;
     int    COLLEGES_PER_STREAM       = 2;
 
-    String COLLEGE_FOCUS = "colleges_focus";
-    String TOP_COLLEGES  = "top_colleges";
-    String ICON          = "icon";
-    String LOCATIONS     = "locations";
-    String BANNER_MID    = "banner_mid";
-    String IMAGE_URL     = "image_url";
+    String COLLEGE_FOCUS   = "colleges_focus";
+    String TOP_COLLEGES    = "top_colleges";
+    String ICON            = "icon";
+    String LOCATIONS       = "locations";
+    String BANNER_MID      = "banner_mid";
+    String IMAGE_URL       = "image_url";
+    String DUMMY_EXAM_ICON = "/engineering_archi.svg";
 }

@@ -268,17 +268,17 @@ function transformCollege(superDoc) {
         female = true;
       }
     }
-    if(male){
-      transformedCollege.institute_gender.push('male');
-    }
 
-    if(female){
+    if(female && male){
+          transformedCollege.institute_gender.push('Co-Ed');
+    }
+    else if(male){
+      transformedCollege.institute_gender.push('male');
+    } else if(female){
       transformedCollege.institute_gender.push('female');
     }
 
-    if(female && male){
-      transformedCollege.institute_gender.push('Co-Ed');
-    }
+
   }
 
   if (superDoc.facilities) {
