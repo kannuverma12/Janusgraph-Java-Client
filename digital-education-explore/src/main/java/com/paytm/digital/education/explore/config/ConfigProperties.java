@@ -8,6 +8,7 @@ import lombok.Getter;
 @Getter
 public class ConfigProperties {
 
+    private static String logoExamPrefix;
     private static String mediaBaseUrl;
     private static String logoImagePrefix;
     private static String facilitiesIconPrefix;
@@ -24,6 +25,11 @@ public class ConfigProperties {
     @Value("${institute.gallery.image.prefix}")
     public void setLogoImagePrefix(String logoPrefix) {
         logoImagePrefix = logoPrefix;
+    }
+
+    @Value("${exam.logo.prefix}")
+    public void setLogoExamPrefix(String logoPrefix) {
+        logoExamPrefix = logoPrefix;
     }
 
     @Value("${institute.facilities.icon.prefix}")
@@ -53,6 +59,10 @@ public class ConfigProperties {
 
     public static String getBaseUrl() {
         return mediaBaseUrl;
+    }
+
+    public static String getLogoExamPrefix() {
+        return logoExamPrefix;
     }
 
     public static String getLogoImagePrefix() {
