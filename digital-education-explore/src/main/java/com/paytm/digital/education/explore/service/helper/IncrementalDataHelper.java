@@ -6,12 +6,19 @@ import com.paytm.digital.education.dto.SftpConfig;
 import com.paytm.digital.education.explore.config.DataIngestionSftpConfig;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.service.SftpService;
+import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -95,5 +102,20 @@ public class IncrementalDataHelper {
             return false;
         }
         return true;
+    }
+
+    public <T> List<T> parseAsStream(final InputStream stream, final Class<T> entryClass) {
+        List<T> result = new ArrayList<>();
+        try {
+            String line;
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
+            while ((line = bufferedReader.readLine()) != null) {
+                T convertedValue = JsonUtils.fromJson(line, entryClass);
+                result.add(convertedValue);
+            }
+        } catch (IOException e) {
+            System.err.println("Error: " + e);
+        }
+        return result;
     }
 }

@@ -36,7 +36,7 @@ public class ExamDto {
     private Integer frequencyOfConduct;
 
     @JsonProperty("id")
-    private Long id;
+    private Long examId;
 
     @JsonProperty("instances")
     private List<InstanceDto> instances;

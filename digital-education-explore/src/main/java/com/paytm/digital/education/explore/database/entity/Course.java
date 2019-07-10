@@ -1,5 +1,6 @@
 package com.paytm.digital.education.explore.database.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.paytm.digital.education.explore.enums.CourseLevel;
@@ -102,4 +103,9 @@ public class Course {
     @Field("cutoffs")
     private List<Cutoff> cutoffs;
 
+    @Field("application_process_url_partner")
+    private String applicationProcessUrlPartner;
+
+    @Field("status")
+    private String status;
 }

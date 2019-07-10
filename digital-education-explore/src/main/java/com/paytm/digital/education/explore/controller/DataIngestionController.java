@@ -18,7 +18,7 @@ public class DataIngestionController {
     private ImportIncrementalDataService importIncrementalDataService;
 
     @RequestMapping(method = RequestMethod.GET, path = "/v1/import/data")
-    public @ResponseBody boolean importData() {
+    public @ResponseBody boolean importData() throws java.io.FileNotFoundException {
         importIncrementalDataService.importData();
         return true;
     }
