@@ -14,6 +14,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EXA
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_DEGREES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_CUTOFF_GENDER;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_CUTOFF_CASTEGROUP;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.ID;
 import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
 import static com.paytm.digital.education.explore.enums.Gender.OTHERS;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_NAME;
@@ -25,6 +26,7 @@ import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.explore.dto.InstituteDto;
 import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.enums.Gender;
@@ -53,6 +55,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -69,6 +72,8 @@ public class InstituteDetailServiceImpl {
 
     private GenderAndCasteGroupHelper        genderAndCasteGroupHelper;
     private Map<String, Map<String, Object>> genderCategoryMap;
+    private TransformInstituteService        transformInstitute;
+
 
     @PostConstruct
     private void setGenderCategoryMap() {
@@ -294,5 +299,35 @@ public class InstituteDetailServiceImpl {
         if (!CollectionUtils.isEmpty(leadEntities)) {
             instituteDetail.setInterested(true);
         }
+    }
+
+    public Integer importData(List<InstituteDto> dtos) {
+        List<Institute> institutes = transformInstitute.transformInstituteDtos(dtos);
+
+        Set<Long> ids =
+                institutes.stream().map(i -> i.getInstituteId()).collect(Collectors.toSet());
+
+        List<String> fields = new ArrayList<>();
+        fields.add(ID);
+        fields.add(INSTITUTE_ID);
+        List<Institute> dbIstitutes = new ArrayList<>();
+        try {
+            dbIstitutes = getInstitutes(new ArrayList<>(ids),fields);
+        } catch (Exception e) {
+            log.error("Error getting data : " + e.getMessage());
+        }
+
+        Map<Long, String> ojbIdToInstIdMap = dbIstitutes.stream()
+                .collect(Collectors.toMap(i -> i.getInstituteId(), i -> i.getId()));
+
+        for (Institute institute : institutes) {
+            Long id = institute.getInstituteId();
+            if (ojbIdToInstIdMap.containsKey(id)) {
+                institute.setId(ojbIdToInstIdMap.get(id));
+            }
+            commonMongoRepository.saveOrUpdate(institute);
+        }
+
+        return institutes.size();
     }
 }
