@@ -27,7 +27,7 @@ public class ImportIncrementalDataService {
     private TransformAndSaveExamService   transformAndSaveExamService;
     private TransformInstituteService     transformInstituteService;
 
-    public boolean importData() throws FileNotFoundException {
+    public boolean importData() {
         Map<String, Boolean> fileInfo = incrementalDataHelper.downloadFileFromSftp();
         if (fileInfo.get(INSTITUTE_FILE_NAME)) {
             List<InstituteDto> instituteDtos =

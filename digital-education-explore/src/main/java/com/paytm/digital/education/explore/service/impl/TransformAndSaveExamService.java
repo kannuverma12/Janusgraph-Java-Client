@@ -24,31 +24,27 @@ public class TransformAndSaveExamService {
     private IncrementalDataHelper incrementalDataHelper;
     private CommonMongoRepository commonMongoRepository;
 
-    public void transformAndSave(List<Exam> examDtos) {
-        List<Long> examIds = new ArrayList<>();
-        List<Exam> exams = examDtos.stream()
-                .map(e2 -> {
-                    Exam exam = new Exam();
-                    BeanUtils.copyProperties(e2, exam);
-                    return exam;
-                })
-                .peek(exam -> examIds
-                        .add(exam.getExamId()))
-                .collect(Collectors.toList());
-        Map<Long, String> map = new HashMap<>();
-        if (!examIds.isEmpty()) {
-            List<Exam> existingCourse =
-                    incrementalDataHelper.getExistingData(Exam.class, EXAM_ID,
-                            examIds);
-            map = existingCourse.stream()
-                    .collect(Collectors.toMap(c -> c.getExamId(), c -> c.getId()));
-        }
-        for (Exam exam : exams) {
-            String id = map.get(exam.getExamId());
-            if (StringUtils.isNotBlank(id)) {
-                exam.setId(id);
+    public void transformAndSave(List<Exam> exams) {
+        try {
+            List<Long> examIds =
+                    exams.stream().map(e2 -> e2.getExamId()).collect(Collectors.toList());
+            Map<Long, String> map = new HashMap<>();
+            if (!examIds.isEmpty()) {
+                List<Exam> existingExams =
+                        incrementalDataHelper.getExistingData(Exam.class, EXAM_ID,
+                                examIds);
+                map = existingExams.stream()
+                        .collect(Collectors.toMap(c -> c.getExamId(), c -> c.getId()));
             }
-            commonMongoRepository.saveOrUpdate(exam);
+            for (Exam exam : exams) {
+                String id = map.get(exam.getExamId());
+                if (StringUtils.isNotBlank(id)) {
+                    exam.setId(id);
+                }
+                commonMongoRepository.saveOrUpdate(exam);
+            }
+        } catch (Exception e) {
+            log.info("Exam ingestion exceptions : " + e.getMessage());
         }
     }
 }
