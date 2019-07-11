@@ -1,6 +1,5 @@
 package com.paytm.digital.education.explore.database.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.paytm.digital.education.explore.enums.CourseLevel;
