@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.explore.enums.CollegeEntityType;
 import lombok.Data;
 import lombok.ToString;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -19,6 +20,7 @@ import java.util.Map;
 @Document
 public class Institute {
 
+    @Id
     @Field("_id")
     @JsonIgnore
     private String id;
