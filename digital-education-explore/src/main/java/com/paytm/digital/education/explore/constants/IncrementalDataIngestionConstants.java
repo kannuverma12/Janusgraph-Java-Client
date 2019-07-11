@@ -12,4 +12,6 @@ public interface IncrementalDataIngestionConstants {
     String NEXT_EXAM_FILE_VERSION          = "next_exam_file_version";
     String DATA_INGESTION                  = "data_ingestion";
     String INCREMENTAL                     = "incremental";
+    String COURSE_IDS                      = "course_ids";
+    String COURSES                         = "courses";
 }

@@ -4,6 +4,7 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.Session;
 import com.paytm.digital.education.dto.SftpConfig;
 import com.paytm.digital.education.explore.config.DataIngestionSftpConfig;
+import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.service.SftpService;
 import com.paytm.digital.education.utility.JsonUtils;
@@ -12,16 +13,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import static com.mongodb.QueryOperators.OR;
 import static com.paytm.digital.education.constant.SftpConstants.CHANNEL_TYPE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSES_FILE_NAME;
@@ -40,8 +45,9 @@ import static com.paytm.digital.education.explore.constants.IncrementalDataInges
 @Service
 @AllArgsConstructor
 public class IncrementalDataHelper {
-    private SftpService    sftpService;
-    private PropertyReader propertyReader;
+    private SftpService           sftpService;
+    private PropertyReader        propertyReader;
+    private CommonMongoRepository commonMongoRepository;
 
     public Map<String, Boolean> downloadFileFromSftp() {
         SftpConfig sftpConfig = new SftpConfig();
@@ -104,10 +110,12 @@ public class IncrementalDataHelper {
         return true;
     }
 
-    public <T> List<T> parseAsStream(final InputStream stream, final Class<T> entryClass) {
+    public <T> List<T> retrieveDataFromFile(String fileName, final Class<T> entryClass) {
         List<T> result = new ArrayList<>();
         try {
             String line;
+            File initialFile = new File(fileName);
+            InputStream stream = new FileInputStream(initialFile);
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
             while ((line = bufferedReader.readLine()) != null) {
                 T convertedValue = JsonUtils.fromJson(line, entryClass);
@@ -118,4 +126,16 @@ public class IncrementalDataHelper {
         }
         return result;
     }
+
+    public  <T> List<T> getExistingData(Class<T> entryClass, String entityField,
+            List<Long> ids) {
+        Map<String, Object> queryObject = new HashMap<>();
+        queryObject.put(entityField, ids);
+        List<String> projectionFields = Arrays.asList(entityField, "_id");
+        List<T> existingData = commonMongoRepository.findAll(queryObject,
+                entryClass,
+                projectionFields, OR);
+        return existingData;
+    }
+
 }
