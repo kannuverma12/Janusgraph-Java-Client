@@ -9,14 +9,13 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.io.FileNotFoundException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSES_FILE_NAME;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.EXAM_FILE_NAME;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.INSTITUTE_FILE_NAME;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.INSTITUTE_FILE_VERSION;
 
 @AllArgsConstructor
 @Service
@@ -35,6 +34,8 @@ public class ImportIncrementalDataService {
                             InstituteDto.class);
             List<Institute> institutes =
                     transformInstituteService.transformInstituteDtos(instituteDtos);
+            // Karan need to update as per his convenience
+            incrementalDataHelper.incrementFileVersion(INSTITUTE_FILE_VERSION);
         }
         if (fileInfo.get(EXAM_FILE_NAME)) {
             List<Exam> examDtos = incrementalDataHelper.retrieveDataFromFile(EXAM_FILE_NAME,

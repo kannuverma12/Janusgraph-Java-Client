@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.EXAM_FILE_VERSION;
 
 @AllArgsConstructor
 @Service
@@ -43,6 +44,7 @@ public class TransformAndSaveExamService {
                 }
                 commonMongoRepository.saveOrUpdate(exam);
             }
+            incrementalDataHelper.incrementFileVersion(EXAM_FILE_VERSION);
         } catch (Exception e) {
             log.info("Exam ingestion exceptions : " + e.getMessage());
         }

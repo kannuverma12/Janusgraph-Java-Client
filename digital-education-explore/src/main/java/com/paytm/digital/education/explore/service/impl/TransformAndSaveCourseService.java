@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_ID;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSES;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSE_FILE_VERSION;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSE_IDS;
 
 @Service
@@ -28,23 +29,28 @@ public class TransformAndSaveCourseService {
     private CommonMongoRepository commonMongoRepository;
 
     public void transformAndSave(List<Course> courseDtos) {
-        Map<String, Object> courseData = transformData(courseDtos);
-        List<Long> courseIds = (List<Long>) courseData.get(COURSE_IDS);
-        List<Course> courses = (List<Course>) courseData.get(COURSES);
-        Map<Long, String> map = new HashMap<>();
-        if (!courseIds.isEmpty()) {
-            List<Course> existingCourse =
-                    incrementalDataHelper.getExistingData(Course.class, COURSE_ID,
-                            courseIds);
-            map = existingCourse.stream()
-                    .collect(Collectors.toMap(c -> c.getCourseId(), c -> c.getId()));
-        }
-        for (Course course : courses) {
-            String id = map.get(course.getCourseId());
-            if (StringUtils.isNotBlank(id)) {
-                course.setId(id);
+        try {
+            Map<String, Object> courseData = transformData(courseDtos);
+            List<Long> courseIds = (List<Long>) courseData.get(COURSE_IDS);
+            List<Course> courses = (List<Course>) courseData.get(COURSES);
+            Map<Long, String> map = new HashMap<>();
+            if (!courseIds.isEmpty()) {
+                List<Course> existingCourse =
+                        incrementalDataHelper.getExistingData(Course.class, COURSE_ID,
+                                courseIds);
+                map = existingCourse.stream()
+                        .collect(Collectors.toMap(c -> c.getCourseId(), c -> c.getId()));
             }
-            commonMongoRepository.saveOrUpdate(course);
+            for (Course course : courses) {
+                String id = map.get(course.getCourseId());
+                if (StringUtils.isNotBlank(id)) {
+                    course.setId(id);
+                }
+                commonMongoRepository.saveOrUpdate(course);
+            }
+            incrementalDataHelper.incrementFileVersion(COURSE_FILE_VERSION);
+        } catch (Exception e) {
+            log.info("Course ingestion exception : " + e.getMessage());
         }
     }
 

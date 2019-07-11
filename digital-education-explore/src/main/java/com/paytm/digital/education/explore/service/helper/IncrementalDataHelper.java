@@ -10,6 +10,10 @@ import com.paytm.digital.education.service.SftpService;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -24,10 +28,15 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Vector;
 
 import static com.mongodb.QueryOperators.OR;
 import static com.paytm.digital.education.constant.SftpConstants.CHANNEL_TYPE;
+import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.ATTRIBUTES;
+import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.COMPONENT;
+import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.KEY;
+import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSES_FILE_NAME;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.DATA_INGESTION;
@@ -136,6 +145,19 @@ public class IncrementalDataHelper {
                 entryClass,
                 projectionFields, OR);
         return existingData;
+    }
+
+    public void incrementFileVersion(String fieldName) {
+        Map<String, Object> queryObject = new HashMap<>();
+        queryObject.put(COMPONENT, EXPLORE_COMPONENT);
+        queryObject.put(NAMESPACE, "data_ingestion");
+        queryObject.put(KEY, "incremental");
+        List<String> fields = Arrays.asList(ATTRIBUTES);
+        Update update = new Update();
+        update.inc(fieldName, 1);
+        FindAndModifyOptions options = new FindAndModifyOptions();
+        options.returnNew(true).upsert(true);
+        commonMongoRepository.findAndModify(queryObject, update, options, Properties.class);
     }
 
 }
