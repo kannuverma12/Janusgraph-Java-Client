@@ -1,14 +1,12 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import com.paytm.digital.education.explore.database.entity.Course;
+import com.paytm.digital.education.explore.database.ingestion.Course;
+import com.paytm.digital.education.explore.database.ingestion.Cutoff;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.explore.dto.CourseDto;
-import com.paytm.digital.education.explore.dto.CutoffDto;
 import com.paytm.digital.education.explore.service.helper.IncrementalDataHelper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,7 +27,7 @@ public class TransformAndSaveCourseService {
     private IncrementalDataHelper incrementalDataHelper;
     private CommonMongoRepository commonMongoRepository;
 
-    public void transformAndSave(List<CourseDto> courseDtos) {
+    public void transformAndSave(List<Course> courseDtos) {
         Map<String, Object> courseData = transformData(courseDtos);
         List<Long> courseIds = (List<Long>) courseData.get(COURSE_IDS);
         List<Course> courses = (List<Course>) courseData.get(COURSES);
@@ -50,15 +48,14 @@ public class TransformAndSaveCourseService {
         }
     }
 
-    private Map<String, Object> transformData(List<CourseDto> courseDtos) {
+    private Map<String, Object> transformData(List<Course> courses) {
         Map<String, Object> response = new HashMap<>();
         List<Long> courseIds = new ArrayList<>();
-        List<Course> courses = new ArrayList<>();
-        for (CourseDto courseDto : courseDtos) {
-            List<CutoffDto> cutoffs = courseDto.getCutoffs();
+        for (Course course : courses) {
+            List<Cutoff> cutoffs = course.getCutoffs();
             if (Objects.nonNull(cutoffs)) {
-                List<CutoffDto> cutoffList = new ArrayList<>();
-                for (CutoffDto cutoff : cutoffs) {
+                List<Cutoff> cutoffList = new ArrayList<>();
+                for (Cutoff cutoff : cutoffs) {
                     if (Objects.nonNull(cutoff.getLocation())) {
                         String location = cutoff.getLocation().replace("_", " ");
                         cutoff.setLocation(location);
@@ -74,14 +71,10 @@ public class TransformAndSaveCourseService {
                     cutoffList.add(cutoff);
                 }
             }
-            courseDto.setCutoffs(cutoffs);
-            Course course = new Course();
-            BeanUtils.copyProperties(courseDto, course);
-            courses.add(course);
-            courseIds.add(course.getCourseId());
+            course.setCutoffs(cutoffs);
         }
-        response.put("course_ids", courseIds);
-        response.put("courses", courses);
+        response.put(COURSE_IDS, courseIds);
+        response.put(COURSES, courses);
         return response;
     }
 }

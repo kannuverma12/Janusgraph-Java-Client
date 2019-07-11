@@ -1,8 +1,7 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import com.paytm.digital.education.explore.database.entity.Exam;
+import com.paytm.digital.education.explore.database.ingestion.Exam;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.explore.dto.ExamDto;
 import com.paytm.digital.education.explore.service.helper.IncrementalDataHelper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +24,7 @@ public class TransformAndSaveExamService {
     private IncrementalDataHelper incrementalDataHelper;
     private CommonMongoRepository commonMongoRepository;
 
-    public void transformAndSave(List<ExamDto> examDtos) {
+    public void transformAndSave(List<Exam> examDtos) {
         List<Long> examIds = new ArrayList<>();
         List<Exam> exams = examDtos.stream()
                 .map(e2 -> {
