@@ -150,8 +150,8 @@ public class IncrementalDataHelper {
     public void incrementFileVersion(String fieldName) {
         Map<String, Object> queryObject = new HashMap<>();
         queryObject.put(COMPONENT, EXPLORE_COMPONENT);
-        queryObject.put(NAMESPACE, "data_ingestion");
-        queryObject.put(KEY, "incremental");
+        queryObject.put(NAMESPACE, DATA_INGESTION);
+        queryObject.put(KEY, INCREMENTAL);
         List<String> fields = Arrays.asList(ATTRIBUTES);
         Update update = new Update();
         update.inc(fieldName, 1);
