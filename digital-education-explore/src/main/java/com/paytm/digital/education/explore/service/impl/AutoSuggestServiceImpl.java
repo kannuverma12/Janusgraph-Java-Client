@@ -185,11 +185,12 @@ public class AutoSuggestServiceImpl {
                     }
                     responseDoc.setUrlDisplayName(
                             CommonUtil.convertNameToUrlDisplayName(esDocument.getOfficialName()));
-                    if (StringUtils.isNotBlank(esDocument.getLogo())) {
-                        if (EducationEntity.EXAM.equals(esDocument.getEntityType())) {
-                            responseDoc.setLogo(examLogoHelper
-                                    .getLogoUrl(esDocument.getEntityId(), esDocument.getLogo()));
-                        } else {
+
+                    if (EducationEntity.EXAM.equals(esDocument.getEntityType())) {
+                        responseDoc.setLogo(examLogoHelper
+                                .getLogoUrl(esDocument.getEntityId(), esDocument.getLogo()));
+                    } else {
+                        if (StringUtils.isNotBlank(esDocument.getLogo())) {
                             responseDoc.setLogo(CommonUtil.getLogoLink(esDocument.getLogo()));
                         }
                     }
