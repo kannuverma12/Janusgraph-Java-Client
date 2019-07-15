@@ -107,6 +107,7 @@ public class RecentSearchesServiceImpl implements RecentSearchesSerivce {
         elasticRequest.setQueryTerm(term);
         elasticRequest.setOffSet(DEFAULT_OFFSET);
         elasticRequest.setLimit(size);
+        elasticRequest.setSearchRequest(true);
         elasticRequest.setAggregationRequest(false);
 
         FilterField[] filterFields = new FilterField[1];
