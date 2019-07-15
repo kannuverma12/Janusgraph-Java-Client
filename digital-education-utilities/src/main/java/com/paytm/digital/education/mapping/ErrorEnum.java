@@ -85,7 +85,9 @@ public enum ErrorEnum {
             HttpStatus.BAD_REQUEST, 3),
     ORDER_ID_AND_EOD_BOTH_CANNOT_BE_NULL(4034, "Both order id and eod cannot be null",
             HttpStatus.BAD_REQUEST, 0),
-    INVALID_EOD(4035, "provided eod is invalid", HttpStatus.BAD_REQUEST, 0);
+    INVALID_EOD(4035, "provided eod is invalid", HttpStatus.BAD_REQUEST, 0),
+    BULK_REQUEST_LIMIT_EXCEEDED(4036, "Bulk request size should be less than 200.",
+            HttpStatus.BAD_REQUEST, 0);
 
     private final int        internalCode;
     private final String     externalMessage;
