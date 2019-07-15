@@ -258,4 +258,5 @@ public interface ExploreConstants {
     String BANNER_MID      = "banner_mid";
     String IMAGE_URL       = "image_url";
     String DUMMY_EXAM_ICON = "/engineering_archi.svg";
+    String ID                = "id";
 }
