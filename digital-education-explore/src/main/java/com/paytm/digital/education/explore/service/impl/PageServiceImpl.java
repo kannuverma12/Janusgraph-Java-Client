@@ -25,11 +25,12 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.BAN
 import static com.paytm.digital.education.explore.constants.ExploreConstants.COLLEGE_FOCUS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ICON;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.IMAGE_URL;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SUB_ITEMS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LOCATIONS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LOGO;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAMS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP_COLLEGES;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP_EXAMS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP_EXAMS_APP;
 
 @Service
 @AllArgsConstructor
@@ -61,7 +62,7 @@ public class PageServiceImpl implements PageService {
             if (section != null && section.getType() != null) {
                 String logoFieldName = null;
                 switch (section.getType()) {
-                    case TOP_EXAMS:
+                    case TOP_EXAMS_APP:
                     case COLLEGE_FOCUS:
                         logoFieldName = LOGO;
                         break;
@@ -77,10 +78,13 @@ public class PageServiceImpl implements PageService {
                 }
                 if (Objects.nonNull(logoFieldName)) {
                     for (Map<String, Object> item : section.getItems()) {
-                        if (TOP_EXAMS.equals(section.getType())) {
+                        if (TOP_EXAMS_APP.equals(section.getType())) {
                             for (Map.Entry<String, Object> topExamsPerLevel : item.entrySet()) {
+
+                                Map<String, Object> subitems =
+                                        (Map<String, Object>) topExamsPerLevel.getValue();
                                 List<Map<String, String>> topExams =
-                                        (List<Map<String, String>>) topExamsPerLevel.getValue();
+                                        (List<Map<String, String>>) subitems.get(SUB_ITEMS);
                                 for (Map<String, String> topExam : topExams) {
                                     String logo = CommonUtil
                                             .getAbsoluteUrl(topExam.get(logoFieldName),
