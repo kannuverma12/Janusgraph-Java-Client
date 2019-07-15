@@ -76,8 +76,4 @@ public class DetailsApiController {
         return courseDetailService.getDetail(courseId, courseName, userId, fieldGroup, fields);
     }
 
-    @RequestMapping(method = RequestMethod.POST, path = "/auth/v1/institute/importData")
-    public Integer importInstitutes(@RequestBody InstituteImportRequest req) {
-        return instituteDetailService.importData(req.getDtos());
-    }
 }

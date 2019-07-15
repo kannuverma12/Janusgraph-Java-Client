@@ -5,22 +5,67 @@ import com.paytm.digital.education.explore.constants.AWSConstants;
 import com.paytm.digital.education.explore.database.entity.Gallery;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.entity.Ranking;
+import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.dto.InstituteDto;
 import com.paytm.digital.education.explore.dto.RankingDto;
+import com.paytm.digital.education.explore.service.helper.IncrementalDataHelper;
 import com.paytm.digital.education.utility.UploadUtil;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Objects;
+import java.util.Set;
 import java.util.Map;
+import java.util.Objects;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+
+import static com.paytm.digital.education.explore.constants.ExploreConstants.ID;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.EXAM_FILE_VERSION;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.INSTITUTE_FILE_VERSION;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class TransformInstituteService {
-    private UploadUtil uploadUtil;
+    private UploadUtil                 uploadUtil;
+    private InstituteDetailServiceImpl instituteDetailService;
+    private CommonMongoRepository      commonMongoRepository;
+    private IncrementalDataHelper      incrementalDataHelper;
+
+    public Integer transformAndSaveInstituteData(List<InstituteDto> dtos) {
+        List<Institute> institutes = transformInstituteDtos(dtos);
+
+        Set<Long> ids =
+                institutes.stream().map(i -> i.getInstituteId()).collect(Collectors.toSet());
+
+        List<String> fields = new ArrayList<>();
+        fields.add(ID);
+        fields.add(INSTITUTE_ID);
+        List<Institute> dbIstitutes = new ArrayList<>();
+        try {
+            dbIstitutes = instituteDetailService.getInstitutes(new ArrayList<>(ids),fields);
+        } catch (Exception e) {
+            log.error("Error getting data : " + e.getMessage());
+        }
+
+        Map<Long, String> ojbIdToInstIdMap = dbIstitutes.stream()
+                .collect(Collectors.toMap(i -> i.getInstituteId(), i -> i.getId()));
+
+        for (Institute institute : institutes) {
+            Long id = institute.getInstituteId();
+            if (ojbIdToInstIdMap.containsKey(id)) {
+                institute.setId(ojbIdToInstIdMap.get(id));
+            }
+            commonMongoRepository.saveOrUpdate(institute);
+        }
+        incrementalDataHelper.incrementFileVersion(INSTITUTE_FILE_VERSION);
+
+        return institutes.size();
+    }
 
     public List<Institute> transformInstituteDtos(List<InstituteDto> dtos) {
         List<Institute> institutes = new ArrayList<>();

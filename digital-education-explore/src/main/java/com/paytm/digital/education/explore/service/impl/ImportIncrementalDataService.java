@@ -29,13 +29,13 @@ public class ImportIncrementalDataService {
     public boolean importData() {
         Map<String, Boolean> fileInfo = incrementalDataHelper.downloadFileFromSftp();
         if (fileInfo.get(INSTITUTE_FILE_NAME)) {
-            List<InstituteDto> instituteDtos =
-                    incrementalDataHelper.retrieveDataFromFile(INSTITUTE_FILE_NAME,
-                            InstituteDto.class);
-            List<Institute> institutes =
-                    transformInstituteService.transformInstituteDtos(instituteDtos);
-            // Karan need to update as per his convenience
-            incrementalDataHelper.incrementFileVersion(INSTITUTE_FILE_VERSION);
+            List<InstituteDto> instituteDtos = incrementalDataHelper
+                    .retrieveDataFromFile(INSTITUTE_FILE_NAME, InstituteDto.class);
+            if (!instituteDtos.isEmpty()) {
+                Integer institutesUpdated =
+                        transformInstituteService.transformAndSaveInstituteData(instituteDtos);
+                log.info("Imported " + institutesUpdated + " institutes.");
+            }
         }
         if (fileInfo.get(EXAM_FILE_NAME)) {
             List<Exam> examDtos = incrementalDataHelper.retrieveDataFromFile(EXAM_FILE_NAME,

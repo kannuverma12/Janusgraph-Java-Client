@@ -72,7 +72,6 @@ public class InstituteDetailServiceImpl {
 
     private GenderAndCasteGroupHelper        genderAndCasteGroupHelper;
     private Map<String, Map<String, Object>> genderCategoryMap;
-    private TransformInstituteService        transformInstitute;
 
 
     @PostConstruct
@@ -301,33 +300,4 @@ public class InstituteDetailServiceImpl {
         }
     }
 
-    public Integer importData(List<InstituteDto> dtos) {
-        List<Institute> institutes = transformInstitute.transformInstituteDtos(dtos);
-
-        Set<Long> ids =
-                institutes.stream().map(i -> i.getInstituteId()).collect(Collectors.toSet());
-
-        List<String> fields = new ArrayList<>();
-        fields.add(ID);
-        fields.add(INSTITUTE_ID);
-        List<Institute> dbIstitutes = new ArrayList<>();
-        try {
-            dbIstitutes = getInstitutes(new ArrayList<>(ids),fields);
-        } catch (Exception e) {
-            log.error("Error getting data : " + e.getMessage());
-        }
-
-        Map<Long, String> ojbIdToInstIdMap = dbIstitutes.stream()
-                .collect(Collectors.toMap(i -> i.getInstituteId(), i -> i.getId()));
-
-        for (Institute institute : institutes) {
-            Long id = institute.getInstituteId();
-            if (ojbIdToInstIdMap.containsKey(id)) {
-                institute.setId(ojbIdToInstIdMap.get(id));
-            }
-            commonMongoRepository.saveOrUpdate(institute);
-        }
-
-        return institutes.size();
-    }
 }

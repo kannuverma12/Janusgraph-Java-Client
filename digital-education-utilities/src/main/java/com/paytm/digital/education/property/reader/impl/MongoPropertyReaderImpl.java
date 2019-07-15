@@ -51,7 +51,8 @@ public class MongoPropertyReaderImpl implements PropertyReader {
 
     @Override
     @Cacheable(value = "properties", unless = "#result == null", condition = "#key != "
-            + "\"campus_engagement\" and #key != \"coaching_data_ingest\"")
+            + "\"campus_engagement\" and #key != \"coaching_data_ingest\" and #key != "
+            + "\"incremental\"")
     public Map<String, Object> getPropertiesAsMapByKey(String component, String namespace,
             String key) {
         Properties properties = propertyRepository
