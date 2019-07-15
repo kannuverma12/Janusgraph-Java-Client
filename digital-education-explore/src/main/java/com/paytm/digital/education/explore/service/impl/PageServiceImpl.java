@@ -25,6 +25,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.BAN
 import static com.paytm.digital.education.explore.constants.ExploreConstants.COLLEGE_FOCUS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ICON;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.IMAGE_URL;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SUB_ITEMS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LOCATIONS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LOGO;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAMS;
@@ -83,7 +84,7 @@ public class PageServiceImpl implements PageService {
                                 Map<String, Object> subitems =
                                         (Map<String, Object>) topExamsPerLevel.getValue();
                                 List<Map<String, String>> topExams =
-                                        (List<Map<String, String>>) subitems.get("subitems");
+                                        (List<Map<String, String>>) subitems.get(SUB_ITEMS);
                                 for (Map<String, String> topExam : topExams) {
                                     String logo = CommonUtil
                                             .getAbsoluteUrl(topExam.get(logoFieldName),
