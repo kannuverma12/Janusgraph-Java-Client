@@ -2,7 +2,12 @@ package com.paytm.digital.education.explore.service.impl;
 
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
-import com.paytm.digital.education.elasticsearch.models.*;
+import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
+import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
+import com.paytm.digital.education.elasticsearch.models.IndexObject;
+import com.paytm.digital.education.elasticsearch.models.SortField;
+import com.paytm.digital.education.elasticsearch.models.SearchField;
+import com.paytm.digital.education.elasticsearch.models.FilterField;
 import com.paytm.digital.education.elasticsearch.service.ElasticSearchService;
 import com.paytm.digital.education.explore.database.entity.SearchHistory;
 import com.paytm.digital.education.explore.database.repository.SearchHistoryRepository;
@@ -18,10 +23,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Date;
+import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.*;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTOSUGGEST_ANALYZER;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_OFFSET;
 
 @Slf4j
 @Service
@@ -70,13 +81,12 @@ public class RecentSearchesServiceImpl implements RecentSearchesSerivce {
 
     private void ingestAudits(SearchHistory searchHistory) {
 
-        Map<String, IndexObject> indexObjects = new HashMap<>();
-
         IndexObject indexObject = new IndexObject();
         indexObject.setId(searchHistory.getRefId());
         indexObject.setIndex("recent_searches");
         indexObject.setType("education");
         indexObject.setSource(searchHistory);
+        Map<String, IndexObject> indexObjects = new HashMap<>();
         indexObjects.put(indexObject.getId(), indexObject);
         try {
             Map<String, String> bulkResponseFailures = elasticSearchService.ingest(indexObjects);
