@@ -18,11 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.*;
@@ -48,7 +44,8 @@ public class RecentSearchesServiceImpl implements RecentSearchesSerivce {
         searchHistory.setUpdatedAt(new Date());
         searchHistory.setUserId(userId);
         searchHistory.setEducationEntity(educationEntity);
-        searchHistoryRepository.save(searchHistory);
+        ingestAudits(searchHistory);
+
     }
 
     @Override
@@ -58,7 +55,7 @@ public class RecentSearchesServiceImpl implements RecentSearchesSerivce {
         try {
             ElasticResponse<SearchHistory> searchResponse =
                     elasticSearchService.executeSearch(searchRequest, SearchHistory.class);
-            if(!CollectionUtils.isEmpty(searchResponse.getDocuments())) {
+            if (!CollectionUtils.isEmpty(searchResponse.getDocuments())) {
                 buildResponse(recentSearches, searchResponse);
             }
         } catch (IOException e) {
@@ -69,6 +66,26 @@ public class RecentSearchesServiceImpl implements RecentSearchesSerivce {
                     e.getLocalizedMessage());
         }
         return recentSearches;
+    }
+
+    private void ingestAudits(SearchHistory searchHistory) {
+
+        Map<String, IndexObject> indexObjects = new HashMap<>();
+
+        IndexObject indexObject = new IndexObject();
+        indexObject.setId(searchHistory.getRefId());
+        indexObject.setIndex("recent_searches");
+        indexObject.setType("education");
+        indexObject.setSource(searchHistory);
+        indexObjects.put(indexObject.getId(), indexObject);
+        try {
+            Map<String, String> bulkResponseFailures = elasticSearchService.ingest(indexObjects);
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.error("Error in ingesting documents into elasticsearch {}",
+                    e.getLocalizedMessage());
+
+        }
     }
 
     private void buildResponse(List<RecentSearch> recentSearches,
