@@ -16,7 +16,7 @@ public class ExamLogoHelper {
 
     private ExamLogoRepository examLogoRepository;
 
-    public String getLogoUrl(Long examId, String dbLogoUrl) {
+    public String getExamLogoUrl(Long examId, String dbLogoUrl) {
 
         ExamLogo examLogo = examLogoRepository.findByExamId(examId);
         if (Objects.nonNull(examLogo) && StringUtils.isNotBlank(examLogo.getLogo())) {
