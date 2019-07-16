@@ -59,6 +59,7 @@ public class IncrementalDataHelper {
     private CommonMongoRepository commonMongoRepository;
 
     public Map<String, Boolean> downloadFileFromSftp() {
+        log.info("Downloading Files from SFTP.");
         SftpConfig sftpConfig = new SftpConfig();
         sftpConfig.setUsername(DataIngestionSftpConfig.getUsername());
         sftpConfig.setHost(DataIngestionSftpConfig.getHost());
@@ -85,19 +86,22 @@ public class IncrementalDataHelper {
             sftp.connect();
             sftp.cd(DataIngestionSftpConfig.getFilePath());
             if (isFileExists(sftp, currentCourseFileName)) {
+                log.info("Found Course file with name {}",currentCourseFileName);
                 sftp.get(currentCourseFileName, COURSES_FILE_NAME);
                 fileExistFlags.put(COURSES_FILE_NAME, true);
             }
             if (isFileExists(sftp, currentInstituteFileName)) {
+                log.info("Found Institute file with name {}",currentInstituteFileName);
                 sftp.get(currentInstituteFileName, INSTITUTE_FILE_NAME);
                 fileExistFlags.put(INSTITUTE_FILE_NAME, true);
             }
             if (isFileExists(sftp, currentExamFileName)) {
+                log.info("Found Exam file with name {}",currentExamFileName);
                 sftp.get(currentExamFileName, EXAM_FILE_NAME);
                 fileExistFlags.put(EXAM_FILE_NAME, true);
             }
         } catch (Exception e) {
-            log.info("Sftp connection exception : " + e.getMessage());
+            log.error("Sftp connection exception : " + e.getMessage());
         } finally {
             if (sftp != null) {
                 sftp.disconnect();
@@ -113,7 +117,7 @@ public class IncrementalDataHelper {
         try {
             Vector<ChannelSftp.LsEntry> list = sftp.ls(fileName);
         } catch (Exception e) {
-            log.info("Sftp " + fileName + " retrieval exception : " + e.getMessage());
+            log.error("Sftp " + fileName + " retrieval exception : " + e.getMessage());
             return false;
         }
         return true;
@@ -131,6 +135,7 @@ public class IncrementalDataHelper {
                 result.add(convertedValue);
             }
         } catch (IOException e) {
+            log.error("Error retrieving data from file {}", fileName);
             System.err.println("Error: " + e);
         }
         return result;
@@ -148,6 +153,7 @@ public class IncrementalDataHelper {
     }
 
     public void incrementFileVersion(String fieldName) {
+        log.info("Incrementing file version for {}",fieldName);
         Map<String, Object> queryObject = new HashMap<>();
         queryObject.put(COMPONENT, EXPLORE_COMPONENT);
         queryObject.put(NAMESPACE, DATA_INGESTION);
