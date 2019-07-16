@@ -13,7 +13,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.INS
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LOCATIONS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STANDALONE_INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAMS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP_EXAMS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP_EXAMS_APP;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.UGC;
 
 import com.paytm.digital.education.explore.config.ConfigProperties;
@@ -49,7 +49,7 @@ public class CommonUtil {
             case BANNER_MID:
                 urlBuilder.append(ConfigProperties.getBannerPrefix());
                 break;
-            case TOP_EXAMS:
+            case TOP_EXAMS_APP:
                 urlBuilder.append(ConfigProperties.getLogoExamPrefix());
                 break;
             default:
