@@ -16,6 +16,7 @@ public class ConfigProperties {
     private static String streamIconPrefix;
     private static String locationIconPrefix;
     private static String bannerPrefix;
+    private static String rankingLogoPrefix;
 
     @Value("${education.asset.baseurl}")
     public void setBaseUrl(String baseUrl) {
@@ -57,12 +58,21 @@ public class ConfigProperties {
         locationIconPrefix = iconPrefix;
     }
 
+    @Value("${ranking.logo.prefix}")
+    public void setRankingLogoPrefix(String logoPrefix) {
+        rankingLogoPrefix = logoPrefix;
+    }
+
     public static String getBaseUrl() {
         return mediaBaseUrl;
     }
 
     public static String getLogoExamPrefix() {
         return logoExamPrefix;
+    }
+
+    public static String getRankingLogo() {
+        return rankingLogoPrefix;
     }
 
     public static String getLogoImagePrefix() {

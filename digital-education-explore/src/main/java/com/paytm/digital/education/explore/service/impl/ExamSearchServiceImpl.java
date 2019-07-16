@@ -47,7 +47,6 @@ import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.utility.DateUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -182,7 +181,7 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
                 examData.setUrlDisplayName(
                         CommonUtil.convertNameToUrlDisplayName(examSearch.getOfficialName()));
                 examData.setLogoUrl(examLogoHelper
-                        .getLogoUrl(new Long(examSearch.getExamId()), examSearch.getImageLink()));
+                        .getExamLogoUrl(new Long(examSearch.getExamId()), examSearch.getImageLink()));
                 List<String> dataAvailable = new ArrayList<>();
                 if (!CollectionUtils.isEmpty(examSearch.getDataAvailable())) {
                     dataAvailable.addAll(examSearch.getDataAvailable());
