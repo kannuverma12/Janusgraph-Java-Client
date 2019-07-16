@@ -35,6 +35,10 @@ public class Ranking {
     @JsonProperty("source")
     private String source;
 
+    @Field("logo")
+    @JsonProperty("logo")
+    private String logo;
+
     @Field("ranking_type")
     @JsonProperty("ranking_type")
     private String rankingType;

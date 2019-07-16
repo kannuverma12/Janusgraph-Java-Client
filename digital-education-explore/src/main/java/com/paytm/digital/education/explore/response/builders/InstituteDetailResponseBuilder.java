@@ -5,6 +5,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.APP
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OVERALL_RANKING;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.NOTABLE_ALUMNI_PLACEHOLDER;
 import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKING_LOGO;
 
 import com.paytm.digital.education.explore.database.entity.Alumni;
 import com.paytm.digital.education.explore.database.entity.CampusAmbassador;
@@ -244,6 +245,7 @@ public class InstituteDetailResponseBuilder {
         r.setSource(dbRanking.getSource());
         r.setYear(dbRanking.getYear());
         r.setRating(dbRanking.getRating());
+        r.setLogo(CommonUtil.getAbsoluteUrl(dbRanking.getLogo(), RANKING_LOGO));
 
         Map<String, String> streamMap = streamDataHelper.getStreamLabelMap();
         String key = dbRanking.getStream().toLowerCase();

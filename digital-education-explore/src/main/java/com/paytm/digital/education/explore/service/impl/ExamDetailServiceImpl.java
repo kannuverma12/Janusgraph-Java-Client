@@ -275,7 +275,7 @@ public class ExamDetailServiceImpl {
         examDetail.setApplicationProcess("");
         examDetail.setCounselling("");
         examDetail.setResult("");
-        examDetail.setLogoUrl(examLogoHelper.getLogoUrl(exam.getExamId(), exam.getLogo()));
+        examDetail.setLogoUrl(examLogoHelper.getExamLogoUrl(exam.getExamId(), exam.getLogo()));
         examDetail.setExamCenters(getExamCenters(exam.getInstances()));
         List<Event> importantDates = new ArrayList<>();
         int instanceIndex = -1;
