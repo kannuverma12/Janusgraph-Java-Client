@@ -1,6 +1,7 @@
 package com.paytm.digital.education.form.handler;
 
 import com.paytm.digital.education.form.dao.FormDataDao;
+import com.paytm.digital.education.form.dao.PaymentPostingErrorDao;
 import com.paytm.digital.education.form.request.FulfilmentKafkaObject;
 import com.paytm.digital.education.form.request.FulfilmentKafkaPostDataObject;
 import com.paytm.digital.education.form.service.PersonaHttpClientService;
@@ -24,6 +25,8 @@ public class NotifyFulfilmentHandler extends BaseHandler<FulfilmentKafkaObject> 
     private PersonaHttpClientService personaHttpClientService;
 
     private FormDataDao formDataDao;
+
+    private PaymentPostingErrorDao paymentPostingErrorDao;
 
     @Override
     public void handle(FulfilmentKafkaObject fulfilmentKafkaObject) {
@@ -50,6 +53,9 @@ public class NotifyFulfilmentHandler extends BaseHandler<FulfilmentKafkaObject> 
             // todo: send metrics
             log.error("Error updating order status to fulfilment:{}",
                     JsonUtils.toJson(fulfilmentKafkaObject), e);
+            paymentPostingErrorDao.upsertRecord(fulfilmentKafkaObject.getRefId(),
+                    "Error updating order status to fulfilment: " + JsonUtils
+                            .toJson(fulfilmentKafkaObject) + "Exception: " + e, null, null);
         }
     }
 
