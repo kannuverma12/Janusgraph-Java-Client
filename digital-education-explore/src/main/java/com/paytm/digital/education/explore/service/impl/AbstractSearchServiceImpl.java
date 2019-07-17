@@ -13,11 +13,12 @@ import com.paytm.digital.education.elasticsearch.models.Operator;
 import com.paytm.digital.education.elasticsearch.models.SearchField;
 import com.paytm.digital.education.elasticsearch.models.SortField;
 import com.paytm.digital.education.exception.EducationException;
-import com.paytm.digital.education.explore.es.model.ClassifierSearchDoc;
-import com.paytm.digital.education.explore.es.model.CourseSearch;
-import com.paytm.digital.education.explore.es.model.ExamSearch;
+import com.paytm.digital.education.explore.es.model.SearchHistory;
 import com.paytm.digital.education.explore.es.model.InstituteSearch;
+import com.paytm.digital.education.explore.es.model.CourseSearch;
 import com.paytm.digital.education.explore.es.model.NestedCourseSearch;
+import com.paytm.digital.education.explore.es.model.ExamSearch;
+import com.paytm.digital.education.explore.es.model.ClassifierSearchDoc;
 import com.paytm.digital.education.explore.request.dto.search.Classification;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.builders.SearchResponseBuilder;
@@ -48,11 +49,11 @@ public abstract class AbstractSearchServiceImpl {
 
     protected Map<Class, Map<String, String>> hierarchyMap;
     @Autowired
-    private ISearchService searchService;
+    private   ISearchService                  searchService;
     @Autowired
-    private SearchResponseBuilder searchResponseBuilder;
+    private   SearchResponseBuilder           searchResponseBuilder;
     @Autowired
-    private PropertyReader propertyReader;
+    private   PropertyReader                  propertyReader;
 
     @PostConstruct
     private void generateLevelMap() {
@@ -67,6 +68,8 @@ public abstract class AbstractSearchServiceImpl {
                 HierarchyIdentifierUtils.getClassHierarchy(CourseSearch.class));
         hierarchyMap.put(ClassifierSearchDoc.class,
                 HierarchyIdentifierUtils.getClassHierarchy(ClassifierSearchDoc.class));
+        hierarchyMap.put(SearchHistory.class,
+                HierarchyIdentifierUtils.getClassHierarchy(SearchHistory.class));
     }
 
 
