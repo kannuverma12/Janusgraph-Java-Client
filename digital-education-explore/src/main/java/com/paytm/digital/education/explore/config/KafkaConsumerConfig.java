@@ -28,7 +28,7 @@ public class KafkaConsumerConfig implements KafkaListenerConfigurer {
     private String groupId;
 
     @Value("${kafka.consumer.concurrent.threads}")
-    private int    KAFKA_CONSUMER_CONCURRENT_THREAD;
+    private int kafkaConsumerConcurrentThreads;
 
     @Bean(name = "explore-consumer-config")
     Map<String, Object> consumerConfigs() {
@@ -52,10 +52,11 @@ public class KafkaConsumerConfig implements KafkaListenerConfigurer {
     }
 
     @Bean(name = "explore-listener")
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory() {
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>>
+        kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, String> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConcurrency(KAFKA_CONSUMER_CONCURRENT_THREAD);
+        factory.setConcurrency(kafkaConsumerConcurrentThreads);
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
         factory.setConsumerFactory(consumerFactory());
         factory.setBatchListener(true);

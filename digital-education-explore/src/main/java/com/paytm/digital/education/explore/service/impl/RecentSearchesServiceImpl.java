@@ -55,7 +55,8 @@ public class RecentSearchesServiceImpl implements RecentSearchesSerivce {
         searchHistory.setUserId(userId);
         searchHistory.setEducationEntity(educationEntity);
         searchHistory.setDocType(RecentDocumentType.RECENTS);
-        kafkaProducer.sendMessage(ExploreConstants.RECENT_SEARCHES_kAFKA_TOPIC, JsonUtils.toJson(searchHistory));
+        kafkaProducer.sendMessage(ExploreConstants.RECENT_SEARCHES_kAFKA_TOPIC,
+                JsonUtils.toJson(searchHistory));
     }
 
     @Override
@@ -79,7 +80,7 @@ public class RecentSearchesServiceImpl implements RecentSearchesSerivce {
     }
 
     @Override
-    public void ingestAudits(List<SearchHistory> searchHistories){
+    public void ingestAudits(List<SearchHistory> searchHistories) {
         Map<String, IndexObject> documents = getDocuments(searchHistories);
         try {
             Map<String, String> ingestionResponse = elasticSearchService.ingest(documents);
@@ -90,12 +91,14 @@ public class RecentSearchesServiceImpl implements RecentSearchesSerivce {
         }
     }
 
-    private void processAuditIngestionResponse(Map<String, String> ingestionResponse,  Map<String, IndexObject> documents ){
-        for(Map.Entry<String, String> entry : ingestionResponse.entrySet()){
-            SearchHistory searchHistory = (SearchHistory)documents.get(entry.getKey()).getSource();
+    private void processAuditIngestionResponse(Map<String, String> ingestionResponse,
+            Map<String, IndexObject> documents) {
+        for (Map.Entry<String, String> entry : ingestionResponse.entrySet()) {
+            SearchHistory searchHistory = (SearchHistory) documents.get(entry.getKey()).getSource();
             searchHistory.setFailureMessage(entry.getValue());
-            searchHistory.setEsIngestionRetries(searchHistory.getEsIngestionRetries()+1);
-            kafkaProducer.sendMessage(ExploreConstants.RECENT_SEARCHES_kAFKA_TOPIC, JsonUtils.toJson(searchHistory));
+            searchHistory.setEsIngestionRetries(searchHistory.getEsIngestionRetries() + 1);
+            kafkaProducer.sendMessage(ExploreConstants.RECENT_SEARCHES_kAFKA_TOPIC,
+                    JsonUtils.toJson(searchHistory));
         }
     }
 
@@ -137,7 +140,8 @@ public class RecentSearchesServiceImpl implements RecentSearchesSerivce {
         FilterField[] filterFields = new FilterField[1];
         filterFields[0] = new FilterField();
         filterFields[0].setValues(Arrays.asList(userId));
-        filterFields[0].setPath(recentSearchesClassLevelMap.get(ExploreConstants.SEARCH_HISTORY_USERID));
+        filterFields[0]
+                .setPath(recentSearchesClassLevelMap.get(ExploreConstants.SEARCH_HISTORY_USERID));
         filterFields[0].setType(FilterQueryType.TERMS);
         filterFields[0].setName(ExploreConstants.SEARCH_HISTORY_USERID);
         elasticRequest.setFilterFields(filterFields);
@@ -146,13 +150,15 @@ public class RecentSearchesServiceImpl implements RecentSearchesSerivce {
             SearchField[] searchFields = new SearchField[1];
             searchFields[0] = new SearchField();
             searchFields[0].setName(ExploreConstants.SEARCH_HISTORY_TERMS);
-            searchFields[0].setPath(recentSearchesClassLevelMap.get(ExploreConstants.SEARCH_HISTORY_TERMS));
+            searchFields[0].setPath(
+                    recentSearchesClassLevelMap.get(ExploreConstants.SEARCH_HISTORY_TERMS));
             elasticRequest.setSearchFields(searchFields);
         } else {
             SortField[] sortFields = new SortField[1];
             sortFields[0] = new SortField();
             sortFields[0].setName(ExploreConstants.SEARCH_HISTORY_UPDATEDAT);
-            sortFields[0].setPath(recentSearchesClassLevelMap.get(ExploreConstants.SEARCH_HISTORY_UPDATEDAT));
+            sortFields[0].setPath(
+                    recentSearchesClassLevelMap.get(ExploreConstants.SEARCH_HISTORY_UPDATEDAT));
             sortFields[0].setOrder(DataSortOrder.DESC);
             elasticRequest.setSortFields(sortFields);
         }

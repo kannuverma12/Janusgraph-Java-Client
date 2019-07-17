@@ -32,7 +32,7 @@ public class KafkaConsumerImpl implements KafkaConsumer {
     private KafkaConsumerState                     kafkaConsumerState;
 
     @Autowired
-    private RecentSearchesSerivce                  recentSearchesSerivce;
+    private RecentSearchesSerivce recentSearchesSerivce;
 
     @Value("${kafka.listener.topics}")
     private String kafkaTopic;
@@ -48,12 +48,12 @@ public class KafkaConsumerImpl implements KafkaConsumer {
         log.info("Read message {}", messages);
         try {
             List<SearchHistory> searchHistories = new ArrayList<>();
-            for(String jsonStr : messages){
+            for (String jsonStr : messages) {
                 SearchHistory searchHistory = JsonUtils.fromJson(jsonStr, SearchHistory.class);
                 searchHistories.add(searchHistory);
             }
             acknowledgment.acknowledge();
-            if(!CollectionUtils.isEmpty(searchHistories)) {
+            if (!CollectionUtils.isEmpty(searchHistories)) {
                 recentSearchesSerivce.ingestAudits(searchHistories);
             }
 
