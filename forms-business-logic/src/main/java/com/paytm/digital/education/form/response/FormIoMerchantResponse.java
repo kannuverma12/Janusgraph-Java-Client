@@ -13,6 +13,8 @@ public class FormIoMerchantResponse {
 
     private String merchantTransactionId;
 
+    private String merchantCandidateId;
+
     private Map<String, Object> candidateDetails;
 
     public void setPaymentStatusToLowerCase() {
