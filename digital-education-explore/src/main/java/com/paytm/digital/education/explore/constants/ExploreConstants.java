@@ -262,4 +262,12 @@ public interface ExploreConstants {
     String DUMMY_EXAM_ICON = "/engineering_archi.svg";
     String ID              = "id";
     String RANKING_LOGO    = "ranking";
+
+
+    String RECENT_SEARCHES_kAFKA_TOPIC = "recent_searches";
+    String RECENT_SEARCHES_ES_INDEX    = "recent_searches";
+    String RECENT_SEARCHES_ES_TYPE     = "education";
+    String SEARCH_HISTORY_USERID       = "user_id";
+    String SEARCH_HISTORY_TERMS        = "terms";
+    String SEARCH_HISTORY_UPDATEDAT    = "updated_at";
 }
