@@ -595,6 +595,9 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
             update.set("formFulfilment.merchantTransactionId",
                     formIoMerchantResponse.getMerchantTransactionId());
         }
+        if (formIoMerchantResponse.getMerchantCandidateId() != null) {
+            update.set("merchantCandidateId", formIoMerchantResponse.getMerchantCandidateId());
+        }
         Date currentDate = new Date();
         update.set("formFulfilment.updatedDate", currentDate);
         update.set("updatedAt", currentDate);
