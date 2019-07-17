@@ -42,6 +42,7 @@ public class ImportIncrementalDataService {
                     Exam.class);
             if (!examDtos.isEmpty()) {
                 transformAndSaveExamService.transformAndSave(examDtos);
+                log.info("Imported " + examDtos.size() + " exams.");
             }
         }
         if (fileInfo.get(COURSES_FILE_NAME)) {
@@ -49,6 +50,7 @@ public class ImportIncrementalDataService {
                     incrementalDataHelper.retrieveDataFromFile(COURSES_FILE_NAME, Course.class);
             if (!courseDtos.isEmpty()) {
                 transformAndSaveCourseService.transformAndSave(courseDtos);
+                log.info("Imported " + courseDtos.size() + " courses.");
             }
         }
         return true;

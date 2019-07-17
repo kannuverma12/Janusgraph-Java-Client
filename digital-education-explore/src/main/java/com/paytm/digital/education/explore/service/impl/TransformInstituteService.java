@@ -49,7 +49,7 @@ public class TransformInstituteService {
         try {
             dbIstitutes = instituteDetailService.getInstitutes(new ArrayList<>(ids),fields);
         } catch (Exception e) {
-            log.error("Error getting data : " + e.getMessage());
+            log.error("Error getting institutes : " + e.getMessage());
         }
 
         Map<Long, String> ojbIdToInstIdMap = dbIstitutes.stream()
@@ -103,6 +103,7 @@ public class TransformInstituteService {
     }
 
     private void uploadImages(Institute institute) {
+        log.info("Uploading images for institute id : {}", institute.getInstituteId());
         Gallery g = institute.getGallery();
 
         if (Objects.nonNull(g)) {
@@ -143,6 +144,7 @@ public class TransformInstituteService {
                 // TODO add fail over strategy
             }
         }
+        log.info("Images uploaded successfully for institute id {}", institute.getInstituteId());
     }
 
     private String getImageName(String url) {
