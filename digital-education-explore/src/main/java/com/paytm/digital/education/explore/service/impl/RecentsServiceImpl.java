@@ -81,7 +81,7 @@ public class RecentsServiceImpl implements RecentsSerivce {
         for (SearchHistoryEsDoc searchHistoryEsDoc : searchHistoryEsDocs) {
             BulkRequestItem bulkRequestItem = new BulkRequestItem();
             bulkRequestItem.setIndex(ExploreConstants.RECENT_SEARCHES_ES_INDEX);
-            bulkRequestItem.setIndex(ExploreConstants.RECENT_SEARCHES_ES_TYPE);
+            bulkRequestItem.setType(ExploreConstants.RECENT_SEARCHES_ES_TYPE);
             bulkRequestItem.setOperation(BulkRequestOperation.INDEX);
             bulkRequestItem.setSource(searchHistoryEsDoc);
             bulkRequestItem.setId(searchHistoryEsDoc.getId());

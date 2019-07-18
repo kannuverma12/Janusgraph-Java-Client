@@ -45,20 +45,20 @@ public class KafkaConsumerImpl implements KafkaConsumer {
             @Header(KafkaHeaders.OFFSET) List<Long> offsets, Acknowledgment acknowledgment) {
 
         log.info("Read message from kafka {}", messages);
+        List<SearchHistoryEsDoc> searchHistories = null;
         try {
-            List<SearchHistoryEsDoc> searchHistories = new ArrayList<>();
+            searchHistories = new ArrayList<>();
             for (String jsonStr : messages) {
                 SearchHistoryEsDoc
                         searchHistoryEsDoc = JsonUtils.fromJson(jsonStr, SearchHistoryEsDoc.class);
                 searchHistories.add(searchHistoryEsDoc);
             }
             acknowledgment.acknowledge();
-            if (!CollectionUtils.isEmpty(searchHistories)) {
-                recentsSerivce.ingestAudits(searchHistories);
-            }
-
         } catch (Exception e) {
-            log.error("Error in processing the msg. Can't ack kafka", e);
+            log.error("Error in Serializing message. Can't ack kafka", e);
+        }
+        if (!CollectionUtils.isEmpty(searchHistories)) {
+            recentsSerivce.ingestAudits(searchHistories);
         }
     }
 
