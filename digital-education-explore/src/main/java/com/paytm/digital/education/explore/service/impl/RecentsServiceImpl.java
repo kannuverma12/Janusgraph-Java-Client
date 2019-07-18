@@ -6,7 +6,6 @@ import com.paytm.digital.education.elasticsearch.service.ElasticSearchService;
 import com.paytm.digital.education.explore.constants.ExploreConstants;
 import com.paytm.digital.education.explore.enums.RecentDocumentType;
 import com.paytm.digital.education.explore.es.model.SearchHistoryEsDoc;
-import com.paytm.digital.education.explore.enums.ESIngestionStatus;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.kafka.KafkaProducer;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
