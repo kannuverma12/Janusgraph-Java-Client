@@ -45,6 +45,7 @@ public class RecentsServiceImpl implements RecentsSerivce {
         searchHistoryEsDoc.setUserId(userId);
         searchHistoryEsDoc.setEducationEntity(educationEntity);
         searchHistoryEsDoc.setDocType(RecentDocumentType.RECENTS);
+        log.info("Inserting :{} in kafka", searchHistoryEsDoc);
         kafkaProducer.sendMessage(ExploreConstants.RECENT_SEARCHES_kAFKA_TOPIC,
                 JsonUtils.toJson(searchHistoryEsDoc));
     }

@@ -49,9 +49,11 @@ public class RecentsLimitCheckScheduler {
     @Scheduled(fixedDelayString = "${search.limiter.interval}")
     public void extractUserId() {
         SearchResponse searchResponse = getAggregationsFromElastic();
+        log.info("Elastic agregations : {}", searchResponse);
         Long userId = extractUserIdFromElasticResponse(searchResponse);
         if (Objects.nonNull(userId)) {
             List<String> documentIds = getDocumentIds(userId);
+            log.info("Removing documents: {} for user :{}", documentIds, userId);
             deleteDocuments(documentIds, ExploreConstants.RECENT_SEARCHES_ES_INDEX,
                     ExploreConstants.RECENT_SEARCHES_ES_TYPE);
         }

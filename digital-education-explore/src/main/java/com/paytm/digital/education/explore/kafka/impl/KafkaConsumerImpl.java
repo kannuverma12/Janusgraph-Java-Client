@@ -44,7 +44,7 @@ public class KafkaConsumerImpl implements KafkaConsumer {
             @Header(KafkaHeaders.RECEIVED_PARTITION_ID) List<Integer> partitions,
             @Header(KafkaHeaders.OFFSET) List<Long> offsets, Acknowledgment acknowledgment) {
 
-        log.info("Read message {}", messages);
+        log.info("Read message from kafka {}", messages);
         try {
             List<SearchHistoryEsDoc> searchHistories = new ArrayList<>();
             for (String jsonStr : messages) {
