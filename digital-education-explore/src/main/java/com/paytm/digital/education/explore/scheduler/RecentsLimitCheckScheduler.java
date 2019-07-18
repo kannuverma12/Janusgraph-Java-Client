@@ -15,6 +15,7 @@ import com.paytm.digital.education.explore.response.dto.search.FilterData;
 import com.paytm.digital.education.explore.service.impl.RecentSearchServiceImpl;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -38,19 +39,19 @@ public class RecentsLimitCheckScheduler {
     private RecentSearchServiceImpl recentSearchService;
     private ElasticSearchService    elasticSearchService;
 
-    @Scheduled(fixedDelay = 10000)
+    @Value("${recent.search.limit.per.user}")
+    private Integer esDocLimitPerUser;
+
+
+    @Scheduled(fixedDelayString = "${search.limiter.interval}")
     public void extractUserId() {
-        log.info("Statring scheduler");
         SearchResponse searchResponse = getAggregationsFromElastic();
         Long userId = extractUserIdFromElasticResponse(searchResponse);
-        log.info("User id : {}", userId);
         if (Objects.nonNull(userId)) {
             List<String> documentIds = getDocumentIds(userId);
-            log.info("Found documents :{}", documentIds);
             deleteDocuments(documentIds, ExploreConstants.RECENT_SEARCHES_ES_INDEX,
                     ExploreConstants.RECENT_SEARCHES_ES_TYPE);
         }
-
     }
 
     private void deleteDocuments(List<String> documentIds, String index, String type) {
@@ -69,7 +70,7 @@ public class RecentsLimitCheckScheduler {
             Map<String, String> bulkResponse = elasticSearchService.executeInBulk(documents);
             if (!CollectionUtils.isEmpty(bulkResponse)) {
                 bulkResponse.forEach((id, item) -> {
-                    log.warn("Couldn't delete doc {} from {} because {}", id, index, item);
+                    log.warn("Couldn't delete doc: {} from: {} because: {}", id, index, item);
                 });
             }
         } catch (IOException e) {
@@ -78,33 +79,29 @@ public class RecentsLimitCheckScheduler {
     }
 
     private List<String> getDocumentIds(Long userId) {
-
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.setEntity(EducationEntity.RECENT_SEARCHES);
-        searchRequest.setLimit(2);
-        searchRequest.setOffset(1);
+        searchRequest.setLimit(ExploreConstants.DELETE_RECENTS_BATCH_SIZE);
+        searchRequest.setOffset(esDocLimitPerUser);
         searchRequest.setFetchFilter(false);
         searchRequest.setOffset(ExploreConstants.DEFAULT_OFFSET);
         Map<String, List<Object>> filters = new HashMap<>();
         filters.put(ExploreConstants.SEARCH_HISTORY_USERID, Arrays.asList(userId));
         searchRequest.setFilter(filters);
-        searchRequest.setSource(false);
         SearchResponse searchResponse = null;
         try {
             searchResponse = recentSearchService.search(searchRequest);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("IO exception while querying elasticsearch :{}", e.getLocalizedMessage());
         } catch (TimeoutException e) {
-            e.printStackTrace();
+            log.error("Timeed out  elasticsearch :{}", e.getLocalizedMessage());
         }
         if (!CollectionUtils.isEmpty(searchResponse.getResults().getValues())) {
             List<SearchBaseData> searchHistories = searchResponse.getResults().getValues();
             List<String> documentIds = new ArrayList<>();
             for (SearchBaseData searchBaseData : searchHistories) {
                 RecentSearch searchHistory = (RecentSearch) searchBaseData;
-                if(searchHistory.getId()!=null) {
-                    documentIds.add(searchHistory.getId());
-                }
+                documentIds.add(searchHistory.getId());
             }
             return documentIds;
         }
@@ -112,8 +109,8 @@ public class RecentsLimitCheckScheduler {
     }
 
     private Long extractUserIdFromElasticResponse(SearchResponse searchResponse) {
-        log.info("Agg response {}", searchResponse.toString());
-        if (!CollectionUtils.isEmpty(searchResponse.getFilters())) {
+        if (Objects.nonNull(searchResponse) && !CollectionUtils
+                .isEmpty(searchResponse.getFilters())) {
             for (FilterData filterData : searchResponse.getFilters()) {
                 if (ExploreConstants.SEARCH_HISTORY_USERID.equals(filterData.getName())) {
                     TermFilterData termFilterData = (TermFilterData) filterData;
@@ -139,9 +136,9 @@ public class RecentsLimitCheckScheduler {
             SearchResponse searchResponse = recentSearchService.search(searchRequest);
             return searchResponse;
         } catch (IOException e) {
-            log.error("Could not connect to elasticsearch :{}", e.getLocalizedMessage());
+            log.error("IO exception while querying elasticsearch :{}", e.getLocalizedMessage());
         } catch (TimeoutException e) {
-            log.error("Could not connect to elasticsearch :{}", e.getLocalizedMessage());
+            log.error("Timeed out  elasticsearch :{}", e.getLocalizedMessage());
         }
         return null;
     }

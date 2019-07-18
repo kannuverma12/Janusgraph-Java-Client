@@ -4,7 +4,7 @@ import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.search.SearchBaseData;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
-import com.paytm.digital.education.explore.service.RecentSearchesSerivce;
+import com.paytm.digital.education.explore.service.RecentsSerivce;
 import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
 import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import com.paytm.digital.education.utility.JsonUtils;
@@ -32,7 +32,7 @@ public class SearchServiceImpl {
     private SubscriptionDetailHelper   subscriptionDetailHelper;
     private ExamSearchServiceImpl      examSearchService;
     private CourseSearchService        courseSearchService;
-    private RecentSearchesSerivce      recentSearchesSerivce;
+    private RecentsSerivce             recentsSerivce;
 
     public SearchResponse search(SearchRequest searchRequest, Long userId) throws Exception {
         long startTime = System.currentTimeMillis();
@@ -44,7 +44,7 @@ public class SearchServiceImpl {
 
             if (StringUtils.isNotBlank(searchRequest.getTerm()) && !CollectionUtils
                     .isEmpty(response.getResults().getValues())) {
-                recentSearchesSerivce
+                recentsSerivce
                         .recordSearches(searchRequest.getTerm(), userId, searchRequest.getEntity());
             }
 

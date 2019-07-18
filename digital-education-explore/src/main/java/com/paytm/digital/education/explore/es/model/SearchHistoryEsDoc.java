@@ -12,7 +12,7 @@ import java.util.Date;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SearchHistory {
+public class SearchHistoryEsDoc {
 
     private String id;
 

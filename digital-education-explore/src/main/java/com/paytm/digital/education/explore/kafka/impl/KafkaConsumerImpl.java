@@ -1,11 +1,10 @@
 package com.paytm.digital.education.explore.kafka.impl;
 
-import com.paytm.digital.education.explore.es.model.SearchHistory;
+import com.paytm.digital.education.explore.es.model.SearchHistoryEsDoc;
 import com.paytm.digital.education.explore.kafka.KafkaConsumer;
 import com.paytm.digital.education.explore.kafka.model.KafkaConsumerState;
-import com.paytm.digital.education.explore.service.RecentSearchesSerivce;
+import com.paytm.digital.education.explore.service.RecentsSerivce;
 import com.paytm.digital.education.utility.JsonUtils;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.TopicPartition;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,7 @@ public class KafkaConsumerImpl implements KafkaConsumer {
     private KafkaConsumerState                     kafkaConsumerState;
 
     @Autowired
-    private RecentSearchesSerivce recentSearchesSerivce;
+    private RecentsSerivce recentsSerivce;
 
     @Value("${kafka.listener.topics}")
     private String kafkaTopic;
@@ -47,14 +46,15 @@ public class KafkaConsumerImpl implements KafkaConsumer {
 
         log.info("Read message {}", messages);
         try {
-            List<SearchHistory> searchHistories = new ArrayList<>();
+            List<SearchHistoryEsDoc> searchHistories = new ArrayList<>();
             for (String jsonStr : messages) {
-                SearchHistory searchHistory = JsonUtils.fromJson(jsonStr, SearchHistory.class);
-                searchHistories.add(searchHistory);
+                SearchHistoryEsDoc
+                        searchHistoryEsDoc = JsonUtils.fromJson(jsonStr, SearchHistoryEsDoc.class);
+                searchHistories.add(searchHistoryEsDoc);
             }
             acknowledgment.acknowledge();
             if (!CollectionUtils.isEmpty(searchHistories)) {
-                recentSearchesSerivce.ingestAudits(searchHistories);
+                recentsSerivce.ingestAudits(searchHistories);
             }
 
         } catch (Exception e) {

@@ -1,16 +1,17 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import com.paytm.digital.education.elasticsearch.enums.BulkRequestOperation;
 import com.paytm.digital.education.elasticsearch.models.BulkRequestItem;
 import com.paytm.digital.education.elasticsearch.service.ElasticSearchService;
 import com.paytm.digital.education.explore.constants.ExploreConstants;
 import com.paytm.digital.education.explore.enums.RecentDocumentType;
-import com.paytm.digital.education.explore.es.model.SearchHistory;
+import com.paytm.digital.education.explore.es.model.SearchHistoryEsDoc;
 import com.paytm.digital.education.explore.enums.ESIngestionStatus;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.kafka.KafkaProducer;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
-import com.paytm.digital.education.explore.service.RecentSearchesSerivce;
+import com.paytm.digital.education.explore.service.RecentsSerivce;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
@@ -28,7 +29,7 @@ import java.util.concurrent.TimeoutException;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class RecentSearchesServiceImpl implements RecentSearchesSerivce {
+public class RecentsServiceImpl implements RecentsSerivce {
 
     private ElasticSearchService    elasticSearchService;
     private KafkaProducer           kafkaProducer;
@@ -37,17 +38,17 @@ public class RecentSearchesServiceImpl implements RecentSearchesSerivce {
     @Override
     public void recordSearches(String searchTerm, Long userId, EducationEntity educationEntity) {
         String uniqueId = CommonUtil.convertNameToUrlDisplayName(searchTerm) + userId.toString();
-        SearchHistory searchHistory = new SearchHistory();
-        searchHistory.setId(uniqueId);
-        searchHistory.setStatus(ESIngestionStatus.PENDING);
-        searchHistory.setTerms(searchTerm);
-        searchHistory.setCreatedAt(new Date());
-        searchHistory.setUpdatedAt(new Date());
-        searchHistory.setUserId(userId);
-        searchHistory.setEducationEntity(educationEntity);
-        searchHistory.setDocType(RecentDocumentType.RECENTS);
+        SearchHistoryEsDoc searchHistoryEsDoc = new SearchHistoryEsDoc();
+        searchHistoryEsDoc.setId(uniqueId);
+        searchHistoryEsDoc.setStatus(ESIngestionStatus.PENDING);
+        searchHistoryEsDoc.setTerms(searchTerm);
+        searchHistoryEsDoc.setCreatedAt(new Date());
+        searchHistoryEsDoc.setUpdatedAt(new Date());
+        searchHistoryEsDoc.setUserId(userId);
+        searchHistoryEsDoc.setEducationEntity(educationEntity);
+        searchHistoryEsDoc.setDocType(RecentDocumentType.RECENTS);
         kafkaProducer.sendMessage(ExploreConstants.RECENT_SEARCHES_kAFKA_TOPIC,
-                JsonUtils.toJson(searchHistory));
+                JsonUtils.toJson(searchHistoryEsDoc));
     }
 
     @Override
@@ -76,38 +77,36 @@ public class RecentSearchesServiceImpl implements RecentSearchesSerivce {
     }
 
     @Override
-    public void ingestAudits(List<SearchHistory> searchHistories) {
-        Map<String, BulkRequestItem> documents = getDocuments(searchHistories);
+    public void ingestAudits(List<SearchHistoryEsDoc> searchHistoryEsDocs) {
+        Map<String, BulkRequestItem> documents = new HashMap<>();
+        for (SearchHistoryEsDoc searchHistoryEsDoc : searchHistoryEsDocs) {
+            BulkRequestItem bulkRequestItem = new BulkRequestItem();
+            bulkRequestItem.setIndex(ExploreConstants.RECENT_SEARCHES_ES_INDEX);
+            bulkRequestItem.setIndex(ExploreConstants.RECENT_SEARCHES_ES_TYPE);
+            bulkRequestItem.setOperation(BulkRequestOperation.INDEX);
+            bulkRequestItem.setSource(searchHistoryEsDoc);
+            bulkRequestItem.setId(searchHistoryEsDoc.getId());
+            documents.put(searchHistoryEsDoc.getId(), bulkRequestItem);
+        }
         try {
             Map<String, String> ingestionResponse = elasticSearchService.executeInBulk(documents);
-            log.debug("Es Ingestion response {}", ingestionResponse);
             processAuditIngestionResponse(ingestionResponse, documents);
         } catch (IOException e) {
-            log.error("Unable to connect to elasticsearch {}.", e.getLocalizedMessage());
+            log.error("Unable to index documents : {}", e.getLocalizedMessage());
         }
     }
 
     private void processAuditIngestionResponse(Map<String, String> ingestionResponse,
             Map<String, BulkRequestItem> documents) {
         for (Map.Entry<String, String> entry : ingestionResponse.entrySet()) {
-            SearchHistory searchHistory = (SearchHistory) documents.get(entry.getKey()).getSource();
-            searchHistory.setFailureMessage(entry.getValue());
-            searchHistory.setEsIngestionRetries(searchHistory.getEsIngestionRetries() + 1);
+            SearchHistoryEsDoc
+                    searchHistoryEsDoc =
+                    (SearchHistoryEsDoc) documents.get(entry.getKey()).getSource();
+            searchHistoryEsDoc.setFailureMessage(entry.getValue());
+            searchHistoryEsDoc
+                    .setEsIngestionRetries(searchHistoryEsDoc.getEsIngestionRetries() + 1);
             kafkaProducer.sendMessage(ExploreConstants.RECENT_SEARCHES_kAFKA_TOPIC,
-                    JsonUtils.toJson(searchHistory));
+                    JsonUtils.toJson(searchHistoryEsDoc));
         }
-    }
-
-    private Map<String, BulkRequestItem> getDocuments(List<SearchHistory> searchHistories) {
-        Map<String, BulkRequestItem> documents = new HashMap<>();
-        for (SearchHistory searchHistory : searchHistories) {
-            BulkRequestItem bulkRequestItem = new BulkRequestItem();
-            bulkRequestItem.setId(searchHistory.getId());
-            bulkRequestItem.setIndex(ExploreConstants.RECENT_SEARCHES_ES_INDEX);
-            bulkRequestItem.setType(ExploreConstants.RECENT_SEARCHES_ES_TYPE);
-            bulkRequestItem.setSource(searchHistory);
-            documents.put(bulkRequestItem.getId(), bulkRequestItem);
-        }
-        return documents;
     }
 }

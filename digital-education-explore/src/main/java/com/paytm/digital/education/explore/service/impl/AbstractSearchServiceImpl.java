@@ -13,7 +13,7 @@ import com.paytm.digital.education.elasticsearch.models.Operator;
 import com.paytm.digital.education.elasticsearch.models.SearchField;
 import com.paytm.digital.education.elasticsearch.models.SortField;
 import com.paytm.digital.education.exception.EducationException;
-import com.paytm.digital.education.explore.es.model.SearchHistory;
+import com.paytm.digital.education.explore.es.model.SearchHistoryEsDoc;
 import com.paytm.digital.education.explore.es.model.InstituteSearch;
 import com.paytm.digital.education.explore.es.model.CourseSearch;
 import com.paytm.digital.education.explore.es.model.NestedCourseSearch;
@@ -68,8 +68,8 @@ public abstract class AbstractSearchServiceImpl {
                 HierarchyIdentifierUtils.getClassHierarchy(CourseSearch.class));
         hierarchyMap.put(ClassifierSearchDoc.class,
                 HierarchyIdentifierUtils.getClassHierarchy(ClassifierSearchDoc.class));
-        hierarchyMap.put(SearchHistory.class,
-                HierarchyIdentifierUtils.getClassHierarchy(SearchHistory.class));
+        hierarchyMap.put(SearchHistoryEsDoc.class,
+                HierarchyIdentifierUtils.getClassHierarchy(SearchHistoryEsDoc.class));
     }
 
 
@@ -186,15 +186,20 @@ public abstract class AbstractSearchServiceImpl {
             String searchResultNamespace, Classification classificationData) {
         SearchResponse searchResponse = new SearchResponse(elasticRequest.getQueryTerm());
         if (elasticRequest.isSearchRequest()) {
-            Map<String, Map<String, Object>> propertyMap = propertyReader
-                    .getPropertiesAsMap(component, searchResultNamespace);
+            Map<String, Map<String, Object>> propertyMap = null;
+            if (StringUtils.isNotBlank(component)) {
+                propertyMap = propertyReader.getPropertiesAsMap(component, searchResultNamespace);
+            }
             populateSearchResults(searchResponse, elasticResponse, propertyMap);
             long total = elasticResponse.getTotalSearchResultsCount();
             searchResponse.setTotal(total);
         }
         if (elasticRequest.isAggregationRequest()) {
-            Map<String, Map<String, Object>> propertyMap = propertyReader
-                    .getPropertiesAsMap(component, filterNamespace);
+            Map<String, Map<String, Object>> propertyMap = null;
+            if (StringUtils.isNotBlank(component)) {
+                propertyMap = propertyReader
+                        .getPropertiesAsMap(component, filterNamespace);
+            }
             searchResponseBuilder
                     .populateSearchFilters(searchResponse, elasticResponse, elasticRequest,
                             propertyMap);

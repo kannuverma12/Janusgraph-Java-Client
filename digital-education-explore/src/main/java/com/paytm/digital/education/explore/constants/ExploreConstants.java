@@ -270,4 +270,6 @@ public interface ExploreConstants {
     String SEARCH_HISTORY_USERID       = "user_id";
     String SEARCH_HISTORY_TERMS        = "terms";
     String SEARCH_HISTORY_UPDATEDAT    = "updated_at";
+    int    DELETE_RECENTS_BATCH_SIZE   = 100;
+
 }

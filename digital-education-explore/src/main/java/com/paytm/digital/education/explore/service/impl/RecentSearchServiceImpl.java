@@ -4,7 +4,7 @@ import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.explore.constants.ExploreConstants;
-import com.paytm.digital.education.explore.es.model.SearchHistory;
+import com.paytm.digital.education.explore.es.model.SearchHistoryEsDoc;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.search.RecentSearch;
 import com.paytm.digital.education.explore.response.dto.search.SearchBaseData;
@@ -12,6 +12,7 @@ import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.response.dto.search.SearchResult;
 import com.paytm.digital.education.explore.service.helper.SearchAggregateHelper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,10 +47,7 @@ public class RecentSearchServiceImpl extends AbstractSearchServiceImpl {
     public SearchResponse search(SearchRequest searchRequest)
             throws IOException, TimeoutException {
         ElasticRequest elasticRequest = buildSearchRequest(searchRequest);
-        ElasticResponse elasticResponse = initiateSearch(elasticRequest, SearchHistory.class);
-
-        log.info("Elastic Response {}", elasticResponse);
-
+        ElasticResponse elasticResponse = initiateSearch(elasticRequest, SearchHistoryEsDoc.class);
         return buildSearchResponse(elasticResponse, elasticRequest, null, null, null, null);
     }
 
@@ -58,13 +56,18 @@ public class RecentSearchServiceImpl extends AbstractSearchServiceImpl {
         ElasticRequest elasticRequest =
                 createSearchRequest(searchRequest, ExploreConstants.AUTOSUGGEST_ANALYZER,
                         ExploreConstants.RECENT_SEARCHES_ES_INDEX);
-        Map<String, Float> searchKeys = searchFieldKeys;
-        populateSearchFields(searchRequest, elasticRequest, searchKeys, SearchHistory.class);
-        populateFilterFields(searchRequest, elasticRequest, SearchHistory.class,
+        populateSearchFields(searchRequest, elasticRequest, searchFieldKeys,
+                SearchHistoryEsDoc.class);
+        populateFilterFields(searchRequest, elasticRequest, SearchHistoryEsDoc.class,
                 filterQueryTypeMap);
-        populateAggregateFields(searchRequest, elasticRequest,
-                searchAggregateHelper.gerRecentSearchesAggregateData(), SearchHistory.class);
-        populateSortFields(searchRequest, elasticRequest, SearchHistory.class);
+        if (searchRequest.getFetchFilter() == false) {
+            populateAggregateFields(searchRequest, elasticRequest,
+                    searchAggregateHelper.gerRecentSearchesAggregateData(),
+                    SearchHistoryEsDoc.class);
+        }
+        if (StringUtils.isBlank(searchRequest.getTerm())) {
+            populateSortFields(searchRequest, elasticRequest, SearchHistoryEsDoc.class);
+        }
         return elasticRequest;
     }
 
@@ -72,9 +75,9 @@ public class RecentSearchServiceImpl extends AbstractSearchServiceImpl {
     protected void populateSearchResults(SearchResponse searchResponse,
             ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties) {
 
-        List<SearchHistory> documents = elasticResponse.getDocuments();
+        List<SearchHistoryEsDoc> documents = elasticResponse.getDocuments();
         List<SearchBaseData> recentSearches = new ArrayList<>();
-        for (SearchHistory document : documents) {
+        for (SearchHistoryEsDoc document : documents) {
             RecentSearch recentSearch = new RecentSearch();
             recentSearch.setEntity(document.getEducationEntity());
             recentSearch.setTerm(document.getTerms());
