@@ -15,6 +15,7 @@ import com.paytm.digital.education.explore.response.dto.search.FilterData;
 import com.paytm.digital.education.explore.service.impl.RecentSearchServiceImpl;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -33,10 +34,12 @@ import java.util.concurrent.TimeoutException;
 @EnableScheduling
 @Configuration
 @Slf4j
-@AllArgsConstructor
 public class RecentsLimitCheckScheduler {
 
+    @Autowired
     private RecentSearchServiceImpl recentSearchService;
+
+    @Autowired
     private ElasticSearchService    elasticSearchService;
 
     @Value("${recent.search.limit.per.user}")
