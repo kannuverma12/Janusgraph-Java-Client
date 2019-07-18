@@ -1,6 +1,6 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import com.paytm.digital.education.elasticsearch.models.IndexObject;
+import com.paytm.digital.education.elasticsearch.models.BulkRequestItem;
 import com.paytm.digital.education.elasticsearch.service.ElasticSearchService;
 import com.paytm.digital.education.explore.constants.ExploreConstants;
 import com.paytm.digital.education.explore.enums.RecentDocumentType;
@@ -77,9 +77,9 @@ public class RecentSearchesServiceImpl implements RecentSearchesSerivce {
 
     @Override
     public void ingestAudits(List<SearchHistory> searchHistories) {
-        Map<String, IndexObject> documents = getDocuments(searchHistories);
+        Map<String, BulkRequestItem> documents = getDocuments(searchHistories);
         try {
-            Map<String, String> ingestionResponse = elasticSearchService.ingest(documents);
+            Map<String, String> ingestionResponse = elasticSearchService.executeInBulk(documents);
             log.debug("Es Ingestion response {}", ingestionResponse);
             processAuditIngestionResponse(ingestionResponse, documents);
         } catch (IOException e) {
@@ -88,7 +88,7 @@ public class RecentSearchesServiceImpl implements RecentSearchesSerivce {
     }
 
     private void processAuditIngestionResponse(Map<String, String> ingestionResponse,
-            Map<String, IndexObject> documents) {
+            Map<String, BulkRequestItem> documents) {
         for (Map.Entry<String, String> entry : ingestionResponse.entrySet()) {
             SearchHistory searchHistory = (SearchHistory) documents.get(entry.getKey()).getSource();
             searchHistory.setFailureMessage(entry.getValue());
@@ -98,15 +98,15 @@ public class RecentSearchesServiceImpl implements RecentSearchesSerivce {
         }
     }
 
-    private Map<String, IndexObject> getDocuments(List<SearchHistory> searchHistories) {
-        Map<String, IndexObject> documents = new HashMap<>();
+    private Map<String, BulkRequestItem> getDocuments(List<SearchHistory> searchHistories) {
+        Map<String, BulkRequestItem> documents = new HashMap<>();
         for (SearchHistory searchHistory : searchHistories) {
-            IndexObject indexObject = new IndexObject();
-            indexObject.setId(searchHistory.getId());
-            indexObject.setIndex(ExploreConstants.RECENT_SEARCHES_ES_INDEX);
-            indexObject.setType(ExploreConstants.RECENT_SEARCHES_ES_TYPE);
-            indexObject.setSource(searchHistory);
-            documents.put(indexObject.getId(), indexObject);
+            BulkRequestItem bulkRequestItem = new BulkRequestItem();
+            bulkRequestItem.setId(searchHistory.getId());
+            bulkRequestItem.setIndex(ExploreConstants.RECENT_SEARCHES_ES_INDEX);
+            bulkRequestItem.setType(ExploreConstants.RECENT_SEARCHES_ES_TYPE);
+            bulkRequestItem.setSource(searchHistory);
+            documents.put(bulkRequestItem.getId(), bulkRequestItem);
         }
         return documents;
     }

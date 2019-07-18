@@ -11,6 +11,7 @@ import com.paytm.digital.education.explore.response.dto.search.SearchBaseData;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.response.dto.search.SearchResult;
 import com.paytm.digital.education.explore.service.helper.SearchAggregateHelper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 @Service
+@Slf4j
 public class RecentSearchServiceImpl extends AbstractSearchServiceImpl {
 
     private static Map<String, Float>           searchFieldKeys;
@@ -46,9 +48,9 @@ public class RecentSearchServiceImpl extends AbstractSearchServiceImpl {
         ElasticRequest elasticRequest = buildSearchRequest(searchRequest);
         ElasticResponse elasticResponse = initiateSearch(elasticRequest, SearchHistory.class);
 
-        SearchResponse searchResponse = new SearchResponse();
-        populateSearchResults(searchResponse, elasticResponse, null);
-        return searchResponse;
+        log.info("Elastic Response {}", elasticResponse);
+
+        return buildSearchResponse(elasticResponse, elasticRequest, null, null, null, null);
     }
 
     @Override
@@ -76,6 +78,7 @@ public class RecentSearchServiceImpl extends AbstractSearchServiceImpl {
             RecentSearch recentSearch = new RecentSearch();
             recentSearch.setEntity(document.getEducationEntity());
             recentSearch.setTerm(document.getTerms());
+            recentSearch.setId(document.getId());
             recentSearches.add(recentSearch);
         }
         SearchResult searchResult = new SearchResult();

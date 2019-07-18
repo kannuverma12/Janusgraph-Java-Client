@@ -6,12 +6,11 @@ import com.paytm.digital.education.elasticsearch.deserializer.SearchResponseDese
 import com.paytm.digital.education.elasticsearch.models.AggregationResponse;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
-import com.paytm.digital.education.elasticsearch.models.IndexObject;
+import com.paytm.digital.education.elasticsearch.models.BulkRequestItem;
 import com.paytm.digital.education.elasticsearch.query.AggregationQueryBuilderService;
 import com.paytm.digital.education.elasticsearch.query.SearchQueryBuilderService;
 import com.paytm.digital.education.elasticsearch.request.BulkRequestBuilder;
 import com.paytm.digital.education.elasticsearch.service.ElasticSearchService;
-import com.paytm.digital.education.elasticsearch.utils.JsonUtils;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import lombok.AllArgsConstructor;
@@ -19,15 +18,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -62,12 +59,12 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         if (request.isSearchRequest()) {
 
             SearchRequest elasticSearchRequest = searchQueryService.buildRequest(request);
-            log.debug("Elastic Search Request (Search) : {}",
+            log.info("Elastic Search Request (Search) : {}",
                     elasticSearchRequest.source().toString());
 
             SearchResponse elasticSearchResponse =
                     esClient.search(elasticSearchRequest, RequestOptions.DEFAULT);
-            log.debug("Elastic Search response (Search) : {}", elasticSearchResponse.toString());
+            log.info("Elastic Search response (Search) : {}", elasticSearchResponse.toString());
 
             if (elasticSearchResponse.isTimedOut()) {
                 throw new TimeoutException();
@@ -87,12 +84,12 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         if (request.isAggregationRequest()) {
 
             SearchRequest elasticAggregationRequest = aggregationQueryService.buildRequest(request);
-            log.debug("Elastic Search Request (Aggregation) : {}",
+            log.info("Elastic Search Request (Aggregation) : {}",
                     elasticAggregationRequest.source().toString());
 
             SearchResponse elasticAggregationResponse =
                     esClient.search(elasticAggregationRequest, RequestOptions.DEFAULT);
-            log.debug("Elastic Search response (Aggregation) : {}",
+            log.info("Elastic Search response (Aggregation) : {}",
                     elasticAggregationResponse.toString());
 
             long timeTakenInElasticFilterQueryExecution =
@@ -117,7 +114,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     }
 
     @Override
-    public Map<String, String> ingest(Map<String, IndexObject> documents) throws IOException {
+    public Map<String, String> executeInBulk(Map<String, BulkRequestItem> documents) throws IOException {
 
         if (documents.size() > ESConstants.MAX_BULK_SIZE) {
             log.error("Bulk request too large");
@@ -139,4 +136,5 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         }
         return response;
     }
+
 }

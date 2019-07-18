@@ -7,6 +7,8 @@ import lombok.Data;
 @Data
 public class RecentSearch extends SearchBaseData {
 
+    private String id;
+
     private String term;
 
     private EducationEntity entity;

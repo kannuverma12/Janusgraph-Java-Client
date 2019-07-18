@@ -59,6 +59,9 @@ public class SearchRequest extends FieldsAndFieldGroupRequest {
     @JsonIgnore
     private Client client;
 
+    @JsonProperty("source")
+    private Boolean source = true;
+
     @JsonProperty("meta")
     private Classification classificationData;
 

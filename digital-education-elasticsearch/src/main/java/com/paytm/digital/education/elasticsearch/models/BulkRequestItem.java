@@ -1,15 +1,18 @@
 package com.paytm.digital.education.elasticsearch.models;
 
+import com.paytm.digital.education.elasticsearch.enums.BulkRequestOperation;
 import lombok.Data;
 
 @Data
-public class IndexObject {
+public class BulkRequestItem {
 
     private String id;
 
     private String index;
 
     private String type;
+
+    private BulkRequestOperation operation;
 
     private Object source;
 
