@@ -60,7 +60,7 @@ public class RecentSearchServiceImpl extends AbstractSearchServiceImpl {
                 SearchHistoryEsDoc.class);
         populateFilterFields(searchRequest, elasticRequest, SearchHistoryEsDoc.class,
                 filterQueryTypeMap);
-        if (searchRequest.getFetchFilter() == false) {
+        if (searchRequest.getFetchFilter()) {
             populateAggregateFields(searchRequest, elasticRequest,
                     searchAggregateHelper.gerRecentSearchesAggregateData(),
                     SearchHistoryEsDoc.class);
