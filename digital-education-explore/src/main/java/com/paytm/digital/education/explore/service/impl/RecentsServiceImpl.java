@@ -39,7 +39,6 @@ public class RecentsServiceImpl implements RecentsSerivce {
         String uniqueId = CommonUtil.convertNameToUrlDisplayName(searchTerm) + userId.toString();
         SearchHistoryEsDoc searchHistoryEsDoc = new SearchHistoryEsDoc();
         searchHistoryEsDoc.setId(uniqueId);
-        searchHistoryEsDoc.setStatus(ESIngestionStatus.PENDING);
         searchHistoryEsDoc.setTerms(searchTerm);
         searchHistoryEsDoc.setCreatedAt(new Date());
         searchHistoryEsDoc.setUpdatedAt(new Date());

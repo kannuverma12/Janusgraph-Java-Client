@@ -7,7 +7,7 @@ import lombok.Data;
 public class FilterData {
 
     @JsonProperty("name")
-    private Object name;
+    private String name;
 
     @JsonProperty("display_name")
     private String displayName;
