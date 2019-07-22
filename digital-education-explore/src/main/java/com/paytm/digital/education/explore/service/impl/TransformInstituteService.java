@@ -76,7 +76,7 @@ public class TransformInstituteService {
             BeanUtils.copyProperties(dto, institute);
 
             institute.setInstituteId(Long.valueOf(dto.getInstituteId()));
-            institute.setStudentCount(Integer.valueOf(dto.getTotalIntake()));
+            institute.setStudentCount(dto.getTotalIntake());
 
             // rankings
             List<RankingDto> rankingDtos = dto.getRankings();

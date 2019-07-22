@@ -94,7 +94,7 @@ public class InstituteDto {
     private Integer facultyCount;
 
     @JsonProperty("total_intake")
-    private String totalIntake;
+    private Integer totalIntake;
 
     @JsonProperty("is_client")
     private int isClient;
