@@ -11,6 +11,8 @@ public interface FblConstants {
     String RENDER_FORM2         = "render_form_2";
     String PAYMENT_AMOUNT       = "payAmount";
     String SUCCESS_STRING       = "success";
+    String FAILURE_STRING       = "failure";
+    String PENDING_STRING       = "pending";
     String STATUS_CODE          = "code";
     String RN_TOKEN             = "rn";
     String PAYTM_PRODUCT_ID     = "productId";
