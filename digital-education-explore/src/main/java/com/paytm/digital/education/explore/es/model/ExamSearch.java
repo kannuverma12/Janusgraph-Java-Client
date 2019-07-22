@@ -20,8 +20,8 @@ public class ExamSearch {
     @JsonProperty("names")
     private List<String>       names;
 
-    @JsonProperty("logo_url")
-    private String             logoUrl;
+    @JsonProperty("image_link")
+    private String             imageLink;
 
     @JsonProperty("linguistic_medium")
     private List<String>       linguisticMedium;

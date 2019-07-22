@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.ToString;
 import org.springframework.data.mongodb.core.mapping.Field;
+
 import java.util.List;
 
 @Data
@@ -13,19 +14,22 @@ import java.util.List;
 public class SubExam {
 
     @Field("duration_hours")
-    private Float          durationHours;
+    private Float durationHours;
 
     @Field("name")
-    private String         name;
+    private String name;
 
     @Field("id")
-    private Long           id;
+    private Long id;
 
     @Field("instances")
     private List<Instance> instances;
 
     @Field("sub_exam_name")
     @JsonProperty("sub_exam_name")
-    private String         subExamName;
+    private String subExamName;
+
+    @Field("published_status")
+    private String publishedStatus;
 
 }

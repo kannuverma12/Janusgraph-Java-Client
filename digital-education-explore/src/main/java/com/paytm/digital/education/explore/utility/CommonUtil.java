@@ -11,8 +11,10 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.FAC
 import static com.paytm.digital.education.explore.constants.ExploreConstants.IGNORE_VALUES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_TYPE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LOCATIONS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKING_LOGO;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STANDALONE_INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAMS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP_EXAMS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.UGC;
 
 import com.paytm.digital.education.explore.config.ConfigProperties;
@@ -47,6 +49,12 @@ public class CommonUtil {
                 break;
             case BANNER_MID:
                 urlBuilder.append(ConfigProperties.getBannerPrefix());
+                break;
+            case TOP_EXAMS:
+                urlBuilder.append(ConfigProperties.getLogoExamPrefix());
+                break;
+            case RANKING_LOGO:
+                urlBuilder.append(ConfigProperties.getRankingLogo());
                 break;
             default:
                 urlBuilder.append(ConfigProperties.getLogoImagePrefix());

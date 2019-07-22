@@ -41,6 +41,7 @@ import com.paytm.digital.education.explore.response.dto.search.ExamData;
 import com.paytm.digital.education.explore.response.dto.search.SearchBaseData;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.response.dto.search.SearchResult;
+import com.paytm.digital.education.explore.service.helper.ExamLogoHelper;
 import com.paytm.digital.education.explore.service.helper.SearchAggregateHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.utility.DateUtil;
@@ -69,6 +70,7 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
     private static Map<String, FilterQueryType>         filterQueryTypeMap;
     private static LinkedHashMap<String, DataSortOrder> sortKeysInOrder;
     private        SearchAggregateHelper                searchAggregateHelper;
+    private        ExamLogoHelper                       examLogoHelper;
 
     @PostConstruct
     private void init() {
@@ -178,7 +180,8 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
                 examData.setOfficialName(examSearch.getOfficialName());
                 examData.setUrlDisplayName(
                         CommonUtil.convertNameToUrlDisplayName(examSearch.getOfficialName()));
-                examData.setLogoUrl(examSearch.getLogoUrl());
+                examData.setLogoUrl(examLogoHelper
+                        .getExamLogoUrl(new Long(examSearch.getExamId()), examSearch.getImageLink()));
                 List<String> dataAvailable = new ArrayList<>();
                 if (!CollectionUtils.isEmpty(examSearch.getDataAvailable())) {
                     dataAvailable.addAll(examSearch.getDataAvailable());
