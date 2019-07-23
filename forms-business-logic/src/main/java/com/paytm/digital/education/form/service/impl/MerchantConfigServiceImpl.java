@@ -130,31 +130,30 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
             components = getKeys(responseString);
         }
 
+        String registrationId = null;
         if (components != null) {
             components.forEach(component -> responseData.put(component.getKey(), component.getDefaultValue()));
-
-            String registrationLabel = (String) data.get("registration_label");
-
-            if (registrationLabel != null) {
-                registrationLabel += " "; // adding space for appending registration id
-                responseData.put("registration_label", registrationLabel.trim());
-            } else {
-                registrationLabel = "";
-            }
-
             if (responseData.containsKey("registration_id")) {
-                String registrationId = (String) responseData.get("registration_id");
-                responseData.put("registration_id", registrationLabel + registrationId);
-
-                if (orderId != null) {
-                    Query query = new Query(Criteria.where("formFulfilment.orderId").is(orderId));
-                    Update update = new Update();
-
-                    update.set("merchantCandidateId", registrationId);
-                    mongoOperations.updateFirst(query, update, FormData.class);
-                }
-
+                registrationId = (String) responseData.get("registration_id");
             }
+        }
+
+        if (data.containsKey("registration_label")) {
+            responseData.put("registration_label", data.get("registration_label"));
+        }
+
+        if (data.containsKey("fetch_registration_key") && (Boolean) data.get("fetch_registration_key")) {
+            registrationId = getRegistrationIdByOrderId(orderId);
+        }
+
+        if (registrationId != null) {
+            if (!data.containsKey("send_registration_key") || ((Boolean) data.get("send_registration_key")) == false) {
+                String registrationLabel = (String) data.get("registration_label");
+                if (!registrationLabel.isEmpty()) {
+                    registrationId = registrationLabel + " " + registrationId;
+                }
+            }
+            responseData.put("registration_id", registrationId);
         }
 
         if (data.containsKey("fill_form_id")) {
@@ -191,6 +190,18 @@ public class MerchantConfigServiceImpl implements MerchantConfigService {
                 orderId, merchantId, postOrderScreenConfigResponse);
 
         return new ResponseEntity<>(postOrderScreenConfigResponse, HttpStatus.OK);
+    }
+
+    private String getRegistrationIdByOrderId(Long orderId) {
+        Query query = new Query(Criteria.where("formFulfilment.orderId").is(orderId));
+        query.fields().include("merchantCandidateId");
+
+        FormData formData = mongoOperations.findOne(query, FormData.class);
+
+        if (formData != null) {
+            return formData.getMerchantCandidateId();
+        }
+        return null;
     }
 
     private String formHttpCall(Map<String, Object> data, Long orderId) {
