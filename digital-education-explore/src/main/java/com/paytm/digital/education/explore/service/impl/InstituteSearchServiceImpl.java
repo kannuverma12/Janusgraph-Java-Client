@@ -126,6 +126,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
     @Cacheable(value = "institute_search")
     public SearchResponse search(SearchRequest searchRequest) throws IOException, TimeoutException {
         validateRequest(searchRequest, filterQueryTypeMap);
+        SearchResponse searchResponse = new SearchResponse(searchRequest.getTerm());
         if (!searchRequest.isClearFilters() && StringUtils.isNotBlank(searchRequest.getTerm())) {
             Map<String, Object> stopWords = propertyReader
                     .getPropertiesAsMapByKey(EXPLORE_COMPONENT, INSTITUTE_NAMESPACE, STOPWORDS_KEY);
@@ -139,9 +140,10 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
         }
         ElasticRequest elasticRequest = buildSearchRequest(searchRequest);
         ElasticResponse elasticResponse = initiateSearch(elasticRequest, InstituteSearch.class);
-        return buildSearchResponse(elasticResponse, elasticRequest, EXPLORE_COMPONENT,
+        buildSearchResponse(searchResponse, elasticResponse, elasticRequest, EXPLORE_COMPONENT,
                 INSTITUTE_FILTER_NAMESPACE, INSTITUTE_SEARCH_NAMESPACE,
                 searchRequest.getClassificationData());
+        return searchResponse;
     }
 
     private List<SearchSortParam> convertMapToPojo(List<Object> data) {

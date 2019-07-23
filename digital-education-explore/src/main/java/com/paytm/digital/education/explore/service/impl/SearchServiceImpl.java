@@ -42,10 +42,10 @@ public class SearchServiceImpl {
 
         if (Objects.nonNull(userId) && userId > 0 && response.isSearchResponse()) {
 
-            if (StringUtils.isNotBlank(searchRequest.getTerm()) && !CollectionUtils
+            if (StringUtils.isNotBlank(response.getSearchTerm()) && !CollectionUtils
                     .isEmpty(response.getResults().getValues())) {
                 recentsSerivce
-                        .recordSearches(searchRequest.getTerm(), userId, searchRequest.getEntity());
+                        .recordSearches(response.getSearchTerm(), userId, searchRequest.getEntity());
             }
 
             if (!CollectionUtils.isEmpty(response.getEntityDataMap())) {

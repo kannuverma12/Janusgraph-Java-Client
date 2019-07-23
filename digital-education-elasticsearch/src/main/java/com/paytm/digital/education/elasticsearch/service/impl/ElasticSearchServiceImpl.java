@@ -59,12 +59,12 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         if (request.isSearchRequest()) {
 
             SearchRequest elasticSearchRequest = searchQueryService.buildRequest(request);
-            log.debug("Elastic Search Request (Search) : {}",
+            log.info("Elastic Search Request (Search) : {}",
                     elasticSearchRequest.source().toString());
 
             SearchResponse elasticSearchResponse =
                     esClient.search(elasticSearchRequest, RequestOptions.DEFAULT);
-            log.debug("Elastic Search response (Search) : {}", elasticSearchResponse.toString());
+            log.info("Elastic Search response (Search) : {}", elasticSearchResponse.toString());
 
             if (elasticSearchResponse.isTimedOut()) {
                 throw new TimeoutException();
@@ -84,12 +84,12 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         if (request.isAggregationRequest()) {
 
             SearchRequest elasticAggregationRequest = aggregationQueryService.buildRequest(request);
-            log.debug("Elastic Search Request (Aggregation) : {}",
+            log.info("Elastic Search Request (Aggregation) : {}",
                     elasticAggregationRequest.source().toString());
 
             SearchResponse elasticAggregationResponse =
                     esClient.search(elasticAggregationRequest, RequestOptions.DEFAULT);
-            log.debug("Elastic Search response (Aggregation) : {}",
+            log.info("Elastic Search response (Aggregation) : {}",
                     elasticAggregationResponse.toString());
 
             long timeTakenInElasticFilterQueryExecution =

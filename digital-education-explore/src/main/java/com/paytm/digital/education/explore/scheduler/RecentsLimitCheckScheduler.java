@@ -40,7 +40,7 @@ public class RecentsLimitCheckScheduler {
     private RecentSearchServiceImpl recentSearchService;
 
     @Autowired
-    private ElasticSearchService    elasticSearchService;
+    private ElasticSearchService elasticSearchService;
 
     @Value("${recent.search.limit.per.user}")
     private Integer esDocLimitPerUser;
@@ -49,13 +49,15 @@ public class RecentsLimitCheckScheduler {
     @Scheduled(fixedDelayString = "${search.limiter.interval}")
     public void extractUserId() {
         SearchResponse searchResponse = getAggregationsFromElastic();
-        log.info("Elastic agregations : {}", searchResponse);
+        log.info("Elastic aggregations : {}", searchResponse);
         Long userId = extractUserIdFromElasticResponse(searchResponse);
         if (Objects.nonNull(userId)) {
             List<String> documentIds = getDocumentIds(userId);
             log.info("Removing documents: {} for user :{}", documentIds, userId);
-            deleteDocuments(documentIds, ExploreConstants.RECENT_SEARCHES_ES_INDEX,
-                    ExploreConstants.RECENT_SEARCHES_ES_TYPE);
+            if (!CollectionUtils.isEmpty(documentIds)) {
+                deleteDocuments(documentIds, ExploreConstants.RECENT_SEARCHES_ES_INDEX,
+                        ExploreConstants.RECENT_SEARCHES_ES_TYPE);
+            }
         }
     }
 
@@ -89,26 +91,24 @@ public class RecentsLimitCheckScheduler {
         searchRequest.setLimit(ExploreConstants.DELETE_RECENTS_BATCH_SIZE);
         searchRequest.setOffset(esDocLimitPerUser);
         searchRequest.setFetchFilter(false);
-        searchRequest.setOffset(ExploreConstants.DEFAULT_OFFSET);
         Map<String, List<Object>> filters = new HashMap<>();
         filters.put(ExploreConstants.SEARCH_HISTORY_USERID, Arrays.asList(userId));
         searchRequest.setFilter(filters);
-        SearchResponse searchResponse = null;
         try {
-            searchResponse = recentSearchService.search(searchRequest);
+            SearchResponse searchResponse = recentSearchService.search(searchRequest);
+            if (!CollectionUtils.isEmpty(searchResponse.getResults().getValues())) {
+                List<SearchBaseData> searchHistories = searchResponse.getResults().getValues();
+                List<String> documentIds = new ArrayList<>();
+                for (SearchBaseData searchBaseData : searchHistories) {
+                    RecentSearch searchHistory = (RecentSearch) searchBaseData;
+                    documentIds.add(searchHistory.getId());
+                }
+                return documentIds;
+            }
         } catch (IOException e) {
             log.error("IO exception while querying elasticsearch :{}", e.getLocalizedMessage());
         } catch (TimeoutException e) {
-            log.error("Timeed out  elasticsearch :{}", e.getLocalizedMessage());
-        }
-        if (!CollectionUtils.isEmpty(searchResponse.getResults().getValues())) {
-            List<SearchBaseData> searchHistories = searchResponse.getResults().getValues();
-            List<String> documentIds = new ArrayList<>();
-            for (SearchBaseData searchBaseData : searchHistories) {
-                RecentSearch searchHistory = (RecentSearch) searchBaseData;
-                documentIds.add(searchHistory.getId());
-            }
-            return documentIds;
+            log.error("Timed out  elasticsearch :{}", e.getLocalizedMessage());
         }
         return null;
     }
@@ -121,7 +121,7 @@ public class RecentsLimitCheckScheduler {
                     TermFilterData termFilterData = (TermFilterData) filterData;
                     if (!CollectionUtils.isEmpty(termFilterData.getBuckets())) {
                         FilterBucket bucket = termFilterData.getBuckets().get(0);
-                        if (bucket.getDocCount() > 1) {
+                        if (bucket.getDocCount() > esDocLimitPerUser) {
                             return Long.parseLong(bucket.getValue());
                         }
                     }
@@ -134,6 +134,7 @@ public class RecentsLimitCheckScheduler {
     private SearchResponse getAggregationsFromElastic() {
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.setFetchFilter(true);
+        searchRequest.setFetchSearchResults(false);
         searchRequest.setLimit(0);
         searchRequest.setEntity(EducationEntity.RECENT_SEARCHES);
 

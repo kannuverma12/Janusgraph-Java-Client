@@ -181,10 +181,10 @@ public abstract class AbstractSearchServiceImpl {
         }
     }
 
-    protected SearchResponse buildSearchResponse(ElasticResponse elasticResponse,
+    protected void buildSearchResponse(SearchResponse searchResponse,
+            ElasticResponse elasticResponse,
             ElasticRequest elasticRequest, String component, String filterNamespace,
             String searchResultNamespace, Classification classificationData) {
-        SearchResponse searchResponse = new SearchResponse(elasticRequest.getQueryTerm());
         if (elasticRequest.isSearchRequest()) {
             Map<String, Map<String, Object>> propertyMap = null;
             if (StringUtils.isNotBlank(component)) {
@@ -214,7 +214,6 @@ public abstract class AbstractSearchServiceImpl {
             classificationResponse.setSortParams(classificationData.getSortParams());
         }
         searchResponse.setClassificationResponseData(classificationResponse);
-        return searchResponse;
     }
 
     protected ElasticResponse initiateSearch(ElasticRequest elasticRequest, Class type)
@@ -229,7 +228,9 @@ public abstract class AbstractSearchServiceImpl {
         elasticRequest.setQueryTerm(searchRequest.getTerm());
         elasticRequest.setIndex(index);
         elasticRequest.setAnalyzer(analyzer);
-        elasticRequest.setSearchRequest(true);
+        if (searchRequest.getFetchSearchResults()) {
+            elasticRequest.setSearchRequest(true);
+        }
         if (searchRequest.getFetchFilter()) {
             elasticRequest.setAggregationRequest(true);
         }

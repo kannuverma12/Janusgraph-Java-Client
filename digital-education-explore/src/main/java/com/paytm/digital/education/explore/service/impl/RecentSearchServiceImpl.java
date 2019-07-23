@@ -1,5 +1,6 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
@@ -18,18 +19,20 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
 @Service
 @Slf4j
 public class RecentSearchServiceImpl extends AbstractSearchServiceImpl {
 
-    private static Map<String, Float>           searchFieldKeys;
-    private static Map<String, FilterQueryType> filterQueryTypeMap;
+    private static  Map<String, Float>                   searchFieldKeys;
+    private static  Map<String, FilterQueryType>         filterQueryTypeMap;
+    private static LinkedHashMap<String, DataSortOrder> defaultSortKeysInOrder;
 
     @Autowired
     private SearchAggregateHelper searchAggregateHelper;
@@ -41,6 +44,8 @@ public class RecentSearchServiceImpl extends AbstractSearchServiceImpl {
         searchFieldKeys.put(ExploreConstants.SEARCH_HISTORY_TERMS, 1F);
         filterQueryTypeMap = new HashMap<>();
         filterQueryTypeMap.put(ExploreConstants.SEARCH_HISTORY_USERID, FilterQueryType.TERMS);
+        defaultSortKeysInOrder = new LinkedHashMap<>();
+        defaultSortKeysInOrder.put(ExploreConstants.SEARCH_HISTORY_UPDATEDAT, DataSortOrder.DESC);
     }
 
     @Override
@@ -48,7 +53,10 @@ public class RecentSearchServiceImpl extends AbstractSearchServiceImpl {
             throws IOException, TimeoutException {
         ElasticRequest elasticRequest = buildSearchRequest(searchRequest);
         ElasticResponse elasticResponse = initiateSearch(elasticRequest, SearchHistoryEsDoc.class);
-        return buildSearchResponse(elasticResponse, elasticRequest, null, null, null, null);
+        SearchResponse searchResponse = new SearchResponse(searchRequest.getTerm());
+        buildSearchResponse(searchResponse, elasticResponse, elasticRequest, null, null, null,
+                null);
+        return searchResponse;
     }
 
     @Override
@@ -66,6 +74,7 @@ public class RecentSearchServiceImpl extends AbstractSearchServiceImpl {
                     SearchHistoryEsDoc.class);
         }
         if (StringUtils.isBlank(searchRequest.getTerm())) {
+            searchRequest.setSortOrder(defaultSortKeysInOrder);
             populateSortFields(searchRequest, elasticRequest, SearchHistoryEsDoc.class);
         }
         return elasticRequest;
