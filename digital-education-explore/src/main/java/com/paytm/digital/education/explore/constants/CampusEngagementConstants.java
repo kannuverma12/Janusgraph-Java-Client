@@ -21,9 +21,8 @@ public interface CampusEngagementConstants {
     String EVENT_SHEET_ID                        = "event_sheet_id";
     String EVENT_HEADER_RANGE                    = "event_header_range";
     String EVENT_START_ROW                       = "event_sheet_start_row";
-    String FILENAME                              = "file_name";
-    String MIMETYPE                              = "mime_type";
-    String INPUTSTREAM                           = "input_stream";
+    String TYPE                                  = "type";
+    String IS_IMPORTABLE                         = "is_importable";
     String IMAGE                                 = "image";
     String VIDEO                                 = "video";
     String FAILED_MEDIA                          = "failed";
@@ -31,9 +30,6 @@ public interface CampusEngagementConstants {
     String ARTICLES                              = "articles";
     String MEDIA                                 = "media";
     String DOCS                                  = "docs";
-    String ID                                    = "id";
-    String USER                                  = "user";
-    String OFFLINE                               = "offline";
     String XCEL_DATE_FORMAT                      = "MM/dd/yyyy HH:mm:ss";
     String DB_DATE_FORMAT                        = "yyyy-MM-dd HH:mm:ss";
     String XCEL_SUBMITTED_DATE_FORMAT            = "MM/dd/yyyy";
