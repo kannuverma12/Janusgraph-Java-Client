@@ -24,8 +24,8 @@ public class DealsEligibleStudentData extends ResponseDto {
 
     @Id
     @JsonIgnore
-    @Field("ref_id")
-    ObjectId refId;
+    @Field("_id")
+    ObjectId id;
 
     @Field("customer_id")
     @JsonProperty("customer_id")
