@@ -57,6 +57,9 @@ public class SearchRequest extends FieldsAndFieldGroupRequest {
     private Boolean fetchFilter = true;
 
     @JsonIgnore
+    private Boolean fetchSearchResults = true;
+
+    @JsonIgnore
     private Client client;
 
     @JsonProperty("meta")

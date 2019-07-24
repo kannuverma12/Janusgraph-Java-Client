@@ -20,6 +20,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.DEG
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_NAME_COURSE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM_COURSE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LEVEL_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_HISTORY_USERID;
 
 import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.BucketAggregationSortParms;
@@ -116,5 +117,16 @@ public class SearchAggregateHelper {
             courseAggregateData[i] = aggregateField;
         }
         return courseAggregateData;
+    }
+
+    public AggregateField[] gerRecentSearchesAggregateData() {
+        AggregateField[] aggregateFields = new AggregateField[1];
+        aggregateFields[0] = new AggregateField();
+        aggregateFields[0].setName(SEARCH_HISTORY_USERID);
+        aggregateFields[0].setType(TERMS);
+        aggregateFields[0].setBucketsOrder(
+                BucketSort.builder().key(BucketAggregationSortParms.COUNT).order(DataSortOrder.DESC)
+                        .build());
+        return aggregateFields;
     }
 }
