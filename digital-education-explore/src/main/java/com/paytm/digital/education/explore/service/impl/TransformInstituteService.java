@@ -2,6 +2,7 @@ package com.paytm.digital.education.explore.service.impl;
 
 import com.paytm.digital.education.config.AwsConfig;
 import com.paytm.digital.education.explore.constants.AWSConstants;
+import com.paytm.digital.education.explore.database.entity.Alumni;
 import com.paytm.digital.education.explore.database.entity.Gallery;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.entity.Ranking;
@@ -12,6 +13,7 @@ import com.paytm.digital.education.explore.service.helper.IncrementalDataHelper;
 import com.paytm.digital.education.utility.UploadUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -91,7 +93,8 @@ public class TransformInstituteService {
                 rankings.add(ranking);
             }
 
-            // TODO check galleries, images, logos and notable allumni
+            //notable alumni
+            updateNotableAlumniDetails(institute);
 
             // S3 upload
             uploadImages(institute);
@@ -100,6 +103,27 @@ public class TransformInstituteService {
         }
 
         return institutes;
+    }
+
+    private void updateNotableAlumniDetails(Institute institute) {
+        List<Alumni> alumniList = institute.getNotableAlumni();
+
+        if (Objects.nonNull(alumniList)) {
+            log.info("Uploading images for Notable alumni.");
+            for (Alumni alumni : alumniList) {
+                if (StringUtils.isNotBlank(alumni.getAlumniPhoto())) {
+                    String imageName = getImageName(alumni.getAlumniPhoto());
+                    String imageUrl = uploadUtil.uploadImage(alumni.getAlumniPhoto(), imageName,
+                            institute.getInstituteId(), AwsConfig.getS3ExploreBucketName(),
+                            AWSConstants.S3_RELATIVE_PATH_FOR_EXPLORE);
+                    if (Objects.nonNull(imageUrl)) {
+                        alumni.setAlumniPhoto(imageUrl);
+                    } else {
+                        log.info("Some issue with alumni picture");
+                    }
+                }
+            }
+        }
     }
 
     private void uploadImages(Institute institute) {
