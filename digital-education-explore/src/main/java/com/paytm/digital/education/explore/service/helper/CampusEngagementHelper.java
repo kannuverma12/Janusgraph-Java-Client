@@ -1,7 +1,10 @@
 package com.paytm.digital.education.explore.service.helper;
 
+import com.paytm.digital.education.database.entity.FailedData;
+import com.paytm.digital.education.database.repository.FailedDataRepository;
 import com.paytm.digital.education.explore.database.entity.Article;
 import com.paytm.digital.education.explore.database.entity.CampusAmbassador;
+import com.paytm.digital.education.explore.database.entity.CampusEngagement;
 import com.paytm.digital.education.explore.database.entity.CampusEvent;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.response.dto.detail.Ambassador;
@@ -9,6 +12,7 @@ import com.paytm.digital.education.explore.response.dto.detail.CampusArticle;
 import com.paytm.digital.education.explore.response.dto.detail.CampusEventDetail;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
+import com.paytm.digital.education.utility.DateUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -33,10 +37,13 @@ import static com.paytm.digital.education.explore.constants.CampusEngagementCons
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.COMPONENT;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.DOCS;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.GOOGLE_SHEETS_INFO;
+import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.HAS_IMPORTED;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.KEY;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.MEDIA;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.NAMESPACE;
+import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.TYPE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
 
 @Slf4j
 @Service
@@ -44,6 +51,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EXP
 public class CampusEngagementHelper {
     private CommonMongoRepository commonMongoRepository;
     private PropertyReader        propertyReader;
+    private FailedDataRepository  failedDataRepository;
 
     public void updatePropertyMap(String key, Object value) {
         Map<String, Object> queryObject = new HashMap<>();
@@ -142,6 +150,42 @@ public class CampusEngagementHelper {
     public void saveMultipleFailedData(List<Object> failedDataList) {
         if (!failedDataList.isEmpty()) {
             commonMongoRepository.saveMultipleObject(failedDataList);
+        }
+    }
+
+    public void addToFailedList(Object object, String message,
+            boolean isImportable, List<Object> failedDataList, String component, String type) {
+        FailedData failedData = new FailedData();
+        failedData.setComponent(component);
+        failedData.setHasImported(false);
+        failedData.setType(type);
+        failedData.setMessage(message);
+        failedData.setIsImportable(isImportable);
+        failedData.setFailedDate(DateUtil.getCurrentDate());
+        failedData.setData(object);
+        failedDataList.add(failedData);
+    }
+
+    public void updateReimportStatus(String type, String component) {
+        Update update = new Update();
+        update.set(HAS_IMPORTED, true);
+        Map<String, Object> queryObject = new HashMap<>();
+        queryObject.put(HAS_IMPORTED, false);
+        queryObject.put(COMPONENT, component);
+        queryObject.put(TYPE, type);
+        List<String> projectionFields = Arrays.asList(HAS_IMPORTED);
+        failedDataRepository.updateMulti(queryObject, projectionFields, update);
+    }
+
+    public CampusEngagement findCampusEngagementData(long instituteId) {
+        List<CampusEngagement> campusEngagement =
+                commonMongoRepository.getEntitiesByIdAndFields(INSTITUTE_ID,
+                instituteId,
+                CampusEngagement.class, new ArrayList<>());
+        if (campusEngagement.isEmpty()) {
+            return null;
+        } else {
+            return campusEngagement.get(0);
         }
     }
 }

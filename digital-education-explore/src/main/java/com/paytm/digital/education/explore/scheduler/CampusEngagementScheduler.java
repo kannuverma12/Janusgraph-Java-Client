@@ -15,6 +15,9 @@ import com.paytm.digital.education.explore.database.repository.CronPropertiesRep
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.core.SchedulerLock;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.text.ParseException;
 import java.util.Objects;
 
 @Slf4j
@@ -30,7 +33,8 @@ public class CampusEngagementScheduler {
 
     //@Scheduled(fixedDelayString = "${failed-campus-engagement.import.cron.fixed.delay}")
     //@SchedulerLock(name = "importFailedCampusEngagementData")
-    public void importFailedArticleScheduler() {
+    public void importFailedArticleScheduler() throws IOException, ParseException,
+            GeneralSecurityException {
         CronProperties campusEngagementCronPropety =
                 cronPropertiesRepository
                         .findByCronName(CAMPUS_ENGAGEMENT_FAILED_IMPORT);
@@ -39,15 +43,15 @@ public class CampusEngagementScheduler {
         } else {
             if (BooleanUtils.isTrue(campusEngagementCronPropety.getIsActive())) {
                 log.info("entered in reimport article scheduler");
-                importArticleService.reimportFailedArticles();
+                //importArticleService.importData(true);
                 log.info("exited in reimport article scheduler");
 
                 log.info("entered in reimport ambassador scheduler scheduler");
-                importAmbassadorService.reimportFailedAmbassador();
+                //importAmbassadorService.importData(true);
                 log.info("exited in reimport ambassador scheduler scheduler");
 
                 log.info("entered in reimport event scheduler scheduler");
-                importEventService.reimportFailedEvents();
+                //importEventService.importData(true);
                 log.info("exited in reimport event scheduler scheduler");
             }
         }

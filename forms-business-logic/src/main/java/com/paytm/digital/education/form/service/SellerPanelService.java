@@ -11,7 +11,10 @@ public interface SellerPanelService {
 
     List<FormData> getInfoOnOrderIds(String merchantId, List<Long> orderIds, Date startDate, Date endDate);
 
-    ResponseData<FormData> getInfoOnDate(String merchantId, Date startDate, Date endDate, int offset, int limit);
+    ResponseData<FormData> getInfoOnDate(String merchantId, Date startDate, Date endDate, Integer offset,
+                                         Integer limit);
+
+    ResponseData<FormData> getInfoOnDate(String merchantId, Date startDate, Date endDate);
 
     void submitDownloadOrderRequest(DownloadOrder downloadOrder);
 

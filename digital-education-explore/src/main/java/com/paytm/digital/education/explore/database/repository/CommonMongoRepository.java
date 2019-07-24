@@ -17,6 +17,7 @@ import com.paytm.digital.education.explore.database.entity.FtlTemplate;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -128,6 +129,11 @@ public class CommonMongoRepository {
         mongoOperation.updateMulti(createMongoQuery(searchRequest, fields), update, type);
     }
 
+    public void upsertData(Map<String, Object> searchRequest, List<String> fields, Update update,
+            Class<?> type) {
+        mongoOperation.upsert(createMongoQuery(searchRequest, fields), update, type);
+    }
+
     private <T> T executeQuery(Query mongoQuery, Class<T> type) {
         return mongoOperation.findOne(mongoQuery, type);
     }
@@ -155,6 +161,14 @@ public class CommonMongoRepository {
             String field, Class<T> result) {
         return executeMongoQueryDistinct(createMongoQuery(searchRequest, new ArrayList<>()),
                 field, instance, result);
+    }
+
+    public <T> T findAndModify(Map<String, Object> searchRequest, Update update,
+            FindAndModifyOptions options, Class<T> type) {
+
+        return mongoOperation.findAndModify(createMongoQuery(searchRequest, new ArrayList<>()), update,
+                options,
+                type);
     }
 
     /*

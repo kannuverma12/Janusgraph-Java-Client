@@ -32,6 +32,7 @@ public interface ExploreConstants {
     String GROUP_NAME   = "name";
     String GROUP_ENTITY = "entity";
     String GROUP_ACTIVE = "active";
+    String SUB_ITEMS    = "subitems";
 
     String EDUCATION_BASE_URL = "/explore";
 
@@ -250,10 +251,15 @@ public interface ExploreConstants {
     int    MAX_STREAMS               = 2;
     int    COLLEGES_PER_STREAM       = 2;
 
-    String COLLEGE_FOCUS = "colleges_focus";
-    String TOP_COLLEGES  = "top_colleges";
-    String ICON          = "icon";
-    String LOCATIONS     = "locations";
-    String BANNER_MID    = "banner_mid";
-    String IMAGE_URL     = "image_url";
+    String COLLEGE_FOCUS   = "colleges_focus";
+    String TOP_COLLEGES    = "top_colleges";
+    String TOP_EXAMS       = "top_exams";
+    String TOP_EXAMS_APP   = "top_exams_app";
+    String ICON            = "icon";
+    String LOCATIONS       = "locations";
+    String BANNER_MID      = "banner_mid";
+    String IMAGE_URL       = "image_url";
+    String DUMMY_EXAM_ICON = "/engineering_archi.svg";
+    String ID              = "id";
+    String RANKING_LOGO    = "ranking";
 }

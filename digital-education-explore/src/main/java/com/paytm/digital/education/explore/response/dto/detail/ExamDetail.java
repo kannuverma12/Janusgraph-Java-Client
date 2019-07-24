@@ -20,7 +20,7 @@ public class ExamDetail {
     private String         examFullName;
 
     @JsonProperty("url_display_key")
-    private String          urlDisplayName;
+    private String         urlDisplayName;
 
     @JsonProperty("interested")
     private boolean        interested;
@@ -33,6 +33,9 @@ public class ExamDetail {
 
     @JsonProperty("exam_level")
     private String         examLevel;
+
+    @JsonProperty("logo_url")
+    private String         logoUrl;
 
     @JsonProperty("linguistic_medium")
     private List<String>   linguisticMedium;

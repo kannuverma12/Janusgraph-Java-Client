@@ -1,14 +1,15 @@
 package com.paytm.digital.education.form.service.impl;
 
 
-import com.mongodb.client.result.UpdateResult;
 import com.paytm.digital.education.config.AwsConfig;
 import com.paytm.digital.education.form.constants.FblConstants;
 import com.paytm.digital.education.form.dao.FormDataDao;
+import com.paytm.digital.education.form.dao.PaymentPostingErrorDao;
 import com.paytm.digital.education.form.model.FormData;
 import com.paytm.digital.education.form.model.FormFulfilment;
 import com.paytm.digital.education.form.model.FormStatus;
 import com.paytm.digital.education.form.model.MerchantProductConfig;
+import com.paytm.digital.education.form.model.PaymentState;
 import com.paytm.digital.education.form.model.PaymentUserMetaData;
 import com.paytm.digital.education.form.producer.KafkaProducer;
 import com.paytm.digital.education.form.request.FormIoMerchantDataRequest;
@@ -53,15 +54,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Date;
 import java.util.ArrayList;
-import java.util.Objects;
-import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 
 /*
@@ -73,6 +74,7 @@ import java.util.Arrays;
     > Update order status in formData collection
     > Update order status to fulfilment via kafka
 */
+
 
 @Data
 @Service
@@ -98,6 +100,9 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
     private FormDataDao formDataDao;
 
     @Autowired
+    private PaymentPostingErrorDao paymentPostingErrorDao;
+
+    @Autowired
     private PredictorStatsRepository predictorStatsRepository;
 
     @Autowired
@@ -114,117 +119,140 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
     @Override
     public boolean processPaymentPosting(PaymentPostingRequest paymentPostingRequest) {
         try {
-            // fetch item from request
-            // todo: handle multiple items
-            log.info("Received payment posting: {}", JsonUtils.toJson(paymentPostingRequest));
-            PaymentPostingItemRequest paymentPostingItemRequest = paymentPostingRequest.getItems().get(0);
+            log.info("Received payment posting Request: {}", paymentPostingRequest);
+            PaymentPostingItemRequest paymentPostingItemRequest =
+                    paymentPostingRequest.getItems().get(0);
 
-            // validate price
             Float minPrice = 0.0f;
             if (paymentPostingItemRequest.getPrice().compareTo(minPrice) < 0) {
-                // todo: send metrics
+                paymentPostingErrorDao
+                        .upsertRecord(null, "Negative price found", paymentPostingRequest.getId(),
+                                paymentPostingItemRequest);
                 log.error("Negative price found: " + paymentPostingItemRequest.getPrice());
-                return false;
+                nackOrder(paymentPostingItemRequest, null);
+                return true;
             }
-
-            // parse metadata
-            final String metaData = paymentPostingItemRequest.getMetaData();
-            PaymentUserMetaData metadata = null;
-            try {
-                metadata = JsonUtils.fromJson(metaData, PaymentUserMetaData.class);
-                if (metadata == null) {
-                    log.error("Error parsing metadata: " + metaData);
-                }
-            } catch (Exception e) {
-                // todo: send metrics
-                log.error("Error parsing metadata: " + metaData, e);
-                return false;
+            String refId = getRefId(paymentPostingRequest.getId(), paymentPostingItemRequest);
+            if (StringUtils.isBlank(refId)) {
+                paymentPostingErrorDao
+                        .upsertRecord(null, "RefId not found in meta: " + paymentPostingItemRequest
+                                        .getMetaData(), paymentPostingRequest.getId(),
+                                paymentPostingItemRequest);
+                log.error("refId not found in metadata: " + paymentPostingItemRequest.getMetaData());
+                nackOrder(paymentPostingItemRequest, null);
+                return true;
             }
-
-            String refId = metadata.getRefId();
-            if (refId == null || refId.isEmpty()) {
-                // todo: send metrics
-                log.error("refId not found in metadata: " + metaData);
-                return false;
-            }
-
-            formDataDao.updateStatus(refId, FormStatus.PG_PAYMENT_DONE);
-
-            // fetch data and status from formData collection using refId
             FormData formData = fetchDataFromFormDataCollection(refId);
-
-            // validate amount
-            if (formData == null || formData.getCandidateDetails().getAmount() == null) {
-                // todo: send metrics
-                log.error("amount not found for refId: " + refId);
-                return false;
+            if (formData == null) {
+                paymentPostingErrorDao.upsertRecord(refId, "Form data not found in DB",
+                        paymentPostingRequest.getId(), paymentPostingItemRequest);
+                log.error("Form data not found for refId: " + refId);
+                nackOrder(paymentPostingItemRequest, refId);
+                return true;
             }
-            if (!(paymentPostingItemRequest.getPrice().equals(formData.getCandidateDetails().getAmount()))) {
-                // todo: send metrics
-                log.error("amount validation failed for refId: " + refId + " " + paymentPostingItemRequest.getPrice()
-                        + " " + formData.getCandidateDetails().getAmount());
-                return false;
+            if (formData.getCandidateDetails().getAmount() == null) {
+                paymentPostingErrorDao.upsertRecord(refId, "Amount not found in DB",
+                        paymentPostingRequest.getId(), paymentPostingItemRequest);
+                log.error("Amount not found for refId: " + refId);
+                nackOrder(paymentPostingItemRequest, refId);
+                return true;
             }
 
-            // check for txn type
+            if (formData.getFormFulfilment() != null) {
+                if (formData.getFormFulfilment().getItemId() != null && !formData.getFormFulfilment()
+                        .getItemId().equals(paymentPostingItemRequest.getItemId())) {
+                    paymentPostingErrorDao.upsertRecord(refId, "Invalid item found in request",
+                            paymentPostingRequest.getId(), paymentPostingItemRequest);
+                    log.error("Invalid item found in request for {} {} {}", refId,
+                            formData.getFormFulfilment().getItemId(),
+                            paymentPostingItemRequest.getItemId());
+                    nackOrder(paymentPostingItemRequest, refId);
+                    return true;
+                }
+
+                if (formData.getFormFulfilment().getPaymentStatus() != null && !formData.getFormFulfilment()
+                        .getPaymentStatus().equalsIgnoreCase(FblConstants.PENDING_STRING)) {
+                    paymentPostingErrorDao.upsertRecord(refId, "Payment already done",
+                            paymentPostingRequest.getId(), paymentPostingItemRequest);
+                    log.error("Payment already done for {} {}", refId,
+                            formData.getFormFulfilment().getPaymentStatus());
+                    return true;
+                }
+            }
+
+            if (!(paymentPostingItemRequest.getPrice()
+                    .equals(formData.getCandidateDetails().getAmount()))) {
+                paymentPostingErrorDao.upsertRecord(refId,
+                        "Amount validation failed. Request amt: " + paymentPostingItemRequest
+                                .getPrice().toString() + " DB amt: " + formData
+                                .getCandidateDetails().getAmount().toString(),
+                        paymentPostingRequest.getId(), paymentPostingItemRequest);
+                log.error("Amount validation failed for refId: {} {} {}", refId, paymentPostingItemRequest.getPrice(),
+                        formData.getCandidateDetails().getAmount());
+                nackOrder(paymentPostingItemRequest, refId);
+                return true;
+            }
+
             if (formData.getTransactionType() == null || formData.getTransactionType().isEmpty()) {
-                // todo: send metrics
-                log.error("transaction type not present for refId: " + refId);
-                return false;
+                paymentPostingErrorDao.upsertRecord(refId, "Transaction type not present",
+                        paymentPostingRequest.getId(), paymentPostingItemRequest);
+                log.error("Transaction type not present for refId: " + refId);
+                nackOrder(paymentPostingItemRequest, refId);
+                return true;
             }
-            log.info("Current transaction type found for refId " + refId + " is " + formData.getTransactionType());
+            log.debug("Current transaction type found for refId " + refId + " is " + formData
+                    .getTransactionType());
 
-            // insert order data in formData collection
-            if (!insertInFormDataCollection(refId, paymentPostingItemRequest)) {
-                // todo: send metrics
-                log.error("Order already exists for refId " + refId);
-                return false;
+            if (formData.getFormFulfilment() == null || formData.getFormFulfilment().getOrderId() == null) {
+                insertInFormDataCollection(refId, paymentPostingItemRequest,
+                        FormStatus.PG_PAYMENT_DONE, PaymentState.ORDER_ID_UPDATED);
+            } else {
+                formDataDao.updateStatus(refId, FormStatus.PG_PAYMENT_DONE);
             }
 
-            // fetch fulfilment id
-            Long fulfilmentId = fetchFulfilmentId(paymentPostingItemRequest, refId);
+            Long fulfilmentId = null;
+            if (formData.getFormFulfilment() != null) {
+                fulfilmentId = formData.getFormFulfilment().getFulfilmentId();
+            }
             if (fulfilmentId == null) {
-                // todo: send metrics
-                log.error("Fulfilment id was not created for refId " + refId);
-                return false;
+                fulfilmentId = createFulfilmentId(refId, paymentPostingItemRequest);
+                if (fulfilmentId == null) {
+                    paymentPostingErrorDao.upsertRecord(refId, "Error creating fulfillment id",
+                            paymentPostingRequest.getId(), paymentPostingItemRequest);
+                    log.error("Error creating fulfillment id");
+                    return false;
+                }
+                updateFulfilmentIdInFormDataCollection(refId, fulfilmentId, PaymentState.FF_ID_UPDATED);
             }
-            log.info("Fulfilment id for " + refId + " created is " + fulfilmentId.toString());
 
-            // update fulfilment id in formData collection
-            updateFulfilmentIdInFormDataCollection(refId, fulfilmentId);
-
-
-            // hit form.io API
             FormIoMerchantResponse formIoMerchantResponse = notifyMerchant(paymentPostingRequest,
                     paymentPostingItemRequest, formData, refId);
-
             if (formIoMerchantResponse == null) {
                 log.error("Response from formio API found null for refId " + refId + ", setting it as PENDING");
                 formIoMerchantResponse = new FormIoMerchantResponse();
-                formIoMerchantResponse.setPaymentStatus("pending");  // PENDING
+                formIoMerchantResponse.setPaymentStatus("pending");
             }
-
-            // check if payment status fetched is null
             if (formIoMerchantResponse.getPaymentStatus() == null) {
                 log.error("Payment status from formio API found null for refId " + refId + ", setting it as PENDING");
-                formIoMerchantResponse.setPaymentStatus("pending");  // PENDING
+                formIoMerchantResponse.setPaymentStatus("pending");
             }
-
             // converting paymentStatus to lowercase
-            formIoMerchantResponse.setPaymentStatus(formIoMerchantResponse.getPaymentStatus().toLowerCase());
+            formIoMerchantResponse.setPaymentStatusToLowerCase();
 
-            // check if unrecognized status is found
             if (!paymentStatus.contains(formIoMerchantResponse.getPaymentStatus())) {
                 log.error("Unrecognized payment status found from formio API for refId " + refId
                         + ", setting it as PENDING");
-                formIoMerchantResponse.setPaymentStatus("pending");  // PENDING
+                formIoMerchantResponse.setPaymentStatus("pending");
             }
             log.info("Setting payment status as " + formIoMerchantResponse.getPaymentStatus() + " for refId" + refId);
 
-            // update order status in formData
-            updateOrderStatusInFormDataCollection(refId, formIoMerchantResponse);
+            PaymentState paymentState = getPaymentState(formIoMerchantResponse.getPaymentStatus());
+            FormStatus formStatus = getFormStatus(formIoMerchantResponse.getPaymentStatus());
+            updateOrderStatusInFormDataCollection(refId, formIoMerchantResponse, formStatus, paymentState);
 
-            // update fulfilment about the order status
+            if (paymentState.equals(PaymentState.PENDING)) {
+                return false;
+            }
             notifyOrderStatusToFulfilment(
                     refId,
                     paymentPostingItemRequest,
@@ -234,24 +262,64 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
             log.info("Payment posting workflow completed for refId " + refId + " and order id "
                     + paymentPostingItemRequest.getOrderId());
         } catch (Exception e) {
-            // todo: send metrics
-            log.error("Error in processPaymentPosting" + paymentPostingRequest.getItems(), e);
+            log.error("Error in processPaymentPosting {} {}", paymentPostingRequest, e);
+            return false;
         }
         return true;
     }
 
-    private Long fetchFulfilmentId(PaymentPostingItemRequest paymentPostingItemRequest,
-                                   String formFulfilmentCollectionId) {
+    private PaymentState getPaymentState(String status) {
+        if (status.equalsIgnoreCase(FblConstants.SUCCESS_STRING)) {
+            return PaymentState.SUCCESS;
+        } else if (status.equalsIgnoreCase(FblConstants.FAILURE_STRING)) {
+            return PaymentState.FAILURE;
+        } else {
+            return PaymentState.PENDING;
+        }
+    }
+
+    private FormStatus getFormStatus(String status) {
+        if (status.equalsIgnoreCase(FblConstants.SUCCESS_STRING)) {
+            return FormStatus.SUCCESS;
+        } else if (status.equalsIgnoreCase(FblConstants.FAILURE_STRING)) {
+            return FormStatus.FAILURE;
+        } else {
+            return FormStatus.PENDING;
+        }
+    }
+
+    private String getRefId(String requestId, PaymentPostingItemRequest paymentPostingItemRequest) {
+        PaymentUserMetaData metadata = null;
+        try {
+            metadata = JsonUtils.fromJson(paymentPostingItemRequest.getMetaData(), PaymentUserMetaData.class);
+            if (metadata == null) {
+                paymentPostingErrorDao.upsertRecord(null, "Error parsing metadata: "
+                        + paymentPostingItemRequest.getMetaData(), requestId, paymentPostingItemRequest);
+                log.error("Error parsing metadata: " + paymentPostingItemRequest.getMetaData());
+                return null;
+            }
+        } catch (Exception e) {
+            paymentPostingErrorDao.upsertRecord(null, "Error parsing metadata: "
+                    + paymentPostingItemRequest.getMetaData() + e, requestId, paymentPostingItemRequest);
+            log.error("Error parsing metadata:", e);
+            return null;
+        }
+        return metadata.getRefId();
+    }
+
+    private Long createFulfilmentId(String formFulfilmentCollectionId,
+                                    PaymentPostingItemRequest paymentPostingItemRequest) {
         // construct URL
-        String url = env.getProperty("fulfilment.host.url") + '/' + paymentPostingItemRequest.getMerchantId().toString()
-                + env.getProperty("fulfilment.path.create") + '/' + paymentPostingItemRequest.getOrderId().toString();
-        log.info("Hitting fulfilment create: " + url);
+        String url = env.getProperty("fulfilment.host.url") + '/' + paymentPostingItemRequest.getMerchantId()
+                + env.getProperty("fulfilment.path.create") + '/' + paymentPostingItemRequest.getOrderId();
+        log.debug("Hitting fulfilment create: " + url);
         // construct request body
         Map<String, Object> map = new HashMap<>();
         map.put("merchant_id", paymentPostingItemRequest.getMerchantId());
         map.put("order_id", paymentPostingItemRequest.getOrderId());
         map.put("status", Integer.parseInt(env.getProperty("fulfilment.status.authorized")));
-        map.put("fulfillment_service_id", Integer.parseInt(env.getProperty("fulfilment.service.id")));
+        map.put("fulfillment_service_id",
+                Integer.parseInt(env.getProperty("fulfilment.service.id")));
         map.put("merchant_track_id", formFulfilmentCollectionId);
         map.put("order_item_ids", new long[]{paymentPostingItemRequest.getItemId()});
         // construct header
@@ -264,18 +332,38 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
                     url, HttpMethod.POST, headers, null, map, HashMap.class);
             return (Long) responseEntity.getBody().get("fulfillment_id");
         } catch (Exception e) {
+            paymentPostingErrorDao
+                    .upsertRecord(formFulfilmentCollectionId, "Error creating fulfillment id" + e,
+                            null, paymentPostingItemRequest);
             log.error("Error creating fulfillment id", e);
             return null;
         }
     }
 
-    private Boolean insertInFormDataCollection(String id, PaymentPostingItemRequest paymentPostingItemRequest) {
+    private void nackOrder(PaymentPostingItemRequest paymentPostingItemRequest, String refId) {
+        String url = env.getProperty("fulfilment.host.url") + '/' + paymentPostingItemRequest.getMerchantId()
+                + env.getProperty("fulfilment.path.ack") + '/' + paymentPostingItemRequest.getOrderId();
+        log.info("Hitting fulfilment nack: " + url);
+
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("status", 0);
+
+        try {
+            personaHttpClientService.makeHttpRequest(url, HttpMethod.POST, headers, null, map, Object.class);
+        } catch (Exception e) {
+            paymentPostingErrorDao.upsertRecord(refId, "Error while cancelling order in fulfilment" + e,
+                    paymentPostingItemRequest.getOrderId().toString(), paymentPostingItemRequest);
+            log.error("Error while cancelling order in fulfilment", e);
+        }
+    }
+
+    private void insertInFormDataCollection(String id, PaymentPostingItemRequest paymentPostingItemRequest,
+                                            FormStatus status, PaymentState paymentState) {
         Query query = new Query();
-        query.addCriteria(Criteria.where("id").is(id)
-                .orOperator(
-                        Criteria.where("formFulfilment.orderId").exists(false),
-                        Criteria.where("formFulfilment.orderId").is(null)
-                ));
+        query.addCriteria(Criteria.where("_id").is(id));
 
         // Creating model object
         FormFulfilment formFulfilment = new FormFulfilment();
@@ -283,6 +371,7 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         formFulfilment.setItemId(paymentPostingItemRequest.getItemId());
         formFulfilment.setProductId(paymentPostingItemRequest.getProductId());
         formFulfilment.setAmount(paymentPostingItemRequest.getPrice());
+        formFulfilment.setPaymentState(paymentState);
         formFulfilment.setStatusCheckAttempts(0);
         formFulfilment.setPaymentStatus("pending"); // setting status as PENDING
         Date currentDate = new Date();
@@ -290,13 +379,10 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         formFulfilment.setUpdatedDate(currentDate);
 
         Update update = new Update();
+        update.set("status", status);
         update.set("updatedAt", currentDate);
         update.set("formFulfilment", formFulfilment);
-
-        // todo: why is this failing when already exist ?
-        UpdateResult updateResult = mongoOperations.updateFirst(query, update, FormData.class);
-
-        return (updateResult.getModifiedCount() > 0);
+        mongoOperations.updateFirst(query, update, FormData.class);
     }
 
     private FormIoMerchantResponse notifyMerchant(PaymentPostingRequest paymentPostingRequest,
@@ -319,16 +405,20 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
             url = (String) ((Map<String, Object>) merchantProductConfig.getData()
                     .get(formData.getTransactionType().toLowerCase())).get("postingUrl");
         } catch (Exception e) {
-            log.error("Error while parsing formio url from config for merchant id " + paymentPostingItemRequest
-                    .getMerchantId() + " and product id " + paymentPostingItemRequest.getProductId());
+            log.error("Error while parsing formio url from config for merchant id "
+                    + paymentPostingItemRequest
+                    .getMerchantId() + " and product id " + paymentPostingItemRequest
+                    .getProductId());
             return null;
         }
         if (url == null) {
-            log.error("postingUrl from config found is null for merchant id " + paymentPostingItemRequest
-                    .getMerchantId() + " and product id " + paymentPostingItemRequest.getProductId());
+            log.error("postingUrl from config found is null for merchant id "
+                    + paymentPostingItemRequest
+                    .getMerchantId() + " and product id " + paymentPostingItemRequest
+                    .getProductId());
             return null;
         }
-        log.info("Merchant url fetched: " + url);
+        log.debug("Merchant url fetched: " + url);
 
         HttpPost postRequest = new HttpPost(url);
 
@@ -348,11 +438,14 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
 
         List<String> requestFormFields;
         try {
-            requestFormFields = (ArrayList<String>) ((Map<String, Object>) merchantProductConfig.getData()
-                    .get(formData.getTransactionType().toLowerCase())).get("requestFormFields");
+            requestFormFields =
+                    (ArrayList<String>) ((Map<String, Object>) merchantProductConfig.getData()
+                            .get(formData.getTransactionType().toLowerCase()))
+                            .get("requestFormFields");
         } catch (Exception e) {
-            log.info("requestFormFields not found for merchant id " + paymentPostingItemRequest
-                    .getMerchantId() + " and product id " + paymentPostingItemRequest.getProductId());
+            log.debug("requestFormFields not found for merchant id " + paymentPostingItemRequest
+                    .getMerchantId() + " and product id " + paymentPostingItemRequest
+                    .getProductId());
             requestFormFields = null;
         }
         if (requestFormFields != null && requestFormFields.size() > 0) {
@@ -367,21 +460,24 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
 
         postRequest.setEntity(new StringEntity(JsonUtils.toJson(formIoMerchantRequest)));
 
-        //log.info("Merchant API Request for refId {} : {}", refId, JsonUtils.toJson(postRequest));
+        log.debug("Merchant API Request for refId {} : {}", refId,
+                JsonUtils.toJson(formIoMerchantRequest));
         // execute post call
         DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpResponse response = httpClient.execute(postRequest);
-
-        // parse response
-        HttpEntity httpEntity = response.getEntity();
-        String apiOutput = EntityUtils.toString(httpEntity);
+        String apiOutput = null;
+        try {
+            HttpResponse response = httpClient.execute(postRequest);
+            HttpEntity httpEntity = response.getEntity();
+            apiOutput = EntityUtils.toString(httpEntity);
+        } catch (Exception e) {
+            log.error("Error while notifying merchant", e);
+        }
+        httpClient.getConnectionManager().shutdown();
         log.info("Merchant API Output for refId " + refId + ": " + apiOutput);
-        // close connection
         log.info("Form Data : {} ", formData);
         log.info("Merchant Product Config : {}", merchantProductConfig);
         FormIoMerchantResultResponse formIoMerchantResultResponse = JsonUtils
                 .fromJson(apiOutput, FormIoMerchantResultResponse.class);
-        httpClient.getConnectionManager().shutdown();
         log.info("Form io merchant result response : {}", formIoMerchantResultResponse);
         if (formIoMerchantResultResponse != null) {
             if (!CollectionUtils.isEmpty(merchantProductConfig.getData()) && merchantProductConfig
@@ -398,7 +494,7 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
     }
 
     private void updatePredictorStats(FormData formData,
-            MerchantProductConfig merchantProductConfig) {
+                                      MerchantProductConfig merchantProductConfig) {
         PredictorStats predictorStats = predictorStatsRepository
                 .findByCustomerIdAndMerchantProductIdAndMerchantId(formData.getCustomerId(),
                         formData.getMerchantProductId(), formData.getMerchantId());
@@ -425,7 +521,7 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
     }
 
     private void uploadAndUpdateS3Link(String refId,
-            FormIoMerchantResponse formIoMerchantResponse) {
+                                       FormIoMerchantResponse formIoMerchantResponse) {
         if (formIoMerchantResponse.getCandidateDetails().containsKey("predictorUrl")) {
             String urlStr =
                     (String) formIoMerchantResponse.getCandidateDetails().get("predictorUrl");
@@ -453,9 +549,10 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
     }
 
 
-    private void updateFulfilmentIdInFormDataCollection(String id, Long fulfilmentId) {
+    private void updateFulfilmentIdInFormDataCollection(String id, Long fulfilmentId, PaymentState state) {
         Update update = new Update();
         update.set("formFulfilment.fulfilmentId", fulfilmentId);
+        update.set("formFulfilment.paymentState", state);
         Date currentDate = new Date();
         update.set("updatedAt", currentDate);
         update.set("formFulfilment.updatedDate", currentDate);
@@ -468,6 +565,8 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
         query.addCriteria(Criteria.where("_id").is(id));
         query.fields().include("candidateDetails.amount");
         query.fields().include("transactionType");
+        query.fields().include("status");
+        query.fields().include("formFulfilment");
         query.fields().include("merchantProductId");
         query.fields().include("merchantCandidateId");
         query.fields().include("customerId");
@@ -479,30 +578,36 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
     private FormData fetchCustomFormData(String id, List<String> inclusionList) {
         Query query = new Query();
         query.addCriteria(Criteria.where("_id").is(id));
-        for (String key: inclusionList) {
+        for (String key : inclusionList) {
             query.fields().include(key);
         }
 
         return mongoOperations.findOne(query, FormData.class);
     }
 
-    private void updateOrderStatusInFormDataCollection(String id, FormIoMerchantResponse formIoMerchantResponse) {
+    private void updateOrderStatusInFormDataCollection(String id, FormIoMerchantResponse formIoMerchantResponse,
+                                                       FormStatus status, PaymentState paymentState) {
         Update update = new Update();
         update.set("formFulfilment.paymentStatus", formIoMerchantResponse.getPaymentStatus());
+        update.set("formFulfilment.paymentState", paymentState);
+        update.set("status", status);
         if (formIoMerchantResponse.getMerchantTransactionId() != null) {
-            update.set("formFulfilment.merchantTransactionId", formIoMerchantResponse.getMerchantTransactionId());
+            update.set("formFulfilment.merchantTransactionId",
+                    formIoMerchantResponse.getMerchantTransactionId());
+        }
+        if (formIoMerchantResponse.getMerchantCandidateId() != null) {
+            update.set("merchantCandidateId", formIoMerchantResponse.getMerchantCandidateId());
         }
         Date currentDate = new Date();
         update.set("formFulfilment.updatedDate", currentDate);
         update.set("updatedAt", currentDate);
-        update.set("status", env.getProperty("formio.status." + formIoMerchantResponse.getPaymentStatus()));
         // update response in candidateDetails
         if (formIoMerchantResponse.getCandidateDetails() != null) {
-            for (Map.Entry<String, Object> entry : formIoMerchantResponse.getCandidateDetails().entrySet()) {
+            for (Map.Entry<String, Object> entry : formIoMerchantResponse.getCandidateDetails()
+                    .entrySet()) {
                 update.set("candidateDetails." + entry.getKey(), entry.getValue());
             }
         }
-
         mongoOperations.updateFirst(new Query(Criteria.where("_id").is(id)), update, FormData.class);
     }
 
@@ -510,10 +615,10 @@ public class PaymentPostingServiceImpl implements PaymentPostingService {
                                                PaymentPostingItemRequest paymentPostingItemRequest,
                                                Long fulfilmentId, String responsecode) {
         // construct URL
-        String url = env.getProperty("fulfilment.host.url") + '/' + paymentPostingItemRequest.getMerchantId().toString()
-                + env.getProperty("fulfilment.path.update") + '/' + fulfilmentId.toString() + "?order_id="
-                + paymentPostingItemRequest.getOrderId().toString();
-        log.info("Created fulfilment update url: " + url);
+        String url = env.getProperty("fulfilment.host.url") + '/' + paymentPostingItemRequest.getMerchantId()
+                + env.getProperty("fulfilment.path.update") + '/' + fulfilmentId + "?order_id="
+                + paymentPostingItemRequest.getOrderId();
+        log.debug("Created fulfilment update url: " + url);
         // construct kafka message
         FulfilmentKafkaPostDataObject fulfilmentKafkaPostDataObject = new FulfilmentKafkaPostDataObject();
         fulfilmentKafkaPostDataObject.setPostActions(env.getProperty("fulfilment.postaction." + responsecode));

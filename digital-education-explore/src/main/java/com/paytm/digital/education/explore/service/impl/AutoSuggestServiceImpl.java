@@ -28,6 +28,7 @@ import com.paytm.digital.education.explore.es.model.AutoSuggestEsData;
 import com.paytm.digital.education.explore.response.dto.suggest.AutoSuggestData;
 import com.paytm.digital.education.explore.response.dto.suggest.AutoSuggestResponse;
 import com.paytm.digital.education.explore.response.dto.suggest.SuggestResult;
+import com.paytm.digital.education.explore.service.helper.ExamLogoHelper;
 import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.search.service.AutoSuggestionService;
@@ -58,6 +59,7 @@ public class AutoSuggestServiceImpl {
     private AutoSuggestionService    autoSuggestionService;
     private Map<String, String>      suggestClassLevelMap;
     private SubscriptionDetailHelper subscriptionDetailHelper;
+    private ExamLogoHelper           examLogoHelper;
 
     @PostConstruct
     private void generateLevelMap() {
@@ -183,8 +185,14 @@ public class AutoSuggestServiceImpl {
                     }
                     responseDoc.setUrlDisplayName(
                             CommonUtil.convertNameToUrlDisplayName(esDocument.getOfficialName()));
-                    if (StringUtils.isNotBlank(esDocument.getLogo())) {
-                        responseDoc.setLogo(CommonUtil.getLogoLink(esDocument.getLogo()));
+
+                    if (EducationEntity.EXAM.equals(esDocument.getEntityType())) {
+                        responseDoc.setLogo(examLogoHelper
+                                .getExamLogoUrl(esDocument.getEntityId(), esDocument.getLogo()));
+                    } else {
+                        if (StringUtils.isNotBlank(esDocument.getLogo())) {
+                            responseDoc.setLogo(CommonUtil.getLogoLink(esDocument.getLogo()));
+                        }
                     }
                     if (Objects.nonNull(esDocument.getOfficialAddress())) {
                         responseDoc.setOfficialAddress(

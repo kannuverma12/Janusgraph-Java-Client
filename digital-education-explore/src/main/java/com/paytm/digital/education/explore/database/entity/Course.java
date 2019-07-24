@@ -102,4 +102,9 @@ public class Course {
     @Field("cutoffs")
     private List<Cutoff> cutoffs;
 
+    @Field("application_process_url_partner")
+    private String applicationProcessUrlPartner;
+
+    @Field("status")
+    private String status;
 }
