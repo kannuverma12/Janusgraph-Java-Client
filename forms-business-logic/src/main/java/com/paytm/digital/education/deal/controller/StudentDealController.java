@@ -16,7 +16,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-@RequestMapping("/v1/deals")
+@RequestMapping("/formfbl")
 @Slf4j
 @AllArgsConstructor
 @RestController
@@ -25,14 +25,14 @@ import javax.validation.constraints.NotNull;
 public class StudentDealController {
     private StudentDataService studentDataService;
 
-    @PostMapping("/add/student-data")
-    public DealsEligibleStudentData createInstitute(
+    @PostMapping("/v1/deals/students")
+    public DealsEligibleStudentData saveStudentData(
             @RequestBody @Valid DealsEligibleStudentData studentData) {
         return studentDataService.addStudentData(studentData);
     }
 
-    @GetMapping("/fetch/student-data/{customerId}")
-    public DealsEligibleStudentData fetchVerificationStatus(@PathVariable @NotNull @Min(1) Long customerId) {
+    @GetMapping("/v1/deals/students/{customerId}")
+    public DealsEligibleStudentData fetchStudentData(@PathVariable @NotNull @Min(1) Long customerId) {
         return studentDataService.fetchStudentData(customerId);
     }
 }
