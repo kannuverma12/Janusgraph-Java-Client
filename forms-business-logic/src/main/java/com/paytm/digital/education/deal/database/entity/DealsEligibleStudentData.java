@@ -30,6 +30,10 @@ public class DealsEligibleStudentData {
     @JsonProperty("customer_id")
     private Long customerId;
 
+    @Field("name")
+    @JsonProperty("name")
+    private String name;
+
     @Field("email")
     @JsonProperty("email")
     private String email;
@@ -38,22 +42,22 @@ public class DealsEligibleStudentData {
     @JsonProperty("mobile_no")
     private String mobileNo;
 
-    @Field("first_name")
-    @JsonProperty("first_name")
-    private String firstName;
-
-    @Field("middle_name")
-    @JsonProperty("middle_name")
-    private String middleName;
-
-    @Field("last_name")
-    @JsonProperty("last_name")
-    private String lastName;
-
     @Field("date_of_birth")
     @JsonProperty("date_of_birth")
     @JsonFormat(pattern = YYYY_MM_DD)
     private Date dateOfBirth;
+
+    @Field("institute_name")
+    @JsonProperty("institute_name")
+    private String instituteName;
+
+    @Field("year_of_passing")
+    @JsonProperty("year_of_passing")
+    private String yearOfPassing;
+
+    @Field("stream")
+    @JsonProperty("stream")
+    private String stream;
 
     @Field("mobile_verified")
     @JsonProperty("mobile_verified")
@@ -62,6 +66,10 @@ public class DealsEligibleStudentData {
     @Field("email_verified")
     @JsonProperty("email_verified")
     private Boolean emailVerified;
+
+    @Field("student_id_details")
+    @JsonProperty("student_id_details")
+    private StudentIdentityDetails studentIdentityDetails;
 
     @Field("status")
     @JsonProperty("status")
@@ -76,41 +84,4 @@ public class DealsEligibleStudentData {
     @JsonProperty("updated_at")
     @JsonFormat(pattern = YYYY_MM_DD_T_HH_MM_SS)
     private Date updatedAt;
-
-    @Field("student_id_details")
-    @JsonProperty("student_id_details")
-    private StudentIdentityDetails studentIdentityDetails;
-
-    @Field("institute_name")
-    @JsonProperty("institute_name")
-    private String instituteName;
-
-    @Field("age")
-    @JsonProperty("age")
-    private Integer age;
-
-    @Field("gender")
-    @JsonProperty("gender")
-    private String gender;
-
-    @Field("blood_group")
-    @JsonProperty("blood_group")
-    private String bloodGroup;
-
-    @Field("level_of_student")
-    @JsonProperty("level_of_student")
-    private String levelOfStudent;
-
-    @Field("year_and_batch")
-    @JsonProperty("year_and_batch")
-    private String yearAndBatch;
-
-    @Field("stream")
-    @JsonProperty("stream")
-    private String stream;
-
-    @Field("roll_no")
-    @JsonProperty("roll_no")
-    private String rollNo;
-
 }
