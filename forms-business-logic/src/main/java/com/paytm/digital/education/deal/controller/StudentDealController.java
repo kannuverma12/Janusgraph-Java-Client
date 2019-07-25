@@ -25,13 +25,13 @@ import javax.validation.constraints.NotNull;
 public class StudentDealController {
     private StudentDataService studentDataService;
 
-    @PostMapping("/v1/deals/students")
+    @PostMapping("/v1/deal/student")
     public DealsEligibleStudentData saveStudentData(
             @RequestBody @Valid DealsEligibleStudentData studentData) {
         return studentDataService.addStudentData(studentData);
     }
 
-    @GetMapping("/v1/deals/students/{customerId}")
+    @GetMapping("/v1/deal/student/{customerId}")
     public DealsEligibleStudentData fetchStudentData(@PathVariable @NotNull @Min(1) Long customerId) {
         return studentDataService.fetchStudentData(customerId);
     }
