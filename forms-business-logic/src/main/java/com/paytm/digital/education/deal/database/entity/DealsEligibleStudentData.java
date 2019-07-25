@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.deal.enums.StatusType;
-import com.paytm.digital.education.deal.response.dto.ResponseDto;
 import lombok.Data;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -20,7 +19,7 @@ import static com.paytm.digital.education.deal.constants.DealConstant.YYYY_MM_DD
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Document("deals_eligible_student_data")
-public class DealsEligibleStudentData extends ResponseDto {
+public class DealsEligibleStudentData {
 
     @Id
     @JsonIgnore
