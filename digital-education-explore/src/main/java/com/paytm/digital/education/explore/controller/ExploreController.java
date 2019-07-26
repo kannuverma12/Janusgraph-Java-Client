@@ -16,6 +16,7 @@ import com.paytm.digital.education.explore.response.dto.search.CutoffSearchRespo
 import com.paytm.digital.education.explore.service.CutoffService;
 import com.paytm.digital.education.explore.service.impl.ExamListServiceImpl;
 
+import com.paytm.digital.education.explore.validators.SubscriptionRequestValidator;
 import com.paytm.digital.education.explore.validators.UrlParamsValidator;
 import com.paytm.digital.education.service.notification.NotificationServiceImpl;
 import com.paytm.digital.education.utility.JsonUtils;
@@ -50,12 +51,13 @@ import lombok.extern.slf4j.Slf4j;
 public class ExploreController {
     private static final SubscriptionStatus SUBSCRIBED_STATUS = SubscriptionStatus.SUBSCRIBED;
 
-    private UrlParamsValidator      urlParamsValidator;
-    private SubscriptionService     subscriptionService;
-    private CutoffService           cutoffService;
-    private ExploreValidator        exploreValidator;
-    private ExamListServiceImpl     examListService;
-    private NotificationServiceImpl notificationServiceImpl;
+    private UrlParamsValidator           urlParamsValidator;
+    private SubscriptionService          subscriptionService;
+    private CutoffService                cutoffService;
+    private ExploreValidator             exploreValidator;
+    private ExamListServiceImpl          examListService;
+    private NotificationServiceImpl      notificationServiceImpl;
+    private SubscriptionRequestValidator subscriptionRequestValidator;
 
     @GetMapping("/ping")
     public String ping() {
@@ -73,9 +75,21 @@ public class ExploreController {
             @RequestHeader(name = "x-user-id") @Min(1) long userId,
             @Valid @RequestBody SubscriptionRequest request) {
         log.info("Subscribe Request : {}", JsonUtils.toJson(request));
+        subscriptionRequestValidator.validate(request);
         return subscriptionService.subscribe(userId, request.getSubscriptionEntity(),
                 request.getSubscriptionEntityId());
     }
+
+    @RequestMapping(method = RequestMethod.DELETE, path = "auth/v1/unsubscribe")
+    @ResponseBody
+    public NotificationFlags bulkUnsubscribe(
+            @RequestHeader(name = "x-user-id") @Min(1) long userId,
+            @RequestBody @Valid SubscriptionRequest request) {
+        log.info("Unsubscribe Request : {}", JsonUtils.toJson(request));
+        subscriptionRequestValidator.validate(request);
+        return subscriptionService.unsubscribe(userId, request);
+    }
+
 
     @RequestMapping(method = RequestMethod.POST, path = "/auth/v1/unsubscribe")
     @ResponseBody
@@ -83,8 +97,8 @@ public class ExploreController {
             @RequestHeader(name = "x-user-id") @Min(1) long userId,
             @RequestBody @Valid SubscriptionRequest request) {
         log.info("Unsubscribe Request : {}", JsonUtils.toJson(request));
-        return subscriptionService.unsubscribe(userId, request.getSubscriptionEntity(),
-                request.getSubscriptionEntityId());
+        subscriptionRequestValidator.validate(request);
+        return subscriptionService.unsubscribe(userId, request);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/subscriptions/count")

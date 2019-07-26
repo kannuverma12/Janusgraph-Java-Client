@@ -13,6 +13,9 @@ public class BannerData {
     @JsonProperty("url")
     private String url;
 
+    @JsonProperty("logo")
+    private String logo;
+
     @JsonProperty("rurl")
     private String rurl;
 

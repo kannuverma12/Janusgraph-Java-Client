@@ -320,8 +320,8 @@ public class ExamDetailServiceImpl {
                 derivedAttributesHelper.getDerivedAttributes(highlights,
                         entityName));
         addDatesToResponse(examDetail, importantDates);
-        examDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName));
-        examDetail.setBanners(bannerDataHelper.getBannerData(entityName));
+        examDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName, null));
+        examDetail.setBanners(bannerDataHelper.getBannerData(entityName, null));
         examDetail.setWidgets(widgetsDataHelper.getWidgets(entityName, exam.getExamId(),
                 getDomainName(exam.getDomains())
         ));

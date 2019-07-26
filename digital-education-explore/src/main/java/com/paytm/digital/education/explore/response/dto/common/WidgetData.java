@@ -23,6 +23,9 @@ public class WidgetData {
     @JsonProperty("url_display_key")
     private String urlDisplayKey;
 
+    @JsonProperty("shortlisted")
+    private boolean shortlisted;
+
     @JsonProperty("stream")
     private String stream;
 

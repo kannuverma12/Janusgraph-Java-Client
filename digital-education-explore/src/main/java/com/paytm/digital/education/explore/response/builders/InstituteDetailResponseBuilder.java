@@ -7,6 +7,8 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.NOT
 import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKING_LOGO;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paytm.digital.education.explore.database.entity.Alumni;
 import com.paytm.digital.education.explore.database.entity.CampusAmbassador;
 import com.paytm.digital.education.explore.database.entity.CampusEngagement;
@@ -16,6 +18,7 @@ import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.CourseLevel;
 import com.paytm.digital.education.explore.enums.PublishStatus;
+import com.paytm.digital.education.explore.response.dto.common.BannerData;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
 import com.paytm.digital.education.explore.response.dto.detail.Ranking;
@@ -46,6 +49,7 @@ import java.util.stream.Collectors;
 
 import javafx.util.Pair;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -56,6 +60,7 @@ import java.util.concurrent.TimeoutException;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class InstituteDetailResponseBuilder {
 
     private ExamInstanceHelper          examInstanceHelper;
@@ -129,8 +134,22 @@ public class InstituteDetailResponseBuilder {
                         institute.getOfficialAddress());
         instituteDetail.setOfficialAddress(officialAddress);
         instituteDetail.setPlacements(placementDataHelper.getSalariesPlacements(institute));
-        instituteDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName));
-        instituteDetail.setBanners(bannerDataHelper.getBannerData(entityName));
+        instituteDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName, client));
+        List<BannerData> banners =
+                bannerDataHelper.getBannerData(entityName, client);
+        if (Client.APP.equals(client)) {
+            try {
+                banners = new ObjectMapper()
+                        .convertValue(banners, new TypeReference<List<BannerData>>() {
+                        });
+                instituteDetail.setBanner1(banners.get(0));
+                instituteDetail.setBanner2(banners.get(1));
+            } catch (NullPointerException | IndexOutOfBoundsException e) {
+                log.error("Update banners for app in DB: {}", e.getLocalizedMessage());
+            }
+        } else {
+            instituteDetail.setBanners(bannerDataHelper.getBannerData(entityName, client));
+        }
         if (institute.getIsClient() == 1) {
             instituteDetail.setClient(true);
         }

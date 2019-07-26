@@ -30,13 +30,13 @@ public class StudentDealController {
         return studentDataService.addStudentData(studentData);
     }
 
-    @GetMapping("/v1/deal/student")
+    @GetMapping("/v1/student")
     public DealsStudentData fetchStudentData(
             @RequestParam("customerId") @NotNull @Min(1) Long customerId) {
         return studentDataService.fetchStudentData(customerId);
     }
 
-    @GetMapping("/v1/deal/student/status")
+    @GetMapping("/v1/student/status")
     public DealsStudentData fetchStudentverificationStatus(
             @RequestParam("customerId") @NotNull @Min(1) Long customerId) {
         return studentDataService.fetchStudentData(customerId);

@@ -57,7 +57,7 @@ public class InstituteDetail {
     @JsonProperty("courses")
     private List<Course> courses;
 
-    @JsonProperty("courses_per_level")
+    @JsonProperty("courses_per_degree")
     private Map<String, List<Course>> coursesPerLevel;
 
     @JsonProperty("total_courses")
@@ -77,6 +77,12 @@ public class InstituteDetail {
 
     @JsonProperty("widgets")
     private List<Widget> widgets;
+
+    @JsonProperty("banner1")
+    private BannerData banner1;
+
+    @JsonProperty("banner2")
+    private BannerData banner2;
 
     @JsonProperty("banners")
     private List<BannerData> banners;
