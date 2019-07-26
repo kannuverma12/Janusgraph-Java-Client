@@ -148,7 +148,7 @@ public class CourseDetailServiceImpl {
         courseDetail.setDerivedAttributes(derivedAttributesHelper
                 .getDerivedAttributes(highlights, COURSE.name().toLowerCase()));
         courseDetail.setWidgets(similarInstituteService.getSimilarInstitutes(institute));
-        courseDetail.setBanners(bannerDataHelper.getBannerData(COURSE.name().toLowerCase()));
+        courseDetail.setBanners(bannerDataHelper.getBannerData(COURSE.name().toLowerCase(), null));
         if (institute != null) {
             CourseInstituteDetail courseInstituteDetail = new CourseInstituteDetail();
             courseInstituteDetail.setOfficialName(institute.getOfficialName());

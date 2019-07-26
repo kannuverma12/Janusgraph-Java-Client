@@ -199,15 +199,17 @@ public interface ExploreConstants {
     String EVENT_TYPE_EXAM       = "EXAM";
     String ZERO                  = "0";
 
-    String DISPLAY_NAME               = "display_name";
-    String LOGO                       = "logo";
-    String SECTION_ORDER_NAMESPACE    = "section_order";
-    String DETAIL_PAGE_SECTION_ORDER  = "detail_page_section_order";
-    String BANNER                     = "banner";
-    String WIDGETS                    = "widgets";
-    String DATA_STRING                = "data";
-    String PARENT_INSTITUTION         = "parent_institution";
-    String NOTABLE_ALUMNI_PLACEHOLDER = "/notable_alumni_placeholder.png";
+    String DISPLAY_NAME                  = "display_name";
+    String LOGO                          = "logo";
+    String SECTION_ORDER_NAMESPACE       = "section_order";
+    String DETAIL_PAGE_SECTION_ORDER     = "detail_page_section_order";
+    String DETAIL_PAGE_SECTION_ORDER_APP = "detail_page_section_order_app";
+    String BANNER                        = "banner";
+    String BANNER_APP                    = "banner_app";
+    String WIDGETS                       = "widgets";
+    String DATA_STRING                   = "data";
+    String PARENT_INSTITUTION            = "parent_institution";
+    String NOTABLE_ALUMNI_PLACEHOLDER    = "/notable_alumni_placeholder.png";
 
     // Other Constants
     Version FTL_CURRENT_VERSION = Configuration.VERSION_2_3_23;
