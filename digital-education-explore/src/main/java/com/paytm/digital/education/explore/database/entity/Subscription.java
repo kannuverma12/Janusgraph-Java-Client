@@ -72,4 +72,12 @@ public class Subscription {
         this.lastModified = new Date();
     }
 
+    public interface Constants {
+        String USER_ID = "user_id";
+        String ENTITY = "entity";
+        String ENTITY_ID = "entity_id";
+        String STATUS = "status";
+        String LAST_UPDATED = "updated_at";
+    }
+
 }

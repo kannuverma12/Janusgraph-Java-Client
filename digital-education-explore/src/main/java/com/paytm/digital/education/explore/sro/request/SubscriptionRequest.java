@@ -9,6 +9,7 @@ import lombok.ToString;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @ToString
 @Data
@@ -21,7 +22,12 @@ public class SubscriptionRequest {
     private SubscribableEntityType subscriptionEntity;
 
     @JsonProperty("entity_id")
-    @Min(1)
-    private long subscriptionEntityId;
+    private Long subscriptionEntityId;
+
+    @JsonProperty("entity_ids")
+    private List<Long> subscriptionEntityIds;
+
+    @JsonProperty("all")
+    private boolean all;
 
 }

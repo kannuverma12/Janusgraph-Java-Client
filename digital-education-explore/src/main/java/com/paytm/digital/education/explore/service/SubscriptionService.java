@@ -6,13 +6,15 @@ import com.paytm.digital.education.explore.database.entity.Subscription;
 import com.paytm.digital.education.explore.enums.SubscribableEntityType;
 
 import com.paytm.digital.education.explore.enums.SubscriptionStatus;
+import com.paytm.digital.education.explore.sro.request.SubscriptionRequest;
+
 import java.util.List;
 
 public interface SubscriptionService {
 
     NotificationFlags subscribe(long userId, SubscribableEntityType entity, long entityId);
 
-    NotificationFlags unsubscribe(long userId, SubscribableEntityType entity, long entityId);
+    NotificationFlags unsubscribe(long userId, SubscriptionRequest subscriptionRequest);
 
     List<Subscription> fetchSubscriptions(long userId, SubscribableEntityType subscriptionEntity,
                                           List<String> fields, String fieldGroup,

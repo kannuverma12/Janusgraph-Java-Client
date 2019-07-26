@@ -87,6 +87,8 @@ public enum ErrorEnum {
             HttpStatus.BAD_REQUEST, 0),
     INVALID_EOD(4035, "provided eod is invalid", HttpStatus.BAD_REQUEST, 0),
     BULK_REQUEST_LIMIT_EXCEEDED(4036, "Bulk request size should be less than 200.",
+            HttpStatus.BAD_REQUEST, 0),
+    ENTITY_ID_MANDATORY_FOR_SUBSCRIPTION(4037, "Entity id is mandatory for subscription requests.",
             HttpStatus.BAD_REQUEST, 0);
 
     private final int        internalCode;
