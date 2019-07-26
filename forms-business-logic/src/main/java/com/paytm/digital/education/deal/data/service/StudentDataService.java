@@ -8,6 +8,7 @@ import com.paytm.digital.education.exception.BadRequestException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -20,7 +21,7 @@ public class StudentDataService {
     private DealsStudentDataRepository studentDataRepository;
 
     public DealsStudentData addStudentData(DealsStudentData studentData) {
-        if (Objects.nonNull(studentData.getRefId())) {
+        if (StringUtils.isNotBlank(studentData.getRefId())) {
             DealsStudentData dbStudentData =
                     studentDataRepository.fetchStudentDataByRefId(studentData.getRefId());
             if (Objects.nonNull(dbStudentData)) {
