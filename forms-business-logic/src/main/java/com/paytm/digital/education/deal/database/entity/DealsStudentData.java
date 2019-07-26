@@ -1,30 +1,28 @@
 package com.paytm.digital.education.deal.database.entity;
 
+import static com.paytm.digital.education.deal.constants.DealConstant.YYYY_MM_DD;
+import static com.paytm.digital.education.deal.constants.DealConstant.YYYY_MM_DD_T_HH_MM_SS;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.deal.enums.StatusType;
+import com.paytm.digital.education.deal.enums.StudentStatus;
 import lombok.Data;
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Date;
 
-import static com.paytm.digital.education.deal.constants.DealConstant.YYYY_MM_DD;
-import static com.paytm.digital.education.deal.constants.DealConstant.YYYY_MM_DD_T_HH_MM_SS;
-
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Document("deals_eligible_student_data")
-public class DealsEligibleStudentData {
+@Document("deals_student_data")
+public class DealsStudentData {
 
     @Id
-    @JsonIgnore
     @Field("_id")
-    ObjectId id;
+    @JsonProperty("refId")
+    String refId;
 
     @Field("customer_id")
     @JsonProperty("customer_id")
@@ -67,13 +65,13 @@ public class DealsEligibleStudentData {
     @JsonProperty("email_verified")
     private Boolean emailVerified;
 
-    @Field("student_id_details")
-    @JsonProperty("student_id_details")
-    private StudentIdentityDetails studentIdentityDetails;
+    @Field("student_identity")
+    @JsonProperty("student_identity")
+    private StudentIdentity studentIdentity;
 
     @Field("status")
     @JsonProperty("status")
-    private StatusType status;
+    private StudentStatus status;
 
     @Field("created_at")
     @JsonProperty("created_at")

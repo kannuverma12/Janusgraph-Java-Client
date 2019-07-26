@@ -13,10 +13,11 @@ import static com.paytm.digital.education.deal.constants.DealConstant.YYYY_MM_DD
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class StudentIdentityDetails {
-    @Field("id_no")
-    @JsonProperty("id_no")
-    private String idNo;
+public class StudentIdentity {
+
+    @Field("enrollment")
+    @JsonProperty("enrollment")
+    private String enrollment;
 
     @Field("valid_upto")
     @JsonProperty("valid_upto")
@@ -48,4 +49,5 @@ public class StudentIdentityDetails {
     @Field("verified_by")
     @JsonProperty("verified_by")
     private String verifiedBy;
+
 }
