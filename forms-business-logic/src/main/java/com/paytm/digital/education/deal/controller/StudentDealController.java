@@ -2,9 +2,11 @@ package com.paytm.digital.education.deal.controller;
 
 import com.paytm.digital.education.deal.data.service.StudentDataService;
 import com.paytm.digital.education.deal.database.entity.DealsStudentData;
+import com.paytm.digital.education.deal.dto.response.VerificationStatusResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,8 +39,11 @@ public class StudentDealController {
     }
 
     @GetMapping("/v1/student/status")
-    public DealsStudentData fetchStudentverificationStatus(
+    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:3000", "http://fe.paytm.com",
+            "http://staging.paytm.com", "http://beta.paytm.com", "http://paytm.com"},
+            allowCredentials = "true")
+    public VerificationStatusResponse fetchStudentverificationStatus(
             @RequestParam("customerId") @NotNull @Min(1) Long customerId) {
-        return studentDataService.fetchStudentData(customerId);
+        return studentDataService.getStudentVerificationResponse(customerId);
     }
 }
