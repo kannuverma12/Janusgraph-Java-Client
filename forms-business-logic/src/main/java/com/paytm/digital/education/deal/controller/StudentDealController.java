@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,7 +35,7 @@ public class StudentDealController {
 
     @GetMapping("/v1/student")
     public DealsStudentData fetchStudentData(
-            @RequestParam("customerId") @NotNull @Min(1) Long customerId) {
+            @RequestParam("customer_id") @NotNull @Min(1) Long customerId) {
         return studentDataService.fetchStudentData(customerId);
     }
 
@@ -42,8 +43,8 @@ public class StudentDealController {
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:3000", "http://fe.paytm.com",
             "http://staging.paytm.com", "http://beta.paytm.com", "http://paytm.com"},
             allowCredentials = "true")
-    public VerificationStatusResponse fetchStudentverificationStatus(
-            @RequestParam("customerId") @NotNull @Min(1) Long customerId) {
+    public VerificationStatusResponse fetchStudentVerificationStatus(
+            @RequestHeader("x-user-id") @NotNull @Min(1) Long customerId) {
         return studentDataService.getStudentVerificationResponse(customerId);
     }
 }
