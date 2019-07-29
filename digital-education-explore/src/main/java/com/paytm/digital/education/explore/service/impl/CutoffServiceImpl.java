@@ -11,6 +11,7 @@ import com.paytm.digital.education.explore.response.dto.detail.ExamAndCutOff;
 import com.paytm.digital.education.explore.response.dto.search.CutoffSearchResponse;
 import com.paytm.digital.education.explore.service.CutoffService;
 import com.paytm.digital.education.explore.service.helper.GenderAndCasteGroupHelper;
+import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.explore.utility.FieldsRetrievalUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -111,6 +112,8 @@ public class CutoffServiceImpl implements CutoffService {
             individualResponse.setCourseDuration(course.getCourseDuration());
             individualResponse.setCourseId(course.getCourseId());
             individualResponse.setCourseNameOfficial(course.getCourseNameOfficial());
+            individualResponse.setUrlDisplayKey(
+                    CommonUtil.convertNameToUrlDisplayName(course.getCourseNameOfficial()));
             individualResponse.setMasterBranch(course.getMasterBranch());
             individualResponse.setCourseLevel(course.getCourseLevel());
             individualResponse.setCutOffs(getCutOffList(course.getCutoffs(), gender, casteGroup,
