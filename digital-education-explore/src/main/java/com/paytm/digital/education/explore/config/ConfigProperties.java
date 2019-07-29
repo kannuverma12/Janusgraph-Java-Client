@@ -17,11 +17,17 @@ public class ConfigProperties {
     private static String streamIconPrefix;
     private static String locationIconPrefix;
     private static String bannerPrefix;
+    private static String appFooterPrefix;
     private static String rankingLogoPrefix;
 
     @Value("${education.asset.baseurl}")
     public void setBaseUrl(String baseUrl) {
         mediaBaseUrl = baseUrl;
+    }
+
+    @Value("${app.footer.prefix}")
+    public void setAppFooterPrefix(String logoPrefix) {
+        appFooterPrefix = logoPrefix;
     }
 
     @Value("${institute.gallery.image.prefix}")
@@ -75,6 +81,10 @@ public class ConfigProperties {
 
     public static String getLogoExamPrefix() {
         return logoExamPrefix;
+    }
+
+    public static String getAppFooterPrefix() {
+        return appFooterPrefix;
     }
 
     public static String getRankingLogo() {

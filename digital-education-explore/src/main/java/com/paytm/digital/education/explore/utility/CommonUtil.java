@@ -16,6 +16,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.STA
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAMS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP_EXAMS_APP;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.UGC;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.APP_FOOTER;
 
 import com.paytm.digital.education.explore.config.ConfigProperties;
 import com.paytm.digital.education.explore.enums.Client;
@@ -39,6 +40,9 @@ public class CommonUtil {
     public String getAbsoluteUrl(String relativeUrl, String type) {
         StringBuilder urlBuilder = new StringBuilder(ConfigProperties.getBaseUrl());
         switch (type) {
+            case APP_FOOTER:
+                urlBuilder.append(ConfigProperties.getAppFooterPrefix());
+                break;
             case FACILITIES:
                 urlBuilder.append(ConfigProperties.getFacilitiesIconPrefix());
                 break;

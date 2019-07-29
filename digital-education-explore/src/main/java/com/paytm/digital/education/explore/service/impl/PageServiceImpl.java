@@ -21,6 +21,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotBlank;
 
+import static com.paytm.digital.education.explore.constants.ExploreConstants.APP_FOOTER;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.BANNER_MID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.COLLEGE_FOCUS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ICON;
@@ -69,6 +70,7 @@ public class PageServiceImpl implements PageService {
                     case STREAMS:
                     case TOP_COLLEGES:
                     case LOCATIONS:
+                    case APP_FOOTER:
                         logoFieldName = ICON;
                         break;
                     case BANNER_MID:

@@ -261,6 +261,7 @@ public interface ExploreConstants {
     String TOP_EXAMS_APP   = "top_exams_app";
     String ICON            = "icon";
     String LOCATIONS       = "locations";
+    String APP_FOOTER      = "app_footer";
     String BANNER_MID      = "banner_mid";
     String IMAGE_URL       = "image_url";
     String DUMMY_EXAM_ICON = "/engineering_archi.svg";
