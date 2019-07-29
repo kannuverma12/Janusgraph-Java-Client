@@ -83,6 +83,8 @@ public interface ExploreConstants {
     String STOPWORDS_KEY              = "stop_words";
     String STOPWORDS                  = "stop_words";
     String NGRAM                      = ".ngram";
+    String INSTANCES                  = "instances";
+    String SUB_EXAMS                  = "subexams";
 
     Float  TIE_BREAKER                  = 0.4f;
     Float  CITY_SEARCH_BOOST            = 1F;

@@ -5,7 +5,9 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.COU
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_FULL_NAME;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_SHORT_NAME;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTANCES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SUB_EXAMS;
 import static com.paytm.digital.education.explore.enums.EducationEntity.COURSE;
 import static com.paytm.digital.education.explore.enums.EducationEntity.EXAM;
 import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
@@ -20,10 +22,13 @@ import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.response.dto.detail.CourseDetail;
-import com.paytm.digital.education.explore.response.dto.detail.CourseFee;
+import com.paytm.digital.education.explore.response.dto.detail.ExamDetail;
 import com.paytm.digital.education.explore.response.dto.detail.CourseInstituteDetail;
+import com.paytm.digital.education.explore.response.dto.detail.Event;
+import com.paytm.digital.education.explore.response.dto.detail.CourseFee;
 import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
+import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
 import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.explore.utility.FieldsRetrievalUtil;
@@ -50,6 +55,7 @@ public class CourseDetailServiceImpl {
     private SimilarInstituteServiceImpl similarInstituteService;
     private BannerDataHelper            bannerDataHelper;
     private LeadDetailHelper            leadDetailHelper;
+    private ExamInstanceHelper          examInstanceHelper;
 
     public CourseDetail getDetail(Long entityId, String courseUrlKey, Long userId,
             String fieldGroup, List<String> fields, Client client) {
@@ -99,17 +105,40 @@ public class CourseDetailServiceImpl {
                         Institute.class,
                         instituteQueryFields);
             }
-            Exam examDetails = null;
-            if (course.getExamsAccepted() != null) {
-                examDetails = getExamNames(course.getExamsAccepted());
-            }
-            return buildResponse(course, instituteDetails, examDetails, client);
-
+            return buildResponse(course, instituteDetails, course.getExamsAccepted(), client);
         } else {
             throw new BadRequestException(INVALID_FIELD_GROUP,
                     INVALID_FIELD_GROUP.getExternalMessage());
         }
     }
+
+    private List<ExamDetail> getExamsAccepted(List<Long> examIds) {
+
+        List<String> fields = new ArrayList<>();
+        fields.add(EXAM_SHORT_NAME);
+        fields.add(EXAM_FULL_NAME);
+        fields.add(INSTANCES);
+        fields.add(SUB_EXAMS);
+        List<Exam> exams = commonMongoRepository
+                .getEntityFieldsByValuesIn(EXAM_ID, examIds, Exam.class, fields);
+
+        List<ExamDetail> examsAccepted = new ArrayList<>();
+
+        for (Exam exam : exams) {
+            ExamDetail examDetail = new ExamDetail();
+            List<Event> impDates = examInstanceHelper.getImportantDates(exam);
+            examDetail.setExamId(exam.getExamId());
+            examDetail.setUrlDisplayName(
+                    CommonUtil.convertNameToUrlDisplayName(exam.getExamFullName()));
+            examDetail.setImportantDates(impDates);
+            examDetail.setExamFullName(exam.getExamFullName());
+            examDetail.setExamShortName(exam.getExamShortName());
+            examsAccepted.add(examDetail);
+        }
+
+        return examsAccepted;
+    }
+
 
     /*
      ** Find all te exams for the course
@@ -128,7 +157,7 @@ public class CourseDetailServiceImpl {
      ** Build the response combining the course and institute details
      */
     private CourseDetail buildResponse(Course course, Institute institute,
-            Exam examDetails, Client client) {
+            List<Long> examIds, Client client) {
         CourseDetail courseDetail = new CourseDetail();
         courseDetail.setCourseId(course.getCourseId());
         courseDetail.setAboutCourse(course.getAboutCourse());
@@ -146,7 +175,11 @@ public class CourseDetailServiceImpl {
         courseDetail.setOfficialBrochureUrl(course.getOfficialBrochureUrl());
         Map<String, Object> highlights = new HashMap<>();
         highlights.put(COURSE.name().toLowerCase(), course);
-        highlights.put(EXAM.name().toLowerCase(), examDetails);
+        if (Client.APP.equals(client)) {
+            courseDetail.setExamsAccepted(getExamsAccepted(examIds));
+        } else {
+            highlights.put(EXAM.name().toLowerCase(), getExamNames(examIds));
+        }
         courseDetail.setDerivedAttributes(derivedAttributesHelper
                 .getDerivedAttributes(highlights, COURSE.name().toLowerCase(), client));
         courseDetail.setWidgets(similarInstituteService.getSimilarInstitutes(institute));

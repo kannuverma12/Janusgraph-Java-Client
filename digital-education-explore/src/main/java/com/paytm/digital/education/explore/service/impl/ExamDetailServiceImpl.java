@@ -120,7 +120,7 @@ public class ExamDetailServiceImpl {
         ExamDetail examDetail = buildResponse(exam, client);
         return examDetail;
     }
-    
+
     private List<Section> getSectionsFromEntitySyllabus(
             List<com.paytm.digital.education.explore.database.entity.Syllabus> entitySyllabusList) {
         List<Section> sectionList = new ArrayList<>();
@@ -145,35 +145,6 @@ public class ExamDetailServiceImpl {
             sectionList.add(section);
         });
         return sectionList;
-    }
-
-    private List<Event> convertEntityEventToResponse(String examName,
-            List<com.paytm.digital.education.explore.database.entity.Event> entityEvents) {
-        List<Event> responseEvents = new ArrayList<>();
-
-        if (!CollectionUtils.isEmpty(entityEvents)) {
-            entityEvents.forEach(event -> {
-                Event respEvent = new Event();
-                respEvent.setName(examName);
-                if (event.getDateRangeStart() != null) {
-                    respEvent.setDateEndRange(event.getDateRangeEnd());
-                    respEvent.setDateStartRange(event.getDateRangeStart());
-                    respEvent.setDateEndRangeTimestamp(event.getDateRangeEnd());
-                    respEvent.setDateStartRangeTimestamp(event.getDateRangeStart());
-                } else {
-                    respEvent.setDateStartRangeTimestamp(event.getDate());
-                    respEvent.setDateStartRange(event.getDate());
-                }
-                respEvent.setMonthTimestamp(DateUtil.stringToDate(event.getMonthDate(), YYYY_MM));
-                respEvent.setMonthDate(
-                        DateUtil.formatDateString(event.getMonthDate(), YYYY_MM, MMM_YYYY));
-                respEvent.setModes(event.getModes());
-                respEvent.setType(event.getType());
-                respEvent.setCertainity(event.getCertainty());
-                responseEvents.add(respEvent);
-            });
-        }
-        return responseEvents;
     }
 
     private void addDatesToResponse(ExamDetail examDetail, List<Event> importantDates) {
@@ -234,8 +205,9 @@ public class ExamDetailServiceImpl {
                         syllabusList.add(syllabus);
                     }
                     importantDates
-                            .addAll(convertEntityEventToResponse(subExam.getSubExamName(),
-                                    subExamInstance.getEvents()));
+                            .addAll(examInstanceHelper
+                                    .convertEntityEventToResponse(subExam.getSubExamName(),
+                                            subExamInstance.getEvents()));
                 }
             });
         });
@@ -287,8 +259,9 @@ public class ExamDetailServiceImpl {
                 int centersCount = exam.getInstances().get(instanceIndex).getExamCenters().size();
                 examDetail.setCentersCount(centersCount);
             }
-            importantDates.addAll(convertEntityEventToResponse(exam.getExamFullName(),
-                    exam.getInstances().get(instanceIndex).getEvents()));
+            importantDates
+                    .addAll(examInstanceHelper.convertEntityEventToResponse(exam.getExamFullName(),
+                            exam.getInstances().get(instanceIndex).getEvents()));
         }
         if (!CollectionUtils.isEmpty(exam.getSubExams()) && instanceIndex != -1) {
             int parentInstanceId = exam.getInstances().get(instanceIndex).getInstanceId();
