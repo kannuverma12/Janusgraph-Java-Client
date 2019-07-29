@@ -69,7 +69,7 @@ public class CommonUtil {
     }
 
     public String getHighLightBaseUrl(Client client) {
-        if(Client.APP.equals(client)){
+        if (Client.APP.equals(client)) {
             return ConfigProperties.getBaseUrl() + ConfigProperties.getHighlightsIconPrefixApp();
         }
         return ConfigProperties.getBaseUrl() + ConfigProperties.getHighlightsIconPrefix();
