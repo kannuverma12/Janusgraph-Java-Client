@@ -88,14 +88,14 @@ public class PageServiceImpl implements PageService {
                                 for (Map<String, String> topExam : topExams) {
                                     String logo = CommonUtil
                                             .getAbsoluteUrl(topExam.get(logoFieldName),
-                                                    sectionName);
+                                                    section.getType());
                                     topExam.put(logoFieldName, logo);
                                 }
                             }
                         } else {
                             String logo =
                                     CommonUtil.getAbsoluteUrl((String) item.get(logoFieldName),
-                                            sectionName);
+                                            section.getType());
                             item.put(logoFieldName, logo);
                         }
                     }
