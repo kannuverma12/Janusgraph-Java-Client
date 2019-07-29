@@ -127,7 +127,7 @@ public class InstituteDetailResponseBuilder {
             highlights.put(APPROVALS, approvalsMap);
         }
         instituteDetail.setDerivedAttributes(
-                derivedAttributesHelper.getDerivedAttributes(highlights, entityName));
+                derivedAttributesHelper.getDerivedAttributes(highlights, entityName, client));
         OfficialAddress officialAddress =
                 CommonUtil.getOfficialAddress(institute.getInstitutionState(),
                         institute.getInstitutionCity(), institute.getPhone(), institute.getUrl(),

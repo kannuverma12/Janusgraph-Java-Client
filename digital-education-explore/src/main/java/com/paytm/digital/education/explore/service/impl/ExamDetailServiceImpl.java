@@ -24,6 +24,7 @@ import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Instance;
 import com.paytm.digital.education.explore.database.entity.SubExam;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.detail.ExamDetail;
 import com.paytm.digital.education.explore.response.dto.detail.Section;
@@ -70,10 +71,10 @@ public class ExamDetailServiceImpl {
     private static int EXAM_PREFIX_LENGTH = EXAM_PREFIX.length();
 
     public ExamDetail getDetail(Long entityId, String examUrlKey, Long userId,
-            String fieldGroup, List<String> fields) throws ParseException {
+            String fieldGroup, List<String> fields, Client client) throws ParseException {
         // fields are not being supported currently. Part of discussion
 
-        ExamDetail examDetail = getExamDetail(entityId, examUrlKey, fieldGroup, fields);
+        ExamDetail examDetail = getExamDetail(entityId, examUrlKey, fieldGroup, fields, client);
         if (userId != null && userId > 0) {
             updateInterested(examDetail, userId);
         }
@@ -83,7 +84,7 @@ public class ExamDetailServiceImpl {
     //TODO - modularize methods for caching as. Its fine as of now as userId is not being used As of now.
     @Cacheable(value = "exam_detail")
     public ExamDetail getExamDetail(Long entityId, String examUrlKey, String fieldGroup,
-            List<String> fields) throws ParseException {
+            List<String> fields, Client client) throws ParseException {
 
         // TODO: fields are not being supported currently. Part of discussion
         List<String> groupFields =
@@ -108,15 +109,15 @@ public class ExamDetailServiceImpl {
                 throw new BadRequestException(INVALID_EXAM_NAME,
                         INVALID_EXAM_NAME.getExternalMessage());
             }
-            return processExamDetail(exam, examFields);
+            return processExamDetail(exam, examFields, client);
         }
         throw new BadRequestException(INVALID_EXAM_ID,
                 INVALID_EXAM_ID.getExternalMessage());
     }
 
-    private ExamDetail processExamDetail(Exam exam, List<String> examFields)
+    private ExamDetail processExamDetail(Exam exam, List<String> examFields, Client client)
             throws ParseException {
-        ExamDetail examDetail = buildResponse(exam);
+        ExamDetail examDetail = buildResponse(exam, client);
         return examDetail;
     }
     
@@ -255,7 +256,7 @@ public class ExamDetailServiceImpl {
         examDetail.setLinguisticMedium(examLang);
     }
 
-    private ExamDetail buildResponse(Exam exam) throws ParseException {
+    private ExamDetail buildResponse(Exam exam, Client client) throws ParseException {
         ExamDetail examDetail = new ExamDetail();
         examDetail.setExamId(exam.getExamId());
         examDetail.setAbout(exam.getAboutExam());
@@ -318,7 +319,7 @@ public class ExamDetailServiceImpl {
         highlights.put(LINGUISTIC_MEDIUM, examDetail.getLinguisticMedium());
         examDetail.setDerivedAttributes(
                 derivedAttributesHelper.getDerivedAttributes(highlights,
-                        entityName));
+                        entityName, client));
         addDatesToResponse(examDetail, importantDates);
         examDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName, null));
         examDetail.setBanners(bannerDataHelper.getBannerData(entityName, null));

@@ -46,10 +46,11 @@ public class DetailsApiController {
             @PathVariable("examName") @NotBlank String examName,
             @RequestParam(name = "field_group", required = false) String fieldGroup,
             @RequestParam(name = "fields", required = false) List<String> fields,
-            @RequestHeader(value = "x-user-id", required = false) Long userId) throws Exception {
+            @RequestHeader(value = "x-user-id", required = false) Long userId,
+            @RequestHeader(value = "fe_client", required = false) Client client) throws Exception {
         exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
         return examDetailService
-                .getDetail(examId, examName, userId, fieldGroup, fields);
+                .getDetail(examId, examName, userId, fieldGroup, fields, client);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/institute/{instituteId}/{instituteName}")
@@ -71,9 +72,11 @@ public class DetailsApiController {
             @PathVariable @NotBlank String courseName,
             @RequestParam(name = "field_group", required = false) String fieldGroup,
             @RequestParam(name = "fields", required = false) List<String> fields,
-            @RequestHeader(value = "x-user-id", required = false) Long userId) {
+            @RequestHeader(value = "x-user-id", required = false) Long userId,
+            @RequestHeader(value = "fe_client", required = false) Client client) {
         exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
-        return courseDetailService.getDetail(courseId, courseName, userId, fieldGroup, fields);
+        return courseDetailService
+                .getDetail(courseId, courseName, userId, fieldGroup, fields, client);
     }
 
 }

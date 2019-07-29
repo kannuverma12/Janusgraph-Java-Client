@@ -5,6 +5,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.HIG
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.response.dto.detail.Attribute;
 import com.paytm.digital.education.explore.template.TemplateProcessor;
 import com.paytm.digital.education.explore.utility.CommonUtil;
@@ -28,8 +29,8 @@ public class DerivedAttributesHelper {
     private TemplateProcessor     templateProcessor;
 
     public Map<String, List<Attribute>> getDerivedAttributes(Map<String, Object> highlightInputData,
-            String entityType) {
-        highlightInputData.put(HIGHLIGHTS_BASE_URL, CommonUtil.getHighLightBaseUrl());
+            String entityType, Client client) {
+        highlightInputData.put(HIGHLIGHTS_BASE_URL, CommonUtil.getHighLightBaseUrl(client));
         String highlightsTemplate = commonMongoRepository
                 .getTemplate(HIGHLIGHTS_TEMPLATE, entityType);
         String highlights = templateProcessor

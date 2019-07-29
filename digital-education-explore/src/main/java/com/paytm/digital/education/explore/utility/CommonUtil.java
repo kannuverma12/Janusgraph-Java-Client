@@ -18,6 +18,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP
 import static com.paytm.digital.education.explore.constants.ExploreConstants.UGC;
 
 import com.paytm.digital.education.explore.config.ConfigProperties;
+import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
@@ -63,7 +64,10 @@ public class CommonUtil {
         return urlBuilder.toString();
     }
 
-    public String getHighLightBaseUrl() {
+    public String getHighLightBaseUrl(Client client) {
+        if(Client.APP.equals(client)){
+            return ConfigProperties.getBaseUrl() + ConfigProperties.getHighlightsIconPrefixApp();
+        }
         return ConfigProperties.getBaseUrl() + ConfigProperties.getHighlightsIconPrefix();
     }
 

@@ -18,6 +18,7 @@ import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.response.dto.detail.CourseDetail;
 import com.paytm.digital.education.explore.response.dto.detail.CourseFee;
 import com.paytm.digital.education.explore.response.dto.detail.CourseInstituteDetail;
@@ -51,8 +52,9 @@ public class CourseDetailServiceImpl {
     private LeadDetailHelper            leadDetailHelper;
 
     public CourseDetail getDetail(Long entityId, String courseUrlKey, Long userId,
-            String fieldGroup, List<String> fields) {
-        CourseDetail courseDetail = getCourseDetails(entityId, courseUrlKey, fieldGroup, fields);
+            String fieldGroup, List<String> fields, Client client) {
+        CourseDetail courseDetail =
+                getCourseDetails(entityId, courseUrlKey, fieldGroup, fields, client);
         if (userId != null && userId > 0) {
             updateInterested(courseDetail, userId);
         }
@@ -64,7 +66,7 @@ public class CourseDetailServiceImpl {
      */
     @Cacheable(value = "course_detail")
     public CourseDetail getCourseDetails(long entityId, String courseUrlKey, String fieldGroup,
-            List<String> fields) {
+            List<String> fields, Client client) {
         List<String> queryFields = null;
         if (StringUtils.isNotBlank(fieldGroup)) {
             queryFields = commonMongoRepository.getFieldsByGroup(Course.class, fieldGroup);
@@ -101,7 +103,7 @@ public class CourseDetailServiceImpl {
             if (course.getExamsAccepted() != null) {
                 examDetails = getExamNames(course.getExamsAccepted());
             }
-            return buildResponse(course, instituteDetails, examDetails);
+            return buildResponse(course, instituteDetails, examDetails, client);
 
         } else {
             throw new BadRequestException(INVALID_FIELD_GROUP,
@@ -126,7 +128,7 @@ public class CourseDetailServiceImpl {
      ** Build the response combining the course and institute details
      */
     private CourseDetail buildResponse(Course course, Institute institute,
-            Exam examDetails) {
+            Exam examDetails, Client client) {
         CourseDetail courseDetail = new CourseDetail();
         courseDetail.setCourseId(course.getCourseId());
         courseDetail.setAboutCourse(course.getAboutCourse());
@@ -146,7 +148,7 @@ public class CourseDetailServiceImpl {
         highlights.put(COURSE.name().toLowerCase(), course);
         highlights.put(EXAM.name().toLowerCase(), examDetails);
         courseDetail.setDerivedAttributes(derivedAttributesHelper
-                .getDerivedAttributes(highlights, COURSE.name().toLowerCase()));
+                .getDerivedAttributes(highlights, COURSE.name().toLowerCase(), client));
         courseDetail.setWidgets(similarInstituteService.getSimilarInstitutes(institute));
         courseDetail.setBanners(bannerDataHelper.getBannerData(COURSE.name().toLowerCase(), null));
         if (institute != null) {
