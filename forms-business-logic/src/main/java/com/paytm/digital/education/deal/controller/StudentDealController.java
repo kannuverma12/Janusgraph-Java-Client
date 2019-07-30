@@ -23,23 +23,23 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @RestController
 @Validated
-@RequestMapping("/formfbl/deal")
+@RequestMapping("/formfbl")
 public class StudentDealController {
     private StudentDataService studentDataService;
 
-    @PostMapping("/v1/student")
+    @PostMapping("/deal/v1/student")
     public DealsStudentData saveStudentData(
             @RequestBody @Valid DealsStudentData studentData) {
         return studentDataService.addStudentData(studentData);
     }
 
-    @GetMapping("/v1/student")
+    @GetMapping("/deal/v1/student")
     public DealsStudentData fetchStudentData(
             @RequestParam("customer_id") @NotNull @Min(1) Long customerId) {
         return studentDataService.fetchStudentData(customerId);
     }
 
-    @GetMapping("/v1/student/status")
+    @GetMapping("/auth/deal/v1/student/status")
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:3000", "http://fe.paytm.com",
             "http://staging.paytm.com", "http://beta.paytm.com", "http://paytm.com"},
             allowCredentials = "true")
