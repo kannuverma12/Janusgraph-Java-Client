@@ -177,10 +177,12 @@ public class CourseDetailServiceImpl {
         courseDetail.setOfficialBrochureUrl(course.getOfficialBrochureUrl());
         Map<String, Object> highlights = new HashMap<>();
         highlights.put(COURSE.name().toLowerCase(), course);
-        if (Client.APP.equals(client)) {
-            courseDetail.setExamsAccepted(getExamsAccepted(examIds));
-        } else {
-            highlights.put(EXAM.name().toLowerCase(), getExamNames(examIds));
+        if(!CollectionUtils.isEmpty(examIds)) {
+            if (Client.APP.equals(client)) {
+                courseDetail.setExamsAccepted(getExamsAccepted(examIds));
+            } else {
+                highlights.put(EXAM.name().toLowerCase(), getExamNames(examIds));
+            }
         }
         courseDetail.setDerivedAttributes(derivedAttributesHelper
                 .getDerivedAttributes(highlights, COURSE.name().toLowerCase(), client));
