@@ -267,7 +267,10 @@ public interface ExploreConstants {
     String DUMMY_EXAM_ICON = "/engineering_archi.svg";
     String ID              = "id";
     String RANKING_LOGO    = "ranking";
-
+    String RANKING_NIRF    = "NIRF";
+    String RANKING_CAREER  = "CAREERS360";
+    String NIRF_LOGO       = "/nirf.jpg";
+    String CAREER_LOGO     = "/career360.jpg";
 
     String RECENT_SEARCHES_kAFKA_TOPIC = "recent_searches";
     String RECENT_SEARCHES_ES_INDEX    = "recent_searches";

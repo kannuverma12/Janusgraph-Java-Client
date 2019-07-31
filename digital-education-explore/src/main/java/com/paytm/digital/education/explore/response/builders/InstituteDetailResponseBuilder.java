@@ -3,6 +3,10 @@ package com.paytm.digital.education.explore.response.builders;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_PREFIX;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.APPROVALS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OVERALL_RANKING;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKING_CAREER;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKING_NIRF;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.NIRF_LOGO;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.CAREER_LOGO;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.NOTABLE_ALUMNI_PLACEHOLDER;
 import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKING_LOGO;
@@ -269,11 +273,24 @@ public class InstituteDetailResponseBuilder {
         r.setSource(dbRanking.getSource());
         r.setYear(dbRanking.getYear());
         r.setRating(dbRanking.getRating());
-        r.setLogo(CommonUtil.getAbsoluteUrl(dbRanking.getLogo(), RANKING_LOGO));
+        String rankingLogo = "";
+        if (RANKING_NIRF.equals(dbRanking.getSource())) {
+            rankingLogo = NIRF_LOGO;
+        } else if (RANKING_CAREER.equals(dbRanking.getSource())) {
+            rankingLogo = CAREER_LOGO;
+        }
+        if (StringUtils.isNotBlank(rankingLogo)) {
+            r.setLogo(CommonUtil.getAbsoluteUrl(rankingLogo, RANKING_LOGO));
+        }
 
         Map<String, String> streamMap = streamDataHelper.getStreamLabelMap();
-        String key = dbRanking.getStream().toLowerCase();
-        if (Objects.nonNull(streamMap.get(key))) {
+        String key = null;
+        if (StringUtils.isNotBlank(dbRanking.getStream())) {
+            key = dbRanking.getStream();
+        } else if (StringUtils.isNotBlank(dbRanking.getRankingStream())) {
+            key = dbRanking.getRankingStream().toLowerCase();
+        }
+        if (StringUtils.isNotBlank(key) && Objects.nonNull(streamMap.get(key))) {
             r.setLabel(streamMap.get(key));
         }
 
@@ -320,8 +337,10 @@ public class InstituteDetailResponseBuilder {
     private Map<String, List<Ranking>> getRankingDetails(
             List<com.paytm.digital.education.explore.database.entity.Ranking> rankingList) {
         if (!CollectionUtils.isEmpty(rankingList)) {
+            Map<String, List<Ranking>> rankingresponse = new HashMap<>();
             Map<String, List<Ranking>> ratingMap = rankingList.stream()
-                    .filter(r -> Objects.nonNull(r.getStream()) && (Objects.nonNull(r.getRank())
+                    .filter(r -> (Objects.nonNull(r.getStream()) || Objects
+                            .nonNull(r.getRankingStream())) && (Objects.nonNull(r.getRank())
                             || Objects.nonNull(r.getRating())))
                     .map(r -> getResponseRanking(r))
                     .filter(r -> Objects.nonNull(r.getLabel()))
