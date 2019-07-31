@@ -8,6 +8,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EXA
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTANCES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SUB_EXAMS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.explore.enums.EducationEntity.COURSE;
 import static com.paytm.digital.education.explore.enums.EducationEntity.EXAM;
 import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
@@ -119,6 +120,7 @@ public class CourseDetailServiceImpl {
         fields.add(EXAM_FULL_NAME);
         fields.add(INSTANCES);
         fields.add(SUB_EXAMS);
+        fields.add(EXAM_ID);
         List<Exam> exams = commonMongoRepository
                 .getEntityFieldsByValuesIn(EXAM_ID, examIds, Exam.class, fields);
 

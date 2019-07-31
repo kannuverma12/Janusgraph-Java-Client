@@ -35,23 +35,24 @@ public class WidgetsDataHelperTest {
     @Before
     public void setUp() {
         List<WidgetData> widgetList = new ArrayList<>();
-        WidgetData widgetData1 = new WidgetData((long) 1, "JEE Mains", "jee-mains", true,
-                "ENGINEERING_AND_ARCHITECTURE", null);
+        WidgetData widgetData1 =
+                new WidgetData((long) 1, "JEE Mains", "JEE Mains", "jee-mains", true,
+                        "ENGINEERING_AND_ARCHITECTURE", "ENGINEERING", null);
         widgetList.add(widgetData1);
-        WidgetData widgetData2 = new WidgetData((long) 1882, "BITSAT", "bitsat", true,
-                "ENGINEERING_AND_ARCHITECTURE", null);
+        WidgetData widgetData2 = new WidgetData((long) 1882, "BITSAT", "BITSAT", "bitsat", true,
+                "ENGINEERING_AND_ARCHITECTURE", "Engineering", null);
         widgetList.add(widgetData2);
         WidgetData widgetData3 =
-                new WidgetData((long) 453, "NATA", "nata", true, "ENGINEERING_AND_ARCHITECTURE",
-                        null);
+                new WidgetData((long) 453, "NATA", "NATA", "nata", true,
+                        "ENGINEERING_AND_ARCHITECTURE", "Engineering", null);
         widgetList.add(widgetData3);
         WidgetData widgetData4 =
-                new WidgetData((long) 789, "NEET", "neet", true, "MEDICINE_AND_ALLIED_SCIENCES"
-                        , null);
+                new WidgetData((long) 789, "NEET", "NEET", "neet", true,
+                        "MEDICINE_AND_ALLIED_SCIENCES", "MEDICINE", null);
         widgetList.add(widgetData4);
         WidgetData widgetData5 =
-                new WidgetData((long) 959, "AIIMS", "aiims", true, "MEDICINE_AND_ALLIED_SCIENCES",
-                        null);
+                new WidgetData((long) 959, "AIIMS", "AIIMS", "aiims", true,
+                        "MEDICINE_AND_ALLIED_SCIENCES", "MEDICINE", null);
         widgetList.add(widgetData5);
         Widget widget = new Widget("exam", "Similar Exams", widgetList);
         List<Widget> data = new ArrayList<>();
