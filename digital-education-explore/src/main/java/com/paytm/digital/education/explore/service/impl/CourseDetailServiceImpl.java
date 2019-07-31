@@ -177,7 +177,7 @@ public class CourseDetailServiceImpl {
         courseDetail.setOfficialBrochureUrl(course.getOfficialBrochureUrl());
         Map<String, Object> highlights = new HashMap<>();
         highlights.put(COURSE.name().toLowerCase(), course);
-        if(!CollectionUtils.isEmpty(examIds)) {
+        if (!CollectionUtils.isEmpty(examIds)) {
             if (Client.APP.equals(client)) {
                 courseDetail.setExamsAccepted(getExamsAccepted(examIds));
             } else {
