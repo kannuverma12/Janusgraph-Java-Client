@@ -24,6 +24,7 @@ import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Instance;
 import com.paytm.digital.education.explore.database.entity.SubExam;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.detail.ExamDetail;
 import com.paytm.digital.education.explore.response.dto.detail.Section;
@@ -70,10 +71,10 @@ public class ExamDetailServiceImpl {
     private static int EXAM_PREFIX_LENGTH = EXAM_PREFIX.length();
 
     public ExamDetail getDetail(Long entityId, String examUrlKey, Long userId,
-            String fieldGroup, List<String> fields) throws ParseException {
+            String fieldGroup, List<String> fields, Client client) throws ParseException {
         // fields are not being supported currently. Part of discussion
 
-        ExamDetail examDetail = getExamDetail(entityId, examUrlKey, fieldGroup, fields);
+        ExamDetail examDetail = getExamDetail(entityId, examUrlKey, fieldGroup, fields, client);
         if (userId != null && userId > 0) {
             updateInterested(examDetail, userId);
         }
@@ -83,7 +84,7 @@ public class ExamDetailServiceImpl {
     //TODO - modularize methods for caching as. Its fine as of now as userId is not being used As of now.
     @Cacheable(value = "exam_detail")
     public ExamDetail getExamDetail(Long entityId, String examUrlKey, String fieldGroup,
-            List<String> fields) throws ParseException {
+            List<String> fields, Client client) throws ParseException {
 
         // TODO: fields are not being supported currently. Part of discussion
         List<String> groupFields =
@@ -108,18 +109,18 @@ public class ExamDetailServiceImpl {
                 throw new BadRequestException(INVALID_EXAM_NAME,
                         INVALID_EXAM_NAME.getExternalMessage());
             }
-            return processExamDetail(exam, examFields);
+            return processExamDetail(exam, examFields, client);
         }
         throw new BadRequestException(INVALID_EXAM_ID,
                 INVALID_EXAM_ID.getExternalMessage());
     }
 
-    private ExamDetail processExamDetail(Exam exam, List<String> examFields)
+    private ExamDetail processExamDetail(Exam exam, List<String> examFields, Client client)
             throws ParseException {
-        ExamDetail examDetail = buildResponse(exam);
+        ExamDetail examDetail = buildResponse(exam, client);
         return examDetail;
     }
-    
+
     private List<Section> getSectionsFromEntitySyllabus(
             List<com.paytm.digital.education.explore.database.entity.Syllabus> entitySyllabusList) {
         List<Section> sectionList = new ArrayList<>();
@@ -144,35 +145,6 @@ public class ExamDetailServiceImpl {
             sectionList.add(section);
         });
         return sectionList;
-    }
-
-    private List<Event> convertEntityEventToResponse(String examName,
-            List<com.paytm.digital.education.explore.database.entity.Event> entityEvents) {
-        List<Event> responseEvents = new ArrayList<>();
-
-        if (!CollectionUtils.isEmpty(entityEvents)) {
-            entityEvents.forEach(event -> {
-                Event respEvent = new Event();
-                respEvent.setName(examName);
-                if (event.getDateRangeStart() != null) {
-                    respEvent.setDateEndRange(event.getDateRangeEnd());
-                    respEvent.setDateStartRange(event.getDateRangeStart());
-                    respEvent.setDateEndRangeTimestamp(event.getDateRangeEnd());
-                    respEvent.setDateStartRangeTimestamp(event.getDateRangeStart());
-                } else {
-                    respEvent.setDateStartRangeTimestamp(event.getDate());
-                    respEvent.setDateStartRange(event.getDate());
-                }
-                respEvent.setMonthTimestamp(DateUtil.stringToDate(event.getMonthDate(), YYYY_MM));
-                respEvent.setMonthDate(
-                        DateUtil.formatDateString(event.getMonthDate(), YYYY_MM, MMM_YYYY));
-                respEvent.setModes(event.getModes());
-                respEvent.setType(event.getType());
-                respEvent.setCertainity(event.getCertainty());
-                responseEvents.add(respEvent);
-            });
-        }
-        return responseEvents;
     }
 
     private void addDatesToResponse(ExamDetail examDetail, List<Event> importantDates) {
@@ -233,8 +205,9 @@ public class ExamDetailServiceImpl {
                         syllabusList.add(syllabus);
                     }
                     importantDates
-                            .addAll(convertEntityEventToResponse(subExam.getSubExamName(),
-                                    subExamInstance.getEvents()));
+                            .addAll(examInstanceHelper
+                                    .convertEntityEventToResponse(subExam.getSubExamName(),
+                                            subExamInstance.getEvents()));
                 }
             });
         });
@@ -255,7 +228,7 @@ public class ExamDetailServiceImpl {
         examDetail.setLinguisticMedium(examLang);
     }
 
-    private ExamDetail buildResponse(Exam exam) throws ParseException {
+    private ExamDetail buildResponse(Exam exam, Client client) throws ParseException {
         ExamDetail examDetail = new ExamDetail();
         examDetail.setExamId(exam.getExamId());
         examDetail.setAbout(exam.getAboutExam());
@@ -286,8 +259,9 @@ public class ExamDetailServiceImpl {
                 int centersCount = exam.getInstances().get(instanceIndex).getExamCenters().size();
                 examDetail.setCentersCount(centersCount);
             }
-            importantDates.addAll(convertEntityEventToResponse(exam.getExamFullName(),
-                    exam.getInstances().get(instanceIndex).getEvents()));
+            importantDates
+                    .addAll(examInstanceHelper.convertEntityEventToResponse(exam.getExamFullName(),
+                            exam.getInstances().get(instanceIndex).getEvents()));
         }
         if (!CollectionUtils.isEmpty(exam.getSubExams()) && instanceIndex != -1) {
             int parentInstanceId = exam.getInstances().get(instanceIndex).getInstanceId();
@@ -318,10 +292,10 @@ public class ExamDetailServiceImpl {
         highlights.put(LINGUISTIC_MEDIUM, examDetail.getLinguisticMedium());
         examDetail.setDerivedAttributes(
                 derivedAttributesHelper.getDerivedAttributes(highlights,
-                        entityName));
+                        entityName, client));
         addDatesToResponse(examDetail, importantDates);
-        examDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName));
-        examDetail.setBanners(bannerDataHelper.getBannerData(entityName));
+        examDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName, null));
+        examDetail.setBanners(bannerDataHelper.getBannerData(entityName, null));
         examDetail.setWidgets(widgetsDataHelper.getWidgets(entityName, exam.getExamId(),
                 getDomainName(exam.getDomains())
         ));

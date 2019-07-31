@@ -83,6 +83,8 @@ public interface ExploreConstants {
     String STOPWORDS_KEY              = "stop_words";
     String STOPWORDS                  = "stop_words";
     String NGRAM                      = ".ngram";
+    String INSTANCES                  = "instances";
+    String SUB_EXAMS                  = "subexams";
 
     Float  TIE_BREAKER                  = 0.4f;
     Float  CITY_SEARCH_BOOST            = 1F;
@@ -199,15 +201,17 @@ public interface ExploreConstants {
     String EVENT_TYPE_EXAM       = "EXAM";
     String ZERO                  = "0";
 
-    String DISPLAY_NAME               = "display_name";
-    String LOGO                       = "logo";
-    String SECTION_ORDER_NAMESPACE    = "section_order";
-    String DETAIL_PAGE_SECTION_ORDER  = "detail_page_section_order";
-    String BANNER                     = "banner";
-    String WIDGETS                    = "widgets";
-    String DATA_STRING                = "data";
-    String PARENT_INSTITUTION         = "parent_institution";
-    String NOTABLE_ALUMNI_PLACEHOLDER = "/notable_alumni_placeholder.png";
+    String DISPLAY_NAME                  = "display_name";
+    String LOGO                          = "logo";
+    String SECTION_ORDER_NAMESPACE       = "section_order";
+    String DETAIL_PAGE_SECTION_ORDER     = "detail_page_section_order";
+    String DETAIL_PAGE_SECTION_ORDER_APP = "detail_page_section_order_app";
+    String BANNER                        = "banner";
+    String BANNER_APP                    = "banner_app";
+    String WIDGETS                       = "widgets";
+    String DATA_STRING                   = "data";
+    String PARENT_INSTITUTION            = "parent_institution";
+    String NOTABLE_ALUMNI_PLACEHOLDER    = "/notable_alumni_placeholder.png";
 
     // Other Constants
     Version FTL_CURRENT_VERSION = Configuration.VERSION_2_3_23;
@@ -231,7 +235,7 @@ public interface ExploreConstants {
     String UGC                  = "ugc";
     String CONSTITUENT          = "constituent";
     String AUTONOMOUS           = "autonomous";
-    String STANDALONE_INSTITUTE = "standalone institute";
+    String STANDALONE_INSTITUTE = "Standalone Institute";
     String STATE_LEGISLATURE    = "state legislature/parliament";
     String AFFILIATED_TO        = "Affiliated To";
     String APPROVED_BY          = "Approved By";
@@ -257,9 +261,23 @@ public interface ExploreConstants {
     String TOP_EXAMS_APP   = "top_exams_app";
     String ICON            = "icon";
     String LOCATIONS       = "locations";
+    String APP_FOOTER      = "app_footer";
     String BANNER_MID      = "banner_mid";
     String IMAGE_URL       = "image_url";
     String DUMMY_EXAM_ICON = "/engineering_archi.svg";
     String ID              = "id";
     String RANKING_LOGO    = "ranking";
+    String RANKING_NIRF    = "NIRF";
+    String RANKING_CAREER  = "CAREERS360";
+    String NIRF_LOGO       = "/nirf.jpg";
+    String CAREER_LOGO     = "/career360.jpg";
+
+    String RECENT_SEARCHES_kAFKA_TOPIC = "recent_searches";
+    String RECENT_SEARCHES_ES_INDEX    = "recent_searches";
+    String RECENT_SEARCHES_ES_TYPE     = "education";
+    String SEARCH_HISTORY_USERID       = "user_id";
+    String SEARCH_HISTORY_TERMS        = "terms";
+    String SEARCH_HISTORY_UPDATEDAT    = "updated_at";
+    int    DELETE_RECENTS_BATCH_SIZE   = 100;
+
 }

@@ -92,8 +92,10 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
         validateRequest(searchRequest, filterQueryTypeMap);
         ElasticRequest elasticRequest = buildSearchRequest(searchRequest);
         ElasticResponse elasticResponse = initiateSearch(elasticRequest, ExamSearch.class);
-        return buildSearchResponse(elasticResponse, elasticRequest, EXPLORE_COMPONENT,
+        SearchResponse searchResponse = new SearchResponse(searchRequest.getTerm());
+        buildSearchResponse(searchResponse,elasticResponse, elasticRequest, EXPLORE_COMPONENT,
                 EXAM_FILTER_NAMESPACE, EXAM_SEARCH_NAMESPACE, null);
+        return searchResponse;
     }
 
 

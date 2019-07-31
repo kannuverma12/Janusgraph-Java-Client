@@ -6,6 +6,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.PAR
 
 import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.CollegeEntityType;
+import com.paytm.digital.education.explore.enums.CourseLevel;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.detail.Course;
@@ -102,7 +103,9 @@ public class CourseDetailHelper {
                                 course.setFee(courseData.getFee());
                                 courses.add(course);
                             });
-                            coursesPerLevel.put(level, courses);
+                            coursesPerLevel
+                                    .put(CourseLevel.valueOf(level.toUpperCase()).getDisplayName(),
+                                            courses);
                         });
             }
             long totalCourses = response.getTotal();

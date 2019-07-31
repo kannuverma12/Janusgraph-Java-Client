@@ -16,6 +16,9 @@ public class CutoffSearchResponse {
     @JsonProperty("course_id")
     private Long courseId;
 
+    @JsonProperty("url_display_key")
+    private String urlDisplayKey;
+
     @JsonProperty("course_name_official")
     private String courseNameOfficial;
 

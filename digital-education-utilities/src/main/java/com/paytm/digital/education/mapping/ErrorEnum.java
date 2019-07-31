@@ -85,12 +85,18 @@ public enum ErrorEnum {
             HttpStatus.BAD_REQUEST, 3),
     ORDER_ID_AND_EOD_BOTH_CANNOT_BE_NULL(4034, "Both order id and eod cannot be null",
             HttpStatus.BAD_REQUEST, 0),
-    INVALID_EOD(4035, "provided eod is invalid", HttpStatus.BAD_REQUEST, 0);
+    INVALID_EOD(4035, "provided eod is invalid", HttpStatus.BAD_REQUEST, 0),
+    BULK_REQUEST_LIMIT_EXCEEDED(4036, "Bulk request size should be less than 200.",
+            HttpStatus.BAD_REQUEST, 0),
+    ENTITY_ID_MANDATORY_FOR_SUBSCRIPTION(4037, "Entity id is mandatory for subscription requests.",
+            HttpStatus.BAD_REQUEST, 0),
+    INVALID_CUSTOMER_ID(4038, "Invalid customer ID. Please provide a valid customer ID.",
+            HttpStatus.BAD_REQUEST, 0);
 
-    private final int        internalCode;
-    private final String     externalMessage;
+    private final int internalCode;
+    private final String externalMessage;
     private final HttpStatus httpStatus;
-    private final int        numberOfArgs;
+    private final int numberOfArgs;
 
     ErrorEnum(int internalCode, String externalMessage, HttpStatus httpStatus, int numberOfArgs) {
         this.internalCode = internalCode;

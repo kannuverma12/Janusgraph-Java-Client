@@ -1,12 +1,14 @@
 package com.paytm.digital.education.explore.service.helper;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EVENT_TYPE_EXAM;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_CUTOFF_CASTEGROUP;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_CUTOFF_GENDER;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_DEGREES;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.NON_TENTATIVE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_CUTOFF_GENDER;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_CUTOFF_CASTEGROUP;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OTHER_CATEGORIES;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EVENT_TYPE_EXAM;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.YYYY_MM;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.APPLICATION;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.MMM_YYYY;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.NON_TENTATIVE;
 import static com.paytm.digital.education.explore.enums.Gender.OTHERS;
 import static com.paytm.digital.education.utility.DateUtil.stringToDate;
 
@@ -17,6 +19,7 @@ import com.paytm.digital.education.explore.database.entity.SubExam;
 import com.paytm.digital.education.explore.enums.Gender;
 import com.paytm.digital.education.explore.response.dto.detail.ExamAndCutOff;
 import com.paytm.digital.education.explore.utility.CommonUtil;
+import com.paytm.digital.education.utility.DateUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -180,5 +183,67 @@ public class ExamInstanceHelper {
             }
         }
         return instanceIndex;
+    }
+
+    public List<com.paytm.digital.education.explore.response.dto.detail.Event> convertEntityEventToResponse(
+            String examName,
+            List<Event> entityEvents) {
+        List<com.paytm.digital.education.explore.response.dto.detail.Event> responseEvents =
+                new ArrayList<>();
+
+        if (!CollectionUtils.isEmpty(entityEvents)) {
+            entityEvents.forEach(event -> {
+                com.paytm.digital.education.explore.response.dto.detail.Event
+                        respEvent =
+                        new com.paytm.digital.education.explore.response.dto.detail.Event();
+                respEvent.setName(examName);
+                if (event.getDateRangeStart() != null) {
+                    respEvent.setDateEndRange(event.getDateRangeEnd());
+                    respEvent.setDateStartRange(event.getDateRangeStart());
+                    respEvent.setDateEndRangeTimestamp(event.getDateRangeEnd());
+                    respEvent.setDateStartRangeTimestamp(event.getDateRangeStart());
+                } else {
+                    respEvent.setDateStartRangeTimestamp(event.getDate());
+                    respEvent.setDateStartRange(event.getDate());
+                }
+                respEvent.setMonthTimestamp(DateUtil.stringToDate(event.getMonthDate(), YYYY_MM));
+                respEvent.setMonthDate(
+                        DateUtil.formatDateString(event.getMonthDate(), YYYY_MM, MMM_YYYY));
+                respEvent.setModes(event.getModes());
+                respEvent.setType(event.getType());
+                respEvent.setCertainity(event.getCertainty());
+                responseEvents.add(respEvent);
+            });
+        }
+        return responseEvents;
+    }
+
+    private void getdatesFromSubExams(int parentInstanceId, List<SubExam> subExams,
+            List<com.paytm.digital.education.explore.response.dto.detail.Event> importantDates) {
+        subExams.forEach(subExam -> {
+            subExam.getInstances().forEach(subExamInstance -> {
+                if (subExamInstance.getParentInstanceId() == parentInstanceId) {
+                    importantDates.addAll(convertEntityEventToResponse(subExam.getSubExamName(),
+                            subExamInstance.getEvents()));
+                }
+            });
+        });
+    }
+
+    public List<com.paytm.digital.education.explore.response.dto.detail.Event> getImportantDates(
+            Exam exam) {
+        List<com.paytm.digital.education.explore.response.dto.detail.Event> importantDates =
+                new ArrayList<>();
+        int instanceIndex = -1;
+        if (!CollectionUtils.isEmpty(exam.getInstances())) {
+            instanceIndex = getRelevantInstanceIndex(exam.getInstances(), APPLICATION);
+            importantDates.addAll(convertEntityEventToResponse(exam.getExamFullName(),
+                    exam.getInstances().get(instanceIndex).getEvents()));
+        }
+        if (!CollectionUtils.isEmpty(exam.getSubExams()) && instanceIndex != -1) {
+            getdatesFromSubExams(exam.getInstances().get(instanceIndex).getInstanceId(),
+                    exam.getSubExams(), importantDates);
+        }
+        return importantDates;
     }
 }

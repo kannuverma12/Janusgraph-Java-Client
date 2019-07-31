@@ -14,10 +14,12 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.LOC
 import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKING_LOGO;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STANDALONE_INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAMS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP_EXAMS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP_EXAMS_APP;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.UGC;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.APP_FOOTER;
 
 import com.paytm.digital.education.explore.config.ConfigProperties;
+import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +40,9 @@ public class CommonUtil {
     public String getAbsoluteUrl(String relativeUrl, String type) {
         StringBuilder urlBuilder = new StringBuilder(ConfigProperties.getBaseUrl());
         switch (type) {
+            case APP_FOOTER:
+                urlBuilder.append(ConfigProperties.getAppFooterPrefix());
+                break;
             case FACILITIES:
                 urlBuilder.append(ConfigProperties.getFacilitiesIconPrefix());
                 break;
@@ -50,7 +55,7 @@ public class CommonUtil {
             case BANNER_MID:
                 urlBuilder.append(ConfigProperties.getBannerPrefix());
                 break;
-            case TOP_EXAMS:
+            case TOP_EXAMS_APP:
                 urlBuilder.append(ConfigProperties.getLogoExamPrefix());
                 break;
             case RANKING_LOGO:
@@ -63,7 +68,10 @@ public class CommonUtil {
         return urlBuilder.toString();
     }
 
-    public String getHighLightBaseUrl() {
+    public String getHighLightBaseUrl(Client client) {
+        if (Client.APP.equals(client)) {
+            return ConfigProperties.getBaseUrl() + ConfigProperties.getHighlightsIconPrefixApp();
+        }
         return ConfigProperties.getBaseUrl() + ConfigProperties.getHighlightsIconPrefix();
     }
 

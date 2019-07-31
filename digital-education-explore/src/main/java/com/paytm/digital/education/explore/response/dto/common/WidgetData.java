@@ -20,11 +20,20 @@ public class WidgetData {
     @JsonProperty("official_name")
     private String officialName;
 
+    @JsonProperty("full_name")
+    private String fullName;
+
     @JsonProperty("url_display_key")
     private String urlDisplayKey;
 
+    @JsonProperty("shortlisted")
+    private boolean shortlisted;
+
     @JsonProperty("stream")
     private String stream;
+
+    @JsonProperty("stream_display_name")
+    private String streamDisplay;
 
     @JsonProperty("logo_url")
     private String logoUrl;
