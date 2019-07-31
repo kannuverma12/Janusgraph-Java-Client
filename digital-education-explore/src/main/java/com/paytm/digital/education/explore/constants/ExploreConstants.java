@@ -235,7 +235,7 @@ public interface ExploreConstants {
     String UGC                  = "ugc";
     String CONSTITUENT          = "constituent";
     String AUTONOMOUS           = "autonomous";
-    String STANDALONE_INSTITUTE = "standalone institute";
+    String STANDALONE_INSTITUTE = "Standalone Institute";
     String STATE_LEGISLATURE    = "state legislature/parliament";
     String AFFILIATED_TO        = "Affiliated To";
     String APPROVED_BY          = "Approved By";
