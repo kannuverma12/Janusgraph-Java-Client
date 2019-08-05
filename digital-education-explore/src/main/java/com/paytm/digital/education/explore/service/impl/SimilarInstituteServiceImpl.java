@@ -14,8 +14,6 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.OFF
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTION_STATE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTION_CITY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTION_CITY;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTION_STATE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.IN_OPERATOR;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.MAX_STREAMS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
@@ -67,7 +65,7 @@ public class SimilarInstituteServiceImpl {
 
     private static List<String> projectionFields =
             Arrays.asList(INSTITUTE_ID, OFFICIAL_NAME, GALLERY_LOGO, OFFICIAL_ADDRESS,
-                    INSTITUTION_CITY, INSTITUTION_CITY);
+                    INSTITUTION_CITY, INSTITUTION_STATE);
 
     @Cacheable(value = "similar_institutes", key = "'similar_'+#institute.instituteId")
     public List<Widget> getSimilarInstitutes(Institute institute) {
