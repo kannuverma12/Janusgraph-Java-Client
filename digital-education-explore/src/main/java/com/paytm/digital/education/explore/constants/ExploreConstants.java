@@ -33,6 +33,7 @@ public interface ExploreConstants {
     String GROUP_ENTITY = "entity";
     String GROUP_ACTIVE = "active";
     String SUB_ITEMS    = "subitems";
+    String DATES        = "dates";
 
     String EDUCATION_BASE_URL = "/explore";
 

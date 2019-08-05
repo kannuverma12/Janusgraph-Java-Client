@@ -9,6 +9,9 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.YYY
 import static com.paytm.digital.education.explore.constants.ExploreConstants.APPLICATION;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.MMM_YYYY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.NON_TENTATIVE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_SEARCH_NAMESPACE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.DATES;
 import static com.paytm.digital.education.explore.enums.Gender.OTHERS;
 import static com.paytm.digital.education.utility.DateUtil.stringToDate;
 
@@ -19,6 +22,7 @@ import com.paytm.digital.education.explore.database.entity.SubExam;
 import com.paytm.digital.education.explore.enums.Gender;
 import com.paytm.digital.education.explore.response.dto.detail.ExamAndCutOff;
 import com.paytm.digital.education.explore.utility.CommonUtil;
+import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.DateUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,6 +38,8 @@ import java.util.Set;
 @AllArgsConstructor
 @Service
 public class ExamInstanceHelper {
+
+    private PropertyReader propertyReader;
 
     private static Date MAX_DATE = new Date(Long.MAX_VALUE);
 
@@ -192,6 +198,9 @@ public class ExamInstanceHelper {
                 new ArrayList<>();
 
         if (!CollectionUtils.isEmpty(entityEvents)) {
+            Map<String, Object> typeDisplayNames =
+                    propertyReader.getPropertiesAsMapByKey(EXPLORE_COMPONENT, EXAM_SEARCH_NAMESPACE,
+                            DATES);
             entityEvents.forEach(event -> {
                 com.paytm.digital.education.explore.response.dto.detail.Event
                         respEvent =
@@ -209,6 +218,12 @@ public class ExamInstanceHelper {
                 respEvent.setMonthTimestamp(DateUtil.stringToDate(event.getMonthDate(), YYYY_MM));
                 respEvent.setMonthDate(
                         DateUtil.formatDateString(event.getMonthDate(), YYYY_MM, MMM_YYYY));
+                if (!CollectionUtils.isEmpty(typeDisplayNames) && typeDisplayNames
+                        .containsKey(event.getType())) {
+                    respEvent.setTypeDisplayName((String) typeDisplayNames.get(event.getType()));
+                } else {
+                    respEvent.setTypeDisplayName(event.getType());
+                }
                 respEvent.setModes(event.getModes());
                 respEvent.setType(event.getType());
                 respEvent.setCertainity(event.getCertainty());
