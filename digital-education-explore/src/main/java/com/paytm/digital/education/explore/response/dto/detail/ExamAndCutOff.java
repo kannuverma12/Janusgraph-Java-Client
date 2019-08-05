@@ -18,6 +18,9 @@ public class ExamAndCutOff {
     @JsonProperty("exam_id")
     private Long examId;
 
+    @JsonProperty("full_name")
+    private String fullName;
+
     @JsonProperty("url_display_key")
     private String urlDisplayKey;
 

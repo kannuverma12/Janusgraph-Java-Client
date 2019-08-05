@@ -57,6 +57,7 @@ public class ExamInstanceHelper {
                 long examId = exam.getExamId();
                 ExamAndCutOff examAndCutOff = new ExamAndCutOff();
                 examAndCutOff.setExamId(examId);
+                examAndCutOff.setFullName(exam.getExamFullName());
                 examAndCutOff.setUrlDisplayKey(
                         CommonUtil.convertNameToUrlDisplayName(exam.getExamFullName()));
                 examAndCutOff.setExamShortName(exam.getExamShortName());
