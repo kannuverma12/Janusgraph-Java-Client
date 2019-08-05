@@ -19,6 +19,7 @@ public class ConfigProperties {
     private static String bannerPrefix;
     private static String appFooterPrefix;
     private static String rankingLogoPrefix;
+    private static String examLogoPrefix;
 
     @Value("${education.asset.baseurl}")
     public void setBaseUrl(String baseUrl) {
@@ -75,6 +76,11 @@ public class ConfigProperties {
         rankingLogoPrefix = logoPrefix;
     }
 
+    @Value("${educaton.exam.logo.prefix}")
+    public void setExamLogoPrefix(String logoPrefix) {
+        examLogoPrefix = logoPrefix;
+    }
+
     public static String getBaseUrl() {
         return mediaBaseUrl;
     }
@@ -89,6 +95,10 @@ public class ConfigProperties {
 
     public static String getRankingLogo() {
         return rankingLogoPrefix;
+    }
+
+    public static String getExamLogoPrefix() {
+        return examLogoPrefix;
     }
 
     public static String getLogoImagePrefix() {

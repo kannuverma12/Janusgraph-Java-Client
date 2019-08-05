@@ -17,6 +17,7 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_COURSE_NAME;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 
 import com.paytm.digital.education.exception.BadRequestException;
+import com.paytm.digital.education.explore.constants.ExploreConstants;
 import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
@@ -33,6 +34,7 @@ import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
 import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.explore.utility.FieldsRetrievalUtil;
+import com.paytm.digital.education.property.reader.PropertyReader;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -53,6 +55,7 @@ public class CourseDetailServiceImpl {
 
     private CommonMongoRepository       commonMongoRepository;
     private DerivedAttributesHelper     derivedAttributesHelper;
+    private PropertyReader              propertyReader;
     private SimilarInstituteServiceImpl similarInstituteService;
     private BannerDataHelper            bannerDataHelper;
     private LeadDetailHelper            leadDetailHelper;
@@ -231,7 +234,14 @@ public class CourseDetailServiceImpl {
 
     private CourseFee getCourseFee(
             com.paytm.digital.education.explore.database.entity.CourseFee fee) {
+        Map<String, Object> cutoffDisplayNames = propertyReader.getPropertiesAsMapByKey(
+                ExploreConstants.EXPLORE_COMPONENT, ExploreConstants.COURSE_DETAIL,
+                ExploreConstants.CASTEGROUP);
+        String displayName = fee.getCasteGroup();
+        if (cutoffDisplayNames.containsKey(fee.getCasteGroup())) {
+            displayName = (String) cutoffDisplayNames.get(fee.getCasteGroup());
+        }
         return CourseFee.builder().casteGroup(fee.getCasteGroup())
-                .fee(fee.getFee()).build();
+                .fee(fee.getFee()).casteGroupDisplay(displayName).build();
     }
 }

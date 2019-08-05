@@ -37,4 +37,7 @@ public class WidgetData {
 
     @JsonProperty("logo_url")
     private String logoUrl;
+
+    @JsonProperty("official_address")
+    private OfficialAddress officialAddress;
 }

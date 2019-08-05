@@ -262,7 +262,8 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
                 instituteData.setExams(instituteSearch.getExamsAccepted());
                 if (StringUtils.isNotBlank(instituteSearch.getImageLink())) {
                     instituteData
-                            .setLogoUrl(CommonUtil.getLogoLink(instituteSearch.getImageLink()));
+                            .setLogoUrl(CommonUtil.getLogoLink(instituteSearch.getImageLink(),
+                                    EducationEntity.INSTITUTE));
                 }
                 OfficialAddress officialAddress =
                         CommonUtil.getOfficialAddress(instituteSearch.getState(),
