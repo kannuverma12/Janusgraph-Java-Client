@@ -16,5 +16,8 @@ public class CourseFee {
 
     @JsonProperty("caste_group")
     private String casteGroup;
+
+    @JsonProperty("caste_group_display_name")
+    private String casteGroupDisplay;
 }
 

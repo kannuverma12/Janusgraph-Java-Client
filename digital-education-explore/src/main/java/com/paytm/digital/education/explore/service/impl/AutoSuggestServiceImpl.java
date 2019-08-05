@@ -191,7 +191,8 @@ public class AutoSuggestServiceImpl {
                                 .getExamLogoUrl(esDocument.getEntityId(), esDocument.getLogo()));
                     } else {
                         if (StringUtils.isNotBlank(esDocument.getLogo())) {
-                            responseDoc.setLogo(CommonUtil.getLogoLink(esDocument.getLogo()));
+                            responseDoc.setLogo(CommonUtil
+                                    .getLogoLink(esDocument.getLogo(), EducationEntity.EXAM));
                         }
                     }
                     if (Objects.nonNull(esDocument.getOfficialAddress())) {

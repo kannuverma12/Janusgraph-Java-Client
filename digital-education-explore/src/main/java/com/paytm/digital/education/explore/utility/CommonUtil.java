@@ -20,6 +20,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.APP
 
 import com.paytm.digital.education.explore.config.ConfigProperties;
 import com.paytm.digital.education.explore.enums.Client;
+import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
@@ -33,8 +34,14 @@ import java.util.Map;
 @UtilityClass
 public class CommonUtil {
 
-    public String getLogoLink(String logo) {
-        return ConfigProperties.getBaseUrl() + ConfigProperties.getLogoImagePrefix() + logo;
+    public String getLogoLink(String logo, EducationEntity educationEntity) {
+        String absoluteUrl = ConfigProperties.getBaseUrl();
+        if (EducationEntity.EXAM.equals(educationEntity)) {
+            absoluteUrl = absoluteUrl + ConfigProperties.getExamLogoPrefix() + logo;
+        } else {
+            absoluteUrl = absoluteUrl + ConfigProperties.getLogoImagePrefix() + logo;
+        }
+        return absoluteUrl;
     }
 
     public String getAbsoluteUrl(String relativeUrl, String type) {

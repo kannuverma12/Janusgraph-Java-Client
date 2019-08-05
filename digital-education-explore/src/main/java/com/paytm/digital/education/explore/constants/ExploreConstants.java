@@ -38,6 +38,9 @@ public interface ExploreConstants {
 
     String EXPLORE_COMPONENT = "explore";
 
+    String COURSE_DETAIL = "course_detail";
+    String CASTE_GROUPS  = "caste_groups";
+
     ////// AutoSuggest Constants ////////////
     String AUTOSUGGEST_INDEX         = "education_autosuggestion_v2";
     String AUTOSUGGEST_ANALYZER      = "words_with_spaces_analyzer";
@@ -264,7 +267,7 @@ public interface ExploreConstants {
     String APP_FOOTER      = "app_footer";
     String BANNER_MID      = "banner_mid";
     String IMAGE_URL       = "image_url";
-    String DUMMY_EXAM_ICON = "/engineering_archi.svg";
+    String DUMMY_EXAM_ICON = "/exam_placeholder.svg";
     String ID              = "id";
     String RANKING_LOGO    = "ranking";
     String RANKING_NIRF    = "NIRF";

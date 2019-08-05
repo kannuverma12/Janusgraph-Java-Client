@@ -2,6 +2,7 @@ package com.paytm.digital.education.explore.service.helper;
 
 import static com.paytm.digital.education.utility.CustomStringUtils.splitAndConvertToCamelCase;
 
+import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.detail.Gallery;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +31,8 @@ public class GalleryDataHelper {
                 for (String key : galleryData.getImages().keySet()) {
                     List<String> urlList = new ArrayList<>(galleryData.getImages().get(key).stream()
                             .filter(url -> StringUtils.isNotBlank(url))
-                            .map(url -> CommonUtil.getLogoLink(url)).collect(Collectors.toSet()));
+                            .map(url -> CommonUtil.getLogoLink(url, EducationEntity.INSTITUTE))
+                            .collect(Collectors.toSet()));
                     if (!CollectionUtils.isEmpty(urlList)) {
                         imageMap.put(splitAndConvertToCamelCase(key, GALLERY_SEPERATOR),
                                 urlList);

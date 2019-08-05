@@ -21,6 +21,7 @@ import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.CourseLevel;
+import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.enums.PublishStatus;
 import com.paytm.digital.education.explore.response.dto.common.BannerData;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
@@ -91,7 +92,8 @@ public class InstituteDetailResponseBuilder {
         if (institute.getGallery() != null && StringUtils
                 .isNotBlank(institute.getGallery().getLogo())) {
             instituteDetail
-                    .setLogoUrl(CommonUtil.getLogoLink(institute.getGallery().getLogo()));
+                    .setLogoUrl(
+                            CommonUtil.getLogoLink(institute.getGallery().getLogo(), INSTITUTE));
         }
         instituteDetail.setEstablishedYear(institute.getEstablishedYear());
         instituteDetail.setOfficialName(institute.getOfficialName());
@@ -194,7 +196,7 @@ public class InstituteDetailResponseBuilder {
         for (Alumni alumni : notableAlumni) {
             String alumniPhoto = alumni.getAlumniPhoto();
             if (Objects.nonNull(alumniPhoto)) {
-                alumniPhoto = CommonUtil.getLogoLink(alumniPhoto);
+                alumniPhoto = CommonUtil.getLogoLink(alumniPhoto, INSTITUTE);
                 alumni.setAlumniPhoto(alumniPhoto);
                 com.paytm.digital.education.explore.response.dto.detail.Alumni responseAlumni =
                         new com.paytm.digital.education.explore.response.dto.detail.Alumni();
@@ -205,7 +207,7 @@ public class InstituteDetailResponseBuilder {
             }
         }
         for (Alumni alumni : alumnWithoutImageList) {
-            alumni.setAlumniPhoto(CommonUtil.getLogoLink(NOTABLE_ALUMNI_PLACEHOLDER));
+            alumni.setAlumniPhoto(CommonUtil.getLogoLink(NOTABLE_ALUMNI_PLACEHOLDER, INSTITUTE));
             com.paytm.digital.education.explore.response.dto.detail.Alumni responseAlumni =
                     new com.paytm.digital.education.explore.response.dto.detail.Alumni();
             BeanUtils.copyProperties(alumni, responseAlumni);

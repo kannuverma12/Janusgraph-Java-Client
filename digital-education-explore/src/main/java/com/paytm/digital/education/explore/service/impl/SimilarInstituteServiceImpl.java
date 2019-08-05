@@ -10,6 +10,9 @@ import static com.paytm.digital.education.explore.constants.CompareConstants.UNI
 import static com.paytm.digital.education.explore.constants.ExploreConstants.COLLEGES_PER_STREAM;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EMPTY_SQUARE_BRACKETS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.GALLERY_LOGO;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_ADDRESS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTION_STATE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTION_CITY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTION_CITY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTION_STATE;
@@ -29,6 +32,7 @@ import com.paytm.digital.education.explore.database.entity.Ranking;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.database.repository.InstituteRepository;
 import com.paytm.digital.education.explore.enums.CourseStream;
+import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.common.Widget;
 import com.paytm.digital.education.explore.response.dto.common.WidgetData;
 import com.paytm.digital.education.explore.service.helper.WidgetsDataHelper;
@@ -62,7 +66,8 @@ public class SimilarInstituteServiceImpl {
     private WidgetsDataHelper     widgetsDataHelper;
 
     private static List<String> projectionFields =
-            Arrays.asList(INSTITUTE_ID, OFFICIAL_NAME, GALLERY_LOGO);
+            Arrays.asList(INSTITUTE_ID, OFFICIAL_NAME, GALLERY_LOGO, OFFICIAL_ADDRESS,
+                    INSTITUTION_CITY, INSTITUTION_CITY);
 
     @Cacheable(value = "similar_institutes", key = "'similar_'+#institute.instituteId")
     public List<Widget> getSimilarInstitutes(Institute institute) {
@@ -157,8 +162,13 @@ public class SimilarInstituteServiceImpl {
                 widgetData.setUrlDisplayKey(
                         CommonUtil.convertNameToUrlDisplayName(institute.getOfficialName()));
                 if (Objects.nonNull(institute.getGallery())) {
-                    widgetData.setLogoUrl(CommonUtil.getLogoLink(institute.getGallery().getLogo()));
+                    widgetData.setLogoUrl(
+                            CommonUtil.getLogoLink(institute.getGallery().getLogo(), INSTITUTE));
                 }
+                widgetData.setOfficialAddress(CommonUtil
+                        .getOfficialAddress(institute.getInstitutionState(),
+                                institute.getInstitutionCity(), institute.getPhone(),
+                                institute.getUrl(), institute.getOfficialAddress()));
                 widgetDataList.add(widgetData);
             }
             widget.setData(widgetDataList);

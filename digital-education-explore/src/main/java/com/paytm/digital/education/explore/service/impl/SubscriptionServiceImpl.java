@@ -16,6 +16,7 @@ import com.paytm.digital.education.explore.daoresult.SubscribedEntityCount;
 import com.paytm.digital.education.explore.daoresult.subscription.SubscriptionWithInstitute;
 import com.paytm.digital.education.explore.database.entity.Subscription;
 import com.paytm.digital.education.explore.database.repository.SubscriptionRepository;
+import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.enums.SubscribableEntityType;
 import com.paytm.digital.education.explore.enums.SubscriptionStatus;
 import com.paytm.digital.education.explore.service.CommonMongoService;
@@ -140,7 +141,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                         .convertNameToUrlDisplayName(
                                 subscriptionWithInstitute.getEntityDetails().getOfficialName()));
                 String logoLink = CommonUtil.getLogoLink(
-                        subscriptionWithInstitute.getEntityDetails().getGallery().getLogo());
+                        subscriptionWithInstitute.getEntityDetails().getGallery().getLogo(),
+                        EducationEntity.INSTITUTE);
                 if (StringUtils.isNotBlank(logoLink)) {
                     subscriptionWithInstitute.getEntityDetails().getGallery()
                             .setLogo(logoLink);
