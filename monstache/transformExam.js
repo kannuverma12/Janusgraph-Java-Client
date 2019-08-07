@@ -11,6 +11,7 @@ module.exports = function(doc) {
 	var targetExam = {};
 	targetExam.exam_id = doc.exam_id;
 	targetExam.official_name = doc.exam_full_name;
+	targetExam.image_link = doc.logo;
 
 	if (Array.isArray(doc.synonyms)) {
 		targetExam.exam_name_synonyms= doc.synonyms;
