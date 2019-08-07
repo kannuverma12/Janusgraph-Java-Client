@@ -11,8 +11,6 @@ import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -84,7 +83,14 @@ public class IncrementalDataHelper {
             session = sftpService.createSession(sftpConfig);
             sftp = (ChannelSftp) session.openChannel(CHANNEL_TYPE);
             sftp.connect();
-            sftp.cd(DataIngestionSftpConfig.getFilePath());
+            LocalDate localDate = LocalDate.now();
+            int year = localDate.getYear();
+            int month = localDate.getMonthValue();
+            int date = localDate.getDayOfMonth();
+            String filePath =
+                    DataIngestionSftpConfig.getFilePath() + "/" + year + "/" + month + "/" + date;
+
+            sftp.cd(filePath);
             if (isFileExists(sftp, currentCourseFileName)) {
                 log.info("Found Course file with name {}",currentCourseFileName);
                 sftp.get(currentCourseFileName, COURSES_FILE_NAME);
