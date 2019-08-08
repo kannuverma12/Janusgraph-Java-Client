@@ -74,4 +74,7 @@ public class CourseDetail {
     @JsonProperty("derived_attributes")
     private Map<String, List<Attribute>> derivedAttributes;
 
+    @JsonProperty("exams_accepted")
+    private List<ExamDetail> examsAccepted;
+
 }

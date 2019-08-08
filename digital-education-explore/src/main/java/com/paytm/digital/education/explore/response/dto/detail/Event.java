@@ -32,6 +32,9 @@ public class Event {
     @JsonProperty("type")
     private String type;
 
+    @JsonProperty("type_display_name")
+    private String typeDisplayName;
+
     @JsonProperty("mode")
     private List<String> modes;
 

@@ -3,10 +3,16 @@ package com.paytm.digital.education.explore.response.builders;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_PREFIX;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.APPROVALS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OVERALL_RANKING;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKING_CAREER;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKING_NIRF;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.NIRF_LOGO;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.CAREER_LOGO;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.NOTABLE_ALUMNI_PLACEHOLDER;
 import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKING_LOGO;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paytm.digital.education.explore.database.entity.Alumni;
 import com.paytm.digital.education.explore.database.entity.CampusAmbassador;
 import com.paytm.digital.education.explore.database.entity.CampusEngagement;
@@ -15,7 +21,9 @@ import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.CourseLevel;
+import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.enums.PublishStatus;
+import com.paytm.digital.education.explore.response.dto.common.BannerData;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
 import com.paytm.digital.education.explore.response.dto.detail.Ranking;
@@ -46,6 +54,7 @@ import java.util.stream.Collectors;
 
 import javafx.util.Pair;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -56,6 +65,7 @@ import java.util.concurrent.TimeoutException;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class InstituteDetailResponseBuilder {
 
     private ExamInstanceHelper          examInstanceHelper;
@@ -82,7 +92,8 @@ public class InstituteDetailResponseBuilder {
         if (institute.getGallery() != null && StringUtils
                 .isNotBlank(institute.getGallery().getLogo())) {
             instituteDetail
-                    .setLogoUrl(CommonUtil.getLogoLink(institute.getGallery().getLogo()));
+                    .setLogoUrl(
+                            CommonUtil.getLogoLink(institute.getGallery().getLogo(), INSTITUTE));
         }
         instituteDetail.setEstablishedYear(institute.getEstablishedYear());
         instituteDetail.setOfficialName(institute.getOfficialName());
@@ -122,15 +133,29 @@ public class InstituteDetailResponseBuilder {
             highlights.put(APPROVALS, approvalsMap);
         }
         instituteDetail.setDerivedAttributes(
-                derivedAttributesHelper.getDerivedAttributes(highlights, entityName));
+                derivedAttributesHelper.getDerivedAttributes(highlights, entityName, client));
         OfficialAddress officialAddress =
                 CommonUtil.getOfficialAddress(institute.getInstitutionState(),
                         institute.getInstitutionCity(), institute.getPhone(), institute.getUrl(),
                         institute.getOfficialAddress());
         instituteDetail.setOfficialAddress(officialAddress);
         instituteDetail.setPlacements(placementDataHelper.getSalariesPlacements(institute));
-        instituteDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName));
-        instituteDetail.setBanners(bannerDataHelper.getBannerData(entityName));
+        instituteDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName, client));
+        List<BannerData> banners =
+                bannerDataHelper.getBannerData(entityName, client);
+        if (Client.APP.equals(client)) {
+            try {
+                banners = new ObjectMapper()
+                        .convertValue(banners, new TypeReference<List<BannerData>>() {
+                        });
+                instituteDetail.setBanner1(banners.get(0));
+                instituteDetail.setBanner2(banners.get(1));
+            } catch (NullPointerException | IndexOutOfBoundsException e) {
+                log.error("Update banners for app in DB: {}", e.getLocalizedMessage());
+            }
+        } else {
+            instituteDetail.setBanners(bannerDataHelper.getBannerData(entityName, client));
+        }
         if (institute.getIsClient() == 1) {
             instituteDetail.setClient(true);
         }
@@ -171,7 +196,7 @@ public class InstituteDetailResponseBuilder {
         for (Alumni alumni : notableAlumni) {
             String alumniPhoto = alumni.getAlumniPhoto();
             if (Objects.nonNull(alumniPhoto)) {
-                alumniPhoto = CommonUtil.getLogoLink(alumniPhoto);
+                alumniPhoto = CommonUtil.getLogoLink(alumniPhoto, INSTITUTE);
                 alumni.setAlumniPhoto(alumniPhoto);
                 com.paytm.digital.education.explore.response.dto.detail.Alumni responseAlumni =
                         new com.paytm.digital.education.explore.response.dto.detail.Alumni();
@@ -182,7 +207,7 @@ public class InstituteDetailResponseBuilder {
             }
         }
         for (Alumni alumni : alumnWithoutImageList) {
-            alumni.setAlumniPhoto(CommonUtil.getLogoLink(NOTABLE_ALUMNI_PLACEHOLDER));
+            alumni.setAlumniPhoto(CommonUtil.getLogoLink(NOTABLE_ALUMNI_PLACEHOLDER, INSTITUTE));
             com.paytm.digital.education.explore.response.dto.detail.Alumni responseAlumni =
                     new com.paytm.digital.education.explore.response.dto.detail.Alumni();
             BeanUtils.copyProperties(alumni, responseAlumni);
@@ -250,11 +275,24 @@ public class InstituteDetailResponseBuilder {
         r.setSource(dbRanking.getSource());
         r.setYear(dbRanking.getYear());
         r.setRating(dbRanking.getRating());
-        r.setLogo(CommonUtil.getAbsoluteUrl(dbRanking.getLogo(), RANKING_LOGO));
+        String rankingLogo = "";
+        if (RANKING_NIRF.equals(dbRanking.getSource())) {
+            rankingLogo = NIRF_LOGO;
+        } else if (RANKING_CAREER.equals(dbRanking.getSource())) {
+            rankingLogo = CAREER_LOGO;
+        }
+        if (StringUtils.isNotBlank(rankingLogo)) {
+            r.setLogo(CommonUtil.getAbsoluteUrl(rankingLogo, RANKING_LOGO));
+        }
 
         Map<String, String> streamMap = streamDataHelper.getStreamLabelMap();
-        String key = dbRanking.getStream().toLowerCase();
-        if (Objects.nonNull(streamMap.get(key))) {
+        String key = null;
+        if (StringUtils.isNotBlank(dbRanking.getStream())) {
+            key = dbRanking.getStream();
+        } else if (StringUtils.isNotBlank(dbRanking.getRankingStream())) {
+            key = dbRanking.getRankingStream().toLowerCase();
+        }
+        if (StringUtils.isNotBlank(key) && Objects.nonNull(streamMap.get(key))) {
             r.setLabel(streamMap.get(key));
         }
 
@@ -301,8 +339,10 @@ public class InstituteDetailResponseBuilder {
     private Map<String, List<Ranking>> getRankingDetails(
             List<com.paytm.digital.education.explore.database.entity.Ranking> rankingList) {
         if (!CollectionUtils.isEmpty(rankingList)) {
+            Map<String, List<Ranking>> rankingresponse = new HashMap<>();
             Map<String, List<Ranking>> ratingMap = rankingList.stream()
-                    .filter(r -> Objects.nonNull(r.getStream()) && (Objects.nonNull(r.getRank())
+                    .filter(r -> (Objects.nonNull(r.getStream()) || Objects
+                            .nonNull(r.getRankingStream())) && (Objects.nonNull(r.getRank())
                             || Objects.nonNull(r.getRating())))
                     .map(r -> getResponseRanking(r))
                     .filter(r -> Objects.nonNull(r.getLabel()))

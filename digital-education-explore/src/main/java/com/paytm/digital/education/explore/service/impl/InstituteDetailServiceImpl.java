@@ -14,7 +14,6 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EXA
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_DEGREES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_CUTOFF_GENDER;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_CUTOFF_CASTEGROUP;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.ID;
 import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
 import static com.paytm.digital.education.explore.enums.Gender.OTHERS;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_NAME;
@@ -26,12 +25,13 @@ import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.explore.dto.InstituteDto;
 import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.enums.Gender;
 import com.paytm.digital.education.explore.enums.PublishStatus;
 import com.paytm.digital.education.explore.response.builders.InstituteDetailResponseBuilder;
+import com.paytm.digital.education.explore.response.dto.common.Widget;
+import com.paytm.digital.education.explore.response.dto.common.WidgetData;
 import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
 import com.paytm.digital.education.explore.service.helper.GenderAndCasteGroupHelper;
 import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
@@ -55,7 +55,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -87,7 +86,7 @@ public class InstituteDetailServiceImpl {
         InstituteDetail instituteDetail = getinstituteDetail(entityId, instituteUrlKey,
                 fieldGroup, client);
         if (userId != null && userId > 0) {
-            updateShortist(instituteDetail, INSTITUTE, userId);
+            updateShortist(instituteDetail, INSTITUTE, userId, client);
             updateInterested(instituteDetail, INSTITUTE, userId);
         }
         return instituteDetail;
@@ -281,12 +280,36 @@ public class InstituteDetailServiceImpl {
     }
 
     private void updateShortist(InstituteDetail instituteDetail, EducationEntity educationEntity,
-            Long userId) {
+            Long userId, Client client) {
+
+        List<Long> instituteIds = new ArrayList<>();
+        instituteIds.add(instituteDetail.getInstituteId());
+        if (Client.APP.equals(client)) {
+            for (Widget widget : instituteDetail.getWidgets()) {
+                if (INSTITUTE.name().equals(widget.getEntity())) {
+                    for (WidgetData widgetData : widget.getData()) {
+                        instituteIds.add(widgetData.getEntityId());
+                    }
+                }
+            }
+        }
         List<Long> subscribedEntities = subscriptionDetailHelper
-                .getSubscribedEntities(educationEntity, userId,
-                        Arrays.asList(instituteDetail.getInstituteId()));
+                .getSubscribedEntities(educationEntity, userId, instituteIds);
         if (!CollectionUtils.isEmpty(subscribedEntities)) {
-            instituteDetail.setShortlisted(true);
+            if (subscribedEntities.contains(instituteDetail.getInstituteId())) {
+                instituteDetail.setShortlisted(true);
+            }
+            if (Client.APP.equals(client)) {
+                for (Widget widget : instituteDetail.getWidgets()) {
+                    if (INSTITUTE.name().equals(widget.getEntity())) {
+                        for (WidgetData widgetData : widget.getData()) {
+                            if (subscribedEntities.contains(widgetData.getEntityId())) {
+                                widgetData.setShortlisted(true);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

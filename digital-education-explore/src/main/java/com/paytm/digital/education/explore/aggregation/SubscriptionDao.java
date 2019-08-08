@@ -14,4 +14,7 @@ public interface SubscriptionDao {
 
     List<Subscription> getUserSubscriptions(long userId, SubscribableEntityType entity, List<String> fields,
                                             long offset, long limit, SubscriptionStatus subscriptionStatus);
+
+    long unsubscribeUserSubscriptions(long userId,
+            SubscribableEntityType subscribableEntityType, List<Long> entityIds, boolean all);
 }

@@ -6,19 +6,28 @@ import com.paytm.digital.education.elasticsearch.deserializer.SearchResponseDese
 import com.paytm.digital.education.elasticsearch.models.AggregationResponse;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
+import com.paytm.digital.education.elasticsearch.models.BulkRequestItem;
 import com.paytm.digital.education.elasticsearch.query.AggregationQueryBuilderService;
 import com.paytm.digital.education.elasticsearch.query.SearchQueryBuilderService;
+import com.paytm.digital.education.elasticsearch.request.BulkRequestBuilder;
 import com.paytm.digital.education.elasticsearch.service.ElasticSearchService;
+import com.paytm.digital.education.exception.BadRequestException;
+import com.paytm.digital.education.mapping.ErrorEnum;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.action.bulk.BulkItemResponse;
+import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -38,6 +47,8 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     private AggregationResponseDeserializer aggregationResponseDes;
 
     private SearchResponseDeserializer searchResponseDes;
+
+    private BulkRequestBuilder bulkRequestBuilder;
 
     @Override
     public <T> ElasticResponse<T> executeSearch(ElasticRequest request, Class<T> type)
@@ -101,4 +112,29 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
 
         return response;
     }
+
+    @Override
+    public Map<String, String> executeInBulk(Map<String, BulkRequestItem> documents) throws IOException {
+
+        if (documents.size() > ESConstants.MAX_BULK_SIZE) {
+            log.error("Bulk request too large");
+            throw new BadRequestException(ErrorEnum.BULK_REQUEST_LIMIT_EXCEEDED,
+                    ErrorEnum.BULK_REQUEST_LIMIT_EXCEEDED.getExternalMessage());
+        }
+
+        BulkRequest bulkRequest = bulkRequestBuilder.build(documents);
+
+        BulkResponse bulkResponse = esClient.bulk(bulkRequest, RequestOptions.DEFAULT);
+
+        Map<String, String> response = new HashMap<>();
+        if (bulkResponse.hasFailures()) {
+            for (BulkItemResponse bulkItemResponse : bulkResponse.getItems()) {
+                if (bulkItemResponse.isFailed()) {
+                    response.put(bulkItemResponse.getId(), bulkItemResponse.getFailureMessage());
+                }
+            }
+        }
+        return response;
+    }
+
 }

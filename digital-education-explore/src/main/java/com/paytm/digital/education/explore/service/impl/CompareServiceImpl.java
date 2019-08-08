@@ -277,7 +277,7 @@ public class CompareServiceImpl implements CompareService {
             cDetail.setStreamsPreparedFor(getStreams(courses));
         }
         if (Objects.nonNull(inst.getGallery()) && Objects.nonNull(inst.getGallery().getLogo())) {
-            cDetail.setLogo(CommonUtil.getLogoLink(inst.getGallery().getLogo()));
+            cDetail.setLogo(CommonUtil.getLogoLink(inst.getGallery().getLogo(), INSTITUTE));
         }
         OfficialAddress officialAddress =
                 CommonUtil.getOfficialAddress(inst.getInstitutionState(),

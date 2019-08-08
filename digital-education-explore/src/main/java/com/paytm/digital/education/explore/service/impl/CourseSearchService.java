@@ -187,7 +187,8 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
         if (institute.getGallery() != null && StringUtils
                 .isNotBlank(institute.getGallery().getLogo())) {
             courseSearchResponse
-                    .setLogoUrl(CommonUtil.getLogoLink(institute.getGallery().getLogo()));
+                    .setLogoUrl(CommonUtil.getLogoLink(institute.getGallery().getLogo(),
+                            EducationEntity.INSTITUTE));
         }
         courseSearchResponse
                 .setOfficialAddress(CommonUtil.getOfficialAddress(institute.getInstitutionState(),
@@ -210,7 +211,8 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
         populateFilterFields(searchRequest, elasticRequest, CourseSearch.class,
                 filterQueryTypeMap);
         populateAggregateFields(searchRequest, elasticRequest,
-                searchAggregateHelper.getCourseAggregateData(searchRequest.getClient()), CourseSearch.class);
+                searchAggregateHelper.getCourseAggregateData(searchRequest.getClient()),
+                CourseSearch.class);
         LinkedHashMap<String, DataSortOrder> sortOrder = new LinkedHashMap<>();
         if (!CollectionUtils.isEmpty(searchRequest.getSortOrder())) {
             if (searchRequest.getSortOrder().containsKey(COURSE_ALPHABETICAL_SORT_KEY)) {

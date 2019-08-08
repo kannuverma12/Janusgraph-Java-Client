@@ -5,7 +5,6 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.APP
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_SEARCH_NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SUCCESS;
-import static com.paytm.digital.education.mapping.ErrorEnum.ENTITY_NOT_SUBSCRIBED;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 
 import com.paytm.digital.education.database.entity.UserFlags;
@@ -17,22 +16,25 @@ import com.paytm.digital.education.explore.daoresult.SubscribedEntityCount;
 import com.paytm.digital.education.explore.daoresult.subscription.SubscriptionWithInstitute;
 import com.paytm.digital.education.explore.database.entity.Subscription;
 import com.paytm.digital.education.explore.database.repository.SubscriptionRepository;
+import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.enums.SubscribableEntityType;
 import com.paytm.digital.education.explore.enums.SubscriptionStatus;
 import com.paytm.digital.education.explore.service.CommonMongoService;
 import com.paytm.digital.education.explore.service.SubscriptionService;
+import com.paytm.digital.education.explore.sro.request.SubscriptionRequest;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
-import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
-import java.util.Date;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Date;
 
 @Slf4j
 @Service
@@ -72,26 +74,22 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public NotificationFlags unsubscribe(long userId, SubscribableEntityType entity,
-            long entityId) {
-        Date currentDate = new java.util.Date();
+    public NotificationFlags unsubscribe(long userId, SubscriptionRequest subscriptionRequest) {
 
-        Subscription subscriptionObj =
-                subscriptionRepository.findBySubscribableEntityTypeAndUserIdAndEntityId(
-                        entity, userId, entityId);
+        List<Long> subscribedEntities = null;
+        if (!CollectionUtils.isEmpty(subscriptionRequest.getSubscriptionEntityIds())) {
+            subscribedEntities = subscriptionRequest.getSubscriptionEntityIds();
+        } else {
+            subscribedEntities = Arrays.asList(subscriptionRequest.getSubscriptionEntityId());
+        }
 
-        if (subscriptionObj == null) {
-            throw new BadRequestException(ENTITY_NOT_SUBSCRIBED,
-                    ENTITY_NOT_SUBSCRIBED.getExternalMessage());
-        }
-        if (SubscriptionStatus.SUBSCRIBED.equals(subscriptionObj.getStatus())) {
-            subscriptionObj.setStatus(SubscriptionStatus.UNSUBSCRIBED);
-            subscriptionObj.setLastModified(currentDate);
-            subscriptionRepository.save(subscriptionObj);
-            return decrementShortlistCount(userId);
-        }
+        long updatedCount = subscriptionDao
+                .unsubscribeUserSubscriptions(userId, subscriptionRequest.getSubscriptionEntity(),
+                        subscribedEntities, subscriptionRequest.isAll());
+
+
         log.info("Unsubscribe Response : {}", DEFAULT_SUCCESS_MESSAGE);
-        return DEFAULT_SUCCESS_MESSAGE;
+        return decrementShortlistCount(userId, (int) updatedCount);
     }
 
     @Override
@@ -143,7 +141,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                         .convertNameToUrlDisplayName(
                                 subscriptionWithInstitute.getEntityDetails().getOfficialName()));
                 String logoLink = CommonUtil.getLogoLink(
-                        subscriptionWithInstitute.getEntityDetails().getGallery().getLogo());
+                        subscriptionWithInstitute.getEntityDetails().getGallery().getLogo(),
+                        EducationEntity.INSTITUTE);
                 if (StringUtils.isNotBlank(logoLink)) {
                     subscriptionWithInstitute.getEntityDetails().getGallery()
                             .setLogo(logoLink);
@@ -179,9 +178,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         return notificationFlags;
     }
 
-    private NotificationFlags decrementShortlistCount(long userId) {
+    private NotificationFlags decrementShortlistCount(long userId, int counterValue) {
         UserFlags userFlags =
-                userFlagRepository.decrementCounterIfPositive(userId, UNREAD_SHORTLIST_COUNT, 1);
+                userFlagRepository
+                        .decrementCounterIfPositive(userId, UNREAD_SHORTLIST_COUNT, counterValue);
         NotificationFlags notificationFlags = new NotificationFlags(SUCCESS);
         if (userFlags != null) {
             notificationFlags.setUnreadShortlist(userFlags.getShortlistFlag());

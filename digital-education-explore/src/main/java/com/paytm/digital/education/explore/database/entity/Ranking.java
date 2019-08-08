@@ -27,6 +27,10 @@ public class Ranking {
     @JsonProperty("stream")
     private String stream;
 
+    @Field("rankingStream")
+    @JsonProperty("rankingStream")
+    private String rankingStream;
+
     @Field("category")
     @JsonProperty("category")
     private String category;
