@@ -38,10 +38,13 @@ import static com.paytm.digital.education.explore.constants.CampusEngagementCons
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.KEY;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSES_DIRECTORY;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSES_FILE_NAME;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.DATA_INGESTION;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.EXAM_DIRECTORY;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.EXAM_FILE_NAME;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.INCREMENTAL;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.INSTITUTION_DIRECTORY;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.INSTITUTE_FILE_NAME;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.NEXT_COURSE_FILE_VERSION;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.NEXT_EXAM_FILE_VERSION;
@@ -84,19 +87,27 @@ public class IncrementalDataHelper {
             session = sftpService.createSession(sftpConfig);
             sftp = (ChannelSftp) session.openChannel(CHANNEL_TYPE);
             sftp.connect();
-            sftp.cd(DataIngestionSftpConfig.getFilePath());
+            log.info("Connected. Cd path : " + DataIngestionSftpConfig.getFilePath()
+                    + COURSES_DIRECTORY);
+            sftp.cd(DataIngestionSftpConfig.getFilePath() + COURSES_DIRECTORY);
             if (isFileExists(sftp, currentCourseFileName)) {
-                log.info("Found Course file with name {}",currentCourseFileName);
+                log.info("Found Course file with name {}", currentCourseFileName);
                 sftp.get(currentCourseFileName, COURSES_FILE_NAME);
                 fileExistFlags.put(COURSES_FILE_NAME, true);
             }
+            log.info("Connected. Cd path : " + DataIngestionSftpConfig.getFilePath()
+                    + INSTITUTION_DIRECTORY);
+            sftp.cd(DataIngestionSftpConfig.getFilePath() + INSTITUTION_DIRECTORY);
             if (isFileExists(sftp, currentInstituteFileName)) {
-                log.info("Found Institute file with name {}",currentInstituteFileName);
+                log.info("Found Institute file with name {}", currentInstituteFileName);
                 sftp.get(currentInstituteFileName, INSTITUTE_FILE_NAME);
                 fileExistFlags.put(INSTITUTE_FILE_NAME, true);
             }
+            log.info("Connected. Cd path : " + DataIngestionSftpConfig.getFilePath()
+                    + EXAM_DIRECTORY);
+            sftp.cd(DataIngestionSftpConfig.getFilePath() + EXAM_DIRECTORY);
             if (isFileExists(sftp, currentExamFileName)) {
-                log.info("Found Exam file with name {}",currentExamFileName);
+                log.info("Found Exam file with name {}", currentExamFileName);
                 sftp.get(currentExamFileName, EXAM_FILE_NAME);
                 fileExistFlags.put(EXAM_FILE_NAME, true);
             }
@@ -141,7 +152,7 @@ public class IncrementalDataHelper {
         return result;
     }
 
-    public  <T> List<T> getExistingData(Class<T> entryClass, String entityField,
+    public <T> List<T> getExistingData(Class<T> entryClass, String entityField,
             List<Long> ids) {
         Map<String, Object> queryObject = new HashMap<>();
         queryObject.put(entityField, ids);
@@ -153,7 +164,7 @@ public class IncrementalDataHelper {
     }
 
     public void incrementFileVersion(String fieldName) {
-        log.info("Incrementing file version for {}",fieldName);
+        log.info("Incrementing file version for {}", fieldName);
         Map<String, Object> queryObject = new HashMap<>();
         queryObject.put(COMPONENT, EXPLORE_COMPONENT);
         queryObject.put(NAMESPACE, DATA_INGESTION);
