@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.Map;
 import java.util.Objects;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ID;
@@ -72,7 +73,7 @@ public class TransformInstituteService {
     }
 
     public List<Institute> transformInstituteDtos(List<InstituteDto> dtos) {
-        List<Institute> institutes = new ArrayList<>();
+        Set<Institute> institutes = new HashSet<>();
 
         for (InstituteDto dto : dtos) {
             Institute institute =
@@ -105,7 +106,7 @@ public class TransformInstituteService {
             institutes.add(institute);
         }
 
-        return institutes;
+        return new ArrayList<>(institutes);
     }
 
     private void updateNotableAlumniDetails(Institute institute) {
