@@ -74,6 +74,7 @@ public class TransformInstituteService {
 
     public List<Institute> transformInstituteDtos(List<InstituteDto> dtos) {
         Set<Institute> institutes = new HashSet<>();
+        Set<Long> instituteIdSet = new HashSet<>();
 
         for (InstituteDto dto : dtos) {
             Institute institute =
@@ -103,7 +104,12 @@ public class TransformInstituteService {
             // S3 upload
             uploadImages(institute);
 
-            institutes.add(institute);
+            if (!instituteIdSet.contains(institute.getInstituteId())) {
+                institutes.add(institute);
+                instituteIdSet.add(institute.getInstituteId());
+
+            }
+
         }
 
         return new ArrayList<>(institutes);
