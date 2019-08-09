@@ -28,7 +28,7 @@ public class TransformAndSaveCourseService {
     private IncrementalDataHelper incrementalDataHelper;
     private CommonMongoRepository commonMongoRepository;
 
-    public void transformAndSave(List<Course> courseDtos) {
+    public void transformAndSave(List<Course> courseDtos, Boolean versionUpdate) {
         try {
             Map<String, Object> courseData = transformData(courseDtos);
             List<Long> courseIds = (List<Long>) courseData.get(COURSE_IDS);
@@ -48,7 +48,9 @@ public class TransformAndSaveCourseService {
                 }
                 commonMongoRepository.saveOrUpdate(course);
             }
-            incrementalDataHelper.incrementFileVersion(COURSE_FILE_VERSION);
+            if (Objects.isNull(versionUpdate) || versionUpdate == true) {
+                incrementalDataHelper.incrementFileVersion(COURSE_FILE_VERSION);
+            }
         } catch (Exception e) {
             log.info("Course ingestion exception : " + e.getMessage());
         }

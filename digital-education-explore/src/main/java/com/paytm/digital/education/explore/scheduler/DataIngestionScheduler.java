@@ -35,7 +35,7 @@ public class DataIngestionScheduler {
         } else {
             if (BooleanUtils.isTrue(dataIngestionCronProperty.getIsActive())) {
                 log.info("Starting Data Ingestion Import via scheduler");
-                importIncrementalDataService.importData();
+                importIncrementalDataService.importData(null, null, null);
                 log.info("Finished Data Ingestion Import via scheduler");
 
             }

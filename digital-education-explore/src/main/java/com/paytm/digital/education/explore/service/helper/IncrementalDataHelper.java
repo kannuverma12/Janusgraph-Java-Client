@@ -11,8 +11,6 @@ import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
@@ -23,13 +21,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Objects;
 import java.util.Vector;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Properties;
 
 import static com.mongodb.QueryOperators.OR;
 import static com.paytm.digital.education.constant.SftpConstants.CHANNEL_TYPE;
@@ -39,12 +38,15 @@ import static com.paytm.digital.education.explore.constants.CampusEngagementCons
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSES_DIRECTORY;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSE_ENTITY;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSES_FILE_NAME;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.DATA_INGESTION;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.EXAM_DIRECTORY;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.EXAM_ENTITY;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.EXAM_FILE_NAME;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.INCREMENTAL;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.INSTITUTION_DIRECTORY;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.INSTITUTE_ENTITY;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.INSTITUTE_FILE_NAME;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.NEXT_COURSE_FILE_VERSION;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.NEXT_EXAM_FILE_VERSION;
@@ -61,7 +63,7 @@ public class IncrementalDataHelper {
     private PropertyReader        propertyReader;
     private CommonMongoRepository commonMongoRepository;
 
-    public Map<String, Boolean> downloadFileFromSftp() {
+    public Map<String, Boolean> downloadFileFromSftp(String entity, Integer version) {
         log.info("Downloading Files from SFTP.");
         SftpConfig sftpConfig = new SftpConfig();
         sftpConfig.setUsername(DataIngestionSftpConfig.getUsername());
@@ -77,39 +79,68 @@ public class IncrementalDataHelper {
         Map<String, Object> versioningData = propertyReader
                 .getPropertiesAsMapByKey(EXPLORE_COMPONENT, DATA_INGESTION, INCREMENTAL);
 
-        String currentExamFileName = MessageFormat.format(SFTP_EXAM_FILE_NAME_FORMAT,
-                versioningData.get(NEXT_EXAM_FILE_VERSION));
-        String currentInstituteFileName = MessageFormat.format(SFTP_INSTITUTE_FILE_NAME_FORMAT,
-                versioningData.get(NEXT_INSTITUTE_FILE_VERSION));
-        String currentCourseFileName = MessageFormat.format(SFTP_COURSE_FILE_NAME_FORMAT,
-                versioningData.get(NEXT_COURSE_FILE_VERSION));
+        String currentExamFileName = null;
+        String currentInstituteFileName = null;
+        String currentCourseFileName = null;
+
+        if (Objects.nonNull(version)) {
+            switch (entity) {
+                case EXAM_ENTITY:
+                    currentExamFileName = MessageFormat.format(SFTP_EXAM_FILE_NAME_FORMAT, version);
+                    break;
+                case COURSE_ENTITY:
+                    currentCourseFileName =
+                            MessageFormat.format(SFTP_COURSE_FILE_NAME_FORMAT, version);
+                    break;
+                case INSTITUTE_ENTITY:
+                    currentInstituteFileName =
+                            MessageFormat.format(SFTP_INSTITUTE_FILE_NAME_FORMAT, version);
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            currentExamFileName = MessageFormat.format(SFTP_EXAM_FILE_NAME_FORMAT,
+                    versioningData.get(NEXT_EXAM_FILE_VERSION));
+            currentInstituteFileName = MessageFormat.format(SFTP_INSTITUTE_FILE_NAME_FORMAT,
+                    versioningData.get(NEXT_INSTITUTE_FILE_VERSION));
+            currentCourseFileName = MessageFormat.format(SFTP_COURSE_FILE_NAME_FORMAT,
+                    versioningData.get(NEXT_COURSE_FILE_VERSION));
+        }
+
         try {
             session = sftpService.createSession(sftpConfig);
             sftp = (ChannelSftp) session.openChannel(CHANNEL_TYPE);
             sftp.connect();
-            log.info("Connected. Cd path : " + DataIngestionSftpConfig.getFilePath()
-                    + COURSES_DIRECTORY);
-            sftp.cd(DataIngestionSftpConfig.getFilePath() + COURSES_DIRECTORY);
-            if (isFileExists(sftp, currentCourseFileName)) {
-                log.info("Found Course file with name {}", currentCourseFileName);
-                sftp.get(currentCourseFileName, COURSES_FILE_NAME);
-                fileExistFlags.put(COURSES_FILE_NAME, true);
+            if (Objects.nonNull(currentCourseFileName)) {
+                log.info("Connected. Cd path : " + DataIngestionSftpConfig.getFilePath()
+                        + COURSES_DIRECTORY);
+                sftp.cd(DataIngestionSftpConfig.getFilePath() + COURSES_DIRECTORY);
+                if (isFileExists(sftp, currentCourseFileName)) {
+                    log.info("Found Course file with name {}", currentCourseFileName);
+                    sftp.get(currentCourseFileName, COURSES_FILE_NAME);
+                    fileExistFlags.put(COURSES_FILE_NAME, true);
+                }
             }
-            log.info("Connected. Cd path : " + DataIngestionSftpConfig.getFilePath()
-                    + INSTITUTION_DIRECTORY);
-            sftp.cd(DataIngestionSftpConfig.getFilePath() + INSTITUTION_DIRECTORY);
-            if (isFileExists(sftp, currentInstituteFileName)) {
-                log.info("Found Institute file with name {}", currentInstituteFileName);
-                sftp.get(currentInstituteFileName, INSTITUTE_FILE_NAME);
-                fileExistFlags.put(INSTITUTE_FILE_NAME, true);
+            if (Objects.nonNull(currentInstituteFileName)) {
+                log.info("Connected. Cd path : " + DataIngestionSftpConfig.getFilePath()
+                        + INSTITUTION_DIRECTORY);
+                sftp.cd(DataIngestionSftpConfig.getFilePath() + INSTITUTION_DIRECTORY);
+                if (isFileExists(sftp, currentInstituteFileName)) {
+                    log.info("Found Institute file with name {}", currentInstituteFileName);
+                    sftp.get(currentInstituteFileName, INSTITUTE_FILE_NAME);
+                    fileExistFlags.put(INSTITUTE_FILE_NAME, true);
+                }
             }
-            log.info("Connected. Cd path : " + DataIngestionSftpConfig.getFilePath()
-                    + EXAM_DIRECTORY);
-            sftp.cd(DataIngestionSftpConfig.getFilePath() + EXAM_DIRECTORY);
-            if (isFileExists(sftp, currentExamFileName)) {
-                log.info("Found Exam file with name {}", currentExamFileName);
-                sftp.get(currentExamFileName, EXAM_FILE_NAME);
-                fileExistFlags.put(EXAM_FILE_NAME, true);
+            if (Objects.nonNull(currentExamFileName)) {
+                log.info("Connected. Cd path : " + DataIngestionSftpConfig.getFilePath()
+                        + EXAM_DIRECTORY);
+                sftp.cd(DataIngestionSftpConfig.getFilePath() + EXAM_DIRECTORY);
+                if (isFileExists(sftp, currentExamFileName)) {
+                    log.info("Found Exam file with name {}", currentExamFileName);
+                    sftp.get(currentExamFileName, EXAM_FILE_NAME);
+                    fileExistFlags.put(EXAM_FILE_NAME, true);
+                }
             }
         } catch (Exception e) {
             log.error("Sftp connection exception : " + e.getMessage());

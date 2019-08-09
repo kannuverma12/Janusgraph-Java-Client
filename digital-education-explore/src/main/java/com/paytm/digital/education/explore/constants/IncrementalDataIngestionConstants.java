@@ -20,4 +20,7 @@ public interface IncrementalDataIngestionConstants {
     String COURSES_DIRECTORY               = "/courses";
     String INSTITUTION_DIRECTORY           = "/institutions";
     String EXAM_DIRECTORY                  = "/exams";
+    String EXAM_ENTITY                     = "exam";
+    String COURSE_ENTITY                   = "course";
+    String INSTITUTE_ENTITY                = "institute";
 }

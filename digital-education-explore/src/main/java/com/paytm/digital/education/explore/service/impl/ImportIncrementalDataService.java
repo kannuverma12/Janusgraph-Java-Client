@@ -26,14 +26,15 @@ public class ImportIncrementalDataService {
     private TransformAndSaveExamService   transformAndSaveExamService;
     private TransformInstituteService     transformInstituteService;
 
-    public boolean importData() {
-        Map<String, Boolean> fileInfo = incrementalDataHelper.downloadFileFromSftp();
+    public boolean importData(String entity, Integer version, Boolean versionUpdate) {
+        Map<String, Boolean> fileInfo = incrementalDataHelper.downloadFileFromSftp(entity, version);
         if (fileInfo.get(INSTITUTE_FILE_NAME)) {
             List<InstituteDto> instituteDtos = incrementalDataHelper
                     .retrieveDataFromFile(INSTITUTE_FILE_NAME, InstituteDto.class);
             if (!instituteDtos.isEmpty()) {
                 Integer institutesUpdated =
-                        transformInstituteService.transformAndSaveInstituteData(instituteDtos);
+                        transformInstituteService
+                                .transformAndSaveInstituteData(instituteDtos, versionUpdate);
                 log.info("Imported " + institutesUpdated + " institutes.");
             }
         }
@@ -41,7 +42,7 @@ public class ImportIncrementalDataService {
             List<Exam> examDtos = incrementalDataHelper.retrieveDataFromFile(EXAM_FILE_NAME,
                     Exam.class);
             if (!examDtos.isEmpty()) {
-                transformAndSaveExamService.transformAndSave(examDtos);
+                transformAndSaveExamService.transformAndSave(examDtos, versionUpdate);
                 log.info("Imported " + examDtos.size() + " exams.");
             }
         }
@@ -49,7 +50,7 @@ public class ImportIncrementalDataService {
             List<Course> courseDtos =
                     incrementalDataHelper.retrieveDataFromFile(COURSES_FILE_NAME, Course.class);
             if (!courseDtos.isEmpty()) {
-                transformAndSaveCourseService.transformAndSave(courseDtos);
+                transformAndSaveCourseService.transformAndSave(courseDtos, versionUpdate);
                 log.info("Imported " + courseDtos.size() + " courses.");
             }
         }

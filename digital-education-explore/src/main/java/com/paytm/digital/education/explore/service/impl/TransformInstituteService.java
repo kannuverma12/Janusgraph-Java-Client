@@ -37,7 +37,7 @@ public class TransformInstituteService {
     private CommonMongoRepository      commonMongoRepository;
     private IncrementalDataHelper      incrementalDataHelper;
 
-    public Integer transformAndSaveInstituteData(List<InstituteDto> dtos) {
+    public Integer transformAndSaveInstituteData(List<InstituteDto> dtos, Boolean versionUpdate) {
         List<Institute> institutes = transformInstituteDtos(dtos);
 
         Set<Long> ids =
@@ -64,7 +64,9 @@ public class TransformInstituteService {
             }
             commonMongoRepository.saveOrUpdate(institute);
         }
-        incrementalDataHelper.incrementFileVersion(INSTITUTE_FILE_VERSION);
+        if (Objects.isNull(versionUpdate) || versionUpdate == true) {
+            incrementalDataHelper.incrementFileVersion(INSTITUTE_FILE_VERSION);
+        }
 
         return institutes.size();
     }

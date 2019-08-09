@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
@@ -23,7 +24,7 @@ public class TransformAndSaveExamService {
     private IncrementalDataHelper incrementalDataHelper;
     private CommonMongoRepository commonMongoRepository;
 
-    public void transformAndSave(List<Exam> exams) {
+    public void transformAndSave(List<Exam> exams, Boolean versionUpdate) {
         try {
             List<Long> examIds =
                     exams.stream().map(e2 -> e2.getExamId()).collect(Collectors.toList());
@@ -42,7 +43,9 @@ public class TransformAndSaveExamService {
                 }
                 commonMongoRepository.saveOrUpdate(exam);
             }
-            incrementalDataHelper.incrementFileVersion(EXAM_FILE_VERSION);
+            if (Objects.isNull(versionUpdate) || versionUpdate == true) {
+                incrementalDataHelper.incrementFileVersion(EXAM_FILE_VERSION);
+            }
         } catch (Exception e) {
             log.info("Exam ingestion exceptions : " + e.getMessage());
         }
