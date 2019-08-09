@@ -84,10 +84,12 @@ public class TransformAndSaveCourseService {
                 }
             }
             course.setCutoffs(cutoffs);
-
-            courseIds.add(course.getCourseId());
-            courseSet.add(course);
+            if (!courseIds.contains(course.getCourseId())) {
+                courseIds.add(course.getCourseId());
+                courseSet.add(course);
+            }
         }
+        log.info("courseIds : "+courseIds.size() + ", courseSet : "+courseSet.size());
         response.put(COURSE_IDS, new ArrayList<>(courseIds));
         response.put(COURSES, new ArrayList<>(courseSet));
         return response;
