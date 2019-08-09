@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_ID;
@@ -58,7 +60,9 @@ public class TransformAndSaveCourseService {
 
     private Map<String, Object> transformData(List<Course> courses) {
         Map<String, Object> response = new HashMap<>();
-        List<Long> courseIds = new ArrayList<>();
+        Set<Long> courseIds = new HashSet<>();
+        Set<Course> courseSet = new HashSet<>();
+
         for (Course course : courses) {
             List<Cutoff> cutoffs = course.getCutoffs();
             if (Objects.nonNull(cutoffs)) {
@@ -80,9 +84,12 @@ public class TransformAndSaveCourseService {
                 }
             }
             course.setCutoffs(cutoffs);
+
+            courseIds.add(course.getCourseId());
+            courseSet.add(course);
         }
-        response.put(COURSE_IDS, courseIds);
-        response.put(COURSES, courses);
+        response.put(COURSE_IDS, new ArrayList<>(courseIds));
+        response.put(COURSES, new ArrayList<>(courseSet));
         return response;
     }
 }
