@@ -34,7 +34,6 @@ import static com.paytm.digital.education.explore.constants.IncrementalDataInges
 @Slf4j
 public class TransformInstituteService {
     private UploadUtil                 uploadUtil;
-    private InstituteDetailServiceImpl instituteDetailService;
     private CommonMongoRepository      commonMongoRepository;
     private IncrementalDataHelper      incrementalDataHelper;
 
@@ -49,7 +48,8 @@ public class TransformInstituteService {
         fields.add(INSTITUTE_ID);
         List<Institute> dbIstitutes = new ArrayList<>();
         try {
-            dbIstitutes = instituteDetailService.getInstitutes(new ArrayList<>(ids),fields);
+            dbIstitutes = incrementalDataHelper
+                    .getExistingData(Institute.class, INSTITUTE_ID, new ArrayList<>(ids));
         } catch (Exception e) {
             log.error("Error getting institutes : " + e.getMessage());
         }
@@ -73,7 +73,8 @@ public class TransformInstituteService {
         List<Institute> institutes = new ArrayList<>();
 
         for (InstituteDto dto : dtos) {
-            Institute institute = new Institute(dto.getCommonName(), Long.valueOf(dto.getInstituteId()));
+            Institute institute =
+                    new Institute(dto.getCommonName(), Long.valueOf(dto.getInstituteId()));
 
             BeanUtils.copyProperties(dto, institute);
 

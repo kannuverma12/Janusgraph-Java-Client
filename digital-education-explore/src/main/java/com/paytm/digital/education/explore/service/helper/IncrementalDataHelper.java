@@ -147,7 +147,6 @@ public class IncrementalDataHelper {
             }
         } catch (IOException e) {
             log.error("Error retrieving data from file {}", fileName);
-            System.err.println("Error: " + e);
         }
         return result;
     }
