@@ -89,7 +89,7 @@ public class TransformAndSaveCourseService {
                 courseSet.add(course);
             }
         }
-        log.info("courseIds : "+courseIds.size() + ", courseSet : "+courseSet.size());
+        log.info("courseIds : " + courseIds.size() + ", courseSet : " + courseSet.size());
         response.put(COURSE_IDS, new ArrayList<>(courseIds));
         response.put(COURSES, new ArrayList<>(courseSet));
         return response;
