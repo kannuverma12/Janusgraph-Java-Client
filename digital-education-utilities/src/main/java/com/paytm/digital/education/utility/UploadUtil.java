@@ -57,7 +57,7 @@ public class UploadUtil {
 
     public String uploadImage(String fileUrl, String fileName, Long instituteId,
             String s3BucketName, String s3ImagePath) {
-        System.setProperty("http.agent", "Chrome");
+        //System.setProperty("http.agent", "Chrome");
         try {
             URL url = new URL(fileUrl);
             InputStream stream = url.openStream();
