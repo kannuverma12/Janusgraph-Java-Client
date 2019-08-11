@@ -67,7 +67,8 @@ public class UploadUtil {
             log.info("Relative_path : {}", relativePath);
             String s3RelativeUrl = s3Service
                     .uploadFile(stream, fileName, instituteId,
-                            relativePath + "/", s3BucketName);
+                             "", s3BucketName);
+
             log.info("S3 relative url: {}", s3RelativeUrl);
             if (StringUtils.isNotBlank(s3RelativeUrl)) {
                 return s3RelativeUrl;
