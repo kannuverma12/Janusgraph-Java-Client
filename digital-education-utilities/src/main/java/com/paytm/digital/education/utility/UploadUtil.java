@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.text.MessageFormat;
 import java.util.Map;
 
@@ -62,7 +63,12 @@ public class UploadUtil {
                         + "Chrome/28.0.1500.29 Safari/537.36");
         try {
             URL url = new URL(fileUrl);
-            InputStream stream = url.openStream();
+            URLConnection connection = url.openConnection();
+            connection.setRequestProperty("User-Agent",
+                    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                            + "Chrome/28.0.1500.29 Safari/537.36");
+            InputStream stream = connection.getInputStream();
+            //InputStream stream = url.openStream();
             String relativePath = MessageFormat.format(s3ImagePath, instituteId.toString());
             log.info("Relative_path : {}", relativePath);
             String s3RelativeUrl = s3Service
