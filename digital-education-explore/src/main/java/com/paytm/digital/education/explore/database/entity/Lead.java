@@ -73,6 +73,10 @@ public class Lead {
     @NotNull
     private Long stateId;
 
+    @Field(Constants.LOCATION)
+    @JsonProperty(Constants.LOCATION)
+    private String location;
+
     @Field(Constants.CITY_ID)
     @JsonProperty(Constants.CITY_ID)
     @NotNull
@@ -137,6 +141,7 @@ public class Lead {
         public static final String CITY_ID                        = "city_id";
         public static final String ENTITY_ID                      = "entity_id";
         public static final String STREAM                         = "stream";
+        public static final String LOCATION                       = "location";
         public static final String REQUEST_TYPE                   = "request_type";
         public static final String ENTITY_TYPE                    = "entity_type";
         public static final String CREATED_AT                     = "created_at";

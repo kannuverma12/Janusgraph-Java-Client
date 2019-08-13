@@ -1,18 +1,21 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import com.paytm.digital.education.exception.BadRequestException;
+import com.paytm.digital.education.explore.database.entity.Lead;
+import com.paytm.digital.education.explore.database.entity.UserDetails;
 import com.paytm.digital.education.explore.database.entity.BaseLeadResponse;
 import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Exam;
-import com.paytm.digital.education.explore.database.entity.Lead;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.database.repository.LeadRepository;
+import com.paytm.digital.education.explore.database.repository.UserDetailsRepository;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.service.LeadService;
 import com.paytm.digital.education.explore.service.external.LeadCareer360Service;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -32,10 +35,17 @@ public class LeadServiceImpl implements LeadService {
     private LeadRepository        leadRepository;
     private CommonMongoRepository commonMongoRepository;
     private LeadCareer360Service  leadCareer360Service;
+    private UserDetailsRepository userDetailsRepository;
 
     @Override
     public com.paytm.digital.education.explore.response.dto.common.Lead captureLead(Lead lead) {
         validateLeadRequest(lead);
+        UserDetails userDetails = userDetailsRepository.getByUserId(lead.getUserId());
+        if (Objects.isNull(userDetails)) {
+            saveUserDetails(lead);
+        } else {
+            validateUserDetails(lead, userDetails);
+        }
         BaseLeadResponse c360LeadRespose = leadCareer360Service.sendLead(lead);
         com.paytm.digital.education.explore.response.dto.common.Lead leadResponse =
                 buildResponse(lead, c360LeadRespose);
@@ -51,6 +61,32 @@ public class LeadServiceImpl implements LeadService {
                 buildResponse(lead, c360LeadRespose);
         leadRepository.upsertLead(lead);
         return leadResponse;
+    }
+
+    private void saveUserDetails(Lead lead) {
+        UserDetails userDetails = new UserDetails();
+        userDetails.setContactEmail(lead.getContactEmail());
+        userDetails.setContactName(lead.getContactName());
+        userDetails.setContactNumber(lead.getContactNumber());
+        userDetails.setUserId(lead.getUserId());
+        if (StringUtils.isNotBlank(lead.getLocation())) {
+            userDetails.setCityId(lead.getCityId());
+            userDetails.setStateId(lead.getStateId());
+            userDetails.setLocation(lead.getLocation());
+        }
+        userDetailsRepository.save(userDetails);
+    }
+
+    private void validateUserDetails(Lead lead, UserDetails userDetails) {
+        if (!lead.getContactEmail().equals(userDetails.getContactEmail())
+                || !lead.getContactNumber().equals(userDetails.getContactNumber())) {
+            throw new BadRequestException(ErrorEnum.USER_INFO_MISMATCH,
+                    ErrorEnum.USER_INFO_MISMATCH.getExternalMessage());
+        }
+        if (StringUtils.isNotBlank(lead.getLocation()) && !lead.getLocation()
+                .equals(userDetails.getLocation())) {
+            saveUserDetails(lead);
+        }
     }
 
     private com.paytm.digital.education.explore.response.dto.common.Lead buildResponse(Lead lead,

@@ -29,14 +29,16 @@ public class UploadUtil {
     private S3Service s3Service;
 
     public Pair<String, String> uploadFile(String fileUrl, String fileName, Long instituteId,
-            String s3ImagePath, String s3BucketName, String clientSecretFileName, String clientSecretFolder) {
+            String s3ImagePath, String s3BucketName, String clientSecretFileName,
+            String clientSecretFolder) {
         InputStream inputStream = null;
         String mimeType = null;
         fileUrl = fileUrl.trim();
         try {
             if (fileUrl.startsWith(GOOGLE_DRIVE_BASE_URL)) {
                 Map<String, Object> fileData =
-                        GoogleDriveUtil.downloadFile(fileUrl, clientSecretFileName, clientSecretFolder);
+                        GoogleDriveUtil
+                                .downloadFile(fileUrl, clientSecretFileName, clientSecretFolder);
                 inputStream = (InputStream) fileData.get(INPUTSTREAM);
                 fileName = (String) fileData.get(FILENAME);
                 mimeType = (String) fileData.get(MIMETYPE);
@@ -59,7 +61,8 @@ public class UploadUtil {
         try {
             URL url = new URL(fileUrl);
             InputStream stream = url.openStream();
-            String relativePath = MessageFormat.format(s3ImagePath, instituteId);
+            String relativePath = MessageFormat.format(s3ImagePath, instituteId.toString());
+            log.info("Relative_path : {}", relativePath);
             String s3RelativeUrl = s3Service
                     .uploadFile(stream, fileName, instituteId,
                             relativePath, s3BucketName);

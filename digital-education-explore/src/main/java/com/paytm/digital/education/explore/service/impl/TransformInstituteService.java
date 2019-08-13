@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.Map;
 import java.util.Objects;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ID;
@@ -34,11 +35,10 @@ import static com.paytm.digital.education.explore.constants.IncrementalDataInges
 @Slf4j
 public class TransformInstituteService {
     private UploadUtil                 uploadUtil;
-    private InstituteDetailServiceImpl instituteDetailService;
     private CommonMongoRepository      commonMongoRepository;
     private IncrementalDataHelper      incrementalDataHelper;
 
-    public Integer transformAndSaveInstituteData(List<InstituteDto> dtos) {
+    public Integer transformAndSaveInstituteData(List<InstituteDto> dtos, Boolean versionUpdate) {
         List<Institute> institutes = transformInstituteDtos(dtos);
 
         Set<Long> ids =
@@ -49,7 +49,8 @@ public class TransformInstituteService {
         fields.add(INSTITUTE_ID);
         List<Institute> dbIstitutes = new ArrayList<>();
         try {
-            dbIstitutes = instituteDetailService.getInstitutes(new ArrayList<>(ids),fields);
+            dbIstitutes = incrementalDataHelper
+                    .getExistingData(Institute.class, INSTITUTE_ID, new ArrayList<>(ids));
         } catch (Exception e) {
             log.error("Error getting institutes : " + e.getMessage());
         }
@@ -64,16 +65,20 @@ public class TransformInstituteService {
             }
             commonMongoRepository.saveOrUpdate(institute);
         }
-        incrementalDataHelper.incrementFileVersion(INSTITUTE_FILE_VERSION);
+        if (Objects.isNull(versionUpdate) || versionUpdate == true) {
+            incrementalDataHelper.incrementFileVersion(INSTITUTE_FILE_VERSION);
+        }
 
         return institutes.size();
     }
 
     public List<Institute> transformInstituteDtos(List<InstituteDto> dtos) {
-        List<Institute> institutes = new ArrayList<>();
+        Set<Institute> institutes = new HashSet<>();
+        Set<Long> instituteIdSet = new HashSet<>();
 
         for (InstituteDto dto : dtos) {
-            Institute institute = new Institute(dto.getCommonName(), Long.valueOf(dto.getInstituteId()));
+            Institute institute =
+                    new Institute(dto.getCommonName(), Long.valueOf(dto.getInstituteId()));
 
             BeanUtils.copyProperties(dto, institute);
 
@@ -99,10 +104,15 @@ public class TransformInstituteService {
             // S3 upload
             uploadImages(institute);
 
-            institutes.add(institute);
+            if (!instituteIdSet.contains(institute.getInstituteId())) {
+                institutes.add(institute);
+                instituteIdSet.add(institute.getInstituteId());
+
+            }
+
         }
 
-        return institutes;
+        return new ArrayList<>(institutes);
     }
 
     private void updateNotableAlumniDetails(Institute institute) {

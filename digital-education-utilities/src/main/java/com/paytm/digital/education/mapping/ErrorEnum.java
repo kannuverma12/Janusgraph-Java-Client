@@ -91,12 +91,14 @@ public enum ErrorEnum {
     ENTITY_ID_MANDATORY_FOR_SUBSCRIPTION(4037, "Entity id is mandatory for subscription requests.",
             HttpStatus.BAD_REQUEST, 0),
     INVALID_CUSTOMER_ID(4038, "Invalid customer ID. Please provide a valid customer ID.",
+            HttpStatus.BAD_REQUEST, 0),
+    USER_INFO_MISMATCH(4039, "Provided user details doesn't matches to info stored at our end",
             HttpStatus.BAD_REQUEST, 0);
 
-    private final int internalCode;
-    private final String externalMessage;
+    private final int        internalCode;
+    private final String     externalMessage;
     private final HttpStatus httpStatus;
-    private final int numberOfArgs;
+    private final int        numberOfArgs;
 
     ErrorEnum(int internalCode, String externalMessage, HttpStatus httpStatus, int numberOfArgs) {
         this.internalCode = internalCode;

@@ -17,4 +17,10 @@ public interface IncrementalDataIngestionConstants {
     String INSTITUTE_FILE_VERSION          = "attributes.next_institute_file_version";
     String COURSE_FILE_VERSION             = "attributes.next_course_file_version";
     String EXAM_FILE_VERSION               = "attributes.next_exam_file_version";
+    String COURSES_DIRECTORY               = "/courses";
+    String INSTITUTION_DIRECTORY           = "/institutions";
+    String EXAM_DIRECTORY                  = "/exams";
+    String EXAM_ENTITY                     = "exam";
+    String COURSE_ENTITY                   = "course";
+    String INSTITUTE_ENTITY                = "institute";
 }
