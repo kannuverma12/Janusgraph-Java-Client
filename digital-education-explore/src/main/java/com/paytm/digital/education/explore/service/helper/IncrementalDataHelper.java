@@ -3,8 +3,10 @@ package com.paytm.digital.education.explore.service.helper;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.Session;
 import com.paytm.digital.education.dto.SftpConfig;
+import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.config.DataIngestionSftpConfig;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.service.SftpService;
 import com.paytm.digital.education.utility.JsonUtils;
@@ -97,7 +99,8 @@ public class IncrementalDataHelper {
                             MessageFormat.format(SFTP_INSTITUTE_FILE_NAME_FORMAT, version);
                     break;
                 default:
-                    break;
+                    throw new BadRequestException(ErrorEnum.INVALID_ENTITY_FOR_DATA_IMPORT,
+                            ErrorEnum.INVALID_ENTITY_FOR_DATA_IMPORT.getExternalMessage());
             }
         } else {
             currentExamFileName = MessageFormat.format(SFTP_EXAM_FILE_NAME_FORMAT,
