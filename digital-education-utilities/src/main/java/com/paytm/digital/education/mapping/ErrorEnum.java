@@ -94,7 +94,8 @@ public enum ErrorEnum {
             HttpStatus.BAD_REQUEST, 0),
     USER_INFO_MISMATCH(4039, "Provided user details doesn't matches to info stored at our end",
             HttpStatus.BAD_REQUEST, 0),
-    INVALID_ENTITY_FOR_DATA_IMPORT(4040, "Provided entity is invalid.", HttpStatus.BAD_REQUEST, 0);
+    INVALID_ENTITY_FOR_DATA_IMPORT(4040, "Provided entity is invalid.", HttpStatus.BAD_REQUEST, 0),
+    USER_DATA_DOESNOT_EXISTS(4041, "User data does not exists.", HttpStatus.BAD_REQUEST, 0);
 
     private final int        internalCode;
     private final String     externalMessage;
