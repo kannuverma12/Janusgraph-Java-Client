@@ -95,7 +95,11 @@ public enum ErrorEnum {
     USER_INFO_MISMATCH(4039, "Provided user details doesn't matches to info stored at our end",
             HttpStatus.BAD_REQUEST, 0),
     INVALID_ENTITY_FOR_DATA_IMPORT(4040, "Provided entity is invalid.", HttpStatus.BAD_REQUEST, 0),
-    USER_DATA_DOESNOT_EXISTS(4041, "User data does not exists.", HttpStatus.BAD_REQUEST, 0);
+    USER_DATA_DOESNOT_EXISTS(4041, "User data does not exists.", HttpStatus.BAD_REQUEST, 0),
+    INVALID_FILE_VERSION(4042, "File not present for provided version number",
+            HttpStatus.BAD_REQUEST, 0),
+    SFTP_CONNECTION_FAILED(4043, "Unable to connect to sftp.", HttpStatus.BAD_REQUEST, 0),
+    CORRUPTED_FILE(4044, "The file you are trying to read is corrupt", HttpStatus.BAD_REQUEST, 0);
 
     private final int        internalCode;
     private final String     externalMessage;

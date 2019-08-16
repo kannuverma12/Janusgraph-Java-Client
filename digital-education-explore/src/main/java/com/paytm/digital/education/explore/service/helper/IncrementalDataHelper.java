@@ -4,6 +4,7 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.Session;
 import com.paytm.digital.education.dto.SftpConfig;
 import com.paytm.digital.education.exception.BadRequestException;
+import com.paytm.digital.education.exception.EducationException;
 import com.paytm.digital.education.explore.config.DataIngestionSftpConfig;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.mapping.ErrorEnum;
@@ -119,7 +120,7 @@ public class IncrementalDataHelper {
                 log.info("Connected. Cd path : " + DataIngestionSftpConfig.getFilePath()
                         + COURSES_DIRECTORY);
                 sftp.cd(DataIngestionSftpConfig.getFilePath() + COURSES_DIRECTORY);
-                if (isFileExists(sftp, currentCourseFileName)) {
+                if (isFileExists(sftp, currentCourseFileName, version)) {
                     log.info("Found Course file with name {}", currentCourseFileName);
                     sftp.get(currentCourseFileName, COURSES_FILE_NAME);
                     fileExistFlags.put(COURSES_FILE_NAME, true);
@@ -129,7 +130,7 @@ public class IncrementalDataHelper {
                 log.info("Connected. Cd path : " + DataIngestionSftpConfig.getFilePath()
                         + INSTITUTION_DIRECTORY);
                 sftp.cd(DataIngestionSftpConfig.getFilePath() + INSTITUTION_DIRECTORY);
-                if (isFileExists(sftp, currentInstituteFileName)) {
+                if (isFileExists(sftp, currentInstituteFileName, version)) {
                     log.info("Found Institute file with name {}", currentInstituteFileName);
                     sftp.get(currentInstituteFileName, INSTITUTE_FILE_NAME);
                     fileExistFlags.put(INSTITUTE_FILE_NAME, true);
@@ -139,7 +140,7 @@ public class IncrementalDataHelper {
                 log.info("Connected. Cd path : " + DataIngestionSftpConfig.getFilePath()
                         + EXAM_DIRECTORY);
                 sftp.cd(DataIngestionSftpConfig.getFilePath() + EXAM_DIRECTORY);
-                if (isFileExists(sftp, currentExamFileName)) {
+                if (isFileExists(sftp, currentExamFileName, version)) {
                     log.info("Found Exam file with name {}", currentExamFileName);
                     sftp.get(currentExamFileName, EXAM_FILE_NAME);
                     fileExistFlags.put(EXAM_FILE_NAME, true);
@@ -147,6 +148,10 @@ public class IncrementalDataHelper {
             }
         } catch (Exception e) {
             log.error("Sftp connection exception : " + e.getMessage());
+            if (Objects.nonNull(version)) {
+                throw new EducationException(ErrorEnum.SFTP_CONNECTION_FAILED,
+                        ErrorEnum.SFTP_CONNECTION_FAILED.getExternalMessage());
+            }
         } finally {
             if (sftp != null) {
                 sftp.disconnect();
@@ -158,11 +163,15 @@ public class IncrementalDataHelper {
         return fileExistFlags;
     }
 
-    private boolean isFileExists(ChannelSftp sftp, String fileName) {
+    private boolean isFileExists(ChannelSftp sftp, String fileName, Integer version) {
         try {
             Vector<ChannelSftp.LsEntry> list = sftp.ls(fileName);
         } catch (Exception e) {
             log.error("Sftp " + fileName + " retrieval exception : " + e.getMessage());
+            if (Objects.nonNull(version)) {
+                throw new BadRequestException(ErrorEnum.USER_DATA_DOESNOT_EXISTS,
+                        ErrorEnum.USER_DATA_DOESNOT_EXISTS.getExternalMessage());
+            }
             return false;
         }
         return true;
