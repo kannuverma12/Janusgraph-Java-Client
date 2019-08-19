@@ -146,6 +146,8 @@ public class IncrementalDataHelper {
                     fileExistFlags.put(EXAM_FILE_NAME, true);
                 }
             }
+        } catch (BadRequestException e) {
+            throw e;
         } catch (Exception e) {
             log.error("Sftp connection exception : " + e.getMessage());
             if (Objects.nonNull(version)) {
@@ -169,8 +171,8 @@ public class IncrementalDataHelper {
         } catch (Exception e) {
             log.error("Sftp " + fileName + " retrieval exception : " + e.getMessage());
             if (Objects.nonNull(version)) {
-                throw new BadRequestException(ErrorEnum.USER_DATA_DOESNOT_EXISTS,
-                        ErrorEnum.USER_DATA_DOESNOT_EXISTS.getExternalMessage());
+                throw new BadRequestException(ErrorEnum.INVALID_FILE_VERSION,
+                        ErrorEnum.INVALID_FILE_VERSION.getExternalMessage());
             }
             return false;
         }
