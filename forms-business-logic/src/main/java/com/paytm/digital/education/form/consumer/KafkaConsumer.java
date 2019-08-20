@@ -7,10 +7,8 @@ import org.springframework.kafka.annotation.KafkaListener;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.stereotype.Service;
 
 import static org.springframework.kafka.support.KafkaHeaders.RECEIVED_PARTITION_ID;
 import static org.springframework.kafka.support.KafkaHeaders.RECEIVED_TOPIC;
@@ -19,9 +17,6 @@ import static org.springframework.kafka.support.KafkaHeaders.RECEIVED_TIMESTAMP;
 
 @Slf4j
 @Data
-@Service
-@ConditionalOnExpression("'${spring.profiles.active}' == 'production' or '${spring.profiles.active}' == 'local' "
-        + "or '${kafka.consumer}' == T(java.net.InetAddress).getLocalHost().getHostName()")
 @AllArgsConstructor
 public class KafkaConsumer {
 
