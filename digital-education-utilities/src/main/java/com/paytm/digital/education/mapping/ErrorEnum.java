@@ -101,7 +101,8 @@ public enum ErrorEnum {
     SFTP_CONNECTION_FAILED(4043, "Unable to connect to sftp.", HttpStatus.BAD_REQUEST, 0),
     CORRUPTED_FILE(4044, "The file you are trying to read is corrupt", HttpStatus.BAD_REQUEST, 0),
     INVALID_SCHOOL_ID(4045, "Invalid school ID. Please provide a valid school ID.",
-            HttpStatus.BAD_REQUEST, 0);
+            HttpStatus.BAD_REQUEST, 0),
+    NO_ENTITY_FOUND(4046, "No %s is found for the given %s - %s", HttpStatus.BAD_REQUEST, 3);
 
     private final int        internalCode;
     private final String     externalMessage;
@@ -130,4 +131,5 @@ public enum ErrorEnum {
     public int getNumberOfArgs() {
         return numberOfArgs;
     }
+
 }
