@@ -127,7 +127,7 @@ public class TransformInstituteService {
                             institute.getInstituteId(), AwsConfig.getS3ExploreBucketName(),
                             AWSConstants.S3_RELATIVE_PATH_FOR_EXPLORE);
                     if (Objects.nonNull(imageUrl)) {
-                        alumni.setAlumniPhoto(imageUrl);
+                        alumni.setAlumniPhoto("/" + imageUrl);
                     } else {
                         log.info("Some issue with alumni picture");
                     }
@@ -154,7 +154,7 @@ public class TransformInstituteService {
                                 institute.getInstituteId(), AwsConfig.getS3ExploreBucketName(),
                                 AWSConstants.S3_RELATIVE_PATH_FOR_EXPLORE);
                         if (Objects.nonNull(imageUrl)) {
-                            newUrls.add(imageUrl);
+                            newUrls.add("/" + imageUrl);
                         } else {
                             // TODO add fail over strategy
                         }
@@ -173,7 +173,7 @@ public class TransformInstituteService {
                     AWSConstants.S3_RELATIVE_PATH_FOR_EXPLORE);
 
             if (Objects.nonNull(logoS3Url)) {
-                g.setLogo(logoS3Url);
+                g.setLogo("/" + logoS3Url);
             } else {
                 // TODO add fail over strategy
             }

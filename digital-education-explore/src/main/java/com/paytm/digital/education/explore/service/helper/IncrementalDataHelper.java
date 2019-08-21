@@ -57,6 +57,11 @@ import static com.paytm.digital.education.explore.constants.IncrementalDataInges
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SFTP_COURSE_FILE_NAME_FORMAT;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SFTP_EXAM_FILE_NAME_FORMAT;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SFTP_INSTITUTE_FILE_NAME_FORMAT;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.NEXT_SCHOOL_FILE_VERSION;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SCHOOLS_FILE_NAME;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SCHOOL_DIRECTORY;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SCHOOL_ENTITY;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SFTP_SCHOOL_FILE_NAME_FORMAT;
 
 @Slf4j
 @Service
@@ -79,12 +84,14 @@ public class IncrementalDataHelper {
         fileExistFlags.put(EXAM_FILE_NAME, false);
         fileExistFlags.put(INSTITUTE_FILE_NAME, false);
         fileExistFlags.put(COURSES_FILE_NAME, false);
+        fileExistFlags.put(SCHOOLS_FILE_NAME, false);
         Map<String, Object> versioningData = propertyReader
                 .getPropertiesAsMapByKey(EXPLORE_COMPONENT, DATA_INGESTION, INCREMENTAL);
 
         String currentExamFileName = null;
         String currentInstituteFileName = null;
         String currentCourseFileName = null;
+        String currentSchoolFileName = null;
 
         if (Objects.nonNull(version)) {
             switch (entity) {
@@ -99,6 +106,10 @@ public class IncrementalDataHelper {
                     currentInstituteFileName =
                             MessageFormat.format(SFTP_INSTITUTE_FILE_NAME_FORMAT, version);
                     break;
+                case SCHOOL_ENTITY:
+                    currentSchoolFileName = MessageFormat.format(SFTP_SCHOOL_FILE_NAME_FORMAT,
+                            version);
+                    break;
                 default:
                     throw new BadRequestException(ErrorEnum.INVALID_ENTITY_FOR_DATA_IMPORT,
                             ErrorEnum.INVALID_ENTITY_FOR_DATA_IMPORT.getExternalMessage());
@@ -110,6 +121,8 @@ public class IncrementalDataHelper {
                     versioningData.get(NEXT_INSTITUTE_FILE_VERSION));
             currentCourseFileName = MessageFormat.format(SFTP_COURSE_FILE_NAME_FORMAT,
                     versioningData.get(NEXT_COURSE_FILE_VERSION));
+            currentSchoolFileName = MessageFormat.format(SFTP_SCHOOL_FILE_NAME_FORMAT,
+                    versioningData.get(NEXT_SCHOOL_FILE_VERSION));
         }
 
         try {
@@ -144,6 +157,16 @@ public class IncrementalDataHelper {
                     log.info("Found Exam file with name {}", currentExamFileName);
                     sftp.get(currentExamFileName, EXAM_FILE_NAME);
                     fileExistFlags.put(EXAM_FILE_NAME, true);
+                }
+            }
+            if (Objects.nonNull(currentSchoolFileName)) {
+                log.info("Connected. Cd path : " + DataIngestionSftpConfig.getFilePath()
+                        + SCHOOL_DIRECTORY);
+                sftp.cd(DataIngestionSftpConfig.getFilePath() + SCHOOL_DIRECTORY);
+                if (isFileExists(sftp, currentSchoolFileName, version)) {
+                    log.info("Found School file with name {}", currentSchoolFileName);
+                    sftp.get(currentSchoolFileName, SCHOOLS_FILE_NAME);
+                    fileExistFlags.put(SCHOOLS_FILE_NAME, true);
                 }
             }
         } catch (BadRequestException e) {

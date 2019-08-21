@@ -284,4 +284,10 @@ public interface ExploreConstants {
     String SEARCH_HISTORY_UPDATEDAT    = "updated_at";
     int    DELETE_RECENTS_BATCH_SIZE   = 100;
 
+
+    //School Constants
+    interface SchoolConstants {
+        String SCHOOL_ID = "school_id";
+    }
+
 }

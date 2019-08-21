@@ -99,7 +99,9 @@ public enum ErrorEnum {
     INVALID_FILE_VERSION(4042, "File not present for provided version number",
             HttpStatus.BAD_REQUEST, 0),
     SFTP_CONNECTION_FAILED(4043, "Unable to connect to sftp.", HttpStatus.BAD_REQUEST, 0),
-    CORRUPTED_FILE(4044, "The file you are trying to read is corrupt", HttpStatus.BAD_REQUEST, 0);
+    CORRUPTED_FILE(4044, "The file you are trying to read is corrupt", HttpStatus.BAD_REQUEST, 0),
+    INVALID_SCHOOL_ID(4045, "Invalid school ID. Please provide a valid school ID.",
+            HttpStatus.BAD_REQUEST, 0);
 
     private final int        internalCode;
     private final String     externalMessage;

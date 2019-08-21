@@ -4,6 +4,7 @@ import com.paytm.digital.education.exception.EducationException;
 import com.paytm.digital.education.explore.database.ingestion.Course;
 import com.paytm.digital.education.explore.database.ingestion.Exam;
 import com.paytm.digital.education.explore.dto.InstituteDto;
+import com.paytm.digital.education.explore.dto.SchoolDto;
 import com.paytm.digital.education.explore.service.helper.IncrementalDataHelper;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import lombok.AllArgsConstructor;
@@ -17,6 +18,7 @@ import java.util.Objects;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSES_FILE_NAME;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.EXAM_FILE_NAME;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.INSTITUTE_FILE_NAME;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SCHOOLS_FILE_NAME;
 
 @AllArgsConstructor
 @Service
@@ -26,6 +28,7 @@ public class ImportIncrementalDataService {
     private TransformAndSaveCourseService transformAndSaveCourseService;
     private TransformAndSaveExamService   transformAndSaveExamService;
     private TransformInstituteService     transformInstituteService;
+    private TransformSchoolService        transformSchoolService;
 
     public boolean importData(String entity, Integer version, Boolean versionUpdate) {
         Map<String, Boolean> fileInfo = incrementalDataHelper.downloadFileFromSftp(entity, version);
@@ -68,6 +71,15 @@ public class ImportIncrementalDataService {
                     throw new EducationException(ErrorEnum.CORRUPTED_FILE,
                             ErrorEnum.CORRUPTED_FILE.getExternalMessage());
                 }
+            }
+        }
+        if (fileInfo.get(SCHOOLS_FILE_NAME)) {
+            log.info("Going to import schools");
+            List<SchoolDto> schoolDtos =
+                    incrementalDataHelper.retrieveDataFromFile(SCHOOLS_FILE_NAME, SchoolDto.class);
+            if (!schoolDtos.isEmpty()) {
+                transformSchoolService.transformAndSaveSchoolsData(schoolDtos);
+                log.info("Imported " + schoolDtos.size() + " schools.");
             }
         }
         return true;
