@@ -1,15 +1,14 @@
 package com.paytm.digital.education.explore.controller;
 
-import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.database.entity.Lead;
 import com.paytm.digital.education.explore.database.entity.UserDetails;
-import com.paytm.digital.education.explore.database.repository.UserDetailsRepository;
 import com.paytm.digital.education.explore.service.LeadService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
-import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.util.Objects;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EDUCATION_BASE_URL;
 
@@ -32,7 +30,6 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EDU
 @Validated
 public class LeadController {
     private LeadService           leadService;
-    private UserDetailsRepository userDetailsRepository;
 
     @PostMapping("/auth/v1/lead")
     public com.paytm.digital.education.explore.response.dto.common.Lead captureLead(
@@ -52,15 +49,11 @@ public class LeadController {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/user_details")
-    public UserDetails getLeadUserDetails(@RequestHeader("x-user-id") @Min(1) Long userId) {
-        log.info("User details request for user id : {}", userId.toString());
-        UserDetails userDetails = userDetailsRepository.getByUserId(userId);
-        if (Objects.nonNull(userDetails)) {
-            return userDetails;
-        }
-        log.warn("User details not found for user id :{}", userId);
-        throw new BadRequestException(ErrorEnum.USER_DATA_DOESNOT_EXISTS,
-                ErrorEnum.USER_DATA_DOESNOT_EXISTS.getExternalMessage());
+    public UserDetails getLeadUserDetails(@RequestHeader("x-user-id") @NotNull @Min(1) Long userId,
+            @RequestHeader("x-user-email") String email,
+            @RequestHeader("x-user-firstname") String firstName,
+            @RequestHeader("x-user-phone") @NotBlank String phone) {
+        return leadService.getUserDetails(userId, email, firstName, phone);
     }
 
 }
