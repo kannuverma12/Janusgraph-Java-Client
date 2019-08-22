@@ -1,6 +1,5 @@
 package com.paytm.digital.education.explore.service.helper;
 
-import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.response.dto.common.Widget;
 import com.paytm.digital.education.explore.response.dto.common.WidgetData;
 import com.paytm.digital.education.property.reader.PropertyReader;
@@ -13,14 +12,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.WIDGETS;
 import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)

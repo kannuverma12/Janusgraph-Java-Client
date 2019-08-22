@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Field;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.paytm.digital.education.explore.enums.PublishStatus;
+import com.paytm.digital.education.enums.PublishStatus;
 import lombok.Data;
 
 @Data

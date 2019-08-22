@@ -5,7 +5,7 @@ import com.paytm.digital.education.coaching.database.entity.CoachingInstitute;
 import com.paytm.digital.education.coaching.database.entity.KeyHighlight;
 import com.paytm.digital.education.coaching.database.entity.OfficialAddress;
 import com.paytm.digital.education.coaching.database.repository.CoachingInstituteRepository;
-import com.paytm.digital.education.coaching.enums.CourseType;
+import com.paytm.digital.education.enums.CourseType;
 import com.paytm.digital.education.coaching.googlesheet.model.CoachingInstituteForm;
 import com.paytm.digital.education.coaching.service.helper.IngestDataHelper;
 import com.paytm.digital.education.config.AwsConfig;

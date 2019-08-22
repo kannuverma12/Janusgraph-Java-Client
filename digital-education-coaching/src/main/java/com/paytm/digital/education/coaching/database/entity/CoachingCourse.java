@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.coaching.enums.CourseType;
+import com.paytm.digital.education.enums.CourseType;
 import com.paytm.digital.education.coaching.response.dto.ResponseDto;
 import lombok.Data;
 import lombok.ToString;

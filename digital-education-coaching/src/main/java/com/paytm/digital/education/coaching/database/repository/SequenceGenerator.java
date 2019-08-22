@@ -21,7 +21,7 @@ public class SequenceGenerator {
     private MongoOperations mongoOperations;
 
     @Transactional
-    protected long getNextSequenceId(String sequenceName) {
+    public long getNextSequenceId(String sequenceName) {
         Query mongoQuery = new Query(Criteria.where(KEY_STRING).is(sequenceName));
         Update update = new Update();
         update.inc(SEQUENCE, 1);

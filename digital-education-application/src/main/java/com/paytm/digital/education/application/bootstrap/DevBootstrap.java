@@ -1,14 +1,14 @@
 package com.paytm.digital.education.application.bootstrap;
 
-import com.paytm.digital.education.explore.database.entity.Exam;
+import com.paytm.digital.education.database.entity.Stream;
+import com.paytm.digital.education.database.repository.StreamRepository;
+import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.entity.State;
-import com.paytm.digital.education.explore.database.entity.Stream;
 import com.paytm.digital.education.explore.database.entity.Subscription;
-import com.paytm.digital.education.explore.database.repository.ExamRepository;
+import com.paytm.digital.education.database.repository.ExamRepository;
 import com.paytm.digital.education.explore.database.repository.InstituteRepository;
 import com.paytm.digital.education.explore.database.repository.StateRepository;
-import com.paytm.digital.education.explore.database.repository.StreamRepository;
 import com.paytm.digital.education.explore.database.repository.SubscriptionRepository;
 import com.paytm.digital.education.explore.enums.StateType;
 import com.paytm.digital.education.explore.enums.SubscribableEntityType;
@@ -52,7 +52,7 @@ public class DevBootstrap implements ApplicationListener<ContextRefreshedEvent> 
         State delhi = new State(DELHI_STATE, StateType.STATE);
         stateRepository.save(delhi);
 
-        Stream eng = new Stream(ENGINEERING_STREAM);
+        Stream eng = Stream.builder().name(ENGINEERING_STREAM).build();
         streamRepository.save(eng);
 
         Institute inst1 = new Institute("inst1", 1L);

@@ -1,9 +1,8 @@
 package com.paytm.digital.education.explore.service.helper;
 
 import com.paytm.digital.education.explore.constants.ExploreConstants;
-import com.paytm.digital.education.explore.database.entity.Exam;
-import com.paytm.digital.education.explore.database.entity.ExamLogo;
-import com.paytm.digital.education.explore.database.repository.ExamLogoRepository;
+import com.paytm.digital.education.database.entity.ExamLogo;
+import com.paytm.digital.education.database.repository.ExamLogoRepository;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import lombok.AllArgsConstructor;

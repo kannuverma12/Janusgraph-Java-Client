@@ -15,10 +15,10 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.DAT
 import static com.paytm.digital.education.explore.enums.Gender.OTHERS;
 import static com.paytm.digital.education.utility.DateUtil.stringToDate;
 
-import com.paytm.digital.education.explore.database.entity.Event;
-import com.paytm.digital.education.explore.database.entity.Exam;
-import com.paytm.digital.education.explore.database.entity.Instance;
-import com.paytm.digital.education.explore.database.entity.SubExam;
+import com.paytm.digital.education.database.entity.Event;
+import com.paytm.digital.education.database.entity.Exam;
+import com.paytm.digital.education.database.entity.Instance;
+import com.paytm.digital.education.database.entity.SubExam;
 import com.paytm.digital.education.explore.enums.Gender;
 import com.paytm.digital.education.explore.response.dto.detail.ExamAndCutOff;
 import com.paytm.digital.education.explore.utility.CommonUtil;

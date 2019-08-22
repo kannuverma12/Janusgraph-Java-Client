@@ -1,6 +1,6 @@
 package com.paytm.digital.education.explore.service;
 
-import com.paytm.digital.education.explore.database.entity.Section;
+import com.paytm.digital.education.database.entity.Section;
 
 import java.util.List;
 

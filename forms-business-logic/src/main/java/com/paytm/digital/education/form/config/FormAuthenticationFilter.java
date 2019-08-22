@@ -1,6 +1,7 @@
 package com.paytm.digital.education.form.config;
 
 import com.google.common.base.Optional;
+import lombok.NoArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
@@ -32,6 +33,11 @@ public class FormAuthenticationFilter extends AuthenticationFilter {
     private final String cookieName = "ff.sid";
     private final String authenticateApi;
     private AuthenticationManager authenticationManager;
+
+    public FormAuthenticationFilter() {
+        super(null);
+        authenticateApi = null;
+    }
 
     public FormAuthenticationFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);

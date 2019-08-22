@@ -1,6 +1,7 @@
 package com.paytm.digital.education.explore.service;
 
-import com.paytm.digital.education.explore.database.entity.Stream;
+
+import com.paytm.digital.education.database.entity.Stream;
 
 public interface StreamService {
 

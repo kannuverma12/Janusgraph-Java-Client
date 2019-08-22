@@ -12,6 +12,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.C
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.SUCCESS_MESSAGE;
 
 @Service
+@Deprecated
 public class CoachingCenterService {
     @Autowired
     private CoachingCenterRespository coachingCenterRespository;

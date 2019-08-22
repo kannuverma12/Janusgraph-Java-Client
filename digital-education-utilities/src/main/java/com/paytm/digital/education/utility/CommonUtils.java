@@ -38,4 +38,8 @@ public class CommonUtils {
         return subStr;
 
     }
+
+    public String convertNameToUrlDisplayName(String name) {
+        return name.replaceAll("[^a-zA-Z0-9]+", "-").toLowerCase();
+    }
 }

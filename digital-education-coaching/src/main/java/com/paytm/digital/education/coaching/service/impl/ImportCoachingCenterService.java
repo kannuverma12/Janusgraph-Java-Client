@@ -4,7 +4,7 @@ import com.paytm.digital.education.coaching.database.entity.CoachingCenter;
 import com.paytm.digital.education.coaching.database.entity.CoachingInstitute;
 import com.paytm.digital.education.coaching.database.repository.CoachingCenterRespository;
 import com.paytm.digital.education.coaching.database.repository.CoachingInstituteRepository;
-import com.paytm.digital.education.coaching.enums.CourseType;
+import com.paytm.digital.education.enums.CourseType;
 import com.paytm.digital.education.coaching.googlesheet.model.CoachingCentreForm;
 import com.paytm.digital.education.coaching.service.helper.IngestDataHelper;
 import com.paytm.digital.education.config.GoogleConfig;

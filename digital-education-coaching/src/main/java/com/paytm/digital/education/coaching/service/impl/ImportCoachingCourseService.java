@@ -3,7 +3,7 @@ package com.paytm.digital.education.coaching.service.impl;
 import com.paytm.digital.education.coaching.constants.CoachingConstants;
 import com.paytm.digital.education.coaching.database.entity.CoachingCourse;
 import com.paytm.digital.education.coaching.database.repository.CoachingCourseRepository;
-import com.paytm.digital.education.coaching.enums.CourseType;
+import com.paytm.digital.education.enums.CourseType;
 import com.paytm.digital.education.coaching.googlesheet.model.CoachingCourseForm;
 import com.paytm.digital.education.coaching.service.helper.IngestDataHelper;
 import com.paytm.digital.education.config.AwsConfig;

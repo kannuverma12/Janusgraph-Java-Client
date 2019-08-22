@@ -3,7 +3,7 @@ package com.paytm.digital.education.explore.database.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.paytm.digital.education.explore.enums.CourseLevel;
-import com.paytm.digital.education.explore.enums.PublishStatus;
+import com.paytm.digital.education.enums.PublishStatus;
 import lombok.Data;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;

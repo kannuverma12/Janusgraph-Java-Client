@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
-@Service
 @AllArgsConstructor
+@Service
 public class CoachingExamService {
 
     private CoachingExamRepository coachingExamRepository;

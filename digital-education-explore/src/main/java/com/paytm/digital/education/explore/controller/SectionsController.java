@@ -1,6 +1,6 @@
 package com.paytm.digital.education.explore.controller;
 
-import com.paytm.digital.education.explore.database.entity.Section;
+import com.paytm.digital.education.database.entity.Section;
 import com.paytm.digital.education.explore.service.PageService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
