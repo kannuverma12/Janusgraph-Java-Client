@@ -24,7 +24,9 @@ public class CollegePredictorsController {
     public @ResponseBody CollegePredictorDetailsDto getCollegePredictorDetails(
             @RequestParam(value = "productId") Long productId) {
 
-        log.info("received a request to fetch college predictor details for product id {}", productId);
+        log.info("received a request to fetch college predictor details for product id {}",
+                productId);
+
         return collegePredictorService.getPredictor(productId);
     }
 }
