@@ -21,10 +21,12 @@ public class CollegePredictorsServiceImpl implements CollegePredictorService {
 
     @Override
     public CollegePredictorDetailsDto getPredictor(Long productId) {
-        Optional<CollegePredictor> predictor = predictorListRepository.findCollegePredictorByMerchantSku(productId);
+        Optional<CollegePredictor> predictor =
+                predictorListRepository.findCollegePredictorByMerchantSku(productId);
 
-        if (! predictor.isPresent()) {
-            throw new BadRequestException(ErrorEnum.NO_ENTITY_FOUND, new String[]{"College Predictor", "product id", productId.toString()});
+        if (!predictor.isPresent()) {
+            throw new BadRequestException(ErrorEnum.NO_ENTITY_FOUND,
+                    new String[] {"College Predictor", "product id", productId.toString()});
         }
 
         return createCollegePredictorDto(predictor.get());
@@ -34,18 +36,18 @@ public class CollegePredictorsServiceImpl implements CollegePredictorService {
 
         CollegePredictorDetailsDto predictorDetailsDto =
                 CollegePredictorDetailsDto.builder()
-                .id(predictor.getMerchantSku())
-                .currency(predictor.getCurrency())
-                .description(predictor.getDescription())
-                .longDescription(predictor.getLongDescription())
-                .image(predictor.getImage())
-                .offeredPrice(predictor.getOfferedPrice())
-                .paytmPrice(predictor.getPaytmPrice())
-                .price(predictor.getPrice())
-                .status(predictor.getStatus())
-                .title(predictor.getTitle())
-                .type(predictor.getType())
-                .build();
+                        .id(predictor.getMerchantSku())
+                        .currency(predictor.getCurrency())
+                        .description(predictor.getDescription())
+                        .longDescription(predictor.getLongDescription())
+                        .image(predictor.getImage())
+                        .offeredPrice(predictor.getOfferedPrice())
+                        .paytmPrice(predictor.getPaytmPrice())
+                        .price(predictor.getPrice())
+                        .status(predictor.getStatus())
+                        .title(predictor.getTitle())
+                        .type(predictor.getType())
+                        .build();
 
         return predictorDetailsDto;
     }
