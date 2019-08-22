@@ -2,8 +2,8 @@ package com.paytm.digital.education.explore.controller;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EDUCATION_BASE_URL;
 
-import com.paytm.digital.education.explore.database.entity.FtlTemplate;
-import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.database.entity.FtlTemplate;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.utility.FileUtility;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

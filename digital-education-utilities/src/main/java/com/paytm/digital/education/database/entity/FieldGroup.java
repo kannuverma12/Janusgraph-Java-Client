@@ -1,7 +1,6 @@
-package com.paytm.digital.education.explore.database.entity;
+package com.paytm.digital.education.database.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.ToString;
@@ -15,10 +14,9 @@ import java.util.List;
 
 @Data
 @ToString
-@Document(collection = "templates")
+@Document(collection = "field_groups")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class FtlTemplate {
+public class FieldGroup {
 
     @JsonIgnore
     @Id
@@ -30,8 +28,8 @@ public class FtlTemplate {
     @Field("entity")
     private String entity;
 
-    @Field("template")
-    private String template;
+    @Field("fields")
+    private List<String> fields;
 
     @Field("active")
     private boolean active;

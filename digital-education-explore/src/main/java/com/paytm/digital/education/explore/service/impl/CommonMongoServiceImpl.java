@@ -1,6 +1,6 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.service.CommonMongoService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

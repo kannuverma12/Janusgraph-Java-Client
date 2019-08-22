@@ -1,19 +1,7 @@
-package com.paytm.digital.education.explore.database.repository;
+package com.paytm.digital.education.database.repository;
 
-import static com.mongodb.QueryOperators.AND;
-import static com.mongodb.QueryOperators.ELEM_MATCH;
-import static com.mongodb.QueryOperators.EXISTS;
-import static com.mongodb.QueryOperators.NE;
-import static com.mongodb.QueryOperators.OR;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EQ_OPERATOR;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.GROUP_ACTIVE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.GROUP_ENTITY;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.GROUP_NAME;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.IN_OPERATOR;
-
-import com.mongodb.DBCursor;
-import com.paytm.digital.education.explore.database.entity.FieldGroup;
-import com.paytm.digital.education.explore.database.entity.FtlTemplate;
+import com.paytm.digital.education.database.entity.FieldGroup;
+import com.paytm.digital.education.database.entity.FtlTemplate;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -31,6 +19,17 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import static com.mongodb.QueryOperators.AND;
+import static com.mongodb.QueryOperators.ELEM_MATCH;
+import static com.mongodb.QueryOperators.EXISTS;
+import static com.mongodb.QueryOperators.NE;
+import static com.mongodb.QueryOperators.OR;
+import static com.paytm.digital.education.constant.DBConstants.EQ_OPERATOR;
+import static com.paytm.digital.education.constant.DBConstants.GROUP_ACTIVE;
+import static com.paytm.digital.education.constant.DBConstants.GROUP_ENTITY;
+import static com.paytm.digital.education.constant.DBConstants.GROUP_NAME;
+import static com.paytm.digital.education.constant.DBConstants.IN_OPERATOR;
 
 @Slf4j
 @AllArgsConstructor
@@ -78,7 +77,8 @@ public class CommonMongoRepository {
     public List<String> getFieldsByGroupAndCollectioName(String collectionName, String fieldGroup) {
         Query mongoQuery = new Query(Criteria
                 .where(GROUP_NAME).is(fieldGroup)
-                .and(GROUP_ENTITY).is(collectionName).and(GROUP_ACTIVE).is(true));
+                .and(GROUP_ENTITY).is(collectionName).and(
+                        GROUP_ACTIVE).is(true));
         FieldGroup groupDetail = executeQuery(mongoQuery, FieldGroup.class);
         if (groupDetail != null) {
             return groupDetail.getFields();
@@ -166,9 +166,10 @@ public class CommonMongoRepository {
     public <T> T findAndModify(Map<String, Object> searchRequest, Update update,
             FindAndModifyOptions options, Class<T> type) {
 
-        return mongoOperation.findAndModify(createMongoQuery(searchRequest, new ArrayList<>()), update,
-                options,
-                type);
+        return mongoOperation
+                .findAndModify(createMongoQuery(searchRequest, new ArrayList<>()), update,
+                        options,
+                        type);
     }
 
     /*

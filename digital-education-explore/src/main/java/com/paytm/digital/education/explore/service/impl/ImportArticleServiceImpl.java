@@ -7,7 +7,7 @@ import com.paytm.digital.education.database.repository.FailedDataRepository;
 import com.paytm.digital.education.explore.database.entity.Article;
 import com.paytm.digital.education.explore.database.entity.CampusEngagement;
 import com.paytm.digital.education.explore.database.entity.Institute;
-import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.service.ImportDataService;
 import com.paytm.digital.education.explore.service.helper.CampusEngagementHelper;
 import com.paytm.digital.education.utility.GoogleDriveUtil;

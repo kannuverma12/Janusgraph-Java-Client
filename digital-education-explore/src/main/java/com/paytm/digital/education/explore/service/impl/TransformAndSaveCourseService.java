@@ -2,7 +2,7 @@ package com.paytm.digital.education.explore.service.impl;
 
 import com.paytm.digital.education.explore.database.ingestion.Course;
 import com.paytm.digital.education.explore.database.ingestion.Cutoff;
-import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.service.helper.IncrementalDataHelper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -6,7 +6,7 @@ import com.paytm.digital.education.explore.database.entity.Article;
 import com.paytm.digital.education.explore.database.entity.CampusAmbassador;
 import com.paytm.digital.education.explore.database.entity.CampusEngagement;
 import com.paytm.digital.education.explore.database.entity.CampusEvent;
-import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.response.dto.detail.Ambassador;
 import com.paytm.digital.education.explore.response.dto.detail.CampusArticle;
 import com.paytm.digital.education.explore.response.dto.detail.CampusEventDetail;

@@ -13,7 +13,7 @@ import com.paytm.digital.education.explore.database.entity.CourseFee;
 import com.paytm.digital.education.explore.database.entity.Cutoff;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.SubExam;
-import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.enums.Gender;
 import com.paytm.digital.education.explore.response.dto.common.CutOff;
 import com.paytm.digital.education.explore.response.dto.detail.CompareCourseDetail;

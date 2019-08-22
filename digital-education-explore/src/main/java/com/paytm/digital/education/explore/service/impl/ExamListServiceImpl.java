@@ -4,7 +4,7 @@ import com.paytm.digital.education.exception.NotFoundException;
 import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.SubExam;
-import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.response.dto.detail.ExamInfo;
 import com.paytm.digital.education.explore.service.ExamListService;
 import com.paytm.digital.education.explore.utility.CommonUtil;

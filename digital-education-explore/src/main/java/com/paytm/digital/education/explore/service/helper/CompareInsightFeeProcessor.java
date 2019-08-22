@@ -11,7 +11,7 @@ import static com.paytm.digital.education.explore.utility.CompareUtil.getInstitu
 
 import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Institute;
-import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.utility.CompareUtil;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;

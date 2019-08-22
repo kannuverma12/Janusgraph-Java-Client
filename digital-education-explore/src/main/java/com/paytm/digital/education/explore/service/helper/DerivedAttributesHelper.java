@@ -4,7 +4,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.HIG
 import static com.paytm.digital.education.explore.constants.ExploreConstants.HIGHLIGHTS_TEMPLATE;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.response.dto.detail.Attribute;
 import com.paytm.digital.education.explore.template.TemplateProcessor;

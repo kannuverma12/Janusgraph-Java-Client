@@ -1,9 +1,9 @@
 package com.paytm.digital.education.coaching.consumer.service;
 
 import com.paytm.digital.education.coaching.consumer.model.response.GetExamDetailsResponse;
+import com.paytm.digital.education.coaching.db.dao.ExamDAO;
 import com.paytm.digital.education.constant.ErrorCode;
 import com.paytm.digital.education.database.entity.Exam;
-import com.paytm.digital.education.database.repository.ExamRepository;
 import com.paytm.digital.education.exception.InvalidRequestException;
 import com.paytm.digital.education.utility.CommonUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -18,10 +18,10 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.E
 @Service
 public class ExamService {
 
-    @Autowired private ExamRepository examRepository;
+    @Autowired private ExamDAO examDAO;
 
     public GetExamDetailsResponse getExamDetails(final Long examId, final String urlDisplayKey) {
-        Exam exam = examRepository.findByExamId(examId);
+        Exam exam = examDAO.findByExamId(examId);
 
         if (Objects.isNull(exam)) {
             log.error("Exam with id: {} does not exist", examId);

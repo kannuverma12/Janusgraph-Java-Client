@@ -4,7 +4,7 @@ import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.constants.ExploreConstants;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
-import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
