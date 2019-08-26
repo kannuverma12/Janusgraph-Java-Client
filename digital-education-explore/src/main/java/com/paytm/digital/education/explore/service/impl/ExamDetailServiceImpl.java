@@ -21,11 +21,13 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
 
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.database.entity.Exam;
+import com.paytm.digital.education.explore.database.entity.ExamPaytmKeys;
 import com.paytm.digital.education.explore.database.entity.Instance;
 import com.paytm.digital.education.explore.database.entity.SubExam;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.detail.ExamDetail;
 import com.paytm.digital.education.explore.response.dto.detail.Section;
 import com.paytm.digital.education.explore.response.dto.detail.Event;
@@ -35,10 +37,11 @@ import com.paytm.digital.education.explore.response.dto.detail.Topic;
 import com.paytm.digital.education.explore.response.dto.detail.Location;
 import com.paytm.digital.education.explore.service.helper.ExamLogoHelper;
 import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
-import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
-import com.paytm.digital.education.explore.service.helper.DetailPageSectionHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
+import com.paytm.digital.education.explore.service.helper.DetailPageSectionHelper;
+import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
 import com.paytm.digital.education.explore.service.helper.WidgetsDataHelper;
+import com.paytm.digital.education.explore.service.helper.CTAHelper;
 import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
@@ -53,6 +56,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Objects;
 
 @AllArgsConstructor
 @Service
@@ -67,6 +71,7 @@ public class ExamDetailServiceImpl {
     private BannerDataHelper        bannerDataHelper;
     private WidgetsDataHelper       widgetsDataHelper;
     private LeadDetailHelper        leadDetailHelper;
+    private CTAHelper               ctaHelper;
 
     private static int EXAM_PREFIX_LENGTH = EXAM_PREFIX.length();
 
@@ -77,6 +82,10 @@ public class ExamDetailServiceImpl {
         ExamDetail examDetail = getExamDetail(entityId, examUrlKey, fieldGroup, fields, client);
         if (userId != null && userId > 0) {
             updateInterested(examDetail, userId);
+        }
+        List<CTA> ctas = ctaHelper.buildExamCTA(examDetail, client);
+        if (!CollectionUtils.isEmpty(ctas)) {
+            examDetail.setCtaList(ctas);
         }
         return examDetail;
     }
@@ -296,6 +305,10 @@ public class ExamDetailServiceImpl {
         addDatesToResponse(examDetail, importantDates);
         examDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName, null));
         examDetail.setBanners(bannerDataHelper.getBannerData(entityName, null));
+        if (Objects.nonNull(exam.getPaytmKeys())) {
+            ExamPaytmKeys examPaytmKeys = exam.getPaytmKeys();
+            examDetail.setCollegePredictorPid(examPaytmKeys.getCollegePredictorId());
+        }
         examDetail.setWidgets(widgetsDataHelper.getWidgets(entityName, exam.getExamId(),
                 getDomainName(exam.getDomains())
         ));

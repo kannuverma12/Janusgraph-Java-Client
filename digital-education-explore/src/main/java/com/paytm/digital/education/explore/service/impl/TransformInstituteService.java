@@ -1,6 +1,7 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import com.paytm.digital.education.config.AwsConfig;
+import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.constants.AWSConstants;
 import com.paytm.digital.education.explore.database.entity.Alumni;
 import com.paytm.digital.education.explore.database.entity.Gallery;
@@ -10,6 +11,7 @@ import com.paytm.digital.education.explore.database.repository.CommonMongoReposi
 import com.paytm.digital.education.explore.dto.InstituteDto;
 import com.paytm.digital.education.explore.dto.RankingDto;
 import com.paytm.digital.education.explore.service.helper.IncrementalDataHelper;
+import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.utility.UploadUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,51 +27,57 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.EXAM_FILE_VERSION;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.INSTITUTE_FILE_VERSION;
 
 @Service
 @AllArgsConstructor
 @Slf4j
 public class TransformInstituteService {
-    private UploadUtil                 uploadUtil;
-    private CommonMongoRepository      commonMongoRepository;
-    private IncrementalDataHelper      incrementalDataHelper;
+    private UploadUtil            uploadUtil;
+    private CommonMongoRepository commonMongoRepository;
+    private IncrementalDataHelper incrementalDataHelper;
 
     public Integer transformAndSaveInstituteData(List<InstituteDto> dtos, Boolean versionUpdate) {
         List<Institute> institutes = transformInstituteDtos(dtos);
 
-        Set<Long> ids =
-                institutes.stream().map(i -> i.getInstituteId()).collect(Collectors.toSet());
-
-        List<String> fields = new ArrayList<>();
-        fields.add(ID);
-        fields.add(INSTITUTE_ID);
-        List<Institute> dbIstitutes = new ArrayList<>();
         try {
-            dbIstitutes = incrementalDataHelper
-                    .getExistingData(Institute.class, INSTITUTE_ID, new ArrayList<>(ids));
-        } catch (Exception e) {
-            log.error("Error getting institutes : " + e.getMessage());
-        }
+            Set<Long> ids =
+                    institutes.stream().map(i -> i.getInstituteId()).collect(Collectors.toSet());
 
-        Map<Long, String> ojbIdToInstIdMap = dbIstitutes.stream()
-                .collect(Collectors.toMap(i -> i.getInstituteId(), i -> i.getId()));
-
-        for (Institute institute : institutes) {
-            Long id = institute.getInstituteId();
-            if (ojbIdToInstIdMap.containsKey(id)) {
-                institute.setId(ojbIdToInstIdMap.get(id));
+            List<Institute> dbInstitutes = new ArrayList<>();
+            try {
+                dbInstitutes = incrementalDataHelper
+                        .getExistingData(Institute.class, INSTITUTE_ID, new ArrayList<>(ids));
+            } catch (Exception e) {
+                log.error("Error getting institutes : " + e.getMessage());
             }
-            commonMongoRepository.saveOrUpdate(institute);
-        }
-        if (Objects.isNull(versionUpdate) || versionUpdate == true) {
-            incrementalDataHelper.incrementFileVersion(INSTITUTE_FILE_VERSION);
-        }
 
-        return institutes.size();
+            Map<Long, Institute> ojbIdToInstIdMap = dbInstitutes.stream()
+                    .collect(Collectors.toMap(i -> i.getInstituteId(), i -> i));
+
+            for (Institute institute : institutes) {
+                Long id = institute.getInstituteId();
+                Institute existingInstitute = ojbIdToInstIdMap.get(id);
+                if (Objects.nonNull(existingInstitute)) {
+                    institute.setId(existingInstitute.getId());
+                    institute.setPaytmKeys(existingInstitute.getPaytmKeys());
+                }
+                commonMongoRepository.saveOrUpdate(institute);
+            }
+            if (Objects.isNull(versionUpdate) || versionUpdate) {
+                incrementalDataHelper.incrementFileVersion(INSTITUTE_FILE_VERSION);
+            }
+
+            return institutes.size();
+        } catch (Exception e) {
+            log.info("Course ingestion exceptions : " + e.getMessage());
+            if (Objects.nonNull(versionUpdate)) {
+                throw new BadRequestException(ErrorEnum.CORRUPTED_FILE,
+                        ErrorEnum.CORRUPTED_FILE.getExternalMessage());
+            }
+            return null;
+        }
     }
 
     public List<Institute> transformInstituteDtos(List<InstituteDto> dtos) {

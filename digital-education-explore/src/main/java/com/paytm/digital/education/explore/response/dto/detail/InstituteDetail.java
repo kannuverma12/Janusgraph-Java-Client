@@ -1,8 +1,10 @@
 package com.paytm.digital.education.explore.response.dto.detail;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.explore.response.dto.common.BannerData;
+import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import com.paytm.digital.education.explore.response.dto.common.Widget;
 import lombok.Data;
@@ -110,4 +112,14 @@ public class InstituteDetail {
 
     @JsonProperty("events")
     private List<CampusEventDetail> events;
+
+    @JsonProperty("cta_list")
+    private List<CTA> ctaList;
+
+    @JsonIgnore
+    private Long pid;
+
+    @JsonIgnore
+    private Long mid;
+
 }

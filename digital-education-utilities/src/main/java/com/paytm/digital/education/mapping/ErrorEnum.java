@@ -96,13 +96,19 @@ public enum ErrorEnum {
             HttpStatus.BAD_REQUEST, 0),
     INVALID_ENTITY_FOR_DATA_IMPORT(4040, "Provided entity is invalid.", HttpStatus.BAD_REQUEST, 0),
     USER_DATA_DOESNOT_EXISTS(4041, "User data does not exists.", HttpStatus.BAD_REQUEST, 0),
-    INVALID_FILE_VERSION(4042, "File not present for provided version number",
+    INVALID_FILE_VERSION(4042, "File is not present for provided version number",
             HttpStatus.BAD_REQUEST, 0),
     SFTP_CONNECTION_FAILED(4043, "Unable to connect to sftp.", HttpStatus.BAD_REQUEST, 0),
-    CORRUPTED_FILE(4044, "The file you are trying to read is corrupt", HttpStatus.BAD_REQUEST, 0),
-    INVALID_SCHOOL_ID(4045, "Invalid school ID. Please provide a valid school ID.",
+    CORRUPTED_FILE(4044, "The file you are trying to read is corrupted", HttpStatus.BAD_REQUEST, 0),
+    DATA_NOT_PRESENT(4045, "Data is missing!!!", HttpStatus.BAD_REQUEST, 0),
+    FUNCTIONALITY_NOT_SUPPORTED_FOR_ENTITY(4046,
+            "This functionality is not supported for provided entity", HttpStatus.BAD_REQUEST, 0),
+    INVALID_SCHOOL_ID(4047, "Invalid school ID. Please provide a valid school ID.",
             HttpStatus.BAD_REQUEST, 0),
-    NO_ENTITY_FOUND(4046, "No %s is found for the given %s - %s", HttpStatus.BAD_REQUEST, 3);
+    NO_ENTITY_FOUND(4048, "No %s is found for the given %s - %s", HttpStatus.BAD_REQUEST, 3),
+    PID_MISSING(4049, "PID doesnot exists for entity %s", HttpStatus.BAD_REQUEST, 1),
+    PREDICTOR_ID_MISSING(4050, "COLLEGE PREDICTOR ID doesnot exists for entity %s",
+            HttpStatus.BAD_REQUEST, 1);
 
     private final int        internalCode;
     private final String     externalMessage;

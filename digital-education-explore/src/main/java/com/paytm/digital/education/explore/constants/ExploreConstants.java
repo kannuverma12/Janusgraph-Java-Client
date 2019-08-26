@@ -284,6 +284,10 @@ public interface ExploreConstants {
     String SEARCH_HISTORY_UPDATEDAT    = "updated_at";
     int    DELETE_RECENTS_BATCH_SIZE   = 100;
 
+    String CTA                  = "cta";
+    String SELECTED             = "_selected";
+    String CTA_LOGO_PLACEHOLDER = "/placeholder.svg";
+
 
     //School Constants
     interface SchoolConstants {

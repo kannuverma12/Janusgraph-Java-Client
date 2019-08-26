@@ -20,6 +20,12 @@ public class ConfigProperties {
     private static String appFooterPrefix;
     private static String rankingLogoPrefix;
     private static String examLogoPrefix;
+    private static String ctaLogoPrefix;
+
+    @Value("${cta.logo.prefix}")
+    public void setCtaLogoPrefix(String prefix) {
+        ctaLogoPrefix = prefix;
+    }
 
     @Value("${education.asset.baseurl}")
     public void setBaseUrl(String baseUrl) {
@@ -127,5 +133,9 @@ public class ConfigProperties {
 
     public static String getBannerPrefix() {
         return bannerPrefix;
+    }
+
+    public static String getCtaLogoPrefix() {
+        return ctaLogoPrefix;
     }
 }
