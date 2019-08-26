@@ -24,7 +24,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.WID
 import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class WidgetsDataHelperTest {
+public class WidgetsEntityDataHelperTest {
     @Mock
     private PropertyReader propertyReader;
 

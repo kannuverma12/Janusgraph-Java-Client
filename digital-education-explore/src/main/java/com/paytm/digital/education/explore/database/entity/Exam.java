@@ -98,6 +98,9 @@ public class Exam {
     @Field("status")
     private String status;
 
+    @Field("paytm_keys")
+    private ExamPaytmKeys paytmKeys;
+
     public Exam(long examId) {
         this.examId = examId;
     }

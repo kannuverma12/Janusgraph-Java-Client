@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -14,6 +15,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDetails {
 
+    @Id
     @Field(Constants.USER_ID)
     @JsonProperty(Constants.USER_ID)
     private Long userId;

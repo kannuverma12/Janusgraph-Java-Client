@@ -18,10 +18,10 @@ import com.paytm.digital.education.explore.database.entity.CampusAmbassador;
 import com.paytm.digital.education.explore.database.entity.CampusEngagement;
 import com.paytm.digital.education.explore.database.entity.Course;
 import com.paytm.digital.education.explore.database.entity.Exam;
+import com.paytm.digital.education.explore.database.entity.InstiPaytmKeys;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.CourseLevel;
-import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.enums.PublishStatus;
 import com.paytm.digital.education.explore.response.dto.common.BannerData;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
@@ -184,6 +184,11 @@ public class InstituteDetailResponseBuilder {
                 instituteDetail.setEvents(campusEngagementHelper
                         .getCampusEventsData(campusEngagement.getEvents()));
             }
+        }
+        if (Objects.nonNull(institute.getPaytmKeys())) {
+            InstiPaytmKeys instiPaytmKeys = institute.getPaytmKeys();
+            instituteDetail.setPid(instiPaytmKeys.getPid());
+            instituteDetail.setMid(instiPaytmKeys.getMid());
         }
         return instituteDetail;
     }

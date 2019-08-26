@@ -3,9 +3,11 @@ package com.paytm.digital.education.explore.response.dto.detail;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.explore.response.dto.common.BannerData;
+import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.common.Widget;
 import lombok.Data;
 
@@ -120,5 +122,11 @@ public class ExamDetail {
 
     @JsonProperty("banners")
     private List<BannerData> banners;
+
+    @JsonProperty("cta_list")
+    private List<CTA> ctaList;
+
+    @JsonIgnore
+    private Long collegePredictorPid;
 
 }

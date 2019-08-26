@@ -11,7 +11,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.GRO
 import static com.paytm.digital.education.explore.constants.ExploreConstants.GROUP_NAME;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.IN_OPERATOR;
 
-import com.mongodb.DBCursor;
+import com.mongodb.client.result.UpdateResult;
 import com.paytm.digital.education.explore.database.entity.FieldGroup;
 import com.paytm.digital.education.explore.database.entity.FtlTemplate;
 import lombok.AllArgsConstructor;
@@ -26,11 +26,12 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Objects;
+import java.util.Collection;
 
 @Slf4j
 @AllArgsConstructor
@@ -111,6 +112,18 @@ public class CommonMongoRepository {
         return null;
     }
 
+    public <T> boolean updateFields(Map<String, Object> data, Class<T> type, Long entityId,
+            String entity) {
+        Update update = new Update();
+        for (Map.Entry<String, Object> entry : data.entrySet()) {
+            update.set(entry.getKey(), entry.getValue());
+        }
+        Query query = new Query(Criteria.where(entity).is(entityId));
+        UpdateResult updateResult = mongoOperation.updateFirst(query, update, type);
+        log.info("Mongo update result : {}", updateResult.toString());
+        return updateResult.wasAcknowledged();
+    }
+
     public void saveOrUpdate(Object obj) {
         mongoOperation.save(obj);
     }
@@ -166,9 +179,10 @@ public class CommonMongoRepository {
     public <T> T findAndModify(Map<String, Object> searchRequest, Update update,
             FindAndModifyOptions options, Class<T> type) {
 
-        return mongoOperation.findAndModify(createMongoQuery(searchRequest, new ArrayList<>()), update,
-                options,
-                type);
+        return mongoOperation
+                .findAndModify(createMongoQuery(searchRequest, new ArrayList<>()), update,
+                        options,
+                        type);
     }
 
     /*
