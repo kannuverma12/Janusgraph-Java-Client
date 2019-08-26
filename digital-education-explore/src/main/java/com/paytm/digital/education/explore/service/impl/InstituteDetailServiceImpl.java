@@ -34,8 +34,6 @@ import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.common.Widget;
 import com.paytm.digital.education.explore.response.dto.common.WidgetData;
 import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
-import com.paytm.digital.education.explore.service.external.FeeUrlGenerator;
-import com.paytm.digital.education.explore.service.external.LeadCareer360Service;
 import com.paytm.digital.education.explore.service.helper.CTAHelper;
 import com.paytm.digital.education.explore.service.helper.GenderAndCasteGroupHelper;
 import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;

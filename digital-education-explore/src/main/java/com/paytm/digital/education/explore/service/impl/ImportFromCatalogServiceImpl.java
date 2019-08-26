@@ -80,11 +80,11 @@ public class ImportFromCatalogServiceImpl implements ImportFromCatalogService {
         fields.put(PaytmKeys.Constants.PAYTM_KEYS, instiPaytmKeys);
         String errorMessage = null;
         try {
-            boolean updated = commonMongoRepository
+            long updated = commonMongoRepository
                     .updateFields(fields, Institute.class, entityData.getEntityId(),
                             ExploreConstants.INSTITUTE_ID);
             errorMessage =
-                    updated ? null : ErrorEnum.SOME_DATA_INCONSISTENCY.getExternalMessage();
+                    updated != 0 ? null : ErrorEnum.INVALID_INSTITUTE_ID.getExternalMessage();
         } catch (Exception e) {
             errorMessage = e.getMessage();
         }
@@ -102,11 +102,11 @@ public class ImportFromCatalogServiceImpl implements ImportFromCatalogService {
         fields.put(PaytmKeys.Constants.PAYTM_KEYS, examPaytmKeys);
         String errorMessage = null;
         try {
-            boolean updated = commonMongoRepository
+            long updated = commonMongoRepository
                     .updateFields(fields, Exam.class, entityData.getEntityId(),
                             ExploreConstants.EXAM_ID);
             errorMessage =
-                    updated ? null : ErrorEnum.SOME_DATA_INCONSISTENCY.getExternalMessage();
+                    updated != 0 ? null : ErrorEnum.INVALID_EXAM_ID.getExternalMessage();
         } catch (Exception e) {
             errorMessage = e.getMessage();
         }

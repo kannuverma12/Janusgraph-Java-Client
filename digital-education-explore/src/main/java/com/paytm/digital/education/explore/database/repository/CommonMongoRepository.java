@@ -112,7 +112,7 @@ public class CommonMongoRepository {
         return null;
     }
 
-    public <T> boolean updateFields(Map<String, Object> data, Class<T> type, Long entityId,
+    public <T> long updateFields(Map<String, Object> data, Class<T> type, Long entityId,
             String entity) {
         Update update = new Update();
         for (Map.Entry<String, Object> entry : data.entrySet()) {
@@ -121,7 +121,7 @@ public class CommonMongoRepository {
         Query query = new Query(Criteria.where(entity).is(entityId));
         UpdateResult updateResult = mongoOperation.updateFirst(query, update, type);
         log.info("Mongo update result : {}", updateResult.toString());
-        return updateResult.wasAcknowledged();
+        return updateResult.getMatchedCount();
     }
 
     public void saveOrUpdate(Object obj) {

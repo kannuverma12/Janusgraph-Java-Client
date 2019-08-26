@@ -53,6 +53,7 @@ public class LeadController {
             @RequestHeader(value = "x-user-email", required = false) String email,
             @RequestHeader(value = "x-user-firstname", required = false) String firstName ,
             @RequestHeader(value = "x-user-phone", required = false) String phone) {
+        log.info("Received email : {}, name : {}, phone : {}", email, firstName, phone);
         return leadService.getUserDetails(userId, email, firstName, phone);
     }
 

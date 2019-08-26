@@ -286,7 +286,7 @@ public interface ExploreConstants {
 
     String CTA                  = "cta";
     String SELECTED             = "_selected";
-    String CTA_LOGO_PLACEHOLDER = "/placeholder";
+    String CTA_LOGO_PLACEHOLDER = "/placeholder.svg";
 
 
     //School Constants

@@ -73,6 +73,7 @@ public class FeeUrlGenerator {
         CatalogProduct response =
                 baseRestApiService.get(catalogAdminUrl, requestParams, null, CatalogProduct.class,
                         Arrays.asList("/" + pid.toString()));
+        log.info("Catalog merchant API response : {}", response.toString());
         return response;
     }
 
