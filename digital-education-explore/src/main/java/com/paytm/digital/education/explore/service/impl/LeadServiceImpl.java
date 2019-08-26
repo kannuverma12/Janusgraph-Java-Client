@@ -73,13 +73,10 @@ public class LeadServiceImpl implements LeadService {
         log.warn("User details not found in DB for user id :{}", userId);
         UserDetails userDetails = new UserDetails();
         userDetails.setUserId(userId);
-        if (Objects.nonNull(email)) {
-            userDetails.setContactEmail(email);
-        }
-        if (Objects.nonNull(firstName)) {
-            userDetails.setContactName(firstName);
-        }
-        userDetails.setContactNumber(phone);
+        userDetails.setContactEmail(Objects.nonNull(email) ? email : "");
+        userDetails.setContactName(Objects.nonNull(firstName) ? firstName : "");
+        userDetails.setContactNumber(Objects.nonNull(phone) ? phone : "");
+
         return userDetails;
     }
 
