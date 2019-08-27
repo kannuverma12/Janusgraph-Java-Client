@@ -21,6 +21,7 @@ public class ConfigProperties {
     private static String rankingLogoPrefix;
     private static String examLogoPrefix;
     private static String ctaLogoPrefix;
+    private static String schoolLogoPrefix;
 
     @Value("${cta.logo.prefix}")
     public void setCtaLogoPrefix(String prefix) {
@@ -87,6 +88,11 @@ public class ConfigProperties {
         examLogoPrefix = logoPrefix;
     }
 
+    @Value("${education.school.logo.prefix}")
+    public void setSchoolLogoPrefix(String logoPrefix) {
+        schoolLogoPrefix = logoPrefix;
+    }
+
     public static String getBaseUrl() {
         return mediaBaseUrl;
     }
@@ -105,6 +111,10 @@ public class ConfigProperties {
 
     public static String getExamLogoPrefix() {
         return examLogoPrefix;
+    }
+
+    public static String getSchoolLogoPrefix() {
+        return schoolLogoPrefix;
     }
 
     public static String getLogoImagePrefix() {
