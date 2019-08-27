@@ -50,7 +50,7 @@ type = "education"
 
 #to parse below env variables run monstache with "-tpl" flag
 [[script]]
-namespace = "digital-education.school"
+namespace = "digital_education.school"
 path = '/var/www/monstache/transformSchool.js'
 
 [logs]
