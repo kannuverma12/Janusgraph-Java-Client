@@ -129,4 +129,8 @@ public class SearchAggregateHelper {
                         .build());
         return aggregateFields;
     }
+
+    public AggregateField[] getSchoolAggregateData() {
+        return new AggregateField[0];
+    }
 }

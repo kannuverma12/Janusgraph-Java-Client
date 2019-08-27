@@ -1,11 +1,9 @@
 package com.paytm.digital.education.explore.constants;
 
-import com.paytm.digital.education.explore.enums.RankingSource;
 import freemarker.template.Configuration;
 import freemarker.template.Version;
 
 import java.text.SimpleDateFormat;
-import java.util.Comparator;
 
 public interface ExploreConstants {
 
@@ -275,6 +273,7 @@ public interface ExploreConstants {
     String RANKING_CAREER  = "CAREERS360";
     String NIRF_LOGO       = "/nirf.jpg";
     String CAREER_LOGO     = "/career360.jpg";
+    String EMPTY_STRING    = " ";
 
     String RECENT_SEARCHES_kAFKA_TOPIC = "recent_searches";
     String RECENT_SEARCHES_ES_INDEX    = "recent_searches";
@@ -288,10 +287,9 @@ public interface ExploreConstants {
     String SELECTED             = "_selected";
     String CTA_LOGO_PLACEHOLDER = "/placeholder.svg";
 
-
-    //School Constants
-    interface SchoolConstants {
-        String SCHOOL_ID = "school_id";
-    }
+    String SCHOOL_SEARCH_NAMESPACE = "school_search";
+    String SCHOOL_FILTER_NAMESPACE = "school_filter";
+    String SEARCH_ANALYZER_SCHOOL  = "word_delimiter_analyzer";
+    String SEARCH_INDEX_SCHOOL     = "education_search_school_v1";
 
 }
