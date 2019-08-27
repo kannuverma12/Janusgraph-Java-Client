@@ -68,6 +68,9 @@ public class TransformSchoolService {
             if (objectIdAndSchoolIdMap.containsKey(id)) {
                 school.setId(objectIdAndSchoolIdMap.get(id));
             }
+
+            uploadImagestoS3(school.getGallery(), school.getSchoolId());
+
             commonMongoRepository.saveOrUpdate(school);
         }
         incrementalDataHelper.incrementFileVersion(SCHOOL_FILE_VERSION);
@@ -128,7 +131,7 @@ public class TransformSchoolService {
                 schoolEntity.setSchoolEntityType(SchoolEntityType.MULTI_BOARD);
             }
 
-            uploadImagestoS3(schoolDto.getGallery(), schoolDto.getId());
+
 
             schoolEntitiesList.add(schoolEntity);
 

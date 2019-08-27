@@ -18,7 +18,7 @@ public interface ExploreConstants {
     String IS_CLIENT                   = "is_client";
     int    DEFAULT_OFFSET              = 0;
     int    DEFAULT_SIZE                = 10;
-    int    DEFAULT_AUTOSUGGEST_SIZE    = 4;
+    int    DEFAULT_AUTOSUGGEST_SIZE    = 3;
     int    DEFAULT_AUTOSUGGEST_COMPARE = 10;
 
     ///// Exam Detail//////////
