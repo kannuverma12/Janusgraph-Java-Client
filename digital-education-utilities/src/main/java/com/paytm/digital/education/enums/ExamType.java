@@ -1,5 +1,7 @@
 package com.paytm.digital.education.enums;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum ExamType {
     TEST_SERIES("Test Series"),
     PERIODIC_TEST("Periodic Test"),
@@ -12,6 +14,7 @@ public enum ExamType {
         this.text = text;
     }
 
+    @JsonValue
     public String getText() {
         return this.text;
     }

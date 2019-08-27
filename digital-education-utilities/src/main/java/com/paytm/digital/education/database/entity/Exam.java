@@ -98,6 +98,12 @@ public class Exam {
     @Field("status")
     private String status;
 
+    @Field("top_coaching_institute_ids")
+    private List<Long> topCoachingInstituteIds;
+
+    @Field("top_coaching_program_ids")
+    private List<Long> topCoachingProgramIds;
+
     public Exam(long examId) {
         this.examId = examId;
     }

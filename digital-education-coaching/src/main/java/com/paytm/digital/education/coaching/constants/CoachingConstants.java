@@ -90,6 +90,12 @@ public class CoachingConstants {
     public static final String S3_UPLOAD_FAILED                      = "File upload failed";
     public static final String PROGRAM                               = "program";
     public static final String COACHING_EXAM                         = "coaching_exam";
+    public static final String COACHING_PROGRAM_ID                   = "program_id";
+
+
+    public static final String DETAILS_FIELD_GROUP       = "details_coaching";
+    public static final String COACHING_INSTITUTE_PREFIX = "coaching_institute.";
+    public static final String COACHING_PROGRAM_PREFIX   = "coaching_program.";
 
 
     public static class S3RelativePath {

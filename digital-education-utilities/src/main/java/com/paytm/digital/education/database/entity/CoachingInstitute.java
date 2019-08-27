@@ -5,9 +5,9 @@ import com.paytm.digital.education.database.embedded.Faq;
 import com.paytm.digital.education.database.embedded.KeyHighlight;
 import com.paytm.digital.education.database.embedded.OfficialAddress;
 import com.paytm.digital.education.enums.CourseType;
-import com.paytm.digital.education.database.entity.Base;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -18,6 +18,7 @@ import java.util.List;
 
 @Data
 @Builder
+@NoArgsConstructor
 @Document("coaching_institute")
 public class CoachingInstitute extends Base {
 

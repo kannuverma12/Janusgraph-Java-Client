@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.URL.COACHING_BASE;
@@ -23,11 +24,10 @@ public class ExamController {
     @Autowired private ExamService examService;
 
     @GetMapping(value = GET_EXAM_DETAILS)
-    public GetExamDetailsResponse getExamDetailsByExamId(
+    public GetExamDetailsResponse getExamDetails(
             @RequestParam(value = "exam_id") @NotNull final Long examId,
-            @RequestParam(value = "url_display_key") @NotNull final String urlDisplayKey) {
+            @RequestParam(value = "url_display_key") @NotEmpty final String urlDisplayKey) {
 
-        log.info("Got ExamId: {} and urlDisplayKey: {}", examId, urlDisplayKey);
         return examService.getExamDetails(examId, urlDisplayKey);
     }
 }

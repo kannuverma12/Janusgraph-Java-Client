@@ -21,4 +21,7 @@ public class CoachingInstitute {
 
     @JsonProperty("priority")
     private int priority;
+
+    @JsonProperty("url_display_key")
+    private String urlDisplayKey;
 }

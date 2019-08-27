@@ -1,5 +1,7 @@
 package com.paytm.digital.education.enums;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum CourseType {
     CLASSROOM_PROGRAM("Classroom program"),
     DISTANCE_LEARNING("Distance learning"),
@@ -13,6 +15,7 @@ public enum CourseType {
         this.text = text;
     }
 
+    @JsonValue
     public String getText() {
         return this.text;
     }

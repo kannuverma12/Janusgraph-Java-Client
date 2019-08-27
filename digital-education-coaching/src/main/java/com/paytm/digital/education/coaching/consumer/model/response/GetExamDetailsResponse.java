@@ -3,9 +3,9 @@ package com.paytm.digital.education.coaching.consumer.model.response;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.coaching.consumer.model.dto.CoachingInstitute;
-import com.paytm.digital.education.coaching.consumer.model.dto.CoachingProgram;
 import com.paytm.digital.education.coaching.consumer.model.dto.ExamAdditionalInfo;
 import com.paytm.digital.education.coaching.consumer.model.dto.ExamImportantDate;
+import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingProgramsForExam;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -38,7 +38,7 @@ public class GetExamDetailsResponse {
     private List<ExamImportantDate> importantDates;
 
     @JsonProperty("top_coaching_programs")
-    private List<CoachingProgram> topCoachingPrograms;
+    private List<TopCoachingProgramsForExam> topCoachingPrograms;
 
     @JsonProperty("additional_info")
     private List<ExamAdditionalInfo> additionalInfo;
