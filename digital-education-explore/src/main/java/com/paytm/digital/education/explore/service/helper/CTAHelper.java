@@ -29,10 +29,14 @@ public class CTAHelper {
 
     public List<CTA> buildInstituteCTA(InstituteDetail instituteDetail, Client client) {
 
-        Map<String, Object> logosPerCta = propertyReader
-                .getPropertiesAsMapByKey(ExploreConstants.EXPLORE_COMPONENT,
-                        EducationEntity.INSTITUTE.name().toLowerCase(),
-                        ExploreConstants.CTA);
+        Map<String, Object> logosPerCta = null;
+        // Logos are not required for web.
+        if (Client.APP.equals(client)) {
+            logosPerCta = propertyReader
+                    .getPropertiesAsMapByKey(ExploreConstants.EXPLORE_COMPONENT,
+                            EducationEntity.INSTITUTE.name().toLowerCase(),
+                            ExploreConstants.CTA);
+        }
 
         List<CTA> ctas = new ArrayList<>();
 
@@ -50,7 +54,12 @@ public class CTAHelper {
             ctas.add(getBrochureCTA(instituteDetail.getBrochureUrl(), logosPerCta));
         }
 
-        ctas.add(getShortlistedCTA(instituteDetail.isShortlisted(), logosPerCta));
+        ctas.add(getShortlistedCTA(instituteDetail.isShortlisted(), logosPerCta, client));
+
+        if (!Client.APP.equals(client)) {
+            ctas.add(getCompareCTA(logosPerCta));
+        }
+
         return ctas;
     }
 
@@ -94,14 +103,17 @@ public class CTAHelper {
         return brochureCta;
     }
 
-    private CTA getShortlistedCTA(boolean shortlisted, Map<String, Object> logosPerCta) {
+    private CTA getShortlistedCTA(boolean shortlisted, Map<String, Object> logosPerCta,
+            Client client) {
         String shortListLabel = null;
         String relativeUrlKey = null;
         if (shortlisted) {
-            shortListLabel = CTA.Constants.SHORTLISTED;
+            shortListLabel = Client.APP.equals(client)
+                    ? CTA.Constants.SHORTLISTED_APP : CTA.Constants.SHORTLISTED;
             relativeUrlKey = CTAType.SHORTLIST.name().toLowerCase() + ExploreConstants.SELECTED;
         } else {
-            shortListLabel = CTA.Constants.SHORTLIST;
+            shortListLabel = Client.APP.equals(client)
+                    ? CTA.Constants.SHORTLIST_APP : CTA.Constants.SHORTLIST;
             relativeUrlKey = CTAType.SHORTLIST.name().toLowerCase();
         }
         String absoluteUrl = getAbsoluteLogoUrl(logosPerCta, relativeUrlKey);
@@ -122,12 +134,18 @@ public class CTAHelper {
         } else {
             relativeUrlKey = CTAType.LEAD.name().toLowerCase() + ExploreConstants.SELECTED;
             leadLabel = Client.APP.equals(client) && isThirdPartyClient
-                    ? CTA.Constants.STOP_UPDATES : CTA.Constants.INTERESTED;
+                    ? CTA.Constants.STOP_UPDATES : CTA.Constants.GET_UPDATES;
         }
         String absoluteUrl = getAbsoluteLogoUrl(logosPerCta, relativeUrlKey);
         CTA leadCta = CTA.builder().type(CTAType.LEAD).label(leadLabel)
                 .logo(absoluteUrl).build();
         return leadCta;
+    }
+
+    private CTA getCompareCTA(Map<String, Object> logosPerCta) {
+        String absoluteUrl = getAbsoluteLogoUrl(logosPerCta, CTAType.COMPARE.name().toLowerCase());
+        return CTA.builder().type(CTAType.COMPARE).label(CTA.Constants.COMPARE).logo(absoluteUrl)
+                .build();
     }
 
 }

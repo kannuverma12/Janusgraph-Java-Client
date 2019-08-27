@@ -22,6 +22,10 @@ public enum CTAType {
     BROCHURE,
 
     @JsonProperty("share")
-    SHARE;
+    SHARE,
+
+    @JsonProperty("compare")
+    COMPARE;
+
 
 }

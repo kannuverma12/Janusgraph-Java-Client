@@ -18,15 +18,20 @@ public class CTA {
 
     private CTAType type;
 
+
     public static class Constants {
 
         public static final String SHORTLIST = "+ Add To Shortlist";
 
+        public static final String SHORTLIST_APP = "Shortlist College";
+
         public static final String SHORTLISTED = "Shortlisted";
 
-        public static final String GET_UPDATES = "Get Updates";
+        public static final String SHORTLISTED_APP = "Shortlisted College";
 
-        public static final String STOP_UPDATES = "Stop Updates";
+        public static final String GET_UPDATES = "Get Update";
+
+        public static final String STOP_UPDATES = "Stop Update";
 
         public static final String GET_IN_TOUCH = "Get In Touch";
 
@@ -35,6 +40,12 @@ public class CTA {
         public static final String PAY_FEE = "Pay Fee";
 
         public static final String BROCHURE = "Download Brochure";
+
+        public static final String COMPARE = "+ Add To Compare";
+
+        public static final String COMPARE_APP = "Compare";
+
+
 
     }
 
