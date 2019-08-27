@@ -1,6 +1,7 @@
 package com.paytm.digital.education.explore.response.dto.common;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.explore.enums.CTAType;
 import lombok.Builder;
 import lombok.Data;
@@ -10,12 +11,19 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CTA {
 
+    @JsonProperty("logo")
     private String logo;
 
+    @JsonProperty("label")
     private String label;
 
+    @JsonProperty("activeText")
+    private String activeText;
+
+    @JsonProperty("url")
     private String url;
 
+    @JsonProperty("type")
     private CTAType type;
 
 
@@ -34,6 +42,10 @@ public class CTA {
         public static final String STOP_UPDATES = "Stop Update";
 
         public static final String GET_IN_TOUCH = "Get In Touch";
+
+        public static final String INQUIRY_SENT = "Inquiry Sent";
+
+        public static final String STP_UPDATES = "Stop Updates";
 
         public static final String INTERESTED = "Interested";
 

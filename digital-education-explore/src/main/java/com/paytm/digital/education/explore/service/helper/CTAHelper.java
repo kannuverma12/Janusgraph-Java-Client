@@ -105,20 +105,21 @@ public class CTAHelper {
 
     private CTA getShortlistedCTA(boolean shortlisted, Map<String, Object> logosPerCta,
             Client client) {
-        String shortListLabel = null;
+        String shortListLabel = Client.APP.equals(client)
+                ? CTA.Constants.SHORTLIST_APP : CTA.Constants.SHORTLIST;
+        String activeLabel = Client.APP.equals(client)
+                ? CTA.Constants.SHORTLISTED_APP : CTA.Constants.SHORTLISTED;
         String relativeUrlKey = null;
         if (shortlisted) {
-            shortListLabel = Client.APP.equals(client)
-                    ? CTA.Constants.SHORTLISTED_APP : CTA.Constants.SHORTLISTED;
             relativeUrlKey = CTAType.SHORTLIST.name().toLowerCase() + ExploreConstants.SELECTED;
         } else {
-            shortListLabel = Client.APP.equals(client)
-                    ? CTA.Constants.SHORTLIST_APP : CTA.Constants.SHORTLIST;
             relativeUrlKey = CTAType.SHORTLIST.name().toLowerCase();
         }
         String absoluteUrl = getAbsoluteLogoUrl(logosPerCta, relativeUrlKey);
         CTA shortListCta =
-                CTA.builder().type(CTAType.SHORTLIST).label(shortListLabel)
+                CTA.builder().type(CTAType.SHORTLIST)
+                        .label(shortListLabel)
+                        .activeText(activeLabel)
                         .logo(absoluteUrl)
                         .build();
         return shortListCta;
@@ -126,18 +127,24 @@ public class CTAHelper {
 
     private CTA getLeadCTA(boolean interested, boolean isThirdPartyClient, Client client,
             Map<String, Object> logosPerCta) {
-        String leadLabel = "";
+        String leadLabel = null;
+        String activeLabel = null;
+        if (isThirdPartyClient) {
+            leadLabel = CTA.Constants.GET_IN_TOUCH;
+            activeLabel = CTA.Constants.INQUIRY_SENT;
+        } else {
+            leadLabel = CTA.Constants.GET_UPDATES;
+            activeLabel = CTA.Constants.INQUIRY_SENT;
+        }
         String relativeUrlKey = null;
         if (!interested) {
             relativeUrlKey = CTAType.LEAD.name().toLowerCase();
-            leadLabel = isThirdPartyClient ? CTA.Constants.GET_IN_TOUCH : CTA.Constants.GET_UPDATES;
         } else {
             relativeUrlKey = CTAType.LEAD.name().toLowerCase() + ExploreConstants.SELECTED;
-            leadLabel = Client.APP.equals(client) && isThirdPartyClient
-                    ? CTA.Constants.STOP_UPDATES : CTA.Constants.GET_UPDATES;
         }
         String absoluteUrl = getAbsoluteLogoUrl(logosPerCta, relativeUrlKey);
         CTA leadCta = CTA.builder().type(CTAType.LEAD).label(leadLabel)
+                .activeText(activeLabel)
                 .logo(absoluteUrl).build();
         return leadCta;
     }
