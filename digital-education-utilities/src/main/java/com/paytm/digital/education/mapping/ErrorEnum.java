@@ -108,7 +108,9 @@ public enum ErrorEnum {
     NO_ENTITY_FOUND(4048, "No %s is found for the given %s - %s", HttpStatus.BAD_REQUEST, 3),
     PID_MISSING(4049, "PID doesnot exists for entity %s", HttpStatus.BAD_REQUEST, 1),
     PREDICTOR_ID_MISSING(4050, "COLLEGE PREDICTOR ID doesnot exists for entity %s",
-            HttpStatus.BAD_REQUEST, 1);
+            HttpStatus.BAD_REQUEST, 1),
+    INVALID_SCHOOL_NAME(4051, "Provided name doesnot match with actual school name",
+            HttpStatus.BAD_REQUEST, 0);
 
     private final int        internalCode;
     private final String     externalMessage;

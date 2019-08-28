@@ -3,6 +3,7 @@ package com.paytm.digital.education.utility;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.helpers.MessageFormatter;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @UtilityClass
 public class CommonUtils {
@@ -13,12 +14,12 @@ public class CommonUtils {
         return MessageFormatter.arrayFormat(msg, objs).getMessage();
     }
 
-    public static boolean isLangSpecific(Class<?> cls) {
+    public boolean isLangSpecific(Class<?> cls) {
         return (cls.isPrimitive() || cls.getName().startsWith(javaLangPackagesStartPath)) ? true
                 : false;
     }
 
-    public static String extractValueOfSubstringKey(String originalStr, String key,
+    public String extractValueOfSubstringKey(String originalStr, String key,
             String nextSeparator) {
         String subStr = null;
 
@@ -37,5 +38,13 @@ public class CommonUtils {
 
         return subStr;
 
+    }
+
+    public boolean isNullOrZero(Integer i) {
+        return i == null || i == 0;
+    }
+
+    public String encodeUrl(String s) {
+        return UriComponentsBuilder.fromUriString(s).toUriString();
     }
 }

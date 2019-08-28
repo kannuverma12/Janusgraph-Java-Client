@@ -26,12 +26,12 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Objects;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @AllArgsConstructor
@@ -52,9 +52,11 @@ public class CommonMongoRepository {
     public <T> T getEntityByFields(String key, long entityId, Class<T> instance,
             List<String> fields) {
         Query mongoQuery = new Query(Criteria.where(key).is(entityId));
-        fields.forEach(field -> {
-            mongoQuery.fields().include(field);
-        });
+        if (Objects.nonNull(fields)) {
+            fields.forEach(field -> {
+                mongoQuery.fields().include(field);
+            });
+        }
         return executeQuery(mongoQuery, instance);
     }
 
@@ -86,6 +88,15 @@ public class CommonMongoRepository {
         }
         return null;
 
+    }
+
+    @Cacheable(value = "field_group", unless = "#result == null")
+    public List<String> getFieldsByGroupAndCollectioName(String collectionName, List<String> fields,
+                                                         String fieldGroup) {
+        if (CollectionUtils.isEmpty(fields)) {
+            return getFieldsByGroupAndCollectioName(collectionName, fieldGroup);
+        }
+        return fields;
     }
 
     @Cacheable(value = "entities", unless = "#result == null")

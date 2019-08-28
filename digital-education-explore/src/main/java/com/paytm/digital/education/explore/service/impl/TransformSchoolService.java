@@ -100,8 +100,8 @@ public class TransformSchoolService {
 
             for (Board boardAffiliatedBySchool : boardsSupportedBySchoolList) {
                 BoardData boardAffiliatedBySchoolData = boardAffiliatedBySchool.getData();
-                SchoolEducationLevelType schoolEducationLevel = boardAffiliatedBySchoolData
-                        .getEducationLevel();
+                SchoolEducationLevelType schoolEducationLevel =
+                        boardAffiliatedBySchoolData.getEducationLevel();
 
                 if (Objects.nonNull(boardAffiliatedBySchoolData)
                         && ClassType.NOT_PROVIDED.equals(boardAffiliatedBySchoolData.getClassTo())

@@ -48,7 +48,6 @@ public class TransactionMongoConfig extends AbstractMongoConfiguration {
         MappingMongoConverter converter =
                 new MappingMongoConverter(dbRefResolver, mongoMappingContext);
         converter.setTypeMapper(new DefaultMongoTypeMapper(null));
-
         return converter;
     }
 }

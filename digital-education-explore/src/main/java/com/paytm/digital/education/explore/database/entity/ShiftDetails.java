@@ -6,11 +6,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.explore.enums.ClassType;
 import com.paytm.digital.education.explore.enums.ShiftType;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@NoArgsConstructor
 public class ShiftDetails {
 
     @Field("class_from")
@@ -24,4 +26,10 @@ public class ShiftDetails {
     @Field("shift_type")
     @JsonProperty("shift_type")
     private ShiftType shiftType;
+
+    public ShiftDetails(ShiftDetails shiftDetails) {
+        this.classFrom = shiftDetails.getClassFrom();
+        this.classTo = shiftDetails.getClassTo();
+        this.shiftType = shiftDetails.getShiftType();
+    }
 }

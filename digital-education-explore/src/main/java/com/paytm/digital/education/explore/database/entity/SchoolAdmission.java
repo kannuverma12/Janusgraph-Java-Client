@@ -40,4 +40,13 @@ public class SchoolAdmission {
     @Field("class_to")
     @JsonProperty("class_to")
     private ClassType classTo;
+
+    public SchoolAdmission(SchoolAdmission schoolAdmission) {
+        this.startDate = schoolAdmission.getStartDate();
+        this.endDate = schoolAdmission.getEndDate();
+        this.modes = schoolAdmission.getModes();
+        this.dateType = schoolAdmission.getDateType();
+        this.classFrom = schoolAdmission.getClassFrom();
+        this.classTo = schoolAdmission.getClassTo();
+    }
 }

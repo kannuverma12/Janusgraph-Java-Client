@@ -11,14 +11,14 @@ public enum SchoolOwnershipType {
     AIDED("Aided"),
     NOT_PROVIDED("");
 
-    private final String name;
+    private final String readableValue;
 
-    SchoolOwnershipType(String name) {
-        this.name = name;
+    SchoolOwnershipType(String readableValue) {
+        this.readableValue = readableValue;
     }
 
     @JsonValue
-    final String value() {
-        return this.name;
+    public String getReadableValue() {
+        return this.readableValue;
     }
 }
