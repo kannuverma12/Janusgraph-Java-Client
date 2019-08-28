@@ -1,22 +1,30 @@
 package com.paytm.digital.education.database.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.paytm.digital.education.database.embedded.CoachingProgramFeature;
+import com.paytm.digital.education.database.embedded.CoachingProgramImportantDate;
 import com.paytm.digital.education.database.embedded.CoachingProgramSessionDetails;
+import com.paytm.digital.education.database.embedded.Currency;
 import com.paytm.digital.education.database.embedded.Faq;
 import com.paytm.digital.education.enums.CourseType;
 import com.paytm.digital.education.enums.Level;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,6 +39,7 @@ public class CoachingProgramEntity {
     List<Faq> faqs;
 
     @Field("program_id")
+    @Setter
     private Long programId;
 
     @Field("name")
@@ -50,9 +59,9 @@ public class CoachingProgramEntity {
 
     @Field("auxiliary_exam_ids")
     private List<Long> auxiliaryExamIds;
-    // Duration in Months
+
     @Field("duration")
-    private Integer    duration;
+    private String duration;
 
     @Field("eligibility")
     private String eligibility;
@@ -64,7 +73,10 @@ public class CoachingProgramEntity {
     private String description;
 
     @Field("price")
-    private Integer price;
+    private Double price;
+
+    @Field("currency")
+    private Currency currency;
 
     @Field("level")
     private Level level;
@@ -72,8 +84,14 @@ public class CoachingProgramEntity {
     @Field("language")
     private String language;
 
-    @Field("syllabus_and_brochure")
-    private String syllabusAndBrochure;
+    @Field("syllabus")
+    private String syllabus;
+
+    @Field("brochure")
+    private String brochure;
+
+    @Field("important_dates")
+    private List<CoachingProgramImportantDate> importantDates;
 
     @Field("global_priority")
     private Integer globalPriority;
@@ -116,4 +134,17 @@ public class CoachingProgramEntity {
 
     @Field("is_enabled")
     private Boolean isEnabled = Boolean.TRUE;
+
+    @Field("created_at")
+    @CreatedDate
+    @JsonIgnore
+    private LocalDateTime createdAt;
+
+    @Field("updated_at")
+    @LastModifiedDate
+    @JsonIgnore
+    private LocalDateTime updatedAt;
+
+    @Field("priority")
+    private Integer priority;
 }

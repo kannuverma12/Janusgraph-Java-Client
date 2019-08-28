@@ -2,10 +2,10 @@ package com.paytm.digital.education.explore.service.impl;
 
 import com.paytm.digital.education.config.AwsConfig;
 import com.paytm.digital.education.explore.constants.AWSConstants;
-import com.paytm.digital.education.explore.database.entity.Alumni;
-import com.paytm.digital.education.explore.database.entity.Gallery;
-import com.paytm.digital.education.explore.database.entity.Institute;
-import com.paytm.digital.education.explore.database.entity.Ranking;
+import com.paytm.digital.education.database.entity.Alumni;
+import com.paytm.digital.education.database.entity.Gallery;
+import com.paytm.digital.education.database.entity.Institute;
+import com.paytm.digital.education.database.entity.Ranking;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.dto.InstituteDto;
 import com.paytm.digital.education.explore.dto.RankingDto;
@@ -24,8 +24,8 @@ import java.util.Objects;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.ID;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.INSTITUTE_FILE_VERSION;
 
 @Service

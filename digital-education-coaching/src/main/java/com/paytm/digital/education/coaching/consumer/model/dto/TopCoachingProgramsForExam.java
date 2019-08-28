@@ -30,7 +30,7 @@ public class TopCoachingProgramsForExam {
     private String eligibility;
 
     @JsonProperty("duration_months")
-    private Integer durationMonths;
+    private String durationMonths;
 
     @JsonProperty("course_type")
     private CourseType courseType;

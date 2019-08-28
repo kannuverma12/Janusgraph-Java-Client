@@ -3,7 +3,7 @@ package com.paytm.digital.education.explore.es.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.enums.RecentDocumentType;
 import lombok.Data;
 import java.util.Date;

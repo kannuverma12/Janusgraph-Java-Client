@@ -1,6 +1,5 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.ingestion.Course;
 import com.paytm.digital.education.explore.database.ingestion.Exam;
 import com.paytm.digital.education.explore.dto.InstituteDto;
@@ -15,7 +14,6 @@ import java.util.Map;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSES_FILE_NAME;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.EXAM_FILE_NAME;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.INSTITUTE_FILE_NAME;
-import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.INSTITUTE_FILE_VERSION;
 
 @AllArgsConstructor
 @Service

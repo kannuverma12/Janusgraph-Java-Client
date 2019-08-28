@@ -1,10 +1,10 @@
 package com.paytm.digital.education.explore.aggregation;
 
-import com.paytm.digital.education.explore.daoresult.SubscribedEntityCount;
-import com.paytm.digital.education.explore.database.entity.Subscription;
-import com.paytm.digital.education.explore.enums.SubscribableEntityType;
+import com.paytm.digital.education.daoresult.SubscribedEntityCount;
+import com.paytm.digital.education.database.entity.Subscription;
+import com.paytm.digital.education.enums.SubscribableEntityType;
 
-import com.paytm.digital.education.explore.enums.SubscriptionStatus;
+import com.paytm.digital.education.enums.SubscriptionStatus;
 import java.util.List;
 
 public interface SubscriptionDao {

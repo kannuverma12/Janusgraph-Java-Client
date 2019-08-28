@@ -11,13 +11,12 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.unwi
 
 import com.mongodb.client.result.UpdateResult;
 import com.paytm.digital.education.explore.aggregation.SubscriptionDao;
-import com.paytm.digital.education.explore.daoresult.SubscribedEntityCount;
-import com.paytm.digital.education.explore.database.entity.Subscription;
-import com.paytm.digital.education.explore.enums.SubscribableEntityType;
-import com.paytm.digital.education.explore.enums.SubscriptionStatus;
+import com.paytm.digital.education.daoresult.SubscribedEntityCount;
+import com.paytm.digital.education.database.entity.Subscription;
+import com.paytm.digital.education.enums.SubscribableEntityType;
+import com.paytm.digital.education.enums.SubscriptionStatus;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;

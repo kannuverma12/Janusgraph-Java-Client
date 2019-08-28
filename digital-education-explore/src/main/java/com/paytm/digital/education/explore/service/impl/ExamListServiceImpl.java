@@ -1,13 +1,13 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import com.paytm.digital.education.exception.NotFoundException;
-import com.paytm.digital.education.explore.database.entity.Course;
+import com.paytm.digital.education.database.entity.Course;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.SubExam;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.response.dto.detail.ExamInfo;
 import com.paytm.digital.education.explore.service.ExamListService;
-import com.paytm.digital.education.explore.utility.CommonUtil;
+import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.explore.validators.UrlParamsValidator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,13 +24,13 @@ import java.util.ArrayList;
 
 import static com.mongodb.QueryOperators.EXISTS;
 import static com.mongodb.QueryOperators.OR;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.CUTOFF_EXAM_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAMS_ACCEPTED;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_FULL_NAME;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_SHORT_NAME;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SUBEXAM_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.CUTOFF_EXAM_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAMS_ACCEPTED;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FULL_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SHORT_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.SUBEXAM_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.NO_EXAM_LIST_EXISTS;
 
 @Slf4j

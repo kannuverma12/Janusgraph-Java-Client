@@ -1,6 +1,6 @@
 package com.paytm.digital.education.explore.controller;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EDUCATION_BASE_URL;
+import static com.paytm.digital.education.constant.ExploreConstants.EDUCATION_BASE_URL;
 
 import java.util.List;
 import javax.validation.Valid;
@@ -9,7 +9,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import com.paytm.digital.education.dto.NotificationFlags;
-import com.paytm.digital.education.explore.enums.Gender;
+import com.paytm.digital.education.enums.Gender;
 import com.paytm.digital.education.explore.response.dto.detail.ExamAndCutOff;
 import com.paytm.digital.education.explore.response.dto.detail.ExamInfo;
 import com.paytm.digital.education.explore.response.dto.search.CutoffSearchResponse;
@@ -32,10 +32,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import com.paytm.digital.education.explore.daoresult.SubscribedEntityCount;
-import com.paytm.digital.education.explore.database.entity.Subscription;
-import com.paytm.digital.education.explore.enums.SubscribableEntityType;
-import com.paytm.digital.education.explore.enums.SubscriptionStatus;
+import com.paytm.digital.education.daoresult.SubscribedEntityCount;
+import com.paytm.digital.education.database.entity.Subscription;
+import com.paytm.digital.education.enums.SubscribableEntityType;
+import com.paytm.digital.education.enums.SubscriptionStatus;
 import com.paytm.digital.education.explore.service.SubscriptionService;
 import com.paytm.digital.education.explore.sro.request.FetchSubscriptionsRequest;
 import com.paytm.digital.education.explore.sro.request.SubscriptionRequest;

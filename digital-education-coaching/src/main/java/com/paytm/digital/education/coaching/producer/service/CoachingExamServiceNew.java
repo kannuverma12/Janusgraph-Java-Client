@@ -1,11 +1,11 @@
 package com.paytm.digital.education.coaching.producer.service;
 
 import com.paytm.digital.education.database.entity.CoachingExamEntity;
-import com.paytm.digital.education.database.entity.CoachingInstitute;
+import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.database.entity.CoachingProgramEntity;
 import com.paytm.digital.education.database.repository.CoachingExamRepositoryNew;
 import com.paytm.digital.education.database.repository.CoachingInstituteRepositoryNew;
-import com.paytm.digital.education.database.repository.ProgramRepository;
+import com.paytm.digital.education.database.repository.CoachingProgramRepository;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingExamCreateRequest;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingExamUpdateRequest;
 import com.paytm.digital.education.coaching.producer.transformer.CoachingExamTransformer;
@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class CoachingExamServiceNew {
@@ -23,24 +24,24 @@ public class CoachingExamServiceNew {
     @Autowired
     private CoachingInstituteRepositoryNew coachingInstituteRepositoryNew;
     @Autowired
-    private ProgramRepository              programRepository;
+    private CoachingProgramRepository      coachingProgramRepository;
     @Autowired
     private StreamRepository               streamRepository;
     @Autowired
     private CoachingExamTransformer        coachingExamTransformer;
 
     public CoachingExamEntity insertCoachingExam(CoachingExamCreateRequest request) {
-        CoachingInstitute coachingInstitute =
+        Optional<CoachingInstituteEntity> coachingInstituteEntityOptional =
                 coachingInstituteRepositoryNew.findByInstituteId(request.getInstituteId());
 
-        if (Objects.isNull(coachingInstitute)) {
+        if (!coachingInstituteEntityOptional.isPresent()) {
             // TODO : throw exception
             return null;
         }
 
         if (!Objects.isNull(request.getProgramId())) {
             CoachingProgramEntity coachingProgram =
-                    programRepository.findByProgramId(request.getProgramId()).orElse(null);
+                    coachingProgramRepository.findByProgramId(request.getProgramId()).orElse(null);
 
             if (Objects.isNull(coachingProgram)) {
                 // TODO : throw exception
@@ -71,17 +72,17 @@ public class CoachingExamServiceNew {
             return null;
         }
 
-        CoachingInstitute coachingInstitute =
+        Optional<CoachingInstituteEntity> coachingInstituteEntityOptional =
                 coachingInstituteRepositoryNew.findByInstituteId(request.getInstituteId());
 
-        if (Objects.isNull(coachingInstitute)) {
+        if (!coachingInstituteEntityOptional.isPresent()) {
             // TODO : throw exception
             return null;
         }
 
         if (!Objects.isNull(request.getProgramId())) {
             CoachingProgramEntity coachingProgram =
-                    programRepository.findByProgramId(request.getProgramId()).orElse(null);
+                    coachingProgramRepository.findByProgramId(request.getProgramId()).orElse(null);
 
             if (Objects.isNull(coachingProgram)) {
                 // TODO : throw exception

@@ -1,7 +1,7 @@
 package com.paytm.digital.education.coaching.producer.controller;
 
 import com.paytm.digital.education.coaching.constants.CoachingConstants;
-import com.paytm.digital.education.database.entity.CoachingInstitute;
+import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingInstituteDataRequest;
 import com.paytm.digital.education.coaching.producer.service.CoachingInstituteService;
 import io.swagger.annotations.Api;
@@ -35,7 +35,7 @@ public class ProducerCoachingInstituteController {
     @ApiOperation(
             value = "creates an institute",
             notes = "takes the data from sheet : " + CoachingConstants.INSTITUTES_GOOGLE_SHEET)
-    public ResponseEntity<CoachingInstitute> createInstitute(
+    public ResponseEntity<CoachingInstituteEntity> createInstitute(
             @Valid @RequestBody CoachingInstituteDataRequest request) {
         return new ResponseEntity<>(coachingInstituteService.create(request), HttpStatus.OK);
     }
@@ -47,7 +47,7 @@ public class ProducerCoachingInstituteController {
     @ApiOperation(
             value = "updates existing institute",
             notes = "takes the data from sheet : " + CoachingConstants.INSTITUTES_GOOGLE_SHEET)
-    public ResponseEntity<CoachingInstitute> updateInstitute(
+    public ResponseEntity<CoachingInstituteEntity> updateInstitute(
             @Valid @RequestBody CoachingInstituteDataRequest request) {
         return new ResponseEntity<>(coachingInstituteService.update(request), HttpStatus.OK);
     }

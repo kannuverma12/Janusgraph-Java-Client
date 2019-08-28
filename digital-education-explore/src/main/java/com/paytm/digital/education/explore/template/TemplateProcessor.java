@@ -1,6 +1,6 @@
 package com.paytm.digital.education.explore.template;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.FTL_CURRENT_VERSION;
+import static com.paytm.digital.education.constant.ExploreConstants.FTL_CURRENT_VERSION;
 
 import freemarker.cache.StringTemplateLoader;
 import freemarker.template.Configuration;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j

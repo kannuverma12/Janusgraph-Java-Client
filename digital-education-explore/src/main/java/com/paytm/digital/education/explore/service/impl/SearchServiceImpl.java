@@ -1,6 +1,6 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.search.SearchBaseData;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.paytm.digital.education.explore.enums.EducationEntity.COURSE;
-import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
+import static com.paytm.digital.education.enums.EducationEntity.COURSE;
+import static com.paytm.digital.education.enums.EducationEntity.INSTITUTE;
 
 @Slf4j
 @Service

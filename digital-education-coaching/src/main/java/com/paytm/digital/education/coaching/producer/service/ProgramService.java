@@ -4,7 +4,7 @@ package com.paytm.digital.education.coaching.producer.service;
 import com.paytm.digital.education.coaching.constants.CoachingConstants;
 import com.paytm.digital.education.coaching.database.repository.SequenceGenerator;
 import com.paytm.digital.education.database.entity.CoachingProgramEntity;
-import com.paytm.digital.education.database.repository.ProgramRepository;
+import com.paytm.digital.education.database.repository.CoachingProgramRepository;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingProgramCreateRequest;
 import com.paytm.digital.education.coaching.producer.transformer.ProgramTransformer;
 import java.util.Objects;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 public class ProgramService {
 
     @Autowired
-    private ProgramRepository programRepository;
+    private CoachingProgramRepository coachingProgramRepository;
 
     @Autowired
     private ProgramTransformer programTransformer;
@@ -31,7 +31,7 @@ public class ProgramService {
             programTransformer.transformProgramCreateRequestToProgramEntity(
                 coachingProgramCreateRequest, new CoachingProgramEntity());
         coachingProgramEntity.setProgramId(sequenceGenerator.getNextSequenceId(CoachingConstants.PROGRAM));
-        coachingProgramEntity = programRepository.save(coachingProgramEntity);
+        coachingProgramEntity = coachingProgramRepository.save(coachingProgramEntity);
         if (Objects.nonNull(coachingProgramEntity)) {
             return coachingProgramEntity.getCoachingInstituteId();
         }
@@ -46,13 +46,13 @@ public class ProgramService {
 
         CoachingProgramEntity coachingProgramEntity = null;
         Optional<CoachingProgramEntity> programEntityOptional =
-            programRepository.findByProgramId(coachingProgramCreateRequest.getId());
+            coachingProgramRepository.findByProgramId(coachingProgramCreateRequest.getId());
         if (programEntityOptional.isPresent()) {
             coachingProgramEntity = programEntityOptional.get();
             coachingProgramEntity =
                 programTransformer.transformProgramCreateRequestToProgramEntity(
                     coachingProgramCreateRequest, coachingProgramEntity);
-            coachingProgramEntity = programRepository.save(coachingProgramEntity);
+            coachingProgramEntity = coachingProgramRepository.save(coachingProgramEntity);
         }
         if (Objects.nonNull(coachingProgramEntity)) {
             return coachingProgramEntity.getCoachingInstituteId();

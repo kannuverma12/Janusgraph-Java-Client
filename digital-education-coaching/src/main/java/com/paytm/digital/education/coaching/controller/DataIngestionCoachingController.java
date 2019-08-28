@@ -48,13 +48,13 @@ public class DataIngestionCoachingController {
     /*
     @PostMapping("/institute")
     public InstituteResponseDto createInstitute(
-            @RequestBody @Valid CoachingInstitute coachingInstitute) {
+            @RequestBody @Valid CoachingInstituteEntity coachingInstitute) {
         return instituteCRUDService.createInstitute(coachingInstitute);
     }
 
     @PutMapping("/institute")
     public InstituteResponseDto updateInstitute(
-            @RequestBody @Valid CoachingInstitute coachingInstitute) {
+            @RequestBody @Valid CoachingInstituteEntity coachingInstitute) {
         return instituteCRUDService.updateInstitute(coachingInstitute);
     }
 

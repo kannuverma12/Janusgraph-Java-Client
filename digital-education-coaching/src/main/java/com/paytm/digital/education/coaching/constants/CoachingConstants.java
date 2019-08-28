@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CoachingConstants {
+
     public static final String INSTITUTE_ID                          = "institute_id";
     public static final String INSTITUTE                             = "institute";
     public static final String COACHING_CENTER                       = "coaching_center";
@@ -23,6 +24,7 @@ public class CoachingConstants {
     public static final String UPDATED_AT                            = "updated_at";
     public static final String YYYY_MM_DD                            = "yyyy-MM-dd";
     public static final String YYYY_MM_DD_T_HH_MM_SS                 = "yyyy-MM-dd'T'HH:mm:ss";
+
     public static final String EXAM_NOT_FOUND_ERROR                  =
             "No such exam exists. Please check your request.";
     public static final String COACHING_NOT_FOUND_ERROR              =
@@ -93,11 +95,12 @@ public class CoachingConstants {
     public static final String COACHING_EXAM                         = "coaching_exam";
     public static final String COACHING_PROGRAM_ID                   = "program_id";
 
+    public static final String DETAILS_FIELD_GROUP = "details_coaching";
 
-    public static final String DETAILS_FIELD_GROUP       = "details_coaching";
-    public static final String COACHING_INSTITUTE_PREFIX = "coaching_institute.";
-    public static final String COACHING_PROGRAM_PREFIX   = "coaching_program.";
-
+    public static final String COACHING_INSTITUTE_PREFIX  = "coaching_institute.";
+    public static final String COACHING_PROGRAM_PREFIX    = "coaching_program.";
+    public static final String COACHING_TOP_RANKER_PREFIX = "coaching_top_ranker.";
+    public static final String EXAM_PREFIX = "exam.";
 
     public static class S3RelativePath {
         private static final String PREFIX           = AwsConfig.getRelativePathPrefix();
@@ -130,6 +133,8 @@ public class CoachingConstants {
         public static final String GET_EXAM_DETAILS = "/exam-details";
 
         public static final String COACHING_PROGRAM_DETAILS = "/program";
+
+        public static final String LANDING_PAGE = "/page";
     }
 
 

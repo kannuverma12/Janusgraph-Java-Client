@@ -4,7 +4,7 @@ import static com.paytm.digital.education.explore.constants.CompareConstants.FEE
 import static com.paytm.digital.education.explore.constants.CompareConstants.PLACEMENT;
 import static com.paytm.digital.education.explore.constants.CompareConstants.RANKING;
 
-import com.paytm.digital.education.explore.database.entity.Institute;
+import com.paytm.digital.education.database.entity.Institute;
 import com.paytm.digital.education.explore.service.helper.CompareInsightFeeProcessor;
 import com.paytm.digital.education.explore.service.helper.CompareInsightPlacementProcessor;
 import com.paytm.digital.education.explore.service.helper.CompareInsightRankProcessor;

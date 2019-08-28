@@ -17,9 +17,9 @@ import static com.paytm.digital.education.explore.constants.CompareConstants.MIN
 import static com.paytm.digital.education.explore.constants.CompareConstants.PLACEMENTS_OF;
 import static com.paytm.digital.education.explore.utility.CompareUtil.getInstituteName;
 
-import com.paytm.digital.education.explore.database.entity.Institute;
-import com.paytm.digital.education.explore.database.entity.Placement;
-import com.paytm.digital.education.explore.utility.CommonUtil;
+import com.paytm.digital.education.database.entity.Institute;
+import com.paytm.digital.education.database.entity.Placement;
+import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.utility.DateUtil;
 import javafx.util.Pair;
 import org.apache.commons.lang3.StringUtils;
@@ -212,7 +212,7 @@ public class CompareInsightPlacementProcessor {
         int maximumSalary = Integer.MIN_VALUE;
         int minimumSalary = Integer.MIN_VALUE;
         Map<String, Placement> placementDataMap = new HashMap<>(4);
-        for (com.paytm.digital.education.explore.database.entity.Placement placement : institute
+        for (Placement placement : institute
                 .getSalariesPlacement()) {
             if (placement.getYear() >= latestYear) {
                 latestYear = placement.getYear();

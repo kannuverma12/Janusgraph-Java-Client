@@ -1,7 +1,7 @@
 package com.paytm.digital.education.explore.service.helper;
 
 import com.paytm.digital.education.explore.response.dto.detail.Facility;
-import com.paytm.digital.education.explore.utility.CommonUtil;
+import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -14,11 +14,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.FACILITIES;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DISPLAY_NAME;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.LOGO;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.FACILITIES_MASTER_LIST;
+import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.constant.ExploreConstants.FACILITIES;
+import static com.paytm.digital.education.constant.ExploreConstants.DISPLAY_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.LOGO;
+import static com.paytm.digital.education.constant.ExploreConstants.FACILITIES_MASTER_LIST;
 
 @Service
 @AllArgsConstructor

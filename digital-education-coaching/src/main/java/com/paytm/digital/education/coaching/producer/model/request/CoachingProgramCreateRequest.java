@@ -45,7 +45,7 @@ public class CoachingProgramCreateRequest {
     private List<Long> auxiliaryExams;
     // Duration in Months
     @NotNull
-    private Integer duration;
+    private String duration;
 
     @NotNull
     private String eligibility;
@@ -57,7 +57,7 @@ public class CoachingProgramCreateRequest {
     private String description;
 
     @NotNull
-    private Integer price;
+    private Double price;
 
     @NotNull
     private Level level;

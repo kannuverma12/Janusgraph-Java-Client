@@ -1,15 +1,15 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTOSUGGEST_ANALYZER;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTOSUGGEST_INDEX;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTOSUGGEST_NAMES;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_AUTOSUGGEST_SIZE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_AUTOSUGGEST_COMPARE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_OFFSET;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE_CITY;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE_STATE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.AUTOSUGGEST_ANALYZER;
+import static com.paytm.digital.education.constant.ExploreConstants.AUTOSUGGEST_INDEX;
+import static com.paytm.digital.education.constant.ExploreConstants.AUTOSUGGEST_NAMES;
+import static com.paytm.digital.education.constant.ExploreConstants.DEFAULT_AUTOSUGGEST_SIZE;
+import static com.paytm.digital.education.constant.ExploreConstants.DEFAULT_AUTOSUGGEST_COMPARE;
+import static com.paytm.digital.education.constant.ExploreConstants.DEFAULT_OFFSET;
+import static com.paytm.digital.education.constant.ExploreConstants.ENTITY_TYPE;
+import static com.paytm.digital.education.constant.ExploreConstants.ENTITY_TYPE_CITY;
+import static com.paytm.digital.education.constant.ExploreConstants.ENTITY_TYPE_STATE;
+import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_NAME;
 
 import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
@@ -22,7 +22,7 @@ import com.paytm.digital.education.elasticsearch.models.FilterField;
 import com.paytm.digital.education.elasticsearch.models.SearchField;
 import com.paytm.digital.education.elasticsearch.models.SortField;
 import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationResponse;
-import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.enums.UserAction;
 import com.paytm.digital.education.explore.es.model.AutoSuggestEsData;
 import com.paytm.digital.education.explore.response.dto.suggest.AutoSuggestData;
@@ -30,7 +30,7 @@ import com.paytm.digital.education.explore.response.dto.suggest.AutoSuggestRespo
 import com.paytm.digital.education.explore.response.dto.suggest.SuggestResult;
 import com.paytm.digital.education.explore.service.helper.ExamLogoHelper;
 import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
-import com.paytm.digital.education.explore.utility.CommonUtil;
+import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.search.service.AutoSuggestionService;
 import com.paytm.digital.education.utility.HierarchyIdentifierUtils;
 import lombok.AllArgsConstructor;

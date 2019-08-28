@@ -1,27 +1,27 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_CLASS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_FULL_NAME;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_SHORT_NAME;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTANCES;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SUB_EXAMS;
-import static com.paytm.digital.education.explore.enums.EducationEntity.COURSE;
-import static com.paytm.digital.education.explore.enums.EducationEntity.EXAM;
-import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
+import static com.paytm.digital.education.constant.ExploreConstants.COURSE_CLASS;
+import static com.paytm.digital.education.constant.ExploreConstants.COURSE_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FULL_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SHORT_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTANCES;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.SUB_EXAMS;
+import static com.paytm.digital.education.enums.EducationEntity.COURSE;
+import static com.paytm.digital.education.enums.EducationEntity.EXAM;
+import static com.paytm.digital.education.enums.EducationEntity.INSTITUTE;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_COURSE_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_COURSE_NAME;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 
 import com.paytm.digital.education.exception.BadRequestException;
-import com.paytm.digital.education.explore.constants.ExploreConstants;
-import com.paytm.digital.education.explore.database.entity.Course;
+import com.paytm.digital.education.constant.ExploreConstants;
+import com.paytm.digital.education.database.entity.Course;
 import com.paytm.digital.education.database.entity.Exam;
-import com.paytm.digital.education.explore.database.entity.Institute;
+import com.paytm.digital.education.database.entity.Institute;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.explore.enums.Client;
+import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.explore.response.dto.detail.CourseDetail;
 import com.paytm.digital.education.explore.response.dto.detail.ExamDetail;
 import com.paytm.digital.education.explore.response.dto.detail.CourseInstituteDetail;
@@ -31,7 +31,7 @@ import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
 import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
-import com.paytm.digital.education.explore.utility.CommonUtil;
+import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.explore.utility.FieldsRetrievalUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import lombok.AllArgsConstructor;
@@ -220,10 +220,10 @@ public class CourseDetailServiceImpl {
     }
 
     private List<CourseFee> getAllCourseFees(
-            List<com.paytm.digital.education.explore.database.entity.CourseFee> courseFee) {
+            List<com.paytm.digital.education.database.entity.CourseFee> courseFee) {
         ArrayList<CourseFee> allCourseFees = new ArrayList<>();
         if (courseFee != null) {
-            for (com.paytm.digital.education.explore.database.entity.CourseFee fee : courseFee) {
+            for (com.paytm.digital.education.database.entity.CourseFee fee : courseFee) {
                 allCourseFees.add(getCourseFee(fee));
             }
             return allCourseFees;
@@ -232,7 +232,7 @@ public class CourseDetailServiceImpl {
     }
 
     private CourseFee getCourseFee(
-            com.paytm.digital.education.explore.database.entity.CourseFee fee) {
+            com.paytm.digital.education.database.entity.CourseFee fee) {
         Map<String, Object> cutoffDisplayNames = propertyReader.getPropertiesAsMapByKey(
                 ExploreConstants.EXPLORE_COMPONENT, ExploreConstants.COURSE_DETAIL,
                 ExploreConstants.CASTEGROUP);

@@ -10,7 +10,7 @@ import com.paytm.digital.education.explore.es.model.ClassifierSortField;
 import com.paytm.digital.education.explore.request.dto.search.Classification;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
-import com.paytm.digital.education.explore.utility.CommonUtil;
+import com.paytm.digital.education.utility.CommonUtil;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -26,10 +26,10 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.CLASSIFIER_INDEX;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.CLASSIFIER_KEYWORD;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.CLASSIFIER_KEYWORD_BOOST;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.CLASSIFIER_ANALYZER;
+import static com.paytm.digital.education.constant.ExploreConstants.CLASSIFIER_INDEX;
+import static com.paytm.digital.education.constant.ExploreConstants.CLASSIFIER_KEYWORD;
+import static com.paytm.digital.education.constant.ExploreConstants.CLASSIFIER_KEYWORD_BOOST;
+import static com.paytm.digital.education.constant.ExploreConstants.CLASSIFIER_ANALYZER;
 
 /**
  * This class classifies search query and apply appropriate filters and sort orders

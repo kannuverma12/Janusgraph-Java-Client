@@ -91,6 +91,8 @@ public enum ErrorEnum {
     ENTITY_ID_MANDATORY_FOR_SUBSCRIPTION(4037, "Entity id is mandatory for subscription requests.",
             HttpStatus.BAD_REQUEST, 0),
     INVALID_CUSTOMER_ID(4038, "Invalid customer ID. Please provide a valid customer ID.",
+            HttpStatus.BAD_REQUEST, 0),
+    INVALID_PROGRAM_ID_AND_URL_DISPLAY_KEY(4039, "Invalid program ID/ url display key. Please provide a valid program ID and url display key.",
             HttpStatus.BAD_REQUEST, 0);
 
     private final int internalCode;

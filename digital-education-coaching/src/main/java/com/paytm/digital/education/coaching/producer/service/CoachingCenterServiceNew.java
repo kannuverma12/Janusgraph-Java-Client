@@ -17,7 +17,7 @@ public class CoachingCenterServiceNew {
     private CoachingCenterDAO coachingCenterDAO;
 
     public CoachingCenterEntity insertCoachingCenter(CoachingCenterDataRequest request) {
-        //        CoachingInstitute coachingInstitute =
+        //        CoachingInstituteEntity coachingInstitute =
         //                coachingInstituteRepositoryNew.findByInstituteId(request.getInstituteId());
         //
         //        if (Objects.isNull(coachingInstitute)) {
@@ -48,7 +48,7 @@ public class CoachingCenterServiceNew {
                                 CoachingConstants.RESOURCE_NOT_PRESENT));
 
 
-        //        //        CoachingInstitute coachingInstitute =
+        //        //        CoachingInstituteEntity coachingInstitute =
         //        //                coachingInstituteRepositoryNew.findByInstituteId(request.getInstituteId());
         //
         //        if (Objects.isNull(coachingInstitute)) {

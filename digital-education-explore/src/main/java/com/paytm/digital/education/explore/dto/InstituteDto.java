@@ -3,12 +3,12 @@ package com.paytm.digital.education.explore.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.explore.database.entity.OfficialAddress;
-import com.paytm.digital.education.explore.database.entity.Gallery;
-import com.paytm.digital.education.explore.database.entity.Alumni;
-import com.paytm.digital.education.explore.database.entity.Accreditation;
-import com.paytm.digital.education.explore.database.entity.Placement;
-import com.paytm.digital.education.explore.enums.CollegeEntityType;
+import com.paytm.digital.education.database.entity.OfficialAddress;
+import com.paytm.digital.education.database.entity.Gallery;
+import com.paytm.digital.education.database.entity.Alumni;
+import com.paytm.digital.education.database.entity.Accreditation;
+import com.paytm.digital.education.database.entity.Placement;
+import com.paytm.digital.education.enums.CollegeEntityType;
 import lombok.Data;
 import lombok.ToString;
 

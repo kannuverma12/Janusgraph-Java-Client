@@ -1,6 +1,6 @@
 package com.paytm.digital.education.explore.controller;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EDUCATION_BASE_URL;
+import static com.paytm.digital.education.constant.ExploreConstants.EDUCATION_BASE_URL;
 
 import com.paytm.digital.education.database.entity.FtlTemplate;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;

@@ -2,7 +2,7 @@ package com.paytm.digital.education.explore.response.dto.search;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
+import com.paytm.digital.education.dto.OfficialAddress;
 import lombok.Data;
 
 import java.util.List;

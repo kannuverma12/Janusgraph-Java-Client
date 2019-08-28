@@ -1,10 +1,10 @@
 package com.paytm.digital.education.explore.service.helper;
 
-import com.paytm.digital.education.explore.constants.ExploreConstants;
+import com.paytm.digital.education.constant.ExploreConstants;
 import com.paytm.digital.education.database.entity.ExamLogo;
 import com.paytm.digital.education.database.repository.ExamLogoRepository;
-import com.paytm.digital.education.explore.enums.EducationEntity;
-import com.paytm.digital.education.explore.utility.CommonUtil;
+import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.utility.CommonUtil;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;

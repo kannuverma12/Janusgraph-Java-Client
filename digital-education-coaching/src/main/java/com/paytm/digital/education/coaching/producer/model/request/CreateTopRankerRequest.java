@@ -17,7 +17,7 @@ public class CreateTopRankerRequest {
     @NotNull private  Long   examId;
     @NotEmpty private String studentName;
     @NotEmpty private String studentPhoto;
-    @NotEmpty private String courseStudied;
+    @NotNull private Long programId;
     @NotEmpty private String year;
     @NotEmpty private String batch;
     @NotEmpty private String rankObtained;

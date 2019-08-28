@@ -1,5 +1,6 @@
 package com.paytm.digital.education.explore.utility;
 
+import com.paytm.digital.education.utility.CommonUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -8,12 +9,12 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.CONSTITUENT_OF;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.CONSTITUENT;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.UGC;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.AFFILIATED_TO;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.AFFILIATED;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.APPROVED_BY;
+import static com.paytm.digital.education.constant.ExploreConstants.CONSTITUENT_OF;
+import static com.paytm.digital.education.constant.ExploreConstants.CONSTITUENT;
+import static com.paytm.digital.education.constant.ExploreConstants.UGC;
+import static com.paytm.digital.education.constant.ExploreConstants.AFFILIATED_TO;
+import static com.paytm.digital.education.constant.ExploreConstants.AFFILIATED;
+import static com.paytm.digital.education.constant.ExploreConstants.APPROVED_BY;
 
 public class ApprovalUtilTest {
 

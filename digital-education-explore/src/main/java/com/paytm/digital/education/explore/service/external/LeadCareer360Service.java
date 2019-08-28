@@ -2,14 +2,13 @@ package com.paytm.digital.education.explore.service.external;
 
 import com.paytm.digital.education.explore.database.entity.BaseLeadResponse;
 import com.paytm.digital.education.explore.database.entity.Lead;
-import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.enums.LeadAction;
 import com.paytm.digital.education.explore.thirdparty.lead.Career360LeadRequest;
 import com.paytm.digital.education.explore.thirdparty.lead.Career360LeadResponse;
 import com.paytm.digital.education.explore.thirdparty.lead.Career360UnfollowRequest;
 import com.paytm.digital.education.explore.thirdparty.lead.Career360UnfollowResponse;
 import com.paytm.digital.education.utility.JsonUtils;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

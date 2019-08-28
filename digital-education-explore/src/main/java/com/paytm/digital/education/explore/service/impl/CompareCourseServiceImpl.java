@@ -1,20 +1,20 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import static com.paytm.digital.education.explore.constants.CompareConstants.GENERAL;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_ID;
-import static com.paytm.digital.education.explore.enums.Gender.FEMALE;
-import static com.paytm.digital.education.explore.enums.Gender.MALE;
-import static com.paytm.digital.education.explore.enums.Gender.OTHERS;
+import static com.paytm.digital.education.constant.ExploreConstants.COURSE_ID;
+import static com.paytm.digital.education.enums.Gender.FEMALE;
+import static com.paytm.digital.education.enums.Gender.MALE;
+import static com.paytm.digital.education.enums.Gender.OTHERS;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 
 import com.paytm.digital.education.exception.BadRequestException;
-import com.paytm.digital.education.explore.database.entity.Course;
-import com.paytm.digital.education.explore.database.entity.CourseFee;
-import com.paytm.digital.education.explore.database.entity.Cutoff;
+import com.paytm.digital.education.database.entity.Course;
+import com.paytm.digital.education.database.entity.CourseFee;
+import com.paytm.digital.education.database.entity.Cutoff;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.SubExam;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.explore.enums.Gender;
+import com.paytm.digital.education.enums.Gender;
 import com.paytm.digital.education.explore.response.dto.common.CutOff;
 import com.paytm.digital.education.explore.response.dto.detail.CompareCourseDetail;
 import com.paytm.digital.education.explore.service.CompareCourseService;

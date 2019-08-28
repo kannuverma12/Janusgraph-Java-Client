@@ -15,7 +15,7 @@ import com.paytm.digital.education.explore.response.dto.search.FilterBucket;
 import com.paytm.digital.education.explore.response.dto.search.TermFilterData;
 import com.paytm.digital.education.explore.response.dto.search.MultipleRangeData;
 import com.paytm.digital.education.explore.response.dto.search.RangeFilterValue;
-import com.paytm.digital.education.explore.utility.CommonUtil;
+import com.paytm.digital.education.utility.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -26,10 +26,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Collection;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DATA;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.FEES;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DISPLAY_NAME;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.KEY;
+import static com.paytm.digital.education.constant.ExploreConstants.DATA;
+import static com.paytm.digital.education.constant.ExploreConstants.FEES;
+import static com.paytm.digital.education.constant.ExploreConstants.DISPLAY_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.KEY;
 
 @Slf4j
 @Service

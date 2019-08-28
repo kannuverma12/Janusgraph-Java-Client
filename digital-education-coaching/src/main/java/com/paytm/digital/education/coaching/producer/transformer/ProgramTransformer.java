@@ -53,9 +53,9 @@ public class ProgramTransformer {
                 .language(ObjectUtils.defaultIfNull(
                         coachingProgramCreateRequest.getLanguage(),
                         coachingProgramEntity.getLanguage()))
-                .syllabusAndBrochure(ObjectUtils.defaultIfNull(
+                .syllabus(ObjectUtils.defaultIfNull(
                         coachingProgramCreateRequest.getSyllabusAndBrochure(),
-                        coachingProgramEntity.getSyllabusAndBrochure()))
+                        coachingProgramEntity.getSyllabus()))
                 .globalPriority(ObjectUtils.defaultIfNull(
                         coachingProgramCreateRequest.getGlobalPriority(),
                         coachingProgramEntity.getGlobalPriority()))

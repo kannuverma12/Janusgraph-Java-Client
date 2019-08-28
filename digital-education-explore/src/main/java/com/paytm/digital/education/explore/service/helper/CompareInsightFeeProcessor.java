@@ -6,11 +6,11 @@ import static com.paytm.digital.education.explore.constants.CompareConstants.COU
 import static com.paytm.digital.education.explore.constants.CompareConstants.FEES_FOR;
 import static com.paytm.digital.education.explore.constants.CompareConstants.LOWER_COMPARED_TO;
 import static com.paytm.digital.education.explore.constants.CompareConstants.NO_OF_INSTITUTES_WITH_MIN_FEE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.explore.utility.CompareUtil.getInstituteName;
 
-import com.paytm.digital.education.explore.database.entity.Course;
-import com.paytm.digital.education.explore.database.entity.Institute;
+import com.paytm.digital.education.database.entity.Course;
+import com.paytm.digital.education.database.entity.Institute;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.utility.CompareUtil;
 import lombok.AllArgsConstructor;

@@ -1,13 +1,13 @@
 package com.paytm.digital.education.explore.service.helper;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_SIZE_FOR_INSTITUTE_DETAIL;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.PARENT_INSTITUTE_ID_COURSE;
+import static com.paytm.digital.education.constant.ExploreConstants.COURSE_SIZE_FOR_INSTITUTE_DETAIL;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID_COURSE;
+import static com.paytm.digital.education.constant.ExploreConstants.PARENT_INSTITUTE_ID_COURSE;
 
-import com.paytm.digital.education.explore.enums.Client;
-import com.paytm.digital.education.explore.enums.CollegeEntityType;
-import com.paytm.digital.education.explore.enums.CourseLevel;
-import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.paytm.digital.education.enums.Client;
+import com.paytm.digital.education.enums.CollegeEntityType;
+import com.paytm.digital.education.enums.CourseLevel;
+import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.detail.Course;
 import com.paytm.digital.education.explore.response.dto.search.CourseSearchResponse;

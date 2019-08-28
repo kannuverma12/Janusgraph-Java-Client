@@ -1,6 +1,9 @@
 package com.paytm.digital.education.explore.database.entity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.paytm.digital.education.database.entity.Article;
+import com.paytm.digital.education.database.entity.CampusAmbassador;
+import com.paytm.digital.education.database.entity.CampusEvent;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
