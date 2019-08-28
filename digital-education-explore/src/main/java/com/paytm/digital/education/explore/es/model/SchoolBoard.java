@@ -25,7 +25,7 @@ public class SchoolBoard {
     private String classTo;
 
     @JsonProperty("gender_accepted")
-    private List<String> gendersAccepted;
+    private String gendersAccepted;
 
     @JsonProperty("ownership")
     private String ownership;
