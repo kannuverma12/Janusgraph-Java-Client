@@ -2,6 +2,7 @@ var database_name = "digital_education";
 var school_collection = "school";
 var target_collection = "education_search_school_v1";
 var target_doc_type = "education";
+var MAX_SAFE_INTEGER = 9007199254740991;
 
 
 module.exports = function(dbDocument, ns, updateDesc) {
@@ -49,10 +50,10 @@ function transformSchool(dbDocument) {
         targetSchool.city = dbDocument.official_address.city;
     }
 
-    targetSchool.year_of_estd = dbDocument.estb_year;
+    targetSchool.year_of_estd = dbDocument.established_year;
 
     if (dbDocument.gallery !== undefined && dbDocument.gallery.logo) {
-        targetSchool.imageLink = dbDocument.gallery.logo;
+        targetSchool.image_link = dbDocument.gallery.logo;
     }
 
     targetSchool.is_client = dbDocument.is_client;
@@ -65,7 +66,7 @@ function transformSchool(dbDocument) {
         for (var i = 0; i < dbDocument.boards.length; i++) {
             var dbSchoolBoard = dbDocument.boards[i];
             var singleBoard = {};
-            singleBoard.name = dbSchoolBoard.name;
+            singleBoard.board_name = dbSchoolBoard.name;
             singleBoard.education_level = dbSchoolBoard.data.education_level;
             singleBoard.class_from = dbSchoolBoard.data.class_from;
             singleBoard.class_to = dbSchoolBoard.data.class_to;
@@ -84,23 +85,24 @@ function transformSchool(dbDocument) {
 
             if (dbSchoolBoard.data.fees_data !== undefined && Array.isArray(dbSchoolBoard.data.fees_data)
                 && dbSchoolBoard.data.fees_data.length > 0) {
-                var min_fee = Number.MAX_SAFE_INTEGER;
+                var min_fee = MAX_SAFE_INTEGER;
                 dbSchoolBoard.data.fees_data.forEach(function (fee) {
                     var cur_fee = 0;
-                    if (fee.fees_tenure !== undefined && fee.fees_tenure === 'Yearly') {
+                    if (fee.fees_tenure && fee.fees_tenure === "Yearly") {
                         cur_fee = fee.fees;
-                    } else if (fee.fees_tenure !== undefined && fee.fees_tenure === 'Half-Yearly') {
+                    } else if (fee.fees_tenure && fee.fees_tenure === "Half-Yearly") {
                         cur_fee = fee.fees * 2;
-                    } else if (fee.fees_tenure !== undefined && fee.fees_tenure === 'Quaterly') {
+                    } else if (fee.fees_tenure && fee.fees_tenure === "Quaterly") {
                         cur_fee = fee.fees * 4;
-                    } else if (fee.fees_tenure !== undefined && fee.fees_tenure === 'Monthly') {
+                    } else if (fee.fees_tenure && fee.fees_tenure === "Monthly") {
                         cur_fee = fee.fees * 12;
                     }
                     if (cur_fee < min_fee) {
                         min_fee = cur_fee;
                     }
                 });
-                singleBoard.fee = min_fee;
+                if (min_fee != MAX_SAFE_INTEGER && min_fee != 0)
+                    singleBoard.fee = min_fee;
             }
             targetSchool.boards.push(singleBoard);
         }

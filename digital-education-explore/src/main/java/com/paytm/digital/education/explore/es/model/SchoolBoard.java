@@ -12,8 +12,8 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SchoolBoard {
 
-    @JsonProperty("name")
-    private String name;
+    @JsonProperty("board_name")
+    private String boardName;
 
     @JsonProperty("education_level")
     private String educationLevel;

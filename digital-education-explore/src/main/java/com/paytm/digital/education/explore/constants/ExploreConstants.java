@@ -300,7 +300,7 @@ public interface ExploreConstants {
     String SCHOOL_BOARDS_GENDER_ACCEPTED    = "gender_accepted";
     String SCHOOL_BOARDS_ESTABLISHMENT_YEAR = "year_of_estd";
     String SCHOOL_FACILITIES                = "facilities";
-    String SCHOOL_BOARDS_ACCEPTED           = "name";
+    String SCHOOL_BOARDS_ACCEPTED           = "board_name";
     String SCHOOL_MEDIUM                    = "lang_medium";
 
     String TOTAL_TEACHERS_IMAGE_URL      =
