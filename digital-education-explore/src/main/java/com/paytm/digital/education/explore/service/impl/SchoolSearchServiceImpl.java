@@ -4,7 +4,6 @@ import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.CrossField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EMPTY_STRING;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.es.model.SchoolSearch;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
@@ -34,6 +33,7 @@ import java.util.concurrent.TimeoutException;
 
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.RANGE;
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.TERMS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EMPTY_STRING;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.OFFICIAL_NAME_SEARCH;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SCHOOL_FILTER_NAMESPACE;

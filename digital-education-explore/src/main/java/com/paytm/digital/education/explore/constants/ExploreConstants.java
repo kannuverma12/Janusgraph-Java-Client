@@ -292,4 +292,14 @@ public interface ExploreConstants {
     String SEARCH_ANALYZER_SCHOOL  = "word_delimiter_analyzer";
     String SEARCH_INDEX_SCHOOL     = "education_search_school_v1";
 
+    String SCHOOL_CITY                      = "city";
+    String SCHOOL_STATE                     = "state";
+    String SCHOOL_BOARDS_EDUCATION_LEVEL    = "education_level";
+    String SCHOOL_BOARDS_FEE                = "fee";
+    String SCHOOL_BOARDS_OWNERSHIP          = "ownership";
+    String SCHOOL_BOARDS_GENDER_ACCEPTED    = "gender_accepted";
+    String SCHOOL_BOARDS_ESTABLISHMENT_YEAR = "year_of_estd";
+    String SCHOOL_FACILITIES                = "facilities";
+    String SCHOOL_BOARDS_ACCEPTED           = "name";
+    String SCHOOL_MEDIUM                    = "lang_medium";
 }

@@ -12,6 +12,16 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.FEE
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_GENDER;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LINGUISTIC_MEDIUM;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OWNERSHIP;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SCHOOL_BOARDS_ACCEPTED;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SCHOOL_BOARDS_EDUCATION_LEVEL;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SCHOOL_BOARDS_ESTABLISHMENT_YEAR;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SCHOOL_BOARDS_FEE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SCHOOL_BOARDS_GENDER_ACCEPTED;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SCHOOL_BOARDS_OWNERSHIP;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SCHOOL_CITY;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SCHOOL_FACILITIES;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SCHOOL_MEDIUM;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SCHOOL_STATE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_EXAM_LEVEL;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STATE_INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM_INSTITUTE;
@@ -131,6 +141,30 @@ public class SearchAggregateHelper {
     }
 
     public AggregateField[] getSchoolAggregateData() {
-        return new AggregateField[0];
+        List<String> schoolKeys =
+                Arrays.asList(SCHOOL_CITY, SCHOOL_STATE, SCHOOL_BOARDS_EDUCATION_LEVEL,
+                        SCHOOL_BOARDS_OWNERSHIP, SCHOOL_BOARDS_GENDER_ACCEPTED,
+                        SCHOOL_FACILITIES, SCHOOL_BOARDS_ACCEPTED,
+                        SCHOOL_MEDIUM, SCHOOL_BOARDS_FEE, SCHOOL_BOARDS_ESTABLISHMENT_YEAR);
+        List<AggregationType> schoolAggregateType =
+                Arrays.asList(TERMS, TERMS, TERMS, TERMS, TERMS, TERMS, TERMS,
+                        TERMS, MINMAX, MINMAX);
+        BucketSort countDescSort = BucketSort.builder().key(BucketAggregationSortParms.COUNT).order(
+                DataSortOrder.DESC).build();
+
+        List<BucketSort> schoolSortOrder =
+                Arrays.asList(countDescSort, countDescSort, countDescSort, countDescSort, countDescSort,
+                        countDescSort, countDescSort, countDescSort, null, null);
+
+        AggregateField[] schoolAggregateData = new AggregateField[schoolKeys.size()];
+
+        for (int i = 0; i < schoolKeys.size(); i++) {
+            AggregateField aggregateField = new AggregateField();
+            aggregateField.setName(schoolKeys.get(i));
+            aggregateField.setType(schoolAggregateType.get(i));
+            aggregateField.setBucketsOrder(schoolSortOrder.get(i));
+            schoolAggregateData[i] = aggregateField;
+        }
+        return schoolAggregateData;
     }
 }
