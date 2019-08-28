@@ -3,6 +3,7 @@ package com.paytm.digital.education.coaching.constants;
 import com.paytm.digital.education.coaching.consumer.model.dto.ExamAdditionalInfo;
 import com.paytm.digital.education.config.AwsConfig;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -148,4 +149,10 @@ public class CoachingConstants {
                         "Find answers to your most common questions",
                         "image_link"));
     }
+
+    public static final SimpleDateFormat MMM_YYYY    = new SimpleDateFormat("MMM,yyyy");
+    public static final SimpleDateFormat DD_MMM_YYYY = new SimpleDateFormat("dd MMM,yyyy");
+    public static final SimpleDateFormat YYYY_MM     = new SimpleDateFormat("yyyy-MM");
+
+    public static final String NON_TENTATIVE = "non_tentative";
 }
