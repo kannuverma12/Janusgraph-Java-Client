@@ -1,5 +1,7 @@
 package com.paytm.digital.education.coaching.consumer.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paytm.digital.education.coaching.consumer.model.dto.Exam;
 import com.paytm.digital.education.coaching.consumer.model.response.GetCoachingCourseDetailsResponse;
 import com.paytm.digital.education.coaching.consumer.transformer.CoachingCourseTransformer;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -23,6 +26,7 @@ import java.util.Set;
 
 import static com.mongodb.QueryOperators.AND;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_ID;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_IDS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_INSTITUTE_PREFIX;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_TOP_RANKER_PREFIX;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_FIELD_GROUP;
@@ -179,8 +183,8 @@ public class CoachingCourseService {
 
     private List<TopRankerEntity> fetchTopRankers(final long courseId, final List<String> fields) {
         List<TopRankerEntity> topRankerEntityList = this.commonMongoRepository
-                .getEntitiesByIdAndFields(COACHING_COURSE_ID, courseId, TopRankerEntity.class,
-                        fields);
+                .getEntityFieldsByValuesIn(COACHING_COURSE_IDS,
+                        Collections.singletonList(courseId), TopRankerEntity.class, fields);
         if (CollectionUtils.isEmpty(topRankerEntityList)) {
             log.error("Got no topRankers for courseId: {}", courseId);
             return new ArrayList<>();

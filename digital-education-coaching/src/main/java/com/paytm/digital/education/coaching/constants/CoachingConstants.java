@@ -93,6 +93,7 @@ public class CoachingConstants {
     public static final String S3_UPLOAD_FAILED                      = "File upload failed";
     public static final String COACHING_EXAM                         = "coaching_exam";
     public static final String COACHING_COURSE_ID    = "course_id";
+    public static final String COACHING_COURSE_IDS    = "course_ids";
 
     public static final String DETAILS_FIELD_GROUP = "details_coaching";
 
