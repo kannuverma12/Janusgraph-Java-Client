@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.explore.enums.ClassType;
 import com.paytm.digital.education.explore.enums.SchoolAdmissionMode;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Date;
@@ -15,6 +16,7 @@ import java.util.List;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@NoArgsConstructor
 public class SchoolAdmission {
     @Field("start_date")
     @JsonFormat(pattern = "yyyy-MM-dd")
