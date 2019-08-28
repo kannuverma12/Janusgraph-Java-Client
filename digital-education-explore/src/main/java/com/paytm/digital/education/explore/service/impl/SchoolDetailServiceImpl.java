@@ -78,6 +78,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
                     INVALID_SCHOOL_NAME.getExternalMessage());
         }
         SchoolDetail schoolDetail = new SchoolDetail();
+        schoolDetail.setSchoolId(school.getSchoolId());
         List<Board> boards = school.getBoardList();
         if (Objects.nonNull(boards) && boards.size() > 0) {
             BoardData boardData = boards.get(0).getData();

@@ -9,6 +9,7 @@ import com.paytm.digital.education.explore.response.dto.detail.Attribute;
 import com.paytm.digital.education.explore.response.dto.detail.ClassInfoLegend;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,10 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor
 public class SchoolDetail {
+    @Field("school_id")
+    @JsonProperty("school_id")
+    private Long schoolId;
+
     @JsonProperty("shifts")
     private List<ShiftDetails> shiftDetailsList;
 
