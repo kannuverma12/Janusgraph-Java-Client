@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class CoachingProgramFeature {
+public class CoachingCourseFeature {
 
     private long   featureId;
     private String featureName;

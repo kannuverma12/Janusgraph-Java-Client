@@ -1,7 +1,7 @@
 package com.paytm.digital.education.coaching.producer.model.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.database.embedded.CoachingProgramFeature;
+import com.paytm.digital.education.database.embedded.CoachingCourseFeature;
 import com.paytm.digital.education.database.embedded.Faq;
 import com.paytm.digital.education.enums.CourseType;
 import com.paytm.digital.education.enums.Level;
@@ -14,16 +14,16 @@ import lombok.Data;
 
 @Data
 @ApiModel
-public class CoachingProgramCreateRequest {
+public class CoachingCourseCreateRequest {
 
     List<Faq> faqs;
 
     @NotNull
-    @ApiModelProperty(value = "id of the program\n")
+    @ApiModelProperty(value = "id of the course\n")
     private Long id;
 
     @NotNull
-    @ApiModelProperty(value = "name of the program\n")
+    @ApiModelProperty(value = "name of the course\n")
     private String name;
 
     @NotNull
@@ -78,7 +78,7 @@ public class CoachingProgramCreateRequest {
 
     @NotNull
     @JsonProperty("features")
-    private List<CoachingProgramFeature> features;
+    private List<CoachingCourseFeature> features;
 
     @JsonProperty("is_scholarship_available")
     private Boolean isScholarshipAvailable;

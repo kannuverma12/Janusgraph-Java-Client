@@ -1,7 +1,7 @@
 package com.paytm.digital.education.coaching.controller;
 
 import com.paytm.digital.education.coaching.data.service.CoachingCenterService;
-import com.paytm.digital.education.coaching.data.service.CoachingCourseService;
+import com.paytm.digital.education.coaching.data.service.CoachingCourseServiceOld;
 import com.paytm.digital.education.coaching.data.service.CoachingExamService;
 import com.paytm.digital.education.coaching.data.service.InstituteService;
 import com.paytm.digital.education.coaching.response.dto.ResponseDto;
@@ -35,7 +35,7 @@ import java.text.ParseException;
 public class DataIngestionCoachingController {
 
     private InstituteService             instituteService;
-    private CoachingCourseService        coachingCourseService;
+    private CoachingCourseServiceOld     coachingCourseServiceOld;
     private CoachingExamService          coachingExamService;
     private ImportInstituteService       importInstituteService;
     private ImportCoachingCenterService  importCoachingCenterService;
@@ -97,7 +97,7 @@ public class DataIngestionCoachingController {
     @GetMapping("/course/{courseId}")
     public ResponseDto getCoachingCourseById(@PathVariable @NotNull @Min(1) Long courseId,
             @RequestParam(value = "active", required = false) Boolean active) {
-        return coachingCourseService.getCourseById(courseId, active);
+        return coachingCourseServiceOld.getCourseById(courseId, active);
     }
 
     /*

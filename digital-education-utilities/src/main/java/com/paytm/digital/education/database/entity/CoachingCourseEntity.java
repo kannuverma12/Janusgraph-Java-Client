@@ -1,16 +1,15 @@
 package com.paytm.digital.education.database.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.paytm.digital.education.database.embedded.CoachingProgramFeature;
-import com.paytm.digital.education.database.embedded.CoachingProgramImportantDate;
-import com.paytm.digital.education.database.embedded.CoachingProgramSessionDetails;
+import com.paytm.digital.education.database.embedded.CoachingCourseFeature;
+import com.paytm.digital.education.database.embedded.CoachingCourseImportantDate;
+import com.paytm.digital.education.database.embedded.CoachingCourseSessionDetails;
 import com.paytm.digital.education.database.embedded.Currency;
 import com.paytm.digital.education.database.embedded.Faq;
 import com.paytm.digital.education.enums.CourseType;
 import com.paytm.digital.education.enums.Level;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,8 +27,8 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "coaching_program")
-public class CoachingProgramEntity {
+@Document(collection = "coaching_course")
+public class CoachingCourseEntity {
 
     @Id
     @Field("_id")
@@ -38,9 +37,9 @@ public class CoachingProgramEntity {
     @Field("faqs")
     List<Faq> faqs;
 
-    @Field("program_id")
+    @Field("course_id")
     @Setter
-    private Long programId;
+    private Long courseId;
 
     @Field("name")
     private String name;
@@ -91,16 +90,16 @@ public class CoachingProgramEntity {
     private String brochure;
 
     @Field("important_dates")
-    private List<CoachingProgramImportantDate> importantDates;
+    private List<CoachingCourseImportantDate> importantDates;
 
     @Field("global_priority")
     private Integer globalPriority;
 
     @Field("session_details")
-    private List<CoachingProgramSessionDetails> sessionDetails;
+    private List<CoachingCourseSessionDetails> sessionDetails;
 
     @Field("features")
-    private List<CoachingProgramFeature> features;
+    private List<CoachingCourseFeature> features;
 
     @Field("is_scholarship_available")
     private Boolean isScholarshipAvailable;

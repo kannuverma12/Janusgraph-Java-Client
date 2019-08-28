@@ -1,8 +1,7 @@
 package com.paytm.digital.education.coaching.producer.controller;
 
-import com.paytm.digital.education.coaching.constants.CoachingConstants;
-import com.paytm.digital.education.coaching.producer.model.request.CoachingProgramCreateRequest;
-import com.paytm.digital.education.coaching.producer.service.ProgramService;
+import com.paytm.digital.education.coaching.producer.model.request.CoachingCourseCreateRequest;
+import com.paytm.digital.education.coaching.producer.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,28 +18,28 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.C
 
 @RestController
 @RequestMapping(COACHING)
-public class ProducerCoachingProgramController {
+public class ProducerCoachingCourseController {
 
     @Autowired
-    private ProgramService programService;
+    private CourseService courseService;
 
     @PostMapping(
-            value = "/v1/coaching/program",
+            value = "/v1/coaching/course",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> insertCoachingProgram(
-            @Valid @RequestBody CoachingProgramCreateRequest request) {
-        programService.save(request);
+            @Valid @RequestBody CoachingCourseCreateRequest request) {
+        courseService.save(request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping(
-            value = "/v1/coaching/program",
+            value = "/v1/coaching/course",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateCoachingProgram(
-            @Valid @RequestBody CoachingProgramCreateRequest request) {
-        programService.update(request);
+            @Valid @RequestBody CoachingCourseCreateRequest request) {
+        courseService.update(request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

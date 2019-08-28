@@ -1,10 +1,10 @@
 package com.paytm.digital.education.coaching.consumer.transformer;
 
-import com.paytm.digital.education.coaching.consumer.model.dto.CoachingProgramFeature;
-import com.paytm.digital.education.coaching.consumer.model.dto.CoachingProgramImportantDate;
-import com.paytm.digital.education.coaching.consumer.model.dto.CoachingProgramSessionDetails;
+import com.paytm.digital.education.coaching.consumer.model.dto.CoachingCourseImportantDate;
 import com.paytm.digital.education.coaching.consumer.model.dto.Exam;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopRanker;
+import com.paytm.digital.education.database.embedded.CoachingCourseFeature;
+import com.paytm.digital.education.database.embedded.CoachingCourseSessionDetails;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-public class CoachingProgramTransformer {
+public class CoachingCourseTransformer {
 
     public List<TopRanker> convertTopRankers(final List<TopRankerEntity> topRankerEntityList) {
         if (CollectionUtils.isEmpty(topRankerEntityList)) {
@@ -27,7 +27,7 @@ public class CoachingProgramTransformer {
                         .id(tr.getTopRankerId())
                         .coachingInstituteId(tr.getInstituteId())
                         .coachingCentreId(tr.getCenterId())
-                        .coachingProgramId(tr.getProgramId())
+                        .coachingCourseIds(tr.getCourseIds())
                         .examId(tr.getExamId())
                         .name(tr.getStudentName())
                         .image(tr.getStudentPhoto())
@@ -46,13 +46,13 @@ public class CoachingProgramTransformer {
                 .build();
     }
 
-    public List<CoachingProgramImportantDate> convertImportantDates(
-            final List<com.paytm.digital.education.database.embedded.CoachingProgramImportantDate> impDates) {
+    public List<CoachingCourseImportantDate> convertImportantDates(
+            final List<com.paytm.digital.education.database.embedded.CoachingCourseImportantDate> impDates) {
         if (CollectionUtils.isEmpty(impDates)) {
             return new ArrayList<>();
         }
         return impDates.stream()
-                .map(date -> CoachingProgramImportantDate.builder()
+                .map(date -> CoachingCourseImportantDate.builder()
                         .key(date.getKey())
                         .value(date.getValue())
                         .priority(date.getPriority())
@@ -60,13 +60,13 @@ public class CoachingProgramTransformer {
                 .collect(Collectors.toList());
     }
 
-    public List<CoachingProgramFeature> convertProgramFeatures(
-            final List<com.paytm.digital.education.database.embedded.CoachingProgramFeature> features) {
+    public List<CoachingCourseFeature> convertCourseFeatures(
+            final List<CoachingCourseFeature> features) {
         if (CollectionUtils.isEmpty(features)) {
             return new ArrayList<>();
         }
         return features.stream()
-                .map(feature -> CoachingProgramFeature.builder()
+                .map(feature -> CoachingCourseFeature.builder()
                         .featureId(feature.getFeatureId())
                         .featureName(feature.getFeatureName())
                         .featureLogo(feature.getFeatureLogo())
@@ -76,13 +76,13 @@ public class CoachingProgramTransformer {
                 .collect(Collectors.toList());
     }
 
-    public List<CoachingProgramSessionDetails> convertSessionDetails(
-            final List<com.paytm.digital.education.database.embedded.CoachingProgramSessionDetails> sessionDetails) {
+    public List<CoachingCourseSessionDetails> convertSessionDetails(
+            final List<CoachingCourseSessionDetails> sessionDetails) {
         if (CollectionUtils.isEmpty(sessionDetails)) {
             return new ArrayList<>();
         }
         return sessionDetails.stream()
-                .map(feature -> CoachingProgramSessionDetails.builder()
+                .map(feature -> CoachingCourseSessionDetails.builder()
                         .key(feature.getKey())
                         .value(feature.getValue())
                         .priority(feature.getPriority())

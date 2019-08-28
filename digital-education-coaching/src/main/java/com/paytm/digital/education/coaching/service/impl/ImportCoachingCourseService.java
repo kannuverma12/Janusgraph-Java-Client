@@ -2,7 +2,7 @@ package com.paytm.digital.education.coaching.service.impl;
 
 import com.paytm.digital.education.coaching.constants.CoachingConstants;
 import com.paytm.digital.education.coaching.database.entity.CoachingCourse;
-import com.paytm.digital.education.coaching.database.repository.CoachingCourseRepository;
+import com.paytm.digital.education.coaching.database.repository.CoachingCourseRepositoryOld;
 import com.paytm.digital.education.enums.CourseType;
 import com.paytm.digital.education.coaching.googlesheet.model.CoachingCourseForm;
 import com.paytm.digital.education.coaching.service.helper.IngestDataHelper;
@@ -48,10 +48,10 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.T
 @Service
 @AllArgsConstructor
 public class ImportCoachingCourseService {
-    private IngestDataHelper         ingestDataHelper;
-    private CoachingCourseRepository coachingCourseRepository;
-    private FailedDataRepository     failedDataRepository;
-    private UploadUtil               uploadUtil;
+    private IngestDataHelper            ingestDataHelper;
+    private CoachingCourseRepositoryOld coachingCourseRepositoryOld;
+    private FailedDataRepository        failedDataRepository;
+    private UploadUtil                  uploadUtil;
 
     /*
      ** Import the new data from spreadsheet
@@ -81,7 +81,7 @@ public class ImportCoachingCourseService {
         Map<Long, CoachingCourse> courseMap = new HashMap<>();
         if (!courseIds.isEmpty()) {
             List<CoachingCourse> existingCourses =
-                    coachingCourseRepository.findAllCoachingCourses(courseIds);
+                    coachingCourseRepositoryOld.findAllCoachingCourses(courseIds);
             courseMap = existingCourses.stream()
                     .collect(Collectors.toMap(c -> c.getCourseId(), c -> c));
         }
@@ -226,7 +226,7 @@ public class ImportCoachingCourseService {
                 }
             }
             if (!isFailed && isImportable) {
-                coachingCourseRepository.upsertCoaching(coachingCourse);
+                coachingCourseRepositoryOld.upsertCoaching(coachingCourse);
                 if (Objects.nonNull(courseId)) {
                     courseMap.put(courseId, coachingCourse);
                     failedDataMap.remove(courseId);
@@ -271,7 +271,7 @@ public class ImportCoachingCourseService {
         for (CoachingCourse coachingCourse : coachingCourseList) {
             isFailed = uploadFiles(coachingCourse);
             if (!isFailed) {
-                coachingCourseRepository.upsertCoaching(coachingCourse);
+                coachingCourseRepositoryOld.upsertCoaching(coachingCourse);
                 if (Objects.nonNull(coachingCourse.getCourseId())) {
                     courseMap.put(coachingCourse.getCourseId(), coachingCourse);
                     failedDataMap.remove(coachingCourse.getCourseId());

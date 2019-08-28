@@ -9,10 +9,10 @@ import lombok.Getter;
 @Getter
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TopCoachingProgramsForExam {
+public class TopCoachingCoursesForExam {
 
-    @JsonProperty("program_id")
-    private Long programId;
+    @JsonProperty("course_id")
+    private Long courseId;
 
     @JsonProperty("coaching_institute_id")
     private Long coachingInstituteId;
@@ -23,8 +23,8 @@ public class TopCoachingProgramsForExam {
     @JsonProperty("logo")
     private String logo;
 
-    @JsonProperty("program_name")
-    private String programName;
+    @JsonProperty("course_name")
+    private String courseName;
 
     @JsonProperty("eligibility")
     private String eligibility;

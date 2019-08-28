@@ -1,10 +1,10 @@
 package com.paytm.digital.education.coaching.consumer.service;
 
 import com.paytm.digital.education.coaching.consumer.model.dto.ExamImportantDate;
-import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingProgramsForExam;
+import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingCoursesForExam;
 import com.paytm.digital.education.coaching.consumer.model.response.GetExamDetailsResponse;
+import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
-import com.paytm.digital.education.database.entity.CoachingProgramEntity;
 import com.paytm.digital.education.database.entity.Event;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Instance;
@@ -26,9 +26,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_ID;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_PREFIX;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_INSTITUTE_PREFIX;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_PROGRAM_ID;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_PROGRAM_PREFIX;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_FIELD_GROUP;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.ExamAdditionalInfoParams;
@@ -46,10 +46,9 @@ import static com.paytm.digital.education.utility.DateUtil.stringToDate;
 @AllArgsConstructor
 public class ExamService {
 
-    private final CommonMongoRepository commonMongoRepository;
-
-    private static final Date MAX_DATE = new Date(Long.MAX_VALUE);
-    private static final Date MIN_DATE = new Date(Long.MIN_VALUE);
+    private static final Date                  MAX_DATE = new Date(Long.MAX_VALUE);
+    private static final Date                  MIN_DATE = new Date(Long.MIN_VALUE);
+    private final        CommonMongoRepository commonMongoRepository;
 
     public GetExamDetailsResponse getExamDetails(final Long examId, final String urlDisplayKey) {
         List<String> groupFields = this.commonMongoRepository.getFieldsByGroup(
@@ -90,7 +89,7 @@ public class ExamService {
                 .additionalInfo(ExamAdditionalInfoParams)
                 .topCoachingInstitutes(this.buildTopCoachingInstituteResponse(
                         coachingInstituteFields, exam))
-                .topCoachingPrograms(this.buildTopCoachingProgramResponse(
+                .topCoachingCourses(this.buildTopCoachingProgramResponse(
                         coachingProgramFields, coachingInstituteFields, exam))
                 .importantDates(this.buildExamImportantDates(exam))
                 .build();
@@ -102,16 +101,17 @@ public class ExamService {
             if (requestedField.contains(COACHING_INSTITUTE_PREFIX)) {
                 coachingInstituteFields.add(requestedField
                         .substring(COACHING_INSTITUTE_PREFIX.length()));
-            } else if (requestedField.contains(COACHING_PROGRAM_PREFIX)) {
+            } else if (requestedField.contains(COACHING_COURSE_PREFIX)) {
                 coachingProgramFields.add(requestedField
-                        .substring(COACHING_PROGRAM_PREFIX.length()));
+                        .substring(COACHING_COURSE_PREFIX.length()));
             } else {
                 examFields.add(requestedField);
             }
         }
     }
 
-    private List<com.paytm.digital.education.coaching.consumer.model.dto.CoachingInstitute> buildTopCoachingInstituteResponse(
+    private List<com.paytm.digital.education.coaching.consumer.model.dto.CoachingInstitute>
+        buildTopCoachingInstituteResponse(
             List<String> coachingInstituteFields, Exam exam) {
         List<com.paytm.digital.education.coaching.consumer.model.dto.CoachingInstitute>
                 topCoachingInstitutesResponse = new ArrayList<>();
@@ -138,19 +138,19 @@ public class ExamService {
         return topCoachingInstitutesResponse;
     }
 
-    private List<TopCoachingProgramsForExam> buildTopCoachingProgramResponse(
+    private List<TopCoachingCoursesForExam> buildTopCoachingProgramResponse(
             List<String> coachingProgramFields, List<String> coachingInstituteFields, Exam exam) {
-        List<TopCoachingProgramsForExam> topCoachingProgramsResponse = new ArrayList<>();
-        if (CollectionUtils.isEmpty(exam.getTopCoachingProgramIds())) {
+        List<TopCoachingCoursesForExam> topCoachingProgramsResponse = new ArrayList<>();
+        if (CollectionUtils.isEmpty(exam.getTopCoachingCourseIds())) {
             return topCoachingProgramsResponse;
         }
 
-        List<CoachingProgramEntity> coachingProgramEntities = this.commonMongoRepository
-                .getEntityFieldsByValuesIn(COACHING_PROGRAM_ID, exam.getTopCoachingProgramIds(),
-                        CoachingProgramEntity.class, coachingProgramFields);
+        List<CoachingCourseEntity> coachingProgramEntities = this.commonMongoRepository
+                .getEntityFieldsByValuesIn(COACHING_COURSE_ID, exam.getTopCoachingCourseIds(),
+                        CoachingCourseEntity.class, coachingProgramFields);
 
         Set<Long> uniqueCoachingInstituteIds = new HashSet<>();
-        for (CoachingProgramEntity coachingProgram : coachingProgramEntities) {
+        for (CoachingCourseEntity coachingProgram : coachingProgramEntities) {
             uniqueCoachingInstituteIds.add(coachingProgram.getCoachingInstituteId());
         }
 
@@ -164,21 +164,21 @@ public class ExamService {
             coachingInstituteMap.put(coachingInstitute.getInstituteId(), coachingInstitute);
         }
 
-        for (CoachingProgramEntity coachingProgramEntity : coachingProgramEntities) {
+        for (CoachingCourseEntity coachingCourseEntity : coachingProgramEntities) {
             CoachingInstituteEntity coachingInstituteDetails = coachingInstituteMap.getOrDefault(
-                    coachingProgramEntity.getCoachingInstituteId(), new CoachingInstituteEntity());
+                    coachingCourseEntity.getCoachingInstituteId(), new CoachingInstituteEntity());
 
-            TopCoachingProgramsForExam toInsert = TopCoachingProgramsForExam.builder()
-                    .courseType(coachingProgramEntity.getCourseType())
-                    .durationMonths(coachingProgramEntity.getDuration())
-                    .eligibility(coachingProgramEntity.getEligibility())
-                    .programId(coachingProgramEntity.getProgramId())
-                    .programName(coachingProgramEntity.getName())
-                    .coachingInstituteId(coachingProgramEntity.getCoachingInstituteId())
+            TopCoachingCoursesForExam toInsert = TopCoachingCoursesForExam.builder()
+                    .courseType(coachingCourseEntity.getCourseType())
+                    .durationMonths(coachingCourseEntity.getDuration())
+                    .eligibility(coachingCourseEntity.getEligibility())
+                    .courseId(coachingCourseEntity.getCourseId())
+                    .courseName(coachingCourseEntity.getName())
+                    .coachingInstituteId(coachingCourseEntity.getCoachingInstituteId())
                     .coachingInstituteName(coachingInstituteDetails.getBrandName())
                     .logo(coachingInstituteDetails.getLogo())
                     .urlDisplayKey(CommonUtils
-                            .convertNameToUrlDisplayName(coachingProgramEntity.getName()))
+                            .convertNameToUrlDisplayName(coachingCourseEntity.getName()))
                     .build();
 
             topCoachingProgramsResponse.add(toInsert);

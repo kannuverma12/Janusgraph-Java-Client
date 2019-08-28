@@ -7,7 +7,7 @@ import lombok.Getter;
 @Builder
 public class CoachingProgramSessionDetails {
 
-  private String key;
-  private String value;
-  private int priority;
+    private String key;
+    private String value;
+    private int    priority;
 }

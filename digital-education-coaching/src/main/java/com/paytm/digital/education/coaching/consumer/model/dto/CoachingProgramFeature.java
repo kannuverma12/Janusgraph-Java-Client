@@ -7,9 +7,9 @@ import lombok.Getter;
 @Builder
 public class CoachingProgramFeature {
 
-  private long featureId;
-  private String featureName;
-  private String featureLogo;
-  private String featureDescription;
-  private int priority;
+    private long   featureId;
+    private String featureName;
+    private String featureLogo;
+    private String featureDescription;
+    private int    priority;
 }

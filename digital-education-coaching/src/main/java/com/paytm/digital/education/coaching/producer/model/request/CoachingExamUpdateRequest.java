@@ -33,8 +33,8 @@ public class CoachingExamUpdateRequest {
     @JsonProperty("exam_description")
     private String examDescription;
 
-    @JsonProperty("program_id")
-    private Long programId;
+    @JsonProperty("course_id")
+    private Long courseId;
 
     @JsonProperty("stream_id")
     private Long streamId;

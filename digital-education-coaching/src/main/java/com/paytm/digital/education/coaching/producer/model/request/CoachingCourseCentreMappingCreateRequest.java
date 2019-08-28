@@ -10,7 +10,7 @@ import java.util.List;
 
 @Data
 @ApiModel
-public class CoachingProgramCentreMappingCreateRequest {
+public class CoachingCourseCentreMappingCreateRequest {
 
     @NotNull
     @ApiModelProperty(value = "id of the stream\n")
@@ -22,7 +22,7 @@ public class CoachingProgramCentreMappingCreateRequest {
 
     @NotNull
     @ApiModelProperty(value = "id of the stream\n")
-    public Long coachingProgramId;
+    public Long coachingCourseId;
 
     @NotNull
     @ApiModelProperty(value = "id of the stream\n")

@@ -23,7 +23,7 @@ import java.util.Objects;
 
 @Repository
 @AllArgsConstructor
-public class CoachingCourseRepository {
+public class CoachingCourseRepositoryOld {
 
     private MongoOperations   mongoOperations;
     private SequenceGenerator sequenceGenerator;

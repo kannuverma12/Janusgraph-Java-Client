@@ -101,8 +101,8 @@ public class Exam {
     @Field("top_coaching_institute_ids")
     private List<Long> topCoachingInstituteIds;
 
-    @Field("top_coaching_program_ids")
-    private List<Long> topCoachingProgramIds;
+    @Field("top_coaching_course_ids")
+    private List<Long> topCoachingCourseIds;
 
     public Exam(long examId) {
         this.examId = examId;

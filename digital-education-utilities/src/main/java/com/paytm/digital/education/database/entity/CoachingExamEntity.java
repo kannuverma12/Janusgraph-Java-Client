@@ -37,8 +37,8 @@ public class CoachingExamEntity {
     @Field("exam_description")
     private String examDescription;
 
-    @Field("program_id")
-    private Long programId;
+    @Field("course_id")
+    private Long courseId;
 
     @Field("stream_id")
     private Long streamId;

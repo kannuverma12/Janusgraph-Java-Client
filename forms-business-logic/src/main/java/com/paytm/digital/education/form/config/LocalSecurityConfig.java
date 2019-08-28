@@ -18,10 +18,10 @@ public class LocalSecurityConfig extends BaseSecurityConfig {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable().
-        sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).
-        and().authorizeRequests().anyRequest().authenticated().
-        and().anonymous().principal(DomainUser.getAnonymousUser());
+        http.cors().and().csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and().authorizeRequests().anyRequest().authenticated()
+                .and().anonymous().principal(DomainUser.getAnonymousUser());
     }
 
     @Bean

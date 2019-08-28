@@ -3,7 +3,7 @@ package com.paytm.digital.education.enums;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum CourseType {
-    CLASSROOM_PROGRAM("Classroom program"),
+    CLASSROOM_COURSE("Classroom course"),
     DISTANCE_LEARNING("Distance learning"),
     TEST_SERIES_ONLINE("Test Series : Online"),
     TEST_SERIES_OFFLINE("Test Series : Offline"),

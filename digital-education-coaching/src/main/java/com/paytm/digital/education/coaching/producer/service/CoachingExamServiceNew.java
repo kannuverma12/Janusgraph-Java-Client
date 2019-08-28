@@ -1,11 +1,11 @@
 package com.paytm.digital.education.coaching.producer.service;
 
+import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.database.entity.CoachingExamEntity;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
-import com.paytm.digital.education.database.entity.CoachingProgramEntity;
 import com.paytm.digital.education.database.repository.CoachingExamRepositoryNew;
 import com.paytm.digital.education.database.repository.CoachingInstituteRepositoryNew;
-import com.paytm.digital.education.database.repository.CoachingProgramRepository;
+import com.paytm.digital.education.database.repository.CoachingCourseRepository;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingExamCreateRequest;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingExamUpdateRequest;
 import com.paytm.digital.education.coaching.producer.transformer.CoachingExamTransformer;
@@ -24,7 +24,7 @@ public class CoachingExamServiceNew {
     @Autowired
     private CoachingInstituteRepositoryNew coachingInstituteRepositoryNew;
     @Autowired
-    private CoachingProgramRepository      coachingProgramRepository;
+    private CoachingCourseRepository       coachingCourseRepository;
     @Autowired
     private StreamRepository               streamRepository;
     @Autowired
@@ -39,9 +39,9 @@ public class CoachingExamServiceNew {
             return null;
         }
 
-        if (!Objects.isNull(request.getProgramId())) {
-            CoachingProgramEntity coachingProgram =
-                    coachingProgramRepository.findByProgramId(request.getProgramId()).orElse(null);
+        if (!Objects.isNull(request.getCourseId())) {
+            CoachingCourseEntity coachingProgram =
+                    coachingCourseRepository.findByCourseId(request.getCourseId()).orElse(null);
 
             if (Objects.isNull(coachingProgram)) {
                 // TODO : throw exception
@@ -80,9 +80,9 @@ public class CoachingExamServiceNew {
             return null;
         }
 
-        if (!Objects.isNull(request.getProgramId())) {
-            CoachingProgramEntity coachingProgram =
-                    coachingProgramRepository.findByProgramId(request.getProgramId()).orElse(null);
+        if (!Objects.isNull(request.getCourseId())) {
+            CoachingCourseEntity coachingProgram =
+                    coachingCourseRepository.findByCourseId(request.getCourseId()).orElse(null);
 
             if (Objects.isNull(coachingProgram)) {
                 // TODO : throw exception

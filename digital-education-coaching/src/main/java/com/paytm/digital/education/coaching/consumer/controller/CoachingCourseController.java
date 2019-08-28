@@ -1,7 +1,7 @@
 package com.paytm.digital.education.coaching.consumer.controller;
 
-import com.paytm.digital.education.coaching.consumer.model.response.GetCoachingProgramDetailsResponse;
-import com.paytm.digital.education.coaching.consumer.service.CoachingProgramService;
+import com.paytm.digital.education.coaching.consumer.model.response.GetCoachingCourseDetailsResponse;
+import com.paytm.digital.education.coaching.consumer.service.CoachingCourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,20 +12,21 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.URL.COACHING_PROGRAM_DETAILS;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.URL.COACHING_COURSE_DETAILS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.URL.V1;
 
 @RestController
 @RequestMapping(value = COACHING)
-public class CoachingProgramController {
+public class CoachingCourseController {
 
     @Autowired
-    private CoachingProgramService coachingProgramService;
+    private CoachingCourseService coachingCourseService;
 
-    @GetMapping(value = V1 + COACHING_PROGRAM_DETAILS)
-    public GetCoachingProgramDetailsResponse getCoachingProgramDetails(
-            @RequestParam(value = "id") @NotNull final Long programId,
+    @GetMapping(value = V1 + COACHING_COURSE_DETAILS)
+    public GetCoachingCourseDetailsResponse getCoachingCourseDetails(
+            @RequestParam(value = "id") @NotNull final Long courseId,
             @RequestParam(value = "url_display_key") @NotEmpty final String urlDisplayKey) {
-        return this.coachingProgramService.getProgramDetailsByIdAndUrlDisplayKey(programId, urlDisplayKey);
+        return this.coachingCourseService.getCourseDetailsByIdAndUrlDisplayKey(courseId,
+                urlDisplayKey);
     }
 }

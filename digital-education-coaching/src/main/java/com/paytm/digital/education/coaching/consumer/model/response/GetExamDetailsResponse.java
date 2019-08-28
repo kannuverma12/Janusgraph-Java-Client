@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.coaching.consumer.model.dto.CoachingInstitute;
 import com.paytm.digital.education.coaching.consumer.model.dto.ExamAdditionalInfo;
 import com.paytm.digital.education.coaching.consumer.model.dto.ExamImportantDate;
-import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingProgramsForExam;
+import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingCoursesForExam;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -37,8 +37,8 @@ public class GetExamDetailsResponse {
     @JsonProperty("important_dates")
     private List<ExamImportantDate> importantDates;
 
-    @JsonProperty("top_coaching_programs")
-    private List<TopCoachingProgramsForExam> topCoachingPrograms;
+    @JsonProperty("top_coaching_courses")
+    private List<TopCoachingCoursesForExam> topCoachingCourses;
 
     @JsonProperty("additional_info")
     private List<ExamAdditionalInfo> additionalInfo;

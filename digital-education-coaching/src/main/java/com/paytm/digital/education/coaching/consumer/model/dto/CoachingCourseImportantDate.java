@@ -5,9 +5,9 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class CoachingProgramImportantDate {
+public class CoachingCourseImportantDate {
 
-  private String key;
-  private String value;
-  private int priority;
+    private String key;
+    private String value;
+    private int    priority;
 }

@@ -6,22 +6,23 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateTopRankerRequest {
 
-    @NotNull private  Long   instituteId;
-    private           Long   centerId;
-    @NotNull private  Long   examId;
-    @NotEmpty private String studentName;
-    @NotEmpty private String studentPhoto;
-    @NotNull private Long programId;
-    @NotEmpty private String year;
-    @NotEmpty private String batch;
-    @NotEmpty private String rankObtained;
-    @NotEmpty private String examYear;
-    private           String collegeAdmitted;
-    private           String testimonial;
+    @NotNull private  Long       instituteId;
+    private           Long       centerId;
+    @NotNull private  Long       examId;
+    @NotEmpty private String     studentName;
+    @NotEmpty private String     studentPhoto;
+    @NotEmpty private List<Long> courseIds;
+    @NotEmpty private String     year;
+    @NotEmpty private String     batch;
+    @NotEmpty private String     rankObtained;
+    @NotEmpty private String     examYear;
+    private           String     collegeAdmitted;
+    private           String     testimonial;
 }

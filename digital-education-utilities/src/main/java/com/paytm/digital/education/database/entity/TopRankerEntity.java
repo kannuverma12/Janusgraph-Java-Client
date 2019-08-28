@@ -9,6 +9,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -37,8 +39,8 @@ public class TopRankerEntity {
     @Field("student_photo")
     private String studentPhoto;
 
-    @Field("program_id")
-    private Long programId;
+    @Field("course_ids")
+    private List<Long> courseIds;
 
     @Field("year")
     private String year;

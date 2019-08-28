@@ -1,6 +1,5 @@
 package com.paytm.digital.education.database.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.paytm.digital.education.database.embedded.Faq;
 import com.paytm.digital.education.database.embedded.KeyHighlight;
 import com.paytm.digital.education.database.embedded.OfficialAddress;
@@ -69,12 +68,10 @@ public class CoachingInstituteEntity {
 
     @Field("created_at")
     @CreatedDate
-    @JsonIgnore
     private LocalDateTime createdAt;
 
     @Field("updated_at")
     @LastModifiedDate
-    @JsonIgnore
     private LocalDateTime updatedAt;
 
     @Field("is_enabled")

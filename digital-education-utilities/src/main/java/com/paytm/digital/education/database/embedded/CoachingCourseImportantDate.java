@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CoachingProgramImportantDate {
+public class CoachingCourseImportantDate {
 
     private String key;
     private String value;

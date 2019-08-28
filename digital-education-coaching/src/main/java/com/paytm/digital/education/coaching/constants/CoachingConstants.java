@@ -91,16 +91,15 @@ public class CoachingConstants {
     public static final String DB_DATE_FORMAT                        = "yyyy-MM-dd HH:mm:ss";
     public static final String XCEL_EXAM_DATE_FORMAT                 = "dd/MM/yyyy";
     public static final String S3_UPLOAD_FAILED                      = "File upload failed";
-    public static final String PROGRAM                               = "program";
     public static final String COACHING_EXAM                         = "coaching_exam";
-    public static final String COACHING_PROGRAM_ID                   = "program_id";
+    public static final String COACHING_COURSE_ID    = "course_id";
 
     public static final String DETAILS_FIELD_GROUP = "details_coaching";
 
     public static final String COACHING_INSTITUTE_PREFIX  = "coaching_institute.";
-    public static final String COACHING_PROGRAM_PREFIX    = "coaching_program.";
+    public static final String COACHING_COURSE_PREFIX     = "coaching_course.";
     public static final String COACHING_TOP_RANKER_PREFIX = "coaching_top_ranker.";
-    public static final String EXAM_PREFIX = "exam.";
+    public static final String EXAM_PREFIX                = "exam.";
 
     public static class S3RelativePath {
         private static final String PREFIX           = AwsConfig.getRelativePathPrefix();
@@ -132,7 +131,7 @@ public class CoachingConstants {
 
         public static final String GET_EXAM_DETAILS = "/exam-details";
 
-        public static final String COACHING_PROGRAM_DETAILS = "/program";
+        public static final String COACHING_COURSE_DETAILS = "/course";
 
         public static final String LANDING_PAGE = "/page";
     }
