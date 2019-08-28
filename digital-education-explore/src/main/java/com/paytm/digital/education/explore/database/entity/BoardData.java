@@ -10,7 +10,11 @@ import com.paytm.digital.education.explore.enums.SchoolOwnershipType;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.util.Collections;
 import java.util.List;
+
+import static com.paytm.digital.education.utility.CommonUtils.isNullOrZero;
+import static com.sun.org.apache.xml.internal.utils.LocaleUtility.EMPTY_STRING;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -114,15 +118,15 @@ public class BoardData {
 
     @Field("school_admission")
     @JsonProperty("school_admission")
-    private List<SchoolAdmission> schoolAdmissionList;
+    private List<SchoolAdmission> schoolAdmissionList = Collections.emptyList();
 
     @Field("shifts")
     @JsonProperty("shifts")
-    private List<ShiftDetails> shifts;
+    private List<ShiftDetails> shifts = Collections.emptyList();
 
     @Field("school_admission_tentative")
     @JsonProperty("tentative")
-    private List<SchoolAdmission> schoolAdmissionTentativeList;
+    private List<SchoolAdmission> schoolAdmissionTentativeList = Collections.emptyList();
 
     @Field("medium_of_instruction")
     @JsonProperty("medium_of_instruction")
@@ -144,4 +148,10 @@ public class BoardData {
     @JsonProperty("program_type")
     private List<String> programType;
 
+    public String getStudentRatio() {
+        if (isNullOrZero(enrollments) || isNullOrZero(noOfTeachers)) {
+            return EMPTY_STRING;
+        }
+        return String.format("%d : 1", enrollments / noOfTeachers);
+    }
 }

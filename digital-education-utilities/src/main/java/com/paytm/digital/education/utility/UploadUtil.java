@@ -39,7 +39,8 @@ public class UploadUtil {
             if (fileUrl.startsWith(GOOGLE_DRIVE_BASE_URL)) {
                 Map<String, Object> fileData =
                         GoogleDriveUtil
-                                .downloadFile(fileUrl, clientSecretFileName, clientSecretFolder);
+                                .downloadFile(fileUrl, clientSecretFileName,
+                                        clientSecretFolder);
                 inputStream = (InputStream) fileData.get(INPUTSTREAM);
                 fileName = (String) fileData.get(FILENAME);
                 mimeType = (String) fileData.get(MIMETYPE);

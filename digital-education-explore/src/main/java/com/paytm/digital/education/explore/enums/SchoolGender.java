@@ -8,13 +8,14 @@ public enum SchoolGender {
     CO_ED("Co-ed"),
     NOT_PROVIDED("");
 
-    private final String name;
+    private final String readableValue;
 
-    SchoolGender(String name) {
-        this.name = name;
+    SchoolGender(String readableValue) {
+        this.readableValue = readableValue;
     }
 
-    @JsonValue final String value() {
-        return this.name;
+    @JsonValue
+    public String getReadableValue() {
+        return this.readableValue;
     }
 }

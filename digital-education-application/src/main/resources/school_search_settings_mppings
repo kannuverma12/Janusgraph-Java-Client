@@ -1,0 +1,221 @@
+Mappings:
+
+{
+  "education_search_school_v1": {
+    "mappings": {
+      "education": {
+        "properties": {
+          "names": {
+            "type": "text",
+            "fields": {
+              "ngram": {
+                "type": "text",
+                "analyzer": "edge_nGram_analyzer"
+              }
+            },
+            "analyzer": "word_delimiter_analyzer"
+          },
+          "area_name": {
+            "type": "keyword",
+            "normalizer": "lowercase_normalizer"
+          },
+          "city": {
+            "type": "keyword",
+            "fields": {
+              "search": {
+                "type": "text",
+                "analyzer": "word_delimiter_analyzer"
+              }
+            },
+            "normalizer": "lowercase_normalizer"
+          },
+          "facilities": {
+            "type": "keyword",
+            "normalizer": "lowercase_normalizer"
+          },
+          "campus_name": {
+            "type": "keyword",
+            "normalizer": "lowercase_normalizer"
+          },
+          "image_link": {
+            "type": "text",
+            "index": false
+          },
+          "school_id": {
+            "type": "long"
+          },
+          "is_client": {
+            "type": "long"
+          },
+          "official_name": {
+            "type": "keyword",
+            "fields": {
+              "ngram": {
+                "type": "text",
+                "analyzer": "edge_nGram_analyzer"
+              },
+              "search": {
+                "type": "text",
+                "analyzer": "word_delimiter_analyzer"
+              }
+            },
+            "normalizer": "lowercase_normalizer"
+          },
+          "lang_medium": {
+            "type": "keyword",
+            "normalizer": "lowercase_normalizer"
+          },
+          "state": {
+            "type": "keyword",
+            "fields": {
+              "search": {
+                "type": "text",
+                "analyzer": "word_delimiter_analyzer"
+              }
+            },
+            "normalizer": "lowercase_normalizer"
+          },
+          "year_of_estd": {
+            "type": "long"
+          },
+          "boards": {
+            "type": "nested",
+            "properties": {
+              "name": {
+                "type": "keyword",
+                "normalizer": "lowercase_normalizer"
+              },
+              "education_level": {
+                "type": "keyword",
+                "normalizer": "lowercase_normalizer"
+              },
+              "class_from": {
+                "type": "keyword",
+                "normalizer": "lowercase_normalizer"
+              },
+              "genders_accepted": {
+                "type": "keyword",
+                "normalizer": "lowercase_normalizer"
+              },
+              "ownership": {
+                "type": "keyword",
+                "normalizer": "lowercase_normalizer"
+              },
+              "affiliation_type": {
+                "type": "keyword",
+                "normalizer": "lowercase_normalizer"
+              },
+              "residential_status": {
+                "type": "keyword",
+                "normalizer": "lowercase_normalizer"
+              },
+              "fee": {
+                "type": "long"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+Settings :
+
+{
+  "settings": {
+    "index": {
+      "search": {
+        "slowlog": {
+          "threshold": {
+            "fetch": {
+              "warn": "1s",
+              "info": "500ms"
+            },
+            "query": {
+              "warn": "10s",
+              "info": "2s"
+            }
+          }
+        }
+      },
+      "indexing": {
+        "slowlog": {
+          "threshold": {
+            "index": {
+              "warn": "1s",
+              "info": "600ms"
+            }
+          }
+        }
+      },
+      "analysis": {
+        "filter": {
+          "edge_nGram_filter": {
+            "token_chars": [
+              "letter",
+              "digit",
+              "punctuation",
+              "symbol",
+              "whitespace"
+            ],
+            "min_gram": "3",
+            "type": "edgeNGram",
+            "max_gram": "50"
+          },
+          "word_delimiter_filter": {
+            "split_on_numerics": "true",
+            "generate_word_parts": "true",
+            "preserve_original": "true",
+            "catenate_words": "false",
+            "generate_number_parts": "false",
+            "catenate_all": "false",
+            "split_on_case_change": "false",
+            "type": "word_delimiter"
+          },
+          "unique_filter": {
+            "type": "unique",
+            "only_on_same_position": "true"
+          },
+          "english_stop": {
+            "type": "stop",
+            "stopwords": "_english_"
+          }
+        },
+        "normalizer": {
+          "lowercase_normalizer": {
+            "filter": [
+              "lowercase",
+              "asciifolding"
+            ],
+            "type": "custom",
+            "char_filter": []
+          }
+        },
+        "analyzer": {
+          "edge_nGram_analyzer": {
+            "filter": [
+              "lowercase",
+              "asciifolding",
+              "edge_nGram_filter",
+              "unique_filter"
+            ],
+            "type": "custom",
+            "tokenizer": "whitespace"
+          },
+          "word_delimiter_analyzer": {
+            "filter": [
+              "word_delimiter_filter",
+              "lowercase",
+              "english_stop"
+            ],
+            "char_filter": [
+              "html_strip"
+            ],
+            "tokenizer": "whitespace"
+          }
+        }
+      }
+    }
+  }
+}

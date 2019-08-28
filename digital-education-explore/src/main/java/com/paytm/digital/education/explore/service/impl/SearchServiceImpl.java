@@ -38,6 +38,7 @@ public class SearchServiceImpl {
     private ExamSearchServiceImpl      examSearchService;
     private CourseSearchService        courseSearchService;
     private RecentsSerivce             recentsSerivce;
+    private SchoolSearchServiceImpl schoolSearchService;
 
     public SearchResponse search(SearchRequest searchRequest, Long userId) throws Exception {
         long startTime = System.currentTimeMillis();
@@ -128,6 +129,8 @@ public class SearchServiceImpl {
                 return examSearchService;
             case COURSE:
                 return courseSearchService;
+            case SCHOOL:
+                return schoolSearchService;
             default:
                 throw new RuntimeException("Invalid entity requested.");
         }

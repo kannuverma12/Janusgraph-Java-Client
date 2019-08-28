@@ -30,7 +30,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SchoolConstants.SCHOOL_ID;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_ID;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SCHOOL_FILE_VERSION;
 
 @Service
@@ -68,6 +68,9 @@ public class TransformSchoolService {
             if (objectIdAndSchoolIdMap.containsKey(id)) {
                 school.setId(objectIdAndSchoolIdMap.get(id));
             }
+
+            uploadImagestoS3(school.getGallery(), school.getSchoolId());
+
             commonMongoRepository.saveOrUpdate(school);
         }
         incrementalDataHelper.incrementFileVersion(SCHOOL_FILE_VERSION);
@@ -97,8 +100,8 @@ public class TransformSchoolService {
 
             for (Board boardAffiliatedBySchool : boardsSupportedBySchoolList) {
                 BoardData boardAffiliatedBySchoolData = boardAffiliatedBySchool.getData();
-                SchoolEducationLevelType schoolEducationLevel = boardAffiliatedBySchoolData
-                        .getEducationLevel();
+                SchoolEducationLevelType schoolEducationLevel =
+                        boardAffiliatedBySchoolData.getEducationLevel();
 
                 if (Objects.nonNull(boardAffiliatedBySchoolData)
                         && ClassType.NOT_PROVIDED.equals(boardAffiliatedBySchoolData.getClassTo())
@@ -128,7 +131,7 @@ public class TransformSchoolService {
                 schoolEntity.setSchoolEntityType(SchoolEntityType.MULTI_BOARD);
             }
 
-            uploadImagestoS3(schoolDto.getGallery(), schoolDto.getId());
+
 
             schoolEntitiesList.add(schoolEntity);
 

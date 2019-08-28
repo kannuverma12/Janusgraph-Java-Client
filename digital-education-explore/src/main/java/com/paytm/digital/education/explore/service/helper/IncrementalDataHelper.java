@@ -223,7 +223,7 @@ public class IncrementalDataHelper {
             List<Long> ids) {
         Map<String, Object> queryObject = new HashMap<>();
         queryObject.put(entityField, ids);
-        List<String> projectionFields = Arrays.asList(entityField, "_id");
+        List<String> projectionFields = Arrays.asList(entityField, "_id", "paytm_keys");
         List<T> existingData = commonMongoRepository.findAll(queryObject,
                 entryClass,
                 projectionFields, OR);

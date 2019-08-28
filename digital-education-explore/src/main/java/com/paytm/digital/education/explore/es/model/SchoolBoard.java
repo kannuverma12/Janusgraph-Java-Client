@@ -24,8 +24,8 @@ public class SchoolBoard {
     @JsonProperty("class_to")
     private String classTo;
 
-    @JsonProperty("genders_accepted")
-    private List<String> gendersAccepted;
+    @JsonProperty("gender_accepted")
+    private String gendersAccepted;
 
     @JsonProperty("ownership")
     private String ownership;
@@ -34,7 +34,7 @@ public class SchoolBoard {
     private String affiliationType;
 
     @JsonProperty("residential_status")
-    private String residentialStatus;
+    private List<String> residentialStatus;
 
     @JsonProperty("fee")
     private long fee;

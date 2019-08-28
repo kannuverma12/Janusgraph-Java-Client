@@ -59,6 +59,10 @@ public class School {
     @JsonProperty("estb_year")
     private Integer establishedYear;
 
+    @Field("last_updated")
+    @JsonProperty("updated")
+    private Date updated;
+
     @Field("boards")
     @JsonProperty("board")
     private List<Board> boardList;
@@ -71,10 +75,6 @@ public class School {
 
     @Field("teacher_to_student_ratio")
     private List<String> teacherToStudentRatio;
-
-    @Field("last_updated")
-    @JsonProperty("updated")
-    private Date updated;
 
     @JsonProperty("phone")
     private String phone;

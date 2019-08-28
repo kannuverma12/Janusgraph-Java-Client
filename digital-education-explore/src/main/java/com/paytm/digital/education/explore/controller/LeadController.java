@@ -50,9 +50,10 @@ public class LeadController {
 
     @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/user_details")
     public UserDetails getLeadUserDetails(@RequestHeader("x-user-id") @NotNull @Min(1) Long userId,
-            @RequestHeader("x-user-email") String email,
-            @RequestHeader("x-user-firstname") String firstName,
-            @RequestHeader("x-user-phone") @NotBlank String phone) {
+            @RequestHeader(value = "x-user-email", required = false) String email,
+            @RequestHeader(value = "x-user-firstname", required = false) String firstName ,
+            @RequestHeader(value = "x-user-phone", required = false) String phone) {
+        log.info("Received email : {}, name : {}, phone : {}", email, firstName, phone);
         return leadService.getUserDetails(userId, email, firstName, phone);
     }
 

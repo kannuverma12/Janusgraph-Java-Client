@@ -3,7 +3,6 @@ package com.paytm.digital.education.explore.config;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.KafkaListenerConfigurer;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
@@ -30,14 +29,11 @@ public class KafkaConsumerConfig implements KafkaListenerConfigurer {
     @Value("${kafka.consumer.concurrent.threads}")
     private int kafkaConsumerConcurrentThreads;
 
-    @Bean(name = "explore-consumer-config")
-    Map<String, Object> consumerConfigs() {
+    private Map<String, Object> consumerConfigs() {
         Map<String, Object> consumerProperties = new HashMap<>();
         consumerProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
-                StringDeserializer.class);
-        consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
-                StringDeserializer.class);
+        consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         consumerProperties.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         consumerProperties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         consumerProperties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
@@ -46,19 +42,17 @@ public class KafkaConsumerConfig implements KafkaListenerConfigurer {
         return consumerProperties;
     }
 
-    @Bean(name = "explore-consumer-factory")
-    public ConsumerFactory<String, String> consumerFactory() {
+    private ConsumerFactory<String, String> kafkaConsumerFactory() {
         return new DefaultKafkaConsumerFactory<>(consumerConfigs());
     }
 
-    @Bean(name = "explore-listener")
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>>
+    private KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>>
         kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, String> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConcurrency(kafkaConsumerConcurrentThreads);
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
-        factory.setConsumerFactory(consumerFactory());
+        factory.setConsumerFactory(kafkaConsumerFactory());
         factory.setBatchListener(true);
 
         return factory;

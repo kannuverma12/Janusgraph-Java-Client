@@ -1,8 +1,10 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.database.ingestion.Exam;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.service.helper.IncrementalDataHelper;
+import com.paytm.digital.education.mapping.ErrorEnum;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -40,18 +42,22 @@ public class TransformAndSaveExamService {
                 }
             }
 
-            Map<Long, String> map = new HashMap<>();
+            Map<Long, Exam> map = new HashMap<>();
             if (!examIds.isEmpty()) {
                 List<Exam> existingExams =
                         incrementalDataHelper.getExistingData(Exam.class, EXAM_ID,
                                 new ArrayList<>(examIdSet));
                 map = existingExams.stream()
-                        .collect(Collectors.toMap(c -> c.getExamId(), c -> c.getId()));
+                        .collect(Collectors.toMap(c -> c.getExamId(), c -> c));
             }
             for (Exam exam : examSet) {
-                String id = map.get(exam.getExamId());
-                if (StringUtils.isNotBlank(id)) {
-                    exam.setId(id);
+                Exam currentExam = map.get(exam.getExamId());
+                if (Objects.nonNull(currentExam)) {
+                    String id = currentExam.getId();
+                    if (StringUtils.isNotBlank(id)) {
+                        exam.setId(id);
+                    }
+                    exam.setPaytmKeys(currentExam.getPaytmKeys());
                 }
                 commonMongoRepository.saveOrUpdate(exam);
             }
@@ -60,6 +66,10 @@ public class TransformAndSaveExamService {
             }
         } catch (Exception e) {
             log.info("Exam ingestion exceptions : " + e.getMessage());
+            if (Objects.nonNull(versionUpdate)) {
+                throw new BadRequestException(ErrorEnum.CORRUPTED_FILE,
+                        ErrorEnum.CORRUPTED_FILE.getExternalMessage());
+            }
         }
     }
 }

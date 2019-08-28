@@ -1,11 +1,9 @@
 package com.paytm.digital.education.explore.constants;
 
-import com.paytm.digital.education.explore.enums.RankingSource;
 import freemarker.template.Configuration;
 import freemarker.template.Version;
 
 import java.text.SimpleDateFormat;
-import java.util.Comparator;
 
 public interface ExploreConstants {
 
@@ -18,7 +16,7 @@ public interface ExploreConstants {
     String IS_CLIENT                   = "is_client";
     int    DEFAULT_OFFSET              = 0;
     int    DEFAULT_SIZE                = 10;
-    int    DEFAULT_AUTOSUGGEST_SIZE    = 4;
+    int    DEFAULT_AUTOSUGGEST_SIZE    = 3;
     int    DEFAULT_AUTOSUGGEST_COMPARE = 10;
 
     ///// Exam Detail//////////
@@ -275,6 +273,7 @@ public interface ExploreConstants {
     String RANKING_CAREER  = "CAREERS360";
     String NIRF_LOGO       = "/nirf.jpg";
     String CAREER_LOGO     = "/career360.jpg";
+    String EMPTY_STRING    = " ";
 
     String RECENT_SEARCHES_kAFKA_TOPIC = "recent_searches";
     String RECENT_SEARCHES_ES_INDEX    = "recent_searches";
@@ -284,6 +283,42 @@ public interface ExploreConstants {
     String SEARCH_HISTORY_UPDATEDAT    = "updated_at";
     int    DELETE_RECENTS_BATCH_SIZE   = 100;
 
+    String CTA                  = "cta";
+    String SELECTED             = "_selected";
+    String CTA_LOGO_PLACEHOLDER = "/placeholder.svg";
+
+    String SCHOOL_SEARCH_NAMESPACE = "school_search";
+    String SCHOOL_FILTER_NAMESPACE = "school_filter";
+    String SEARCH_ANALYZER_SCHOOL  = "word_delimiter_analyzer";
+    String SEARCH_INDEX_SCHOOL     = "education_search_school_v1";
+
+    String SCHOOL_CITY                      = "city";
+    String SCHOOL_STATE                     = "state";
+    String SCHOOL_BOARDS_EDUCATION_LEVEL    = "education_level";
+    String SCHOOL_BOARDS_FEE                = "fee";
+    String SCHOOL_BOARDS_OWNERSHIP          = "ownership";
+    String SCHOOL_BOARDS_GENDER_ACCEPTED    = "gender_accepted";
+    String SCHOOL_BOARDS_ESTABLISHMENT_YEAR = "year_of_estd";
+    String SCHOOL_FACILITIES                = "facilities";
+    String SCHOOL_BOARDS_ACCEPTED           = "name";
+    String SCHOOL_MEDIUM                    = "lang_medium";
+
+    String TOTAL_TEACHERS_IMAGE_URL      =
+            "https://assetscdn1.paytm.com/educationwebassets/education/explore/highlight/total_faculty.svg";
+    String STUDENT_TO_TEACHERS_IMAGE_URL =
+            "http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg";
+    String ASSET_CDN_PREFIX              =
+            "http://assetscdn1.paytm.com/educationwebassets/education/explore/school/images";
+    String MORNING_SHIFT_IMAGE_LINK_URL  =
+            "http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg";
+    String EVENING_SHIFT_IMAGE_LINK_URL  =
+            "http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg";
+    String DEFAULT_SHIFT_IMAGE_LINK_URL  =
+            "http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg";
+    String OFFICIAL_WEBSITE_LINK         = "Official Website Link";
+
+    String SCHOOL    = "school";
+    String ACTUAL    = "actual";
 
     //School Constants
     interface SchoolConstants {

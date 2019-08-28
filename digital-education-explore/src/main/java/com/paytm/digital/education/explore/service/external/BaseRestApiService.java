@@ -17,6 +17,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -28,10 +29,10 @@ public class BaseRestApiService {
     private RestConfig rest;
 
     public <T> T get(String url, Map<String, ?> queryParams, HttpHeaders httpHeaders,
-            Type responseClassType) {
+            Type responseClassType, List<String> pathvariablesInorder) {
         ResponseEntity<T> responseEntity;
         HttpEntity<Object> requestEntity = new HttpEntity<>(httpHeaders);
-        URI uri = getURI(url, queryParams);
+        URI uri = getURI(url, queryParams, pathvariablesInorder);
         try {
             responseEntity =
                     rest.getRestTemplate().exchange(uri, HttpMethod.GET, requestEntity,
@@ -77,8 +78,13 @@ public class BaseRestApiService {
         return responseEntity.getBody();
     }
 
-    private URI getURI(String url, Map<String, ?> queryParams) {
+    public URI getURI(String url, Map<String, ?> queryParams, List<String> pathVariablesInOrder) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
+        if (!CollectionUtils.isEmpty(pathVariablesInOrder)) {
+            for (String var : pathVariablesInOrder) {
+                builder.path(var);
+            }
+        }
         if (!CollectionUtils.isEmpty(queryParams)) {
             for (Map.Entry<String, ?> entry : queryParams.entrySet()) {
                 builder = builder.queryParam(entry.getKey(), entry.getValue());

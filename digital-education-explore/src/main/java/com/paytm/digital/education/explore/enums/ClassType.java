@@ -2,6 +2,11 @@ package com.paytm.digital.education.explore.enums;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 public enum ClassType {
     PRE_NURSERY("Pre Nursery"),
     NURSERY("Nursery"),
@@ -21,14 +26,15 @@ public enum ClassType {
     TWELVE("12th"),
     NOT_PROVIDED("");
 
-    private final String name;
+    private final String readableValue;
 
-    private ClassType(String name) {
-        this.name = name;
+    ClassType(String readableValue) {
+        this.readableValue = readableValue;
     }
 
     @JsonValue
-    final String value() {
-        return this.name;
+    public String getReadableValue() {
+        return this.readableValue;
     }
+
 }

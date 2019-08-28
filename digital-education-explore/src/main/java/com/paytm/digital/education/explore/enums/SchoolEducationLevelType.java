@@ -2,6 +2,8 @@ package com.paytm.digital.education.explore.enums;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import java.util.Arrays;
+
 public enum SchoolEducationLevelType {
     PRIMARY("Primary School"),
     MIDDLE("Upper Primary/Middle School"),
@@ -9,15 +11,15 @@ public enum SchoolEducationLevelType {
     SENIOR_SECONDARY("Sr. Secondary/Higher Secondary School"),
     JUNIOR_COLLEGE("Junior College/Intermediate College");
 
-    private final String name;
+    private final String readableValue;
 
-    SchoolEducationLevelType(String name) {
-        this.name = name;
+    SchoolEducationLevelType(String readableValue) {
+        this.readableValue = readableValue;
     }
 
     @JsonValue
-    final String value() {
-        return this.name;
+    public String getReadableValue() {
+        return this.readableValue;
     }
 
 }

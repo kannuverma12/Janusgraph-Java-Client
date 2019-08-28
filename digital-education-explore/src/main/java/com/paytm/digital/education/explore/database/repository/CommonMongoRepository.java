@@ -11,7 +11,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.GRO
 import static com.paytm.digital.education.explore.constants.ExploreConstants.GROUP_NAME;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.IN_OPERATOR;
 
-import com.mongodb.DBCursor;
+import com.mongodb.client.result.UpdateResult;
 import com.paytm.digital.education.explore.database.entity.FieldGroup;
 import com.paytm.digital.education.explore.database.entity.FtlTemplate;
 import lombok.AllArgsConstructor;
@@ -28,6 +28,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -51,9 +52,11 @@ public class CommonMongoRepository {
     public <T> T getEntityByFields(String key, long entityId, Class<T> instance,
             List<String> fields) {
         Query mongoQuery = new Query(Criteria.where(key).is(entityId));
-        fields.forEach(field -> {
-            mongoQuery.fields().include(field);
-        });
+        if (Objects.nonNull(fields)) {
+            fields.forEach(field -> {
+                mongoQuery.fields().include(field);
+            });
+        }
         return executeQuery(mongoQuery, instance);
     }
 
@@ -87,6 +90,15 @@ public class CommonMongoRepository {
 
     }
 
+    @Cacheable(value = "field_group", unless = "#result == null")
+    public List<String> getFieldsByGroupAndCollectioName(String collectionName, List<String> fields,
+                                                         String fieldGroup) {
+        if (CollectionUtils.isEmpty(fields)) {
+            return getFieldsByGroupAndCollectioName(collectionName, fieldGroup);
+        }
+        return fields;
+    }
+
     @Cacheable(value = "entities", unless = "#result == null")
     public <T> List<T> getEntitiesByIdAndFields(String key, long entityId, Class<T> type,
             List<String> fields) {
@@ -109,6 +121,18 @@ public class CommonMongoRepository {
             return template.getTemplate();
         }
         return null;
+    }
+
+    public <T> long updateFields(Map<String, Object> data, Class<T> type, Long entityId,
+            String entity) {
+        Update update = new Update();
+        for (Map.Entry<String, Object> entry : data.entrySet()) {
+            update.set(entry.getKey(), entry.getValue());
+        }
+        Query query = new Query(Criteria.where(entity).is(entityId));
+        UpdateResult updateResult = mongoOperation.updateFirst(query, update, type);
+        log.info("Mongo update result : {}", updateResult.toString());
+        return updateResult.getMatchedCount();
     }
 
     public void saveOrUpdate(Object obj) {
@@ -166,9 +190,10 @@ public class CommonMongoRepository {
     public <T> T findAndModify(Map<String, Object> searchRequest, Update update,
             FindAndModifyOptions options, Class<T> type) {
 
-        return mongoOperation.findAndModify(createMongoQuery(searchRequest, new ArrayList<>()), update,
-                options,
-                type);
+        return mongoOperation
+                .findAndModify(createMongoQuery(searchRequest, new ArrayList<>()), update,
+                        options,
+                        type);
     }
 
     /*
