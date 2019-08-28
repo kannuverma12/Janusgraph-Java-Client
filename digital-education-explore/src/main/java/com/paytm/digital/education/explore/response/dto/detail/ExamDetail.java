@@ -129,4 +129,7 @@ public class ExamDetail {
     @JsonIgnore
     private Long collegePredictorPid;
 
+    @JsonIgnore
+    private String formId;
+
 }

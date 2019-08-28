@@ -308,6 +308,7 @@ public class ExamDetailServiceImpl {
         if (Objects.nonNull(exam.getPaytmKeys())) {
             ExamPaytmKeys examPaytmKeys = exam.getPaytmKeys();
             examDetail.setCollegePredictorPid(examPaytmKeys.getCollegePredictorId());
+            examDetail.setFormId(examPaytmKeys.getFormId());
         }
         examDetail.setWidgets(widgetsDataHelper.getWidgets(entityName, exam.getExamId(),
                 getDomainName(exam.getDomains())

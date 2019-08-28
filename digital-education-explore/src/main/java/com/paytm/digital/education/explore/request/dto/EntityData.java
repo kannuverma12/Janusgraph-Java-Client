@@ -20,6 +20,9 @@ public class EntityData {
     @JsonProperty("entity")
     private EducationEntity educationEntity;
 
+    @JsonProperty("form_id")
+    private String formId;
+
     @JsonProperty("pid")
     private Long pid;
 

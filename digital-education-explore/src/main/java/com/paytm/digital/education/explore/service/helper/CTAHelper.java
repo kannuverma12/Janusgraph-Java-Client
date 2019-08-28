@@ -10,8 +10,9 @@ import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
 import com.paytm.digital.education.explore.service.external.FeeUrlGenerator;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
-import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -21,11 +22,16 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 @Service
-@AllArgsConstructor
 public class CTAHelper {
 
+    @Autowired
     private FeeUrlGenerator feeUrlGenerator;
+
+    @Autowired
     private PropertyReader  propertyReader;
+
+    @Value("${forms.prefix.url}")
+    private String formsUrlPrefix;
 
     public List<CTA> buildInstituteCTA(InstituteDetail instituteDetail, Client client) {
 
@@ -70,8 +76,20 @@ public class CTAHelper {
                         EducationEntity.EXAM.name().toLowerCase(),
                         ExploreConstants.CTA);
 
+        if (Client.APP.equals(client) && StringUtils.isNotBlank(examDetail.getFormId())) {
+            ctas.add(getFormsCTA(examDetail.getFormId(), logosPerCta));
+        }
+
         ctas.add(getLeadCTA(examDetail.isInterested(), false, client, logosPerCta));
         return ctas;
+    }
+
+    private CTA getFormsCTA(String formsUrl, Map<String, Object> logosPerCta) {
+        return CTA.builder()
+                .logo(getAbsoluteLogoUrl(logosPerCta, CTAType.FORMS.name().toLowerCase()))
+                .url(formsUrlPrefix + formsUrl)
+                .type(CTAType.FORMS)
+                .label(CTA.Constants.APPLY).build();
     }
 
     private CTA getFeeCTA(Long pid, Client client, Map<String, Object> logosPerCta) {
@@ -109,16 +127,14 @@ public class CTAHelper {
                 ? CTA.Constants.SHORTLIST_APP : CTA.Constants.SHORTLIST;
         String activeLabel = Client.APP.equals(client)
                 ? CTA.Constants.SHORTLISTED_APP : CTA.Constants.SHORTLISTED;
-        String relativeUrlKey = null;
-        if (shortlisted) {
-            relativeUrlKey = CTAType.SHORTLIST.name().toLowerCase() + ExploreConstants.SELECTED;
-        } else {
-            relativeUrlKey = CTAType.SHORTLIST.name().toLowerCase();
-        }
-        String absoluteUrl = getAbsoluteLogoUrl(logosPerCta, relativeUrlKey);
+        String absoluteUrl =
+                getAbsoluteLogoUrl(logosPerCta, CTAType.SHORTLIST.name().toLowerCase());
+        String absoluteActiveLogoUrl = getAbsoluteLogoUrl(logosPerCta,
+                CTAType.SHORTLIST.name().toLowerCase() + ExploreConstants.SELECTED);
         CTA shortListCta =
                 CTA.builder().type(CTAType.SHORTLIST)
                         .label(shortListLabel)
+                        .activeLogo(absoluteActiveLogoUrl)
                         .activeText(activeLabel)
                         .logo(absoluteUrl)
                         .build();
@@ -136,15 +152,12 @@ public class CTAHelper {
             leadLabel = CTA.Constants.GET_UPDATES;
             activeLabel = CTA.Constants.INQUIRY_SENT;
         }
-        String relativeUrlKey = null;
-        if (!interested) {
-            relativeUrlKey = CTAType.LEAD.name().toLowerCase();
-        } else {
-            relativeUrlKey = CTAType.LEAD.name().toLowerCase() + ExploreConstants.SELECTED;
-        }
-        String absoluteUrl = getAbsoluteLogoUrl(logosPerCta, relativeUrlKey);
+        String absoluteUrl = getAbsoluteLogoUrl(logosPerCta, CTAType.LEAD.name().toLowerCase());
+        String activeLogoUrl = getAbsoluteLogoUrl(logosPerCta,
+                CTAType.LEAD.name().toLowerCase() + ExploreConstants.SELECTED);
         CTA leadCta = CTA.builder().type(CTAType.LEAD).label(leadLabel)
                 .activeText(activeLabel)
+                .activeLogo(activeLogoUrl)
                 .logo(absoluteUrl).build();
         return leadCta;
     }

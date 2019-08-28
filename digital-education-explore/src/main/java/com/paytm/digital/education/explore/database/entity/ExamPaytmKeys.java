@@ -11,4 +11,7 @@ public class ExamPaytmKeys extends PaytmKeys {
     @Field("college_predictor_id")
     private Long collegePredictorId;
 
+    @Field("form_id")
+    private String formId;
+
 }

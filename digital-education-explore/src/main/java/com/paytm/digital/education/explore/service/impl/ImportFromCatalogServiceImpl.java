@@ -92,12 +92,10 @@ public class ImportFromCatalogServiceImpl implements ImportFromCatalogService {
     }
 
     private String ingestInExamCollection(EntityData entityData) {
-        if (Objects.isNull(entityData.getCollegePredictorId())) {
-            return ErrorEnum.PREDICTOR_ID_MISSING.getExternalMessage();
-        }
         Map<String, Object> fields = new HashMap<>();
         ExamPaytmKeys examPaytmKeys =
-                ExamPaytmKeys.builder().collegePredictorId(entityData.getCollegePredictorId())
+                ExamPaytmKeys.builder().formId(entityData.getFormId())
+                        .collegePredictorId(entityData.getCollegePredictorId())
                         .build();
         fields.put(PaytmKeys.Constants.PAYTM_KEYS, examPaytmKeys);
         String errorMessage = null;
