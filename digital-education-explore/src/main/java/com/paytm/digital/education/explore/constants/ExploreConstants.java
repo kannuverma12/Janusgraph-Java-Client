@@ -317,8 +317,15 @@ public interface ExploreConstants {
             "http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg";
     String OFFICIAL_WEBSITE_LINK         = "Official Website Link";
 
-    String SCHOOL    = "school";
-    String ACTUAL    = "actual";
+    String SCHOOL          = "school";
+    String ACTUAL          = "actual";
+    String OTHER           = "Other";
+    String SUMMARY         = "Summary";
+    String BLANK           = "";
+    String RANKING_OVERALL = "ranking_overall";
+    int    MINUS_TEN       = -10;
+    int    FIFTY           = 50;
+
 
     //School Constants
     interface SchoolConstants {

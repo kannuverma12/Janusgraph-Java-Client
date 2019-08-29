@@ -57,4 +57,11 @@ public class AutoSuggestController {
         autoSuggestValidator.validate(query);
         return autoSuggestServiceImpl.getSuggestions(query, entities, actions, userId);
     }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/institute/autosuggest")
+    public @ResponseBody AutoSuggestResponse autosuggestInstitute(@RequestParam("query") String query,
+            @RequestHeader(value = "x-user-id", required = false) Long userId) {
+        log.info("Received autosuggest request for institutes ");
+        return autoSuggestServiceImpl.autosuggestInstitute(query, userId);
+    }
 }

@@ -74,23 +74,23 @@ public class SearchServiceImpl {
 
     /**
      * Searches for top institutes
-     * @param searchRequest
-     * @param userId
+     * @param searchRequest represents SearchRequest body
+     * @param userId represents userid
      * @return AutoSuggestResponse
-     * @throws Exception
+     * @throws Exception when userid is null
      */
     public AutoSuggestResponse instituteSearch(SearchRequest searchRequest, Long userId) throws Exception {
         SearchResponse searchResponse = search(searchRequest, userId);
         AutoSuggestResponse autoSuggestResponse = new AutoSuggestResponse();
-        List<AutoSuggestData> asdataList = new ArrayList<>();
+        List<AutoSuggestData> asDataList = new ArrayList<>();
 
+        //transform the search response to auto-suggest response
         if (Objects.nonNull(searchResponse)) {
             SearchResult results = searchResponse.getResults();
-            if (!Objects.nonNull(results)) {
-
+            if (Objects.nonNull(results) && Objects.nonNull(results.getEntity())) {
                 if (results.getEntity().equals(INSTITUTE)) {
-                    AutoSuggestData asdata = new AutoSuggestData();
-                    asdata.setEntityType(INSTITUTE.toString());
+                    AutoSuggestData asData = new AutoSuggestData();
+                    asData.setEntityType(INSTITUTE.name().toLowerCase());
 
                     List<SuggestResult> suggestResults = new ArrayList<>();
                     List<SearchBaseData> values = results.getValues();
@@ -99,7 +99,8 @@ public class SearchServiceImpl {
                         for (SearchBaseData searchBaseData : values) {
                             InstituteData iData = (InstituteData) searchBaseData;
 
-                            SuggestResult suggestResult = new SuggestResult(iData.getInstituteId(), iData.getOfficialName());
+                            SuggestResult suggestResult = new SuggestResult(iData.getInstituteId(),
+                                    iData.getOfficialName());
                             suggestResult.setOfficialAddress(iData.getOfficialAddress());
                             suggestResult.setEntityId(iData.getInstituteId());
                             suggestResult.setUrlDisplayName(iData.getUrlDisplayName());
@@ -108,13 +109,11 @@ public class SearchServiceImpl {
 
                             suggestResults.add(suggestResult);
                         }
-                        asdata.setResults(suggestResults);
-
-                    } else {
+                        asData.setResults(suggestResults);
 
                     }
-                    asdataList.add(asdata);
-                    autoSuggestResponse.setData(asdataList);
+                    asDataList.add(asData);
+                    autoSuggestResponse.setData(asDataList);
                 }
             }
         }
