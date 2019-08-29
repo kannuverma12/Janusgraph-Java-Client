@@ -25,7 +25,7 @@ public class GeneralInformation {
     private String logo;
 
     @JsonProperty("city")
-    private String City;
+    private String city;
 
     @JsonProperty("state")
     private String state;
