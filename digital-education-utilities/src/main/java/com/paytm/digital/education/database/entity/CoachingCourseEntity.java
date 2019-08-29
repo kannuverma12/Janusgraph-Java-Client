@@ -21,7 +21,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-@Document(collection = "coaching_program")
+@Document(collection = "coaching_course")
 public class CoachingCourseEntity extends Base {
 
     @Id
@@ -120,48 +120,48 @@ public class CoachingCourseEntity extends Base {
     private List<Long> courseFeatureIds;
 
     @Field("test_count")
-    private Integer testCount;
+    public Integer testCount;
 
     @Field("test_duration")
-    private Integer testDuration;
+    public Integer testDuration;
 
     @Field("test_question_count")
-    private Integer testQuestionCount;
+    public Integer testQuestionCount;
 
     @Field("test_practice_paper_count")
-    private Integer testPracticePaperCount;
+    public Integer testPracticePaperCount;
 
     @Field("distance_learning_books_count")
-    private Integer distanceLearningBooksCount;
+    public Integer distanceLearningBooksCount;
 
     @Field("distance_learning_solved_paper_count")
-    private Integer distanceLearningSolvedPaperCount;
+    public Integer distanceLearningSolvedPaperCount;
 
     @Field("distance_learning_assignment_count")
-    private Integer distanceLearningAssignmentsCount;
+    public Integer distanceLearningAssignmentsCount;
 
     @Field("elearning_lecture_count")
-    private Integer elearningLectureCount;
+    public Integer elearningLectureCount;
 
     @Field("elearning_lecture_duration")
-    private Integer elearningLectureDuration;
+    public Integer elearningLectureDuration;
 
     @Field("elearning_online_test_count")
-    private Integer elearningOnlineTestCount;
+    public Integer elearningOnlineTestCount;
 
     @Field("elearning_practice_paper_count")
-    private Integer elearningPracticePaperCount;
+    public Integer elearningPracticePaperCount;
 
     @Field("classroom_lecture_count")
-    private Integer classroomLectureCount;
+    public Integer classroomLectureCount;
 
     @Field("classroom_lecture_duration")
-    private Integer classroomLectureDuration;
+    public Integer classroomLectureDuration;
 
     @Field("classroom_test_count")
-    private Integer classroomTestCount;
+    public Integer classroomTestCount;
 
     @Field("classroom_teacher_student_ratio")
-    private Integer classroomTeacherStudentRatio;
+    public Integer classroomTeacherStudentRatio;
 
 }

@@ -6,23 +6,15 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.List;
-
 @Getter
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class TopRanker {
+public class CoachingCourseFeature {
 
-    private long id;
-    private long coachingInstituteId;
-    private long coachingCentreId;
-    private List<String> coachingCourseNames;
-    private String examName;
-    private String studentName;
-    private String image;
-    private String rank;
-    private String examDate;
-    private String testimonial;
-    private String signatureImage;
+    private long   featureId;
+    private String featureName;
+    private String featureLogo;
+    private String featureDescription;
+    private int    priority;
 }

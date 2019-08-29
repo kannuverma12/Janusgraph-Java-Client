@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class CoachingProgramSessionDetails {
+public class CoachingCourseSessionDetails {
 
     private String key;
     private String value;

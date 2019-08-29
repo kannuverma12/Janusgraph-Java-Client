@@ -29,9 +29,6 @@ public class TopRankerEntity extends Base {
     @Field("exam_id")
     private Long examId;
 
-    @Field("exam_name")
-    private String examName;
-
     @Field("student_name")
     private String studentName;
 
@@ -40,9 +37,6 @@ public class TopRankerEntity extends Base {
 
     @Field("course_ids")
     private List<Long> courseIds;
-
-    @Field("course_names")
-    private List<String> courseNames;
 
     @Field("year")
     private String year;
