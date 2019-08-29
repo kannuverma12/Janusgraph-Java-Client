@@ -326,6 +326,9 @@ public interface ExploreConstants {
     String RANKING_OVERALL = "ranking_overall";
     int    MINUS_TEN       = -10;
     int    FIFTY           = 50;
+    String YEARS           = "years";
+    int    SIX             = 6;
+
 
 
 }
