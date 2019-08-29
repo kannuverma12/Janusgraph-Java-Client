@@ -58,10 +58,10 @@ public class AutoSuggestController {
         return autoSuggestServiceImpl.getSuggestions(query, entities, actions, userId);
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/institute/autosuggest")
-    public @ResponseBody AutoSuggestResponse autosuggestInstitute(@RequestParam("query") String query,
-            @RequestHeader(value = "x-user-id", required = false) Long userId) {
+    @RequestMapping(method = RequestMethod.GET, path = "/v1/institute/autosuggest")
+    public @ResponseBody AutoSuggestResponse autosuggestInstitute(
+            @RequestParam("query") String query) {
         log.info("Received autosuggest request for institutes ");
-        return autoSuggestServiceImpl.autosuggestInstitute(query, userId);
+        return autoSuggestServiceImpl.autosuggestInstitute(query);
     }
 }

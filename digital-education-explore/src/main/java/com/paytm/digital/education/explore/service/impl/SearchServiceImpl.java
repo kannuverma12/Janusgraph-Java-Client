@@ -79,8 +79,8 @@ public class SearchServiceImpl {
      * @return AutoSuggestResponse
      * @throws Exception when userid is null
      */
-    public AutoSuggestResponse instituteSearch(SearchRequest searchRequest, Long userId) throws Exception {
-        SearchResponse searchResponse = search(searchRequest, userId);
+    public AutoSuggestResponse instituteSearch(SearchRequest searchRequest) throws Exception {
+        SearchResponse searchResponse = search(searchRequest, null);
         AutoSuggestResponse autoSuggestResponse = new AutoSuggestResponse();
         List<AutoSuggestData> asDataList = new ArrayList<>();
 

@@ -119,14 +119,14 @@ public class AutoSuggestServiceImpl {
         return buildAutoSuggestResponse(response);
     }
 
-    public AutoSuggestResponse autosuggestInstitute(String query, Long userId) {
+    public AutoSuggestResponse autosuggestInstitute(String query) {
         AutoSuggestResponse autoSuggestResponse;
         if (StringUtils.isBlank(query)) {
-            autoSuggestResponse = getTopInstitutes(userId);
+            autoSuggestResponse = getTopInstitutes();
         } else {
             List<EducationEntity> entities = new ArrayList<>();
             entities.add(EducationEntity.INSTITUTE);
-            autoSuggestResponse = getSuggestions(query, entities, null, userId);
+            autoSuggestResponse = getSuggestions(query, entities, null, null);
         }
         addDefaultOption(autoSuggestResponse);
         return autoSuggestResponse;
@@ -148,7 +148,7 @@ public class AutoSuggestServiceImpl {
         }
     }
 
-    public AutoSuggestResponse getTopInstitutes(Long userId) {
+    public AutoSuggestResponse getTopInstitutes() {
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.setEntity(EducationEntity.INSTITUTE);
         searchRequest.setFetchFilter(false);
@@ -163,7 +163,7 @@ public class AutoSuggestServiceImpl {
         searchRequest.setSortOrder(map);
         AutoSuggestResponse autoSuggestResponse = new AutoSuggestResponse();
         try {
-            autoSuggestResponse = searchServiceImpl.instituteSearch(searchRequest, userId);
+            autoSuggestResponse = searchServiceImpl.instituteSearch(searchRequest);
         } catch (Exception e) {
             log.error("Error in search response : {} ", e.getMessage());
         }

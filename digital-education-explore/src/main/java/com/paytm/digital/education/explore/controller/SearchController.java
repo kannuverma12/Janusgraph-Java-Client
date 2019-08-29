@@ -52,7 +52,7 @@ public class SearchController {
             CourseSearchValidator.validateRequest(searchRequest);
         }
 
-        AutoSuggestResponse searchResponse = searchServiceImpl.instituteSearch(searchRequest, userId);
+        AutoSuggestResponse searchResponse = searchServiceImpl.instituteSearch(searchRequest);
         return searchResponse;
     }
 }
