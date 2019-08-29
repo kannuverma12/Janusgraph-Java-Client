@@ -44,6 +44,7 @@ import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHO
 import static com.paytm.digital.education.explore.enums.EducationEntity.SCHOOL;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_SCHOOL_NAME;
+import static com.paytm.digital.education.mapping.ErrorEnum.NO_ENTITY_FOUND;
 
 @Slf4j
 @Service
@@ -77,6 +78,9 @@ public class SchoolDetailServiceImpl implements SchoolService {
                 = commonMongoRepository.getFieldsByGroupAndCollectioName(SchoolConstants.SCHOOL, fields, fieldGroup);
         School school =
                 commonMongoRepository.getEntityByFields(SCHOOL_ID, schoolId, School.class, fieldsToBeFetched);
+        if (Objects.isNull(school)) {
+            throw new BadRequestException(NO_ENTITY_FOUND, new Object[] {SchoolConstants.SCHOOL, SCHOOL_ID, schoolId});
+        }
         if (!schoolName.equals(CommonUtil.convertNameToUrlDisplayName(school.getOfficialName()))) {
             throw new BadRequestException(INVALID_SCHOOL_NAME,
                     INVALID_SCHOOL_NAME.getExternalMessage());
