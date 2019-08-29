@@ -165,7 +165,7 @@ public class AutoSuggestServiceImpl {
         try {
             autoSuggestResponse = searchServiceImpl.instituteSearch(searchRequest, userId);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error in search response : {} ", e.getMessage());
         }
         return autoSuggestResponse;
     }

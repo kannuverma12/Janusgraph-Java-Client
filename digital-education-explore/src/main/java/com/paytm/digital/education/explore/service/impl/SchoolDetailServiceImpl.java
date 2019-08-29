@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.constants.ExploreConstants;
+import com.paytm.digital.education.explore.constants.SchoolConstants;
 import com.paytm.digital.education.explore.database.entity.Board;
 import com.paytm.digital.education.explore.database.entity.BoardData;
 import com.paytm.digital.education.explore.database.entity.RelevantLink;
@@ -36,10 +37,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_WEBSITE_LINK;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.ACTUAL;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.TENTATIVE;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.ACTUAL;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.OFFICIAL_WEBSITE_LINK;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_ID;
 import static com.paytm.digital.education.explore.enums.EducationEntity.SCHOOL;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_SCHOOL_NAME;
@@ -73,7 +74,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
     public SchoolDetail getSchoolDetails(Long schoolId, Client client, String schoolName,
                                          List<String> fields, String fieldGroup) {
         List<String> fieldsToBeFetched
-                = commonMongoRepository.getFieldsByGroupAndCollectioName(ExploreConstants.SCHOOL, fields, fieldGroup);
+                = commonMongoRepository.getFieldsByGroupAndCollectioName(SchoolConstants.SCHOOL, fields, fieldGroup);
         School school =
                 commonMongoRepository.getEntityByFields(SCHOOL_ID, schoolId, School.class, fieldsToBeFetched);
         if (!schoolName.equals(CommonUtil.convertNameToUrlDisplayName(school.getOfficialName()))) {

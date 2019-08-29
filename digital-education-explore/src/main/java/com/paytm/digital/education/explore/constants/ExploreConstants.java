@@ -287,6 +287,7 @@ public interface ExploreConstants {
     String SELECTED             = "_selected";
     String CTA_LOGO_PLACEHOLDER = "/placeholder.svg";
 
+    //School Constants
     String SCHOOL_SEARCH_NAMESPACE = "school_search";
     String SCHOOL_FILTER_NAMESPACE = "school_filter";
     String SEARCH_ANALYZER_SCHOOL  = "word_delimiter_analyzer";
@@ -325,9 +326,5 @@ public interface ExploreConstants {
     int    MINUS_TEN       = -10;
     int    FIFTY           = 50;
 
-    //School Constants
-    interface SchoolConstants {
-        String SCHOOL_ID = "school_id";
-    }
 
 }
