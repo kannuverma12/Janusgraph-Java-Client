@@ -9,6 +9,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class CommonUtils {
 
     private final String javaLangPackagesStartPath = "java.lang";
+    private static final String ASSET_CDN_PREFIX              =
+            "http://assetscdn1.paytm.com/educationwebassets/education/explore/school/images";
 
     public String messageFormat(String msg, Object... objs) {
         return MessageFormatter.arrayFormat(msg, objs).getMessage();
@@ -46,5 +48,9 @@ public class CommonUtils {
 
     public String encodeUrl(String s) {
         return UriComponentsBuilder.fromUriString(s).toUriString();
+    }
+
+    public String addCDNPrefixAndEncode(String s) {
+        return encodeUrl(ASSET_CDN_PREFIX + s);
     }
 }

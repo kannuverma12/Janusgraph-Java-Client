@@ -307,8 +307,6 @@ public interface ExploreConstants {
             "https://assetscdn1.paytm.com/educationwebassets/education/explore/highlight/total_faculty.svg";
     String STUDENT_TO_TEACHERS_IMAGE_URL =
             "http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg";
-    String ASSET_CDN_PREFIX              =
-            "http://assetscdn1.paytm.com/educationwebassets/education/explore/school/images";
     String MORNING_SHIFT_IMAGE_LINK_URL  =
             "http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg";
     String EVENING_SHIFT_IMAGE_LINK_URL  =
@@ -317,8 +315,9 @@ public interface ExploreConstants {
             "http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg";
     String OFFICIAL_WEBSITE_LINK         = "Official Website Link";
 
-    String SCHOOL    = "school";
-    String ACTUAL    = "actual";
+    String SCHOOL              = "school";
+    String ACTUAL              = "actual";
+    String SCHOOL_FACILITY_KEY = "school_facility_map";
 
     //School Constants
     interface SchoolConstants {

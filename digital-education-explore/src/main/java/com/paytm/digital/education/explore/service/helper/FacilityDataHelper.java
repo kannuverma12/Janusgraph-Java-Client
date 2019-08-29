@@ -1,8 +1,10 @@
 package com.paytm.digital.education.explore.service.helper;
 
 import com.paytm.digital.education.explore.response.dto.detail.Facility;
+import com.paytm.digital.education.explore.response.dto.detail.school.detail.FacilityResponse;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
+import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -17,8 +19,10 @@ import java.util.stream.Collectors;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.FACILITIES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DISPLAY_NAME;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.FACILITIES_NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LOGO;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.FACILITIES_MASTER_LIST;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SCHOOL_FACILITY_KEY;
 
 @Service
 @AllArgsConstructor
@@ -57,5 +61,25 @@ public class FacilityDataHelper {
         Map<String, String> facilityMap = facilityDataMap.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> (String) e.getValue()));
         return facilityMap;
+    }
+
+    private FacilityResponse fetchAndMapToFacilityResponse(String key, Map<String, Object> m) {
+        if (!m.containsKey(key)) {
+            return new FacilityResponse(key);
+        }
+        Map<String, String> dataMap = (Map<String, String>) m.get(key);
+        FacilityResponse facilityResponse = JsonUtils.convertValue(dataMap, FacilityResponse.class);
+        return facilityResponse;
+    }
+
+    public List<FacilityResponse> mapSchoolFacilitiesToDataObject(List<String> facilitiesAsString) {
+        Map<String, Object> map =
+                propertyReader.getPropertiesAsMapByKey(
+                        EXPLORE_COMPONENT, FACILITIES_NAMESPACE, SCHOOL_FACILITY_KEY);
+        List<FacilityResponse> facilities = facilitiesAsString.stream()
+                .map(key -> fetchAndMapToFacilityResponse(key, map))
+                .peek(x -> x.setLogoUrl(CommonUtil.getAbsoluteUrl(x.getLogoUrl(), FACILITIES)))
+                .collect(Collectors.toList());
+        return facilities;
     }
 }

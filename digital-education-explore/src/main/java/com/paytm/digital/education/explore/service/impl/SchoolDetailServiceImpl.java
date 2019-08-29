@@ -10,6 +10,7 @@ import com.paytm.digital.education.explore.database.entity.RelevantLink;
 import com.paytm.digital.education.explore.database.entity.School;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.enums.Client;
+import com.paytm.digital.education.explore.response.dto.detail.school.detail.FacilityResponse;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.GeneralInformation;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.ImportantDate;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.SchoolDetail;
@@ -17,8 +18,10 @@ import com.paytm.digital.education.explore.response.dto.detail.school.detail.Sch
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.ShiftDetailsResponse;
 import com.paytm.digital.education.explore.service.SchoolService;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
+import com.paytm.digital.education.explore.service.helper.FacilityDataHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 
+import com.paytm.digital.education.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -39,7 +42,6 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.ACT
 import static com.paytm.digital.education.explore.constants.ExploreConstants.TENTATIVE;
 import static com.paytm.digital.education.explore.enums.EducationEntity.SCHOOL;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
-import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_NAME;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_SCHOOL_NAME;
 
 @Slf4j
@@ -49,6 +51,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
 
     private final CommonMongoRepository commonMongoRepository;
     private final DerivedAttributesHelper derivedAttributesHelper;
+    private final FacilityDataHelper facilityDataHelper;
 
     public List<School> getSchools(List<Long> entityIds, List<String> groupFields) {
         if (CollectionUtils.isEmpty(groupFields)) {
@@ -87,7 +90,9 @@ public class SchoolDetailServiceImpl implements SchoolService {
             schoolDetail.getFacultyDetail().setTotalTeachers(boardData.getNoOfTeachers());
             schoolDetail.getFacultyDetail().setStudentToTeacherRatio(boardData.getStudentRatio());
             schoolDetail.setFeesDetails(boardData.getFeesDetails());
-            schoolDetail.setFacilities(boardData.getSchoolFacilities());
+            List<FacilityResponse> facilityResponseList =
+                    facilityDataHelper.mapSchoolFacilitiesToDataObject(boardData.getSchoolFacilities());
+            schoolDetail.setFacilities(facilityResponseList);
             List<ImportantDate> importantDates = Stream.concat(
                     boardData.getSchoolAdmissionList().stream().map(x -> new ImportantDate(x, ACTUAL)),
                     boardData.getSchoolAdmissionTentativeList().stream().map(x -> new ImportantDate(x, TENTATIVE))
@@ -115,6 +120,9 @@ public class SchoolDetailServiceImpl implements SchoolService {
             generalInformation.setLatLon(school.getOfficialAddress().getLatLon());
             generalInformation.setOfficialWebsiteLink(getOfficialWebsiteLinkFromData(boardData));
             generalInformation.setOfficialName(school.getOfficialName());
+            generalInformation.setLogo(CommonUtils.addCDNPrefixAndEncode(school.getGallery().getLogo()));
+            generalInformation.setCity(school.getOfficialAddress().getCity());
+            generalInformation.setState(school.getOfficialAddress().getState());
             return generalInformation;
         }
         return null;
