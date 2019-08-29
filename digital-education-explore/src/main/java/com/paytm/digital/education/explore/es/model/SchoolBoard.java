@@ -36,7 +36,7 @@ public class SchoolBoard {
     @JsonProperty("residential_status")
     private List<String> residentialStatus;
 
-    @JsonProperty("fee")
-    private long fee;
+    @JsonProperty("fees")
+    private long fees;
 
 }

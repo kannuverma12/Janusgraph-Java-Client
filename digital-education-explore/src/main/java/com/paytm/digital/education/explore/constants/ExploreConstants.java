@@ -295,7 +295,7 @@ public interface ExploreConstants {
     String SCHOOL_CITY                      = "city";
     String SCHOOL_STATE                     = "state";
     String SCHOOL_BOARDS_EDUCATION_LEVEL    = "education_level";
-    String SCHOOL_BOARDS_FEE                = "fee";
+    String SCHOOL_BOARDS_FEE                = "fees";
     String SCHOOL_BOARDS_OWNERSHIP          = "ownership";
     String SCHOOL_BOARDS_GENDER_ACCEPTED    = "gender_accepted";
     String SCHOOL_BOARDS_ESTABLISHMENT_YEAR = "year_of_estd";

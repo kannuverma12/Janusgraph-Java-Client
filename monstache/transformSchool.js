@@ -102,7 +102,7 @@ function transformSchool(dbDocument) {
                     }
                 });
                 if (min_fee != MAX_SAFE_INTEGER && min_fee != 0)
-                    singleBoard.fee = min_fee;
+                    singleBoard.fees = min_fee;
             }
             targetSchool.boards.push(singleBoard);
         }
