@@ -287,41 +287,12 @@ public interface ExploreConstants {
     String SELECTED             = "_selected";
     String CTA_LOGO_PLACEHOLDER = "/placeholder.svg";
 
+    //School Constants
     String SCHOOL_SEARCH_NAMESPACE = "school_search";
     String SCHOOL_FILTER_NAMESPACE = "school_filter";
     String SEARCH_ANALYZER_SCHOOL  = "word_delimiter_analyzer";
     String SEARCH_INDEX_SCHOOL     = "education_search_school_v1";
-
-    String SCHOOL_CITY                      = "city";
-    String SCHOOL_STATE                     = "state";
-    String SCHOOL_BOARDS_EDUCATION_LEVEL    = "education_level";
-    String SCHOOL_BOARDS_FEE                = "fees";
-    String SCHOOL_BOARDS_OWNERSHIP          = "ownership";
-    String SCHOOL_BOARDS_GENDER_ACCEPTED    = "gender_accepted";
-    String SCHOOL_BOARDS_ESTABLISHMENT_YEAR = "year_of_estd";
-    String SCHOOL_FACILITIES                = "facilities";
-    String SCHOOL_BOARDS_ACCEPTED           = "board_name";
-    String SCHOOL_MEDIUM                    = "lang_medium";
-
-    String TOTAL_TEACHERS_IMAGE_URL      =
-            "https://assetscdn1.paytm.com/educationwebassets/education/explore/highlight/total_faculty.svg";
-    String STUDENT_TO_TEACHERS_IMAGE_URL =
-            "http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg";
-    String MORNING_SHIFT_IMAGE_LINK_URL  =
-            "http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg";
-    String EVENING_SHIFT_IMAGE_LINK_URL  =
-            "http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg";
-    String DEFAULT_SHIFT_IMAGE_LINK_URL  =
-            "http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg";
-    String OFFICIAL_WEBSITE_LINK         = "Official Website Link";
-
-    String SCHOOL              = "school";
-    String ACTUAL              = "actual";
     String SCHOOL_FACILITY_KEY = "school_facility_map";
 
-    //School Constants
-    interface SchoolConstants {
-        String SCHOOL_ID = "school_id";
-    }
 
 }

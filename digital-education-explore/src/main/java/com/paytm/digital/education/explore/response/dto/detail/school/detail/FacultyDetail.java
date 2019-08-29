@@ -3,8 +3,8 @@ package com.paytm.digital.education.explore.response.dto.detail.school.detail;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.STUDENT_TO_TEACHERS_IMAGE_URL;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.TOTAL_TEACHERS_IMAGE_URL;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.STUDENT_TO_TEACHERS_IMAGE_URL;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.TOTAL_TEACHERS_IMAGE_URL;
 
 @Data
 public class FacultyDetail {

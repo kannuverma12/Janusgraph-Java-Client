@@ -43,19 +43,19 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.SEA
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STOPWORDS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STOPWORDS_KEY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.TIE_BREAKER;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.COURSES_LEVEL;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.ESTABLISHED_YEAR;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.FACILITIES;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.FEES;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.GENDERS_ACCEPTED;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.OWNERSHIP;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_EDUCATION_LEVEL;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_FEE;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_OWNERSHIP;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_GENDER_ACCEPTED;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_ESTABLISHMENT_YEAR;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_FACILITIES;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_CITY;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_ID;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_STATE;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.NAMES_SEARCH;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.NAMES_SEARCH_BOOST;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.LANGUAGES_ACCEPTED;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.BOARD_ACCEPTED;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_ACCEPTED;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_MEDIUM;
 
 @Slf4j
 @Service
@@ -73,15 +73,15 @@ public class SchoolSearchServiceImpl extends AbstractSearchServiceImpl {
         filterQueryTypeMap = new HashMap<>();
         filterQueryTypeMap.put(SCHOOL_CITY, TERMS);
         filterQueryTypeMap.put(SCHOOL_STATE, TERMS);
-        filterQueryTypeMap.put(COURSES_LEVEL, TERMS);
-        filterQueryTypeMap.put(FEES, RANGE);
+        filterQueryTypeMap.put(SCHOOL_BOARDS_EDUCATION_LEVEL, TERMS);
+        filterQueryTypeMap.put(SCHOOL_BOARDS_FEE, RANGE);
         filterQueryTypeMap.put(SCHOOL_ID, TERMS);
-        filterQueryTypeMap.put(OWNERSHIP, TERMS);
-        filterQueryTypeMap.put(FACILITIES, TERMS);
-        filterQueryTypeMap.put(GENDERS_ACCEPTED, TERMS);
-        filterQueryTypeMap.put(BOARD_ACCEPTED, TERMS);
-        filterQueryTypeMap.put(LANGUAGES_ACCEPTED, TERMS);
-        filterQueryTypeMap.put(ESTABLISHED_YEAR, RANGE);
+        filterQueryTypeMap.put(SCHOOL_BOARDS_OWNERSHIP, TERMS);
+        filterQueryTypeMap.put(SCHOOL_FACILITIES, TERMS);
+        filterQueryTypeMap.put(SCHOOL_BOARDS_GENDER_ACCEPTED, TERMS);
+        filterQueryTypeMap.put(SCHOOL_BOARDS_ACCEPTED, TERMS);
+        filterQueryTypeMap.put(SCHOOL_MEDIUM, TERMS);
+        filterQueryTypeMap.put(SCHOOL_BOARDS_ESTABLISHMENT_YEAR, RANGE);
         locationSearchFieldKeys = new HashMap<>();
         locationSearchFieldKeys.put(SCHOOL_STATE, 0.001F);
         locationSearchFieldKeys.put(SCHOOL_CITY, 0.001F);
