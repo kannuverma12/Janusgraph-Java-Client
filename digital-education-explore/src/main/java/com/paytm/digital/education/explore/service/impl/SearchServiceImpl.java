@@ -2,8 +2,13 @@ package com.paytm.digital.education.explore.service.impl;
 
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
+import com.paytm.digital.education.explore.response.dto.search.InstituteData;
 import com.paytm.digital.education.explore.response.dto.search.SearchBaseData;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
+import com.paytm.digital.education.explore.response.dto.search.SearchResult;
+import com.paytm.digital.education.explore.response.dto.suggest.AutoSuggestData;
+import com.paytm.digital.education.explore.response.dto.suggest.AutoSuggestResponse;
+import com.paytm.digital.education.explore.response.dto.suggest.SuggestResult;
 import com.paytm.digital.education.explore.service.RecentsSerivce;
 import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
 import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
@@ -65,6 +70,54 @@ public class SearchServiceImpl {
         }
         log.debug("Time taken in search : " + (System.currentTimeMillis() - startTime));
         return response;
+    }
+
+    /**
+     * Searches for top institutes
+     * @param searchRequest represents SearchRequest body
+     * @param userId represents userid
+     * @return AutoSuggestResponse
+     * @throws Exception when userid is null
+     */
+    public AutoSuggestResponse instituteSearch(SearchRequest searchRequest) throws Exception {
+        SearchResponse searchResponse = search(searchRequest, null);
+        AutoSuggestResponse autoSuggestResponse = new AutoSuggestResponse();
+        List<AutoSuggestData> asDataList = new ArrayList<>();
+
+        //transform the search response to auto-suggest response
+        if (Objects.nonNull(searchResponse)) {
+            SearchResult results = searchResponse.getResults();
+            if (Objects.nonNull(results) && Objects.nonNull(results.getEntity())) {
+                if (results.getEntity().equals(INSTITUTE)) {
+                    AutoSuggestData asData = new AutoSuggestData();
+                    asData.setEntityType(INSTITUTE.name().toLowerCase());
+
+                    List<SuggestResult> suggestResults = new ArrayList<>();
+                    List<SearchBaseData> values = results.getValues();
+
+                    if (!CollectionUtils.isEmpty(values)) {
+                        for (SearchBaseData searchBaseData : values) {
+                            InstituteData iData = (InstituteData) searchBaseData;
+
+                            SuggestResult suggestResult = new SuggestResult(iData.getInstituteId(),
+                                    iData.getOfficialName());
+                            suggestResult.setOfficialAddress(iData.getOfficialAddress());
+                            suggestResult.setEntityId(iData.getInstituteId());
+                            suggestResult.setUrlDisplayName(iData.getUrlDisplayName());
+                            suggestResult.setOfficialName(iData.getOfficialName());
+                            suggestResult.setLogo(iData.getLogoUrl());
+
+                            suggestResults.add(suggestResult);
+                        }
+                        asData.setResults(suggestResults);
+
+                    }
+                    asDataList.add(asData);
+                    autoSuggestResponse.setData(asDataList);
+                }
+            }
+        }
+        return autoSuggestResponse;
     }
 
     private AbstractSearchServiceImpl handler(EducationEntity educationEntity) {
