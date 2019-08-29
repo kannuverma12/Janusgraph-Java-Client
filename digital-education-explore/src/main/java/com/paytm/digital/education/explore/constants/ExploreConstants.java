@@ -295,20 +295,18 @@ public interface ExploreConstants {
     String SCHOOL_CITY                      = "city";
     String SCHOOL_STATE                     = "state";
     String SCHOOL_BOARDS_EDUCATION_LEVEL    = "education_level";
-    String SCHOOL_BOARDS_FEE                = "fee";
+    String SCHOOL_BOARDS_FEE                = "fees";
     String SCHOOL_BOARDS_OWNERSHIP          = "ownership";
     String SCHOOL_BOARDS_GENDER_ACCEPTED    = "gender_accepted";
     String SCHOOL_BOARDS_ESTABLISHMENT_YEAR = "year_of_estd";
     String SCHOOL_FACILITIES                = "facilities";
-    String SCHOOL_BOARDS_ACCEPTED           = "name";
+    String SCHOOL_BOARDS_ACCEPTED           = "board_name";
     String SCHOOL_MEDIUM                    = "lang_medium";
 
     String TOTAL_TEACHERS_IMAGE_URL      =
             "https://assetscdn1.paytm.com/educationwebassets/education/explore/highlight/total_faculty.svg";
     String STUDENT_TO_TEACHERS_IMAGE_URL =
             "http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg";
-    String ASSET_CDN_PREFIX              =
-            "http://assetscdn1.paytm.com/educationwebassets/education/explore/school/images";
     String MORNING_SHIFT_IMAGE_LINK_URL  =
             "http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg";
     String EVENING_SHIFT_IMAGE_LINK_URL  =
@@ -319,13 +317,13 @@ public interface ExploreConstants {
 
     String SCHOOL          = "school";
     String ACTUAL          = "actual";
+    String SCHOOL_FACILITY_KEY = "school_facility_map";
     String OTHER           = "Other";
     String SUMMARY         = "Summary";
     String BLANK           = "";
     String RANKING_OVERALL = "ranking_overall";
     int    MINUS_TEN       = -10;
     int    FIFTY           = 50;
-
 
     //School Constants
     interface SchoolConstants {

@@ -25,7 +25,10 @@ public enum CTAType {
     SHARE,
 
     @JsonProperty("compare")
-    COMPARE;
+    COMPARE,
+
+    @JsonProperty("forms")
+    FORMS;
 
 
 }

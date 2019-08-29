@@ -3,7 +3,6 @@ package com.paytm.digital.education.explore.response.dto.detail.school.detail;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.explore.database.entity.SchoolFeeDetails;
-import com.paytm.digital.education.explore.database.entity.SchoolGallery;
 import com.paytm.digital.education.explore.database.entity.ShiftDetails;
 import com.paytm.digital.education.explore.response.dto.detail.Attribute;
 import com.paytm.digital.education.explore.response.dto.detail.ClassInfoLegend;
@@ -17,6 +16,9 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor
 public class SchoolDetail {
+    @JsonProperty("school_id")
+    private Long schoolId;
+
     @JsonProperty("shifts")
     private List<ShiftDetails> shiftDetailsList;
 
@@ -27,13 +29,13 @@ public class SchoolDetail {
     private List<SchoolFeeDetails> feesDetails;
 
     @JsonProperty("facilities")
-    private List<String> facilities;
+    private List<FacilityResponse> facilities;
 
     @JsonProperty("important_dates")
     private List<ImportantDate> importantDateSections;
 
     @JsonProperty("gallery")
-    private SchoolGallery gallery;
+    private SchoolGalleryResponse gallery;
 
     @JsonProperty("derived_attributes")
     private Map<String, List<Attribute>> derivedAttributes;

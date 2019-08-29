@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AFFILIATED;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AFFILIATED_TO;
@@ -181,8 +182,8 @@ public class CommonUtil {
         String displayName;
         if (!CollectionUtils.isEmpty(propertyMap)
                 && propertyMap.containsKey(fieldName) && propertyMap
-
-                .get(fieldName).containsKey(keyName)) {
+                .get(fieldName).containsKey(keyName)
+                && Objects.nonNull(propertyMap.get(fieldName).get(keyName))) {
             displayName = propertyMap.get(fieldName).get(keyName)
                     .toString();
         } else {

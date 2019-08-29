@@ -20,4 +20,13 @@ public class GeneralInformation {
 
     @JsonProperty("official_name")
     private String officialName;
+
+    @JsonProperty("logo")
+    private String logo;
+
+    @JsonProperty("city")
+    private String city;
+
+    @JsonProperty("state")
+    private String state;
 }

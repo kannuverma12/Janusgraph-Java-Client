@@ -14,6 +14,9 @@ public class CTA {
     @JsonProperty("logo")
     private String logo;
 
+    @JsonProperty("activeLogo")
+    private String activeLogo;
+
     @JsonProperty("label")
     private String label;
 
@@ -55,9 +58,9 @@ public class CTA {
 
         public static final String COMPARE = "+ Add To Compare";
 
+        public static final String APPLY = "Apply";
+
         public static final String COMPARE_APP = "Compare";
-
-
 
     }
 

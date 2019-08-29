@@ -29,8 +29,8 @@ def process_hits(hits):
         if 'names' in school['_source'] and school['_source']['names']:
             for name in school['_source']['names']:
                 names.append(name)
-        if 'imageLink' in school['_source'] and school['_source']['imageLink']:
-            logo = school['_source']['imageLink']
+        if 'imageLink' in school['_source'] and school['_source']['image_link']:
+            logo = school['_source']['image_link']
         yield {"_index": autosuggestIndex, "_type": autosuggestIndexType,
                "_source": {"names": names, "official_name": school['_source']['official_name'],
                            "logo": logo, "official_address": {"state": state, "city": city},

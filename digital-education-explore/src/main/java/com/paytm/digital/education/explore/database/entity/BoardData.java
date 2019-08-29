@@ -8,6 +8,7 @@ import com.paytm.digital.education.explore.enums.SchoolEducationLevelType;
 import com.paytm.digital.education.explore.enums.SchoolGender;
 import com.paytm.digital.education.explore.enums.SchoolOwnershipType;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Collections;
@@ -19,6 +20,7 @@ import static com.sun.org.apache.xml.internal.utils.LocaleUtility.EMPTY_STRING;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@NoArgsConstructor
 public class BoardData {
     @Field("affiliation_type")
     @JsonProperty("affiliation_type")
