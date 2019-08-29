@@ -5,12 +5,10 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface TopRankerRepository extends MongoRepository<TopRankerEntity, ObjectId> {
 
-    Optional<TopRankerEntity> findByTopRankerId(Long topRankerId);
+    TopRankerEntity findByTopRankerId(Long id);
 
 }

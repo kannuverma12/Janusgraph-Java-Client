@@ -1,44 +1,38 @@
 package com.paytm.digital.education.database.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.paytm.digital.education.database.embedded.CoachingCourseFeature;
 import com.paytm.digital.education.database.embedded.CoachingCourseImportantDate;
-import com.paytm.digital.education.database.embedded.CoachingCourseSessionDetails;
 import com.paytm.digital.education.database.embedded.Currency;
 import com.paytm.digital.education.database.embedded.Faq;
 import com.paytm.digital.education.enums.CourseType;
+import com.paytm.digital.education.enums.DurationType;
+import com.paytm.digital.education.enums.Language;
 import com.paytm.digital.education.enums.Level;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.bson.types.ObjectId;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-@Getter
-@Builder
+@Data
 @NoArgsConstructor
-@AllArgsConstructor
-@Document(collection = "coaching_course")
-public class CoachingCourseEntity {
+@Document(collection = "coaching_program")
+public class CoachingCourseEntity extends Base {
 
     @Id
     @Field("_id")
+    @JsonIgnore
     ObjectId id;
 
     @Field("faqs")
     List<Faq> faqs;
 
     @Field("course_id")
-    @Setter
     private Long courseId;
 
     @Field("name")
@@ -50,8 +44,8 @@ public class CoachingCourseEntity {
     @Field("course_type")
     private CourseType courseType;
 
-    @Field("stream")
-    private Long stream;
+    @Field("stream_ids")
+    private List<Long> streamIds;
 
     @Field("primary_exam_ids")
     private List<Long> primaryExamIds;
@@ -59,8 +53,11 @@ public class CoachingCourseEntity {
     @Field("auxiliary_exam_ids")
     private List<Long> auxiliaryExamIds;
 
+    @Field("duration_type")
+    private DurationType durationType;
+
     @Field("duration")
-    private String duration;
+    private Integer duration;
 
     @Field("eligibility")
     private String eligibility;
@@ -70,6 +67,9 @@ public class CoachingCourseEntity {
 
     @Field("description")
     private String description;
+
+    @Field("features")
+    private List<Long> features;
 
     @Field("price")
     private Double price;
@@ -81,7 +81,7 @@ public class CoachingCourseEntity {
     private Level level;
 
     @Field("language")
-    private String language;
+    private Language language;
 
     @Field("syllabus")
     private String syllabus;
@@ -92,17 +92,32 @@ public class CoachingCourseEntity {
     @Field("important_dates")
     private List<CoachingCourseImportantDate> importantDates;
 
-    @Field("global_priority")
-    private Integer globalPriority;
+    @Field("how_to_use_1")
+    private String howToUse1;
 
-    @Field("session_details")
-    private List<CoachingCourseSessionDetails> sessionDetails;
+    @Field("how_to_use_2")
+    private String howToUse2;
 
-    @Field("features")
-    private List<CoachingCourseFeature> features;
+    @Field("how_to_use_3")
+    private String howToUse3;
 
-    @Field("is_scholarship_available")
-    private Boolean isScholarshipAvailable;
+    @Field("how_to_use_4")
+    private String howToUse4;
+
+    @Field("is_certificate_available")
+    private Boolean isCertificateAvailable;
+
+    @Field("is_doubt_solving_forum_available")
+    private Boolean isDoubtSolvingForumAvailable;
+
+    @Field("is_progress_analysis_available")
+    private Boolean isProgressAnalysisAvailable;
+
+    @Field("is_rank_analysis_available")
+    private Boolean isRankAnalysisAvailable;
+
+    @Field("course_features")
+    private List<Long> courseFeatureIds;
 
     @Field("test_count")
     private Integer testCount;
@@ -110,40 +125,43 @@ public class CoachingCourseEntity {
     @Field("test_duration")
     private Integer testDuration;
 
-    @Field("test_series_duration")
-    private Integer testSeriesDuration;
+    @Field("test_question_count")
+    private Integer testQuestionCount;
 
-    @Field("types_of_results")
-    private String typesOfResults;
+    @Field("test_practice_paper_count")
+    private Integer testPracticePaperCount;
 
-    @Field("is_doubt_solving_session_available")
-    private Boolean isDoubtSolvingSessionAvailable;
+    @Field("distance_learning_books_count")
+    private Integer distanceLearningBooksCount;
 
-    @Field("number_of_books")
-    private Integer numberOfBooks;
+    @Field("distance_learning_solved_paper_count")
+    private Integer distanceLearningSolvedPaperCount;
 
-    @Field("delivery_schedule")
-    private String deliverySchedule;
+    @Field("distance_learning_assignment_count")
+    private Integer distanceLearningAssignmentsCount;
 
-    @Field("inclusions")
-    private List<String> inclusions;
+    @Field("elearning_lecture_count")
+    private Integer elearningLectureCount;
 
-    @Field("how_to_use")
-    private List<String> howToUse;
+    @Field("elearning_lecture_duration")
+    private Integer elearningLectureDuration;
 
-    @Field("is_enabled")
-    private Boolean isEnabled = Boolean.TRUE;
+    @Field("elearning_online_test_count")
+    private Integer elearningOnlineTestCount;
 
-    @Field("created_at")
-    @CreatedDate
-    @JsonIgnore
-    private LocalDateTime createdAt;
+    @Field("elearning_practice_paper_count")
+    private Integer elearningPracticePaperCount;
 
-    @Field("updated_at")
-    @LastModifiedDate
-    @JsonIgnore
-    private LocalDateTime updatedAt;
+    @Field("classroom_lecture_count")
+    private Integer classroomLectureCount;
 
-    @Field("priority")
-    private Integer priority;
+    @Field("classroom_lecture_duration")
+    private Integer classroomLectureDuration;
+
+    @Field("classroom_test_count")
+    private Integer classroomTestCount;
+
+    @Field("classroom_teacher_student_ratio")
+    private Integer classroomTeacherStudentRatio;
+
 }

@@ -1,6 +1,5 @@
 package com.paytm.digital.education.exception;
 
-import com.paytm.digital.education.mapping.ErrorDetails;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;

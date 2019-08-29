@@ -17,9 +17,10 @@ import java.util.List;
 import java.util.Map;
 
 @Data
-@Deprecated
+//@Deprecated
 @ToString
 //@Document("coaching_institute")
+// TODO : Need to remove this class
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CoachingInstitute extends ResponseDto {

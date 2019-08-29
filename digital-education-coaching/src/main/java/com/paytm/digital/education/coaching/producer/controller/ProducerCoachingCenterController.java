@@ -1,9 +1,11 @@
 package com.paytm.digital.education.coaching.producer.controller;
 
-import com.paytm.digital.education.database.entity.CoachingCenterEntity;
+import com.paytm.digital.education.coaching.producer.model.dto.CoachingCenterDTO;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCenterDataRequest;
-import com.paytm.digital.education.coaching.producer.service.CoachingCenterServiceNew;
+import com.paytm.digital.education.coaching.producer.service.CoachingCenterManagerService;
+import com.paytm.digital.education.database.entity.CoachingCenterEntity;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,24 +26,31 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.C
 public class ProducerCoachingCenterController {
 
     @Autowired
-    private CoachingCenterServiceNew coachingCenterServiceNew;
+    private CoachingCenterManagerService coachingCenterManagerService;
 
     @PostMapping(
             value = "/v1/admin/coaching-centers",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CoachingCenterEntity> insertCoachingCenter(
+    @ApiOperation(
+            value = "Adds a new coaching center",
+            notes = "Adds new coaching center in the collection of coaching center")
+    public ResponseEntity<CoachingCenterDTO> insertCoachingCenter(
             @Valid @RequestBody CoachingCenterDataRequest request) {
-        return new ResponseEntity<>(coachingCenterServiceNew.insertCoachingCenter(request), HttpStatus.OK);
+        return new ResponseEntity<>(coachingCenterManagerService.insertCoachingCenter(request),
+                HttpStatus.OK);
     }
 
     @PutMapping(
             value = "/v1/admin/coaching-centers",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CoachingCenterEntity> updateCoachingCenter(
+    @ApiOperation(
+            value = "Updates existing coaching center",
+            notes = "Updates existing coaching center in the collection of coaching center")
+    public ResponseEntity<CoachingCenterDTO> updateCoachingCenter(
             @Valid @RequestBody CoachingCenterDataRequest request) {
-        coachingCenterServiceNew.updateCoachingCenter(request);
-        return new ResponseEntity<>(coachingCenterServiceNew.updateCoachingCenter(request), HttpStatus.OK);
+        return new ResponseEntity<>(coachingCenterManagerService.updateCoachingCenter(request),
+                HttpStatus.OK);
     }
 }

@@ -1,9 +1,10 @@
 package com.paytm.digital.education.coaching.producer.controller;
 
 import com.paytm.digital.education.coaching.constants.CoachingConstants;
-import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
+import com.paytm.digital.education.coaching.producer.model.dto.CoachingInstituteDTO;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingInstituteDataRequest;
-import com.paytm.digital.education.coaching.producer.service.CoachingInstituteService;
+import com.paytm.digital.education.coaching.producer.service.CoachingInstituteManagerService;
+import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.C
 public class ProducerCoachingInstituteController {
 
     @Autowired
-    private CoachingInstituteService coachingInstituteService;
+    private CoachingInstituteManagerService coachingInstituteManagerService;
 
     @PostMapping(
             value = "/v1/admin/institutes",
@@ -35,9 +36,9 @@ public class ProducerCoachingInstituteController {
     @ApiOperation(
             value = "creates an institute",
             notes = "takes the data from sheet : " + CoachingConstants.INSTITUTES_GOOGLE_SHEET)
-    public ResponseEntity<CoachingInstituteEntity> createInstitute(
+    public ResponseEntity<CoachingInstituteDTO> createInstitute(
             @Valid @RequestBody CoachingInstituteDataRequest request) {
-        return new ResponseEntity<>(coachingInstituteService.create(request), HttpStatus.OK);
+        return new ResponseEntity<>(coachingInstituteManagerService.create(request), HttpStatus.OK);
     }
 
     @PutMapping(
@@ -47,8 +48,8 @@ public class ProducerCoachingInstituteController {
     @ApiOperation(
             value = "updates existing institute",
             notes = "takes the data from sheet : " + CoachingConstants.INSTITUTES_GOOGLE_SHEET)
-    public ResponseEntity<CoachingInstituteEntity> updateInstitute(
+    public ResponseEntity<CoachingInstituteDTO> updateInstitute(
             @Valid @RequestBody CoachingInstituteDataRequest request) {
-        return new ResponseEntity<>(coachingInstituteService.update(request), HttpStatus.OK);
+        return new ResponseEntity<>(coachingInstituteManagerService.update(request), HttpStatus.OK);
     }
 }

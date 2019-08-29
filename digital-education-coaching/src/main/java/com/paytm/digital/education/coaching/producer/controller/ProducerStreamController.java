@@ -1,9 +1,8 @@
 package com.paytm.digital.education.coaching.producer.controller;
 
-import com.paytm.digital.education.coaching.constants.CoachingConstants;
+import com.paytm.digital.education.coaching.producer.model.dto.StreamDTO;
 import com.paytm.digital.education.coaching.producer.model.request.StreamDataRequest;
-import com.paytm.digital.education.coaching.producer.service.StreamService;
-import com.paytm.digital.education.database.entity.Stream;
+import com.paytm.digital.education.coaching.producer.service.StreamManagerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,15 +25,17 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.C
 public class ProducerStreamController {
 
     @Autowired
-    private StreamService streamService;
+    private StreamManagerService streamManagerService;
 
     @PostMapping(
             value = "/v1/admin/streams",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Adds a new stream", notes = "Adds new stream in the collection of streams")
-    public ResponseEntity<Stream> createStream(@Valid @RequestBody StreamDataRequest request) {
-        return new ResponseEntity<>(streamService.create(request), HttpStatus.OK);
+    @ApiOperation(
+            value = "Adds a new stream",
+            notes = "Adds new stream in the collection of streams")
+    public ResponseEntity<StreamDTO> createStream(@Valid @RequestBody StreamDataRequest request) {
+        return new ResponseEntity<>(streamManagerService.create(request), HttpStatus.OK);
     }
 
     @PutMapping(
@@ -44,7 +45,7 @@ public class ProducerStreamController {
     @ApiOperation(
             value = "Updates existing stream",
             notes = "Updates existing stream in the collection of streams")
-    public ResponseEntity<Stream> updateStream(@Valid @RequestBody StreamDataRequest request) {
-        return new ResponseEntity<>(streamService.update(request), HttpStatus.OK);
+    public ResponseEntity<StreamDTO> updateStream(@Valid @RequestBody StreamDataRequest request) {
+        return new ResponseEntity<>(streamManagerService.update(request), HttpStatus.OK);
     }
 }

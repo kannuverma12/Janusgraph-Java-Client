@@ -5,7 +5,6 @@ import com.paytm.digital.education.database.embedded.CoachingCourseFeature;
 import com.paytm.digital.education.database.embedded.Faq;
 import com.paytm.digital.education.enums.CourseType;
 import com.paytm.digital.education.enums.Level;
-import com.paytm.digital.education.coaching.producer.model.dto.CoachingProgramSessionDetails;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
@@ -72,9 +71,6 @@ public class CoachingCourseCreateRequest {
     @JsonProperty("global_priority")
     private Integer globalPriority;
 
-    @NotNull
-    @JsonProperty("session_details")
-    private List<CoachingProgramSessionDetails> sessionDetails;
 
     @NotNull
     @JsonProperty("features")

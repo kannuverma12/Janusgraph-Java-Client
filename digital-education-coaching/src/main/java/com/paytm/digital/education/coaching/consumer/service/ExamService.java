@@ -1,5 +1,6 @@
 package com.paytm.digital.education.coaching.consumer.service;
 
+import com.paytm.digital.education.coaching.consumer.model.dto.CoachingInstitute;
 import com.paytm.digital.education.coaching.consumer.model.dto.ExamImportantDate;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingCoursesForExam;
 import com.paytm.digital.education.coaching.consumer.model.response.GetExamDetailsResponse;
@@ -26,6 +27,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import static com.paytm.digital.education.utility.DateUtil.stringToDate;
+
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_PREFIX;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_INSTITUTE_PREFIX;
@@ -33,13 +39,9 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.D
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.ExamAdditionalInfoParams;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.MMM_YYYY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.NON_TENTATIVE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.YYYY_MM;
-import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
-import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
-import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
-import static com.paytm.digital.education.utility.DateUtil.stringToDate;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.MMM_YYYY;
 
 @Slf4j
 @Service
@@ -110,8 +112,7 @@ public class ExamService {
         }
     }
 
-    private List<com.paytm.digital.education.coaching.consumer.model.dto.CoachingInstitute>
-        buildTopCoachingInstituteResponse(
+    private List<CoachingInstitute> buildTopCoachingInstituteResponse(
             List<String> coachingInstituteFields, Exam exam) {
         List<com.paytm.digital.education.coaching.consumer.model.dto.CoachingInstitute>
                 topCoachingInstitutesResponse = new ArrayList<>();
@@ -170,7 +171,7 @@ public class ExamService {
 
             TopCoachingCoursesForExam toInsert = TopCoachingCoursesForExam.builder()
                     .courseType(coachingCourseEntity.getCourseType())
-                    .durationMonths(coachingCourseEntity.getDuration())
+                    //                    .durationMonths(coachingProgramEntity.getDuration().toString())
                     .eligibility(coachingCourseEntity.getEligibility())
                     .courseId(coachingCourseEntity.getCourseId())
                     .courseName(coachingCourseEntity.getName())

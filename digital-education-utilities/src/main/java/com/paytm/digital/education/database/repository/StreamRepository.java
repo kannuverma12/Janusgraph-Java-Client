@@ -1,12 +1,19 @@
 package com.paytm.digital.education.database.repository;
 
-import com.paytm.digital.education.database.entity.Stream;
+import com.paytm.digital.education.database.entity.StreamEntity;
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface StreamRepository extends MongoRepository<Stream, String> {
+import java.util.List;
 
-    Stream findByStreamId(Long id);
+@Repository
+public interface StreamRepository extends MongoRepository<StreamEntity, ObjectId> {
+
+    StreamEntity findByStreamId(Long id);
+
+    @Query(value = "{stream_id: { $in: ?0 } })", fields = "{'stream_id':1, _id : 0}")
+    List<StreamEntity> findAllByStreamId(List<Long> ids);
 
 }

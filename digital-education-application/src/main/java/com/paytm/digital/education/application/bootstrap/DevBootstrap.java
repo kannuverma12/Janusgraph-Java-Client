@@ -1,6 +1,6 @@
 package com.paytm.digital.education.application.bootstrap;
 
-import com.paytm.digital.education.database.entity.Stream;
+import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.database.repository.StreamRepository;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Institute;
@@ -52,7 +52,8 @@ public class DevBootstrap implements ApplicationListener<ContextRefreshedEvent> 
         State delhi = new State(DELHI_STATE, StateType.STATE);
         stateRepository.save(delhi);
 
-        Stream eng = Stream.builder().name(ENGINEERING_STREAM).build();
+        StreamEntity eng = new StreamEntity();
+        eng.setName(ENGINEERING_STREAM);
         streamRepository.save(eng);
 
         Institute inst1 = new Institute("inst1", 1L);

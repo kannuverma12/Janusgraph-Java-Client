@@ -1,12 +1,15 @@
 package com.paytm.digital.education.coaching.producer.service;
 
+import com.paytm.digital.education.coaching.constants.CoachingConstants;
+import com.paytm.digital.education.coaching.db.dao.TopRankerDAO;
+import com.paytm.digital.education.coaching.exeptions.ResourceNotPresentException;
+import com.paytm.digital.education.coaching.producer.ConverterUtil;
+import com.paytm.digital.education.coaching.producer.model.request.TopRankerDataRequest;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
-import com.paytm.digital.education.database.repository.TopRankerRepository;
-import com.paytm.digital.education.coaching.producer.model.request.CreateTopRankerRequest;
-import com.paytm.digital.education.coaching.producer.model.request.UpdateTopRankerRequest;
-import com.paytm.digital.education.coaching.producer.transformer.TopRankerTransformer;
+import com.paytm.digital.education.exception.InvalidRequestException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -16,27 +19,41 @@ import java.util.Optional;
 @AllArgsConstructor
 public class TopRankerService {
 
-    private final TopRankerTransformer topRankerTransformer;
-    private final TopRankerRepository  topRankerRepository;
+    private final TopRankerDAO topRankerDAO;
 
-    public void create(final CreateTopRankerRequest request) {
-        final TopRankerEntity topRankerEntity = this.topRankerTransformer.transform(request);
-        this.topRankerRepository.save(topRankerEntity);
-    }
+    public TopRankerEntity create(final TopRankerDataRequest request) {
+        final TopRankerEntity topRankerEntity = TopRankerEntity.builder()
+                .instituteId(request.getInstituteId())
+                .centerId(request.getCenterId())
+                .batch(request.getBatchInfo())
+                .courseIds(request.getCourseStudied())
+                .examId(request.getExamId())
+                .examYear(request.getExamYear())
+                .rankObtained(request.getRankObtained())
+                .studentName(request.getStudentName())
+                .studentPhoto(request.getStudentPhoto())
+                .testimonial(request.getTestimonial())
+                .year(request.getExamYear())
+                .collegeAdmitted(request.getCollegeAdmitted())
+                .build();
 
-    public void update(final UpdateTopRankerRequest request) {
-
-        final Optional<TopRankerEntity> existingTopRankerEntityOptional =
-                this.topRankerRepository.findByTopRankerId(request.getTopRankerId());
-
-        if (!existingTopRankerEntityOptional.isPresent()) {
-            log.error("TopRanker doesn't exist in db for id: {}", request.getTopRankerId());
-            return;
+        try {
+            return topRankerDAO.save(topRankerEntity);
+        } catch (DataIntegrityViolationException ex) {
+            throw new InvalidRequestException(ex.getMessage(), ex);
         }
 
-        final TopRankerEntity topRankerEntity =
-                this.topRankerTransformer.transform(request, existingTopRankerEntityOptional.get());
+    }
 
-        this.topRankerRepository.save(topRankerEntity);
+    public TopRankerEntity update(final TopRankerDataRequest request) {
+
+        final TopRankerEntity existingTopRankerEntity =
+                Optional.ofNullable(
+                        topRankerDAO.findByTopRankerId(request.getTopRankerId()))
+                        .orElseThrow(() -> new ResourceNotPresentException(
+                                CoachingConstants.RESOURCE_NOT_PRESENT));
+        ConverterUtil.setTopRanker(request, existingTopRankerEntity);
+
+        return topRankerDAO.save(existingTopRankerEntity);
     }
 }

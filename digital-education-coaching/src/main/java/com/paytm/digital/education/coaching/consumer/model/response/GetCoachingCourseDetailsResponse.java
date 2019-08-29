@@ -35,7 +35,7 @@ public class GetCoachingCourseDetailsResponse {
     private List<Exam> targetExams;
     private List<Exam> auxiliaryExams;
     private String     eligibility;
-    private String     duration;
+    private Integer     duration;
 
     private List<TopRanker> topRankers;
 

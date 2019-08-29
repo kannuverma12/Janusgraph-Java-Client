@@ -1,9 +1,8 @@
 package com.paytm.digital.education.database.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -13,9 +12,9 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 @Document("stream")
-@Builder
-public class Stream extends Base {
+public class StreamEntity extends Base {
 
     @Id
     @Field("_id")
@@ -23,7 +22,7 @@ public class Stream extends Base {
     private ObjectId id;
 
     @Field("stream_id")
-    @JsonProperty("stream_id")
+    @Indexed(unique = true)
     private Long streamId;
 
     @Indexed(unique = true)
@@ -31,7 +30,6 @@ public class Stream extends Base {
 
     private String logo;
 
-    @JsonProperty("top_institutes")
     @Field("top_institutes")
     private List<Long> topInstitutes;
 }

@@ -1,7 +1,5 @@
 package com.paytm.digital.education.coaching.consumer.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paytm.digital.education.coaching.consumer.model.dto.Exam;
 import com.paytm.digital.education.coaching.consumer.model.response.GetCoachingCourseDetailsResponse;
 import com.paytm.digital.education.coaching.consumer.transformer.CoachingCourseTransformer;
@@ -214,11 +212,6 @@ public class CoachingCourseService {
                 .topRankers(this.coachingCourseTransformer.convertTopRankers(topRankers))
                 .importantDates(this.coachingCourseTransformer.convertImportantDates(
                         course.getImportantDates()))
-                .courseFeatures(this.coachingCourseTransformer.convertCourseFeatures(
-                        course.getFeatures()))
-                .courseInclusions(course.getInclusions())
-                .sessionDetails(this.coachingCourseTransformer.convertSessionDetails(
-                        course.getSessionDetails()))
                 .syllabus(course.getSyllabus())
                 .brochure(course.getBrochure())
                 .build();

@@ -73,7 +73,7 @@ public enum ErrorEnum {
             HttpStatus.BAD_REQUEST, 0),
     HTTP_REQUEST_FAILED(4028, "Http request failed %s",
             HttpStatus.BAD_REQUEST, 1),
-    STREAM_IS_MANDATORY_FOR_COURSE_LEAD(4029, "Stream is mandatory",
+    STREAM_IS_MANDATORY_FOR_COURSE_LEAD(4029, "StreamEntity is mandatory",
             HttpStatus.BAD_REQUEST, 0),
     ACTION_NOT_SUPPORTED(4030, "Requested action is not supported for given entity",
             HttpStatus.BAD_REQUEST, 0),

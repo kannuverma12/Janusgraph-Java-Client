@@ -50,4 +50,7 @@ public class CoachingExamCreateRequest {
 
     @JsonProperty("eligibility")
     private String eligibility;
+
+    @JsonProperty("priority")
+    private Integer priority;
 }

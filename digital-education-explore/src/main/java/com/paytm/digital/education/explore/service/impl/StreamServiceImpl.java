@@ -1,6 +1,6 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import com.paytm.digital.education.database.entity.Stream;
+import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.database.repository.StreamRepository;
 import com.paytm.digital.education.explore.service.StreamService;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ public class StreamServiceImpl implements StreamService {
     private StreamRepository streamRepository;
 
     @Cacheable(value = "streams", key = "streams", unless = "#result == null")
-    public Iterable<Stream> getAllStreams() {
+    public Iterable<StreamEntity> getAllStreams() {
         return streamRepository.findAll();
     }
 }

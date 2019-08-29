@@ -1,4 +1,4 @@
-package com.paytm.digital.education.coaching.consumer.model.dto;
+package com.paytm.digital.education.coaching.producer.model.embedded;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;

@@ -1,68 +1,49 @@
 package com.paytm.digital.education.coaching.producer.service;
 
-import com.paytm.digital.education.coaching.constants.CoachingConstants;
 import com.paytm.digital.education.coaching.db.dao.CoachingInstituteDAO;
-import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
+import com.paytm.digital.education.coaching.producer.ConverterUtil;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingInstituteDataRequest;
+import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
+import com.paytm.digital.education.exception.InvalidRequestException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.ResourceAccessException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class CoachingInstituteService {
 
+    @Autowired
     private CoachingInstituteDAO coachingInstituteDAO;
 
     public CoachingInstituteEntity create(CoachingInstituteDataRequest request) {
 
-        CoachingInstituteEntity coachingInstituteEntity =
-                CoachingInstituteEntity.builder()
-                        .brandName(request.getBrandName())
-                        .aboutInstitute(request.getAboutInstitute())
-                        .officialAddress(request.getAddress())
-                        .coverImage(request.getCoverImage())
-                        .logo(request.getLogo())
-                        .streams(request.getStreamIds())
-                        .exams(request.getExamIds())
-                        .courseTypes(request.getCourseTypes())
-                        .establishmentYear(request.getEstablishmentYear())
-                        .brochure(request.getBrochureUrl())
-                        .keyHighlights(request.getHighlights())
-                        .faqs(request.getFaqs())
-                        .build();
-        coachingInstituteEntity.setIsEnabled(request.getIsEnabled());
-        coachingInstituteEntity.setPriority(request.getPriority());
-        return coachingInstituteDAO.save(coachingInstituteEntity);
+        CoachingInstituteEntity coachingInstituteEntity = new CoachingInstituteEntity();
+        ConverterUtil.setCoachingInstituteData(request, coachingInstituteEntity);
+        try {
+            return coachingInstituteDAO.save(coachingInstituteEntity);
+        } catch (DataIntegrityViolationException ex) {
+            throw new InvalidRequestException(ex.getMessage(), ex);
+        }
     }
 
     public CoachingInstituteEntity update(CoachingInstituteDataRequest request) {
-
         CoachingInstituteEntity existingIntitute =
-                coachingInstituteDAO.findByInstituteId(request.getInstituteId())
-                        .orElseThrow(() -> new ResourceAccessException(
-                                CoachingConstants.RESOURCE_NOT_PRESENT));
+                Optional.ofNullable(
+                        coachingInstituteDAO.findByInstituteId(request.getInstituteId()))
+                        .orElseThrow(() -> new InvalidRequestException("institute not present"));
 
-        CoachingInstituteEntity toSave =
-                CoachingInstituteEntity.builder()
-                        .id(existingIntitute.getId())
-                        .instituteId(request.getInstituteId())
-                        .brandName(request.getBrandName())
-                        .aboutInstitute(request.getAboutInstitute())
-                        .officialAddress(request.getAddress())
-                        .coverImage(request.getCoverImage())
-                        .logo(request.getLogo())
-                        .streams(request.getStreamIds())
-                        .exams(request.getExamIds())
-                        .courseTypes(request.getCourseTypes())
-                        .establishmentYear(request.getEstablishmentYear())
-                        .brochure(request.getBrochureUrl())
-                        .keyHighlights(request.getHighlights())
-                        .faqs(request.getFaqs())
-                        .build();
-        toSave.setIsEnabled(request.getIsEnabled());
-        toSave.setPriority(request.getPriority());
+        ConverterUtil.setCoachingInstituteData(request, existingIntitute);
+        return coachingInstituteDAO.save(existingIntitute);
+    }
 
-        return coachingInstituteDAO.save(toSave);
+    public List<CoachingInstituteEntity> findAllByInstituteId(List<Long> instituteIds) {
+        return coachingInstituteDAO.findAllByInstituteId(instituteIds);
+    }
+
+    public CoachingInstituteEntity findByInstituteId(Long instituteId) {
+        return coachingInstituteDAO.findByInstituteId(instituteId);
     }
 }

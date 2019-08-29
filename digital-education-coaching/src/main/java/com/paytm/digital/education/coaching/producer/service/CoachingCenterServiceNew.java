@@ -1,12 +1,14 @@
 package com.paytm.digital.education.coaching.producer.service;
 
-import com.paytm.digital.education.coaching.constants.CoachingConstants;
 import com.paytm.digital.education.coaching.db.dao.CoachingCenterDAO;
-import com.paytm.digital.education.database.entity.CoachingCenterEntity;
+import com.paytm.digital.education.coaching.producer.ConverterUtil;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCenterDataRequest;
+import com.paytm.digital.education.database.entity.CoachingCenterEntity;
+import com.paytm.digital.education.exception.InvalidRequestException;
+import com.paytm.digital.education.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.ResourceAccessException;
 
 import java.util.Optional;
 
@@ -16,55 +18,24 @@ public class CoachingCenterServiceNew {
     @Autowired
     private CoachingCenterDAO coachingCenterDAO;
 
+    private static String data = "coaching center not present";
+
     public CoachingCenterEntity insertCoachingCenter(CoachingCenterDataRequest request) {
-        //        CoachingInstituteEntity coachingInstitute =
-        //                coachingInstituteRepositoryNew.findByInstituteId(request.getInstituteId());
-        //
-        //        if (Objects.isNull(coachingInstitute)) {
-        //            // TODO : Add exception here
-        //            return null;
-        //        }
 
-        CoachingCenterEntity coachingCenterEntity = CoachingCenterEntity.builder()
-                .courseTypes(request.getCourseTypes())
-                .officialAddress(request.getOfficialAddress())
-                .officialName(request.getOfficialName())
-                .instituteId(request.getInstituteId())
-                .build();
-
-        coachingCenterEntity.setIsEnabled(request.getIsEnabled());
-        coachingCenterEntity.setPriority(request.getPriority());
-
-        return coachingCenterDAO.save(coachingCenterEntity);
+        CoachingCenterEntity coachingCenterEntity = new CoachingCenterEntity();
+        ConverterUtil.setCoachingCenter(request, coachingCenterEntity);
+        try {
+            return coachingCenterDAO.save(coachingCenterEntity);
+        } catch (DataIntegrityViolationException ex) {
+            throw new InvalidRequestException(ex.getMessage(), ex);
+        }
     }
 
     public CoachingCenterEntity updateCoachingCenter(CoachingCenterDataRequest request) {
-
-        //raise exception if coaching center is not preset
-
         CoachingCenterEntity existingCenter =
                 Optional.ofNullable(coachingCenterDAO.findByCenterId(request.getCenterId()))
-                        .orElseThrow(() -> new ResourceAccessException(
-                                CoachingConstants.RESOURCE_NOT_PRESENT));
-
-
-        //        //        CoachingInstituteEntity coachingInstitute =
-        //        //                coachingInstituteRepositoryNew.findByInstituteId(request.getInstituteId());
-        //
-        //        if (Objects.isNull(coachingInstitute)) {
-        //            // TODO : Add exception here
-        //            return null;
-        //        }
-
-        CoachingCenterEntity toSave = CoachingCenterEntity.builder()
-                .id(existingCenter.getId())
-                .centerId(existingCenter.getCenterId())
-                .officialAddress(request.getOfficialAddress())
-                .officialName(request.getOfficialName())
-                .instituteId(request.getInstituteId())
-                .courseTypes(request.getCourseTypes())
-                .build();
-
-        return coachingCenterDAO.save(toSave);
+                        .orElseThrow(() -> new ResourceNotFoundException(data));
+        ConverterUtil.setCoachingCenter(request, existingCenter);
+        return coachingCenterDAO.save(existingCenter);
     }
 }

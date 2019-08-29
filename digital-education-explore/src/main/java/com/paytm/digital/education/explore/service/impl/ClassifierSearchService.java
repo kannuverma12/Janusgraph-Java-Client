@@ -167,7 +167,7 @@ public class ClassifierSearchService extends AbstractSearchServiceImpl {
                             (Map<String, List<Object>>) (Object) document.getFilters(), filters);
                 }
                 /*
-                 * Stream wise sort params are in different map coz we are giving priority to stream sorting
+                 * StreamEntity wise sort params are in different map coz we are giving priority to stream sorting
                  * */
                 if (!CollectionUtils.isEmpty(document.getSortOrder())) {
                     for (ClassifierSortField sortField : document.getSortOrder()) {

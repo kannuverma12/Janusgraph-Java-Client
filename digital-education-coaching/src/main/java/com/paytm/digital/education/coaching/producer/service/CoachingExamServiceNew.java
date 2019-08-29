@@ -1,106 +1,41 @@
 package com.paytm.digital.education.coaching.producer.service;
 
-import com.paytm.digital.education.database.entity.CoachingCourseEntity;
+import com.paytm.digital.education.coaching.db.dao.CoachingExamDAO;
+import com.paytm.digital.education.coaching.producer.ConverterUtil;
+import com.paytm.digital.education.coaching.producer.model.request.CoachingExamDataRequest;
 import com.paytm.digital.education.database.entity.CoachingExamEntity;
-import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
-import com.paytm.digital.education.database.repository.CoachingExamRepositoryNew;
-import com.paytm.digital.education.database.repository.CoachingInstituteRepositoryNew;
-import com.paytm.digital.education.database.repository.CoachingCourseRepository;
-import com.paytm.digital.education.coaching.producer.model.request.CoachingExamCreateRequest;
-import com.paytm.digital.education.coaching.producer.model.request.CoachingExamUpdateRequest;
-import com.paytm.digital.education.coaching.producer.transformer.CoachingExamTransformer;
-import com.paytm.digital.education.database.entity.Stream;
-import com.paytm.digital.education.database.repository.StreamRepository;
+import com.paytm.digital.education.exception.InvalidRequestException;
+import com.paytm.digital.education.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
 public class CoachingExamServiceNew {
-    @Autowired
-    private CoachingExamRepositoryNew      coachingExamRepositoryNew;
-    @Autowired
-    private CoachingInstituteRepositoryNew coachingInstituteRepositoryNew;
-    @Autowired
-    private CoachingCourseRepository       coachingCourseRepository;
-    @Autowired
-    private StreamRepository               streamRepository;
-    @Autowired
-    private CoachingExamTransformer        coachingExamTransformer;
 
-    public CoachingExamEntity insertCoachingExam(CoachingExamCreateRequest request) {
-        Optional<CoachingInstituteEntity> coachingInstituteEntityOptional =
-                coachingInstituteRepositoryNew.findByInstituteId(request.getInstituteId());
+    private static String          data = "coaching exam not present";
+    @Autowired
+    private        CoachingExamDAO coachingExamDAO;
 
-        if (!coachingInstituteEntityOptional.isPresent()) {
-            // TODO : throw exception
-            return null;
+    public CoachingExamEntity insertCoachingExam(CoachingExamDataRequest request) {
+
+        CoachingExamEntity coachingExamEntity = new CoachingExamEntity();
+        ConverterUtil.setCoachingExam(request, coachingExamEntity);
+        try {
+            return coachingExamDAO.save(coachingExamEntity);
+        } catch (DataIntegrityViolationException ex) {
+            throw new InvalidRequestException(ex.getMessage(), ex);
+
         }
-
-        if (!Objects.isNull(request.getCourseId())) {
-            CoachingCourseEntity coachingProgram =
-                    coachingCourseRepository.findByCourseId(request.getCourseId()).orElse(null);
-
-            if (Objects.isNull(coachingProgram)) {
-                // TODO : throw exception
-                return null;
-            }
-        }
-
-        if (!Objects.isNull(request.getStreamId())) {
-            Stream stream = streamRepository.findByStreamId(request.getStreamId());
-
-            if (Objects.isNull(stream)) {
-                // TODO : throw exception
-                return null;
-            }
-        }
-
-        CoachingExamEntity toSave = coachingExamTransformer.transform(request);
-        return coachingExamRepositoryNew.save(toSave);
     }
 
-    public CoachingExamEntity updateCoachingExam(CoachingExamUpdateRequest request) {
+    public CoachingExamEntity updateCoachingExam(CoachingExamDataRequest request) {
         CoachingExamEntity existingCoachingExam =
-                coachingExamRepositoryNew.findByCoachingExamId(request.getCoachingExamId())
-                        .orElse(null);
-
-        if (Objects.isNull(existingCoachingExam)) {
-            // TODO : throw exception
-            return null;
-        }
-
-        Optional<CoachingInstituteEntity> coachingInstituteEntityOptional =
-                coachingInstituteRepositoryNew.findByInstituteId(request.getInstituteId());
-
-        if (!coachingInstituteEntityOptional.isPresent()) {
-            // TODO : throw exception
-            return null;
-        }
-
-        if (!Objects.isNull(request.getCourseId())) {
-            CoachingCourseEntity coachingProgram =
-                    coachingCourseRepository.findByCourseId(request.getCourseId()).orElse(null);
-
-            if (Objects.isNull(coachingProgram)) {
-                // TODO : throw exception
-                return null;
-            }
-        }
-
-        if (!Objects.isNull(request.getStreamId())) {
-            Stream stream = streamRepository.findByStreamId(request.getStreamId());
-
-            if (Objects.isNull(stream)) {
-                // TODO : throw exception
-                return null;
-            }
-        }
-
-        CoachingExamEntity toSave =
-                coachingExamTransformer.transform(request, existingCoachingExam);
-        return coachingExamRepositoryNew.save(toSave);
+                Optional.ofNullable(coachingExamDAO.findByExamId(request.getCoachingExamId()))
+                        .orElseThrow(() -> new ResourceNotFoundException(data));
+        ConverterUtil.setCoachingExam(request, existingCoachingExam);
+        return coachingExamDAO.save(existingCoachingExam);
     }
 }

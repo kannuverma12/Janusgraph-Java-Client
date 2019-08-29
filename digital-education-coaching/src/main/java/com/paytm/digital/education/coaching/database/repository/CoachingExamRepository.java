@@ -25,6 +25,8 @@ import java.util.Objects;
 @Slf4j
 @Repository
 @AllArgsConstructor
+@Deprecated
+// TODO : Need to remove this class
 public class CoachingExamRepository {
 
     private MongoOperations   mongoOperations;

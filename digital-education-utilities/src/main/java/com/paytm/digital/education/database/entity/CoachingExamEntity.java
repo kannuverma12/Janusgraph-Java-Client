@@ -3,6 +3,7 @@ package com.paytm.digital.education.database.entity;
 import com.paytm.digital.education.enums.ExamType;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -12,17 +13,22 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
 @Data
-@Builder
+@NoArgsConstructor
 @Document("coaching_exam")
-public class CoachingExamEntity {
+public class CoachingExamEntity extends Base {
 
     @Id
     @Field("_id")
-    ObjectId id;
+    @JsonIgnore
+    private ObjectId id;
 
     @Indexed(unique = true)
-    @Field("exam_id")
+    @Field("coaching_exam_id")
     private Long coachingExamId;
 
     @Field("institute_id")
@@ -55,12 +61,5 @@ public class CoachingExamEntity {
     @Field("eligibility")
     private String eligibility;
 
-    @Field("active")
-    private boolean active;
-
-    @Field("created_at")
-    private LocalDateTime createdAt;
-
-    @Field("updated_at")
-    private LocalDateTime updatedAt;
 }
+

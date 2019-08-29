@@ -3,6 +3,7 @@ package com.paytm.digital.education.exception;
 import com.paytm.digital.education.constant.ErrorCode;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Data
@@ -22,6 +23,18 @@ public class GlobalException extends RuntimeException {
         this.cause = cause;
         this.errorCode = errorCode;
         this.message = message + " " + errorCode.getDescription();
+    }
+
+    public GlobalException(HttpStatus httpStatus, String message, Throwable cause) {
+        super();
+        this.httpStatus = httpStatus;
+        this.message = message;
+    }
+
+    public GlobalException(HttpStatus httpStatus, String message) {
+        super();
+        this.httpStatus = httpStatus;
+        this.message = message;
     }
 
 }

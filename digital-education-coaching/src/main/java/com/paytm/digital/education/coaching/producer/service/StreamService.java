@@ -1,13 +1,16 @@
 package com.paytm.digital.education.coaching.producer.service;
 
-import com.paytm.digital.education.coaching.constants.CoachingConstants;
 import com.paytm.digital.education.coaching.db.dao.CoachingStreamDAO;
+import com.paytm.digital.education.coaching.producer.ConverterUtil;
 import com.paytm.digital.education.coaching.producer.model.request.StreamDataRequest;
-import com.paytm.digital.education.database.entity.Stream;
+import com.paytm.digital.education.database.entity.StreamEntity;
+import com.paytm.digital.education.exception.InvalidRequestException;
+import com.paytm.digital.education.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.ResourceAccessException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -16,27 +19,29 @@ public class StreamService {
     @Autowired
     private CoachingStreamDAO coachingStreamDAO;
 
-    public Stream create(StreamDataRequest request) {
-        Stream stream = Stream.builder().logo(request.getLogo()).name(request.getName())
-                .topInstitutes(request.getTopInstitutes()).build();
-
-        stream.setIsEnabled(request.getIsEnabled());
-        stream.setPriority(request.getPriority());
-        return coachingStreamDAO.save(stream);
+    public StreamEntity create(StreamDataRequest request) {
+        StreamEntity streamEntity = new StreamEntity();
+        ConverterUtil.setStreamData(request, streamEntity);
+        try {
+            return coachingStreamDAO.save(streamEntity);
+        } catch (DataIntegrityViolationException ex) {
+            throw new InvalidRequestException(ex.getMessage(), ex);
+        }
     }
 
-    public Stream update(StreamDataRequest request) {
-
-        Stream existingStream =
+    public StreamEntity update(StreamDataRequest request) {
+        StreamEntity existingStreamEntity =
                 Optional.ofNullable(coachingStreamDAO.findByStreamId(request.getStreamId()))
-                        .orElseThrow(() -> new ResourceAccessException(
-                                CoachingConstants.RESOURCE_NOT_PRESENT));
+                        .orElseThrow(() -> new ResourceNotFoundException("stream not present"));
+        ConverterUtil.setStreamData(request, existingStreamEntity);
+        return coachingStreamDAO.save(existingStreamEntity);
+    }
 
-        Stream stream = Stream.builder().id(existingStream.getId()).logo(request.getLogo())
-                .name(request.getName()).build();
-        stream.setPriority(request.getPriority());
-        stream.setIsEnabled(request.getIsEnabled());
+    public List<StreamEntity> findAllByStreamId(List<Long> instituteIds) {
+        return coachingStreamDAO.findAllByStreamId(instituteIds);
+    }
 
-        return coachingStreamDAO.save(stream);
+    public StreamEntity findByStreamId(Long instituteId) {
+        return coachingStreamDAO.findByStreamId(instituteId);
     }
 }

@@ -1,6 +1,7 @@
 package com.paytm.digital.education.coaching.producer.model.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @Data
 @ApiModel
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class StreamDataRequest {
 
     @Min(value = 1)
@@ -36,12 +38,10 @@ public class StreamDataRequest {
     private String logo;
 
     @NotNull
-    @JsonProperty("is_enabled")
     @ApiModelProperty(value = "flag to enable/disable the stream")
     private Boolean isEnabled = Boolean.TRUE;
 
     @NotEmpty
-    @JsonProperty("top_institutes")
     @ApiModelProperty(value = "top institutes id for this streams")
     private List<Long> topInstitutes;
 

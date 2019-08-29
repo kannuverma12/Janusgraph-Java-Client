@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.paytm.digital.education.exception.EducationException;
+import com.paytm.digital.education.exception.InvalidRequestException;
 import com.paytm.digital.education.exception.ValidationException;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import java.util.Set;
@@ -126,6 +127,12 @@ public class ErrorAdvice extends ResponseEntityExceptionHandler {
         String name = ex.getParameterName();
         String errorMessage = name + " is missing";
         return new ResponseEntity<>(new ErrorDetails(400, errorMessage, errorMessage),
+                HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidRequestException.class)
+    public final ResponseEntity<ErrorDetails> handleInvalidException(Throwable ex, WebRequest request) {
+        return new ResponseEntity<>(new ErrorDetails(400, ex.getMessage(), ex.getMessage()),
                 HttpStatus.BAD_REQUEST);
     }
 

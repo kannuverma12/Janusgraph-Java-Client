@@ -2,7 +2,7 @@ package com.paytm.digital.education.explore.controller;
 
 import static com.paytm.digital.education.constant.ExploreConstants.EDUCATION_BASE_URL;
 
-import com.paytm.digital.education.database.entity.Stream;
+import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.explore.service.StreamService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +17,7 @@ public class StreamController {
     private StreamService streamService;
 
     @RequestMapping(method = RequestMethod.GET, path = "/v1/streams")
-    public Iterable<Stream> getStreams() {
+    public Iterable<StreamEntity> getStreams() {
         return streamService.getAllStreams();
     }
 }
