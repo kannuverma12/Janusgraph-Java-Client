@@ -32,6 +32,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.LOG
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAMS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP_COLLEGES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP_EXAMS_APP;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP_SCHOOLS;
 
 @Service
 @AllArgsConstructor
@@ -69,6 +70,7 @@ public class PageServiceImpl implements PageService {
                         break;
                     case STREAMS:
                     case TOP_COLLEGES:
+                    case TOP_SCHOOLS:
                     case LOCATIONS:
                     case APP_FOOTER:
                         logoFieldName = ICON;

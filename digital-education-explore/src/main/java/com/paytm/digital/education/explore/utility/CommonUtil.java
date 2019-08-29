@@ -31,6 +31,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.RAN
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STANDALONE_INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAMS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP_EXAMS_APP;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP_SCHOOLS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.UGC;
 
 @UtilityClass
@@ -77,6 +78,9 @@ public class CommonUtil {
                 break;
             case RANKING_LOGO:
                 urlBuilder.append(ConfigProperties.getRankingLogo());
+                break;
+            case TOP_SCHOOLS:
+                urlBuilder.append(ConfigProperties.getSchoolLogoPrefix());
                 break;
             case CTA :
                 urlBuilder.append(ConfigProperties.getCtaLogoPrefix());
