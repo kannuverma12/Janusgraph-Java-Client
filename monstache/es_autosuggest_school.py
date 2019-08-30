@@ -29,15 +29,16 @@ def process_hits(hits):
         if 'names' in school['_source'] and school['_source']['names']:
             for name in school['_source']['names']:
                 names.append(name)
-        if 'imageLink' in school['_source'] and school['_source']['image_link']:
+        if 'image_link' in school['_source'] and school['_source']['image_link']:
             logo = school['_source']['image_link']
-        yield {"_index": autosuggestIndex, "_type": autosuggestIndexType,
+        yield {"_index": autosuggestIndex, "_type": autosuggestIndexType, "_id": school['_id'],
                "_source": {"names": names, "official_name": school['_source']['official_name'],
                            "logo": logo, "official_address": {"state": state, "city": city},
                            "entity_type": "school",
                            "entity_id": school['_source']['school_id']}, }
 
 
+# city and state autosuggest data not to be ingested as of now as it is not required.
 #Get city data for autosuggest ingestion
 def getCityData(cityNames):
     for city in cityNames:

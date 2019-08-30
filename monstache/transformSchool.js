@@ -28,6 +28,7 @@ module.exports = function(dbDocument, ns, updateDesc) {
 
 function transformSchool(dbDocument) {
     var targetSchool = {};
+    targetSchool._id = dbDocument._id;
     targetSchool.school_id = dbDocument.school_id;
     targetSchool.official_name = dbDocument.name;
 
