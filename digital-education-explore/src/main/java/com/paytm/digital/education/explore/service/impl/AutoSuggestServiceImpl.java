@@ -119,10 +119,10 @@ public class AutoSuggestServiceImpl {
         return buildAutoSuggestResponse(response);
     }
 
-    public AutoSuggestResponse autosuggestInstitute(String query) {
+    public AutoSuggestResponse autosuggestInstitute(String query, Integer limit) {
         AutoSuggestResponse autoSuggestResponse;
         if (StringUtils.isBlank(query)) {
-            autoSuggestResponse = getTopInstitutes();
+            autoSuggestResponse = getTopInstitutes(limit);
         } else {
             List<EducationEntity> entities = new ArrayList<>();
             entities.add(EducationEntity.INSTITUTE);
@@ -148,11 +148,15 @@ public class AutoSuggestServiceImpl {
         }
     }
 
-    public AutoSuggestResponse getTopInstitutes() {
+    public AutoSuggestResponse getTopInstitutes(Integer limit) {
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.setEntity(EducationEntity.INSTITUTE);
         searchRequest.setFetchFilter(false);
-        searchRequest.setLimit(FIFTY);
+        if (Objects.nonNull(limit) && limit > 1 && limit < FIFTY) {
+            searchRequest.setLimit(limit - 1);
+        } else {
+            searchRequest.setLimit(FIFTY - 1);
+        }
         searchRequest.setOffset(Integer.parseInt(ZERO));
         searchRequest.setFieldGroup(SUMMARY);
         searchRequest.setFilter(new HashMap<>());
