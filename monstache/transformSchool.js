@@ -70,8 +70,10 @@ function transformSchool(dbDocument) {
             singleBoard.education_level = dbSchoolBoard.data.education_level;
             singleBoard.class_from = dbSchoolBoard.data.class_from;
             singleBoard.class_to = dbSchoolBoard.data.class_to;
-            singleBoard.gender_accepted = dbSchoolBoard.data.gender;
-            singleBoard.ownership = dbSchoolBoard.data.ownership;
+            if (dbSchoolBoard.data.gender && dbSchoolBoard.data.gender !== "NOT_PROVIDED")
+                singleBoard.gender_accepted = dbSchoolBoard.data.gender;
+            if (dbSchoolBoard.data.ownership && dbSchoolBoard.data.ownership !== "NOT_PROVIDED")
+                singleBoard.ownership = dbSchoolBoard.data.ownership;
             singleBoard.affiliation_type = dbSchoolBoard.data.affiliation_type;
             singleBoard.residential_status = dbSchoolBoard.data.residential_status;
 

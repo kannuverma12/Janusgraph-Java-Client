@@ -259,6 +259,7 @@ public interface ExploreConstants {
 
     String COLLEGE_FOCUS   = "colleges_focus";
     String TOP_COLLEGES    = "top_colleges";
+    String TOP_SCHOOLS    = "top_schools";
     String TOP_EXAMS       = "top_exams";
     String TOP_EXAMS_APP   = "top_exams_app";
     String ICON            = "icon";
@@ -325,6 +326,7 @@ public interface ExploreConstants {
     String RANKING_OVERALL = "ranking_overall";
     int    MINUS_TEN       = -10;
     int    FIFTY           = 50;
-
+    String YEARS           = "years";
+    int    SIX             = 6;
 
 }

@@ -19,7 +19,7 @@ public interface SchoolConstants {
     String TOTAL_TEACHERS_IMAGE_URL      =
             "https://assetscdn1.paytm.com/educationwebassets/education/explore/highlight/total_faculty.svg";
     String STUDENT_TO_TEACHERS_IMAGE_URL =
-            "http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg";
+            "https://assetscdn1.paytm.com/educationwebassets/education/explore/highlight/students_to_teacher_ratio.svg";
     String ASSET_CDN_PREFIX              =
             "http://assetscdn1.paytm.com/educationwebassets/education/explore/school/images";
     String MORNING_SHIFT_IMAGE_LINK_URL  =

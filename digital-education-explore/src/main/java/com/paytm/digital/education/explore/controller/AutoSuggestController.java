@@ -8,6 +8,7 @@ import com.paytm.digital.education.explore.validators.AutoSuggestValidator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,6 +26,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EDU
 @AllArgsConstructor
 @Slf4j
 @RequestMapping(EDUCATION_BASE_URL)
+@Validated
 public class AutoSuggestController {
 
     private AutoSuggestServiceImpl autoSuggestServiceImpl;
@@ -60,8 +62,9 @@ public class AutoSuggestController {
 
     @RequestMapping(method = RequestMethod.GET, path = "/v1/institute/autosuggest")
     public @ResponseBody AutoSuggestResponse autosuggestInstitute(
-            @RequestParam("query") String query) {
+            @RequestParam("query") String query,
+            @RequestParam(value = "limit", required = false) @Min(2) Integer limit) {
         log.info("Received autosuggest request for institutes ");
-        return autoSuggestServiceImpl.autosuggestInstitute(query);
+        return autoSuggestServiceImpl.autosuggestInstitute(query, limit);
     }
 }

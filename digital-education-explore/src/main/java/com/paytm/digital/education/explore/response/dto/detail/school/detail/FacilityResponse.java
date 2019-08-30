@@ -17,7 +17,7 @@ public class FacilityResponse {
     private String description;
 
     @JsonProperty("logo_url")
-    private String logoUrl = "placeholder.svg";
+    private String logoUrl = "/placeholder.svg?v=2";
 
     public FacilityResponse(String name) {
         this.name = name;
