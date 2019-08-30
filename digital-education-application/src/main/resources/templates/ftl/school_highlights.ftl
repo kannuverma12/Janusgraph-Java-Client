@@ -14,7 +14,7 @@
             {"logo_url":"https://assetscdn1.paytm.com/educationwebassets/education/explore/highlight/co_ed.svg","title":"Gender","description":"${boardData.gender}"},
         </#if>
         <#if boardData.noOfClassrooms?has_content>
-            {"logo_url":"http://assetscdn1.paytm.com/educationwebassets/backend/Star.svg","title":"No. of Classrooms","description":"${boardData.noOfClassrooms}"},
+            {"logo_url":"https://assetscdn1.paytm.com/educationwebassets/education/explore/highlight/no_of_classrooms.svg","title":"No. of Classrooms","description":"${boardData.noOfClassrooms}"},
         </#if>
         <#if boardData.enrollments?has_content>
             {"logo_url":"https://assetscdn1.paytm.com/educationwebassets/education/explore/highlight/total_student.svg","title":"No. of Students","description":"${boardData.enrollments}"},

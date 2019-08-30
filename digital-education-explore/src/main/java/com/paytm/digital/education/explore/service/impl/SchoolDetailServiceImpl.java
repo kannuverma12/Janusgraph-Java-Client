@@ -3,7 +3,6 @@ package com.paytm.digital.education.explore.service.impl;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.paytm.digital.education.exception.BadRequestException;
-import com.paytm.digital.education.explore.constants.ExploreConstants;
 import com.paytm.digital.education.explore.constants.SchoolConstants;
 import com.paytm.digital.education.explore.database.entity.Board;
 import com.paytm.digital.education.explore.database.entity.BoardData;
@@ -25,6 +24,7 @@ import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -51,9 +51,9 @@ import static com.paytm.digital.education.mapping.ErrorEnum.NO_ENTITY_FOUND;
 @RequiredArgsConstructor
 public class SchoolDetailServiceImpl implements SchoolService {
 
-    private final CommonMongoRepository commonMongoRepository;
+    private final CommonMongoRepository   commonMongoRepository;
     private final DerivedAttributesHelper derivedAttributesHelper;
-    private final FacilityDataHelper facilityDataHelper;
+    private final FacilityDataHelper      facilityDataHelper;
 
     public List<School> getSchools(List<Long> entityIds, List<String> groupFields) {
         if (CollectionUtils.isEmpty(groupFields)) {
@@ -73,13 +73,17 @@ public class SchoolDetailServiceImpl implements SchoolService {
 
     @Override
     public SchoolDetail getSchoolDetails(Long schoolId, Client client, String schoolName,
-                                         List<String> fields, String fieldGroup) {
-        List<String> fieldsToBeFetched
-                = commonMongoRepository.getFieldsByGroupAndCollectioName(SchoolConstants.SCHOOL, fields, fieldGroup);
+            List<String> fields, String fieldGroup) {
+        List<String> fieldsToBeFetched =
+                commonMongoRepository
+                        .getFieldsByGroupAndCollectioName(SchoolConstants.SCHOOL, fields,
+                                fieldGroup);
         School school =
-                commonMongoRepository.getEntityByFields(SCHOOL_ID, schoolId, School.class, fieldsToBeFetched);
+                commonMongoRepository
+                        .getEntityByFields(SCHOOL_ID, schoolId, School.class, fieldsToBeFetched);
         if (Objects.isNull(school)) {
-            throw new BadRequestException(NO_ENTITY_FOUND, new Object[] {SchoolConstants.SCHOOL, SCHOOL_ID, schoolId});
+            throw new BadRequestException(NO_ENTITY_FOUND,
+                    new Object[] {SchoolConstants.SCHOOL, SCHOOL_ID, schoolId});
         }
         if (!schoolName.equals(CommonUtil.convertNameToUrlDisplayName(school.getOfficialName()))) {
             throw new BadRequestException(INVALID_SCHOOL_NAME,
@@ -91,24 +95,30 @@ public class SchoolDetailServiceImpl implements SchoolService {
         if (Objects.nonNull(boards) && boards.size() > 0) {
             BoardData boardData = boards.get(0).getData();
             schoolDetail.setShiftDetailsList(
-                    boardData.getShifts().stream().map(ShiftDetailsResponse::new).collect(Collectors.toList()));
+                    boardData.getShifts().stream().map(ShiftDetailsResponse::new)
+                            .collect(Collectors.toList()));
             schoolDetail.getFacultyDetail().setTotalTeachers(boardData.getNoOfTeachers());
             schoolDetail.getFacultyDetail().setStudentToTeacherRatio(boardData.getStudentRatio());
             schoolDetail.setFeesDetails(boardData.getFeesDetails());
             List<FacilityResponse> facilityResponseList =
-                    facilityDataHelper.mapSchoolFacilitiesToDataObject(boardData.getSchoolFacilities());
+                    facilityDataHelper
+                            .mapSchoolFacilitiesToDataObject(boardData.getSchoolFacilities());
             schoolDetail.setFacilities(facilityResponseList);
             List<ImportantDate> importantDates = Stream.concat(
-                    boardData.getSchoolAdmissionList().stream().map(x -> new ImportantDate(x, ACTUAL)),
-                    boardData.getSchoolAdmissionTentativeList().stream().map(x -> new ImportantDate(x, TENTATIVE))
+                    boardData.getSchoolAdmissionList().stream()
+                            .map(x -> new ImportantDate(x, ACTUAL)),
+                    boardData.getSchoolAdmissionTentativeList().stream()
+                            .map(x -> new ImportantDate(x, TENTATIVE))
             ).collect(Collectors.toList());
             schoolDetail.setImportantDateSections(importantDates);
             schoolDetail.setGallery(
-                    Optional.ofNullable(school.getGallery()).map(SchoolGalleryResponse::new).orElse(null));
+                    Optional.ofNullable(school.getGallery()).map(SchoolGalleryResponse::new)
+                            .orElse(null));
             String entityName = SCHOOL.name().toLowerCase();
             schoolDetail.setDerivedAttributes(
                     derivedAttributesHelper.getDerivedAttributes(
-                            Maps.newHashMap(ImmutableMap.of(entityName, school)), entityName, client));
+                            Maps.newHashMap(ImmutableMap.of(entityName, school)), entityName,
+                                client));
             schoolDetail.setGeneralInformation(collectGeneralInformationFromSchool(school));
         }
         return schoolDetail;
@@ -125,7 +135,12 @@ public class SchoolDetailServiceImpl implements SchoolService {
             generalInformation.setLatLon(school.getOfficialAddress().getLatLon());
             generalInformation.setOfficialWebsiteLink(getOfficialWebsiteLinkFromData(boardData));
             generalInformation.setOfficialName(school.getOfficialName());
-            generalInformation.setLogo(CommonUtils.addCDNPrefixAndEncode(school.getGallery().getLogo()));
+            final String logoUrl = school.getGallery().getLogo();
+            generalInformation.setLogo(
+                    StringUtils.isNotBlank(logoUrl)
+                            ?
+                            CommonUtils.addCDNPrefixAndEncode(logoUrl) : ""
+            );
             generalInformation.setCity(school.getOfficialAddress().getCity());
             generalInformation.setState(school.getOfficialAddress().getState());
             return generalInformation;
