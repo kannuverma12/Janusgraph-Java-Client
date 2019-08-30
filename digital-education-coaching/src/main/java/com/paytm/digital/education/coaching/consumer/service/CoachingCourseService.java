@@ -80,7 +80,7 @@ public class CoachingCourseService {
         }
 
         final List<TopRankerEntity> topRankerEntityList = this.fetchTopRankers(courseId,
-                topRankerFields);
+                topRankerFields, institute.getInstituteId());
 
         final Map<Long, String> examIdAndNameMap = new HashMap<>();
         Map<Long, String> courseIdAndNameMap = new HashMap<>();
@@ -243,13 +243,20 @@ public class CoachingCourseService {
                 com.paytm.digital.education.database.entity.Exam.class, fields);
     }
 
-    private List<TopRankerEntity> fetchTopRankers(final long courseId, final List<String> fields) {
+    private List<TopRankerEntity> fetchTopRankers(final long courseId, final List<String> fields,
+            Long instituteId) {
         List<TopRankerEntity> topRankerEntityList = this.commonMongoRepository
                 .getEntityFieldsByValuesIn(COACHING_COURSE_IDS,
                         Collections.singletonList(courseId), TopRankerEntity.class, fields);
         if (CollectionUtils.isEmpty(topRankerEntityList)) {
             log.error("Got no topRankers for courseId: {}", courseId);
-            return new ArrayList<>();
+
+            topRankerEntityList = this.commonMongoRepository.getEntityFieldsByValuesIn(INSTITUTE_ID,
+                    Collections.singletonList(instituteId), TopRankerEntity.class, fields);
+            if (CollectionUtils.isEmpty(topRankerEntityList)) {
+                log.error("Got no topRankers for instituteId: {}", instituteId);
+                return new ArrayList<>();
+            }
         }
         return topRankerEntityList;
     }
@@ -279,7 +286,7 @@ public class CoachingCourseService {
                 .importantDates(this.coachingCourseTransformer.convertImportantDates(
                         course.getImportantDates()))
                 .sessionDetails(this.coachingCourseTransformer.convertSessionDetails(course))
-//                .courseFeatures(this.coachingCourseTransformer.convertCourseFeatures(course.getFeatures()))
+                //.courseFeatures(this.coachingCourseTransformer.convertCourseFeatures(course.getFeatures()))
                 .syllabus(course.getSyllabus())
                 .brochure(course.getBrochure())
                 .build();
