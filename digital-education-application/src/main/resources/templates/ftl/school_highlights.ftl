@@ -11,7 +11,7 @@
     </#if>
     <#if boardData??>
         <#if boardData.gender?has_content>
-            <#assign highlights = highlights + ['{"logo_url":"https://assetscdn1.paytm.com/educationwebassets/education/explore/highlight/co_ed.svg","title":"Gender","description":"${boardData.gender}"}']>
+            <#assign highlights = highlights + ['{"logo_url":"https://assetscdn1.paytm.com/educationwebassets/education/explore/highlight/co_ed.svg","title":"Gender","description":"${boardData.gender.getReadableValue()}"}']>
         </#if>
         <#if boardData.noOfClassrooms?has_content>
             <#assign highlights = highlights + ['{"logo_url":"https://assetscdn1.paytm.com/educationwebassets/education/explore/highlight/no_of_classrooms.svg","title":"No. of Classrooms","description":"${boardData.noOfClassrooms}"}']>
@@ -21,6 +21,20 @@
         </#if>
         <#if boardData.mediumOfInstruction?has_content>
             <#assign highlights = highlights + ['{"logo_url":"https://assetscdn1.paytm.com/educationwebassets/education/explore/highlight/medium.svg","title":"Medium","description":"${boardData.mediumOfInstruction?join(", ")}"}']>
+        </#if>
+        <#if boardData.disableStudentFriendly?has_content>
+            <#if boardData.disableStudentFriendly == 1>
+                <#assign disableStudentFriendlyHumanReadable = "YES">
+            <#else>
+                <#assign disableStudentFriendlyHumanReadable = "NO">
+            </#if>
+            <#assign highlights = highlights + ['{"logo_url":"https://assetscdn1.paytm.com/educationwebassets/education/explore/highlight/co_ed.svg","title":"Disable Student Friendly","description":"${disableStudentFriendlyHumanReadable}"}']>
+        </#if>
+        <#if boardData.ownership?has_content>
+            <#assign highlights = highlights + ['{"logo_url":"https://assetscdn1.paytm.com/educationwebassets/education/explore/highlight/ownership.svg","title":"Ownership","description":"${boardData.ownership.getReadableValue()}"}']>
+        </#if>
+        <#if boardData.residentialStatus?has_content>
+            <#assign highlights = highlights + ['{"logo_url":"https://assetscdn1.paytm.com/educationwebassets/education/explore/highlight/ownership.svg","title":"Residential Status","description":"${boardData.residentialStatus?join(", ")}"}']>
         </#if>
     </#if>
     {
