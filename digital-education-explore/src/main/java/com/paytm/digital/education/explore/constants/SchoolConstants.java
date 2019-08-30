@@ -11,10 +11,11 @@ public interface SchoolConstants {
     String SCHOOL_FACILITIES                = "facilities";
     String SCHOOL_BOARDS_ACCEPTED           = "board_name";
     String SCHOOL_MEDIUM                    = "lang_medium";
-    String SCHOOL_ID            = "school_id";
-    String OFFICIAL_NAME_SEARCH = "official_name";
-    String NAMES_SEARCH         = "names";
-    Float  NAMES_SEARCH_BOOST   = 1F;
+    String SCHOOL_ID                        = "school_id";
+    String OFFICIAL_NAME_SEARCH             = "official_name.search";
+    String OFFICIAL_NAME                    = "official_name";
+    String NAMES                            = "names";
+    Float  NAMES_SEARCH_BOOST               = 1F;
 
     String TOTAL_TEACHERS_IMAGE_URL      =
             "https://assetscdn1.paytm.com/educationwebassets/education/explore/highlight/total_faculty.svg";

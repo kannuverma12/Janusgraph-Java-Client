@@ -35,7 +35,8 @@ import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.RA
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.TERMS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EMPTY_STRING;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.OFFICIAL_NAME_SEARCH;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.NGRAM;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.OTHER_NAMES_NGRAM_BOOST;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SCHOOL_FILTER_NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SCHOOL_SEARCH_NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_ANALYZER_SCHOOL;
@@ -43,19 +44,21 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.SEA
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STOPWORDS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STOPWORDS_KEY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.TIE_BREAKER;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_EDUCATION_LEVEL;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_FEE;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_OWNERSHIP;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_GENDER_ACCEPTED;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_ESTABLISHMENT_YEAR;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_FACILITIES;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_CITY;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_ID;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_STATE;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.NAMES_SEARCH;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.NAMES;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.NAMES_SEARCH_BOOST;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.OFFICIAL_NAME_SEARCH;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.OFFICIAL_NAME;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_ACCEPTED;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_EDUCATION_LEVEL;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_ESTABLISHMENT_YEAR;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_FEE;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_GENDER_ACCEPTED;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_OWNERSHIP;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_CITY;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_FACILITIES;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_ID;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_MEDIUM;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_STATE;
 
 @Slf4j
 @Service
@@ -87,7 +90,9 @@ public class SchoolSearchServiceImpl extends AbstractSearchServiceImpl {
         locationSearchFieldKeys.put(SCHOOL_CITY, 0.001F);
         searchFieldKeys = new HashMap<>();
         searchFieldKeys.put(OFFICIAL_NAME_SEARCH, NAMES_SEARCH_BOOST);
-        searchFieldKeys.put(NAMES_SEARCH, NAMES_SEARCH_BOOST);
+        searchFieldKeys.put(NAMES, NAMES_SEARCH_BOOST);
+        searchFieldKeys.put(OFFICIAL_NAME + NGRAM, OTHER_NAMES_NGRAM_BOOST);
+        searchFieldKeys.put(NAMES + NGRAM, OTHER_NAMES_NGRAM_BOOST);
     }
 
     @Override
