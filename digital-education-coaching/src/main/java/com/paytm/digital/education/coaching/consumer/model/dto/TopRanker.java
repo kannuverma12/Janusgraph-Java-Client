@@ -14,15 +14,15 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class TopRanker {
 
-    private long id;
-    private long coachingInstituteId;
-    private long coachingCentreId;
+    private long         id;
+    private long         coachingInstituteId;
+    private long         coachingCentreId;
     private List<String> coachingCourseNames;
-    private String examName;
-    private String studentName;
-    private String image;
-    private String rank;
-    private String examDate;
-    private String testimonial;
-    private String signatureImage;
+    private String       examName;
+    private String       studentName;
+    private String       image;
+    private String       rank;
+    private String       examDate;
+    private String       testimonial;
+    private String       signatureImage;
 }

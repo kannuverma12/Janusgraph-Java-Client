@@ -14,14 +14,15 @@ import java.math.BigDecimal;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class CoachingCourse {
 
-    private long       courseId;
+    private Long       courseId;
     private String     courseName;
     private String     description;
     private String     targetExam;
     private String     eligibility;
-    private int        duration;
+    private Integer        duration;
     private BigDecimal price;
     private String     imageUrl;
     private String     courseLevel;
-    private int        priority;
+    private Integer        priority;
+    private String     courseType;
 }

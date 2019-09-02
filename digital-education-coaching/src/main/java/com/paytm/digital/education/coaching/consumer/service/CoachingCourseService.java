@@ -103,7 +103,7 @@ public class CoachingCourseService {
             final List<Exam> topRankerExams = examTypeAndExamListMap.get(TOP_RANKER_EXAM);
             if (!topRankerExams.isEmpty()) {
                 for (final Exam exam : topRankerExams) {
-                    examIdAndNameMap.put(exam.getId(), exam.getName());
+                    examIdAndNameMap.put(exam.getId(), exam.getExamShortName());
                 }
             }
         }

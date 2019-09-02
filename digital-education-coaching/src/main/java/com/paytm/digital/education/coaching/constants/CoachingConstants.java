@@ -17,6 +17,7 @@ public class CoachingConstants {
     public static final String COURSE                                = "course";
     public static final String COACHING_CENTER_ID                    = "center_id";
     public static final String EXAM_ID                               = "exam_id";
+    public static final String STREAM_ID                             = "stream_id";
     public static final String COURSE_ID                             = "course_id";
     public static final String ACTIVE                                = "active";
     public static final String KEY_STRING                            = "key";
@@ -24,6 +25,11 @@ public class CoachingConstants {
     public static final String UPDATED_AT                            = "updated_at";
     public static final String YYYY_MM_DD                            = "yyyy-MM-dd";
     public static final String YYYY_MM_DD_T_HH_MM_SS                 = "yyyy-MM-dd'T'HH:mm:ss";
+    public static final String COURSE_TYPE                           = "course_type";
+    public static final String EXAM_DOMAIN                           = "domains";
+    public static final String COACHING_COURSE_STREAM                = "stream_ids";
+    public static final String COACHING_EXAM_STREAMS                 = "streams";
+
 
     public static final String EXAM_NOT_FOUND_ERROR                  =
             "No such exam exists. Please check your request.";
@@ -96,12 +102,13 @@ public class CoachingConstants {
     public static final String COACHING_COURSE_IDS    = "course_ids";
     public static final String NAME    = "name";
 
-    public static final String DETAILS_FIELD_GROUP = "details_coaching";
-
+    public static final String DETAILS_FIELD_GROUP        = "details_coaching";
     public static final String COACHING_INSTITUTE_PREFIX  = "coaching_institute.";
     public static final String COACHING_COURSE_PREFIX     = "coaching_course.";
+    public static final String COACHING_STREAM_PREFIX     = "stream.";
     public static final String COACHING_TOP_RANKER_PREFIX = "coaching_top_ranker.";
     public static final String EXAM_PREFIX                = "exam.";
+
 
     public static class S3RelativePath {
         private static final String PREFIX           = AwsConfig.getRelativePathPrefix();
@@ -134,6 +141,10 @@ public class CoachingConstants {
         public static final String GET_EXAM_DETAILS = "/exam-details";
 
         public static final String COACHING_COURSE_DETAILS = "/course";
+
+        public static final String GET_STREAM_DETAILS = "/stream-details";
+
+        public static final String GET_COACHING_INSTITUTE_DETAILS = "/coaching-institute-details";
 
         public static final String LANDING_PAGE = "/page";
     }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Getter
 @Builder
@@ -13,8 +14,9 @@ import lombok.Getter;
 public class Exam {
 
     private long   id;
-    private String name;
-    private String image;
+    private String examFullName;
+    private String examShortName;
+    private String logo;
     private String admissionInto;
     private String conductedBy;
     private int    priority;

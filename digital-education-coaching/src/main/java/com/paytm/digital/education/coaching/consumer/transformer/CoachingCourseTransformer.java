@@ -47,7 +47,7 @@ public class CoachingCourseTransformer {
     public Exam convertExam(final com.paytm.digital.education.database.entity.Exam exam) {
         return Exam.builder()
                 .id(exam.getExamId())
-                .name(exam.getExamFullName())
+                .examFullName(exam.getExamFullName())
                 .conductedBy(exam.getConductingBody())
                 .build();
     }

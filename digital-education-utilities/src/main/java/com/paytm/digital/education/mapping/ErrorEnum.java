@@ -94,6 +94,10 @@ public enum ErrorEnum {
             HttpStatus.BAD_REQUEST, 0),
     INVALID_COURSE_ID_AND_URL_DISPLAY_KEY(4039,
             "Invalid course ID/ url display key. Please provide a valid course ID and url display key.",
+            HttpStatus.BAD_REQUEST, 0),
+    INVALID_STREAM_ID(4040, "Invalid stream ID. Please provide a valid stream ID.",
+            HttpStatus.BAD_REQUEST, 0),
+    INVALID_STREAM_NAME(4041, "Invalid stream name. Please provide a valid stream name.",
             HttpStatus.BAD_REQUEST, 0);
 
     private final int internalCode;

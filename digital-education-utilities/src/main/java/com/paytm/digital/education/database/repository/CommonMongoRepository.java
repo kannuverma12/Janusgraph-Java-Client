@@ -84,7 +84,6 @@ public class CommonMongoRepository {
             return groupDetail.getFields();
         }
         return null;
-
     }
 
     @Cacheable(value = "entities", unless = "#result == null")
