@@ -6,7 +6,6 @@ import com.paytm.digital.education.explore.service.LeadService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import com.paytm.digital.education.utility.JsonUtils;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMethod;
-
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EDUCATION_BASE_URL;
 
