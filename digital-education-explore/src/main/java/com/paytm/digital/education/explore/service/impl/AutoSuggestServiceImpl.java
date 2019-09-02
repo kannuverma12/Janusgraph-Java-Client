@@ -12,10 +12,13 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.ZER
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_CLASS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.MINUS_TEN;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OTHER;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.FIFTY;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SIXTY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SUMMARY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.BLANK;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKING_OVERALL;
+import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.P_TOP_INS;
+
 import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
@@ -121,12 +124,24 @@ public class AutoSuggestServiceImpl {
 
     public AutoSuggestResponse autosuggestInstitute(String query, Integer limit) {
         AutoSuggestResponse autoSuggestResponse;
-        if (StringUtils.isBlank(query)) {
-            autoSuggestResponse = getTopInstitutes(limit);
+
+        if (StringUtils.isNotBlank(query)) {
+            if (query.equalsIgnoreCase(P_TOP_INS)) {
+                autoSuggestResponse = getTopInstitutes(limit);
+            } else {
+                List<EducationEntity> entities = new ArrayList<>();
+                entities.add(EducationEntity.INSTITUTE);
+                autoSuggestResponse = getSuggestions(query, entities, null, null);
+            }
         } else {
-            List<EducationEntity> entities = new ArrayList<>();
-            entities.add(EducationEntity.INSTITUTE);
-            autoSuggestResponse = getSuggestions(query, entities, null, null);
+            autoSuggestResponse = new AutoSuggestResponse();
+            List<AutoSuggestData> asDataList = new ArrayList<>();
+            AutoSuggestData asData = new AutoSuggestData();
+            asData.setEntityType(INSTITUTE.name().toLowerCase());
+            List<SuggestResult> suggestResults = new ArrayList<>();
+            asData.setResults(suggestResults);
+            asDataList.add(asData);
+            autoSuggestResponse.setData(asDataList);
         }
         addDefaultOption(autoSuggestResponse);
         return autoSuggestResponse;
@@ -152,10 +167,10 @@ public class AutoSuggestServiceImpl {
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.setEntity(EducationEntity.INSTITUTE);
         searchRequest.setFetchFilter(false);
-        if (Objects.nonNull(limit) && limit > 1 && limit < FIFTY) {
+        if (Objects.nonNull(limit) && limit > 1 && limit < SIXTY) {
             searchRequest.setLimit(limit - 1);
         } else {
-            searchRequest.setLimit(FIFTY - 1);
+            searchRequest.setLimit(SIXTY - 1);
         }
         searchRequest.setOffset(Integer.parseInt(ZERO));
         searchRequest.setFieldGroup(SUMMARY);
