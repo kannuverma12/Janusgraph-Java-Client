@@ -120,6 +120,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
                             Maps.newHashMap(ImmutableMap.of(entityName, school)), entityName,
                                 client));
             schoolDetail.setGeneralInformation(collectGeneralInformationFromSchool(school));
+            schoolDetail.setStreams(boardData.getStreams());
         }
         return schoolDetail;
     }

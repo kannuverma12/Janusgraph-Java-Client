@@ -43,6 +43,9 @@ public class SchoolDetail {
     @JsonProperty("class_info")
     private List<ClassInfoLegend> classInfoLegend = ClassInfoLegend.CLASS_INFO_STATIC_CONTENT_LIST;
 
+    @JsonProperty("streams")
+    private List<String> streams;
+
     @JsonProperty("general_information")
     private GeneralInformation generalInformation;
 }
