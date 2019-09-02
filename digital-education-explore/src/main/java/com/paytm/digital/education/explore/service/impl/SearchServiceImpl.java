@@ -75,7 +75,6 @@ public class SearchServiceImpl {
     /**
      * Searches for top institutes
      * @param searchRequest represents SearchRequest body
-     * @param userId represents userid
      * @return AutoSuggestResponse
      * @throws Exception when userid is null
      */
