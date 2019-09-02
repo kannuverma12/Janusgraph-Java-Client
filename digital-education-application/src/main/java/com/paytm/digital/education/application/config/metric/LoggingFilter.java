@@ -30,7 +30,8 @@ public class LoggingFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException,
             ServletException {
 
         try {
@@ -53,7 +54,9 @@ public class LoggingFilter implements Filter {
         String requestId = getRequestId(request);
         String deviceId = getDeviceId(request);
 
-        if (StringUtils.isEmpty(deviceId)) return requestId;
+        if (StringUtils.isEmpty(deviceId)) {
+            return requestId;
+        }
 
         return requestId + Constant.Request.REQUEST_DEVICE_ID_SEPARATOR + deviceId;
     }
@@ -61,16 +64,21 @@ public class LoggingFilter implements Filter {
     private String getRequestId(ServletRequest request) {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         String requestId = StringUtils.isNotEmpty(httpServletRequest.getHeader(Constant.Request.ID))
-                            ? httpServletRequest.getHeader(Constant.Request.ID) : request.getParameter(Constant.Request.ID);
+                ?
+                httpServletRequest.getHeader(Constant.Request.ID) :
+                request.getParameter(Constant.Request.ID);
 
-        if (StringUtils.isEmpty(requestId)) return UUID.randomUUID().toString();
+        if (StringUtils.isEmpty(requestId)) {
+            return UUID.randomUUID().toString();
+        }
 
         return requestId;
     }
 
     private String getDeviceId(ServletRequest request) {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        String deviceNameAndImei = StringUtils.isNotEmpty(httpServletRequest.getHeader(Constant.Request.DEVICE_IDENTIFIER))
+        String deviceNameAndImei = StringUtils
+                .isNotEmpty(httpServletRequest.getHeader(Constant.Request.DEVICE_IDENTIFIER))
                 ? httpServletRequest.getHeader(Constant.Request.DEVICE_IDENTIFIER)
                 : request.getParameter(Constant.Request.DEVICE_IDENTIFIER);
 

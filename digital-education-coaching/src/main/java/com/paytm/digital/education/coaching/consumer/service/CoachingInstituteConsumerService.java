@@ -84,8 +84,8 @@ public class CoachingInstituteConsumerService {
             List<Exam> examList = getExamsByExamIds(coachingInstituteEntity.getExams(), examFields);
             List<TopRanker> topRankerList = getTopRankersForInstitute(instituteId);
             List<String> listOfCourseType = null;
-            if(Objects.nonNull(coachingInstituteEntity.getCourseTypes())) {
-                 listOfCourseType =
+            if (Objects.nonNull(coachingInstituteEntity.getCourseTypes())) {
+                listOfCourseType =
                         coachingInstituteEntity.getCourseTypes().stream().map(
                                 CourseType::getText).collect(Collectors.toList());
             }
@@ -95,7 +95,8 @@ public class CoachingInstituteConsumerService {
                     .instituteName(coachingInstituteEntity.getBrandName())
                     .imageUrl(coachingInstituteEntity.getCoverImage())
                     .instituteHighLights(
-                            CoachingInstituteTransformer.convertInstituteHighlights(coachingInstituteEntity.getKeyHighlights()))
+                            CoachingInstituteTransformer.convertInstituteHighlights(
+                                    coachingInstituteEntity.getKeyHighlights()))
                     .streams(streamList)
                     .exams(examList)
                     .topRankers(topRankerList)
@@ -139,7 +140,8 @@ public class CoachingInstituteConsumerService {
         List<com.paytm.digital.education.database.entity.StreamEntity> streamEntityList =
                 commonMongoRepository.getEntityFieldsByValuesIn(STREAM_ID, streamIds,
                         StreamEntity.class, streamFields);
-        return CoachingInstituteTransformer.convertStreamEntityToStreamDto(streamList, streamEntityList);
+        return CoachingInstituteTransformer
+                .convertStreamEntityToStreamDto(streamList, streamEntityList);
     }
 
     private List<TopRanker> getTopRankersForInstitute(long instituteId) {
@@ -149,7 +151,7 @@ public class CoachingInstituteConsumerService {
         Map<Long, String> coachingCourseIdsAndNameMap;
         List<TopRankerEntity> topRankerEntityList =
                 topRankerRepository.findByInstituteId(instituteId);
-        List<TopRanker> topRankerList = new ArrayList<>();
+        final List<TopRanker> topRankerList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(topRankerEntityList)) {
             for (TopRankerEntity topRankerEntity : topRankerEntityList) {
                 if (Objects.nonNull(topRankerEntity.getExamId())) {
@@ -163,7 +165,8 @@ public class CoachingInstituteConsumerService {
         examIdsAndNameMap = getExamIdsToNameMap((new ArrayList<>(examIds)));
         coachingCourseIdsAndNameMap =
                 getCoachingCourseIdsToNameMap((new ArrayList<>(courseIds)));
-        return CoachingInstituteTransformer.convertTopRankerEntityToTopRankerDto(examIdsAndNameMap, coachingCourseIdsAndNameMap,
+        return CoachingInstituteTransformer.convertTopRankerEntityToTopRankerDto(examIdsAndNameMap,
+                coachingCourseIdsAndNameMap,
                 topRankerEntityList, topRankerList);
     }
 
@@ -172,10 +175,12 @@ public class CoachingInstituteConsumerService {
         if (CollectionUtils.isEmpty(examIds)) {
             return examIdsAndNameMap;
         }
-        List<String> examFields = new ArrayList<String>() {{
-            add("exam_id");
-            add("exam_short_name");
-        }};
+        List<String> examFields = new ArrayList<String>() {
+            {
+                add("exam_id");
+                add("exam_short_name");
+            }
+        };
         List<com.paytm.digital.education.database.entity.Exam> examEntityList =
                 commonMongoRepository.getEntityFieldsByValuesIn(EXAM_ID, examIds,
                         com.paytm.digital.education.database.entity.Exam.class, examFields);
@@ -192,17 +197,19 @@ public class CoachingInstituteConsumerService {
         if (CollectionUtils.isEmpty(courseIds)) {
             return coachingCourseIdsAndNameMap;
         }
-        List<String> coachingCourseFields = new ArrayList<String>() {{
-            add("course_id");
-            add("name");
-        }};
+        List<String> coachingCourseFields = new ArrayList<String>() {
+            {
+                add("course_id");
+                add("name");
+            }
+        };
         List<CoachingCourseEntity> coachingCourseEntityList =
                 commonMongoRepository.getEntityFieldsByValuesIn(COURSE_ID, courseIds,
                         CoachingCourseEntity.class, coachingCourseFields);
         if (!CollectionUtils.isEmpty(coachingCourseEntityList)) {
             for (CoachingCourseEntity coachingCourseEntity : coachingCourseEntityList) {
-                coachingCourseIdsAndNameMap.put(coachingCourseEntity.getCourseId()
-                        , coachingCourseEntity.getName());
+                coachingCourseIdsAndNameMap.put(coachingCourseEntity.getCourseId(),
+                        coachingCourseEntity.getName());
             }
         }
         return coachingCourseIdsAndNameMap;

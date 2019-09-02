@@ -22,8 +22,8 @@ public class CoachingStreamTransformer {
                         .courseId(coachingCourseEntity.getCourseId())
                         .courseName(coachingCourseEntity.getName())
                         .courseType(
-                                Objects.nonNull(coachingCourseEntity.getCourseType()) ?
-                                        coachingCourseEntity.getCourseType().getText() :
+                                Objects.nonNull(coachingCourseEntity.getCourseType())
+                                        ? coachingCourseEntity.getCourseType().getText() :
                                         null)
                         .duration(coachingCourseEntity.getDuration())
                         .eligibility(coachingCourseEntity.getEligibility())
@@ -38,8 +38,8 @@ public class CoachingStreamTransformer {
             List<CoachingInstitute> coachingInstituteList,
             List<CoachingInstituteEntity> coachingInstituteEntityList) {
         if (!CollectionUtils.isEmpty(coachingInstituteEntityList)) {
-            for(CoachingInstituteEntity coachingInstituteEntity:coachingInstituteEntityList){
-                CoachingInstitute coachingInstitute=CoachingInstitute.builder()
+            for (CoachingInstituteEntity coachingInstituteEntity : coachingInstituteEntityList) {
+                CoachingInstitute coachingInstitute = CoachingInstitute.builder()
                         .id(coachingInstituteEntity.getInstituteId())
                         .name(coachingInstituteEntity.getBrandName())
                         .image(coachingInstituteEntity.getLogo())
