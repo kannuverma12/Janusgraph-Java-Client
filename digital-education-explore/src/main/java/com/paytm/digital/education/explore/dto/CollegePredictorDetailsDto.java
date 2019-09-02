@@ -31,13 +31,13 @@ public class CollegePredictorDetailsDto {
     @JsonProperty("price")
     private Integer price;
 
-    @JsonProperty("offeredPrice")
+    @JsonProperty("offered_price")
     private Integer offeredPrice;
 
-    @JsonProperty("longDescription")
+    @JsonProperty("long_description")
     private List<String> longDescription;
 
-    @JsonProperty("paytmPrice")
+    @JsonProperty("paytm_price")
     private Integer paytmPrice;
 
     @JsonProperty("pid")
