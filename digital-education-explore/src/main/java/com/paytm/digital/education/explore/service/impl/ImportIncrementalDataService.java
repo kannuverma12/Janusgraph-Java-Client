@@ -1,21 +1,24 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import com.paytm.digital.education.explore.database.entity.Institute;
+import com.paytm.digital.education.exception.EducationException;
 import com.paytm.digital.education.explore.database.ingestion.Course;
 import com.paytm.digital.education.explore.database.ingestion.Exam;
 import com.paytm.digital.education.explore.dto.InstituteDto;
+import com.paytm.digital.education.explore.dto.SchoolDto;
 import com.paytm.digital.education.explore.service.helper.IncrementalDataHelper;
+import com.paytm.digital.education.mapping.ErrorEnum;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSES_FILE_NAME;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.EXAM_FILE_NAME;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.INSTITUTE_FILE_NAME;
-import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.INSTITUTE_FILE_VERSION;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SCHOOLS_FILE_NAME;
 
 @AllArgsConstructor
 @Service
@@ -25,6 +28,7 @@ public class ImportIncrementalDataService {
     private TransformAndSaveCourseService transformAndSaveCourseService;
     private TransformAndSaveExamService   transformAndSaveExamService;
     private TransformInstituteService     transformInstituteService;
+    private TransformSchoolService        transformSchoolService;
 
     public boolean importData(String entity, Integer version, Boolean versionUpdate) {
         Map<String, Boolean> fileInfo = incrementalDataHelper.downloadFileFromSftp(entity, version);
@@ -36,6 +40,11 @@ public class ImportIncrementalDataService {
                         transformInstituteService
                                 .transformAndSaveInstituteData(instituteDtos, versionUpdate);
                 log.info("Imported " + institutesUpdated + " institutes.");
+            } else {
+                if (Objects.nonNull(version)) {
+                    throw new EducationException(ErrorEnum.CORRUPTED_FILE,
+                            ErrorEnum.CORRUPTED_FILE.getExternalMessage());
+                }
             }
         }
         if (fileInfo.get(EXAM_FILE_NAME)) {
@@ -44,6 +53,11 @@ public class ImportIncrementalDataService {
             if (!examDtos.isEmpty()) {
                 transformAndSaveExamService.transformAndSave(examDtos, versionUpdate);
                 log.info("Imported " + examDtos.size() + " exams.");
+            } else {
+                if (Objects.nonNull(version)) {
+                    throw new EducationException(ErrorEnum.CORRUPTED_FILE,
+                            ErrorEnum.CORRUPTED_FILE.getExternalMessage());
+                }
             }
         }
         if (fileInfo.get(COURSES_FILE_NAME)) {
@@ -52,6 +66,20 @@ public class ImportIncrementalDataService {
             if (!courseDtos.isEmpty()) {
                 transformAndSaveCourseService.transformAndSave(courseDtos, versionUpdate);
                 log.info("Imported " + courseDtos.size() + " courses.");
+            } else {
+                if (Objects.nonNull(version)) {
+                    throw new EducationException(ErrorEnum.CORRUPTED_FILE,
+                            ErrorEnum.CORRUPTED_FILE.getExternalMessage());
+                }
+            }
+        }
+        if (fileInfo.get(SCHOOLS_FILE_NAME)) {
+            log.info("Going to import schools");
+            List<SchoolDto> schoolDtos =
+                    incrementalDataHelper.retrieveDataFromFile(SCHOOLS_FILE_NAME, SchoolDto.class);
+            if (!schoolDtos.isEmpty()) {
+                transformSchoolService.transformAndSaveSchoolsData(schoolDtos);
+                log.info("Imported " + schoolDtos.size() + " schools.");
             }
         }
         return true;

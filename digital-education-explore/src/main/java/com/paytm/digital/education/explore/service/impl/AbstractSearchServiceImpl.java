@@ -13,6 +13,7 @@ import com.paytm.digital.education.elasticsearch.models.Operator;
 import com.paytm.digital.education.elasticsearch.models.SearchField;
 import com.paytm.digital.education.elasticsearch.models.SortField;
 import com.paytm.digital.education.exception.EducationException;
+import com.paytm.digital.education.explore.es.model.SchoolSearch;
 import com.paytm.digital.education.explore.es.model.SearchHistoryEsDoc;
 import com.paytm.digital.education.explore.es.model.InstituteSearch;
 import com.paytm.digital.education.explore.es.model.CourseSearch;
@@ -70,6 +71,8 @@ public abstract class AbstractSearchServiceImpl {
                 HierarchyIdentifierUtils.getClassHierarchy(ClassifierSearchDoc.class));
         hierarchyMap.put(SearchHistoryEsDoc.class,
                 HierarchyIdentifierUtils.getClassHierarchy(SearchHistoryEsDoc.class));
+        hierarchyMap.put(SchoolSearch.class,
+                HierarchyIdentifierUtils.getClassHierarchy(SchoolSearch.class));
     }
 
 

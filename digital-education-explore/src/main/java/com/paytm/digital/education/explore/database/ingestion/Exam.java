@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.explore.database.entity.PaytmKeys;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Field;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -120,4 +121,8 @@ public class Exam {
     @Field("status")
     @JsonProperty("status")
     private String status;
+
+    @Field("paytm_keys")
+    @JsonProperty("paytm_keys")
+    private PaytmKeys paytmKeys;
 }

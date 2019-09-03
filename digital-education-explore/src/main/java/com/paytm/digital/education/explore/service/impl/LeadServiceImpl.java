@@ -63,6 +63,23 @@ public class LeadServiceImpl implements LeadService {
         return leadResponse;
     }
 
+    @Override
+    public UserDetails getUserDetails(Long userId, String email, String firstName, String phone) {
+        log.info("User details request for user id : {}", userId.toString());
+        UserDetails dbUserDetails = userDetailsRepository.getByUserId(userId);
+        if (Objects.nonNull(dbUserDetails)) {
+            return dbUserDetails;
+        }
+        log.warn("User details not found in DB for user id :{}", userId);
+        UserDetails userDetails = new UserDetails();
+        userDetails.setUserId(userId);
+        userDetails.setContactEmail(Objects.nonNull(email) ? email : "");
+        userDetails.setContactName(Objects.nonNull(firstName) ? firstName : "");
+        userDetails.setContactNumber(Objects.nonNull(phone) ? phone : "");
+
+        return userDetails;
+    }
+
     private void saveUserDetails(Lead lead) {
         UserDetails userDetails = new UserDetails();
         userDetails.setContactEmail(lead.getContactEmail());

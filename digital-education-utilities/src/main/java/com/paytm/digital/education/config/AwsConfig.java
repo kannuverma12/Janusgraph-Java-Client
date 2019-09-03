@@ -13,6 +13,7 @@ public class AwsConfig {
     private static String s3CoachingBucketName;
     private static String relativePathPrefix;
     private static String mediaBaseUrl;
+    private static String s3ExploreBucketNameWithoutSuffix;
 
     @Value("${aws.s3.region}")
     public void setClientRegion(String region) {
@@ -39,6 +40,11 @@ public class AwsConfig {
         mediaBaseUrl = baseUrl;
     }
 
+    @Value("${aws.s3.explore.bucketname.without.suffix}")
+    public void setS3ExploreBucketNameWithoutSuffix(String bucketName) {
+        s3ExploreBucketNameWithoutSuffix = bucketName;
+    }
+
     public static String getMediaBaseUrl() {
         return mediaBaseUrl;
     }
@@ -49,6 +55,10 @@ public class AwsConfig {
 
     public static String getS3ExploreBucketName() {
         return s3ExploreBucketName;
+    }
+
+    public static String getS3ExploreBucketNameWithoutSuffix() {
+        return s3ExploreBucketNameWithoutSuffix;
     }
 
     public static String getS3CoachingBucketName() {

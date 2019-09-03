@@ -7,6 +7,7 @@ import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
+import com.paytm.digital.education.explore.response.dto.suggest.AutoSuggestResponse;
 import com.paytm.digital.education.explore.service.impl.SearchServiceImpl;
 import com.paytm.digital.education.explore.validators.CourseSearchValidator;
 import com.paytm.digital.education.explore.validators.ExploreValidator;
@@ -39,6 +40,19 @@ public class SearchController {
         }
 
         SearchResponse searchResponse = searchServiceImpl.search(searchRequest, userId);
+        return searchResponse;
+    }
+
+    @PostMapping("/auth/v1/institute/search")
+    public @ResponseBody AutoSuggestResponse instituteSearch(@RequestBody SearchRequest searchRequest,
+            @RequestHeader(value = "x-user-id", required = false) Long userId) throws Exception {
+        log.info("Search Request : {}", JsonUtils.toJson(searchRequest));
+        exploreValidator.validateAndThrowException(searchRequest);
+        if (searchRequest.getEntity().equals(EducationEntity.COURSE)) {
+            CourseSearchValidator.validateRequest(searchRequest);
+        }
+
+        AutoSuggestResponse searchResponse = searchServiceImpl.instituteSearch(searchRequest);
         return searchResponse;
     }
 }

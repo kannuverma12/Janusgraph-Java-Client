@@ -2,11 +2,11 @@ package com.paytm.digital.education.explore.controller;
 
 import com.paytm.digital.education.explore.database.entity.Lead;
 import com.paytm.digital.education.explore.database.entity.UserDetails;
-import com.paytm.digital.education.explore.database.repository.UserDetailsRepository;
 import com.paytm.digital.education.explore.service.LeadService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
@@ -28,7 +28,6 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EDU
 @Validated
 public class LeadController {
     private LeadService           leadService;
-    private UserDetailsRepository userDetailsRepository;
 
     @PostMapping("/auth/v1/lead")
     public com.paytm.digital.education.explore.response.dto.common.Lead captureLead(
@@ -48,9 +47,12 @@ public class LeadController {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/user_details")
-    public UserDetails getLeadUserDetails(@RequestHeader("x-user-id") @Min(1) Long userId) {
-        log.info("User details request for user id : {}", userId.toString());
-        return userDetailsRepository.getByUserId(userId);
+    public UserDetails getLeadUserDetails(@RequestHeader("x-user-id") @NotNull @Min(1) Long userId,
+            @RequestHeader(value = "x-user-email", required = false) String email,
+            @RequestHeader(value = "x-user-firstname", required = false) String firstName ,
+            @RequestHeader(value = "x-user-phone", required = false) String phone) {
+        log.info("Received email : {}, name : {}, phone : {}", email, firstName, phone);
+        return leadService.getUserDetails(userId, email, firstName, phone);
     }
 
 }
