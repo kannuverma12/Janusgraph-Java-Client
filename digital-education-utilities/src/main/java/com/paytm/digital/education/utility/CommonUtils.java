@@ -10,7 +10,7 @@ public class CommonUtils {
 
     private final String javaLangPackagesStartPath = "java.lang";
     private static final String ASSET_CDN_PREFIX              =
-            "http://assetscdn1.paytm.com/educationwebassets/education/explore/school/images";
+            "https://assetscdn1.paytm.com/educationwebassets/education/explore/school/images";
 
     public String messageFormat(String msg, Object... objs) {
         return MessageFormatter.arrayFormat(msg, objs).getMessage();
