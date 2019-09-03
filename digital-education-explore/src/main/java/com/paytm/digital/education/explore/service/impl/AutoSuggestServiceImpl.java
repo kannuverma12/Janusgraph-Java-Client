@@ -132,19 +132,27 @@ public class AutoSuggestServiceImpl {
                 List<EducationEntity> entities = new ArrayList<>();
                 entities.add(EducationEntity.INSTITUTE);
                 autoSuggestResponse = getSuggestions(query, entities, null, null);
+                if (Objects.nonNull(autoSuggestResponse) && CollectionUtils
+                        .isEmpty(autoSuggestResponse.getData())) {
+                    addEmptyResponse(autoSuggestResponse);
+                }
             }
         } else {
             autoSuggestResponse = new AutoSuggestResponse();
-            List<AutoSuggestData> asDataList = new ArrayList<>();
-            AutoSuggestData asData = new AutoSuggestData();
-            asData.setEntityType(INSTITUTE.name().toLowerCase());
-            List<SuggestResult> suggestResults = new ArrayList<>();
-            asData.setResults(suggestResults);
-            asDataList.add(asData);
-            autoSuggestResponse.setData(asDataList);
+            addEmptyResponse(autoSuggestResponse);
         }
         addDefaultOption(autoSuggestResponse);
         return autoSuggestResponse;
+    }
+
+    private void addEmptyResponse(AutoSuggestResponse autoSuggestResponse) {
+        List<AutoSuggestData> asDataList = new ArrayList<>();
+        AutoSuggestData asData = new AutoSuggestData();
+        asData.setEntityType(INSTITUTE.name().toLowerCase());
+        List<SuggestResult> suggestResults = new ArrayList<>();
+        asData.setResults(suggestResults);
+        asDataList.add(asData);
+        autoSuggestResponse.setData(asDataList);
     }
 
     private void addDefaultOption(AutoSuggestResponse autoSuggestResponse) {
