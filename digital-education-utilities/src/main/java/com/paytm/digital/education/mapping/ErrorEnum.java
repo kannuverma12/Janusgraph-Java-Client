@@ -91,12 +91,31 @@ public enum ErrorEnum {
     ENTITY_ID_MANDATORY_FOR_SUBSCRIPTION(4037, "Entity id is mandatory for subscription requests.",
             HttpStatus.BAD_REQUEST, 0),
     INVALID_CUSTOMER_ID(4038, "Invalid customer ID. Please provide a valid customer ID.",
+            HttpStatus.BAD_REQUEST, 0),
+    USER_INFO_MISMATCH(4039, "Provided user details doesn't matches to info stored at our end",
+            HttpStatus.BAD_REQUEST, 0),
+    INVALID_ENTITY_FOR_DATA_IMPORT(4040, "Provided entity is invalid.", HttpStatus.BAD_REQUEST, 0),
+    USER_DATA_DOESNOT_EXISTS(4041, "User data does not exists.", HttpStatus.BAD_REQUEST, 0),
+    INVALID_FILE_VERSION(4042, "File is not present for provided version number",
+            HttpStatus.BAD_REQUEST, 0),
+    SFTP_CONNECTION_FAILED(4043, "Unable to connect to sftp.", HttpStatus.BAD_REQUEST, 0),
+    CORRUPTED_FILE(4044, "The file you are trying to read is corrupted", HttpStatus.BAD_REQUEST, 0),
+    DATA_NOT_PRESENT(4045, "Data is missing!!!", HttpStatus.BAD_REQUEST, 0),
+    FUNCTIONALITY_NOT_SUPPORTED_FOR_ENTITY(4046,
+            "This functionality is not supported for provided entity", HttpStatus.BAD_REQUEST, 0),
+    INVALID_SCHOOL_ID(4047, "Invalid school ID. Please provide a valid school ID.",
+            HttpStatus.BAD_REQUEST, 0),
+    NO_ENTITY_FOUND(4048, "No %s is found for the given %s - %s", HttpStatus.BAD_REQUEST, 3),
+    PID_MISSING(4049, "PID doesnot exists for entity %s", HttpStatus.BAD_REQUEST, 1),
+    PREDICTOR_ID_MISSING(4050, "COLLEGE PREDICTOR ID doesnot exists for entity %s",
+            HttpStatus.BAD_REQUEST, 1),
+    INVALID_SCHOOL_NAME(4051, "Provided name doesnot match with actual school name",
             HttpStatus.BAD_REQUEST, 0);
 
-    private final int internalCode;
-    private final String externalMessage;
+    private final int        internalCode;
+    private final String     externalMessage;
     private final HttpStatus httpStatus;
-    private final int numberOfArgs;
+    private final int        numberOfArgs;
 
     ErrorEnum(int internalCode, String externalMessage, HttpStatus httpStatus, int numberOfArgs) {
         this.internalCode = internalCode;
@@ -120,4 +139,5 @@ public enum ErrorEnum {
     public int getNumberOfArgs() {
         return numberOfArgs;
     }
+
 }

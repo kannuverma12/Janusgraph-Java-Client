@@ -12,6 +12,9 @@ public enum EducationEntity {
     @JsonProperty("institute")
     INSTITUTE,
 
+    @JsonProperty("school")
+    SCHOOL,
+
     @JsonProperty("course")
     COURSE,
 

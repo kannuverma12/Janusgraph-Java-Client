@@ -1,11 +1,9 @@
 package com.paytm.digital.education.explore.constants;
 
-import com.paytm.digital.education.explore.enums.RankingSource;
 import freemarker.template.Configuration;
 import freemarker.template.Version;
 
 import java.text.SimpleDateFormat;
-import java.util.Comparator;
 
 public interface ExploreConstants {
 
@@ -18,7 +16,7 @@ public interface ExploreConstants {
     String IS_CLIENT                   = "is_client";
     int    DEFAULT_OFFSET              = 0;
     int    DEFAULT_SIZE                = 10;
-    int    DEFAULT_AUTOSUGGEST_SIZE    = 4;
+    int    DEFAULT_AUTOSUGGEST_SIZE    = 3;
     int    DEFAULT_AUTOSUGGEST_COMPARE = 10;
 
     ///// Exam Detail//////////
@@ -261,6 +259,7 @@ public interface ExploreConstants {
 
     String COLLEGE_FOCUS   = "colleges_focus";
     String TOP_COLLEGES    = "top_colleges";
+    String TOP_SCHOOLS    = "top_schools";
     String TOP_EXAMS       = "top_exams";
     String TOP_EXAMS_APP   = "top_exams_app";
     String ICON            = "icon";
@@ -275,6 +274,7 @@ public interface ExploreConstants {
     String RANKING_CAREER  = "CAREERS360";
     String NIRF_LOGO       = "/nirf.jpg";
     String CAREER_LOGO     = "/career360.jpg";
+    String EMPTY_STRING    = " ";
 
     String RECENT_SEARCHES_kAFKA_TOPIC = "recent_searches";
     String RECENT_SEARCHES_ES_INDEX    = "recent_searches";
@@ -283,5 +283,26 @@ public interface ExploreConstants {
     String SEARCH_HISTORY_TERMS        = "terms";
     String SEARCH_HISTORY_UPDATEDAT    = "updated_at";
     int    DELETE_RECENTS_BATCH_SIZE   = 100;
+
+    String CTA                  = "cta";
+    String SELECTED             = "_selected";
+    String CTA_LOGO_PLACEHOLDER = "/placeholder.svg";
+
+    //School Constants
+    String SCHOOL_SEARCH_NAMESPACE = "school_search";
+    String SCHOOL_FILTER_NAMESPACE = "school_filter";
+    String SEARCH_ANALYZER_SCHOOL  = "word_delimiter_analyzer";
+    String SEARCH_INDEX_SCHOOL     = "education_search_school_v1";
+    String SCHOOL_FACILITY_KEY = "school_facility_map";
+
+    String OTHER           = "Other";
+    String SUMMARY         = "Summary";
+    String BLANK           = "";
+    String RANKING_OVERALL = "ranking_overall";
+    int    MINUS_TEN       = -10;
+    int    SIXTY           = 60;
+    String YEARS           = "years";
+    int    SIX             = 6;
+    String P_TOP_INS       = "P_TOP_INS";
 
 }
