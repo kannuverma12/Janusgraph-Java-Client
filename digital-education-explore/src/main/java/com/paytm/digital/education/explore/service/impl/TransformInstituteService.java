@@ -158,13 +158,15 @@ public class TransformInstituteService {
 
                     for (String url : urls) {
                         String imageName = getImageName(url);
-                        String imageUrl = uploadUtil.uploadImage(url, imageName,
-                                institute.getInstituteId(), AwsConfig.getS3ExploreBucketName(),
-                                AWSConstants.S3_RELATIVE_PATH_FOR_EXPLORE);
-                        if (Objects.nonNull(imageUrl)) {
-                            newUrls.add("/" + imageUrl);
-                        } else {
-                            // TODO add fail over strategy
+                        if (Objects.nonNull(imageName)) {
+                            String imageUrl = uploadUtil.uploadImage(url, imageName,
+                                    institute.getInstituteId(), AwsConfig.getS3ExploreBucketName(),
+                                    AWSConstants.S3_RELATIVE_PATH_FOR_EXPLORE);
+                            if (Objects.nonNull(imageUrl)) {
+                                newUrls.add("/" + imageUrl);
+                            } else {
+                                // TODO add fail over strategy
+                            }
                         }
                     }
                     images.put(key, newUrls);
@@ -176,22 +178,28 @@ public class TransformInstituteService {
 
             String logoUrl = g.getLogo();
             String logoName = getImageName(logoUrl);
-            String logoS3Url = uploadUtil.uploadImage(logoUrl, logoName,
-                    institute.getInstituteId(), AwsConfig.getS3ExploreBucketName(),
-                    AWSConstants.S3_RELATIVE_PATH_FOR_EXPLORE);
+            if (Objects.nonNull(logoName)) {
+                String logoS3Url = uploadUtil.uploadImage(logoUrl, logoName,
+                        institute.getInstituteId(), AwsConfig.getS3ExploreBucketName(),
+                        AWSConstants.S3_RELATIVE_PATH_FOR_EXPLORE);
 
-            if (Objects.nonNull(logoS3Url)) {
-                g.setLogo("/" + logoS3Url);
-            } else {
-                // TODO add fail over strategy
+                if (Objects.nonNull(logoS3Url)) {
+                    g.setLogo("/" + logoS3Url);
+                } else {
+                    // TODO add fail over strategy
+                }
             }
+
         }
         log.info("Images uploaded successfully for institute id {}", institute.getInstituteId());
     }
 
     private String getImageName(String url) {
-        String[] arr = url.split("/");
-        return arr[arr.length - 1];
+        if (Objects.nonNull(url)) {
+            String[] arr = url.split("/");
+            return arr[arr.length - 1];
+        }
+        return null;
     }
 
 }
