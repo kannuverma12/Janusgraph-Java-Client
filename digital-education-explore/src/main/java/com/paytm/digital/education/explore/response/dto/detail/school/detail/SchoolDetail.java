@@ -23,7 +23,7 @@ public class SchoolDetail {
     private List<ShiftDetails> shiftDetailsList;
 
     @JsonProperty("faculty")
-    private FacultyDetail facultyDetail = new FacultyDetail();
+    private FacultyDetail facultyDetail;
 
     @JsonProperty("fees_data")
     private List<SchoolFeeDetails> feesDetails;

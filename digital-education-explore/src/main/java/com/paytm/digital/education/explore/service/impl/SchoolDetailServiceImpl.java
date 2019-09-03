@@ -11,6 +11,7 @@ import com.paytm.digital.education.explore.database.entity.School;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.FacilityResponse;
+import com.paytm.digital.education.explore.response.dto.detail.school.detail.FacultyDetail;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.GeneralInformation;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.ImportantDate;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.SchoolDetail;
@@ -45,6 +46,7 @@ import static com.paytm.digital.education.explore.enums.EducationEntity.SCHOOL;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_SCHOOL_NAME;
 import static com.paytm.digital.education.mapping.ErrorEnum.NO_ENTITY_FOUND;
+import static com.paytm.digital.education.utility.CommonUtils.isNullOrZero;
 
 @Slf4j
 @Service
@@ -97,8 +99,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
             schoolDetail.setShiftDetailsList(
                     boardData.getShifts().stream().map(ShiftDetailsResponse::new)
                             .collect(Collectors.toList()));
-            schoolDetail.getFacultyDetail().setTotalTeachers(boardData.getNoOfTeachers());
-            schoolDetail.getFacultyDetail().setStudentToTeacherRatio(boardData.getStudentRatio());
+            schoolDetail.setFacultyDetail(fetchFacultyDetailsIfPresent(boardData));
             schoolDetail.setFeesDetails(boardData.getFeesDetails());
             List<FacilityResponse> facilityResponseList =
                     facilityDataHelper
@@ -123,6 +124,18 @@ public class SchoolDetailServiceImpl implements SchoolService {
             schoolDetail.setStreams(boardData.getStreams());
         }
         return schoolDetail;
+    }
+
+    private FacultyDetail fetchFacultyDetailsIfPresent(BoardData boardData) {
+        if (Objects.isNull(boardData)) {
+            return null;
+        }
+        Integer numberOfTeachers = boardData.getNoOfTeachers();
+        String studentRatio = boardData.getStudentRatio();
+        if (!isNullOrZero(numberOfTeachers) && StringUtils.isNotBlank(studentRatio)) {
+            return new FacultyDetail(numberOfTeachers, studentRatio);
+        }
+        return null;
     }
 
     private GeneralInformation collectGeneralInformationFromSchool(School school) {
