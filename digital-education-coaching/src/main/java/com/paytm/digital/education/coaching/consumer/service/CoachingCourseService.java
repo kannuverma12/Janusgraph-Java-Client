@@ -2,11 +2,14 @@ package com.paytm.digital.education.coaching.consumer.service;
 
 import com.paytm.digital.education.coaching.consumer.model.dto.Exam;
 import com.paytm.digital.education.coaching.consumer.model.response.GetCoachingCourseDetailsResponse;
+import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingCourseData;
+import com.paytm.digital.education.coaching.consumer.service.helper.SearchDataHelper;
 import com.paytm.digital.education.coaching.consumer.transformer.CoachingCourseTransformer;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.utility.CommonUtils;
 import lombok.AllArgsConstructor;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,6 +37,8 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.E
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_PREFIX;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.NAME;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_IDS;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_COURSE_ID_AND_URL_DISPLAY_KEY;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 
@@ -47,6 +53,7 @@ public class CoachingCourseService {
 
     private final CoachingCourseTransformer coachingCourseTransformer;
     private final CommonMongoRepository     commonMongoRepository;
+    private final SearchDataHelper          searchDataHelper;
 
     public GetCoachingCourseDetailsResponse getCourseDetailsByIdAndUrlDisplayKey(
             final long courseId, final String urlDisplayKey) {
@@ -290,5 +297,21 @@ public class CoachingCourseService {
                 .syllabus(course.getSyllabus())
                 .brochure(course.getBrochure())
                 .build();
+    }
+
+    public List<CoachingCourseData> getTopCoachingCoursesForExamId(Long examId) {
+        Map<String, List<Object>> filter = new HashMap<>();
+        filter.put(EXAM_IDS, Arrays.asList(examId));
+
+        return (List<CoachingCourseData>) (List<?>) searchDataHelper
+                .getTopSearchData(filter, EducationEntity.COACHING_COURSE, null);
+    }
+
+    public List<CoachingCourseData> getTopCoachingCoursesForStreamId(Long streamId) {
+        Map<String, List<Object>> filter = new HashMap<>();
+        filter.put(STREAM_IDS, Arrays.asList(streamId));
+
+        return (List<CoachingCourseData>) (List<?>) searchDataHelper
+                .getTopSearchData(filter, EducationEntity.COACHING_COURSE, null);
     }
 }

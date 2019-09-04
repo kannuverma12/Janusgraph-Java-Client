@@ -28,7 +28,13 @@ public enum EducationEntity {
     LOCATION,
 
     @JsonProperty("recent_searches")
-    RECENT_SEARCHES;
+    RECENT_SEARCHES,
+
+    @JsonProperty("coaching_institute")
+    COACHING_INSTITUTE,
+
+    @JsonProperty("coaching_course")
+    COACHING_COURSE;
 
     public static Career360EntityType convertToCareer360entity(EducationEntity educationEntity) {
         switch (educationEntity) {

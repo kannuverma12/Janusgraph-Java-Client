@@ -4,6 +4,8 @@ import com.paytm.digital.education.coaching.consumer.model.dto.Exam;
 import com.paytm.digital.education.coaching.consumer.model.dto.Stream;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopRanker;
 import com.paytm.digital.education.coaching.consumer.model.response.GetCoachingInstituteDetailsResponse;
+import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingInstituteData;
+import com.paytm.digital.education.coaching.consumer.service.helper.SearchDataHelper;
 import com.paytm.digital.education.coaching.consumer.transformer.CoachingInstituteTransformer;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
@@ -11,17 +13,21 @@ import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.database.repository.TopRankerRepository;
+import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.enums.CourseType;
+import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.utility.CommonUtils;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -35,19 +41,22 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.E
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_PREFIX;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_ID;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_IDS;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.IGNORE_GLOBAL_PRIORITY;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
+import static com.paytm.digital.education.elasticsearch.enums.DataSortOrder.ASC;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_NAME;
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class CoachingInstituteConsumerService {
 
-    @Autowired
-    private CommonMongoRepository commonMongoRepository;
-
-    @Autowired
-    private TopRankerRepository topRankerRepository;
+    private final CommonMongoRepository commonMongoRepository;
+    private final TopRankerRepository   topRankerRepository;
+    private final SearchDataHelper      searchDataHelper;
 
     public GetCoachingInstituteDetailsResponse getCoachingInstituteDetails(long instituteId,
             String urlDisplayKey) {
@@ -213,5 +222,27 @@ public class CoachingInstituteConsumerService {
             }
         }
         return coachingCourseIdsAndNameMap;
+    }
+
+    public List<CoachingInstituteData> getTopCoachingInstitutesByExamId(Long examId) {
+        Map<String, List<Object>> filter = new HashMap<>();
+        filter.put(EXAM_IDS, Arrays.asList(examId));
+
+        LinkedHashMap<String, DataSortOrder> sortOrder = new LinkedHashMap<>();
+        sortOrder.put(IGNORE_GLOBAL_PRIORITY, ASC);
+
+        return (List<CoachingInstituteData>) (List<?>) searchDataHelper
+                .getTopSearchData(filter, EducationEntity.COACHING_INSTITUTE, sortOrder);
+    }
+
+    public List<CoachingInstituteData> getTopCoachingInstitutesByStreamId(Long streamId) {
+        Map<String, List<Object>> filter = new HashMap<>();
+        filter.put(STREAM_IDS, Arrays.asList(streamId));
+
+        LinkedHashMap<String, DataSortOrder> sortOrder = new LinkedHashMap<>();
+        sortOrder.put(IGNORE_GLOBAL_PRIORITY, ASC);
+
+        return (List<CoachingInstituteData>) (List<?>) searchDataHelper
+                .getTopSearchData(filter, EducationEntity.COACHING_INSTITUTE, sortOrder);
     }
 }

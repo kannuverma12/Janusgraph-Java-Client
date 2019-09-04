@@ -5,31 +5,31 @@ import com.paytm.digital.education.config.AwsConfig;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CoachingConstants {
 
-    public static final String INSTITUTE_ID                          = "institute_id";
-    public static final String INSTITUTE                             = "institute";
-    public static final String COACHING_CENTER                       = "coaching_center";
-    public static final String EXAM                                  = "exam";
-    public static final String COACHING                              = "coaching";
-    public static final String COURSE                                = "course";
-    public static final String COACHING_CENTER_ID                    = "center_id";
-    public static final String EXAM_ID                               = "exam_id";
-    public static final String STREAM_ID                             = "stream_id";
-    public static final String COURSE_ID                             = "course_id";
-    public static final String ACTIVE                                = "active";
-    public static final String KEY_STRING                            = "key";
-    public static final String SEQUENCE                              = "sequence";
-    public static final String UPDATED_AT                            = "updated_at";
-    public static final String YYYY_MM_DD                            = "yyyy-MM-dd";
-    public static final String YYYY_MM_DD_T_HH_MM_SS                 = "yyyy-MM-dd'T'HH:mm:ss";
-    public static final String COURSE_TYPE                           = "course_type";
-    public static final String EXAM_DOMAIN                           = "domains";
-    public static final String COACHING_COURSE_STREAM                = "stream_ids";
-    public static final String COACHING_EXAM_STREAMS                 = "streams";
-
+    public static final String INSTITUTE_ID           = "institute_id";
+    public static final String INSTITUTE              = "institute";
+    public static final String COACHING_CENTER        = "coaching_center";
+    public static final String EXAM                   = "exam";
+    public static final String COACHING               = "coaching";
+    public static final String COURSE                 = "course";
+    public static final String COACHING_CENTER_ID     = "center_id";
+    public static final String EXAM_ID                = "exam_id";
+    public static final String STREAM_ID              = "stream_id";
+    public static final String COURSE_ID              = "course_id";
+    public static final String ACTIVE                 = "active";
+    public static final String KEY_STRING             = "key";
+    public static final String SEQUENCE               = "sequence";
+    public static final String UPDATED_AT             = "updated_at";
+    public static final String YYYY_MM_DD             = "yyyy-MM-dd";
+    public static final String YYYY_MM_DD_T_HH_MM_SS  = "yyyy-MM-dd'T'HH:mm:ss";
+    public static final String COURSE_TYPE            = "course_type";
+    public static final String EXAM_DOMAIN            = "domains";
+    public static final String COACHING_COURSE_STREAM = "stream_ids";
+    public static final String COACHING_EXAM_STREAMS  = "streams";
 
     public static final String EXAM_NOT_FOUND_ERROR                  =
             "No such exam exists. Please check your request.";
@@ -98,9 +98,45 @@ public class CoachingConstants {
     public static final String XCEL_EXAM_DATE_FORMAT                 = "dd/MM/yyyy";
     public static final String S3_UPLOAD_FAILED                      = "File upload failed";
     public static final String COACHING_EXAM                         = "coaching_exam";
-    public static final String COACHING_COURSE_ID    = "course_id";
-    public static final String COACHING_COURSE_IDS    = "course_ids";
-    public static final String NAME    = "name";
+    public static final String COACHING_COURSE_ID                    = "course_id";
+    public static final String COACHING_COURSE_IDS                   = "course_ids";
+    public static final String NAME                                  = "name";
+
+    public static final String RESOURCE_NOT_PRESENT = "resource not available";
+
+    public static final String INSTITUTES_GOOGLE_SHEET =
+            "https://docs.google.com/spreadsheets/u/1/d/1gXwzFk3tLldPBYkgWZZINAc4gNJBSyItINeLLg4Bqs8/edit#gid=1844071691";
+    public static final String TOP_RANKER_GOOGLE_SHEET =
+            "https://docs.google.com/spreadsheets/d/1wBWJbX57bTgZxkwCx9Ml3Z9fVOP-yQkVvlRA-krdOZo/edit#gid=1642305828";
+
+    public static final SimpleDateFormat MMM_YYYY    = new SimpleDateFormat("MMM,yyyy");
+    public static final SimpleDateFormat DD_MMM_YYYY = new SimpleDateFormat("dd MMM,yyyy");
+    public static final SimpleDateFormat YYYY_MM     = new SimpleDateFormat("yyyy-MM");
+
+
+    public static final List<ExamAdditionalInfo> EXAM_ADDITIONAL_INFO_PARAMS = new ArrayList<>();
+
+    static {
+        EXAM_ADDITIONAL_INFO_PARAMS.add(
+                new ExamAdditionalInfo("Eligibility", "Find out eligibility", "image_link"));
+        EXAM_ADDITIONAL_INFO_PARAMS.add(
+                new ExamAdditionalInfo("Syllabus", "Find out Syllabus", "image_link"));
+        EXAM_ADDITIONAL_INFO_PARAMS.add(
+                new ExamAdditionalInfo("Fill Application Form", "Fill out application form",
+                        "image_link"));
+        EXAM_ADDITIONAL_INFO_PARAMS.add(
+                new ExamAdditionalInfo(
+                        "Frequently Asked Questions",
+                        "Find answers to your most common questions",
+                        "image_link"));
+    }
+
+    public static final List<String> EXAM_DETAILS_FIELDS = new ArrayList<>(
+            Arrays.asList("exam_id", "exam_full_name", "exam_short_name", "about_exam",
+                    "instances", "logo"));
+
+    public static final List<String> STREAM_DETAILS_FIELDS = new ArrayList<>(
+            Arrays.asList("stream_id", "name"));
 
     public static final String DETAILS_FIELD_GROUP        = "details_coaching";
     public static final String COACHING_INSTITUTE_PREFIX  = "coaching_institute.";
@@ -108,6 +144,10 @@ public class CoachingConstants {
     public static final String COACHING_STREAM_PREFIX     = "stream.";
     public static final String COACHING_TOP_RANKER_PREFIX = "coaching_top_ranker.";
     public static final String EXAM_PREFIX                = "exam.";
+    public static final String TOP_RANKER                 = "top_ranker";
+
+    public static final String NON_TENTATIVE = "non_tentative";
+
 
 
     public static class S3RelativePath {
@@ -120,17 +160,6 @@ public class CoachingConstants {
         public static final  String SCHOLARMATRIX    = PREFIX + "/course/{0}/scholarmatrix";
         public static final  String BROCHURE         = PREFIX + "/course/{0}/brochure";
     }
-
-
-    public static final String INSTITUTES_GOOGLE_SHEET =
-            "https://docs.google.com/spreadsheets/u/1/d/1gXwzFk3tLldPBYkgWZZINAc4gNJBSyItINeLLg4Bqs8/edit#gid=1844071691";
-
-    public static final String TOP_RANKER_GOOGLE_SHEET =
-            "https://docs.google.com/spreadsheets/d/1wBWJbX57bTgZxkwCx9Ml3Z9fVOP-yQkVvlRA-krdOZo/edit#gid=1642305828";
-
-    public static final String RESOURCE_NOT_PRESENT = "resource not available";
-
-    public static final String TOP_RANKER = "top_ranker";
 
 
     public static class URL {
@@ -150,26 +179,64 @@ public class CoachingConstants {
     }
 
 
-    public static final List<ExamAdditionalInfo> ExamAdditionalInfoParams = new ArrayList<>();
+    public static class Search {
 
-    static {
-        ExamAdditionalInfoParams.add(
-                new ExamAdditionalInfo("Eligibility", "Find out eligibility", "image_link"));
-        ExamAdditionalInfoParams.add(
-                new ExamAdditionalInfo("Syllabus", "Find out Syllabus", "image_link"));
-        ExamAdditionalInfoParams.add(
-                new ExamAdditionalInfo("Fill Application Form", "Fill out application form",
-                        "image_link"));
-        ExamAdditionalInfoParams.add(
-                new ExamAdditionalInfo(
-                        "Frequently Asked Questions",
-                        "Find answers to your most common questions",
-                        "image_link"));
+        public static final String EXAM_INDEX                      = "education_search_exam_v2";
+        public static final String SEARCH_INDEX_COACHING_COURSE    = "coaching_course_v1";
+        public static final String SEARCH_INDEX_COACHING_INSTITUTE = "coaching_institute_v1";
+
+        public static final String IGNORE_GLOBAL_PRIORITY = "ignore_global_priority";
+        public static final String IGNORE_ENTITY_POSITION = "ignore_entity_position";
+
+        public static final String EXAM_ANALYZER                      = "word_delimiter_search";
+        public static final String SEARCH_ANALYZER_COACHING_COURSE    = "ngram_analyzer";
+        public static final String SEARCH_ANALYZER_COACHING_INSTITUTE = "ngram_alanyzer";
+
+        public static final String EXAM_SHORT_NAME                = "exam_short_name";
+        public static final String EXAM_FULL_NAME                 = "exam_full_name";
+        public static final String EXAM_OFFICIAL_NAME             = "official_name";
+        public static final String EXAM_OFFICIAL_NAME_NGRAM       = "official_name.raw";
+        public static final String EXAM_NAME_SYNONYMS             = "exam_name_synonyms";
+        public static final Float  EXAM_FULL_NAME_BOOST           = 1F;
+        public static final Float  EXAM_SHORT_NAME_BOOST          = 1F;
+        public static final Float  EXAM_OFFICIAL_NAME_BOOST       = 1F;
+        public static final Float  EXAM_NAME_SYNONYMS_BOOST       = 1F;
+        public static final Float  EXAM_OFFICIAL_NAME_NGRAM_BOOST = 0.00001F;
+        public static final String APPLICATION                    = "APPLICATION";
+        public static final String NON_TENTATIVE                  = "NON_TENTATIVE";
+
+        public static final String EXAM_IDS                       = "exam_ids";
+        public static final String EXAMS                          = "exams";
+        public static final String STREAM_IDS                     = "stream_ids";
+        public static final String STREAMS                        = "streams";
+        public static final String COACHING_INSTITUTE_ID          = "coaching_institute_id";
+        public static final String COACHING_INSTITUTE_BRAND       = "brand_name";
+        public static final Float  COACHING_INSTITUTE_BRAND_BOOST = 1F;
+        public static final String COACHING_COURSE_NAME           = "course_name";
+        public static final Float  COACHING_COURSE_NAME_BOOST     = 1F;
+
+        public static final String SEARCH_STREAM_PREFIX = "streams.";
+        public static final String SEARCH_STREAM_SUFFIX = ".position";
+        public static final String SEARCH_EXAM_PREFIX   = "exams.";
+        public static final String SEARCH_EXAM_SUFFIX   = ".position";
+
+        public static final String GLOBAL_PRIORITY = "global_priority";
+        public static final String DATE_TAB        = "dates";
+        public static final String SYLLABUS_TAB    = "syllabus";
+        public static final String RESULT          = "results";
+        public static final String EXAM            = "EXAM";
+
+        public static final String FEES                      = "fees";
+        public static final String DATA                      = "data";
+        public static final String DISPLAY_NAME              = "display_name";
+        public static final String KEY                       = "key";
+        public static final int    SEARCH_REQUEST_MAX_OFFSET = 9950;
+        public static final int    SEARCH_REQUEST_MAX_LIMIT  = 500;
+        public static final int    DEFAULT_OFFSET            = 0;
+        public static final int    DEFAULT_SIZE              = 10;
+
+
+
     }
 
-    public static final SimpleDateFormat MMM_YYYY    = new SimpleDateFormat("MMM,yyyy");
-    public static final SimpleDateFormat DD_MMM_YYYY = new SimpleDateFormat("dd MMM,yyyy");
-    public static final SimpleDateFormat YYYY_MM     = new SimpleDateFormat("yyyy-MM");
-
-    public static final String NON_TENTATIVE = "non_tentative";
 }

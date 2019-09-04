@@ -14,14 +14,15 @@ import java.util.List;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.MMM_YYYY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.NON_TENTATIVE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.APPLICATION;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.YYYY_MM;
 import static com.paytm.digital.education.utility.DateUtil.stringToDate;
 
 @UtilityClass
 public class CommonServiceUtils {
 
-    private static final Date                  MAX_DATE = new Date(Long.MAX_VALUE);
-    private static final Date                  MIN_DATE = new Date(Long.MIN_VALUE);
+    private static final Date MAX_DATE = new Date(Long.MAX_VALUE);
+    private static final Date MIN_DATE = new Date(Long.MIN_VALUE);
 
     public static List<ExamImportantDate> buildExamImportantDates(Exam exam) {
         List<ExamImportantDate> importantDates = new ArrayList<>();
@@ -29,7 +30,7 @@ public class CommonServiceUtils {
             return importantDates;
         }
 
-        int relevantInstanceIndex = getRelevantInstanceIndex(exam.getInstances());
+        int relevantInstanceIndex = getRelevantInstanceIndex(exam.getInstances(), APPLICATION);
 
         importantDates.addAll(convertEventEntityToResponse(
                 exam.getExamFullName(),
@@ -38,7 +39,7 @@ public class CommonServiceUtils {
         return importantDates;
     }
 
-    private int getRelevantInstanceIndex(List<Instance> instances) {
+    private int getRelevantInstanceIndex(List<Instance> instances, String type) {
         int instanceIndex = 0;
         Date presentDate = new Date();
         Date futureMinDate = MAX_DATE;
@@ -50,26 +51,28 @@ public class CommonServiceUtils {
                 List<Event> events = instances.get(index).getEvents();
 
                 for (Event event : events) {
-                    Date eventDate;
-                    if (NON_TENTATIVE.equalsIgnoreCase(event.getCertainty())) {
-                        eventDate = event.getDate() != null
-                                ? event.getDate()
-                                : event.getDateRangeStart();
-                    } else {
-                        eventDate = stringToDate(event.getMonthDate(), YYYY_MM);
-                    }
+                    if (event.getType().equalsIgnoreCase(type)) {
+                        Date eventDate;
+                        if (NON_TENTATIVE.equalsIgnoreCase(event.getCertainty())) {
+                            eventDate = event.getDate() != null
+                                    ? event.getDate()
+                                    : event.getDateRangeStart();
+                        } else {
+                            eventDate = stringToDate(event.getMonthDate(), YYYY_MM);
+                        }
 
-                    if (eventDate != null && minApplicationDate.after(eventDate)) {
-                        minApplicationDate = eventDate;
-                    }
-                    if (eventDate != null && minApplicationDate.after(presentDate)
-                            && futureMinDate.after(eventDate)) {
-                        futureMinDate = minApplicationDate;
-                        instanceIndex = index;
-                    } else if (futureMinDate.equals(MAX_DATE)
-                            && minApplicationDate.after(pastMaxDate)) {
-                        pastMaxDate = minApplicationDate;
-                        instanceIndex = index;
+                        if (eventDate != null && minApplicationDate.after(eventDate)) {
+                            minApplicationDate = eventDate;
+                        }
+                        if (eventDate != null && minApplicationDate.after(presentDate)
+                                && futureMinDate.after(eventDate)) {
+                            futureMinDate = minApplicationDate;
+                            instanceIndex = index;
+                        } else if (futureMinDate.equals(MAX_DATE)
+                                && minApplicationDate.after(pastMaxDate)) {
+                            pastMaxDate = minApplicationDate;
+                            instanceIndex = index;
+                        }
                     }
                 }
             }

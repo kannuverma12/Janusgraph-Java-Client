@@ -27,8 +27,9 @@ public class CoachingStreamController {
 
     @GetMapping(value = GET_STREAM_DETAILS)
     public GetStreamDetailsResponse getStreamDetails(
-            @RequestParam(value = "streamId") @NotNull final Long streamId,
+            @RequestParam(value = "stream_id") @NotNull final Long streamId,
             @RequestParam(value = "url_display_key") @NotEmpty final String urlDisplayKey) {
-        return coachingStreamService.getStreamDetails(streamId,urlDisplayKey);
+
+        return coachingStreamService.getStreamDetails(streamId, urlDisplayKey);
     }
 }
