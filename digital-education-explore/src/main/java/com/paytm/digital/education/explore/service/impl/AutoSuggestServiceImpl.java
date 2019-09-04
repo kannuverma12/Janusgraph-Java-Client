@@ -125,21 +125,16 @@ public class AutoSuggestServiceImpl {
     public AutoSuggestResponse autosuggestInstitute(String query, Integer limit) {
         AutoSuggestResponse autoSuggestResponse;
 
-        if (StringUtils.isNotBlank(query)) {
-            if (query.equalsIgnoreCase(P_TOP_INS)) {
-                autoSuggestResponse = getTopInstitutes(limit);
-            } else {
-                List<EducationEntity> entities = new ArrayList<>();
-                entities.add(EducationEntity.INSTITUTE);
-                autoSuggestResponse = getSuggestions(query, entities, null, null);
-                if (Objects.nonNull(autoSuggestResponse) && CollectionUtils
-                        .isEmpty(autoSuggestResponse.getData())) {
-                    addEmptyResponse(autoSuggestResponse);
-                }
-            }
+        if (Objects.isNull(query) || StringUtils.isBlank(query)) {
+            autoSuggestResponse = getTopInstitutes(limit);
         } else {
-            autoSuggestResponse = new AutoSuggestResponse();
-            addEmptyResponse(autoSuggestResponse);
+            List<EducationEntity> entities = new ArrayList<>();
+            entities.add(EducationEntity.INSTITUTE);
+            autoSuggestResponse = getSuggestions(query, entities, null, null);
+            if (Objects.nonNull(autoSuggestResponse) && CollectionUtils
+                    .isEmpty(autoSuggestResponse.getData())) {
+                addEmptyResponse(autoSuggestResponse);
+            }
         }
         addDefaultOption(autoSuggestResponse);
         return autoSuggestResponse;
