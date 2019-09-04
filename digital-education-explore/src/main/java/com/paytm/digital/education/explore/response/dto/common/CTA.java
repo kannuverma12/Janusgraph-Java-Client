@@ -62,6 +62,8 @@ public class CTA {
 
         public static final String COMPARE_APP = "Compare";
 
+        public static final String PREDICT_COLLEGE = "Predict College";
+
     }
 
 

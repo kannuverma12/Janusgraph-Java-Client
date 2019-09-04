@@ -96,7 +96,9 @@ public class CTAHelper {
         return CTA.builder()
                 .logo(getAbsoluteLogoUrl(logosPerCta, CTAType.PREDICTOR.name().toLowerCase()))
                 .url(predictorUrlPrefix + predictorId.toString())
-                .type(CTAType.PREDICTOR).build();
+                .type(CTAType.PREDICTOR)
+                .label(CTA.Constants.PREDICT_COLLEGE)
+                .build();
     }
 
     private CTA getFormsCTA(String formsUrl, Map<String, Object> logosPerCta) {
