@@ -22,7 +22,6 @@ public class ConverterUtil {
     public static void setStreamData(StreamDataRequest request, StreamEntity streamEntity) {
         streamEntity.setLogo(request.getLogo());
         streamEntity.setName(request.getName());
-        streamEntity.setTopInstitutes(request.getTopInstitutes());
         streamEntity.setPriority(request.getPriority());
         streamEntity.setIsEnabled(request.getIsEnabled());
     }
@@ -87,8 +86,8 @@ public class ConverterUtil {
         coachingExamEntity.setExamType(request.getExamType());
         coachingExamEntity.setExamName(request.getExamName());
         coachingExamEntity.setExamDescription(request.getExamDescription());
-        coachingExamEntity.setCourseId(request.getProgramId());
-        coachingExamEntity.setStreamId(request.getStreamId());
+        coachingExamEntity.setCourseIds(request.getCourseIds());
+        coachingExamEntity.setStreamIds(request.getStreamIds());
         coachingExamEntity.setExamDuration(request.getExamDuration());
         coachingExamEntity.setMaximumMarks(request.getMaximumMarks());
         coachingExamEntity.setExamDate(request.getExamDate());

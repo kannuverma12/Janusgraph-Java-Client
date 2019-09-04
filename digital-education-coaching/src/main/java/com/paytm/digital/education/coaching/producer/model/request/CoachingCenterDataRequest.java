@@ -30,7 +30,7 @@ public class CoachingCenterDataRequest {
     private Long instituteId;
 
     @NotEmpty
-    @Size(max = 100)
+    @Size(max = 20)
     @ApiModelProperty(value = "name of the center")
     private String officialName;
 
@@ -42,9 +42,10 @@ public class CoachingCenterDataRequest {
     @ApiModelProperty(value = "elements from predefined course types")
     private List<CourseType> courseTypes;
 
-    @Min(value = 0)
+    @NotNull
+    @Min(value = 1)
     @ApiModelProperty(value = "priority of coaching center")
-    private Integer priority = new Integer(0);
+    private Integer priority;
 
     @ApiModelProperty(value = "flag to enable/disable the center")
     private Boolean isEnabled = Boolean.TRUE;

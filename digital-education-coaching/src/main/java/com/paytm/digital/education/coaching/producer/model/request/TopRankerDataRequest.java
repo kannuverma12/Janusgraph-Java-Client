@@ -40,7 +40,7 @@ public class TopRankerDataRequest {
     private Long examId;
 
     @NotEmpty
-    @Size(max = 50)
+    @Size(max = 30)
     @ApiModelProperty(value = "name of student")
     private String studentName;
 
@@ -54,13 +54,12 @@ public class TopRankerDataRequest {
     @ApiModelProperty(value = "course ids studied")
     private List<Long> courseStudied;
 
-    @NotEmpty
-    @Size(max = 50)
+    @Size(max = 20)
     @ApiModelProperty(value = "batch info")
     private String batchInfo;
 
     @NotEmpty
-    @Size(max = 50)
+    @Size(max = 20)
     @ApiModelProperty(value = "rank obtained")
     private String rankObtained;
 
@@ -69,24 +68,24 @@ public class TopRankerDataRequest {
     @ApiModelProperty(value = "exam year of the rank holder")
     private String examYear;
 
-    @NotEmpty
     @Size(max = 50)
     @ApiModelProperty(value = "college taken")
     private String collegeAdmitted;
 
-
-    @NotEmpty
-    @Size(max = 100)
+    @Size(max = 200)
     @ApiModelProperty(value = "testimonial from rank holder")
     private String testimonial;
 
+    // TODO : define an enum for this
+    @NotNull
+    @ApiModelProperty(value = "student category")
+    private Object studentCategory;
 
     @NotNull
     @Min(value = 1)
     @ApiModelProperty(value = "priority across all the existing top ranker")
     private Integer priority;
 
-    @NotNull
     @ApiModelProperty(value = "flag to enable/disable the top ranker")
     private Boolean isEnabled = Boolean.TRUE;
 }

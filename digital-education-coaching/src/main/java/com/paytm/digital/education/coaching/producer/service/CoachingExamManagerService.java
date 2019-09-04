@@ -8,7 +8,9 @@ import com.paytm.digital.education.exception.InvalidRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class CoachingExamManagerService {
@@ -41,11 +43,7 @@ public class CoachingExamManagerService {
         //            }
         //        }
 
-        StreamEntity existingStreamEntity = streamService.findByStreamId(request.getStreamId());
-        if (Objects.isNull(existingStreamEntity)) {
-            throw new InvalidRequestException("StreamEntity id not present");
-        }
-
+        streamService.isValidStreamIds(request.getStreamIds());
         return CoachingExamDTO.builder()
                 .coachingExamId(coachingExamService.insertCoachingExam(request).getCoachingExamId())
                 .build();
@@ -69,12 +67,7 @@ public class CoachingExamManagerService {
         //            }
         //        }
 
-
-        StreamEntity existingStreamEntity = streamService.findByStreamId(request.getStreamId());
-        if (Objects.isNull(existingStreamEntity)) {
-            throw new InvalidRequestException("StreamEntity id not present");
-        }
-
+        streamService.isValidStreamIds(request.getStreamIds());
         return CoachingExamDTO.builder()
                 .coachingExamId(coachingExamService.updateCoachingExam(request).getCoachingExamId())
                 .build();

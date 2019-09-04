@@ -14,14 +14,11 @@ import javax.validation.constraints.Size;
 public class KeyHighlight {
 
     @URL
-    @NotEmpty
     private String logo;
 
-    @NotEmpty
-    @Size(max = 100)
+    @Size(max = 200)
     private String key;
 
-    @NotEmpty
-    @Size(max = 100)
+    @Size(max = 200)
     private String value;
 }

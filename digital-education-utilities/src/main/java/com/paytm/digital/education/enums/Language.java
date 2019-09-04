@@ -1,8 +1,8 @@
 package com.paytm.digital.education.enums;
 
 public enum Language {
-    HINDI("year"),
-    ENGLISH("month");
+    HINDI("hindi"),
+    ENGLISH("english");
 
     private String text;
 

@@ -162,6 +162,6 @@ public class CoachingCourseEntity extends Base {
     public Integer classroomTestCount;
 
     @Field("classroom_teacher_student_ratio")
-    public Integer classroomTeacherStudentRatio;
+    private String classroomTeacherStudentRatio;
 
 }

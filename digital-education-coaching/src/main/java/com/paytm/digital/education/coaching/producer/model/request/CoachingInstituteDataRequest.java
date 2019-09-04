@@ -2,8 +2,10 @@ package com.paytm.digital.education.coaching.producer.model.request;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.paytm.digital.education.coaching.producer.model.embedded.Faq;
 import com.paytm.digital.education.coaching.producer.model.embedded.KeyHighlight;
 import com.paytm.digital.education.coaching.producer.model.embedded.OfficialAddress;
+import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.CourseType;
 import com.paytm.digital.education.validator.PositiveElementsCollection;
 import io.swagger.annotations.ApiModel;
@@ -34,7 +36,7 @@ public class CoachingInstituteDataRequest {
     private String brandName;
 
     @NotEmpty
-    @Size(max = 1000)
+    @Size(max = 250)
     @ApiModelProperty(value = "description about coaching institute")
     private String aboutInstitute;
 
@@ -59,9 +61,10 @@ public class CoachingInstituteDataRequest {
     @PositiveElementsCollection
     private List<Long> examIds;
 
-    @Min(value = 0)
+    @NotNull
+    @Min(value = 1)
     @ApiModelProperty(value = "priority of coaching institute")
-    private Integer priority = new Integer(0);
+    private Integer priority;
 
     @ApiModelProperty(value = "flag is enable/disable institute, default is true")
     private Boolean isEnabled = Boolean.TRUE;
@@ -70,14 +73,27 @@ public class CoachingInstituteDataRequest {
     @ApiModelProperty(value = "elements from predefined course types")
     private List<CourseType> courseTypes;
 
+    @NotEmpty
+    @ApiModelProperty(value = "elements from predefined course levels")
+    private List<CourseLevel> courseLevels;
+
     @Valid
     private OfficialAddress officialAddress;
 
-    @NotEmpty
     @Pattern(regexp = "^(19|20)\\d{2}$")
     private String establishmentYear;
 
     @URL
     @NotEmpty
     private String brochureUrl;
+
+    @Valid
+    private List<Faq> faqs;
+
+    @URL
+    private String extraInfo1;
+
+    @Size(max = 200)
+    private String extraInfo2;
+
 }

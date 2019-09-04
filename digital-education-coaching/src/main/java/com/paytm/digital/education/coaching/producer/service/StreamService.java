@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class StreamService {
@@ -37,11 +38,22 @@ public class StreamService {
         return coachingStreamDAO.save(existingStreamEntity);
     }
 
-    public List<StreamEntity> findAllByStreamId(List<Long> instituteIds) {
-        return coachingStreamDAO.findAllByStreamId(instituteIds);
+    public List<StreamEntity> findAllByStreamId(List<Long> streamIds) {
+        return coachingStreamDAO.findAllByStreamId(streamIds);
     }
 
     public StreamEntity findByStreamId(Long instituteId) {
         return coachingStreamDAO.findByStreamId(instituteId);
+    }
+
+    public boolean isValidStreamIds(List<Long> ids) {
+        List<Long> existingStreamIds = coachingStreamDAO.findAllByStreamId(ids)
+                .stream().map(StreamEntity::getStreamId).collect(Collectors.toList());
+        List<Long> invalidStreamIds = ids.stream().filter(id -> !existingStreamIds.contains(id))
+                .collect(Collectors.toList());
+        if (!invalidStreamIds.isEmpty()) {
+            throw new InvalidRequestException("Invalid StreamEntity ids given : " + invalidStreamIds);
+        }
+        return true;
     }
 }

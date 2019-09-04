@@ -19,7 +19,7 @@ public class CoachingCourseDAO {
     private SequenceGenerator sequenceGenerator;
 
     public CoachingCourseEntity save(@NonNull CoachingCourseEntity coachingProgramEntity) {
-        if (Objects.nonNull(coachingProgramEntity.getCourseId())) {
+        if (Objects.isNull(coachingProgramEntity.getCourseId())) {
             coachingProgramEntity.setCourseId(sequenceGenerator
                     .getNextSequenceId(coachingProgramEntity.getClass().getSimpleName()));
         }

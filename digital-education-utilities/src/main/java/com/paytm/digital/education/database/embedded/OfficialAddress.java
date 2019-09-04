@@ -33,10 +33,10 @@ public class OfficialAddress {
     private String pincode;
 
     @Field("latitude")
-    private String latitude;
+    private Double latitude;
 
     @Field("longitude")
-    private String longitude;
+    private Double longitude;
 
     @Field("email")
     private String email;

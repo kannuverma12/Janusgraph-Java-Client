@@ -10,6 +10,7 @@ import org.hibernate.validator.constraints.URL;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.List;
 
@@ -24,6 +25,7 @@ public class StreamDataRequest {
 
     @NotEmpty
     @Size(max = 50)
+    @Pattern(regexp = "^[a-zA-Z&-]+$")
     @ApiModelProperty(value = "name of the stream")
     private String name;
 
@@ -34,15 +36,9 @@ public class StreamDataRequest {
 
     @URL
     @ApiModelProperty(value = "stream logo url")
-    @NotNull
     private String logo;
 
-    @NotNull
     @ApiModelProperty(value = "flag to enable/disable the stream")
     private Boolean isEnabled = Boolean.TRUE;
-
-    @NotEmpty
-    @ApiModelProperty(value = "top institutes id for this streams")
-    private List<Long> topInstitutes;
 
 }

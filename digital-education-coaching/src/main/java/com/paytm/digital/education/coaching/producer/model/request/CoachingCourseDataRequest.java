@@ -30,7 +30,7 @@ public class CoachingCourseDataRequest {
     private Long courseId;
 
     @NotEmpty
-    @Size(max = 50)
+    @Size(max = 100)
     @ApiModelProperty(value = "name of course")
     private String name;
 
@@ -53,11 +53,6 @@ public class CoachingCourseDataRequest {
     @ApiModelProperty(value = "id of primary exams")
     private List<Long> primaryExamIds;
 
-    @NotEmpty
-    @PositiveElementsCollection
-    @ApiModelProperty(value = "id of auxiliary exams")
-    private List<Long> auxiliaryExams;
-
     @NotNull
     @ApiModelProperty(value = "duration type from predefined duration types")
     private DurationType durationType;
@@ -68,12 +63,12 @@ public class CoachingCourseDataRequest {
     private Integer duration;
 
     @NotEmpty
-    @Size(max = 50)
+    @Size(max = 30)
     @ApiModelProperty(value = "eligibility for coaching course")
     private String eligibility;
 
     @NotEmpty
-    @Size(max = 50)
+    @Size(max = 150)
     @ApiModelProperty(value = "short description about coaching course")
     private String info;
 
@@ -82,9 +77,8 @@ public class CoachingCourseDataRequest {
     @ApiModelProperty(value = "description about coaching course")
     private String description;
 
-    @NotEmpty
-    @Max(value = 200000)
-    @Min(value = 1)
+    @NotNull
+    @Min(value = 0)
     @ApiModelProperty(value = "mrp of for coaching course")
     private Double price;
 
@@ -100,9 +94,10 @@ public class CoachingCourseDataRequest {
     @NotEmpty
     private String syllabusAndBrochure;
 
-    @Min(value = 0)
+    @NotNull
+    @Min(value = 1)
     @ApiModelProperty(value = "priority of coaching course across existing courses")
-    private Integer priority = new Integer(0);
+    private Integer priority;
 
     @NotNull
     @ApiModelProperty(value = "certified after course completion")
@@ -121,33 +116,33 @@ public class CoachingCourseDataRequest {
     private Boolean isRankAnalysisAvailable;
 
     @NotEmpty
+    @PositiveElementsCollection
     @ApiModelProperty(value = "course feature ids provided at institute level")
     private List<Long> courseFeatureIds;
 
-
-    @Positive
+    @Min(value = 1)
     @Max(value = 100)
     @ApiModelProperty(value = "number of test counts for test series")
     private Integer testCount;
 
-    @Positive
+    @Min(value = 1)
     @Max(value = 300)
     @ApiModelProperty(value = "duration of each test in minutes test series")
     private Integer testDuration;
 
-    @Positive
+    @Min(value = 1)
     @Max(value = 300)
     @ApiModelProperty(value = "question count in each test of test series")
     private Integer testQuestionCount;
 
-    @Positive
-    @Max(value = 50)
+    @Min(value = 1)
+    @Max(value = 300)
     @ApiModelProperty(value = "practice paper count of test series")
     private Integer testPracticePaperCount;
 
 
     @Positive
-    @Max(value = 100)
+    @Max(value = 50)
     @ApiModelProperty(value = "provided books count in the course")
     private Integer distanceLearningBooksCount;
 
@@ -198,18 +193,23 @@ public class CoachingCourseDataRequest {
     @ApiModelProperty(value = "online test count in the course")
     private Integer classroomTestCount;
 
-    @Positive
-    @Max(value = 100)
+    @Size(max = 10)
     @ApiModelProperty(value = "practice paper count in the course")
-    private Integer classroomTeacherStudentRatio;
+    private String classroomTeacherStudentRatio;
 
+    @Size(max = 200)
     private String howToUse1;
 
+    @Size(max = 200)
     private String howToUse2;
 
+    @Size(max = 200)
     private String howToUse3;
 
+    @Size(max = 200)
     private String howToUse4;
+
+    // TODO : add important date
 
     @ApiModelProperty(value = "flag is enable/disable course, default is true")
     private Boolean isEnabled = Boolean.TRUE;

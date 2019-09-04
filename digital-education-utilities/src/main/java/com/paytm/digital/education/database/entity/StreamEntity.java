@@ -9,8 +9,6 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @Document("stream")
@@ -30,6 +28,4 @@ public class StreamEntity extends Base {
 
     private String logo;
 
-    @Field("top_institutes")
-    private List<Long> topInstitutes;
 }

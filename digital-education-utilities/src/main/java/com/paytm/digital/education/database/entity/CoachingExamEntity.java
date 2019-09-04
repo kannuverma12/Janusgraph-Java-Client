@@ -44,10 +44,10 @@ public class CoachingExamEntity extends Base {
     private String examDescription;
 
     @Field("course_id")
-    private Long courseId;
+    private List<Long> courseIds;
 
     @Field("stream_id")
-    private Long streamId;
+    private List<Long> streamIds;
 
     @Field("exam_duration")
     private String examDuration;
@@ -56,7 +56,7 @@ public class CoachingExamEntity extends Base {
     private Double maximumMarks;
 
     @Field("exam_date")
-    private List<LocalDateTime> examDate;
+    private LocalDateTime examDate;
 
     @Field("eligibility")
     private String eligibility;

@@ -5,15 +5,16 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Faq {
 
-    @NotEmpty
+    @Size(max = 200)
     private String question;
 
-    @NotEmpty
+    @Size(max = 200)
     private String answers;
 }

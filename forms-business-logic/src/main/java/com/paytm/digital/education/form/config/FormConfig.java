@@ -44,15 +44,14 @@ public class FormConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authenticationProvider(cookieAuthenticationProvider)
                 .authenticationProvider(tokenAuthenticationProvider)
-                .addFilterBefore(new FormAuthenticationFilter(), AnonymousAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/formfbl/v1/orders").authenticated()
                 .antMatchers("/formfbl/v1/orders/download").authenticated()
                 .antMatchers("/formfbl/v1/orders/bulk-download").authenticated()
                 .antMatchers("/formfbl/v1/download").authenticated()
-                .anyRequest()
-                .permitAll();
+                .antMatchers("/coaching/v1/admin/**").authenticated()
+                .anyRequest().permitAll();
 
         http.headers().frameOptions().disable();
 
@@ -63,7 +62,6 @@ public class FormConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().antMatchers("/explore");
-        web.ignoring().antMatchers("/coaching");
     }
 
     @Override
