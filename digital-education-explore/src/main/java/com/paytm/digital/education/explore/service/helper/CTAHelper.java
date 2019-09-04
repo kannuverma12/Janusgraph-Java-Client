@@ -28,10 +28,14 @@ public class CTAHelper {
     private FeeUrlGenerator feeUrlGenerator;
 
     @Autowired
-    private PropertyReader  propertyReader;
+    private PropertyReader propertyReader;
 
     @Value("${forms.prefix.url}")
     private String formsUrlPrefix;
+
+    @Value("${predictor.app.url.prefix}")
+    private String predictorUrlPrefix;
+
 
     public List<CTA> buildInstituteCTA(InstituteDetail instituteDetail, Client client) {
 
@@ -80,8 +84,19 @@ public class CTAHelper {
             ctas.add(getFormsCTA(examDetail.getFormId(), logosPerCta));
         }
 
+        if (Client.APP.equals(client) && Objects.nonNull(examDetail.getCollegePredictorPid())) {
+            ctas.add(getPredictorCTA(examDetail.getCollegePredictorPid(), logosPerCta));
+        }
+
         ctas.add(getLeadCTA(examDetail.isInterested(), false, client, logosPerCta));
         return ctas;
+    }
+
+    private CTA getPredictorCTA(Long predictorId, Map<String, Object> logosPerCta) {
+        return CTA.builder().
+                logo(getAbsoluteLogoUrl(logosPerCta, CTAType.PREDICTOR.name().toLowerCase()))
+                .url(predictorUrlPrefix + predictorId.toString())
+                .type(CTAType.PREDICTOR).build();
     }
 
     private CTA getFormsCTA(String formsUrl, Map<String, Object> logosPerCta) {
