@@ -20,6 +20,7 @@ import com.paytm.digital.education.explore.response.dto.detail.school.detail.Shi
 import com.paytm.digital.education.explore.service.SchoolService;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.service.helper.FacilityDataHelper;
+import com.paytm.digital.education.explore.service.helper.SchoolDetailsResponseHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 
 import com.paytm.digital.education.utility.CommonUtils;
@@ -122,6 +123,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
                                 client));
             schoolDetail.setGeneralInformation(collectGeneralInformationFromSchool(school));
             schoolDetail.setStreams(boardData.getStreams());
+            SchoolDetailsResponseHelper.pruneDuplicateDataInSchoolDetail(schoolDetail);
         }
         return schoolDetail;
     }
