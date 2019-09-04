@@ -93,8 +93,8 @@ public class CTAHelper {
     }
 
     private CTA getPredictorCTA(Long predictorId, Map<String, Object> logosPerCta) {
-        return CTA.builder().
-                logo(getAbsoluteLogoUrl(logosPerCta, CTAType.PREDICTOR.name().toLowerCase()))
+        return CTA.builder()
+                .logo(getAbsoluteLogoUrl(logosPerCta, CTAType.PREDICTOR.name().toLowerCase()))
                 .url(predictorUrlPrefix + predictorId.toString())
                 .type(CTAType.PREDICTOR).build();
     }
