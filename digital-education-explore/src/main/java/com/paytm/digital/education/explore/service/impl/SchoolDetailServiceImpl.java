@@ -131,11 +131,17 @@ public class SchoolDetailServiceImpl implements SchoolService {
             return null;
         }
         Integer numberOfTeachers = boardData.getNoOfTeachers();
+        Integer numberOfTrainedTeachers = boardData.getNoOfTrainedTeachers();
+        Integer numberOfUntrainedTeachers = boardData.getNoOfUntrainedTeachers();
         String studentRatio = boardData.getStudentRatio();
-        if (!isNullOrZero(numberOfTeachers) && StringUtils.isNotBlank(studentRatio)) {
-            return new FacultyDetail(numberOfTeachers, studentRatio);
+        if (isNullOrZero(numberOfTeachers)
+            || StringUtils.isBlank(studentRatio)) {
+            return null;
         }
-        return null;
+        FacultyDetail facultyDetail = new FacultyDetail(numberOfTeachers, studentRatio);
+        facultyDetail.setNoOfTrainedTeachers(numberOfTrainedTeachers);
+        facultyDetail.setNoOfUntrainedTeachers(numberOfUntrainedTeachers);
+        return facultyDetail;
     }
 
     private GeneralInformation collectGeneralInformationFromSchool(School school) {

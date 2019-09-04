@@ -21,6 +21,12 @@ public class FacultyDetail {
     @JsonProperty("student_to_teacher_ratio")
     private String studentToTeacherRatio;
 
+    @JsonProperty("no_of_trained_teachers")
+    private Integer noOfTrainedTeachers;
+
+    @JsonProperty("no_of_untrained_teachers")
+    private Integer noOfUntrainedTeachers;
+
     @JsonProperty("student_to_teacher_ratio_image_url")
     private String studentToTeacherRatioImageUrl = STUDENT_TO_TEACHERS_IMAGE_URL;
 
