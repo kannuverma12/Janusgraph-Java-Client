@@ -42,7 +42,7 @@ public class S3Service {
         PutObjectRequest objectRequest = new PutObjectRequest(s3BucketName + "/" + relativePath,
                 fileName,
                 byteArrayInputStream, metadata);
-        log.info("S3 upload path: {}", s3BucketName + relativePath + "/" + fileName);
+        log.info("S3 upload path: {}", s3BucketName + "/" + relativePath + "/" + fileName);
         objectRequest.withCannedAcl(CannedAccessControlList.PublicReadWrite);
         PutObjectResult result = s3Provider.getAmazonS3().putObject(objectRequest);
         log.info("S3 upload result {}", JsonUtils.toJson(result));

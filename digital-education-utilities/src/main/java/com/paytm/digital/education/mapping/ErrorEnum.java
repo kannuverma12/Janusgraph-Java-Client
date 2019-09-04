@@ -110,6 +110,8 @@ public enum ErrorEnum {
     PREDICTOR_ID_MISSING(4050, "COLLEGE PREDICTOR ID doesnot exists for entity %s",
             HttpStatus.BAD_REQUEST, 1),
     INVALID_SCHOOL_NAME(4051, "Provided name doesnot match with actual school name",
+            HttpStatus.BAD_REQUEST, 0),
+    INVALID_UPLOAD_REQUEST(4052, "Please choose at least one file to upload",
             HttpStatus.BAD_REQUEST, 0);
 
     private final int        internalCode;

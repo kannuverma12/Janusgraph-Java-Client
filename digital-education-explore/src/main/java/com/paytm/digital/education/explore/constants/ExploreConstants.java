@@ -305,4 +305,7 @@ public interface ExploreConstants {
     int    SIX             = 6;
     String P_TOP_INS       = "P_TOP_INS";
 
+    String EDUCATION_EXPLORE_PREFIX  = "education/explore/";
+    String DIRECTORY_SEPARATOR_SLASH = "/";
+
 }
