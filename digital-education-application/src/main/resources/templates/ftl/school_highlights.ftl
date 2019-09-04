@@ -4,7 +4,7 @@
         <#assign highlights = highlights + ['{"logo_url":"https://assetscdn1.paytm.com/educationwebassets/education/explore/highlight/establishment_year.svg","title":"Established Year","description":"${school.establishedYear?c}"}']>
     </#if>
     <#if school.schoolSize??>
-        <#assign highlights = highlights + ['{"logo_url":"https://assetscdn1.paytm.com/educationwebassets/education/explore/highlight/campus_size.svg","title":"School Size","description":"${school.schoolSize?c}"}']>
+        <#assign highlights = highlights + ['{"logo_url":"https://assetscdn1.paytm.com/educationwebassets/education/explore/highlight/campus_size.svg","title":"School Size","description":"${school.schoolSize?c} ${school.schoolSizeUnit!""}"}']>
     </#if>
     <#if school.boardList?has_content>
         <#assign boardData=school.boardList[0].data>
