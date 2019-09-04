@@ -1,7 +1,9 @@
 package com.paytm.digital.education.coaching.producer;
 
+import com.paytm.digital.education.coaching.producer.model.request.CoachingBannerDataRequest;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCenterDataRequest;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCourseDataRequest;
+import com.paytm.digital.education.coaching.producer.model.request.CoachingCourseFeatureDataRequest;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingExamDataRequest;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingInstituteDataRequest;
 import com.paytm.digital.education.coaching.producer.model.request.StreamDataRequest;
@@ -10,8 +12,10 @@ import com.paytm.digital.education.database.embedded.KeyHighlight;
 import com.paytm.digital.education.database.embedded.OfficialAddress;
 import com.paytm.digital.education.database.entity.CoachingCenterEntity;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
+import com.paytm.digital.education.database.entity.CoachingCourseFeatureEntity;
 import com.paytm.digital.education.database.entity.CoachingExamEntity;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
+import com.paytm.digital.education.database.entity.CoachingBannerEntity;
 import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
 
@@ -187,7 +191,26 @@ public class ConverterUtil {
         coachingCourseEntity.setPriority(request.getPriority());
     }
 
+    public static void setCoachingBannerData(CoachingBannerDataRequest request, CoachingBannerEntity
+            coachingBannerEntity) {
+        coachingBannerEntity.setCoachingBannerId(request.getCoachingBannerId());
+        coachingBannerEntity.setBannerImageUrl(request.getBannerImageUrl());
+        coachingBannerEntity.setPriority(request.getPriority());
+        coachingBannerEntity.setIsEnabled(request.getIsEnabled());
+        coachingBannerEntity.setRedirectionUrl(request.getRedirectionUrl());
+    }
 
+    public static void setCoachingCourseFeatureData(CoachingCourseFeatureDataRequest request,
+            CoachingCourseFeatureEntity coachingCourseFeatureEntity) {
+        coachingCourseFeatureEntity
+                .setCoachingCourseFeatureId(request.getCoachingCourseFeatureId());
+        coachingCourseFeatureEntity.setDescription(request.getDescription());
+        coachingCourseFeatureEntity.setInstituteId(request.getInstituteId());
+        coachingCourseFeatureEntity.setLogo(request.getLogo());
+        coachingCourseFeatureEntity.setName(request.getCoachingCourseFeatureName().getText());
+        coachingCourseFeatureEntity.setPriority(request.getPriority());
+        coachingCourseFeatureEntity.setIsEnabled(request.getIsEnabled());
+    }
 }
 
 
