@@ -3,17 +3,20 @@ package com.paytm.digital.education.coaching.consumer.model.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.util.List;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class ExamAdditionalInfo {
+public class ExamAdditionalInfoData {
 
-    private String                       header;
-    private List<ExamAdditionalInfoData> results;
+    private String heading;
+    private String description;
+    private String image;
 }

@@ -104,6 +104,8 @@ public class ExamSearchService extends AbstractSearchService {
                 ExamData examData = new ExamData();
                 examData.setExamId(examSearch.getExamId());
                 examData.setOfficialName(examSearch.getOfficialName());
+                examData.setExamShortName(examSearch.getExamShortName());
+                examData.setLogoUrl(examSearch.getImageLink());
                 examData.setUrlDisplayKey(
                         CommonUtil.convertNameToUrlDisplayName(examSearch.getOfficialName()));
                 List<String> dataAvailable = new ArrayList<>();

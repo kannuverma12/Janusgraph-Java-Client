@@ -1,6 +1,6 @@
 package com.paytm.digital.education.coaching.constants;
 
-import com.paytm.digital.education.coaching.consumer.model.dto.ExamAdditionalInfo;
+import com.paytm.digital.education.coaching.consumer.model.dto.ExamAdditionalInfoData;
 import com.paytm.digital.education.config.AwsConfig;
 
 import java.text.SimpleDateFormat;
@@ -114,18 +114,18 @@ public class CoachingConstants {
     public static final SimpleDateFormat YYYY_MM     = new SimpleDateFormat("yyyy-MM");
 
 
-    public static final List<ExamAdditionalInfo> EXAM_ADDITIONAL_INFO_PARAMS = new ArrayList<>();
+    public static final List<ExamAdditionalInfoData> EXAM_ADDITIONAL_INFO_PARAMS = new ArrayList<>();
 
     static {
         EXAM_ADDITIONAL_INFO_PARAMS.add(
-                new ExamAdditionalInfo("Eligibility", "Find out eligibility", "image_link"));
+                new ExamAdditionalInfoData("Eligibility", "Find out eligibility", "image_link"));
         EXAM_ADDITIONAL_INFO_PARAMS.add(
-                new ExamAdditionalInfo("Syllabus", "Find out Syllabus", "image_link"));
+                new ExamAdditionalInfoData("Syllabus", "Find out Syllabus", "image_link"));
         EXAM_ADDITIONAL_INFO_PARAMS.add(
-                new ExamAdditionalInfo("Fill Application Form", "Fill out application form",
+                new ExamAdditionalInfoData("Fill Application Form", "Fill out application form",
                         "image_link"));
         EXAM_ADDITIONAL_INFO_PARAMS.add(
-                new ExamAdditionalInfo(
+                new ExamAdditionalInfoData(
                         "Frequently Asked Questions",
                         "Find answers to your most common questions",
                         "image_link"));

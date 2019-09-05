@@ -19,6 +19,9 @@ public class ExamSearch {
     @JsonProperty("official_name")
     private String officialName;
 
+    @JsonProperty("exam_short_name")
+    private String examShortName;
+
     @JsonProperty("names")
     private List<String> names;
 

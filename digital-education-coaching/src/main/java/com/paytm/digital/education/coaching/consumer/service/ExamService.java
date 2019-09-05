@@ -1,5 +1,6 @@
 package com.paytm.digital.education.coaching.consumer.service;
 
+import com.paytm.digital.education.coaching.consumer.model.dto.ExamAdditionalInfo;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingCourses;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingInstitutes;
 import com.paytm.digital.education.coaching.consumer.model.response.GetExamDetailsResponse;
@@ -70,7 +71,7 @@ public class ExamService {
                 .examShortName(exam.getExamShortName())
                 .urlDisplayKey(urlDisplayKey)
                 .examDescription(exam.getAboutExam())
-                .additionalInfo(EXAM_ADDITIONAL_INFO_PARAMS)
+                .additionalInfo(this.getExamAdditionalInfo(exam))
                 .topCoachingInstitutes(this.getTopCoachingInstitutes(exam))
                 .topCoachingCourses(this.getTopCoachingCourses(exam))
                 .importantDates(CommonServiceUtils.buildExamImportantDates(exam))
@@ -126,6 +127,14 @@ public class ExamService {
                 .builder()
                 .header("Similar Coaching Institutes")
                 .results(institutes)
+                .build();
+    }
+
+    private ExamAdditionalInfo getExamAdditionalInfo(Exam exam) {
+        return ExamAdditionalInfo
+                .builder()
+                .header("All you need to know about " + exam.getExamShortName())
+                .results(EXAM_ADDITIONAL_INFO_PARAMS)
                 .build();
     }
 

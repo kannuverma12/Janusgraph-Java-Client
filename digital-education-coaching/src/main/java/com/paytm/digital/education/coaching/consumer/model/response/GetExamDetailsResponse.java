@@ -18,13 +18,13 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class GetExamDetailsResponse {
 
-    private long                     examId;
-    private String                   examFullName;
-    private String                   examShortName;
-    private String                   urlDisplayKey;
-    private String                   examDescription;
-    private TopCoachingInstitutes    topCoachingInstitutes;
-    private List<ExamImportantDate>  importantDates;
-    private TopCoachingCourses       topCoachingCourses;
-    private List<ExamAdditionalInfo> additionalInfo;
+    private long                    examId;
+    private String                  examFullName;
+    private String                  examShortName;
+    private String                  urlDisplayKey;
+    private String                  examDescription;
+    private TopCoachingInstitutes   topCoachingInstitutes;
+    private List<ExamImportantDate> importantDates;
+    private TopCoachingCourses      topCoachingCourses;
+    private ExamAdditionalInfo      additionalInfo;
 }

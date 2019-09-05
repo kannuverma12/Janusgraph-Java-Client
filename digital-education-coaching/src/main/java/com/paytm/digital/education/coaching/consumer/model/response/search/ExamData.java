@@ -15,6 +15,7 @@ public class ExamData extends SearchBaseData {
 
     private Integer                 examId;
     private String                  urlDisplayKey;
+    private String                  examShortName;
     private String                  officialName;
     private String                  applicationMonth;
     private String                  resultMonth;
