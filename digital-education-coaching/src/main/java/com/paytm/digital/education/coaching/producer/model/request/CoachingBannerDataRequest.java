@@ -24,6 +24,7 @@ public class CoachingBannerDataRequest {
     private String redirectionUrl;
 
     @NotNull
+    @Min(value = 1)
     private Integer priority;
 
     @NotNull
