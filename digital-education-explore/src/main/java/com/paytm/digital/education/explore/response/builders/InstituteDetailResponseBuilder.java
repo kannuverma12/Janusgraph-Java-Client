@@ -97,6 +97,7 @@ public class InstituteDetailResponseBuilder {
         }
         instituteDetail.setEstablishedYear(institute.getEstablishedYear());
         instituteDetail.setOfficialName(institute.getOfficialName());
+        instituteDetail.setCommonName(institute.getCommonName());
         instituteDetail.setUrlDisplayName(
                 CommonUtil.convertNameToUrlDisplayName(institute.getOfficialName()));
         instituteDetail.setBrochureUrl(institute.getOfficialUrlBrochure());

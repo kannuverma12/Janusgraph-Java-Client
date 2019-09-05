@@ -23,6 +23,9 @@ public class InstituteDetail {
     @JsonProperty("official_name")
     private String officialName;
 
+    @JsonProperty("common_name")
+    private String commonName;
+
     @JsonProperty("logo_url")
     private String logoUrl;
 

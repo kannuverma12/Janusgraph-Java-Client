@@ -21,6 +21,9 @@ public class GeneralInformation {
     @JsonProperty("official_name")
     private String officialName;
 
+    @JsonProperty("short_name")
+    private String shortName;
+
     @JsonProperty("logo")
     private String logo;
 

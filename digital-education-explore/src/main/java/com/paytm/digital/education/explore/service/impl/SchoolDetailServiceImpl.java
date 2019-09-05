@@ -157,6 +157,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
             generalInformation.setLatLon(school.getOfficialAddress().getLatLon());
             generalInformation.setOfficialWebsiteLink(getOfficialWebsiteLinkFromData(boardData));
             generalInformation.setOfficialName(school.getOfficialName());
+            generalInformation.setShortName(school.getShortName());
             final String logoUrl = school.getGallery().getLogo();
             generalInformation.setLogo(
                     StringUtils.isNotBlank(logoUrl)
