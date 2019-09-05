@@ -1,6 +1,5 @@
 package com.paytm.digital.education.coaching.consumer.service;
 
-import com.paytm.digital.education.coaching.consumer.model.dto.ExamImportantDate;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingCourses;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingInstitutes;
 import com.paytm.digital.education.coaching.consumer.model.response.GetStreamDetailsResponse;
@@ -15,13 +14,9 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_PREFIX;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_INSTITUTE_PREFIX;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_PREFIX;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_DETAILS_FIELDS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_STREAM_ID;
@@ -54,14 +49,12 @@ public class CoachingStreamService {
             throw new BadRequestException(INVALID_STREAM_NAME);
         }
 
-        List<ExamImportantDate> examImportantDates = new ArrayList<>();
         List<ExamData> topExams = this.getTopExamsForStream(streamEntity);
 
         return GetStreamDetailsResponse.builder()
                 .streamId(streamEntity.getStreamId())
                 .streamName(streamEntity.getName())
                 .topExams(topExams)
-                .examImportantDates(examImportantDates)
                 .topCoachingInstitutes(this.getTopCoachingInstitutesForStream(streamEntity))
                 .topCoachingCourses(this.getTopCoachingCoursesForStream(streamEntity))
                 .build();

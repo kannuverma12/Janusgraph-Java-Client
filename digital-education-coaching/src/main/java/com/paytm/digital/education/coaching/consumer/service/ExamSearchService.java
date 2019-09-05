@@ -15,6 +15,7 @@ import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.utility.CommonUtil;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.S
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_EXAMS;
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.TERMS;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class ExamSearchService extends AbstractSearchService {
@@ -68,7 +70,13 @@ public class ExamSearchService extends AbstractSearchService {
     public SearchResponse search(SearchRequest searchRequest) throws IOException, TimeoutException {
         validateRequest(searchRequest, filterQueryTypeMap);
         ElasticRequest elasticRequest = buildSearchRequest(searchRequest);
-        ElasticResponse elasticResponse = initiateSearch(elasticRequest, ExamSearch.class);
+        ElasticResponse elasticResponse;
+        try {
+            elasticResponse = initiateSearch(elasticRequest, ExamSearch.class);
+        } catch (Exception e) {
+            log.error("Error encountered in search query for exam ", e);
+            elasticResponse = new ElasticResponse();
+        }
         SearchResponse searchResponse = new SearchResponse(searchRequest.getTerm());
         buildSearchResponse(searchResponse, elasticResponse, elasticRequest);
         return searchResponse;

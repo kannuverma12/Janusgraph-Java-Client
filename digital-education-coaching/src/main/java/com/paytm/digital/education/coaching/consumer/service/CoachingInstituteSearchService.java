@@ -65,8 +65,13 @@ public class CoachingInstituteSearchService extends AbstractSearchService {
     public SearchResponse search(SearchRequest searchRequest) throws IOException, TimeoutException {
         validateRequest(searchRequest, filterQueryTypeMap);
         ElasticRequest elasticRequest = buildSearchRequest(searchRequest);
-        ElasticResponse elasticResponse =
-                initiateSearch(elasticRequest, CoachingInstituteSearch.class);
+        ElasticResponse elasticResponse;
+        try {
+            elasticResponse = initiateSearch(elasticRequest, CoachingInstituteSearch.class);
+        } catch (Exception e) {
+            log.error("Error encountered in search query for coaching institute ", e);
+            elasticResponse = new ElasticResponse();
+        }
         SearchResponse searchResponse = new SearchResponse(searchRequest.getTerm());
         buildSearchResponse(searchResponse, elasticResponse, elasticRequest);
         return searchResponse;
