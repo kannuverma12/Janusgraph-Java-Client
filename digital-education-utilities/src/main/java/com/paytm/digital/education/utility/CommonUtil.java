@@ -13,8 +13,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.paytm.digital.education.constant.CommonConstants.COACHING_COURSES;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_STREAMS;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_EXAMS;
+import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES;
 import static com.paytm.digital.education.constant.ExploreConstants.AFFILIATED;
 import static com.paytm.digital.education.constant.ExploreConstants.AFFILIATED_TO;
 import static com.paytm.digital.education.constant.ExploreConstants.APPROVED_BY;
@@ -71,6 +73,12 @@ public class CommonUtil {
                 break;
             case RANKING_LOGO:
                 urlBuilder.append(ConfigProperties.getRankingLogo());
+                break;
+            case COACHING_COURSES:
+                urlBuilder.append(ConfigProperties.getCoachingCourseLogoPrefix());
+                break;
+            case TOP_COACHING_INSTITUTES:
+                urlBuilder.append(ConfigProperties.getCoachingInstituteLogoPrefix());
                 break;
             default:
                 urlBuilder.append(ConfigProperties.getLogoImagePrefix());

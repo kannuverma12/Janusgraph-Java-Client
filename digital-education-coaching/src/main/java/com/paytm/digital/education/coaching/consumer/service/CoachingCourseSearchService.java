@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_PLACEHOLDER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_COURSE_NAME;
@@ -37,6 +38,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.S
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.SEARCH_ANALYZER_COACHING_COURSE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.SEARCH_INDEX_COACHING_COURSE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
+import static com.paytm.digital.education.constant.CommonConstants.COACHING_COURSES;
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.TERMS;
 
 @Slf4j
@@ -101,13 +103,12 @@ public class CoachingCourseSearchService extends AbstractSearchService {
             List<SearchBaseData> courseDataList = new ArrayList<>();
 
             for (CoachingCourseSearch coachingCourseSearch : coachingCourseSearches) {
-                courseDataList.add(CoachingCourseData
+                CoachingCourseData toAdd = CoachingCourseData
                         .builder()
                         .courseId(coachingCourseSearch.getCourseId())
                         .courseName(coachingCourseSearch.getCourseName())
                         .coachingInstituteId(coachingCourseSearch.getCoachingInstituteId())
                         .coachingInstituteName(coachingCourseSearch.getCoachingInstituteName())
-                        .logo(coachingCourseSearch.getLogo())
                         .courseType(coachingCourseSearch.getCourseType())
                         .courseDurationDays(coachingCourseSearch.getCourseDurationDays())
                         .price(coachingCourseSearch.getPrice())
@@ -116,7 +117,17 @@ public class CoachingCourseSearchService extends AbstractSearchService {
                         .eligibility(coachingCourseSearch.getEligibility())
                         .urlDisplayKey(CommonUtil
                                 .convertNameToUrlDisplayName(coachingCourseSearch.getCourseName()))
-                        .build());
+                        .build();
+
+                if (!StringUtils.isBlank(coachingCourseSearch.getLogo())) {
+                    toAdd.setLogo(CommonUtil.getAbsoluteUrl(coachingCourseSearch.getLogo(),
+                            COACHING_COURSES));
+                } else {
+                    toAdd.setLogo(CommonUtil.getAbsoluteUrl(COACHING_COURSE_PLACEHOLDER,
+                            COACHING_COURSES));
+                }
+
+                courseDataList.add(toAdd);
             }
             searchResults.setValues(courseDataList);
         }

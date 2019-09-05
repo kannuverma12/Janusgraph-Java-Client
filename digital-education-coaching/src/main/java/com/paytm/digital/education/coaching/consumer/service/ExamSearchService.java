@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_PLACEHOLDER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_FULL_NAME;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_FULL_NAME_BOOST;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_NAME_SYNONYMS;
@@ -39,6 +40,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.S
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_SHORT_NAME;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_SHORT_NAME_BOOST;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
+import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_EXAMS;
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.TERMS;
 
 @Service
@@ -105,7 +107,6 @@ public class ExamSearchService extends AbstractSearchService {
                 examData.setExamId(examSearch.getExamId());
                 examData.setOfficialName(examSearch.getOfficialName());
                 examData.setExamShortName(examSearch.getExamShortName());
-                examData.setLogoUrl(examSearch.getImageLink());
                 examData.setUrlDisplayKey(
                         CommonUtil.convertNameToUrlDisplayName(examSearch.getOfficialName()));
                 List<String> dataAvailable = new ArrayList<>();
@@ -127,6 +128,15 @@ public class ExamSearchService extends AbstractSearchService {
                     dataAvailable.add(CoachingConstants.Search.DATE_TAB);
                 }
                 examData.setDataAvailable(dataAvailable);
+
+                if (!StringUtils.isBlank(examSearch.getImageLink())) {
+                    examData.setLogoUrl(CommonUtil.getAbsoluteUrl(examSearch.getImageLink(),
+                            COACHING_TOP_EXAMS));
+                } else {
+                    examData.setLogoUrl(CommonUtil.getAbsoluteUrl(EXAM_PLACEHOLDER,
+                            COACHING_TOP_EXAMS));
+                }
+
                 examDataList.add(examData);
             });
             searchResults.setValues(examDataList);

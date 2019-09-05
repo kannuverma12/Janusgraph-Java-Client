@@ -28,18 +28,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_PREFIX;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_INSTITUTE_PREFIX;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_FIELD_GROUP;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ADDITIONAL_INFO_PARAMS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_DETAILS_FIELDS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ID;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ADDITIONAL_INFO_PARAMS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.IGNORE_ENTITY_POSITION;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
 import static com.paytm.digital.education.elasticsearch.enums.DataSortOrder.ASC;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
-import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 
 @Slf4j
 @Service

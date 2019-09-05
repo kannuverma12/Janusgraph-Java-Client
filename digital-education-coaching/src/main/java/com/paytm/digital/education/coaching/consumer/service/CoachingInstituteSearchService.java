@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ID;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_PLACEHOLDER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_INSTITUTE_BRAND;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_INSTITUTE_BRAND_BOOST;
@@ -36,6 +37,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.S
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.SEARCH_ANALYZER_COACHING_INSTITUTE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.SEARCH_INDEX_COACHING_INSTITUTE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
+import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES;
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.TERMS;
 
 @Slf4j
@@ -99,14 +101,23 @@ public class CoachingInstituteSearchService extends AbstractSearchService {
             List<SearchBaseData> instituteDataList = new ArrayList<>();
 
             for (CoachingInstituteSearch coachingInstituteSearch : coachingInstituteSearches) {
-                instituteDataList.add(CoachingInstituteData
+                CoachingInstituteData toAdd = CoachingInstituteData
                         .builder()
                         .coachingInstituteId(coachingInstituteSearch.getCoachingInstituteId())
                         .urlDisplayKey(CommonUtil.convertNameToUrlDisplayName(
                                 coachingInstituteSearch.getBrandName()))
                         .brandName(coachingInstituteSearch.getBrandName())
-                        .logo(coachingInstituteSearch.getLogo())
-                        .build());
+                        .build();
+
+                if (!StringUtils.isBlank(coachingInstituteSearch.getLogo())) {
+                    toAdd.setLogo(CommonUtil.getAbsoluteUrl(coachingInstituteSearch.getLogo(),
+                            TOP_COACHING_INSTITUTES));
+                } else {
+                    toAdd.setLogo(CommonUtil.getAbsoluteUrl(INSTITUTE_PLACEHOLDER,
+                            TOP_COACHING_INSTITUTES));
+                }
+
+                instituteDataList.add(toAdd);
             }
             searchResults.setValues(instituteDataList);
         }

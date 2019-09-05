@@ -1,8 +1,8 @@
 package com.paytm.digital.education.config;
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import lombok.Getter;
 
 @Configuration
 @Getter
@@ -20,6 +20,8 @@ public class ConfigProperties {
     private static String appFooterPrefix;
     private static String rankingLogoPrefix;
     private static String examLogoPrefix;
+    private static String coachingCourseLogoPrefix;
+    private static String coachingInstituteLogoPrefix;
 
     @Value("${education.asset.baseurl}")
     public void setBaseUrl(String baseUrl) {
@@ -81,6 +83,16 @@ public class ConfigProperties {
         examLogoPrefix = logoPrefix;
     }
 
+    @Value("${coaching.course.logo.prefix}")
+    public void setCoachingCourseLogoPrefix(String logoPrefix) {
+        coachingCourseLogoPrefix = logoPrefix;
+    }
+
+    @Value("${coaching.institute.logo.prefix}")
+    public void setCoachingInstituteLogoPrefix(String logoPrefix) {
+        coachingInstituteLogoPrefix = logoPrefix;
+    }
+
     public static String getBaseUrl() {
         return mediaBaseUrl;
     }
@@ -127,5 +139,13 @@ public class ConfigProperties {
 
     public static String getBannerPrefix() {
         return bannerPrefix;
+    }
+
+    public static String getCoachingCourseLogoPrefix() {
+        return coachingCourseLogoPrefix;
+    }
+
+    public static String getCoachingInstituteLogoPrefix() {
+        return coachingInstituteLogoPrefix;
     }
 }

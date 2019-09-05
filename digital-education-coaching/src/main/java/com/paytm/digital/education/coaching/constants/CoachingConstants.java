@@ -114,7 +114,8 @@ public class CoachingConstants {
     public static final SimpleDateFormat YYYY_MM     = new SimpleDateFormat("yyyy-MM");
 
 
-    public static final List<ExamAdditionalInfoData> EXAM_ADDITIONAL_INFO_PARAMS = new ArrayList<>();
+    public static final List<ExamAdditionalInfoData> EXAM_ADDITIONAL_INFO_PARAMS =
+            new ArrayList<>();
 
     static {
         EXAM_ADDITIONAL_INFO_PARAMS.add(
@@ -148,6 +149,10 @@ public class CoachingConstants {
 
     public static final String NON_TENTATIVE = "non_tentative";
 
+
+    public static final String EXAM_PLACEHOLDER            = "/exam_placeholder";
+    public static final String INSTITUTE_PLACEHOLDER       = "/institute_placeholder";
+    public static final String COACHING_COURSE_PLACEHOLDER = "/coaching_course_placeholder";
 
 
     public static class S3RelativePath {
