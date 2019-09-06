@@ -1,5 +1,6 @@
 package com.paytm.digital.education.coaching.consumer.service;
 
+import com.paytm.digital.education.coaching.consumer.model.dto.ImportantDatesBannerDetails;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingCourses;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingInstitutes;
 import com.paytm.digital.education.coaching.consumer.model.response.GetStreamDetailsResponse;
@@ -15,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.WordUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +26,10 @@ import java.util.Objects;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_COMPONENT;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_KEY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_NAMESPACE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.ImportantDates.BUTTON_TEXT;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.ImportantDates.DESCRIPTION;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.ImportantDates.HEADER;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.ImportantDates.LOGO;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_DETAILS_FIELDS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_ID;
@@ -72,12 +78,17 @@ public class CoachingStreamService {
                 .topCoachingInstitutes(this.getTopCoachingInstitutesForStream(streamEntity))
                 .topCoachingCourses(this.getTopCoachingCoursesForStream(streamEntity))
                 .sections(sections)
+                .importantDatesBannerDetails(this.getImportantDatesBannerDetails())
                 .build();
     }
 
     private TopCoachingCourses getTopCoachingCoursesForStream(StreamEntity stream) {
         List<CoachingCourseData> courses = coachingCourseService
                 .getTopCoachingCoursesForStreamId(stream.getStreamId());
+
+        if (CollectionUtils.isEmpty(courses)) {
+            courses = new ArrayList<>();
+        }
 
         return TopCoachingCourses
                 .builder()
@@ -90,11 +101,25 @@ public class CoachingStreamService {
         List<CoachingInstituteData> institutes = coachingInstituteService
                 .getTopCoachingInstitutesByStreamId(stream.getStreamId());
 
+        if (CollectionUtils.isEmpty(institutes)) {
+            institutes = new ArrayList<>();
+        }
+
         return TopCoachingInstitutes
                 .builder()
                 .header("Top Coaching Institutes for " + WordUtils
                         .capitalizeFully(stream.getName()))
                 .results(institutes)
+                .build();
+    }
+
+    private ImportantDatesBannerDetails getImportantDatesBannerDetails() {
+        return ImportantDatesBannerDetails
+                .builder()
+                .header(HEADER)
+                .description(DESCRIPTION)
+                .logo(LOGO)
+                .buttonText(BUTTON_TEXT)
                 .build();
     }
 

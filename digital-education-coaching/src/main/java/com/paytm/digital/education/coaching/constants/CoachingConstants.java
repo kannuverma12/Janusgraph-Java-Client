@@ -249,4 +249,14 @@ public class CoachingConstants {
 
     }
 
+
+    public static class ImportantDates {
+
+        public static final String HEADER      = "Important Dates!";
+        public static final String DESCRIPTION =
+                "Keep track of important dates like Last date of form submission, Examination date, etc.";
+        public static final String LOGO        = "image_logo";
+        public static final String BUTTON_TEXT = "View Dates";
+    }
+
 }

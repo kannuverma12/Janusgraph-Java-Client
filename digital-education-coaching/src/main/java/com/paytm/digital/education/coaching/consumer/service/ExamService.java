@@ -1,6 +1,7 @@
 package com.paytm.digital.education.coaching.consumer.service;
 
 import com.paytm.digital.education.coaching.consumer.model.dto.ExamAdditionalInfo;
+import com.paytm.digital.education.coaching.consumer.model.dto.ImportantDatesBannerDetails;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingCourses;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingInstitutes;
 import com.paytm.digital.education.coaching.consumer.model.response.GetExamDetailsResponse;
@@ -34,6 +35,10 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.E
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ADDITIONAL_INFO_PARAMS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_DETAILS_FIELDS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ID;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.ImportantDates.BUTTON_TEXT;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.ImportantDates.DESCRIPTION;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.ImportantDates.HEADER;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.ImportantDates.LOGO;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
@@ -79,6 +84,7 @@ public class ExamService {
                 .topCoachingCourses(this.getTopCoachingCourses(exam))
                 .importantDates(CommonServiceUtils.buildExamImportantDates(exam))
                 .sections(sections)
+                .importantDatesBannerDetails(this.getImportantDatesBannerDetails())
                 .build();
     }
 
@@ -99,6 +105,10 @@ public class ExamService {
         } else {
             courses = coachingCourseService
                     .getTopCoachingCoursesForStreamId(exam.getStreamIds().get(0));
+        }
+
+        if (CollectionUtils.isEmpty(courses)) {
+            courses = new ArrayList<>();
         }
 
         return TopCoachingCourses
@@ -127,6 +137,10 @@ public class ExamService {
                     .getTopCoachingInstitutesByStreamId(exam.getStreamIds().get(0));
         }
 
+        if (CollectionUtils.isEmpty(institutes)) {
+            institutes = new ArrayList<>();
+        }
+
         return TopCoachingInstitutes
                 .builder()
                 .header("Similar Coaching Institutes")
@@ -139,6 +153,16 @@ public class ExamService {
                 .builder()
                 .header("All you need to know about " + exam.getExamShortName())
                 .results(EXAM_ADDITIONAL_INFO_PARAMS)
+                .build();
+    }
+
+    private ImportantDatesBannerDetails getImportantDatesBannerDetails() {
+        return ImportantDatesBannerDetails
+                .builder()
+                .header(HEADER)
+                .description(DESCRIPTION)
+                .logo(LOGO)
+                .buttonText(BUTTON_TEXT)
                 .build();
     }
 

@@ -3,6 +3,7 @@ package com.paytm.digital.education.coaching.consumer.model.response;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.paytm.digital.education.coaching.consumer.model.dto.ImportantDatesBannerDetails;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingCourses;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingInstitutes;
 import com.paytm.digital.education.coaching.consumer.model.response.search.ExamData;
@@ -17,10 +18,11 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class GetStreamDetailsResponse {
 
-    private long                  streamId;
-    private String                streamName;
-    private List<ExamData>        topExams;
-    private TopCoachingInstitutes topCoachingInstitutes;
-    private TopCoachingCourses    topCoachingCourses;
-    private List<String>          sections;
+    private long                        streamId;
+    private String                      streamName;
+    private List<ExamData>              topExams;
+    private TopCoachingInstitutes       topCoachingInstitutes;
+    private TopCoachingCourses          topCoachingCourses;
+    private List<String>                sections;
+    private ImportantDatesBannerDetails importantDatesBannerDetails;
 }
