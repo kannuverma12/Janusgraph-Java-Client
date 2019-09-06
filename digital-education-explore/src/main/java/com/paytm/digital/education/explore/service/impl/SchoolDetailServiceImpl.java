@@ -39,6 +39,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.paytm.digital.education.explore.constants.ExploreConstants.CLIENT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.TENTATIVE;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.ACTUAL;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.OFFICIAL_WEBSITE_LINK;
@@ -119,8 +120,12 @@ public class SchoolDetailServiceImpl implements SchoolService {
             String entityName = SCHOOL.name().toLowerCase();
             schoolDetail.setDerivedAttributes(
                     derivedAttributesHelper.getDerivedAttributes(
-                            Maps.newHashMap(ImmutableMap.of(entityName, school)), entityName,
-                                client));
+                            Maps.newHashMap(ImmutableMap.of(
+                                    entityName, school,
+                                    CLIENT, client
+                            )),
+                            entityName,
+                            client));
             schoolDetail.setGeneralInformation(collectGeneralInformationFromSchool(school));
             schoolDetail.setStreams(boardData.getStreams());
             SchoolDetailsResponseHelper.pruneDuplicateDataInSchoolDetail(schoolDetail);
