@@ -14,6 +14,7 @@ public class CoachingConstants {
     public static final String INSTITUTE              = "institute";
     public static final String COACHING_CENTER        = "coaching_center";
     public static final String EXAM                   = "exam";
+    public static final String STREAM                 = "stream";
     public static final String COACHING               = "coaching";
     public static final String COURSE                 = "course";
     public static final String COACHING_CENTER_ID     = "center_id";
@@ -132,12 +133,16 @@ public class CoachingConstants {
                         "image_link"));
     }
 
+    public static final String DETAILS_PROPERTY_KEY       = "detail_page_section_order";
+    public static final String DETAILS_PROPERTY_COMPONENT = "coaching";
+    public static final String DETAILS_PROPERTY_NAMESPACE = "section_order";
+
     public static final List<String> EXAM_DETAILS_FIELDS = new ArrayList<>(
             Arrays.asList("exam_id", "exam_full_name", "exam_short_name", "about_exam",
-                    "instances", "logo"));
+                    "instances", "logo", "stream_ids"));
 
     public static final List<String> STREAM_DETAILS_FIELDS = new ArrayList<>(
-            Arrays.asList("stream_id", "name"));
+            Arrays.asList("stream_id", "name", "is_enabled"));
 
     public static final String DETAILS_FIELD_GROUP        = "details_coaching";
     public static final String COACHING_INSTITUTE_PREFIX  = "coaching_institute.";

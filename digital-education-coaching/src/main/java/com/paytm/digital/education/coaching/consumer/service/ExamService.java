@@ -11,9 +11,9 @@ import com.paytm.digital.education.coaching.consumer.service.helper.SearchDataHe
 import com.paytm.digital.education.coaching.consumer.service.utils.CommonServiceUtils;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.BadRequestException;
+import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.CommonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,17 +23,18 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_COMPONENT;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_KEY;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_NAMESPACE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ADDITIONAL_INFO_PARAMS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_DETAILS_FIELDS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ID;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.IGNORE_ENTITY_POSITION;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
-import static com.paytm.digital.education.elasticsearch.enums.DataSortOrder.ASC;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
 
@@ -46,6 +47,7 @@ public class ExamService {
     private final CoachingCourseService            coachingCourseService;
     private final CoachingInstituteConsumerService coachingInstituteService;
     private final SearchDataHelper                 searchDataHelper;
+    private final PropertyReader                   propertyReader;
 
     public GetExamDetailsResponse getExamDetails(final Long examId, final String urlDisplayKey) {
         Exam exam = this.commonMongoRepository.getEntityByFields(
@@ -61,6 +63,11 @@ public class ExamService {
             throw new BadRequestException(INVALID_EXAM_NAME);
         }
 
+        Map<String, Object> propertyMap = propertyReader.getPropertiesAsMapByKey(
+                DETAILS_PROPERTY_COMPONENT, DETAILS_PROPERTY_NAMESPACE, DETAILS_PROPERTY_KEY);
+
+        List<String> sections = (List<String>) propertyMap.getOrDefault(EXAM, new ArrayList<>());
+
         return GetExamDetailsResponse.builder()
                 .examId(exam.getExamId())
                 .examFullName(exam.getExamFullName())
@@ -71,6 +78,7 @@ public class ExamService {
                 .topCoachingInstitutes(this.getTopCoachingInstitutes(exam))
                 .topCoachingCourses(this.getTopCoachingCourses(exam))
                 .importantDates(CommonServiceUtils.buildExamImportantDates(exam))
+                .sections(sections)
                 .build();
     }
 
@@ -138,10 +146,7 @@ public class ExamService {
         Map<String, List<Object>> filter = new HashMap<>();
         filter.put(STREAM_IDS, Arrays.asList(streamId));
 
-        LinkedHashMap<String, DataSortOrder> sortOrder = new LinkedHashMap<>();
-        sortOrder.put(IGNORE_ENTITY_POSITION, ASC);
-
         return (List<ExamData>) (List<?>) searchDataHelper
-                .getTopSearchData(filter, EducationEntity.EXAM, sortOrder);
+                .getTopSearchData(filter, EducationEntity.EXAM, null);
     }
 }

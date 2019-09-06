@@ -9,14 +9,22 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.ExamD
 import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.exception.BadRequestException;
+import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.CommonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.text.WordUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_COMPONENT;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_KEY;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_NAMESPACE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_DETAILS_FIELDS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_STREAM_ID;
@@ -31,13 +39,14 @@ public class CoachingStreamService {
     private final CoachingCourseService            coachingCourseService;
     private final CoachingInstituteConsumerService coachingInstituteService;
     private final ExamService                      examService;
+    private final PropertyReader                   propertyReader;
 
     public GetStreamDetailsResponse getStreamDetails(final long streamId,
             final String urlDisplayKey) {
         StreamEntity streamEntity = commonMongoRepository.getEntityByFields(
                 STREAM_ID, streamId, StreamEntity.class, STREAM_DETAILS_FIELDS);
 
-        if (Objects.isNull(streamEntity)) {
+        if (Objects.isNull(streamEntity) || !streamEntity.getIsEnabled()) {
             log.error("stream with id: {} does not exist", streamId);
             throw new BadRequestException(INVALID_STREAM_ID);
         }
@@ -49,14 +58,20 @@ public class CoachingStreamService {
             throw new BadRequestException(INVALID_STREAM_NAME);
         }
 
+        Map<String, Object> propertyMap = propertyReader.getPropertiesAsMapByKey(
+                DETAILS_PROPERTY_COMPONENT, DETAILS_PROPERTY_NAMESPACE, DETAILS_PROPERTY_KEY);
+
+        List<String> sections = (List<String>) propertyMap.getOrDefault(STREAM, new ArrayList<>());
+
         List<ExamData> topExams = this.getTopExamsForStream(streamEntity);
 
         return GetStreamDetailsResponse.builder()
                 .streamId(streamEntity.getStreamId())
-                .streamName(streamEntity.getName())
+                .streamName(WordUtils.capitalizeFully(streamEntity.getName()))
                 .topExams(topExams)
                 .topCoachingInstitutes(this.getTopCoachingInstitutesForStream(streamEntity))
                 .topCoachingCourses(this.getTopCoachingCoursesForStream(streamEntity))
+                .sections(sections)
                 .build();
     }
 
@@ -66,7 +81,7 @@ public class CoachingStreamService {
 
         return TopCoachingCourses
                 .builder()
-                .header("Top Coaching Courses for " + stream.getName())
+                .header("Top Coaching Courses for " + WordUtils.capitalizeFully(stream.getName()))
                 .results(courses)
                 .build();
     }
@@ -77,7 +92,8 @@ public class CoachingStreamService {
 
         return TopCoachingInstitutes
                 .builder()
-                .header("Top Coaching Institutes for " + stream.getName())
+                .header("Top Coaching Institutes for " + WordUtils
+                        .capitalizeFully(stream.getName()))
                 .results(institutes)
                 .build();
     }

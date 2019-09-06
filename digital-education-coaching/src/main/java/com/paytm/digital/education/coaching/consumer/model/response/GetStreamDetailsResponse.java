@@ -22,4 +22,5 @@ public class GetStreamDetailsResponse {
     private List<ExamData>        topExams;
     private TopCoachingInstitutes topCoachingInstitutes;
     private TopCoachingCourses    topCoachingCourses;
+    private List<String>          sections;
 }

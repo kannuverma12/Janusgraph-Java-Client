@@ -27,4 +27,5 @@ public class GetExamDetailsResponse {
     private List<ExamImportantDate> importantDates;
     private TopCoachingCourses      topCoachingCourses;
     private ExamAdditionalInfo      additionalInfo;
+    private List<String>            sections;
 }
