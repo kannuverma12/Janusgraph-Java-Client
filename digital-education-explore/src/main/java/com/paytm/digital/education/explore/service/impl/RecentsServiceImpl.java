@@ -59,7 +59,7 @@ public class RecentsServiceImpl implements RecentsSerivce {
         searchRequest.setTerm(term);
         Map<String, List<Object>> filters = new HashMap<>();
         filters.put(ExploreConstants.SEARCH_HISTORY_USERID, Arrays.asList(userId));
-        if(Objects.nonNull(entity)){
+        if (Objects.nonNull(entity)) {
             filters.put(ExploreConstants.RECENT_SEARCHES_ENTITY,
                     Arrays.asList(entity.name()));
         }
