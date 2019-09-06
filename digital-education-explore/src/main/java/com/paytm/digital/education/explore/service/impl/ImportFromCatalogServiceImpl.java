@@ -1,22 +1,27 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import com.google.common.collect.ImmutableMap;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.constants.ExploreConstants;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.ExamPaytmKeys;
-import com.paytm.digital.education.explore.database.entity.InstiPaytmKeys;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.entity.PaytmKeys;
+import com.paytm.digital.education.explore.database.entity.School;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.request.dto.EntityData;
 import com.paytm.digital.education.explore.response.dto.dataimport.CatalogDataIngestionError;
 import com.paytm.digital.education.explore.service.ImportFromCatalogService;
+import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.mapping.ErrorEnum;
+import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -40,7 +45,8 @@ public class ImportFromCatalogServiceImpl implements ImportFromCatalogService {
             String errorMessage = null;
             switch (entityData.getEducationEntity()) {
                 case INSTITUTE:
-                    errorMessage = ingestInInstituteCollection(entityData);
+                case SCHOOL:
+                    errorMessage = ingestInInstituteOrSchoolCollection(entityData);
                     if (StringUtils.isNotBlank(errorMessage)) {
                         errors.add(CatalogDataIngestionError.builder()
                                 .entityId(entityData.getEntityId())
@@ -69,20 +75,36 @@ public class ImportFromCatalogServiceImpl implements ImportFromCatalogService {
         return errors;
     }
 
-    private String ingestInInstituteCollection(EntityData entityData) {
+    private Class<? extends Object> getCorrespondingClassForEnum(EducationEntity educationEntity) {
+        switch (educationEntity) {
+            case SCHOOL:
+                return School.class;
+            case EXAM:
+                return Exam.class;
+            case INSTITUTE:
+                return Institute.class;
+            default:
+                return null;
+        }
+    }
+
+    private String ingestInInstituteOrSchoolCollection(EntityData entityData) {
         if (Objects.isNull(entityData.getPid())) {
             return ErrorEnum.PID_MISSING.getExternalMessage();
         }
-        InstiPaytmKeys instiPaytmKeys =
-                InstiPaytmKeys.builder().mid(entityData.getMid()).pid(entityData.getPid())
-                        .build();
-        Map<String, Object> fields = new HashMap<>();
-        fields.put(PaytmKeys.Constants.PAYTM_KEYS, instiPaytmKeys);
+        final List<String> IGNORABLE_KEYS = Arrays.asList("entity_id", "entity");
+        Map<String, Object> keys = JsonUtils.convertValue(entityData, HashMap.class);
+        IGNORABLE_KEYS.forEach(keys::remove);
         String errorMessage = null;
         try {
             long updated = commonMongoRepository
-                    .updateFields(fields, Institute.class, entityData.getEntityId(),
-                            ExploreConstants.INSTITUTE_ID);
+                    .updateFields(
+                            ImmutableMap.of(
+                                    PaytmKeys.Constants.PAYTM_KEYS,
+                                    keys),
+                            getCorrespondingClassForEnum(entityData.getEducationEntity()),
+                            entityData.getEntityId(),
+                            CommonUtil.getIdFieldNameFromEducationEntity(entityData.getEducationEntity()));
             errorMessage =
                     updated != 0 ? null : ErrorEnum.INVALID_INSTITUTE_ID.getExternalMessage();
         } catch (Exception e) {

@@ -24,6 +24,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.CON
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CONSTITUENT_OF;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CTA;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.FACILITIES;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.FIELD_POST_FIX;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.IGNORE_VALUES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_TYPE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LOCATIONS;
@@ -303,5 +304,9 @@ public class CommonUtil {
 
     public String convertNameToUrlDisplayName(String name) {
         return name.replaceAll("[^a-zA-Z0-9]+", "-").toLowerCase();
+    }
+
+    public String getIdFieldNameFromEducationEntity(EducationEntity educationEntity) {
+        return educationEntity.name().toLowerCase() + FIELD_POST_FIX;
     }
 }
