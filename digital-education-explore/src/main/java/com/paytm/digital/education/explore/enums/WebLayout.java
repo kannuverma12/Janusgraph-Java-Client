@@ -8,5 +8,6 @@ public enum WebLayout {
     BANNER_CAROUSEL,
     BANNER_IMAGE,
     GRID,
-    STRIP
+    STRIP,
+    CAROUSEL
 }
