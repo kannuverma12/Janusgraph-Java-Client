@@ -114,9 +114,8 @@ public class CoachingConstants {
     public static final SimpleDateFormat DD_MMM_YYYY = new SimpleDateFormat("dd MMM,yyyy");
     public static final SimpleDateFormat YYYY_MM     = new SimpleDateFormat("yyyy-MM");
 
-
-    public static final List<ExamAdditionalInfoData> EXAM_ADDITIONAL_INFO_PARAMS =
-            new ArrayList<>();
+    public static final List<ExamAdditionalInfoData>
+            EXAM_ADDITIONAL_INFO_PARAMS = new ArrayList<ExamAdditionalInfoData>();
 
     static {
         EXAM_ADDITIONAL_INFO_PARAMS.add(
@@ -153,7 +152,6 @@ public class CoachingConstants {
     public static final String TOP_RANKER                 = "top_ranker";
 
     public static final String NON_TENTATIVE = "non_tentative";
-
 
     public static final String EXAM_PLACEHOLDER            = "/exam_placeholder";
     public static final String INSTITUTE_PLACEHOLDER       = "/institute_placeholder";
@@ -245,8 +243,14 @@ public class CoachingConstants {
         public static final int    DEFAULT_OFFSET            = 0;
         public static final int    DEFAULT_SIZE              = 10;
 
+    }
 
 
+    public static class LandingPage {
+        public static final String NAME            = "display_name";
+        public static final String ID              = "entity_id";
+        public static final String URL_DISPLAY_KEY = "url_display_key";
+        public static final String LOGO            = "logo";
     }
 
 

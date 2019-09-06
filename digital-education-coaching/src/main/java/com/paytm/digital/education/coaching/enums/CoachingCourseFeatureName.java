@@ -1,8 +1,6 @@
 package com.paytm.digital.education.coaching.enums;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.paytm.digital.education.coaching.exeptions.InvalidRequestException;
 
 public enum CoachingCourseFeatureName {
 

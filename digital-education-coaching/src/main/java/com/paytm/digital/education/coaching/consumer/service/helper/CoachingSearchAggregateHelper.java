@@ -13,6 +13,7 @@ import java.util.List;
 import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_MEDIUM;
 import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_EXAM_LEVEL;
 import static com.paytm.digital.education.elasticsearch.enums.AggregationType.TERMS;
+import static com.paytm.digital.education.elasticsearch.enums.AggregationType.TOP_HITS;
 
 @Service
 public class CoachingSearchAggregateHelper {
@@ -37,6 +38,14 @@ public class CoachingSearchAggregateHelper {
             examAggregateData[i] = aggregateField;
         }
         return examAggregateData;
+    }
+
+    public AggregateField[] getTopHitsAggregateData(String fieldName) {
+        AggregateField[] aggregateFields = new AggregateField[1];
+        aggregateFields[0] = new AggregateField();
+        aggregateFields[0].setName(fieldName);
+        aggregateFields[0].setType(TOP_HITS);
+        return aggregateFields;
     }
 
 }

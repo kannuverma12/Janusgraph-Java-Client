@@ -1,8 +1,9 @@
 package com.paytm.digital.education.coaching.consumer.controller;
 
+import com.paytm.digital.education.coaching.consumer.service.LandingPageService;
 import com.paytm.digital.education.database.entity.Section;
 import com.paytm.digital.education.service.PageService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,14 +16,17 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.U
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.URL.V1;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = COACHING)
-public class LandingPageController {
+public class CoachingLandingPageController {
 
-    @Autowired
-    private PageService pageService;
+    private LandingPageService landingPageService;
+    private PageService        pageService;
 
     @GetMapping(V1 + LANDING_PAGE)
     public List<Section> getPageSections(@RequestParam("pageName") final String pageName) {
-        return this.pageService.getPageSections(pageName);
+        List<Section> sections = pageService.getPageSections(pageName);
+        landingPageService.addDynamicData(sections);
+        return sections;
     }
 }

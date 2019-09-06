@@ -62,7 +62,7 @@ public class CoachingInstituteSearchService extends AbstractSearchService {
 
     @Override
     @Cacheable(value = "coaching_institute_search")
-    public SearchResponse search(SearchRequest searchRequest) throws IOException, TimeoutException {
+    public SearchResponse search(SearchRequest searchRequest) {
         validateRequest(searchRequest, filterQueryTypeMap);
         ElasticRequest elasticRequest = buildSearchRequest(searchRequest);
         ElasticResponse elasticResponse;

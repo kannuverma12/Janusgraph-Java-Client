@@ -3,17 +3,22 @@ package com.paytm.digital.education.coaching.consumer.service;
 import com.paytm.digital.education.coaching.constants.CoachingConstants;
 import com.paytm.digital.education.coaching.consumer.model.request.SearchRequest;
 import com.paytm.digital.education.coaching.consumer.model.response.search.ExamData;
+import com.paytm.digital.education.coaching.consumer.model.response.search.ExamsTopHitsData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchBaseData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResult;
 import com.paytm.digital.education.coaching.consumer.service.helper.CoachingSearchAggregateHelper;
+
 import com.paytm.digital.education.coaching.es.model.ExamSearch;
 import com.paytm.digital.education.coaching.utils.SearchUtils;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
+import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
+import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationResponse;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.utility.CommonUtil;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -78,6 +83,9 @@ public class ExamSearchService extends AbstractSearchService {
             elasticResponse = new ElasticResponse();
         }
         SearchResponse searchResponse = new SearchResponse(searchRequest.getTerm());
+        if (searchRequest.isFetchSearchResultsPerFilter()) {
+            populateSearchResultPerLevel(searchResponse, elasticResponse);
+        }
         buildSearchResponse(searchResponse, elasticResponse, elasticRequest);
         return searchResponse;
     }
@@ -89,16 +97,17 @@ public class ExamSearchService extends AbstractSearchService {
                         CoachingConstants.Search.EXAM_INDEX);
         populateSearchFields(searchRequest, elasticRequest, searchFieldKeys, ExamSearch.class);
         populateFilterFields(searchRequest, elasticRequest, ExamSearch.class, filterQueryTypeMap);
-        populateAggregateFields(searchRequest, elasticRequest,
-                coachingSearchAggregateHelper.getExamAggregateData(), ExamSearch.class);
         if (StringUtils.isBlank(searchRequest.getTerm())) {
             SearchUtils.setSortKeysInOrder(searchRequest);
         } else {
             searchRequest.setSortOrder(null);
         }
         populateSortFields(searchRequest, elasticRequest, ExamSearch.class);
-
-
+        AggregateField[] aggregateFields = searchRequest.isFetchSearchResultsPerFilter()
+                ? coachingSearchAggregateHelper
+                .getTopHitsAggregateData(searchRequest.getDataPerFilter())
+                : coachingSearchAggregateHelper.getExamAggregateData();
+        populateAggregateFields(searchRequest, elasticRequest, aggregateFields, ExamSearch.class);
         return elasticRequest;
     }
 
@@ -148,6 +157,55 @@ public class ExamSearchService extends AbstractSearchService {
                 examDataList.add(examData);
             });
             searchResults.setValues(examDataList);
+        }
+        searchResponse.setResults(searchResults);
+    }
+
+    private void populateSearchResultPerLevel(SearchResponse searchResponse,
+            ElasticResponse elasticResponse) {
+        SearchResult searchResults = new SearchResult();
+        if (elasticResponse.getAggregationResponse().containsKey(STREAM_IDS)) {
+            TopHitsAggregationResponse<ExamSearch> topHitsAggregationResponse =
+                    (TopHitsAggregationResponse<ExamSearch>) elasticResponse
+                            .getAggregationResponse().get(STREAM_IDS);
+            Map<String, List<ExamData>> examsPerStream = new HashMap<>();
+            topHitsAggregationResponse.getDocumentsPerEntity().forEach((key, documents) -> {
+                List<ExamData> examDataList = new ArrayList<>();
+                documents.forEach(examSearch -> {
+                    ExamData examData = new ExamData();
+                    examData.setExamId(examSearch.getExamId());
+                    examData.setOfficialName(examSearch.getOfficialName());
+                    examData.setUrlDisplayKey(
+                            CommonUtil.convertNameToUrlDisplayName(examSearch.getOfficialName()));
+                    List<String> dataAvailable = new ArrayList<>();
+                    if (!CollectionUtils.isEmpty(examSearch.getDataAvailable())) {
+                        dataAvailable.addAll(examSearch.getDataAvailable());
+                    }
+                    if (!CollectionUtils.isEmpty(examSearch.getExamInstances())) {
+                        int instanceIndex = 0;
+                        instanceIndex = SearchUtils.getRelevantInstanceIndex(
+                                examSearch.getExamInstances(),
+                                CoachingConstants.Search.APPLICATION);
+                        SearchUtils.setAllDates(examData,
+                                examSearch.getExamInstances().get(instanceIndex));
+                        SearchUtils.setExamImportantDates(examData,
+                                examSearch.getExamInstances().get(instanceIndex));
+                        if (examSearch.getExamInstances().get(instanceIndex)
+                                .isSyllabusAvailable()) {
+                            dataAvailable.add(CoachingConstants.Search.SYLLABUS_TAB);
+                        }
+                        dataAvailable.add(CoachingConstants.Search.DATE_TAB);
+                    }
+                    examData.setDataAvailable(dataAvailable);
+                    examDataList.add(examData);
+                });
+                examsPerStream.put(key.getKey(), examDataList);
+            });
+            ExamsTopHitsData examsTopHitsData = ExamsTopHitsData.builder().examsPerStream(
+                    examsPerStream).build();
+            List<SearchBaseData> values = new ArrayList<>();
+            values.add(examsTopHitsData);
+            searchResults.setValues(values);
         }
         searchResponse.setResults(searchResults);
     }

@@ -29,6 +29,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,12 +67,18 @@ public abstract class AbstractSearchService {
 
     protected void validateRequest(SearchRequest searchRequest,
             Map<String, FilterQueryType> filterQueryTypeMap) {
-        searchRequest.getFilter().forEach((filterKeyName, values) -> {
-            if (!filterQueryTypeMap.containsKey(filterKeyName)) {
+        if (!CollectionUtils.isEmpty(searchRequest.getFilter())) {
+            List<String> invalidFilters = new ArrayList<>();
+            searchRequest.getFilter().forEach((filterKeyName, values) -> {
+                if (!filterQueryTypeMap.containsKey(filterKeyName)) {
+                    invalidFilters.add(filterKeyName);
+                }
+            });
+            if (!CollectionUtils.isEmpty(invalidFilters)) {
                 throw new EducationException(ErrorEnum.FILTER_DOESNOT_EXIST,
                         "Applied filter is not present in filterQueryMap");
             }
-        });
+        }
     }
 
     protected <T> void populateSearchFields(SearchRequest searchRequest,
@@ -132,21 +139,45 @@ public abstract class AbstractSearchService {
             for (int i = 0; i < aggregateFields.length; i++) {
                 aggregateFields[i].setPath(
                         hierarchyMap.get(type).get(aggregateFields[i].getName()));
-                if (!CollectionUtils.isEmpty(filters)
-                        && aggregateFields[i].getType() == AggregationType.TERMS
-                        && filters.containsKey(aggregateFields[i].getName())) {
-                    if (!CollectionUtils.isEmpty(filters.get(aggregateFields[i].getName()))) {
-                        // TODO: need a sol, as ES include exclude takes only long[] and String[]
-                        String[] valuesString =
-                                filters.get(aggregateFields[i].getName()).toArray(new String[] {});
-                        aggregateFields[i].setValues(valuesString);
+                if (AggregationType.TERMS.equals(aggregateFields[i].getType())) {
+                    if (!CollectionUtils.isEmpty(filters)) {
+                        addFilters(filters, aggregateFields[i]);
+                    }
+                } else if (AggregationType.TOP_HITS.equals(aggregateFields[i].getType())) {
+                    if (!CollectionUtils.isEmpty(searchRequest.getSortOrder())) {
+                        addSortOrder(searchRequest.getSortOrder(), aggregateFields[i], type);
                     }
                 }
+
             }
             elasticRequest.setAggregateFields(aggregateFields);
         }
 
     }
+
+    private void addFilters(Map<String, List<Object>> filters, AggregateField aggregateField) {
+        if (!CollectionUtils.isEmpty(filters.get(aggregateField.getName()))) {
+            // TODO: need a sol, as ES include exclude takes only long[] and String[]
+            String[] valuesString =
+                    filters.get(aggregateField.getName()).toArray(new String[] {});
+            aggregateField.setValues(valuesString);
+        }
+    }
+
+    private <T> void addSortOrder(Map<String, DataSortOrder> sortOrderMap,
+            AggregateField aggregateField, Class<T> type) {
+        SortField[] sortFields = new SortField[sortOrderMap.size()];
+        int i = 0;
+        for (Map.Entry<String, DataSortOrder> key : sortOrderMap.entrySet()) {
+            SortField sortField = new SortField();
+            sortField.setName(key.getKey());
+            sortField.setPath(hierarchyMap.get(type).get(key.getKey()));
+            sortField.setOrder(key.getValue());
+            sortFields[i++] = sortField;
+        }
+        aggregateField.setSortFields(sortFields);
+    }
+
 
     protected abstract ElasticRequest buildSearchRequest(SearchRequest searchRequest);
 

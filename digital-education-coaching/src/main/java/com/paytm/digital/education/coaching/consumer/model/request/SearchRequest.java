@@ -48,14 +48,20 @@ public class SearchRequest {
     @JsonProperty("fetch_filter")
     @NotNull
     private Boolean fetchFilter = true;
+    
+    @JsonProperty("sort_order")
+    private LinkedHashMap<String, DataSortOrder> sortOrder;
 
     @JsonIgnore
     private Boolean fetchSearchResults = true;
 
     @JsonIgnore
-    private Client client;
+    private boolean fetchSearchResultsPerFilter;
 
-    @JsonProperty("sort_order")
-    private LinkedHashMap<String, DataSortOrder> sortOrder;
+    @JsonIgnore
+    private String dataPerFilter;
+
+    @JsonIgnore
+    private Client client;
 
 }
