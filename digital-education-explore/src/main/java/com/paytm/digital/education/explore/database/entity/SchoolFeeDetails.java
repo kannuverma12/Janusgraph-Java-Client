@@ -3,7 +3,6 @@ package com.paytm.digital.education.explore.database.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -14,7 +13,6 @@ import java.util.Objects;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
-@AllArgsConstructor
 public class SchoolFeeDetails {
     @Field("fees")
     @JsonProperty("fees")

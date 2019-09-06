@@ -309,6 +309,5 @@ public interface ExploreConstants {
     String EDUCATION_EXPLORE_PREFIX  = "education/explore/";
     String DIRECTORY_SEPARATOR_SLASH = "/";
     String CLIENT                    = "client";
-    String RUPEES_PREFIX             = "Rs.";
     String FIELD_POST_FIX            = "_id";
 }

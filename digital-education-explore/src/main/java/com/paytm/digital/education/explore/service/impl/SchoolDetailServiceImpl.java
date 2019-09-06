@@ -8,7 +8,6 @@ import com.paytm.digital.education.explore.database.entity.Board;
 import com.paytm.digital.education.explore.database.entity.BoardData;
 import com.paytm.digital.education.explore.database.entity.RelevantLink;
 import com.paytm.digital.education.explore.database.entity.School;
-import com.paytm.digital.education.explore.database.entity.SchoolFeeDetails;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.FacilityResponse;
@@ -16,7 +15,6 @@ import com.paytm.digital.education.explore.response.dto.detail.school.detail.Fac
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.GeneralInformation;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.ImportantDate;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.SchoolDetail;
-import com.paytm.digital.education.explore.response.dto.detail.school.detail.SchoolFeeDetailsResponse;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.SchoolGalleryResponse;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.ShiftDetailsResponse;
 import com.paytm.digital.education.explore.service.SchoolService;
@@ -104,11 +102,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
                     boardData.getShifts().stream().map(ShiftDetailsResponse::new)
                             .collect(Collectors.toList()));
             schoolDetail.setFacultyDetail(fetchFacultyDetailsIfPresent(boardData));
-            schoolDetail.setFeesDetails(
-                    boardData.getFeesDetails()
-                            .stream()
-                            .map(SchoolFeeDetailsResponse::new)
-                            .collect(Collectors.toList()));
+            schoolDetail.setFeesDetails(boardData.getFeesDetails());
             List<FacilityResponse> facilityResponseList =
                     facilityDataHelper
                             .mapSchoolFacilitiesToDataObject(boardData.getSchoolFacilities());
