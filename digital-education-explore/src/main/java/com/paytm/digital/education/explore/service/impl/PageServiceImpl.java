@@ -26,6 +26,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.BAN
 import static com.paytm.digital.education.explore.constants.ExploreConstants.BROWSE_BY_EXAM_LEVEL;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CAROUSEL;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.COLLEGE_FOCUS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_FOCUS_APP;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ICON;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.IMAGE_URL;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.POPULAR_EXAMS_APP;
@@ -70,6 +71,7 @@ public class PageServiceImpl implements PageService {
                     case TOP_EXAMS_APP:
                     case COLLEGE_FOCUS:
                     case POPULAR_EXAMS_APP:
+                    case EXAM_FOCUS_APP:
                     case BROWSE_BY_EXAM_LEVEL:
                         logoFieldName = LOGO;
                         break;

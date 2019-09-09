@@ -25,6 +25,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.CAR
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CONSTITUENT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CONSTITUENT_OF;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CTA;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_FOCUS_APP;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.FACILITIES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.FIELD_POST_FIX;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.IGNORE_VALUES;
@@ -80,6 +81,7 @@ public class CommonUtil {
                 break;
             case TOP_EXAMS_APP:
             case POPULAR_EXAMS_APP:
+            case EXAM_FOCUS_APP:
             case BROWSE_BY_EXAM_LEVEL:
                 urlBuilder.append(ConfigProperties.getLogoExamPrefix());
                 break;

@@ -118,7 +118,7 @@ public interface ExploreConstants {
 
     ///////// Explore search Constatnts ///////////
     // Exam
-    String SEARCH_INDEX_EXAM              = "education_search_exam_v2";
+    String SEARCH_INDEX_EXAM              = "education_search_exam_v3";
     String SEARCH_ANALYZER_EXAM           = "word_delimiter_analyzer_search";
     String SEARCH_NAMES_EXAM              = "names";
     String EXAM_FULL_NAME_SEARCH          = "exam_full_name";
@@ -126,6 +126,7 @@ public interface ExploreConstants {
     String EXAM_OFFICIAL_NAME             = "official_name";
     String EXAM_OFFICIAL_NAME_NGRAM       = "official_name.raw";
     String EXAM_NAME_SYNONYMS             = "exam_name_synonyms";
+    String EXAM_DOMAIN_NAME               = "domain_name";
     Float  EXAM_FULL_NAME_BOOST           = 1F;
     Float  EXAM_SHORT_NAME_BOOST          = 1F;
     Float  EXAM_OFFICIAL_NAME_BOOST       = 1F;
@@ -277,6 +278,7 @@ public interface ExploreConstants {
     String CAREER_LOGO     = "/career360.jpg";
     String EMPTY_STRING    = " ";
 
+    String EXAM_FOCUS_APP              = "exam_focus_app";
     String POPULAR_EXAMS_APP           = "popular_exams_app";
     String BROWSE_BY_EXAM_LEVEL        = "browse_by_exam_level";
     String RECENT_SEARCHES_kAFKA_TOPIC = "recent_searches";

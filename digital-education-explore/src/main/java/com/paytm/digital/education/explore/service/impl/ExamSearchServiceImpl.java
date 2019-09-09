@@ -5,6 +5,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.APP
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DATE_TAB;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DD_MMM_YYYY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_DOMAIN_NAME;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_FILTER_NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_SEARCH_NAMESPACE;
@@ -77,6 +78,7 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
         filterQueryTypeMap = new HashMap<>();
         filterQueryTypeMap.put(LINGUISTIC_MEDIUM, TERMS);
         filterQueryTypeMap.put(SEARCH_EXAM_LEVEL, TERMS);
+        filterQueryTypeMap.put(EXAM_DOMAIN_NAME, TERMS);
         searchFieldKeys = new HashMap<>();
         searchFieldKeys.put(EXAM_FULL_NAME, EXAM_FULL_NAME_BOOST);
         searchFieldKeys.put(EXAM_SHORT_NAME, EXAM_SHORT_NAME_BOOST);
