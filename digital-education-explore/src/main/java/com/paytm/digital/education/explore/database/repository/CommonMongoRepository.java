@@ -65,9 +65,9 @@ public class CommonMongoRepository {
             Class<T> instance,
             List<String> fields) {
         Query mongoQuery = new Query(Criteria.where(key).in(entityIds));
-        fields.forEach(field -> {
-            mongoQuery.fields().include(field);
-        });
+        if (!CollectionUtils.isEmpty(fields)) {
+            fields.forEach(field -> mongoQuery.fields().include(field));
+        }
         return executeMongoQuery(mongoQuery, instance);
     }
 
