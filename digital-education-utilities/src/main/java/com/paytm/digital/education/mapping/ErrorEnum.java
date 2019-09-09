@@ -112,7 +112,10 @@ public enum ErrorEnum {
     INVALID_SCHOOL_NAME(4051, "Provided name doesnot match with actual school name",
             HttpStatus.BAD_REQUEST, 0),
     INVALID_UPLOAD_REQUEST(4052, "Please choose at least one file to upload",
-            HttpStatus.BAD_REQUEST, 0);
+            HttpStatus.BAD_REQUEST, 0),
+    INVALID_ENTITY_ID(4053, "Invalid %1$s ID. Please provide a valid %1$s ID.",
+            HttpStatus.BAD_REQUEST, 1),
+    ENTITY_MISSING(4054, "entity field is required.", HttpStatus.BAD_REQUEST, 0);
 
     private final int        internalCode;
     private final String     externalMessage;

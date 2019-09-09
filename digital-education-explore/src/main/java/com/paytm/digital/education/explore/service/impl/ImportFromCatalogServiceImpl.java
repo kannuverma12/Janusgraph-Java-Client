@@ -2,18 +2,22 @@ package com.paytm.digital.education.explore.service.impl;
 
 import com.google.common.collect.ImmutableMap;
 import com.paytm.digital.education.exception.BadRequestException;
+import com.paytm.digital.education.exception.EducationException;
 import com.paytm.digital.education.explore.constants.ExploreConstants;
 import com.paytm.digital.education.explore.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.ExamPaytmKeys;
+import com.paytm.digital.education.explore.database.entity.InstiPaytmKeys;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.entity.PaytmKeys;
 import com.paytm.digital.education.explore.database.entity.School;
+import com.paytm.digital.education.explore.database.entity.SchoolPaytmKeys;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.request.dto.EntityData;
 import com.paytm.digital.education.explore.response.dto.dataimport.CatalogDataIngestionError;
 import com.paytm.digital.education.explore.service.ImportFromCatalogService;
 import com.paytm.digital.education.explore.utility.CommonUtil;
+import com.paytm.digital.education.explore.validators.ExploreValidator;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
@@ -21,7 +25,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -33,6 +36,7 @@ import java.util.HashMap;
 public class ImportFromCatalogServiceImpl implements ImportFromCatalogService {
 
     private CommonMongoRepository commonMongoRepository;
+    private ExploreValidator exploreValidator;
 
     @Override
     public List<CatalogDataIngestionError> ingestDataEntityWise(List<EntityData> entityDataList) {
@@ -42,6 +46,10 @@ public class ImportFromCatalogServiceImpl implements ImportFromCatalogService {
                     ErrorEnum.DATA_NOT_PRESENT.getExternalMessage());
         }
         for (EntityData entityData : entityDataList) {
+            if (Objects.isNull(entityData.getEducationEntity())) {
+                errors.add(buildCatalogDataIngestionError(entityData.getEntityId(), ErrorEnum.ENTITY_MISSING));
+                continue;
+            }
             String errorMessage = null;
             switch (entityData.getEducationEntity()) {
                 case INSTITUTE:
@@ -75,6 +83,15 @@ public class ImportFromCatalogServiceImpl implements ImportFromCatalogService {
         return errors;
     }
 
+    private CatalogDataIngestionError buildCatalogDataIngestionError(
+            Long entityId, ErrorEnum errorEnum) {
+        return CatalogDataIngestionError
+                .builder()
+                .errorMessage(errorEnum.getExternalMessage())
+                .entityId(entityId)
+                .build();
+    }
+
     private Class<? extends Object> getCorrespondingClassForEnum(EducationEntity educationEntity) {
         switch (educationEntity) {
             case SCHOOL:
@@ -88,25 +105,39 @@ public class ImportFromCatalogServiceImpl implements ImportFromCatalogService {
         }
     }
 
+    private PaytmKeys writeEntityDataToCorrespondingPaytmKeys(EntityData entityData) {
+        EducationEntity educationEntity = entityData.getEducationEntity();
+        switch (educationEntity) {
+            case INSTITUTE:
+                return JsonUtils.convertValue(entityData, InstiPaytmKeys.class);
+            case SCHOOL:
+                return JsonUtils.convertValue(entityData, SchoolPaytmKeys.class);
+            default:
+                return null;
+        }
+    }
+
     private String ingestInInstituteOrSchoolCollection(EntityData entityData) {
         if (Objects.isNull(entityData.getPid())) {
-            return ErrorEnum.PID_MISSING.getExternalMessage();
+            return String.format(ErrorEnum.PID_MISSING.getExternalMessage(),
+                    entityData.getEducationEntity().name());
         }
-        final List<String> IGNORABLE_KEYS = Arrays.asList("entity_id", "entity");
-        Map<String, Object> keys = JsonUtils.convertValue(entityData, HashMap.class);
-        IGNORABLE_KEYS.forEach(keys::remove);
         String errorMessage = null;
+        PaytmKeys paytmKeys = writeEntityDataToCorrespondingPaytmKeys(entityData);
+        exploreValidator.validateAndThrowException(paytmKeys);
         try {
             long updated = commonMongoRepository
                     .updateFields(
                             ImmutableMap.of(
                                     PaytmKeys.Constants.PAYTM_KEYS,
-                                    keys),
+                                    paytmKeys),
                             getCorrespondingClassForEnum(entityData.getEducationEntity()),
                             entityData.getEntityId(),
                             CommonUtil.getIdFieldNameFromEducationEntity(entityData.getEducationEntity()));
-            errorMessage =
-                    updated != 0 ? null : ErrorEnum.INVALID_INSTITUTE_ID.getExternalMessage();
+            if (updated == 0) {
+                throw new EducationException(
+                        ErrorEnum.INVALID_ENTITY_ID, new Object[]{entityData.getEducationEntity().name()});
+            }
         } catch (Exception e) {
             errorMessage = e.getMessage();
         }

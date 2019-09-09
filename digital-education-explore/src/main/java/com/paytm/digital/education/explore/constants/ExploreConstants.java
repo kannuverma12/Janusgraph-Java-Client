@@ -306,8 +306,9 @@ public interface ExploreConstants {
     int    SIX             = 6;
     String P_TOP_INS       = "P_TOP_INS";
 
-    String EDUCATION_EXPLORE_PREFIX  = "education/explore/";
-    String DIRECTORY_SEPARATOR_SLASH = "/";
-    String CLIENT                    = "client";
-    String FIELD_POST_FIX            = "_id";
+    String EDUCATION_EXPLORE_PREFIX      = "education/explore/";
+    String DIRECTORY_SEPARATOR_SLASH     = "/";
+    String CLIENT                        = "client";
+    String FIELD_POST_FIX                = "_id";
+    String ERROR_IN_FIELD_VALUE_TEMPLATE = "Incorrect value %s for field %s";
 }

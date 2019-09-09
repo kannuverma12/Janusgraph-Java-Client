@@ -94,6 +94,9 @@ public class School {
     @JsonProperty("pincode")
     private String pincode;
 
+    @Field("paytm_keys")
+    private SchoolPaytmKeys paytmKeys;
+
     public School(String officialName, Long schoolId) {
         this.officialName = officialName;
         this.schoolId = schoolId;
