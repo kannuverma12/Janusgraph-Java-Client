@@ -28,6 +28,7 @@ import java.util.concurrent.TimeoutException;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_PLACEHOLDER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_PLACEHOLDER;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.LandingPage.FULL_NAME;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.LandingPage.ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.LandingPage.LOGO;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.LandingPage.NAME;
@@ -78,7 +79,7 @@ public class LandingPageService {
             }
             itemList.add(
                     getItem(coachingInstitute.getBrandName(), coachingInstitute.getUrlDisplayKey(),
-                            coachingInstitute.getCoachingInstituteId(), logoUrl));
+                            coachingInstitute.getCoachingInstituteId(), logoUrl, null));
         }
         section.setItems(itemList);
     }
@@ -95,8 +96,8 @@ public class LandingPageService {
                     logoUrl = CommonUtil.getAbsoluteUrl(EXAM_PLACEHOLDER, COACHING_TOP_EXAMS);
                 }
                 itemList.add(
-                        getItem(exam.getOfficialName(), exam.getUrlDisplayKey(), exam.getExamId(),
-                                logoUrl));
+                        getItem(exam.getExamShortName(), exam.getUrlDisplayKey(), exam.getExamId(),
+                                logoUrl, exam.getOfficialName()));
             }
             section.setItems(itemList);
         }
@@ -134,8 +135,7 @@ public class LandingPageService {
         Set<ExamData> exams = new HashSet<>();
         for (Map.Entry<String, List<ExamData>> entry : examsPerStream.entrySet()) {
             for (ExamData examData : entry.getValue()) {
-                if (!exams.contains(examData)) {
-                    exams.add(examData);
+                if (exams.add(examData)) {
                     break;
                 }
             }
@@ -143,12 +143,16 @@ public class LandingPageService {
         return new ArrayList<>(exams);
     }
 
-    private Map<String, Object> getItem(String name, String urlDisplayKey, Object id, String logo) {
+    private Map<String, Object> getItem(String name, String urlDisplayKey, Object id, String logo,
+            String fullName) {
         Map<String, Object> item = new HashMap<>();
         item.put(NAME, name);
         item.put(ID, id);
         item.put(URL_DISPLAY_KEY, urlDisplayKey);
         item.put(LOGO, logo);
+        if (StringUtils.isNotBlank(fullName)) {
+            item.put(FULL_NAME, fullName);
+        }
         return item;
     }
 
