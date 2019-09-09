@@ -266,6 +266,7 @@ public interface ExploreConstants {
     String LOCATIONS       = "locations";
     String APP_FOOTER      = "app_footer";
     String BANNER_MID      = "banner_mid";
+    String CAROUSEL        = "CAROUSEL";
     String IMAGE_URL       = "image_url";
     String DUMMY_EXAM_ICON = "/exam_placeholder.svg";
     String ID              = "id";
@@ -276,6 +277,8 @@ public interface ExploreConstants {
     String CAREER_LOGO     = "/career360.jpg";
     String EMPTY_STRING    = " ";
 
+    String POPULAR_EXAMS_APP           = "popular_exams_app";
+    String BROWSE_BY_EXAM_LEVEL        = "browse_by_exam_level";
     String RECENT_SEARCHES_kAFKA_TOPIC = "recent_searches";
     String RECENT_SEARCHES_ES_INDEX    = "recent_searches";
     String RECENT_SEARCHES_ES_TYPE     = "education";

@@ -20,6 +20,8 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.APP
 import static com.paytm.digital.education.explore.constants.ExploreConstants.APP_FOOTER;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTONOMOUS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.BANNER_MID;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.BROWSE_BY_EXAM_LEVEL;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.CAROUSEL;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CONSTITUENT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CONSTITUENT_OF;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CTA;
@@ -28,6 +30,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.FIE
 import static com.paytm.digital.education.explore.constants.ExploreConstants.IGNORE_VALUES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_TYPE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LOCATIONS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.POPULAR_EXAMS_APP;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKING_LOGO;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STANDALONE_INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAMS;
@@ -72,9 +75,12 @@ public class CommonUtil {
                 urlBuilder.append(ConfigProperties.getLocationIconPrefix());
                 break;
             case BANNER_MID:
+            case CAROUSEL:
                 urlBuilder.append(ConfigProperties.getBannerPrefix());
                 break;
             case TOP_EXAMS_APP:
+            case POPULAR_EXAMS_APP:
+            case BROWSE_BY_EXAM_LEVEL:
                 urlBuilder.append(ConfigProperties.getLogoExamPrefix());
                 break;
             case RANKING_LOGO:
