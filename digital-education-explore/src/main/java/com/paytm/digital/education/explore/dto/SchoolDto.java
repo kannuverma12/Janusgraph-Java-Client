@@ -7,8 +7,10 @@ import com.paytm.digital.education.explore.database.entity.Board;
 import com.paytm.digital.education.explore.database.entity.SchoolGallery;
 import com.paytm.digital.education.explore.database.entity.SchoolOfficialAddress;
 import com.paytm.digital.education.explore.database.entity.SocialLink;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
@@ -17,6 +19,8 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SchoolDto {
     @JsonProperty("id")
     private Long id;
