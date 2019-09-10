@@ -131,7 +131,7 @@ public class CoachingStreamService {
 
         return TopExams
                 .builder()
-                .header("Coaching for " + WordUtils.capitalizeFully(stream.getName()) + "Exams")
+                .header("Coaching for " + WordUtils.capitalizeFully(stream.getName()) + " Exams")
                 .results(topExams)
                 .build();
     }
