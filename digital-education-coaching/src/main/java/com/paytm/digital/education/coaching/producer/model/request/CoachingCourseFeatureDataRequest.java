@@ -23,7 +23,6 @@ public class CoachingCourseFeatureDataRequest {
     private Long instituteId;
 
     @URL
-    @NotNull
     private String logo;
 
     @Size(min = 1, max = 200)

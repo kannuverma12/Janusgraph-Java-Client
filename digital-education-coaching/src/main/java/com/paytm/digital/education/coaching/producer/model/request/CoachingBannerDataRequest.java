@@ -20,7 +20,6 @@ public class CoachingBannerDataRequest {
     private String bannerImageUrl;
 
     @URL
-    @NotNull
     private String redirectionUrl;
 
     @NotNull
@@ -28,5 +27,5 @@ public class CoachingBannerDataRequest {
     private Integer priority;
 
     @NotNull
-    private Boolean isEnabled;
+    private Boolean isEnabled = Boolean.TRUE;
 }

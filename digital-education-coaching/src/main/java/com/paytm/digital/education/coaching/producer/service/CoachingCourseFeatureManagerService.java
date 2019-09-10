@@ -5,6 +5,7 @@ import com.paytm.digital.education.coaching.producer.model.request.CoachingCours
 import com.paytm.digital.education.exception.InvalidRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -26,6 +27,12 @@ public class CoachingCourseFeatureManagerService {
         Optional.ofNullable(
                 coachingInstituteService.findByInstituteId(request.getInstituteId()))
                 .orElseThrow(() -> new InvalidRequestException("institute id not present"));
+        if (!CollectionUtils.isEmpty(coachingCourseFeatureService
+                .findByInstituteIdAndName(request.getInstituteId(),
+                        request.getCoachingCourseFeatureName().getText()))) {
+            throw new InvalidRequestException(
+                    "Feature name in specified institute already exists");
+        }
         return CoachingCourseFeatureDTO.builder()
                 .coachingCourseFeatureId(
                         coachingCourseFeatureService.create(request).getCoachingCourseFeatureId())
@@ -37,10 +44,15 @@ public class CoachingCourseFeatureManagerService {
         Optional.ofNullable(request.getCoachingCourseFeatureId())
                 .orElseThrow(() -> new InvalidRequestException("feature id should be present"));
 
-
         Optional.ofNullable(
                 coachingInstituteService.findByInstituteId(request.getInstituteId()))
                 .orElseThrow(() -> new InvalidRequestException("institute id not present"));
+        if (!CollectionUtils.isEmpty(coachingCourseFeatureService
+                .findByInstituteIdAndName(request.getInstituteId(),
+                        request.getCoachingCourseFeatureName().getText()))) {
+            throw new InvalidRequestException(
+                    "Feature name in specified institute already exists");
+        }
         return CoachingCourseFeatureDTO.builder()
                 .coachingCourseFeatureId(
                         coachingCourseFeatureService.update(request).getCoachingCourseFeatureId()

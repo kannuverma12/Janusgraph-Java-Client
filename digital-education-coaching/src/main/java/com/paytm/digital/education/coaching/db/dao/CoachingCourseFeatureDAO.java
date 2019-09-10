@@ -6,6 +6,7 @@ import com.paytm.digital.education.database.repository.CoachingCourseFeatureRepo
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Objects;
 
 @Component
@@ -29,5 +30,9 @@ public class CoachingCourseFeatureDAO {
 
     public CoachingCourseFeatureEntity findByCoachingCourseFeatureId(Long id) {
         return coachingCourseFeatureRepository.findByCoachingCourseFeatureId(id);
+    }
+
+    public List<CoachingCourseFeatureEntity> findByInstituteIdAndName(Long id, String name) {
+        return coachingCourseFeatureRepository.findByInstituteIdAndName(id, name);
     }
 }
