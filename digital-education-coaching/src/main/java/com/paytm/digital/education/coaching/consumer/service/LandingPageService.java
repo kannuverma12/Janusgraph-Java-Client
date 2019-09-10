@@ -132,10 +132,12 @@ public class LandingPageService {
         Map<String, List<ExamData>> examsPerStream =
                 ((ExamsTopHitsData) searchResponse.getResults().getValues().get(0))
                         .getExamsPerStream();
-        Set<ExamData> exams = new HashSet<>();
+        List<ExamData> exams = new ArrayList<>();
+        Set<Integer> examIds = new HashSet<>();
         for (Map.Entry<String, List<ExamData>> entry : examsPerStream.entrySet()) {
             for (ExamData examData : entry.getValue()) {
-                if (exams.add(examData)) {
+                if (examIds.add(examData.getExamId())) {
+                    exams.add(examData);
                     break;
                 }
             }
