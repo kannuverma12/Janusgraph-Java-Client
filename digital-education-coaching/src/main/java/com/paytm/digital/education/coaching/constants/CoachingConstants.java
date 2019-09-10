@@ -252,6 +252,7 @@ public class CoachingConstants {
         public static final String URL_DISPLAY_KEY = "url_display_key";
         public static final String LOGO            = "logo";
         public static final String FULL_NAME       = "full_name";
+        public static final String KEY             = "key";
     }
 
 

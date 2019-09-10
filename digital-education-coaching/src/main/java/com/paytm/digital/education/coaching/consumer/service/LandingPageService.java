@@ -34,7 +34,9 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.L
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.LandingPage.NAME;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.LandingPage.URL_DISPLAY_KEY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.IGNORE_ENTITY_POSITION;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.KEY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
+import static com.paytm.digital.education.constant.CommonConstants.COACHING_STREAMS;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_EXAMS;
 import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES;
 import static com.paytm.digital.education.elasticsearch.enums.DataSortOrder.ASC;
@@ -55,7 +57,7 @@ public class LandingPageService {
                     addTopCoachingInstitutes(section);
                     break;
                 case COACHING_TOP_EXAMS:
-                    addTopExams(section);
+                    addTopExams(section, sections);
                     break;
                 default:
             }
@@ -84,8 +86,8 @@ public class LandingPageService {
         section.setItems(itemList);
     }
 
-    private void addTopExams(Section section) {
-        List<ExamData> exams = getTopExamsPerStream();
+    private void addTopExams(Section section, List<Section> sections) {
+        List<ExamData> exams = getTopExamsPerStream(sections);
         List<Map<String, Object>> itemList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(exams)) {
             for (ExamData exam : exams) {
@@ -103,7 +105,7 @@ public class LandingPageService {
         }
     }
 
-    private List<ExamData> getTopExamsPerStream() {
+    private List<ExamData> getTopExamsPerStream(List<Section> sections) {
         LinkedHashMap<String, DataSortOrder> sortOrderMap = new LinkedHashMap<>();
         sortOrderMap.put(IGNORE_ENTITY_POSITION, ASC);
         SearchRequest searchRequest = SearchRequest.builder()
@@ -117,7 +119,7 @@ public class LandingPageService {
                 .build();
         try {
             SearchResponse searchResponse = examSearchService.search(searchRequest);
-            return fetchTopExamsPerStreamFromSearchResponse(searchResponse);
+            return fetchTopExamsPerStreamFromSearchResponse(searchResponse, sections);
         } catch (IOException e) {
             log.error("IO Exception for fetching top exams per stream "
                     + "", e);
@@ -128,21 +130,37 @@ public class LandingPageService {
         return null;
     }
 
-    private List<ExamData> fetchTopExamsPerStreamFromSearchResponse(SearchResponse searchResponse) {
+    private List<String> getStreamsInOrder(List<Section> sections) {
+        List<String> streams = new ArrayList<>();
+        for (Section section : sections) {
+            if (COACHING_STREAMS.equals(section.getType())) {
+                for (Map<String, Object> item : section.getItems()) {
+                    streams.add((String) item.get(KEY));
+                }
+                break;
+            }
+        }
+        return streams;
+    }
+
+    private List<ExamData> fetchTopExamsPerStreamFromSearchResponse(SearchResponse searchResponse,
+            List<Section> sections) {
         Map<String, List<ExamData>> examsPerStream =
                 ((ExamsTopHitsData) searchResponse.getResults().getValues().get(0))
                         .getExamsPerStream();
+        List<String> streamsInOrder = getStreamsInOrder(sections);
         List<ExamData> exams = new ArrayList<>();
         Set<Integer> examIds = new HashSet<>();
-        for (Map.Entry<String, List<ExamData>> entry : examsPerStream.entrySet()) {
-            for (ExamData examData : entry.getValue()) {
-                if (examIds.add(examData.getExamId())) {
-                    exams.add(examData);
+        for (String stream : streamsInOrder) {
+            List<ExamData> examData = examsPerStream.get(stream);
+            for (ExamData exam : examData) {
+                if (examIds.add(exam.getExamId())) {
+                    exams.add(exam);
                     break;
                 }
             }
         }
-        return new ArrayList<>(exams);
+        return exams;
     }
 
     private Map<String, Object> getItem(String name, String urlDisplayKey, Object id, String logo,
