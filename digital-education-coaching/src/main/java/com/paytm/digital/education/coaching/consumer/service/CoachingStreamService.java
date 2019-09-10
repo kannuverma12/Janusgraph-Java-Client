@@ -3,6 +3,7 @@ package com.paytm.digital.education.coaching.consumer.service;
 import com.paytm.digital.education.coaching.consumer.model.dto.ImportantDatesBannerDetails;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingCourses;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingInstitutes;
+import com.paytm.digital.education.coaching.consumer.model.dto.TopExams;
 import com.paytm.digital.education.coaching.consumer.model.response.GetStreamDetailsResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingCourseData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingInstituteData;
@@ -69,12 +70,10 @@ public class CoachingStreamService {
 
         List<String> sections = (List<String>) propertyMap.getOrDefault(STREAM, new ArrayList<>());
 
-        List<ExamData> topExams = this.getTopExamsForStream(streamEntity);
-
         return GetStreamDetailsResponse.builder()
                 .streamId(streamEntity.getStreamId())
                 .streamName(WordUtils.capitalizeFully(streamEntity.getName()))
-                .topExams(topExams)
+                .topExams(this.getTopExamsForStream(streamEntity))
                 .topCoachingInstitutes(this.getTopCoachingInstitutesForStream(streamEntity))
                 .topCoachingCourses(this.getTopCoachingCoursesForStream(streamEntity))
                 .sections(sections)
@@ -123,8 +122,18 @@ public class CoachingStreamService {
                 .build();
     }
 
-    private List<ExamData> getTopExamsForStream(StreamEntity stream) {
-        return examService.getTopExamsbyStreamId(stream.getStreamId());
+    private TopExams getTopExamsForStream(StreamEntity stream) {
+        List<ExamData> topExams = examService.getTopExamsbyStreamId(stream.getStreamId());
+
+        if (CollectionUtils.isEmpty(topExams)) {
+            topExams = new ArrayList<>();
+        }
+
+        return TopExams
+                .builder()
+                .header("Coaching for " + WordUtils.capitalizeFully(stream.getName()) + "Exams")
+                .results(topExams)
+                .build();
     }
 
 }
