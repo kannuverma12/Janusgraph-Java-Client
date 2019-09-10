@@ -18,8 +18,6 @@ public class CoachingCenterServiceNew {
     @Autowired
     private CoachingCenterDAO coachingCenterDAO;
 
-    private static String data = "coaching center not present";
-
     public CoachingCenterEntity insertCoachingCenter(CoachingCenterDataRequest request) {
 
         CoachingCenterEntity coachingCenterEntity = new CoachingCenterEntity();
@@ -34,8 +32,12 @@ public class CoachingCenterServiceNew {
     public CoachingCenterEntity updateCoachingCenter(CoachingCenterDataRequest request) {
         CoachingCenterEntity existingCenter =
                 Optional.ofNullable(coachingCenterDAO.findByCenterId(request.getCenterId()))
-                        .orElseThrow(() -> new ResourceNotFoundException(data));
+                        .orElseThrow(() -> new InvalidRequestException("coaching center not present"));
         ConverterUtil.setCoachingCenter(request, existingCenter);
-        return coachingCenterDAO.save(existingCenter);
+        try {
+            return coachingCenterDAO.save(existingCenter);
+        } catch (DataIntegrityViolationException ex) {
+            throw new InvalidRequestException(ex.getMessage(), ex);
+        }
     }
 }

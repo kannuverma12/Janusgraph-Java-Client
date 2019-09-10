@@ -4,7 +4,8 @@ public enum CourseLevel {
     POSTGRADUATE("Postgraduate"),
     UNDERGRADUATE("Undergraduate"),
     DOCTORATE("Doctorate"),
-    DIPLOMA("Diploma");
+    DIPLOMA("Diploma"),
+    SCHOOL("School");
 
     private String displayName;
 

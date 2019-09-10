@@ -2,6 +2,7 @@ package com.paytm.digital.education.coaching.producer.model.request;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.paytm.digital.education.enums.StudentCategory;
 import com.paytm.digital.education.validator.PositiveElementsCollection;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -76,10 +77,9 @@ public class TopRankerDataRequest {
     @ApiModelProperty(value = "testimonial from rank holder")
     private String testimonial;
 
-    // TODO : define an enum for this
     @NotNull
     @ApiModelProperty(value = "student category")
-    private Object studentCategory;
+    private StudentCategory studentCategory;
 
     @NotNull
     @Min(value = 1)

@@ -7,15 +7,18 @@ import com.paytm.digital.education.coaching.producer.model.request.CoachingCours
 import com.paytm.digital.education.coaching.producer.model.request.CoachingExamDataRequest;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingInstituteDataRequest;
 import com.paytm.digital.education.coaching.producer.model.request.StreamDataRequest;
+import com.paytm.digital.education.coaching.producer.model.request.TargetExamUpdateRequest;
 import com.paytm.digital.education.coaching.producer.model.request.TopRankerDataRequest;
+import com.paytm.digital.education.database.embedded.CoachingCourseImportantDate;
 import com.paytm.digital.education.database.embedded.KeyHighlight;
 import com.paytm.digital.education.database.embedded.OfficialAddress;
+import com.paytm.digital.education.database.entity.CoachingBannerEntity;
 import com.paytm.digital.education.database.entity.CoachingCenterEntity;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.database.entity.CoachingCourseFeatureEntity;
 import com.paytm.digital.education.database.entity.CoachingExamEntity;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
-import com.paytm.digital.education.database.entity.CoachingBannerEntity;
+import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
 
@@ -113,6 +116,7 @@ public class ConverterUtil {
         topRankerEntity.setStudentPhoto(request.getStudentPhoto());
         topRankerEntity.setTestimonial(request.getTestimonial());
         topRankerEntity.setYear(request.getExamYear());
+        topRankerEntity.setStudentCategory(request.getStudentCategory());
         topRankerEntity.setCollegeAdmitted(request.getCollegeAdmitted());
 
         topRankerEntity.setIsEnabled(request.getIsEnabled());
@@ -124,6 +128,7 @@ public class ConverterUtil {
         coachingCourseEntity.setName(request.getName());
         coachingCourseEntity.setCoachingInstituteId(request.getInstituteId());
         coachingCourseEntity.setCourseType(request.getCourseType());
+        coachingCourseEntity.setCourseCover(request.getCourseCover());
         coachingCourseEntity.setStreamIds(request.getStreamIds());
         coachingCourseEntity.setPrimaryExamIds(request.getPrimaryExamIds());
         coachingCourseEntity.setDuration(request.getDuration());
@@ -133,9 +138,13 @@ public class ConverterUtil {
         coachingCourseEntity.setDescription(request.getDescription());
         coachingCourseEntity.setFeatures(request.getCourseFeatureIds());
         coachingCourseEntity.setPrice(request.getPrice());
-        coachingCourseEntity.setLevel(request.getLevel());
+        coachingCourseEntity.setCourseLevel(request.getCourseLevel());
         coachingCourseEntity.setLanguage(request.getLanguage());
         coachingCourseEntity.setSyllabus(request.getSyllabusAndBrochure());
+        coachingCourseEntity.setImportantDates(request.getImportantDates().stream()
+                .map(input -> CoachingCourseImportantDate.builder()
+                        .key(input.getKey())
+                        .value(input.getValue()).build()).collect(Collectors.toList()));
 
         // common across all the courses
         coachingCourseEntity
@@ -189,6 +198,12 @@ public class ConverterUtil {
 
         coachingCourseEntity.setIsEnabled(request.getIsEnabled());
         coachingCourseEntity.setPriority(request.getPriority());
+    }
+
+    public static void setExamUpdateData(TargetExamUpdateRequest request,
+            Exam exam) {
+        exam.setStreamIds(request.getStreamIds());
+        exam.setPriority(request.getPriority());
     }
 
     public static void setCoachingBannerData(CoachingBannerDataRequest request, CoachingBannerEntity

@@ -2,13 +2,12 @@ package com.paytm.digital.education.coaching.producer.service;
 
 import com.paytm.digital.education.coaching.producer.model.dto.CoachingInstituteDTO;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingInstituteDataRequest;
-import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.exception.InvalidRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class CoachingInstituteManagerService {
@@ -19,32 +18,26 @@ public class CoachingInstituteManagerService {
     @Autowired
     private StreamService streamService;
 
+    @Autowired
+    private TargetExamService targetExamService;
+
     public CoachingInstituteDTO create(CoachingInstituteDataRequest request) {
-
-        List<Long> existingStreamIds = streamService.findAllByStreamId(request.getStreamIds())
-                .stream().map(StreamEntity::getStreamId).collect(Collectors.toList());
-        if (request.getStreamIds().stream()
-                .filter(id -> !existingStreamIds.contains(id)).count() > 0) {
-            throw new InvalidRequestException("StreamEntity ids not present");
+        if (Objects.nonNull(request.getInstituteId())) {
+            throw new InvalidRequestException(
+                    "request should not have id : " + request.getInstituteId());
         }
-
-        //TODO : add exam validation
+        streamService.isValidStreamIds(request.getStreamIds());
+        targetExamService.isValidExamIds(request.getExamIds());
 
         return CoachingInstituteDTO.builder()
                 .instituteId(coachingInstituteService.create(request).getInstituteId()).build();
     }
 
     public CoachingInstituteDTO update(CoachingInstituteDataRequest request) {
-
-        List<Long> existingStreamIds = streamService.findAllByStreamId(request.getStreamIds())
-                .stream().map(StreamEntity::getStreamId).collect(Collectors.toList());
-        if (request.getStreamIds().stream()
-                .filter(id -> !existingStreamIds.contains(id)).count() > 0) {
-            throw new InvalidRequestException("StreamEntity ids not present");
-        }
-
-        //TODO : add exam validation
-
+        Optional.ofNullable(request.getInstituteId())
+                .orElseThrow(() -> new InvalidRequestException("institute id should be present"));
+        streamService.isValidStreamIds(request.getStreamIds());
+        targetExamService.isValidExamIds(request.getExamIds());
         return CoachingInstituteDTO.builder()
                 .instituteId(coachingInstituteService.update(request).getInstituteId()).build();
     }

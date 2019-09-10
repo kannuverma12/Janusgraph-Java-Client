@@ -1,0 +1,34 @@
+package com.paytm.digital.education.coaching.producer.model.request;
+
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.paytm.digital.education.validator.PositiveElementsCollection;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.util.List;
+
+@Data
+@ApiModel
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+public class TargetExamUpdateRequest {
+
+    @NotNull
+    @Min(value = 1)
+    @ApiModelProperty(value = "unique existing id of the target exam")
+    private Long examId;
+
+    @NotEmpty
+    @PositiveElementsCollection
+    private List<Long> streamIds;
+
+    @NotNull
+    @Min(value = 1)
+    @ApiModelProperty(value = "priority across all the existing target exams")
+    private Integer priority;
+
+}

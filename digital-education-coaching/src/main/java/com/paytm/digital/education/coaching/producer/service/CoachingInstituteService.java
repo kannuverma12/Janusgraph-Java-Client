@@ -36,7 +36,11 @@ public class CoachingInstituteService {
                         .orElseThrow(() -> new InvalidRequestException("institute not present"));
 
         ConverterUtil.setCoachingInstituteData(request, existingIntitute);
-        return coachingInstituteDAO.save(existingIntitute);
+        try {
+            return coachingInstituteDAO.save(existingIntitute);
+        } catch (DataIntegrityViolationException ex) {
+            throw new InvalidRequestException(ex.getMessage(), ex);
+        }
     }
 
     public List<CoachingInstituteEntity> findAllByInstituteId(List<Long> instituteIds) {

@@ -32,9 +32,13 @@ public class CoachingCourseFeatureService {
         CoachingCourseFeatureEntity coachingCourseFeatureEntity = Optional.ofNullable(
                 coachingCourseFeatureDAO
                         .findByCoachingCourseFeatureId(request.getCoachingCourseFeatureId()))
-                .orElseThrow(() -> new InvalidRequestException("Coaching feature not present"));
+                .orElseThrow(() -> new InvalidRequestException("coaching feature id not present"));
         ConverterUtil.setCoachingCourseFeatureData(request, coachingCourseFeatureEntity);
-        return coachingCourseFeatureDAO.save(coachingCourseFeatureEntity);
+        try {
+            return coachingCourseFeatureDAO.save(coachingCourseFeatureEntity);
+        } catch (DataIntegrityViolationException ex) {
+            throw new InvalidRequestException(ex.getMessage(), ex);
+        }
     }
 
 }

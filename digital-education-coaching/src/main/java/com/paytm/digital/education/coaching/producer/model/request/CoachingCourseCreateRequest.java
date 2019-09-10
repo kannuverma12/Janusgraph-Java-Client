@@ -3,8 +3,8 @@ package com.paytm.digital.education.coaching.producer.model.request;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.database.embedded.CoachingCourseFeature;
 import com.paytm.digital.education.database.embedded.Faq;
+import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.CourseType;
-import com.paytm.digital.education.enums.Level;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
@@ -59,7 +59,7 @@ public class CoachingCourseCreateRequest {
     private Double price;
 
     @NotNull
-    private Level level;
+    private CourseLevel level;
 
     private String language;
 

@@ -4,16 +4,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.paytm.digital.education.database.embedded.CoachingCourseImportantDate;
 import com.paytm.digital.education.database.embedded.Currency;
 import com.paytm.digital.education.database.embedded.Faq;
+import com.paytm.digital.education.enums.CourseCover;
+import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.CourseType;
 import com.paytm.digital.education.enums.DurationType;
 import com.paytm.digital.education.enums.Language;
-import com.paytm.digital.education.enums.Level;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -33,6 +33,7 @@ public class CoachingCourseEntity extends Base {
     List<Faq> faqs;
 
     @Field("course_id")
+    @Indexed(unique = true)
     private Long courseId;
 
     @Field("name")
@@ -78,7 +79,10 @@ public class CoachingCourseEntity extends Base {
     private Currency currency;
 
     @Field("level")
-    private Level level;
+    private CourseLevel courseLevel;
+
+    @Field("course_cover")
+    private CourseCover courseCover;
 
     @Field("language")
     private Language language;

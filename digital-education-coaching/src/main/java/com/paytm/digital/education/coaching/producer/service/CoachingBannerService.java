@@ -33,6 +33,10 @@ public class CoachingBannerService {
                 coachingBannerDAO.findByCoachingBannerId(request.getCoachingBannerId()))
                 .orElseThrow(() -> new InvalidRequestException("Coaching Banner not present"));
         ConverterUtil.setCoachingBannerData(request, coachingBannerExistingEntity);
-        return coachingBannerDAO.save(coachingBannerExistingEntity);
+        try {
+            return coachingBannerDAO.save(coachingBannerExistingEntity);
+        } catch (DataIntegrityViolationException ex) {
+            throw new InvalidRequestException(ex.getMessage(), ex);
+        }
     }
 }

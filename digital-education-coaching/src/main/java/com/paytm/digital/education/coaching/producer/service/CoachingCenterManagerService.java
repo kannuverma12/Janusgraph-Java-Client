@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class CoachingCenterManagerService {
@@ -20,6 +21,10 @@ public class CoachingCenterManagerService {
 
     public CoachingCenterDTO insertCoachingCenter(CoachingCenterDataRequest request) {
 
+        if (Objects.nonNull(request.getCenterId())) {
+            throw new InvalidRequestException(
+                    "request should not have id : " + request.getCenterId());
+        }
 
         CoachingInstituteEntity existingCoachingInstitutes =
                 coachingInstituteService.findByInstituteId(request.getInstituteId());
@@ -33,6 +38,9 @@ public class CoachingCenterManagerService {
     }
 
     public CoachingCenterDTO updateCoachingCenter(CoachingCenterDataRequest request) {
+
+        Optional.ofNullable(request.getCenterId())
+                .orElseThrow(() -> new InvalidRequestException("center id should be present"));
 
         CoachingInstituteEntity existingCoachingInstitutes =
                 coachingInstituteService.findByInstituteId(request.getInstituteId());

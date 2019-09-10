@@ -1,16 +1,19 @@
 package com.paytm.digital.education.database.entity;
 
-import lombok.Builder;
+import com.paytm.digital.education.enums.StudentCategory;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
-@Builder
+@NoArgsConstructor
 @Document(collection = "top_ranker")
 public class TopRankerEntity extends Base {
 
@@ -18,6 +21,8 @@ public class TopRankerEntity extends Base {
     private ObjectId id;
 
     @Field("top_ranker_id")
+    @Indexed(unique = true)
+    // todo: check to port same in production
     private Long topRankerId;
 
     @Field("institute_id")
@@ -52,6 +57,9 @@ public class TopRankerEntity extends Base {
 
     @Field("college_admitted")
     private String collegeAdmitted;
+
+    @Field("student_category")
+    private StudentCategory studentCategory;
 
     @Field("testimonial")
     private String testimonial;

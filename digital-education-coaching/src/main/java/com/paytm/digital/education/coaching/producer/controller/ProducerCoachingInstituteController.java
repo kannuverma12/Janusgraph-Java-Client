@@ -4,7 +4,6 @@ import com.paytm.digital.education.coaching.constants.CoachingConstants;
 import com.paytm.digital.education.coaching.producer.model.dto.CoachingInstituteDTO;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingInstituteDataRequest;
 import com.paytm.digital.education.coaching.producer.service.CoachingInstituteManagerService;
-import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;

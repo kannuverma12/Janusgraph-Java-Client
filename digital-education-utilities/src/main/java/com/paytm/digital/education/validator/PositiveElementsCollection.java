@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Constraint(validatedBy = PositiveElementsCollectionValidator.class)
 public @interface PositiveElementsCollection {
-    String message() default "Must have positive values";
+    String message() default "Must have unique positive values";
 
     Class<?>[] groups() default {};
 

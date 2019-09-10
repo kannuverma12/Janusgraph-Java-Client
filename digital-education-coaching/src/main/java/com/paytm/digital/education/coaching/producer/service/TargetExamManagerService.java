@@ -1,0 +1,29 @@
+package com.paytm.digital.education.coaching.producer.service;
+
+import com.paytm.digital.education.coaching.exeptions.InvalidRequestException;
+import com.paytm.digital.education.coaching.producer.model.dto.TargetExamDTO;
+import com.paytm.digital.education.coaching.producer.model.request.TargetExamUpdateRequest;
+import com.paytm.digital.education.database.entity.StreamEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class TargetExamManagerService {
+
+    @Autowired
+    private TargetExamService targetExamService;
+
+    @Autowired
+    private StreamService streamService;
+
+    public TargetExamDTO update(TargetExamUpdateRequest request) {
+
+        streamService.isValidStreamIds(request.getStreamIds());
+
+        return TargetExamDTO.builder().examId(targetExamService.update(request).getExamId())
+                .build();
+    }
+}

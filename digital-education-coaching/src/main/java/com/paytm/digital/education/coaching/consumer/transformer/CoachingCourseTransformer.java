@@ -62,7 +62,6 @@ public class CoachingCourseTransformer {
                 .map(date -> CoachingCourseImportantDate.builder()
                         .key(date.getKey())
                         .value(date.getValue())
-                        .priority(date.getPriority())
                         .build())
                 .collect(Collectors.toList());
     }

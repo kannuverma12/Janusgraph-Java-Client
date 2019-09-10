@@ -33,9 +33,13 @@ public class StreamService {
     public StreamEntity update(StreamDataRequest request) {
         StreamEntity existingStreamEntity =
                 Optional.ofNullable(coachingStreamDAO.findByStreamId(request.getStreamId()))
-                        .orElseThrow(() -> new ResourceNotFoundException("stream not present"));
+                        .orElseThrow(() -> new InvalidRequestException("stream id not present"));
         ConverterUtil.setStreamData(request, existingStreamEntity);
-        return coachingStreamDAO.save(existingStreamEntity);
+        try {
+            return coachingStreamDAO.save(existingStreamEntity);
+        } catch (DataIntegrityViolationException ex) {
+            throw new InvalidRequestException(ex.getMessage(), ex);
+        }
     }
 
     public List<StreamEntity> findAllByStreamId(List<Long> streamIds) {

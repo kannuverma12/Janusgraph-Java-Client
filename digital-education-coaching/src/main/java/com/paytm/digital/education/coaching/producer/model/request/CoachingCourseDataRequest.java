@@ -2,20 +2,24 @@ package com.paytm.digital.education.coaching.producer.model.request;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.paytm.digital.education.coaching.producer.model.embedded.ImportantDate;
+import com.paytm.digital.education.enums.CourseCover;
+import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.CourseType;
 import com.paytm.digital.education.enums.DurationType;
 import com.paytm.digital.education.enums.Language;
-import com.paytm.digital.education.enums.Level;
 import com.paytm.digital.education.validator.PositiveElementsCollection;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.hibernate.validator.constraints.URL;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.util.List;
@@ -84,7 +88,11 @@ public class CoachingCourseDataRequest {
 
     @NotNull
     @ApiModelProperty(value = "existing education level of applicant")
-    private Level level;
+    private CourseLevel courseLevel;
+
+    @NotNull
+    @ApiModelProperty(value = "course coverage from define values")
+    private CourseCover courseCover;
 
     @NotNull
     @ApiModelProperty(value = "language of coaching course")
@@ -194,6 +202,7 @@ public class CoachingCourseDataRequest {
     private Integer classroomTestCount;
 
     @Size(max = 10)
+    @Pattern(regexp = "^[1-9]*:[1-9]*$")
     @ApiModelProperty(value = "practice paper count in the course")
     private String classroomTeacherStudentRatio;
 
@@ -209,7 +218,8 @@ public class CoachingCourseDataRequest {
     @Size(max = 200)
     private String howToUse4;
 
-    // TODO : add important date
+    @Valid
+    private List<ImportantDate> importantDates;
 
     @ApiModelProperty(value = "flag is enable/disable course, default is true")
     private Boolean isEnabled = Boolean.TRUE;

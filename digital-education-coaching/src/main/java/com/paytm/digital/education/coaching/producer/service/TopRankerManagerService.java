@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -24,6 +25,11 @@ public class TopRankerManagerService {
 
     public TopRankerDTO create(final TopRankerDataRequest request) {
 
+        if (Objects.nonNull(request.getTopRankerId())) {
+            throw new InvalidRequestException(
+                    "request should not have id : " + request.getTopRankerId());
+        }
+
         CoachingInstituteEntity existingCoachingInstitutes =
                 coachingInstituteService.findByInstituteId(request.getInstituteId());
         if (Objects.isNull(existingCoachingInstitutes)) {
@@ -35,6 +41,10 @@ public class TopRankerManagerService {
     }
 
     public TopRankerDTO update(final TopRankerDataRequest request) {
+
+        Optional.ofNullable(request.getTopRankerId())
+                .orElseThrow(() -> new InvalidRequestException("top ranker id should be present"));
+
 
         CoachingInstituteEntity existingCoachingInstitutes =
                 coachingInstituteService.findByInstituteId(request.getInstituteId());

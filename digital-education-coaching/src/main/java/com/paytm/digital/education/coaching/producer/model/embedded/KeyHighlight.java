@@ -16,9 +16,9 @@ public class KeyHighlight {
     @URL
     private String logo;
 
-    @Size(max = 200)
+    @Size(max = 30)
     private String key;
 
-    @Size(max = 200)
+    @Size(max = 30)
     private String value;
 }

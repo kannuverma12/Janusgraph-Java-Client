@@ -25,7 +25,7 @@ public class StreamDataRequest {
 
     @NotEmpty
     @Size(max = 50)
-    @Pattern(regexp = "^[a-zA-Z&-]+$")
+    @Pattern(regexp = "^[a-zA-Z]+[a-zA-Z& ]*$")
     @ApiModelProperty(value = "name of the stream")
     private String name;
 

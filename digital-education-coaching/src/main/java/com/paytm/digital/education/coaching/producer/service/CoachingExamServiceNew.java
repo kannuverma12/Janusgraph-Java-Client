@@ -15,7 +15,6 @@ import java.util.Optional;
 @Service
 public class CoachingExamServiceNew {
 
-    private static String          data = "coaching exam not present";
     @Autowired
     private        CoachingExamDAO coachingExamDAO;
 
@@ -27,15 +26,18 @@ public class CoachingExamServiceNew {
             return coachingExamDAO.save(coachingExamEntity);
         } catch (DataIntegrityViolationException ex) {
             throw new InvalidRequestException(ex.getMessage(), ex);
-
         }
     }
 
     public CoachingExamEntity updateCoachingExam(CoachingExamDataRequest request) {
         CoachingExamEntity existingCoachingExam =
                 Optional.ofNullable(coachingExamDAO.findByExamId(request.getCoachingExamId()))
-                        .orElseThrow(() -> new ResourceNotFoundException(data));
+                        .orElseThrow(() -> new InvalidRequestException("coaching exam not present"));
         ConverterUtil.setCoachingExam(request, existingCoachingExam);
-        return coachingExamDAO.save(existingCoachingExam);
+        try {
+            return coachingExamDAO.save(existingCoachingExam);
+        } catch (DataIntegrityViolationException ex) {
+            throw new InvalidRequestException(ex.getMessage(), ex);
+        }
     }
 }

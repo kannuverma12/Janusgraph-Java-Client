@@ -39,6 +39,8 @@ public class TransformAndSaveExamService {
                 String id = map.get(exam.getExamId());
                 if (StringUtils.isNotBlank(id)) {
                     exam.setId(id);
+                    exam.setStreamIds(exam.getStreamIds());
+                    exam.setPriority(exam.getPriority());
                 }
                 commonMongoRepository.saveOrUpdate(exam);
             }

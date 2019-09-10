@@ -13,5 +13,4 @@ public class CoachingCourseImportantDate {
 
     private String key;
     private String value;
-    private int    priority;
 }

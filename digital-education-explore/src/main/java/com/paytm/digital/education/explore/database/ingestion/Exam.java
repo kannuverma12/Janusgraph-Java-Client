@@ -120,4 +120,12 @@ public class Exam {
     @Field("status")
     @JsonProperty("status")
     private String status;
+
+    @Field("stream_ids")
+    @JsonProperty("stream_ids")
+    private List<Long> streamIds;
+
+    @Field("priority")
+    @JsonProperty("priority")
+    private List<Long> priority;
 }

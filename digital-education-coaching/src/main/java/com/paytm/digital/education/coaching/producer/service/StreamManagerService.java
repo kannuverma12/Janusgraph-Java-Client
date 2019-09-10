@@ -6,6 +6,7 @@ import com.paytm.digital.education.exception.InvalidRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -18,7 +19,10 @@ public class StreamManagerService {
     private CoachingInstituteService coachingInstituteService;
 
     public StreamDTO create(StreamDataRequest request) {
-
+        if (Objects.nonNull(request.getStreamId())) {
+            throw new InvalidRequestException(
+                    "request should not have id : " + request.getStreamId());
+        }
         return StreamDTO.builder().streamId(streamService.create(request).getStreamId()).build();
     }
 

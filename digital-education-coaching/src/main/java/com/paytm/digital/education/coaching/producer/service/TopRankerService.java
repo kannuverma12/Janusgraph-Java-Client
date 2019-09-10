@@ -22,20 +22,8 @@ public class TopRankerService {
     private final TopRankerDAO topRankerDAO;
 
     public TopRankerEntity create(final TopRankerDataRequest request) {
-        final TopRankerEntity topRankerEntity = TopRankerEntity.builder()
-                .instituteId(request.getInstituteId())
-                .centerId(request.getCenterId())
-                .batch(request.getBatchInfo())
-                .courseIds(request.getCourseStudied())
-                .examId(request.getExamId())
-                .examYear(request.getExamYear())
-                .rankObtained(request.getRankObtained())
-                .studentName(request.getStudentName())
-                .studentPhoto(request.getStudentPhoto())
-                .testimonial(request.getTestimonial())
-                .year(request.getExamYear())
-                .collegeAdmitted(request.getCollegeAdmitted())
-                .build();
+        TopRankerEntity topRankerEntity = new TopRankerEntity();
+        ConverterUtil.setTopRanker(request, topRankerEntity);
 
         try {
             return topRankerDAO.save(topRankerEntity);
@@ -50,10 +38,13 @@ public class TopRankerService {
         final TopRankerEntity existingTopRankerEntity =
                 Optional.ofNullable(
                         topRankerDAO.findByTopRankerId(request.getTopRankerId()))
-                        .orElseThrow(() -> new ResourceNotPresentException(
-                                CoachingConstants.RESOURCE_NOT_PRESENT));
+                        .orElseThrow(() -> new InvalidRequestException("top ranker id not present"));
         ConverterUtil.setTopRanker(request, existingTopRankerEntity);
 
-        return topRankerDAO.save(existingTopRankerEntity);
+        try {
+            return topRankerDAO.save(existingTopRankerEntity);
+        } catch (DataIntegrityViolationException ex) {
+            throw new InvalidRequestException(ex.getMessage(), ex);
+        }
     }
 }

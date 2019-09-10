@@ -7,6 +7,7 @@ import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Objects;
 
 @Component
@@ -24,6 +25,10 @@ public class CoachingCourseDAO {
                     .getNextSequenceId(coachingProgramEntity.getClass().getSimpleName()));
         }
         return programRepository.save(coachingProgramEntity);
+    }
+
+    public List<CoachingCourseEntity> findAllByCourseId(@NonNull List<Long> ids) {
+        return programRepository.findAllByCourseId(ids);
     }
 
     public CoachingCourseEntity findByProgramId(@NonNull Long id) {

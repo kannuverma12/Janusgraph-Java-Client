@@ -2,7 +2,6 @@ package com.paytm.digital.education.coaching.producer.service;
 
 import com.paytm.digital.education.coaching.producer.model.dto.CoachingCourseFeatureDTO;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCourseFeatureDataRequest;
-import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.exception.InvalidRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,12 +21,11 @@ public class CoachingCourseFeatureManagerService {
     public CoachingCourseFeatureDTO create(CoachingCourseFeatureDataRequest request) {
         if (Objects.nonNull(request.getCoachingCourseFeatureId())) {
             throw new InvalidRequestException(
-                    "Coaching Course feature ID should be null in post request");
+                    "coaching course feature id should be null in post request");
         }
-        CoachingInstituteEntity existingInstitute =
-                Optional.ofNullable(
-                        coachingInstituteService.findByInstituteId(request.getInstituteId()))
-                        .orElseThrow(() -> new InvalidRequestException("institute not present"));
+        Optional.ofNullable(
+                coachingInstituteService.findByInstituteId(request.getInstituteId()))
+                .orElseThrow(() -> new InvalidRequestException("institute id not present"));
         return CoachingCourseFeatureDTO.builder()
                 .coachingCourseFeatureId(
                         coachingCourseFeatureService.create(request).getCoachingCourseFeatureId())
@@ -35,10 +33,14 @@ public class CoachingCourseFeatureManagerService {
     }
 
     public CoachingCourseFeatureDTO update(CoachingCourseFeatureDataRequest request) {
-        CoachingInstituteEntity existingInstitute =
-                Optional.ofNullable(
-                        coachingInstituteService.findByInstituteId(request.getInstituteId()))
-                        .orElseThrow(() -> new InvalidRequestException("institute not present"));
+
+        Optional.ofNullable(request.getCoachingCourseFeatureId())
+                .orElseThrow(() -> new InvalidRequestException("feature id should be present"));
+
+
+        Optional.ofNullable(
+                coachingInstituteService.findByInstituteId(request.getInstituteId()))
+                .orElseThrow(() -> new InvalidRequestException("institute id not present"));
         return CoachingCourseFeatureDTO.builder()
                 .coachingCourseFeatureId(
                         coachingCourseFeatureService.update(request).getCoachingCourseFeatureId()

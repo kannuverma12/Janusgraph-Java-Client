@@ -8,7 +8,10 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -40,12 +43,14 @@ public class OfficialAddress {
     @Pattern(regexp = "^[0-9]*$")
     private String pincode;
 
-    @NotEmpty
-    //TODO : add validation integer between -90 and +90 and decimal upto 6 places
+    @NotNull
+    @Min(value = -90)
+    @Max(value = 90)
     private Double latitude;
 
-    @NotEmpty
-    //TODO : add validation integer between -180 and +180 and decimal upto 6 places
+    @NotNull
+    @Min(value = -180)
+    @Max(value = 180)
     private Double longitude;
 
     @Email

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class CoachingBannerMangerService {
@@ -16,7 +17,8 @@ public class CoachingBannerMangerService {
 
     public CoachingBannerDTO create(CoachingBannerDataRequest request) {
         if (Objects.nonNull(request.getCoachingBannerId())) {
-            throw new InvalidRequestException("Coaching Banner ID should be null in post request");
+            throw new InvalidRequestException(
+                    "request should not have id : " + request.getCoachingBannerId());
         }
         return CoachingBannerDTO.builder()
                 .coachingBannerId(coachingBannerService.create(request).getCoachingBannerId())
@@ -24,6 +26,10 @@ public class CoachingBannerMangerService {
     }
 
     public CoachingBannerDTO update(CoachingBannerDataRequest request) {
+
+        Optional.ofNullable(request.getCoachingBannerId())
+                .orElseThrow(() -> new InvalidRequestException("banner id should be present"));
+
         return CoachingBannerDTO.builder()
                 .coachingBannerId(coachingBannerService.update(request).getCoachingBannerId())
                 .build();
