@@ -293,7 +293,7 @@ public class CoachingCourseService {
                 .importantDates(this.coachingCourseTransformer.convertImportantDates(
                         course.getImportantDates()))
                 .sessionDetails(this.coachingCourseTransformer.convertSessionDetails(course))
-                //.courseFeatures(this.coachingCourseTransformer.convertCourseFeatures(course.getFeatures()))
+                //.courseFeatures(this.coachingCourseTransformer.convertCourseFeatures(course.getFeatureIds()))
                 .syllabus(course.getSyllabus())
                 .brochure(course.getBrochure())
                 .build();

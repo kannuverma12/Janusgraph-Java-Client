@@ -28,7 +28,7 @@ public class ProducerCoachingCourseFeatureController {
     private CoachingCourseFeatureManagerService coachingCourseFeatureManagerService;
 
     @PostMapping(
-            value = "/v1/admin/coaching-course-feature",
+            value = "/v1/coaching-course-feature",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(
@@ -40,7 +40,7 @@ public class ProducerCoachingCourseFeatureController {
     }
 
     @PutMapping(
-            value = "/v1/admin/coaching-course-feature",
+            value = "/v1/coaching-course-feature",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(

@@ -16,4 +16,13 @@ public enum CourseLevel {
     public String getDisplayName() {
         return this.displayName;
     }
+
+    public static CourseLevel fromString(String text) {
+        for (CourseLevel courseLevel : CourseLevel.values()) {
+            if (courseLevel.getDisplayName().equalsIgnoreCase(text)) {
+                return courseLevel;
+            }
+        }
+        return null;
+    }
 }

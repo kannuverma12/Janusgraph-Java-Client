@@ -6,7 +6,10 @@ import com.paytm.digital.education.coaching.producer.model.embedded.OfficialAddr
 import com.paytm.digital.education.enums.CourseType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -16,6 +19,9 @@ import javax.validation.constraints.Size;
 import java.util.List;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @ApiModel
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class CoachingCenterDataRequest {

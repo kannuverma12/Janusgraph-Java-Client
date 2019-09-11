@@ -29,7 +29,7 @@ public class ProducerCoachingInstituteController {
     private CoachingInstituteManagerService coachingInstituteManagerService;
 
     @PostMapping(
-            value = "/v1/admin/institutes",
+            value = "/v1/institutes",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(
@@ -41,7 +41,7 @@ public class ProducerCoachingInstituteController {
     }
 
     @PutMapping(
-            value = "/v1/admin/institutes",
+            value = "/v1/institutes",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(

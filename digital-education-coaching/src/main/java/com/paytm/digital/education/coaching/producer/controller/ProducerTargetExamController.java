@@ -29,7 +29,7 @@ public class ProducerTargetExamController {
     public TargetExamManagerService targetExamManagerService;
 
     @PatchMapping(
-            value = V1 + "/admin" + "/exam",
+            value = V1 + "/exam",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(

@@ -28,7 +28,7 @@ public class ProducerStreamController {
     private StreamManagerService streamManagerService;
 
     @PostMapping(
-            value = "/v1/admin/streams",
+            value = "/v1/streams",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(
@@ -39,7 +39,7 @@ public class ProducerStreamController {
     }
 
     @PutMapping(
-            value = "/v1/admin/streams",
+            value = "/v1/streams",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(

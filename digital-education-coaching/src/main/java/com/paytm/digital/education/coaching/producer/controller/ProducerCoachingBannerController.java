@@ -28,7 +28,7 @@ public class ProducerCoachingBannerController {
     private CoachingBannerMangerService coachingBannerMangerService;
 
     @PostMapping(
-            value = "/v1/admin/coaching-banner",
+            value = "/v1/coaching-banner",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(
@@ -40,7 +40,7 @@ public class ProducerCoachingBannerController {
     }
 
     @PutMapping(
-            value = "/v1/admin/coaching-banner",
+            value = "/v1/coaching-banner",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(

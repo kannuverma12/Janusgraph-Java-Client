@@ -31,7 +31,7 @@ public class ProducerTopRankerController {
     public TopRankerManagerService topRankerManagerService;
 
     @PostMapping(
-            value = V1 + "/admin" + "/top-ranker",
+            value = V1 + "/top-ranker",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(
@@ -43,7 +43,7 @@ public class ProducerTopRankerController {
     }
 
     @PutMapping(
-            value = V1 + "/admin" + "/top-ranker",
+            value = V1  + "/top-ranker",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(

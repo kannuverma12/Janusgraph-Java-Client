@@ -28,7 +28,7 @@ public class ProducerCoachingExamController {
     private CoachingExamManagerService coachingExamManagerService;
 
     @PostMapping(
-            value = "/v1/admin/coaching-exams",
+            value = "/v1/coaching-exams",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(
@@ -41,7 +41,7 @@ public class ProducerCoachingExamController {
     }
 
     @PutMapping(
-            value = "/v1/admin/coaching-exams",
+            value = "/v1/coaching-exams",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(

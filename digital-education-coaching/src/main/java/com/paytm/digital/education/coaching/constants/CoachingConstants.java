@@ -264,8 +264,10 @@ public class CoachingConstants {
     }
 
 
-    public static class ImportantDates {
+    public static final String EMPTY_STRING = "";
 
+
+    public static class ImportantDates {
         public static final String HEADER      = "Important Dates!";
         public static final String DESCRIPTION =
                 "Keep track of important dates like Last date of form submission, Examination date, etc.";
@@ -273,4 +275,11 @@ public class CoachingConstants {
         public static final String BUTTON_TEXT = "View Dates";
     }
 
+
+    public static final class FailedDataCollection {
+        public static final String COMPONENT     = "component";
+        public static final String TYPE          = "type";
+        public static final String HAS_IMPORTED  = "has_imported";
+        public static final String IS_IMPORTABLE = "is_importable";
+    }
 }
