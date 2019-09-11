@@ -45,6 +45,7 @@ public class FeeUrlGenerator {
         } catch (NullPointerException | IndexOutOfBoundsException e) {
             log.error("Received unexpected response from catalog : {}",
                     e.getLocalizedMessage());
+            log.error("Error with stack trace", e);
             return null;
         }
     }

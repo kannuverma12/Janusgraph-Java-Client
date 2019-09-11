@@ -8,8 +8,10 @@ import com.paytm.digital.education.explore.database.entity.Board;
 import com.paytm.digital.education.explore.database.entity.BoardData;
 import com.paytm.digital.education.explore.database.entity.RelevantLink;
 import com.paytm.digital.education.explore.database.entity.School;
+import com.paytm.digital.education.explore.database.entity.SchoolPaytmKeys;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.enums.Client;
+import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.FacilityResponse;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.FacultyDetail;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.GeneralInformation;
@@ -18,6 +20,7 @@ import com.paytm.digital.education.explore.response.dto.detail.school.detail.Sch
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.SchoolGalleryResponse;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.ShiftDetailsResponse;
 import com.paytm.digital.education.explore.service.SchoolService;
+import com.paytm.digital.education.explore.service.helper.CTAHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.service.helper.FacilityDataHelper;
 import com.paytm.digital.education.explore.service.helper.SchoolDetailsResponseHelper;
@@ -31,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -58,6 +62,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
     private final CommonMongoRepository   commonMongoRepository;
     private final DerivedAttributesHelper derivedAttributesHelper;
     private final FacilityDataHelper      facilityDataHelper;
+    private final CTAHelper               ctaHelper;
 
     public List<School> getSchools(List<Long> entityIds, List<String> groupFields) {
         if (CollectionUtils.isEmpty(groupFields)) {
@@ -129,6 +134,12 @@ public class SchoolDetailServiceImpl implements SchoolService {
             schoolDetail.setGeneralInformation(collectGeneralInformationFromSchool(school));
             schoolDetail.setStreams(boardData.getStreams());
             SchoolDetailsResponseHelper.pruneDuplicateDataInSchoolDetail(schoolDetail);
+            Optional<SchoolPaytmKeys> schoolPaytmKeys = Optional.ofNullable(school.getPaytmKeys());
+            schoolDetail.setPid(schoolPaytmKeys.map(SchoolPaytmKeys::getPid).orElse(null));
+            schoolDetail.setFormId(schoolPaytmKeys.map(SchoolPaytmKeys::getFormId).orElse(null));
+            schoolDetail.setBrochureUrl(boardData.getSchoolBrochureLink());
+            List<CTA> ctaList = ctaHelper.buildCTA(schoolDetail, client);
+            schoolDetail.setCtaList(ctaList);
         }
         return schoolDetail;
     }
