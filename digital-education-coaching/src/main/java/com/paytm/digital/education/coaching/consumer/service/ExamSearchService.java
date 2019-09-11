@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_EXAM_STREAMS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_PLACEHOLDER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_FULL_NAME;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_FULL_NAME_BOOST;
@@ -47,6 +48,8 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.S
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_SHORT_NAME_BOOST;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_EXAMS;
+import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_MEDIUM;
+import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_EXAM_LEVEL;
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.TERMS;
 
 @Slf4j
@@ -62,6 +65,9 @@ public class ExamSearchService extends AbstractSearchService {
     private void init() {
         filterQueryTypeMap = new HashMap<>();
         filterQueryTypeMap.put(STREAM_IDS, TERMS);
+        filterQueryTypeMap.put(LINGUISTIC_MEDIUM, TERMS);
+        filterQueryTypeMap.put(SEARCH_EXAM_LEVEL, TERMS);
+        filterQueryTypeMap.put(COACHING_EXAM_STREAMS, TERMS);
         searchFieldKeys = new HashMap<>();
         searchFieldKeys.put(EXAM_FULL_NAME, EXAM_FULL_NAME_BOOST);
         searchFieldKeys.put(EXAM_SHORT_NAME, EXAM_SHORT_NAME_BOOST);

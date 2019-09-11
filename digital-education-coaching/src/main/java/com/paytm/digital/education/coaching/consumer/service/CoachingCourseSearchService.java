@@ -30,7 +30,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_DURATION;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_EXAMS;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_INSTITUTE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_LEVEL;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_PLACEHOLDER;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_STREAMS;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_TYPE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_COURSE_NAME;
@@ -60,6 +66,12 @@ public class CoachingCourseSearchService extends AbstractSearchService {
         filterQueryTypeMap.put(EXAM_ID, TERMS);
         filterQueryTypeMap.put(EXAM_IDS, TERMS);
         filterQueryTypeMap.put(COACHING_INSTITUTE_ID, TERMS);
+        filterQueryTypeMap.put(COACHING_COURSE_STREAMS, TERMS);
+        filterQueryTypeMap.put(COACHING_COURSE_EXAMS, TERMS);
+        filterQueryTypeMap.put(COURSE_TYPE, TERMS);
+        filterQueryTypeMap.put(COACHING_COURSE_INSTITUTE, TERMS);
+        filterQueryTypeMap.put(COACHING_COURSE_LEVEL, TERMS);
+        filterQueryTypeMap.put(COACHING_COURSE_DURATION, TERMS);
         searchFieldKeys = new HashMap<>();
         searchFieldKeys.put(COACHING_COURSE_NAME, COACHING_COURSE_NAME_BOOST);
     }

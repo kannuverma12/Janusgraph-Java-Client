@@ -29,6 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_INSTITUTE_COURSE_TYPES;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_INSTITUTE_EXAMS;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_INSTITUTE_STREAMS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_PLACEHOLDER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_ID;
@@ -57,6 +60,9 @@ public class CoachingInstituteSearchService extends AbstractSearchService {
         filterQueryTypeMap.put(STREAM_IDS, TERMS);
         filterQueryTypeMap.put(EXAM_ID, TERMS);
         filterQueryTypeMap.put(EXAM_IDS, TERMS);
+        filterQueryTypeMap.put(COACHING_INSTITUTE_STREAMS, TERMS);
+        filterQueryTypeMap.put(COACHING_INSTITUTE_EXAMS, TERMS);
+        filterQueryTypeMap.put(COACHING_INSTITUTE_COURSE_TYPES, TERMS);
         searchFieldKeys = new HashMap<>();
         searchFieldKeys.put(COACHING_INSTITUTE_BRAND, COACHING_INSTITUTE_BRAND_BOOST);
     }
