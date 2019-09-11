@@ -39,5 +39,6 @@ public interface CampusEngagementConstants {
             "Unable to import data due to invalid institute ids";
     String HAS_IMPORTED                          = "has_imported";
     String CAMPUS_ENGAGEMENT_FAILED_IMPORT       = "campus_engagement_failed_import";
-    String DATA_INGESTION_IMPORT = "data_ingestion_import";
+    String DATA_INGESTION_IMPORT                 = "data_ingestion_import";
+    String DRIVE_URL                             = "https://drive.google.com";
 }
