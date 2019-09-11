@@ -72,16 +72,10 @@ public class LandingPageService {
                         .getTopSearchData(null, EducationEntity.COACHING_INSTITUTE, sortOrder);
         List<Map<String, Object>> itemList = new ArrayList<>();
         for (CoachingInstituteData coachingInstitute : institutes) {
-            String logoUrl = null;
-            if (StringUtils.isNotBlank(coachingInstitute.getLogo())) {
-                logoUrl = CommonUtil
-                        .getAbsoluteUrl(coachingInstitute.getLogo(), TOP_COACHING_INSTITUTES);
-            } else {
-                logoUrl = CommonUtil.getAbsoluteUrl(INSTITUTE_PLACEHOLDER, TOP_COACHING_INSTITUTES);
-            }
             itemList.add(
                     getItem(coachingInstitute.getBrandName(), coachingInstitute.getUrlDisplayKey(),
-                            coachingInstitute.getCoachingInstituteId(), logoUrl, null));
+                            coachingInstitute.getCoachingInstituteId(), coachingInstitute.getLogo(),
+                            null));
         }
         section.setItems(itemList);
     }
@@ -91,15 +85,9 @@ public class LandingPageService {
         List<Map<String, Object>> itemList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(exams)) {
             for (ExamData exam : exams) {
-                String logoUrl = null;
-                if (StringUtils.isNotBlank(exam.getLogoUrl())) {
-                    logoUrl = CommonUtil.getAbsoluteUrl(exam.getLogoUrl(), COACHING_TOP_EXAMS);
-                } else {
-                    logoUrl = CommonUtil.getAbsoluteUrl(EXAM_PLACEHOLDER, COACHING_TOP_EXAMS);
-                }
                 itemList.add(
                         getItem(exam.getExamShortName(), exam.getUrlDisplayKey(), exam.getExamId(),
-                                logoUrl, exam.getOfficialName()));
+                                exam.getLogoUrl(), exam.getOfficialName()));
             }
             section.setItems(itemList);
         }
@@ -135,7 +123,7 @@ public class LandingPageService {
         for (Section section : sections) {
             if (COACHING_STREAMS.equals(section.getType())) {
                 for (Map<String, Object> item : section.getItems()) {
-                    streams.add((String) item.get(KEY));
+                    streams.add(item.get(ID).toString());
                 }
                 break;
             }

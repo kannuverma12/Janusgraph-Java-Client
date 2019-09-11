@@ -184,6 +184,13 @@ public class ExamSearchService extends AbstractSearchService {
                     examData.setExamShortName(examSearch.getExamShortName());
                     examData.setUrlDisplayKey(
                             CommonUtil.convertNameToUrlDisplayName(examSearch.getOfficialName()));
+                    if (!StringUtils.isBlank(examSearch.getImageLink())) {
+                        examData.setLogoUrl(CommonUtil.getAbsoluteUrl(examSearch.getImageLink(),
+                                COACHING_TOP_EXAMS));
+                    } else {
+                        examData.setLogoUrl(CommonUtil.getAbsoluteUrl(EXAM_PLACEHOLDER,
+                                COACHING_TOP_EXAMS));
+                    }
                     List<String> dataAvailable = new ArrayList<>();
                     if (!CollectionUtils.isEmpty(examSearch.getDataAvailable())) {
                         dataAvailable.addAll(examSearch.getDataAvailable());
