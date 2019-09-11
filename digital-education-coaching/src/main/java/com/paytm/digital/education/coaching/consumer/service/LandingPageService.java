@@ -153,10 +153,12 @@ public class LandingPageService {
         Set<Integer> examIds = new HashSet<>();
         for (String stream : streamsInOrder) {
             List<ExamData> examData = examsPerStream.get(stream);
-            for (ExamData exam : examData) {
-                if (examIds.add(exam.getExamId())) {
-                    exams.add(exam);
-                    break;
+            if (!CollectionUtils.isEmpty(examData)) {
+                for (ExamData exam : examData) {
+                    if (examIds.add(exam.getExamId())) {
+                        exams.add(exam);
+                        break;
+                    }
                 }
             }
         }
