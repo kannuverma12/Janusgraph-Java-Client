@@ -490,17 +490,8 @@ public class CampusAdminServiceImpl implements CampusAdminService {
     }
 
     private boolean validInstitute(Long instituteId) {
-        Query query = new Query();
-        query.fields().include(INSTITUTE_ID);
-
-        List<Institute> validInstitutes = mongoOperations.find(query, Institute.class);
-        List<Long> validInstituteIdList = validInstitutes.stream().map(c -> c.getInstituteId())
-                .collect(Collectors.toList());
-
-        if (validInstituteIdList.contains(instituteId)) {
-            return true;
-        } else {
-            return false;
-        }
+        return !CollectionUtils.isEmpty(commonMongoRepository
+                .getEntitiesByIdAndFields(INSTITUTE_ID, instituteId, Institute.class,
+                        Arrays.asList(INSTITUTE_ID)));
     }
 }
