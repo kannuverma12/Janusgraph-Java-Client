@@ -147,7 +147,7 @@ public class CTAHelper {
         String activeLabel = null;
         if (isThirdPartyClient) {
             leadLabel = CTA.Constants.GET_IN_TOUCH;
-            activeLabel = CTA.Constants.INQUIRY_SENT;
+            activeLabel = CTA.Constants.GET_IN_TOUCH;
         } else {
             leadLabel = CTA.Constants.GET_UPDATES;
             activeLabel = CTA.Constants.INQUIRY_SENT;
