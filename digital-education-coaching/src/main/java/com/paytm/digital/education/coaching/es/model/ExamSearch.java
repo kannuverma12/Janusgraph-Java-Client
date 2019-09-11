@@ -46,6 +46,9 @@ public class ExamSearch {
     @JsonProperty("stream_ids")
     private List<Long> streamIds;
 
+    @JsonProperty("stream_names")
+    private List<String> streamNames;
+
     @JsonProperty("streams")
     private Map<String, Map<String, Long>> streams;
 

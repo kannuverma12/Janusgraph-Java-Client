@@ -7,6 +7,8 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.Searc
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResult;
 import com.paytm.digital.education.coaching.consumer.service.helper.CoachingSearchAggregateHelper;
 import com.paytm.digital.education.coaching.es.model.CoachingCourseSearch;
+import com.paytm.digital.education.coaching.es.model.CoachingInstituteSearch;
+import com.paytm.digital.education.coaching.es.model.ExamSearch;
 import com.paytm.digital.education.coaching.utils.SearchUtils;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
@@ -87,7 +89,11 @@ public class CoachingCourseSearchService extends AbstractSearchService {
                 CoachingCourseSearch.class);
         populateFilterFields(searchRequest, elasticRequest, CoachingCourseSearch.class,
                 filterQueryTypeMap);
-
+        if (searchRequest.getFetchFilter()) {
+            populateAggregateFields(searchRequest, elasticRequest,
+                    coachingSearchAggregateHelper.getCoachingCourseAggregateData(),
+                    CoachingInstituteSearch.class);
+        }
         if (StringUtils.isBlank(searchRequest.getTerm())) {
             SearchUtils.setSortKeysInOrder(searchRequest);
         } else {

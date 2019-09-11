@@ -24,8 +24,10 @@ public class CoachingInstituteSearch {
     private String                              logo;
     private Map<String, Map<String, String>>    streams;
     private List<Long>                          streamIds;
+    private List<String>                        streamNames;
     private Map<String, Map<String, String>>    exams;
     private List<Long>                          examIds;
+    private List<String>                        examNames;
     private List<CourseType>                    courseTypes;
     private Integer                             establishmentYear;
     private String                              brochure;

@@ -10,27 +10,35 @@ import java.util.List;
 
 public class CoachingConstants {
 
-    public static final String INSTITUTE_ID           = "institute_id";
-    public static final String INSTITUTE              = "institute";
-    public static final String COACHING_CENTER        = "coaching_center";
-    public static final String EXAM                   = "exam";
-    public static final String STREAM                 = "stream";
-    public static final String COACHING               = "coaching";
-    public static final String COURSE                 = "course";
-    public static final String COACHING_CENTER_ID     = "center_id";
-    public static final String EXAM_ID                = "exam_id";
-    public static final String STREAM_ID              = "stream_id";
-    public static final String COURSE_ID              = "course_id";
-    public static final String ACTIVE                 = "active";
-    public static final String KEY_STRING             = "key";
-    public static final String SEQUENCE               = "sequence";
-    public static final String UPDATED_AT             = "updated_at";
-    public static final String YYYY_MM_DD             = "yyyy-MM-dd";
-    public static final String YYYY_MM_DD_T_HH_MM_SS  = "yyyy-MM-dd'T'HH:mm:ss";
-    public static final String COURSE_TYPE            = "course_type";
-    public static final String EXAM_DOMAIN            = "domains";
-    public static final String COACHING_COURSE_STREAM = "stream_ids";
-    public static final String COACHING_EXAM_STREAMS  = "streams";
+    public static final String INSTITUTE_ID                    = "institute_id";
+    public static final String INSTITUTE                       = "institute";
+    public static final String COACHING_CENTER                 = "coaching_center";
+    public static final String STREAM                          = "stream";
+    public static final String EXAM                            = "exam";
+    public static final String COACHING                        = "coaching";
+    public static final String COURSE                          = "course";
+    public static final String COACHING_CENTER_ID              = "center_id";
+    public static final String EXAM_ID                         = "exam_id";
+    public static final String STREAM_ID                       = "stream_id";
+    public static final String COURSE_ID                       = "course_id";
+    public static final String ACTIVE                          = "active";
+    public static final String KEY_STRING                      = "key";
+    public static final String SEQUENCE                        = "sequence";
+    public static final String UPDATED_AT                      = "updated_at";
+    public static final String YYYY_MM_DD                      = "yyyy-MM-dd";
+    public static final String YYYY_MM_DD_T_HH_MM_SS           = "yyyy-MM-dd'T'HH:mm:ss";
+    public static final String COURSE_TYPE                     = "course_type";
+    public static final String EXAM_DOMAIN                     = "domains";
+    public static final String COACHING_COURSE_STREAM          = "stream_ids";
+    public static final String COACHING_EXAM_STREAMS           = "stream_names";
+    public static final String COACHING_COURSE_EXAMS           = "exam_names";
+    public static final String COACHING_COURSE_STREAMS         = "stream_names";
+    public static final String COACHING_COURSE_INSTITUTE       = "coaching_institute_name";
+    public static final String COACHING_COURSE_LEVEL           = "level";
+    public static final String COACHING_COURSE_DURATION        = "course_duration_days";
+    public static final String COACHING_INSTITUTE_STREAMS      = "stream_names";
+    public static final String COACHING_INSTITUTE_EXAMS        = "exam_names";
+    public static final String COACHING_INSTITUTE_COURSE_TYPES = "course_types";
 
     public static final String EXAM_NOT_FOUND_ERROR                  =
             "No such exam exists. Please check your request.";
@@ -196,9 +204,9 @@ public class CoachingConstants {
         public static final String IGNORE_GLOBAL_PRIORITY = "ignore_global_priority";
         public static final String IGNORE_ENTITY_POSITION = "ignore_entity_position";
 
-        public static final String EXAM_ANALYZER                      = "word_delimiter_search";
-        public static final String SEARCH_ANALYZER_COACHING_COURSE    = "ngram_analyzer";
-        public static final String SEARCH_ANALYZER_COACHING_INSTITUTE = "ngram_alanyzer";
+        public static final String EXAM_ANALYZER                      = "word_delimiter_analyzer_search";
+        public static final String SEARCH_ANALYZER_COACHING_COURSE    = "word_delimiter_analyzer_search";
+        public static final String SEARCH_ANALYZER_COACHING_INSTITUTE = "word_delimiter_analyzer_search";
 
         public static final String EXAM_SHORT_NAME                = "exam_short_name";
         public static final String EXAM_FULL_NAME                 = "exam_full_name";
