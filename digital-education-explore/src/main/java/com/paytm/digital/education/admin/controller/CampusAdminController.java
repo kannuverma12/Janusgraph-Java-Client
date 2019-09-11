@@ -41,7 +41,7 @@ public class CampusAdminController {
     }
 
     @PutMapping("/admin/v1/campus-articles")
-    public @ResponseBody CampusAdminResponse addAmbassadors(@RequestBody
+    public @ResponseBody CampusAdminResponse addArticles(@RequestBody
             XcelArticle campusArticle) {
         log.info("Adding campus article.");
         return campusAdminService.addArticles(campusArticle);

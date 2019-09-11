@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -32,7 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Arrays;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 import static com.mongodb.QueryOperators.EXISTS;
 import static com.mongodb.QueryOperators.NE;
@@ -67,84 +65,96 @@ public class CampusAdminServiceImpl implements CampusAdminService {
             Long instituteId = ambassador.getInstituteId();
             if (Objects.nonNull(instituteId) && validInstitute(instituteId)) {
 
-                Map<String, Object> queryObject = new HashMap<>();
-                queryObject.put(INSTITUTE_ID, instituteId);
-                CampusEngagement campusEngagement = commonMongoRepository
-                        .getEntityById(INSTITUTE_ID, instituteId, CampusEngagement.class);
-                Map<String, CampusAmbassador> ambassadorMap = null;
-                CampusAmbassador campusAmbassador = null;
                 String mobileNumber = ambassador.getPaytmMobileNumber();
-                if (Objects.nonNull(campusEngagement)) {
-                    ambassadorMap = campusEngagement.getCampusAmbassadors();
+                if (StringUtils.isNotBlank(mobileNumber) && validMobileNumber(mobileNumber)) {
+                    Map<String, Object> queryObject = new HashMap<>();
+                    queryObject.put(INSTITUTE_ID, instituteId);
+                    CampusEngagement campusEngagement = commonMongoRepository
+                            .getEntityById(INSTITUTE_ID, instituteId, CampusEngagement.class);
+                    Map<String, CampusAmbassador> ambassadorMap;
+                    CampusAmbassador campusAmbassador;
 
-                    if (StringUtils.isNotBlank(mobileNumber)) {
-                        campusAmbassador = ambassadorMap.get(mobileNumber.trim());
-                        if (Objects.isNull(campusAmbassador)) {
+                    if (Objects.nonNull(campusEngagement)) {
+                        ambassadorMap = campusEngagement.getCampusAmbassadors();
+
+                        if (Objects.nonNull(ambassadorMap)) {
+                            if (StringUtils.isNotBlank(mobileNumber)) {
+                                campusAmbassador = ambassadorMap.get(mobileNumber.trim());
+                                if (Objects.isNull(campusAmbassador)) {
+                                    campusAmbassador = new CampusAmbassador();
+                                }
+                            } else {
+                                campusAdminResponse.setMessage("Ambassador not added");
+                                campusAdminResponse.setError("Please provide mobile number");
+                                return campusAdminResponse;
+                            }
+                        } else {
+                            ambassadorMap = new HashMap<>();
                             campusAmbassador = new CampusAmbassador();
                         }
+                    } else {
+                        ambassadorMap = new HashMap<>();
+                        campusAmbassador = new CampusAmbassador();
                     }
-                } else {
-                    ambassadorMap = new HashMap<>();
-                    campusAmbassador = new CampusAmbassador();
-                }
 
-                if (StringUtils.isNotBlank(ambassador.getName())) {
-                    campusAmbassador.setName(ambassador.getName());
-                }
-                if (StringUtils.isNotBlank(ambassador.getCourse())) {
-                    campusAmbassador.setCourse(ambassador.getCourse());
-                }
-                campusAmbassador.setInstituteId(instituteId);
-                if (StringUtils.isNotBlank(mobileNumber) && mobileNumber.length() == 10) {
+                    if (StringUtils.isNotBlank(ambassador.getName())) {
+                        campusAmbassador.setName(ambassador.getName());
+                    }
+                    if (StringUtils.isNotBlank(ambassador.getCourse())) {
+                        campusAmbassador.setCourse(ambassador.getCourse());
+                    }
+                    campusAmbassador.setInstituteId(instituteId);
                     campusAmbassador.setPaytmMobileNumber(mobileNumber.trim());
+
+                    if (StringUtils.isNotBlank(ambassador.getYearAndBatch())) {
+                        campusAmbassador.setYearAndBatch(ambassador.getYearAndBatch());
+                    }
+                    if (StringUtils.isNotBlank(ambassador.getEmailAddress())) {
+                        campusAmbassador.setEmailAddress(ambassador.getEmailAddress());
+                    }
+                    try {
+                        campusAmbassador.setCreatedAt(
+                                campusEngagementHelper.convertDateFormat(XCEL_DATE_FORMAT,
+                                        DB_DATE_FORMAT, ambassador.getTimestamp()));
+                    } catch (Exception e) {
+                        log.error("Error parsing date : {} ", e.getMessage());
+                    }
+
+                    campusAmbassador.setLastUpdated(campusAmbassador.getCreatedAt());
+
+                    if (StringUtils.isNotBlank(ambassador.getImage())) {
+                        if (ambassador.getImage().startsWith(DRIVE_URL)) {
+                            log.info("Going to upload image to s3");
+                            if (setMediaFields(campusAmbassador, ambassador.getImage())) {
+                                log.info("Image Upload successful.");
+                            } else {
+                                log.info("Image Upload failed.");
+                            }
+                        } else {
+                            log.info("Image already uploaded. Setting the db path.");
+                            campusAmbassador.setImageUrl(ambassador.getImage());
+                        }
+                    }
+
+                    ambassadorMap.put(mobileNumber.trim(), campusAmbassador);
+
+                    Map<String, Object> queryObject1 = new HashMap<>();
+                    queryObject1.put(INSTITUTE_ID, instituteId);
+                    List<String> fields = Arrays.asList(INSTITUTE_ID, CAMPUS_AMBASSADORS);
+                    Update update = new Update();
+                    update.set(INSTITUTE_ID, instituteId);
+                    update.set(CAMPUS_AMBASSADORS, ambassadorMap);
+                    commonMongoRepository.upsertData(queryObject1, fields, update,
+                            CampusEngagement.class);
+
+                    campusAdminResponse.setEntity(String.valueOf(instituteId));
+                    campusAdminResponse.setMessage("Ambassador added successfully");
+
                 } else {
                     campusAdminResponse.setMessage("Ambassador not added");
                     campusAdminResponse.setError("Invalid mobile number");
                     return campusAdminResponse;
                 }
-                if (StringUtils.isNotBlank(ambassador.getYearAndBatch())) {
-                    campusAmbassador.setYearAndBatch(ambassador.getYearAndBatch());
-                }
-                if (StringUtils.isNotBlank(ambassador.getEmailAddress())) {
-                    campusAmbassador.setEmailAddress(ambassador.getEmailAddress());
-                }
-                try {
-                    campusAmbassador.setCreatedAt(
-                            campusEngagementHelper.convertDateFormat(XCEL_DATE_FORMAT,
-                                    DB_DATE_FORMAT, ambassador.getTimestamp()));
-                } catch (Exception e) {
-                    log.error("Error parsing date : {} ", e.getMessage());
-                }
-
-                campusAmbassador.setLastUpdated(campusAmbassador.getCreatedAt());
-
-                if (StringUtils.isNotBlank(ambassador.getImage())) {
-                    if (ambassador.getImage().startsWith(DRIVE_URL)) {
-                        log.info("Going to upload image to s3");
-                        if (setMediaFields(campusAmbassador, ambassador.getImage())) {
-                            log.info("Image Upload successful.");
-                        } else {
-                            log.info("Image Upload failed.");
-                        }
-                    } else {
-                        log.info("Image already uploaded. Setting the db path.");
-                        campusAmbassador.setImageUrl(ambassador.getImage());
-                    }
-                }
-
-                ambassadorMap.put(mobileNumber.trim(), campusAmbassador);
-
-                Map<String, Object> queryObject1 = new HashMap<>();
-                queryObject1.put(INSTITUTE_ID, instituteId);
-                List<String> fields = Arrays.asList(INSTITUTE_ID, CAMPUS_AMBASSADORS);
-                Update update = new Update();
-                update.set(INSTITUTE_ID, instituteId);
-                update.set(CAMPUS_AMBASSADORS, ambassadorMap);
-                commonMongoRepository.upsertData(queryObject1, fields, update,
-                        CampusEngagement.class);
-
-                campusAdminResponse.setEntity(String.valueOf(instituteId));
-                campusAdminResponse.setMessage("Ambassador added successfully");
             } else {
                 campusAdminResponse.setMessage("Ambassador not added");
                 campusAdminResponse.setError("Invalid Institute Id");
@@ -186,6 +196,13 @@ public class CampusAdminServiceImpl implements CampusAdminService {
             Long instituteId = xcelArticle.getInstituteId();
             if (Objects.nonNull(instituteId) && validInstitute(instituteId)) {
 
+                String mobileNumber = xcelArticle.getStudentPaytmMobileNumber();
+                if (!(StringUtils.isNotBlank(mobileNumber) && validMobileNumber(mobileNumber))) {
+                    campusAdminResponse.setMessage("Article not added");
+                    campusAdminResponse.setError("Invalid mobile number");
+                    return campusAdminResponse;
+                }
+
                 Map<String, Object> queryObject = new HashMap<>();
                 queryObject.put(INSTITUTE_ID, instituteId);
                 CampusEngagement campusEngagement = commonMongoRepository
@@ -205,16 +222,7 @@ public class CampusAdminServiceImpl implements CampusAdminService {
                 article.setInstituteId(instituteId);
                 article.setArticleShortDescription(xcelArticle.getArticleShortDescription());
                 article.setArticleTitle(xcelArticle.getArticleTitle());
-
-                String mobileNumber = xcelArticle.getStudentPaytmMobileNumber();
-                if (StringUtils.isNotBlank(mobileNumber) && mobileNumber.length() == 10) {
-                    article.setStudentPaytmMobileNumber(mobileNumber.trim());
-                } else {
-                    campusAdminResponse.setMessage("Article not added");
-                    campusAdminResponse.setError("Invalid mobile number");
-                    return campusAdminResponse;
-                }
-
+                article.setStudentPaytmMobileNumber(mobileNumber.trim());
                 article.setSubmittedBy(xcelArticle.getSubmittedBy());
                 article.setEmailAddress(xcelArticle.getEmailAddress());
                 try {
@@ -490,8 +498,21 @@ public class CampusAdminServiceImpl implements CampusAdminService {
     }
 
     private boolean validInstitute(Long instituteId) {
-        return !CollectionUtils.isEmpty(commonMongoRepository
-                .getEntitiesByIdAndFields(INSTITUTE_ID, instituteId, Institute.class,
-                        Arrays.asList(INSTITUTE_ID)));
+        Institute institute = commonMongoRepository
+                .getEntityByFields(INSTITUTE_ID, instituteId, Institute.class,
+                        Arrays.asList(INSTITUTE_ID));
+        if (Objects.nonNull(institute)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean validMobileNumber(String mobileNumber) {
+        if (Objects.nonNull(mobileNumber) && mobileNumber.trim().length() == 10) {
+            if (mobileNumber.matches("[0-9]+")) {
+                return true;
+            }
+        }
+        return false;
     }
 }
