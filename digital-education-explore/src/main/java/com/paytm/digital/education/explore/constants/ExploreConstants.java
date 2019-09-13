@@ -289,6 +289,7 @@ public interface ExploreConstants {
     String SEARCH_HISTORY_UPDATEDAT    = "updated_at";
     int    DELETE_RECENTS_BATCH_SIZE   = 100;
     String RECENT_SEARCHES_ENTITY      = "entity";
+    String RECENT_SEARCHES_ID_SEPERATOR = "-";
 
     String CTA                  = "cta";
     String SELECTED             = "_selected";
