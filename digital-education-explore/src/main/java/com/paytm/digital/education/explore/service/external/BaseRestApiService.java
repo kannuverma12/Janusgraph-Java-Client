@@ -72,7 +72,7 @@ public class BaseRestApiService {
         HttpEntity<Object> httpEntity = new HttpEntity<Object>(requestBody, httpHeaders);
         ResponseEntity<T> responseEntity =
                 rest.getRestTemplate().exchange(url, HttpMethod.POST, httpEntity, clazz);
-        log.info("Http request : {}", httpEntity.toString());
+        log.info("Http request : {}", httpEntity);
         if (responseEntity.getStatusCodeValue() != 200) {
             throw new BadRequestException(ErrorEnum.HTTP_REQUEST_FAILED,
                     ErrorEnum.HTTP_REQUEST_FAILED.getExternalMessage());
