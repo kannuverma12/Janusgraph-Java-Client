@@ -69,6 +69,7 @@ public class BaseRestApiService {
             httpHeaders.add(entry.getKey(), entry.getValue());
         }
         HttpEntity<Object> httpEntity = new HttpEntity<Object>(requestBody, httpHeaders);
+        log.info("Http request : {}", httpEntity);
         ResponseEntity<T> responseEntity =
                 rest.getRestTemplate().exchange(url, HttpMethod.POST, httpEntity, clazz);
         if (responseEntity.getStatusCodeValue() != 200) {
