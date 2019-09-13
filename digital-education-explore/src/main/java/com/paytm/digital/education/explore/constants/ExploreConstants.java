@@ -282,7 +282,7 @@ public interface ExploreConstants {
     String EXAM_FOCUS_APP              = "exam_focus_app";
     String POPULAR_EXAMS_APP           = "popular_exams_app";
     String BROWSE_BY_EXAM_LEVEL        = "browse_by_exam_level";
-    String RECENT_SEARCHES_kAFKA_TOPIC = "recent_searches";
+    String RECENT_SEARCHES_kAFKA_TOPIC = "recent_searches_explore";
     String RECENT_SEARCHES_ES_INDEX    = "recent_searches";
     String RECENT_SEARCHES_ES_TYPE     = "education";
     String SEARCH_HISTORY_USERID       = "user_id";
