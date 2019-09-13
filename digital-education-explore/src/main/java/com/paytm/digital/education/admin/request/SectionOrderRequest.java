@@ -18,6 +18,10 @@ import java.util.List;
 public class SectionOrderRequest {
 
     @NotBlank
+    @JsonProperty("page")
+    private String page;
+
+    @NotBlank
     @JsonProperty("entity")
     private String entity;
 
