@@ -162,6 +162,7 @@ public interface ExploreConstants {
     String EXAM_SEARCH_NAMESPACE       = "exam";
     String LINGUISTIC_MEDIUM           = "linguistic_medium";
     String SEARCH_EXAM_LEVEL           = "level";
+    String SEARCH_EXAM_DOMAIN          = "domain_name";
     String IGNORE_VALUES               = "ignore";
     String RANKING_STREAM_NAMESPACE    = "ranking_stream";
     String FACILITIES_MASTER_LIST      = "master_list";
