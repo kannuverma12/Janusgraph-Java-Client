@@ -39,7 +39,6 @@ public class LeadCareer360Service {
         String jsonStr = JsonUtils.toJson(career360UnfollowRequest);
         Career360UnfollowResponse response = restApiService
                 .post(c360LeadUnfollow, Career360UnfollowResponse.class, jsonStr, getHeaders());
-        log.info("Careers 360 lead response :{}", response);
         return buildUnfollowResponse(response);
     }
 
