@@ -191,6 +191,8 @@ public class CoachingConstants {
 
         public static final String GET_COACHING_INSTITUTE_DETAILS = "/coaching-institute-details";
 
+        public static final String GET_COCHING_AUTOSUGGESTIONS = "/autosuggest";
+
         public static final String LANDING_PAGE = "/page";
     }
 

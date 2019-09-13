@@ -98,7 +98,8 @@ public enum ErrorEnum {
     INVALID_STREAM_ID(4040, "Invalid stream ID. Please provide a valid stream ID.",
             HttpStatus.BAD_REQUEST, 0),
     INVALID_STREAM_NAME(4041, "Invalid stream name. Please provide a valid stream name.",
-            HttpStatus.BAD_REQUEST, 0);
+            HttpStatus.BAD_REQUEST, 0),
+    ENTITY_LIST_EMPTY(4042, "Atleast one entity is required.", HttpStatus.BAD_REQUEST, 0);
 
     private final int internalCode;
     private final String externalMessage;
