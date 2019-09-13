@@ -33,8 +33,8 @@ public class FeeUrlGenerator {
     private String feeAppUrlSuffix;
 
     public String generateUrl(Long pid, Client client) {
-        CatalogProduct catalogProduct = getCollegeInfo(pid);
         try {
+            CatalogProduct catalogProduct = getCollegeInfo(pid);
             Attributes attributes =
                     catalogProduct.getVariants().get(0).getVariants().get(0).getProducts().get(0)
                             .getAttributes();
