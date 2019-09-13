@@ -48,6 +48,7 @@ public class LeadCareer360Service {
         String jsonStr = JsonUtils.toJson(career360LeadRequest);
         Career360LeadResponse response = restApiService
                 .post(c360LeadFollow, Career360LeadResponse.class, jsonStr, getHeaders());
+        log.info("Careers360 lead response : {}", JsonUtils.toJson(response));
         return buildResponse(response);
     }
 
