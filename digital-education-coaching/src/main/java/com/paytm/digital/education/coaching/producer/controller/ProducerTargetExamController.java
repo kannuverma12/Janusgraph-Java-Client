@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ import javax.validation.constraints.NotNull;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.URL.V1;
 
+@Validated
 @RestController
 @Api(description = "Target Exam Resource APIs")
 @RequestMapping(CoachingConstants.URL.COACHING_BASE)
@@ -29,7 +31,7 @@ public class ProducerTargetExamController {
     public TargetExamManagerService targetExamManagerService;
 
     @PatchMapping(
-            value = V1 + "/exam",
+            value = V1 + "/admin/exam",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(

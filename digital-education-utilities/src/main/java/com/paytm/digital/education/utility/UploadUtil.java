@@ -28,8 +28,9 @@ public class UploadUtil {
      */
     private S3Service s3Service;
 
-    public Pair<String, String> uploadFile(String fileUrl, String fileName, Long instituteId,
+    public Pair<String, String> uploadFile(String fileUrl, String fileName, Long entityId,
             String s3ImagePath, String s3BucketName, String clientSecretFileName, String clientSecretFolder) {
+
         InputStream inputStream = null;
         String mimeType = null;
         fileUrl = fileUrl.trim();
@@ -38,17 +39,20 @@ public class UploadUtil {
                 Map<String, Object> fileData =
                         GoogleDriveUtil.downloadFile(fileUrl, clientSecretFileName, clientSecretFolder);
                 inputStream = (InputStream) fileData.get(INPUTSTREAM);
-                fileName = (String) fileData.get(FILENAME);
+                fileName =
+                        (fileName == null ? "" : fileName + "_") + (String) fileData.get(FILENAME);
                 mimeType = (String) fileData.get(MIMETYPE);
             }
-            String relativePath = MessageFormat.format(s3ImagePath, instituteId);
+            String relativePath = MessageFormat.format(s3ImagePath, entityId);
+            log.info("relativePath: {}", relativePath);
             String imageUrl =
-                    s3Service.uploadFile(inputStream, fileName, instituteId,
+                    s3Service.uploadFile(inputStream, fileName, entityId,
                             relativePath, s3BucketName);
+            log.info("imageUrl: {}", imageUrl);
             return new Pair<>(imageUrl, mimeType);
         } catch (Exception e) {
-            log.error("Unable to upload file for file : {} and the error is {}",
-                    fileUrl, JsonUtils.toJson(e.getMessage()));
+            log.error("Unable to upload file for file : {} and the error:",
+                    fileUrl, e);
         }
         return new Pair<>(null, null);
     }

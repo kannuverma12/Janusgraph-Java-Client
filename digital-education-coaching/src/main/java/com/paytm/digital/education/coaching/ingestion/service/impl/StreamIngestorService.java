@@ -1,8 +1,6 @@
 package com.paytm.digital.education.coaching.ingestion.service.impl;
 
 import com.paytm.digital.education.coaching.exeptions.CoachingBaseException;
-import com.paytm.digital.education.coaching.http.HttpConstants;
-import com.paytm.digital.education.coaching.http.HttpRequestDetails;
 import com.paytm.digital.education.coaching.ingestion.model.IngestorResponse;
 import com.paytm.digital.education.coaching.ingestion.model.googleform.StreamForm;
 import com.paytm.digital.education.coaching.ingestion.model.properties.PropertiesRequest;
@@ -10,14 +8,13 @@ import com.paytm.digital.education.coaching.ingestion.model.properties.Propertie
 import com.paytm.digital.education.coaching.ingestion.service.IngestorService;
 import com.paytm.digital.education.coaching.ingestion.service.IngestorServiceHelper;
 import com.paytm.digital.education.coaching.ingestion.transformer.IngestorStreamTransformer;
+import com.paytm.digital.education.coaching.producer.controller.ProducerStreamController;
 import com.paytm.digital.education.coaching.producer.model.dto.StreamDTO;
 import com.paytm.digital.education.coaching.producer.model.request.StreamDataRequest;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -36,8 +33,11 @@ public class StreamIngestorService extends IngestorServiceHelper implements Inge
 
     private static final String TYPE = "Stream";
 
-    @Value("${coaching.producer.streamApi.url}")
-    private String producerStreamApiUrl;
+    @Value("${coaching.stream.logo.prefix}")
+    private String coachingStreamLogoPrefix;
+
+    @Autowired
+    private ProducerStreamController producerStreamController;
 
     @Override
     public IngestorResponse ingest() {
@@ -62,12 +62,11 @@ public class StreamIngestorService extends IngestorServiceHelper implements Inge
     protected <T> void upsertFailedRecords(T form, Class<T> clazz) {
         final StreamForm newStreamForm = (StreamForm) clazz.cast(form);
         try {
+            final StreamDataRequest request = this.buildRequest(newStreamForm);
             if (null == newStreamForm.getStreamId()) {
-                this.makeCall(IngestorStreamTransformer.convert(newStreamForm),
-                        HttpMethod.POST);
+                this.producerStreamController.createStream(request);
             } else {
-                this.makeCall(IngestorStreamTransformer.convert(newStreamForm),
-                        HttpMethod.PUT);
+                this.producerStreamController.updateStream(request);
             }
         } catch (final Exception e) {
             log.error("Got Exception in upsertFailedRecords for input: {}, exception: ", form, e);
@@ -81,12 +80,11 @@ public class StreamIngestorService extends IngestorServiceHelper implements Inge
         ResponseEntity<StreamDTO> response = null;
         String failureMessage = EMPTY_STRING;
         try {
+            final StreamDataRequest request = this.buildRequest(newStreamForm);
             if (null == newStreamForm.getStreamId()) {
-                response = this.makeCall(IngestorStreamTransformer.convert(newStreamForm),
-                        HttpMethod.POST);
+                response = this.producerStreamController.createStream(request);
             } else {
-                response = this.makeCall(IngestorStreamTransformer.convert(newStreamForm),
-                        HttpMethod.PUT);
+                response = this.producerStreamController.updateStream(request);
             }
         } catch (final Exception e) {
             log.error("Got Exception in upsertNewRecords for input: {}, exception: ", form, e);
@@ -105,22 +103,9 @@ public class StreamIngestorService extends IngestorServiceHelper implements Inge
         }
     }
 
-    private ResponseEntity<StreamDTO> makeCall(final StreamDataRequest request,
-            final HttpMethod method) throws CoachingBaseException {
-
-        final HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
-        httpHeaders.add("Accept", MediaType.APPLICATION_JSON_VALUE);
-
-        final HttpRequestDetails requestDetails = HttpRequestDetails.builder()
-                .requestMethod(method)
-                .url(this.producerStreamApiUrl)
-                .body(request)
-                .headers(httpHeaders)
-                .requestApiName("StreamIngestorService")
-                .build();
-
-        return this.httpUtil.exchange(this.restTemplateFactory.getRestTemplate(
-                HttpConstants.GENERIC_HTTP_SERVICE), requestDetails, StreamDTO.class);
+    private StreamDataRequest buildRequest(final StreamForm form) throws CoachingBaseException {
+        final StreamDataRequest request = IngestorStreamTransformer.convert(form);
+        request.setLogo(this.uploadFile(request.getLogo(), this.coachingStreamLogoPrefix));
+        return request;
     }
 }

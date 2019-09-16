@@ -1,8 +1,6 @@
 package com.paytm.digital.education.coaching.ingestion.service.impl;
 
 import com.paytm.digital.education.coaching.exeptions.CoachingBaseException;
-import com.paytm.digital.education.coaching.http.HttpConstants;
-import com.paytm.digital.education.coaching.http.HttpRequestDetails;
 import com.paytm.digital.education.coaching.ingestion.model.IngestorResponse;
 import com.paytm.digital.education.coaching.ingestion.model.googleform.CoachingInstituteForm;
 import com.paytm.digital.education.coaching.ingestion.model.properties.PropertiesRequest;
@@ -10,14 +8,13 @@ import com.paytm.digital.education.coaching.ingestion.model.properties.Propertie
 import com.paytm.digital.education.coaching.ingestion.service.IngestorService;
 import com.paytm.digital.education.coaching.ingestion.service.IngestorServiceHelper;
 import com.paytm.digital.education.coaching.ingestion.transformer.IngestorCoachingInstituteTransformer;
+import com.paytm.digital.education.coaching.producer.controller.ProducerCoachingInstituteController;
 import com.paytm.digital.education.coaching.producer.model.dto.CoachingInstituteDTO;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingInstituteDataRequest;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -37,8 +34,13 @@ public class CoachingInstituteIngestorService extends IngestorServiceHelper
 
     private static final String TYPE = "CoachingInstitute";
 
-    @Value("${coaching.producer.instituteApi.url}")
-    private String producerInstituteApiUrl;
+    @Value("${coaching.institute.logo.prefix}")
+    protected String coachingInstituteLogoPrefix;
+    @Value("${coaching.institute.image.prefix}")
+    protected String coachingInstituteImagePrefix;
+
+    @Autowired
+    private ProducerCoachingInstituteController producerCoachingInstituteController;
 
     @Override
     public IngestorResponse ingest() {
@@ -68,12 +70,11 @@ public class CoachingInstituteIngestorService extends IngestorServiceHelper
         ResponseEntity<CoachingInstituteDTO> response = null;
         String failureMessage = EMPTY_STRING;
         try {
+            final CoachingInstituteDataRequest request = this.buildRequest(instituteForm);
             if (null == instituteForm.getInstituteId()) {
-                response = this.makeCall(IngestorCoachingInstituteTransformer.convert(
-                        instituteForm), HttpMethod.POST);
+                response = this.producerCoachingInstituteController.createInstitute(request);
             } else {
-                response = this.makeCall(IngestorCoachingInstituteTransformer.convert(
-                        instituteForm), HttpMethod.PUT);
+                response = this.producerCoachingInstituteController.updateInstitute(request);
             }
         } catch (final Exception e) {
             log.error("Got Exception in upsertNewRecords for input: {}, exception: ", form, e);
@@ -82,13 +83,11 @@ public class CoachingInstituteIngestorService extends IngestorServiceHelper
 
         if (null == response || !response.getStatusCode().is2xxSuccessful()
                 || null == response.getBody() || null == response.getBody().getInstituteId()) {
-
             if (EMPTY_STRING.equals(failureMessage)) {
                 failureMessage = "Failed to put new data in CoachingInstitute collection";
             }
-
-            this.addToFailedList(JsonUtils.toJson(form),
-                    failureMessage, true, COACHING, TYPE, failedDataList);
+            this.addToFailedList(JsonUtils.toJson(form), failureMessage, true,
+                    COACHING, TYPE, failedDataList);
         }
     }
 
@@ -96,35 +95,24 @@ public class CoachingInstituteIngestorService extends IngestorServiceHelper
     protected <T> void upsertFailedRecords(T form, Class<T> clazz) {
         final CoachingInstituteForm instituteForm = (CoachingInstituteForm) clazz.cast(form);
         try {
+            final CoachingInstituteDataRequest request = this.buildRequest(instituteForm);
             if (null == instituteForm.getInstituteId()) {
-                this.makeCall(IngestorCoachingInstituteTransformer.convert(
-                        instituteForm), HttpMethod.POST);
+                this.producerCoachingInstituteController.createInstitute(request);
             } else {
-                this.makeCall(IngestorCoachingInstituteTransformer.convert(
-                        instituteForm), HttpMethod.PUT);
+                this.producerCoachingInstituteController.updateInstitute(request);
             }
         } catch (final Exception e) {
             log.error("Got Exception in upsertFailedRecords for input: {}, exception: ", form, e);
         }
     }
 
-    private ResponseEntity<CoachingInstituteDTO> makeCall(
-            final CoachingInstituteDataRequest request,
-            final HttpMethod method) throws CoachingBaseException {
-
-        final HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
-        httpHeaders.add("Accept", MediaType.APPLICATION_JSON_VALUE);
-
-        final HttpRequestDetails requestDetails = HttpRequestDetails.builder()
-                .requestMethod(method)
-                .url(this.producerInstituteApiUrl)
-                .body(request)
-                .headers(httpHeaders)
-                .requestApiName("CoachingInstituteIngestorService")
-                .build();
-
-        return this.httpUtil.exchange(this.restTemplateFactory.getRestTemplate(
-                HttpConstants.GENERIC_HTTP_SERVICE), requestDetails, CoachingInstituteDTO.class);
+    private CoachingInstituteDataRequest buildRequest(final CoachingInstituteForm form)
+            throws CoachingBaseException {
+        final CoachingInstituteDataRequest request = IngestorCoachingInstituteTransformer
+                .convert(form);
+        request.setLogo(this.uploadFile(request.getLogo(), this.coachingInstituteLogoPrefix));
+        request.setCoverImage(this.uploadFile(request.getCoverImage(),
+                this.coachingInstituteImagePrefix));
+        return request;
     }
 }

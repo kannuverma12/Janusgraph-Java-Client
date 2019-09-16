@@ -11,6 +11,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.URL;
+import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -25,6 +26,7 @@ import java.util.List;
 @AllArgsConstructor
 @ApiModel
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@Validated
 public class TopRankerDataRequest {
 
     @Min(value = 1)
@@ -51,7 +53,6 @@ public class TopRankerDataRequest {
     @ApiModelProperty(value = "name of student")
     private String studentName;
 
-    @URL
     @NotEmpty
     @ApiModelProperty(value = "student photo url")
     private String studentPhoto;

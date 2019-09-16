@@ -1,8 +1,6 @@
 package com.paytm.digital.education.coaching.ingestion.service.impl;
 
 import com.paytm.digital.education.coaching.exeptions.CoachingBaseException;
-import com.paytm.digital.education.coaching.http.HttpConstants;
-import com.paytm.digital.education.coaching.http.HttpRequestDetails;
 import com.paytm.digital.education.coaching.ingestion.model.IngestorResponse;
 import com.paytm.digital.education.coaching.ingestion.model.googleform.CoachingBannerForm;
 import com.paytm.digital.education.coaching.ingestion.model.properties.PropertiesRequest;
@@ -10,14 +8,13 @@ import com.paytm.digital.education.coaching.ingestion.model.properties.Propertie
 import com.paytm.digital.education.coaching.ingestion.service.IngestorService;
 import com.paytm.digital.education.coaching.ingestion.service.IngestorServiceHelper;
 import com.paytm.digital.education.coaching.ingestion.transformer.IngestorCoachingBannerTransformer;
+import com.paytm.digital.education.coaching.producer.controller.ProducerCoachingBannerController;
 import com.paytm.digital.education.coaching.producer.model.dto.CoachingBannerDTO;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingBannerDataRequest;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -37,8 +34,11 @@ public class CoachingBannerIngestorService extends IngestorServiceHelper
 
     private static final String TYPE = "CoachingBanner";
 
-    @Value("${coaching.producer.bannerApi.url}")
-    private String producerBannerApiUrl;
+    @Value("${coaching.banner.image.prefix}")
+    protected String coachingBannerImagePrefix;
+
+    @Autowired
+    private ProducerCoachingBannerController producerCoachingBannerController;
 
     @Override
     public IngestorResponse ingest() {
@@ -63,18 +63,16 @@ public class CoachingBannerIngestorService extends IngestorServiceHelper
     @Override
     protected <T> void upsertNewRecords(final T form, final List<Object> failedDataList,
             final Class<T> clazz) {
-
         final CoachingBannerForm bannerForm = (CoachingBannerForm) clazz.cast(form);
 
         ResponseEntity<CoachingBannerDTO> response = null;
         String failureMessage = EMPTY_STRING;
         try {
+            final CoachingBannerDataRequest request = this.buildRequest(bannerForm);
             if (null == bannerForm.getId()) {
-                response = this.makeCall(IngestorCoachingBannerTransformer.convert(bannerForm),
-                        HttpMethod.POST);
+                response = this.producerCoachingBannerController.createCoachingBanner(request);
             } else {
-                response = this.makeCall(IngestorCoachingBannerTransformer.convert(bannerForm),
-                        HttpMethod.PUT);
+                response = this.producerCoachingBannerController.updateCoachingBanner(request);
             }
         } catch (final Exception e) {
             log.error("Got Exception in upsertNewRecords for input: {}, exception: ", form, e);
@@ -83,13 +81,11 @@ public class CoachingBannerIngestorService extends IngestorServiceHelper
 
         if (null == response || !response.getStatusCode().is2xxSuccessful()
                 || null == response.getBody() || null == response.getBody().getCoachingBannerId()) {
-
             if (EMPTY_STRING.equals(failureMessage)) {
                 failureMessage = "Failed to put new data in CoachingBanner collection";
             }
-
-            this.addToFailedList(JsonUtils.toJson(form),
-                    failureMessage, true, COACHING, TYPE, failedDataList);
+            this.addToFailedList(JsonUtils.toJson(form), failureMessage, true,
+                    COACHING, TYPE, failedDataList);
         }
     }
 
@@ -97,34 +93,22 @@ public class CoachingBannerIngestorService extends IngestorServiceHelper
     protected <T> void upsertFailedRecords(final T form, final Class<T> clazz) {
         final CoachingBannerForm bannerForm = (CoachingBannerForm) clazz.cast(form);
         try {
+            final CoachingBannerDataRequest request = this.buildRequest(bannerForm);
             if (null == bannerForm.getId()) {
-                this.makeCall(IngestorCoachingBannerTransformer.convert(bannerForm),
-                        HttpMethod.POST);
+                this.producerCoachingBannerController.createCoachingBanner(request);
             } else {
-                this.makeCall(IngestorCoachingBannerTransformer.convert(bannerForm),
-                        HttpMethod.PUT);
+                this.producerCoachingBannerController.updateCoachingBanner(request);
             }
         } catch (final Exception e) {
             log.error("Got Exception in upsertFailedRecords for input: {}, exception: ", form, e);
         }
     }
 
-    private ResponseEntity<CoachingBannerDTO> makeCall(final CoachingBannerDataRequest request,
-            final HttpMethod method) throws CoachingBaseException {
-
-        final HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
-        httpHeaders.add("Accept", MediaType.APPLICATION_JSON_VALUE);
-
-        final HttpRequestDetails requestDetails = HttpRequestDetails.builder()
-                .requestMethod(method)
-                .url(this.producerBannerApiUrl)
-                .body(request)
-                .headers(httpHeaders)
-                .requestApiName("CoachingBannerIngestorService")
-                .build();
-
-        return this.httpUtil.exchange(this.restTemplateFactory.getRestTemplate(
-                HttpConstants.GENERIC_HTTP_SERVICE), requestDetails, CoachingBannerDTO.class);
+    private CoachingBannerDataRequest buildRequest(final CoachingBannerForm form)
+            throws CoachingBaseException {
+        final CoachingBannerDataRequest request = IngestorCoachingBannerTransformer.convert(form);
+        request.setBannerImageUrl(this.uploadFile(request.getBannerImageUrl(),
+                this.coachingBannerImagePrefix));
+        return request;
     }
 }

@@ -10,7 +10,7 @@ import lombok.Getter;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class CompetitiveExamForm {
 
-    private Long   examId;
-    private String domains;
+    private Long    examId;
+    private String  domains;
     private Integer globalPriority;
 }

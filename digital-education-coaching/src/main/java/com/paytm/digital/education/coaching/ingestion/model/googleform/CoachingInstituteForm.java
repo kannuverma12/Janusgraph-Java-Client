@@ -20,19 +20,21 @@ public class CoachingInstituteForm {
     private String pincode;
     private Double latitude;
     private Double longitude;
-    private String emailAddress;
-    private String contactNumber;
+    private String emailId;
+    private String phoneNumber;
 
     private String coverImage;
     private String logo;
     private String streamIds;
     private String examIds;
     private String courseTypes;
-    private String establishedYear;
+    private String yearOfEstablishment;
     private String brochure;
     private String isEnabled;
     private String courseLevel;
     private String levelOfEducation;
+    private String stepsToApply;
+    private String scholarshipMatrix;
 
     private String highlightAttributeName1;
     private String highlightValue1;
@@ -57,6 +59,7 @@ public class CoachingInstituteForm {
     private String extraInfo1;
     private String extraInfo2;
 
+    private String  statusActive;
     private Integer globalPriority;
 
 }

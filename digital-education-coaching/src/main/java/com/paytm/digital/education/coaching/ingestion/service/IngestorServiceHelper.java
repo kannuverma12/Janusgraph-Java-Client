@@ -1,7 +1,6 @@
 package com.paytm.digital.education.coaching.ingestion.service;
 
-import com.paytm.digital.education.coaching.http.HttpUtil;
-import com.paytm.digital.education.coaching.http.RestTemplateFactory;
+import com.paytm.digital.education.coaching.exeptions.CoachingBaseException;
 import com.paytm.digital.education.coaching.ingestion.model.IngestorResponse;
 import com.paytm.digital.education.coaching.ingestion.model.properties.PropertiesRequest;
 import com.paytm.digital.education.coaching.ingestion.model.properties.PropertiesResponse;
@@ -12,15 +11,20 @@ import com.paytm.digital.education.database.repository.FailedDataRepository;
 import com.paytm.digital.education.utility.DateUtil;
 import com.paytm.digital.education.utility.GoogleDriveUtil;
 import com.paytm.digital.education.utility.JsonUtils;
+import com.paytm.digital.education.utility.UploadUtil;
+import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.text.MessageFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,12 +43,17 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.F
 @Component
 public abstract class IngestorServiceHelper {
 
+    @Value("${ingestion.env.profile}")
+    protected String envProfile;
+    @Value("${coaching.s3.bucketName}")
+    protected String coachingS3BucketName;
+    @Value("${coaching.s3.path}")
+    protected String coachingS3Path;
+
     @Autowired
-    public    IngestDataHelper     ingestDataHelper;
+    protected IngestDataHelper     ingestDataHelper;
     @Autowired
-    protected RestTemplateFactory  restTemplateFactory;
-    @Autowired
-    protected HttpUtil             httpUtil;
+    protected UploadUtil           uploadUtil;
     @Autowired
     private   FailedDataRepository failedDataRepository;
 
@@ -209,5 +218,38 @@ public abstract class IngestorServiceHelper {
 
         this.failedDataRepository.updateMulti(queryObject,
                 Collections.singletonList(HAS_IMPORTED), update);
+    }
+
+    protected String uploadFile(final String driveImageUrl, final String imagePrefix)
+            throws CoachingBaseException {
+
+        if (StringUtils.isEmpty(driveImageUrl) || StringUtils.isEmpty(imagePrefix)) {
+            log.error("Got empty upload file request, driveImageUrl: {}, imagePrefix: {}",
+                    driveImageUrl, imagePrefix);
+            return null;
+        }
+
+        final Pair<String, String> fileNameAndMemeTypePair = this.uploadUtil.uploadFile(
+                driveImageUrl, String.valueOf(Instant.now().toEpochMilli()), null,
+                this.envProfile + imagePrefix,
+                this.coachingS3BucketName + this.coachingS3Path,
+                GoogleConfig.getCoachingCredentialFileName(),
+                GoogleConfig.getCoachingCredentialFolderPath());
+        log.debug("fileNameAndMemeTypePair: {}", fileNameAndMemeTypePair.toString());
+
+        if (null != fileNameAndMemeTypePair.getKey()) {
+            log.debug("File uploaded in s3 for driveImageUrl: {}, imagePrefix: {}, filePath: {}",
+                    driveImageUrl, imagePrefix, fileNameAndMemeTypePair.getKey());
+
+            final String s3Path = fileNameAndMemeTypePair.getKey();
+            String filePath = "";
+            if (s3Path.contains(this.envProfile + imagePrefix)) {
+                filePath = s3Path.replace(this.envProfile + imagePrefix, "");
+            }
+            return filePath;
+        } else {
+            throw new CoachingBaseException(String.format("Failed to upload file in s3, "
+                    + "driveImageUrl: %s, imagePrefix: %s", driveImageUrl, imagePrefix));
+        }
     }
 }

@@ -15,6 +15,6 @@ public class CoachingBannerForm {
     private String redirectionUrl;
 
     private Integer globalPriority;
-    private String  isEnabled;
+    private String  statusActive;
 }
 

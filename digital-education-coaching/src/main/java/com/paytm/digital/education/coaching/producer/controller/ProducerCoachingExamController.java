@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
+@Validated
 @RestController
 @RequestMapping(CoachingConstants.URL.COACHING_BASE)
 @Api(description = "Coaching Exams Resource APIs")
@@ -28,7 +30,7 @@ public class ProducerCoachingExamController {
     private CoachingExamManagerService coachingExamManagerService;
 
     @PostMapping(
-            value = "/v1/coaching-exams",
+            value = "/v1/admin/coaching-exams",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(
@@ -41,7 +43,7 @@ public class ProducerCoachingExamController {
     }
 
     @PutMapping(
-            value = "/v1/coaching-exams",
+            value = "/v1/admin/coaching-exams",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(

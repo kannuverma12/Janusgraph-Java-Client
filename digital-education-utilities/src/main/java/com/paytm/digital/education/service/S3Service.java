@@ -35,6 +35,9 @@ public class S3Service {
     public String uploadFile(InputStream inputStream, String fileName,
             Object entityId, String relativePath, String s3BucketName) throws IOException {
 
+        log.info("inputStream: {}, fileName: {}, entityId: {}, relativepath: {}, s3BucketName: {}",
+                inputStream, fileName, entityId, relativePath, s3BucketName);
+
         ObjectMetadata metadata = new ObjectMetadata();
         byte[] bytes1 = IOUtils.toByteArray(inputStream);
         metadata.setContentLength(bytes1.length);

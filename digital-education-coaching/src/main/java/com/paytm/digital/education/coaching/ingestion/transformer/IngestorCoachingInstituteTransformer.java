@@ -30,8 +30,10 @@ public class IngestorCoachingInstituteTransformer {
                         form.getIsEnabled()))
                 .courseTypes(IngestorCommonTransformer.convertCourseTypes(
                         form.getCourseTypes()))
+                .courseLevels(IngestorCommonTransformer.convertCourseLevels(
+                        form.getCourseLevel()))
                 .officialAddress(convertAddress(form))
-                .establishmentYear(form.getEstablishedYear())
+                .establishmentYear(form.getYearOfEstablishment())
                 .brochureUrl(form.getBrochure())
                 .build();
 
@@ -77,8 +79,8 @@ public class IngestorCoachingInstituteTransformer {
                 .pincode(form.getPincode())
                 .latitude(form.getLatitude())
                 .longitude(form.getLongitude())
-                .email(form.getEmailAddress())
-                .phone(form.getContactNumber())
+                .email(form.getEmailId())
+                .phone(form.getPhoneNumber())
                 .build();
 
         log.info("OfficialAddress: {}", officialAddress);

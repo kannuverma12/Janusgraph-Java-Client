@@ -15,6 +15,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.URL;
+import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -30,6 +31,7 @@ import java.util.List;
 @AllArgsConstructor
 @ApiModel
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@Validated
 public class CoachingInstituteDataRequest {
 
     @Min(value = 1)
@@ -46,12 +48,10 @@ public class CoachingInstituteDataRequest {
     @ApiModelProperty(value = "description about coaching institute")
     private String aboutInstitute;
 
-    @URL
     @NotNull
     @ApiModelProperty(value = "url of institute logo image")
     private String logo;
 
-    @URL
     @NotEmpty
     @ApiModelProperty(value = "institute cover image")
     private String coverImage;

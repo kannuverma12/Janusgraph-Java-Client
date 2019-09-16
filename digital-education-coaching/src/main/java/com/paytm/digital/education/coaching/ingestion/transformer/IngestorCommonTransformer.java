@@ -1,5 +1,6 @@
 package com.paytm.digital.education.coaching.ingestion.transformer;
 
+import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.CourseType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
@@ -34,6 +35,22 @@ public class IngestorCommonTransformer {
             }
         }
         return courseTypeEnumList;
+    }
+
+    public static List<CourseLevel> convertCourseLevels(final String courseLevel) {
+        if (StringUtils.isEmpty(courseLevel)) {
+            return new ArrayList<>();
+        }
+        final String[] courseLevels = courseLevel.split(DELIMITER_COMMA);
+        final List<CourseLevel> courseLevelEnumList = new ArrayList<>();
+
+        for (final String ct : courseLevels) {
+            final CourseLevel convertedCourseLevel = CourseLevel.fromString(ct);
+            if (null != convertedCourseLevel) {
+                courseLevelEnumList.add(convertedCourseLevel);
+            }
+        }
+        return courseLevelEnumList;
     }
 
     public static List<Long> convertStringToListOfLong(final String input) {

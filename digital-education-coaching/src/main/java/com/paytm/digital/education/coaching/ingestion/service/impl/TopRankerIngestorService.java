@@ -1,8 +1,6 @@
 package com.paytm.digital.education.coaching.ingestion.service.impl;
 
 import com.paytm.digital.education.coaching.exeptions.CoachingBaseException;
-import com.paytm.digital.education.coaching.http.HttpConstants;
-import com.paytm.digital.education.coaching.http.HttpRequestDetails;
 import com.paytm.digital.education.coaching.ingestion.model.IngestorResponse;
 import com.paytm.digital.education.coaching.ingestion.model.googleform.TopRankerForm;
 import com.paytm.digital.education.coaching.ingestion.model.properties.PropertiesRequest;
@@ -10,14 +8,13 @@ import com.paytm.digital.education.coaching.ingestion.model.properties.Propertie
 import com.paytm.digital.education.coaching.ingestion.service.IngestorService;
 import com.paytm.digital.education.coaching.ingestion.service.IngestorServiceHelper;
 import com.paytm.digital.education.coaching.ingestion.transformer.IngestorTopRankerTransformer;
+import com.paytm.digital.education.coaching.producer.controller.ProducerTopRankerController;
 import com.paytm.digital.education.coaching.producer.model.dto.TopRankerDTO;
 import com.paytm.digital.education.coaching.producer.model.request.TopRankerDataRequest;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -36,8 +33,11 @@ public class TopRankerIngestorService extends IngestorServiceHelper implements I
 
     private static final String TYPE = "CoachingTopRanker";
 
-    @Value("${coaching.producer.topRankerApi.url}")
-    private String producerTopRankerApiUrl;
+    @Value("${coaching.topranker.image.prefix}")
+    protected String coachingTopRankerImagePrefix;
+
+    @Autowired
+    private ProducerTopRankerController producerTopRankerController;
 
     @Override
     public IngestorResponse ingest() {
@@ -54,8 +54,8 @@ public class TopRankerIngestorService extends IngestorServiceHelper implements I
         final List<TopRankerForm> failedTopRankerFormList = this
                 .getFailedData(TYPE, TopRankerForm.class, COACHING);
 
-        return this.processRecords(topRankerFormData,
-                failedTopRankerFormList, TopRankerForm.class, TYPE);
+        return this.processRecords(topRankerFormData, failedTopRankerFormList,
+                TopRankerForm.class, TYPE);
     }
 
     @Override
@@ -66,12 +66,11 @@ public class TopRankerIngestorService extends IngestorServiceHelper implements I
         ResponseEntity<TopRankerDTO> response = null;
         String failureMessage = EMPTY_STRING;
         try {
+            final TopRankerDataRequest request = this.buildRequest(topRankerForm);
             if (null == topRankerForm.getTopRankerId()) {
-                response = this.makeCall(IngestorTopRankerTransformer.convert(topRankerForm),
-                        HttpMethod.POST);
+                response = this.producerTopRankerController.createTopRanker(request);
             } else {
-                response = this.makeCall(IngestorTopRankerTransformer.convert(topRankerForm),
-                        HttpMethod.PUT);
+                response = this.producerTopRankerController.updateTopRanker(request);
             }
         } catch (final Exception e) {
             log.error("Got Exception in upsertNewRecords for input: {}, exception: ", form, e);
@@ -80,48 +79,34 @@ public class TopRankerIngestorService extends IngestorServiceHelper implements I
 
         if (null == response || !response.getStatusCode().is2xxSuccessful()
                 || null == response.getBody() || null == response.getBody().getTopRankerId()) {
-
             if (EMPTY_STRING.equals(failureMessage)) {
                 failureMessage = "Failed to put new data in TopRanker collection";
             }
-
             this.addToFailedList(JsonUtils.toJson(form),
                     failureMessage, true, COACHING, TYPE, failedDataList);
         }
     }
 
     @Override
-    protected <T> void upsertFailedRecords(T form, Class<T> clazz) {
+    protected <T> void upsertFailedRecords(final T form, final Class<T> clazz) {
         final TopRankerForm topRankerForm = (TopRankerForm) clazz.cast(form);
         try {
+            final TopRankerDataRequest request = this.buildRequest(topRankerForm);
             if (null == topRankerForm.getTopRankerId()) {
-                this.makeCall(IngestorTopRankerTransformer.convert(topRankerForm),
-                        HttpMethod.POST);
+                this.producerTopRankerController.createTopRanker(request);
             } else {
-                this.makeCall(IngestorTopRankerTransformer.convert(topRankerForm),
-                        HttpMethod.PUT);
+                this.producerTopRankerController.updateTopRanker(request);
             }
         } catch (final Exception e) {
             log.error("Got Exception in upsertFailedRecords for input: {}, exception: ", form, e);
         }
     }
 
-    private ResponseEntity<TopRankerDTO> makeCall(final TopRankerDataRequest request,
-            final HttpMethod method) throws CoachingBaseException {
-
-        final HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
-        httpHeaders.add("Accept", MediaType.APPLICATION_JSON_VALUE);
-
-        final HttpRequestDetails requestDetails = HttpRequestDetails.builder()
-                .requestMethod(method)
-                .url(this.producerTopRankerApiUrl)
-                .body(request)
-                .headers(httpHeaders)
-                .requestApiName("TopRankerIngestorService")
-                .build();
-
-        return this.httpUtil.exchange(this.restTemplateFactory.getRestTemplate(
-                HttpConstants.GENERIC_HTTP_SERVICE), requestDetails, TopRankerDTO.class);
+    private TopRankerDataRequest buildRequest(final TopRankerForm form)
+            throws CoachingBaseException {
+        final TopRankerDataRequest request = IngestorTopRankerTransformer.convert(form);
+        request.setStudentPhoto(this.uploadFile(request.getStudentPhoto(),
+                this.coachingTopRankerImagePrefix));
+        return request;
     }
 }

@@ -16,6 +16,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.URL;
+import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -33,6 +34,7 @@ import java.util.List;
 @AllArgsConstructor
 @ApiModel
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@Validated
 public class CoachingCourseDataRequest {
 
     @Min(value = 1)

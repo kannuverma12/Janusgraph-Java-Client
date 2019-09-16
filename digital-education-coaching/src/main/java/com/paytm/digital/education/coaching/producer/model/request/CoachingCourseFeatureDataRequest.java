@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.URL;
+import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -19,6 +20,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@Validated
 public class CoachingCourseFeatureDataRequest {
 
     @Min(value = 1)
@@ -28,7 +30,6 @@ public class CoachingCourseFeatureDataRequest {
     @Min(value = 1)
     private Long instituteId;
 
-    @URL
     private String logo;
 
     @Size(min = 1, max = 200)

@@ -75,10 +75,16 @@ public class CommonUtil {
                 urlBuilder.append(ConfigProperties.getRankingLogo());
                 break;
             case COACHING_COURSES:
-                urlBuilder.append(ConfigProperties.getCoachingCourseLogoPrefix());
+                urlBuilder.append(ConfigProperties.getCoachingS3Path())
+                        .append("/")
+                        .append(ConfigProperties.getEnvProfile())
+                        .append(ConfigProperties.getCoachingCourseLogoPrefix());
                 break;
             case TOP_COACHING_INSTITUTES:
-                urlBuilder.append(ConfigProperties.getCoachingInstituteLogoPrefix());
+                urlBuilder.append(ConfigProperties.getCoachingS3Path())
+                        .append("/")
+                        .append(ConfigProperties.getEnvProfile())
+                        .append(ConfigProperties.getCoachingInstituteLogoPrefix());
                 break;
             default:
                 urlBuilder.append(ConfigProperties.getLogoImagePrefix());

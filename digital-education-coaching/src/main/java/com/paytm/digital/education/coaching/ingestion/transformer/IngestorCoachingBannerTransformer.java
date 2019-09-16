@@ -17,7 +17,7 @@ public class IngestorCoachingBannerTransformer {
                 .redirectionUrl(form.getRedirectionUrl())
                 .priority(form.getGlobalPriority())
                 .isEnabled(IngestorCommonTransformer.convertStringToBoolean(
-                        form.getIsEnabled()))
+                        form.getStatusActive()))
                 .build();
     }
 }

@@ -10,7 +10,7 @@
     <Appenders>
         <Console name="STDOUT" target="SYSTEM_OUT">
             <PatternLayout
-                    pattern="%-5p | %X{ClientId} | %X{RequestId} | %d{yyyy-MM-dd HH:mm:ss} | [%t] %C - %m%n"/>
+                    pattern="%highlight{%-5p} | %style{%X{ClientId}}{cyan} | %style{%X{RequestId}}{green} | %style{%d{yyyy-MM-dd HH:mm:ss}}{cyan} | %style{[%t]}{green} %style{%C{2}}{cyan} - %m%n"/>
         </Console>
         <RollingRandomAccessFile name="ApplicationLog"
                                  fileName="${path}/application.log"

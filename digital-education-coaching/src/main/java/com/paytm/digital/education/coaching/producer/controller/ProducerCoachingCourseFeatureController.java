@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,7 @@ import javax.validation.Valid;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING;
 
+@Validated
 @RestController
 @RequestMapping(COACHING)
 @Api(description = "Coaching Course Feature Resource APIs")
@@ -28,7 +30,7 @@ public class ProducerCoachingCourseFeatureController {
     private CoachingCourseFeatureManagerService coachingCourseFeatureManagerService;
 
     @PostMapping(
-            value = "/v1/coaching-course-feature",
+            value = "/v1/admin/coaching-course-feature",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(
@@ -40,7 +42,7 @@ public class ProducerCoachingCourseFeatureController {
     }
 
     @PutMapping(
-            value = "/v1/coaching-course-feature",
+            value = "/v1/admin/coaching-course-feature",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(

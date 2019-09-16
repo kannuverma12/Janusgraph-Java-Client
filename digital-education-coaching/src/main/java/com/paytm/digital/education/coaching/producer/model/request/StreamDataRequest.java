@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.URL;
+import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -23,6 +24,7 @@ import java.util.List;
 @AllArgsConstructor
 @ApiModel
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@Validated
 public class StreamDataRequest {
 
     @Min(value = 1)
@@ -40,7 +42,6 @@ public class StreamDataRequest {
     @ApiModelProperty(value = "stream ranking across all the existing streams")
     private Integer priority;
 
-    @URL
     @ApiModelProperty(value = "stream logo url")
     private String logo;
 

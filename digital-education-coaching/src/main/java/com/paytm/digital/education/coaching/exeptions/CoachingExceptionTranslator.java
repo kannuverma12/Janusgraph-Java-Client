@@ -14,12 +14,9 @@ public class CoachingExceptionTranslator {
             throw e;
         } catch (final ResourceAccessException rae) {
             throw new CoachingTimeoutException(e, HttpStatus.GATEWAY_TIMEOUT, rae.getMessage());
-        } catch (final HttpClientErrorException hcee) {
-            final HttpStatus httpStatus = hcee.getStatusCode();
-            throw new CoachingClientException(e, httpStatus, hcee.getResponseBodyAsString());
-        } catch (final HttpServerErrorException hsee) {
-            final HttpStatus httpStatus = hsee.getStatusCode();
-            throw new CoachingServerException(e, httpStatus, hsee.getResponseBodyAsString());
+        } catch (final HttpClientErrorException | HttpServerErrorException hte) {
+            final HttpStatus httpStatus = hte.getStatusCode();
+            throw new CoachingBaseException(e, httpStatus, hte.getResponseBodyAsString());
         } catch (final Exception ex) {
             throw new CoachingBaseException(ex, HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
         }

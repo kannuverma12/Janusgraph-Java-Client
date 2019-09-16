@@ -1,8 +1,5 @@
 package com.paytm.digital.education.coaching.ingestion.service.impl;
 
-import com.paytm.digital.education.coaching.exeptions.CoachingBaseException;
-import com.paytm.digital.education.coaching.http.HttpConstants;
-import com.paytm.digital.education.coaching.http.HttpRequestDetails;
 import com.paytm.digital.education.coaching.ingestion.model.IngestorResponse;
 import com.paytm.digital.education.coaching.ingestion.model.googleform.CoachingExamForm;
 import com.paytm.digital.education.coaching.ingestion.model.properties.PropertiesRequest;
@@ -10,14 +7,12 @@ import com.paytm.digital.education.coaching.ingestion.model.properties.Propertie
 import com.paytm.digital.education.coaching.ingestion.service.IngestorService;
 import com.paytm.digital.education.coaching.ingestion.service.IngestorServiceHelper;
 import com.paytm.digital.education.coaching.ingestion.transformer.IngestorCoachingExamTransformer;
+import com.paytm.digital.education.coaching.producer.controller.ProducerCoachingExamController;
 import com.paytm.digital.education.coaching.producer.model.dto.CoachingExamDTO;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingExamDataRequest;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -36,8 +31,8 @@ public class CoachingExamIngestorService extends IngestorServiceHelper implement
 
     private static final String TYPE = "CoachingExam";
 
-    @Value("${coaching.producer.examApi.url}")
-    private String producerExamApiUrl;
+    @Autowired
+    private ProducerCoachingExamController producerCoachingExamController;
 
     @Override
     public IngestorResponse ingest() {
@@ -66,12 +61,12 @@ public class CoachingExamIngestorService extends IngestorServiceHelper implement
         ResponseEntity<CoachingExamDTO> response = null;
         String failureMessage = EMPTY_STRING;
         try {
+            final CoachingExamDataRequest request = IngestorCoachingExamTransformer.convert(
+                    examForm);
             if (null == examForm.getCoachingExamId()) {
-                response = this.makeCall(IngestorCoachingExamTransformer.convert(examForm),
-                        HttpMethod.POST);
+                response = this.producerCoachingExamController.insertCoachingExam(request);
             } else {
-                response = this.makeCall(IngestorCoachingExamTransformer.convert(examForm),
-                        HttpMethod.PUT);
+                response = this.producerCoachingExamController.updateCoachingExam(request);
             }
         } catch (final Exception e) {
             log.error("Got Exception in upsertNewRecords for input: {}, exception: ", form, e);
@@ -91,37 +86,19 @@ public class CoachingExamIngestorService extends IngestorServiceHelper implement
     }
 
     @Override
-    protected <T> void upsertFailedRecords(T form, Class<T> clazz) {
+    protected <T> void upsertFailedRecords(final T form, final Class<T> clazz) {
         final CoachingExamForm examForm = (CoachingExamForm) clazz.cast(form);
         try {
+
+            final CoachingExamDataRequest request = IngestorCoachingExamTransformer.convert(
+                    examForm);
             if (null == examForm.getCoachingExamId()) {
-                this.makeCall(IngestorCoachingExamTransformer.convert(examForm),
-                        HttpMethod.POST);
+                this.producerCoachingExamController.insertCoachingExam(request);
             } else {
-                this.makeCall(IngestorCoachingExamTransformer.convert(examForm),
-                        HttpMethod.PUT);
+                this.producerCoachingExamController.updateCoachingExam(request);
             }
         } catch (final Exception e) {
             log.error("Got Exception in upsertFailedRecords for input: {}, exception: ", form, e);
         }
-    }
-
-    private ResponseEntity<CoachingExamDTO> makeCall(final CoachingExamDataRequest request,
-            final HttpMethod method) throws CoachingBaseException {
-
-        final HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
-        httpHeaders.add("Accept", MediaType.APPLICATION_JSON_VALUE);
-
-        final HttpRequestDetails requestDetails = HttpRequestDetails.builder()
-                .requestMethod(method)
-                .url(this.producerExamApiUrl)
-                .body(request)
-                .headers(httpHeaders)
-                .requestApiName("CoachingExamIngestorService")
-                .build();
-
-        return this.httpUtil.exchange(this.restTemplateFactory.getRestTemplate(
-                HttpConstants.GENERIC_HTTP_SERVICE), requestDetails, CoachingExamDTO.class);
     }
 }
