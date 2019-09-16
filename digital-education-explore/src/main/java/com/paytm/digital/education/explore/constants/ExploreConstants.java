@@ -320,5 +320,8 @@ public interface ExploreConstants {
     String CLIENT                        = "client";
     String FIELD_POST_FIX                = "_id";
     String ERROR_IN_FIELD_VALUE_TEMPLATE = "Incorrect value %s for field %s";
+    String SCHOOL                        = "school";
+    String COLLEGE                       = "college";
+    String HIGHLIGHT                     = "highlight";
 
 }
