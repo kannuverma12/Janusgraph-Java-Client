@@ -56,9 +56,9 @@ function transformSchool(dbDocument) {
             var latLonArray = dbDocument.address.lat_lon.split(',');
 
             if(latLonArray.length == 2) {
-               locationData.lat = latLonArray[0];
-               locationData.lon = latLonArray[1];
-               targetSchool.location = locationData;
+                locationData.lat = latLonArray[0];
+                locationData.lon = latLonArray[1];
+                targetSchool.location = locationData;
             }
         }
     }
