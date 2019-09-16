@@ -23,7 +23,10 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Date;
+import java.util.Objects;
 import java.util.concurrent.TimeoutException;
+
+import static com.paytm.digital.education.explore.constants.ExploreConstants.RECENT_SEARCHES_ID_SEPERATOR;
 
 @Slf4j
 @Service
@@ -36,7 +39,9 @@ public class RecentsServiceImpl implements RecentsSerivce {
 
     @Override
     public void recordSearches(String searchTerm, Long userId, EducationEntity educationEntity) {
-        String uniqueId = CommonUtil.convertNameToUrlDisplayName(searchTerm) + userId.toString();
+        String uniqueId = CommonUtil.convertNameToUrlDisplayName(searchTerm)
+                + RECENT_SEARCHES_ID_SEPERATOR + educationEntity.name().toLowerCase()
+                + RECENT_SEARCHES_ID_SEPERATOR + userId.toString();
         SearchHistoryEsDoc searchHistoryEsDoc = new SearchHistoryEsDoc();
         searchHistoryEsDoc.setId(uniqueId);
         searchHistoryEsDoc.setTerms(searchTerm);
@@ -51,12 +56,16 @@ public class RecentsServiceImpl implements RecentsSerivce {
     }
 
     @Override
-    public SearchResponse getRecentSearchTerms(String term, Long userId, int size) {
+    public SearchResponse getRecentSearchTerms(String term, Long userId, int size, EducationEntity entity) {
 
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.setTerm(term);
         Map<String, List<Object>> filters = new HashMap<>();
         filters.put(ExploreConstants.SEARCH_HISTORY_USERID, Arrays.asList(userId));
+        if (Objects.nonNull(entity)) {
+            filters.put(ExploreConstants.RECENT_SEARCHES_ENTITY,
+                    Arrays.asList(entity.name()));
+        }
         searchRequest.setFilter(filters);
         searchRequest.setEntity(EducationEntity.RECENT_SEARCHES);
         searchRequest.setOffset(ExploreConstants.DEFAULT_OFFSET);

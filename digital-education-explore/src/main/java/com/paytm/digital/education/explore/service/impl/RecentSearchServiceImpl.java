@@ -19,11 +19,11 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.Map;
-import java.util.LinkedHashMap;
-import java.util.HashMap;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 @Service
@@ -44,6 +44,7 @@ public class RecentSearchServiceImpl extends AbstractSearchServiceImpl {
         searchFieldKeys.put(ExploreConstants.SEARCH_HISTORY_TERMS, 1F);
         filterQueryTypeMap = new HashMap<>();
         filterQueryTypeMap.put(ExploreConstants.SEARCH_HISTORY_USERID, FilterQueryType.TERMS);
+        filterQueryTypeMap.put(ExploreConstants.RECENT_SEARCHES_ENTITY, FilterQueryType.TERMS);
         defaultSortKeysInOrder = new LinkedHashMap<>();
         defaultSortKeysInOrder.put(ExploreConstants.SEARCH_HISTORY_UPDATEDAT, DataSortOrder.DESC);
     }

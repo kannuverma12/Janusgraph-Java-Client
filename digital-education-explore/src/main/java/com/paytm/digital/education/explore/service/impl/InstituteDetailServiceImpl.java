@@ -91,7 +91,7 @@ public class InstituteDetailServiceImpl {
             updateShortist(instituteDetail, INSTITUTE, userId, client);
             updateInterested(instituteDetail, INSTITUTE, userId);
         }
-        List<CTA> ctaList = ctaHelper.buildInstituteCTA(instituteDetail, client);
+        List<CTA> ctaList = ctaHelper.buildCTA(instituteDetail, client);
         if (!CollectionUtils.isEmpty(ctaList)) {
             instituteDetail.setCtaList(ctaList);
         }

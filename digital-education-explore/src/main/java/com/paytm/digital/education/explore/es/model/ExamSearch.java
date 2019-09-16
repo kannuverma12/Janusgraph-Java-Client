@@ -35,4 +35,6 @@ public class ExamSearch {
     @JsonProperty("tabs_available")
     private List<String>       dataAvailable;
 
+    @JsonProperty("domain_name")
+    private List<String> domainName;
 }

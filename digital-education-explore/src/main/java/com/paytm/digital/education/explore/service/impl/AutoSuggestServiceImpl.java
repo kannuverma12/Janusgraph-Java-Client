@@ -3,21 +3,20 @@ package com.paytm.digital.education.explore.service.impl;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTOSUGGEST_ANALYZER;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTOSUGGEST_INDEX;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTOSUGGEST_NAMES;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_AUTOSUGGEST_SIZE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.BLANK;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_AUTOSUGGEST_COMPARE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_AUTOSUGGEST_SIZE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_OFFSET;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.ZERO;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_CLASS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.MINUS_TEN;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OTHER;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKING_OVERALL;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SIXTY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SUMMARY;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.BLANK;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKING_OVERALL;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.ZERO;
 import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.P_TOP_INS;
 
 import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
@@ -46,8 +45,10 @@ import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.search.service.AutoSuggestionService;
 import com.paytm.digital.education.utility.HierarchyIdentifierUtils;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -55,26 +56,29 @@ import org.springframework.util.CollectionUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.LinkedHashMap;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Service
 public class AutoSuggestServiceImpl {
 
-    private AutoSuggestionService    autoSuggestionService;
+    private final AutoSuggestionService    autoSuggestionService;
     private Map<String, String>      suggestClassLevelMap;
-    private SubscriptionDetailHelper subscriptionDetailHelper;
-    private ExamLogoHelper           examLogoHelper;
-    private SearchServiceImpl        searchServiceImpl;
+    private final SubscriptionDetailHelper subscriptionDetailHelper;
+    private final ExamLogoHelper           examLogoHelper;
+    private final SearchServiceImpl        searchServiceImpl;
+
+    @Value("${autosuggest.single.entity.count}")
+    private Integer singleEntityAutoSuggestCount;
 
     @PostConstruct
     private void generateLevelMap() {
@@ -90,21 +94,18 @@ public class AutoSuggestServiceImpl {
 
     public AutoSuggestResponse getSuggestions(String searchTerm, List<EducationEntity> entities,
             List<UserAction> actions, Long userId) {
-        AutoSuggestResponse autoSuggestResponse = null;
+        boolean isAlphabeticalSorting = false;
+        int autoSuggestSize = DEFAULT_AUTOSUGGEST_SIZE;
         if (!CollectionUtils.isEmpty(actions) && actions.contains(UserAction.SHORTLIST)) {
-            autoSuggestResponse =
-                    getSuggestResults(searchTerm, entities, DEFAULT_AUTOSUGGEST_COMPARE,
-                            false);
-        } else {
-            autoSuggestResponse =
-                    getSuggestResults(searchTerm, entities, DEFAULT_AUTOSUGGEST_SIZE,
-                            false);
+            autoSuggestSize = DEFAULT_AUTOSUGGEST_COMPARE;
+        } else if (!CollectionUtils.isEmpty(entities) && entities.size() == 1) {
+            autoSuggestSize = singleEntityAutoSuggestCount;
         }
+        AutoSuggestResponse autoSuggestResponse =
+                getSuggestResults(searchTerm, entities, autoSuggestSize, isAlphabeticalSorting);
         groupEntityBasedOnActions(autoSuggestResponse, actions, userId);
         return autoSuggestResponse;
     }
-
-
 
     @Cacheable(value = "autosuggest")
     public AutoSuggestResponse getSuggestResults(String searchTerm, List<EducationEntity> entities,
@@ -119,32 +120,35 @@ public class AutoSuggestServiceImpl {
                     ex.getMessage());
             throw new EducationException(ErrorEnum.HTTP_REQUEST_FAILED, ex.getMessage(), null, ex);
         }
-        return buildAutoSuggestResponse(response);
+        return buildAutoSuggestResponse(elasticRequest, response, entities);
     }
 
     public AutoSuggestResponse autosuggestInstitute(String query, Integer limit) {
         AutoSuggestResponse autoSuggestResponse;
 
-        if (StringUtils.isNotBlank(query)) {
-            if (query.equalsIgnoreCase(P_TOP_INS)) {
-                autoSuggestResponse = getTopInstitutes(limit);
-            } else {
-                List<EducationEntity> entities = new ArrayList<>();
-                entities.add(EducationEntity.INSTITUTE);
-                autoSuggestResponse = getSuggestions(query, entities, null, null);
-            }
+        if (Objects.isNull(query) || StringUtils.isBlank(query)) {
+            autoSuggestResponse = getTopInstitutes(limit);
         } else {
-            autoSuggestResponse = new AutoSuggestResponse();
-            List<AutoSuggestData> asDataList = new ArrayList<>();
-            AutoSuggestData asData = new AutoSuggestData();
-            asData.setEntityType(INSTITUTE.name().toLowerCase());
-            List<SuggestResult> suggestResults = new ArrayList<>();
-            asData.setResults(suggestResults);
-            asDataList.add(asData);
-            autoSuggestResponse.setData(asDataList);
+            List<EducationEntity> entities = new ArrayList<>();
+            entities.add(EducationEntity.INSTITUTE);
+            autoSuggestResponse = getSuggestions(query, entities, null, null);
+            if (Objects.nonNull(autoSuggestResponse) && CollectionUtils
+                    .isEmpty(autoSuggestResponse.getData())) {
+                addEmptyResponse(autoSuggestResponse);
+            }
         }
         addDefaultOption(autoSuggestResponse);
         return autoSuggestResponse;
+    }
+
+    private void addEmptyResponse(AutoSuggestResponse autoSuggestResponse) {
+        List<AutoSuggestData> asDataList = new ArrayList<>();
+        AutoSuggestData asData = new AutoSuggestData();
+        asData.setEntityType(INSTITUTE.name().toLowerCase());
+        List<SuggestResult> suggestResults = new ArrayList<>();
+        asData.setResults(suggestResults);
+        asDataList.add(asData);
+        autoSuggestResponse.setData(asDataList);
     }
 
     private void addDefaultOption(AutoSuggestResponse autoSuggestResponse) {
@@ -197,7 +201,6 @@ public class AutoSuggestServiceImpl {
         elasticRequest.setQueryTerm(term);
         elasticRequest.setOffSet(DEFAULT_OFFSET);
         elasticRequest.setLimit(size);
-        elasticRequest.setAggregationRequest(true);
         String filterFieldPath = suggestClassLevelMap.get(ENTITY_TYPE);
 
         if (!CollectionUtils.isEmpty(entities)) {
@@ -212,19 +215,27 @@ public class AutoSuggestServiceImpl {
             elasticRequest.setFilterFields(filterFields);
         }
 
-        AggregateField[] aggFields = new AggregateField[1];
-        aggFields[0] = new AggregateField();
-        aggFields[0].setName(ENTITY_TYPE);
-        aggFields[0].setType(AggregationType.TOP_HITS);
-        if (alphabeticalSorting) {
-            SortField[] sortFields = new SortField[1];
-            sortFields[0] = new SortField();
-            sortFields[0].setName(OFFICIAL_NAME);
-            sortFields[0].setOrder(DataSortOrder.ASC);
-            sortFields[0].setPath(suggestClassLevelMap.get(OFFICIAL_NAME));
-            aggFields[0].setSortFields(sortFields);
+        if (!CollectionUtils.isEmpty(entities) && entities.size() == 1) {
+            elasticRequest.setSearchRequest(true);
         }
-        elasticRequest.setAggregateFields(aggFields);
+
+        if (CollectionUtils.isEmpty(entities)
+                || (!CollectionUtils.isEmpty(entities) && entities.size() > 1)) {
+            elasticRequest.setAggregationRequest(true);
+            AggregateField[] aggFields = new AggregateField[1];
+            aggFields[0] = new AggregateField();
+            aggFields[0].setName(ENTITY_TYPE);
+            aggFields[0].setType(AggregationType.TOP_HITS);
+            if (alphabeticalSorting) {
+                SortField[] sortFields = new SortField[1];
+                sortFields[0] = new SortField();
+                sortFields[0].setName(OFFICIAL_NAME);
+                sortFields[0].setOrder(DataSortOrder.ASC);
+                sortFields[0].setPath(suggestClassLevelMap.get(OFFICIAL_NAME));
+                aggFields[0].setSortFields(sortFields);
+            }
+            elasticRequest.setAggregateFields(aggFields);
+        }
 
         String searchFieldPath = suggestClassLevelMap.get(AUTOSUGGEST_NAMES);
         SearchField[] searchFields = new SearchField[1];
@@ -236,63 +247,53 @@ public class AutoSuggestServiceImpl {
         return elasticRequest;
     }
 
-    private AutoSuggestResponse buildAutoSuggestResponse(
-            ElasticResponse<AutoSuggestEsData> esResponse) {
+    private AutoSuggestResponse buildAutoSuggestResponse(ElasticRequest elasticRequest,
+            ElasticResponse<AutoSuggestEsData> esResponse, List<EducationEntity> entities) {
+        if (elasticRequest.isSearchRequest()) {
+            return getSearchResponse(esResponse, entities.get(0));
+        }
+        return getAggregationResponse(esResponse);
+    }
 
+    private AutoSuggestResponse getSearchResponse(ElasticResponse<AutoSuggestEsData> esResponse,
+            EducationEntity entity) {
         AutoSuggestResponse response = new AutoSuggestResponse();
+        List<AutoSuggestEsData> esDocumentList = esResponse.getDocuments();
+        Map<Long, SuggestResult> suggestResultMap = new HashMap<>();
+        List<AutoSuggestData> responseList = new ArrayList<>();
+        AutoSuggestData autoSuggestData =
+                getAutoSuggestResultData(entity.name().toLowerCase(), esDocumentList, suggestResultMap);
+        responseList.add(autoSuggestData);
+        List<AutoSuggestData> autoSuggestDataList = new ArrayList<>();
+        autoSuggestDataList.add(autoSuggestData);
+        response.setData(autoSuggestDataList);
+        Map<String, Map<Long, SuggestResult>> entityResultMap =
+                new HashMap<String, Map<Long, SuggestResult>>() {{
+                    put(entity.name().toLowerCase(), suggestResultMap);
+            }
+        };
+        response.setPerEntitySuggestMap(entityResultMap);
+        return response;
+    }
 
+    private AutoSuggestResponse getAggregationResponse(
+            ElasticResponse<AutoSuggestEsData> esResponse) {
+        AutoSuggestResponse response = new AutoSuggestResponse();
         Map<String, AggregationResponse> aggregationResponse = esResponse.getAggregationResponse();
-
         if (aggregationResponse.containsKey(ENTITY_TYPE)) {
-
             TopHitsAggregationResponse<AutoSuggestEsData> topHitsPerEntity =
                     (TopHitsAggregationResponse<AutoSuggestEsData>) aggregationResponse
                             .get(ENTITY_TYPE);
-
             // topHitsPerEntity
             List<AutoSuggestData> suggestData = new ArrayList<>();
             Map<String, Map<Long, SuggestResult>> entityResultsMap = new HashMap<>();
-
             topHitsPerEntity.getDocumentsPerEntity().forEach((key, documents) -> {
-                AutoSuggestData dataPerEntity = new AutoSuggestData();
-                List<SuggestResult> responseResultDocList = new ArrayList<>();
                 if (!entityResultsMap.containsKey(key)) {
                     entityResultsMap.put(key.getKey(), new HashMap<>());
                 }
-                documents.forEach(esDocument -> {
-                    SuggestResult responseDoc = new SuggestResult(esDocument.getEntityId(),
-                            esDocument.getOfficialName());
-                    if (EducationEntity.LOCATION.equals(esDocument.getEntityType())) {
-                        responseDoc.setCityId(esDocument.getCityId());
-                        responseDoc.setStateId(esDocument.getStateId());
-                    }
-                    responseDoc.setUrlDisplayName(
-                            CommonUtil.convertNameToUrlDisplayName(esDocument.getOfficialName()));
-
-                    if (EducationEntity.EXAM.equals(esDocument.getEntityType())) {
-                        responseDoc.setLogo(examLogoHelper
-                                .getExamLogoUrl(esDocument.getEntityId(), esDocument.getLogo()));
-                    } else {
-                        if (StringUtils.isNotBlank(esDocument.getLogo())) {
-                            responseDoc.setLogo(CommonUtil
-                                    .getLogoLink(esDocument.getLogo(), esDocument.getEntityType()));
-                        }
-                    }
-                    if (Objects.nonNull(esDocument.getOfficialAddress())) {
-                        responseDoc.setOfficialAddress(
-                                CommonUtil
-                                        .getOfficialAddress(
-                                                esDocument.getOfficialAddress().getState(),
-                                                esDocument.getOfficialAddress().getCity(), null,
-                                                null,
-                                                null));
-                    }
-                    entityResultsMap.get(key.getKey()).put(responseDoc.getEntityId(), responseDoc);
-                    responseResultDocList.add(responseDoc);
-                });
-                dataPerEntity.setEntityType(key.getKey());
-                dataPerEntity.setResults(responseResultDocList);
-                suggestData.add(dataPerEntity);
+                AutoSuggestData autoSuggestData = getAutoSuggestResultData(key.getKey(), documents,
+                        entityResultsMap.get(key.getKey()));
+                suggestData.add(autoSuggestData);
             });
             response.setData(suggestData);
             response.setPerEntitySuggestMap(entityResultsMap);
@@ -300,6 +301,50 @@ public class AutoSuggestServiceImpl {
         return response;
     }
 
+    private AutoSuggestData getAutoSuggestResultData(String entity,
+            List<AutoSuggestEsData> documents, Map<Long, SuggestResult> resultMap) {
+        AutoSuggestData autoSuggestData = new AutoSuggestData();
+        List<SuggestResult> responseResultDocList = new ArrayList<>();
+        documents.forEach(esDocument -> {
+            SuggestResult responseDoc = getSuggestResult(esDocument);
+            resultMap.put(responseDoc.getEntityId(), responseDoc);
+            responseResultDocList.add(responseDoc);
+        });
+        autoSuggestData.setEntityType(entity);
+        autoSuggestData.setResults(responseResultDocList);
+        return autoSuggestData;
+    }
+
+    private SuggestResult getSuggestResult(AutoSuggestEsData esDocument) {
+        SuggestResult responseDoc = new SuggestResult(esDocument.getEntityId(),
+                esDocument.getOfficialName());
+        if (EducationEntity.LOCATION.equals(esDocument.getEntityType())) {
+            responseDoc.setCityId(esDocument.getCityId());
+            responseDoc.setStateId(esDocument.getStateId());
+        }
+        responseDoc.setUrlDisplayName(
+                CommonUtil.convertNameToUrlDisplayName(esDocument.getOfficialName()));
+
+        if (EducationEntity.EXAM.equals(esDocument.getEntityType())) {
+            responseDoc.setLogo(examLogoHelper
+                    .getExamLogoUrl(esDocument.getEntityId(), esDocument.getLogo()));
+        } else {
+            if (StringUtils.isNotBlank(esDocument.getLogo())) {
+                responseDoc.setLogo(CommonUtil
+                        .getLogoLink(esDocument.getLogo(), esDocument.getEntityType()));
+            }
+        }
+        if (Objects.nonNull(esDocument.getOfficialAddress())) {
+            responseDoc.setOfficialAddress(
+                    CommonUtil
+                            .getOfficialAddress(
+                                    esDocument.getOfficialAddress().getState(),
+                                    esDocument.getOfficialAddress().getCity(), null,
+                                    null,
+                                    null));
+        }
+        return responseDoc;
+    }
 
     private void groupEntityBasedOnActions(AutoSuggestResponse autoSuggestResponse,
             List<UserAction> actions,

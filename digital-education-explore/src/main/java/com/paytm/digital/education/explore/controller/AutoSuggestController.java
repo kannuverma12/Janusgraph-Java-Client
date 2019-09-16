@@ -62,7 +62,7 @@ public class AutoSuggestController {
 
     @RequestMapping(method = RequestMethod.GET, path = "/v1/institute/autosuggest")
     public @ResponseBody AutoSuggestResponse autosuggestInstitute(
-            @RequestParam("query") String query,
+            @RequestParam(name = "query", required = false) String query,
             @RequestParam(value = "limit", required = false) @Min(2) Integer limit) {
         log.info("Received autosuggest request for institutes ");
         return autoSuggestServiceImpl.autosuggestInstitute(query, limit);

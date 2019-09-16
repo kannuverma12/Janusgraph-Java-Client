@@ -11,14 +11,13 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import javax.validation.constraints.Min;
 
-@Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class InstiPaytmKeys extends PaytmKeys {
-
+@NoArgsConstructor
+@AllArgsConstructor
+public class SchoolPaytmKeys extends PaytmKeys {
     @Field("pid")
     @JsonProperty("pid")
     @Min(1)
@@ -29,4 +28,7 @@ public class InstiPaytmKeys extends PaytmKeys {
     @Min(1)
     private Long mid;
 
+    @Field("form_id")
+    @JsonProperty("form_id")
+    private String formId;
 }

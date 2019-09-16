@@ -118,7 +118,7 @@ public interface ExploreConstants {
 
     ///////// Explore search Constatnts ///////////
     // Exam
-    String SEARCH_INDEX_EXAM              = "education_search_exam_v2";
+    String SEARCH_INDEX_EXAM              = "education_search_exam_v3";
     String SEARCH_ANALYZER_EXAM           = "word_delimiter_analyzer_search";
     String SEARCH_NAMES_EXAM              = "names";
     String EXAM_FULL_NAME_SEARCH          = "exam_full_name";
@@ -126,6 +126,7 @@ public interface ExploreConstants {
     String EXAM_OFFICIAL_NAME             = "official_name";
     String EXAM_OFFICIAL_NAME_NGRAM       = "official_name.raw";
     String EXAM_NAME_SYNONYMS             = "exam_name_synonyms";
+    String EXAM_DOMAIN_NAME               = "domain_name";
     Float  EXAM_FULL_NAME_BOOST           = 1F;
     Float  EXAM_SHORT_NAME_BOOST          = 1F;
     Float  EXAM_OFFICIAL_NAME_BOOST       = 1F;
@@ -161,6 +162,7 @@ public interface ExploreConstants {
     String EXAM_SEARCH_NAMESPACE       = "exam";
     String LINGUISTIC_MEDIUM           = "linguistic_medium";
     String SEARCH_EXAM_LEVEL           = "level";
+    String SEARCH_EXAM_DOMAIN          = "domain_name";
     String IGNORE_VALUES               = "ignore";
     String RANKING_STREAM_NAMESPACE    = "ranking_stream";
     String FACILITIES_MASTER_LIST      = "master_list";
@@ -266,6 +268,7 @@ public interface ExploreConstants {
     String LOCATIONS       = "locations";
     String APP_FOOTER      = "app_footer";
     String BANNER_MID      = "banner_mid";
+    String CAROUSEL        = "CAROUSEL";
     String IMAGE_URL       = "image_url";
     String DUMMY_EXAM_ICON = "/exam_placeholder.svg";
     String ID              = "id";
@@ -276,13 +279,18 @@ public interface ExploreConstants {
     String CAREER_LOGO     = "/career360.jpg";
     String EMPTY_STRING    = " ";
 
-    String RECENT_SEARCHES_kAFKA_TOPIC = "recent_searches";
+    String EXAM_FOCUS_APP              = "exam_focus_app";
+    String POPULAR_EXAMS_APP           = "popular_exams_app";
+    String BROWSE_BY_EXAM_LEVEL        = "browse_by_exam_level";
+    String RECENT_SEARCHES_kAFKA_TOPIC = "recent_searches_explore";
     String RECENT_SEARCHES_ES_INDEX    = "recent_searches";
     String RECENT_SEARCHES_ES_TYPE     = "education";
     String SEARCH_HISTORY_USERID       = "user_id";
     String SEARCH_HISTORY_TERMS        = "terms";
     String SEARCH_HISTORY_UPDATEDAT    = "updated_at";
     int    DELETE_RECENTS_BATCH_SIZE   = 100;
+    String RECENT_SEARCHES_ENTITY      = "entity";
+    String RECENT_SEARCHES_ID_SEPERATOR = "-";
 
     String CTA                  = "cta";
     String SELECTED             = "_selected";
@@ -305,4 +313,9 @@ public interface ExploreConstants {
     int    SIX             = 6;
     String P_TOP_INS       = "P_TOP_INS";
 
+    String EDUCATION_EXPLORE_PREFIX      = "education/explore/";
+    String DIRECTORY_SEPARATOR_SLASH     = "/";
+    String CLIENT                        = "client";
+    String FIELD_POST_FIX                = "_id";
+    String ERROR_IN_FIELD_VALUE_TEMPLATE = "Incorrect value %s for field %s";
 }

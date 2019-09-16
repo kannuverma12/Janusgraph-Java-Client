@@ -5,7 +5,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.explore.enums.SchoolEntityType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -17,6 +20,9 @@ import java.util.List;
 @Document
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class School {
 
     @Id
@@ -93,6 +99,9 @@ public class School {
     @Field("pincode")
     @JsonProperty("pincode")
     private String pincode;
+
+    @Field("paytm_keys")
+    private SchoolPaytmKeys paytmKeys;
 
     public School(String officialName, Long schoolId) {
         this.officialName = officialName;

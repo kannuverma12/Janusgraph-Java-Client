@@ -36,9 +36,13 @@ public class CTA {
 
         public static final String SHORTLIST_APP = "Shortlist College";
 
+        public static final String SHORTLIST_SCHOOL_APP = "Shortlist School";
+
         public static final String SHORTLISTED = "Shortlisted";
 
         public static final String SHORTLISTED_APP = "Shortlisted College";
+
+        public static final String SHORTLISTED_SCHOOL_APP = "Shortlisted School";
 
         public static final String GET_UPDATES = "Get Update";
 
@@ -61,6 +65,8 @@ public class CTA {
         public static final String APPLY = "Apply";
 
         public static final String COMPARE_APP = "Compare";
+
+        public static final String PREDICT_COLLEGE = "Predict College";
 
     }
 

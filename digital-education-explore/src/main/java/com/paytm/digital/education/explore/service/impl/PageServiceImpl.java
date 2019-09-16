@@ -23,9 +23,13 @@ import javax.validation.constraints.NotBlank;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.APP_FOOTER;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.BANNER_MID;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.BROWSE_BY_EXAM_LEVEL;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.CAROUSEL;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.COLLEGE_FOCUS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_FOCUS_APP;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ICON;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.IMAGE_URL;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.POPULAR_EXAMS_APP;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SUB_ITEMS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LOCATIONS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LOGO;
@@ -66,6 +70,9 @@ public class PageServiceImpl implements PageService {
                 switch (section.getType()) {
                     case TOP_EXAMS_APP:
                     case COLLEGE_FOCUS:
+                    case POPULAR_EXAMS_APP:
+                    case EXAM_FOCUS_APP:
+                    case BROWSE_BY_EXAM_LEVEL:
                         logoFieldName = LOGO;
                         break;
                     case STREAMS:
@@ -76,13 +83,14 @@ public class PageServiceImpl implements PageService {
                         logoFieldName = ICON;
                         break;
                     case BANNER_MID:
+                    case CAROUSEL:
                         logoFieldName = IMAGE_URL;
                         break;
                     default:
                 }
                 if (Objects.nonNull(logoFieldName)) {
                     for (Map<String, Object> item : section.getItems()) {
-                        if (TOP_EXAMS_APP.equals(section.getType())) {
+                        if (TOP_EXAMS_APP.equals(section.getType()) || BROWSE_BY_EXAM_LEVEL.equals(section.getType())) {
                             for (Map.Entry<String, Object> topExamsPerLevel : item.entrySet()) {
 
                                 Map<String, Object> subitems =

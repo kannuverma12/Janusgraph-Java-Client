@@ -26,48 +26,45 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.ID;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_ID;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SCHOOL_FILE_VERSION;
+import static com.paytm.digital.education.explore.database.entity.PaytmKeys.Constants.PAYTM_KEYS;
 
 @Service
 @AllArgsConstructor
 @Slf4j
 public class TransformSchoolService {
 
-    private SchoolDetailServiceImpl schoolDetailService;
     private CommonMongoRepository   commonMongoRepository;
     private IncrementalDataHelper   incrementalDataHelper;
     private UploadUtil              uploadUtil;
 
     public Integer transformAndSaveSchoolsData(List<SchoolDto> schoolDtos) {
-
-        List<School> schoolEntities = transformSchoolDtoToMongoEntity(schoolDtos);
-
-        Set<Long> schoolIds =
-                schoolEntities.stream().map(s -> s.getSchoolId()).collect(Collectors.toSet());
-
-        List<String> fields = new ArrayList<>();
-        fields.add(ID);
-        fields.add(SCHOOL_ID);
+        List<Long> schoolIds =
+                schoolDtos.stream().map(SchoolDto::getId).collect(Collectors.toList());
         List<School> schoolsFromDb =
-                schoolDetailService.getSchools(new ArrayList<>(schoolIds), fields);
+                commonMongoRepository.getEntityFieldsByValuesIn(
+                        SCHOOL_ID, schoolIds, School.class, null);
+        Map<Long, School> schoolIdToSchoolMap = schoolsFromDb.stream()
+                .collect(Collectors.toMap(School::getSchoolId, Function.identity()));
 
-        if (Objects.isNull(schoolsFromDb)) {
-            schoolsFromDb = new ArrayList<>();
-        }
-
-        Map<Long, String> objectIdAndSchoolIdMap = schoolsFromDb.stream()
-                .collect(Collectors.toMap(s -> s.getSchoolId(), s -> s.getId()));
+        String[] ignorableKeys = {PAYTM_KEYS};
+        List<School> schoolEntities = schoolDtos
+                .stream()
+                .map(schoolDto ->
+                        convertRequestDtoToDbEntity(
+                                schoolDto,
+                                schoolIdToSchoolMap.getOrDefault(schoolDto.getId(), new School()),
+                                ignorableKeys))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
 
         for (School school : schoolEntities) {
-            Long id = school.getSchoolId();
-            if (objectIdAndSchoolIdMap.containsKey(id)) {
-                school.setId(objectIdAndSchoolIdMap.get(id));
-            }
 
             uploadImagestoS3(school.getGallery(), school.getSchoolId());
 
@@ -78,65 +75,58 @@ public class TransformSchoolService {
         return schoolsFromDb.size();
     }
 
-    private List<School> transformSchoolDtoToMongoEntity(List<SchoolDto> schoolDtos) {
-        List<School> schoolEntitiesList = new ArrayList<>();
-        log.info("Found {} no. of schools", schoolDtos.size());
+    private Optional<School> convertRequestDtoToDbEntity(
+            SchoolDto schoolDto, School schoolEntity, String[] ignorableKeys) {
+        List<Board> boardsSupportedBySchoolList = schoolDto.getBoardList();
+        if (CollectionUtils.isEmpty(boardsSupportedBySchoolList)) {
+            log.error("Board information is missing for school with entityId : {} , skipping",
+                    schoolDto.getId());
+            return Optional.empty();
+        }
 
-        for (SchoolDto schoolDto : schoolDtos) {
+        schoolEntity.setOfficialName(schoolDto.getName());
+        schoolEntity.setSchoolId(schoolDto.getId());
+        return Optional.of(convert(schoolDto, schoolEntity, ignorableKeys));
+    }
 
-            School schoolEntity = new School(schoolDto.getName(), schoolDto.getId());
+    private School convert(SchoolDto schoolDto, School schoolEntity, String[] ignorableKeys) {
+        List<Board> boardsSupportedBySchoolList = schoolDto.getBoardList();
+        BeanUtils.copyProperties(schoolDto, schoolEntity, ignorableKeys);
 
-            BeanUtils.copyProperties(schoolDto, schoolEntity);
+        for (Board boardAffiliatedBySchool : boardsSupportedBySchoolList) {
+            BoardData boardAffiliatedBySchoolData = boardAffiliatedBySchool.getData();
+            SchoolEducationLevelType schoolEducationLevel =
+                    boardAffiliatedBySchoolData.getEducationLevel();
 
-            schoolEntity.setSchoolId(Long.valueOf(schoolDto.getId()));
-
-            List<Board> boardsSupportedBySchoolList = schoolDto.getBoardList();
-
-            if (CollectionUtils.isEmpty(boardsSupportedBySchoolList)) {
-                log.error("Board information is missing for school with entityId : {} , skipping",
-                        schoolDto.getId());
-                continue;
-            }
-
-            for (Board boardAffiliatedBySchool : boardsSupportedBySchoolList) {
-                BoardData boardAffiliatedBySchoolData = boardAffiliatedBySchool.getData();
-                SchoolEducationLevelType schoolEducationLevel =
-                        boardAffiliatedBySchoolData.getEducationLevel();
-
-                if (Objects.nonNull(boardAffiliatedBySchoolData)
-                        && ClassType.NOT_PROVIDED.equals(boardAffiliatedBySchoolData.getClassTo())
-                        && Objects.nonNull(schoolEducationLevel)) {
-                    boardAffiliatedBySchoolData.setClassFrom(ClassType.NURSERY);
-                    switch (schoolEducationLevel) {
-                        case SECONDARY:
-                            boardAffiliatedBySchoolData.setClassTo(ClassType.TEN);
-                            break;
-                        case SENIOR_SECONDARY:
-                            boardAffiliatedBySchoolData.setClassTo(ClassType.TWELVE);
-                            break;
-                        case MIDDLE:
-                            boardAffiliatedBySchoolData.setClassTo(ClassType.EIGHT);
-                            break;
-                        case PRIMARY:
-                            boardAffiliatedBySchoolData.setClassTo(ClassType.FIVE);
-                            break;
-                        default:
-                            log.error("Invalid education level type : {}", schoolEducationLevel);
-                            break;
-                    }
+            if (Objects.nonNull(boardAffiliatedBySchoolData)
+                    && ClassType.NOT_PROVIDED.equals(boardAffiliatedBySchoolData.getClassTo())
+                    && Objects.nonNull(schoolEducationLevel)) {
+                boardAffiliatedBySchoolData.setClassFrom(ClassType.NURSERY);
+                switch (schoolEducationLevel) {
+                    case SECONDARY:
+                        boardAffiliatedBySchoolData.setClassTo(ClassType.TEN);
+                        break;
+                    case SENIOR_SECONDARY:
+                        boardAffiliatedBySchoolData.setClassTo(ClassType.TWELVE);
+                        break;
+                    case MIDDLE:
+                        boardAffiliatedBySchoolData.setClassTo(ClassType.EIGHT);
+                        break;
+                    case PRIMARY:
+                        boardAffiliatedBySchoolData.setClassTo(ClassType.FIVE);
+                        break;
+                    default:
+                        log.error("Invalid education level type : {}", schoolEducationLevel);
+                        break;
                 }
             }
-
-            if (boardsSupportedBySchoolList.size() > 1) {
-                schoolEntity.setSchoolEntityType(SchoolEntityType.MULTI_BOARD);
-            }
-
-
-
-            schoolEntitiesList.add(schoolEntity);
-
         }
-        return schoolEntitiesList;
+
+        if (boardsSupportedBySchoolList.size() > 1) {
+            schoolEntity.setSchoolEntityType(SchoolEntityType.MULTI_BOARD);
+        }
+
+        return schoolEntity;
     }
 
     private void uploadImagestoS3(SchoolGallery gallery, Long entityId) {
