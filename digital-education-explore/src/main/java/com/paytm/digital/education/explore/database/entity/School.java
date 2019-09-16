@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.List;
 
 @Data
-@Document
+@Document("school")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
@@ -44,6 +44,10 @@ public class School {
     @Field("official_address")
     @JsonProperty("official_address")
     private SchoolOfficialAddress officialAddress;
+
+    @Field("address")
+    @JsonProperty("address")
+    private SchoolOfficialAddress address;
 
     @Field("short_name")
     @JsonProperty("short_name")

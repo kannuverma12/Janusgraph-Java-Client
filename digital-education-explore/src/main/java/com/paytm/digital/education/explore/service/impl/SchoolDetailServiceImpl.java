@@ -169,8 +169,8 @@ public class SchoolDetailServiceImpl implements SchoolService {
             GeneralInformation generalInformation = new GeneralInformation();
             generalInformation.setEmail(boardData.getEmail());
             generalInformation.setPhone(school.getPhone());
-            generalInformation.setStreetAddress(school.getOfficialAddress().getStreetAddress());
-            generalInformation.setLatLon(school.getOfficialAddress().getLatLon());
+            generalInformation.setStreetAddress(school.getAddress().getStreetAddress());
+            generalInformation.setLatLon(school.getAddress().getLatLon());
             generalInformation.setOfficialWebsiteLink(getOfficialWebsiteLinkFromData(boardData));
             generalInformation.setOfficialName(school.getOfficialName());
             generalInformation.setShortName(school.getShortName());
@@ -180,8 +180,8 @@ public class SchoolDetailServiceImpl implements SchoolService {
                             ?
                             CommonUtils.addCDNPrefixAndEncode(logoUrl) : ""
             );
-            generalInformation.setCity(school.getOfficialAddress().getCity());
-            generalInformation.setState(school.getOfficialAddress().getState());
+            generalInformation.setCity(school.getAddress().getCity());
+            generalInformation.setState(school.getAddress().getState());
             return generalInformation;
         }
         return null;

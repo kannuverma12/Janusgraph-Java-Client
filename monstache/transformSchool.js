@@ -46,13 +46,14 @@ function transformSchool(dbDocument) {
     }
 
     targetSchool.area_name = dbDocument.area_name;
-    if (dbDocument.official_address !== undefined) {
-        targetSchool.state = dbDocument.official_address.state;
-        targetSchool.city = dbDocument.official_address.city;
 
-        if(dbDocument.official_address.lat_lon !== undefined) {
+    if (dbDocument.address !== undefined) {
+        targetSchool.state = dbDocument.address.state;
+        targetSchool.city = dbDocument.address.city;
+
+        if(dbDocument.address.lat_lon !== undefined) {
             var locationData = {};
-            var latLonArray = dbDocument.official_address.lat_lon.split(',');
+            var latLonArray = dbDocument.address.lat_lon.split(',');
 
             if(latLonArray.length == 2) {
                locationData.lat = latLonArray[0];
