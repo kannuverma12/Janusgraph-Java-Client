@@ -107,6 +107,9 @@ public class School {
     @Field("paytm_keys")
     private SchoolPaytmKeys paytmKeys;
 
+    @JsonProperty("url_display_key")
+    private String urlDisplayKey;
+
     public School(String officialName, Long schoolId) {
         this.officialName = officialName;
         this.schoolId = schoolId;

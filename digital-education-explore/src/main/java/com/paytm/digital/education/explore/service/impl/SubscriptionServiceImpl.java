@@ -13,7 +13,10 @@ import com.paytm.digital.education.dto.NotificationFlags;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.aggregation.SubscriptionDao;
 import com.paytm.digital.education.explore.daoresult.SubscribedEntityCount;
+import com.paytm.digital.education.explore.daoresult.subscription.SubscriptionWithExam;
 import com.paytm.digital.education.explore.daoresult.subscription.SubscriptionWithInstitute;
+import com.paytm.digital.education.explore.daoresult.subscription.SubscriptionWithSchool;
+import com.paytm.digital.education.explore.database.entity.SchoolGallery;
 import com.paytm.digital.education.explore.database.entity.Subscription;
 import com.paytm.digital.education.explore.database.repository.SubscriptionRepository;
 import com.paytm.digital.education.explore.enums.EducationEntity;
@@ -146,6 +149,40 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 if (StringUtils.isNotBlank(logoLink)) {
                     subscriptionWithInstitute.getEntityDetails().getGallery()
                             .setLogo(logoLink);
+                }
+            } else if (subscriptionEntity.getCorrespondingClass() == SubscriptionWithSchool.class) {
+                SubscriptionWithSchool subscriptionWithSchool =
+                        (SubscriptionWithSchool) subscription;
+
+                if (Objects.nonNull(subscriptionWithSchool.getEntityDetails())) {
+                    subscriptionWithSchool.getEntityDetails().setUrlDisplayKey(CommonUtil
+                            .convertNameToUrlDisplayName(
+                                    subscriptionWithSchool.getEntityDetails().getOfficialName()));
+                    SchoolGallery gallery = subscriptionWithSchool.getEntityDetails().getGallery();
+
+                    if (Objects.nonNull(gallery) && StringUtils.isNotBlank(gallery.getLogo())) {
+                        String logoLink = CommonUtil.getLogoLink(gallery.getLogo(),
+                                EducationEntity.SCHOOL);
+                        subscriptionWithSchool.getEntityDetails().getGallery()
+                                .setLogo(logoLink);
+                    }
+                }
+            } else if (subscriptionEntity.getCorrespondingClass() == SubscriptionWithExam.class) {
+                SubscriptionWithExam subscriptionWithExam =
+                        (SubscriptionWithExam) subscription;
+
+                if (Objects.nonNull(subscriptionWithExam.getEntityDetails())) {
+                    subscriptionWithExam.getEntityDetails().setUrlDisplayKey(CommonUtil
+                            .convertNameToUrlDisplayName(
+                                    subscriptionWithExam.getEntityDetails().getExamFullName()));
+
+                    if (StringUtils.isNotBlank(subscriptionWithExam.getEntityDetails().getLogo())) {
+                        String logoLink = CommonUtil
+                                .getLogoLink(subscriptionWithExam.getEntityDetails().getLogo(),
+                                        EducationEntity.EXAM);
+                        subscriptionWithExam.getEntityDetails()
+                                .setLogo(logoLink);
+                    }
                 }
             }
         } catch (Exception ex) {
