@@ -83,7 +83,8 @@ public class RecentSearchServiceImpl extends AbstractSearchServiceImpl {
 
     @Override
     protected void populateSearchResults(SearchResponse searchResponse,
-            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties) {
+            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties,
+            ElasticRequest elasticRequest) {
 
         List<SearchHistoryEsDoc> documents = elasticResponse.getDocuments();
         List<SearchBaseData> recentSearches = new ArrayList<>();

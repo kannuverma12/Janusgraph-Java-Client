@@ -244,7 +244,8 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
 
     @Override
     protected void populateSearchResults(SearchResponse searchResponse,
-            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties) {
+            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties,
+            ElasticRequest elasticRequest) {
         List<InstituteSearch> instituteSearches = elasticResponse.getDocuments();
         SearchResult searchResults = new SearchResult();
         Map<Long, SearchBaseData> instituteDataMap = new HashMap<Long, SearchBaseData>();

@@ -48,4 +48,10 @@ public class SchoolSearch {
     @JsonProperty("boards")
     private List<SchoolBoard> boards;
 
+    @JsonProperty("location")
+    private GeoLocation geoLocation;
+
+    @JsonProperty("sort")
+    private List<Double> sort;
+
 }

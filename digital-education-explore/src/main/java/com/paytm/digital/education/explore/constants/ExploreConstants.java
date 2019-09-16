@@ -18,6 +18,8 @@ public interface ExploreConstants {
     int    DEFAULT_SIZE                = 10;
     int    DEFAULT_AUTOSUGGEST_SIZE    = 3;
     int    DEFAULT_AUTOSUGGEST_COMPARE = 10;
+    String SORT_DISTANCE_FIELD         = "location";
+    String DISTANCE_KILOMETERS         =  " km";
 
     ///// Exam Detail//////////
     String TENTATIVE     = "tentative";
@@ -318,4 +320,5 @@ public interface ExploreConstants {
     String CLIENT                        = "client";
     String FIELD_POST_FIX                = "_id";
     String ERROR_IN_FIELD_VALUE_TEMPLATE = "Incorrect value %s for field %s";
+
 }

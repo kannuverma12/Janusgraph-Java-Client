@@ -21,4 +21,7 @@ public class SchoolSearchData extends SearchBaseData {
     @JsonProperty("url_display_key")
     private String urlDisplayName;
 
+    @JsonProperty("distance")
+    private String distance;
+
 }

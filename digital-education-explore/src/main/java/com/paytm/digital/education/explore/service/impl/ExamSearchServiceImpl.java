@@ -172,7 +172,8 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
 
     @Override
     protected void populateSearchResults(SearchResponse searchResponse,
-            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties) {
+            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties,
+            ElasticRequest elasticRequest) {
         List<ExamSearch> examSearches = elasticResponse.getDocuments();
         SearchResult searchResults = new SearchResult();
         if (!CollectionUtils.isEmpty(examSearches)) {

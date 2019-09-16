@@ -4,7 +4,10 @@ import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.CrossField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
+import com.paytm.digital.education.elasticsearch.models.SortField;
+import com.paytm.digital.education.explore.constants.ExploreConstants;
 import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.paytm.digital.education.explore.es.model.GeoLocation;
 import com.paytm.digital.education.explore.es.model.SchoolSearch;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
@@ -17,6 +20,7 @@ import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -24,7 +28,9 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +39,7 @@ import java.util.concurrent.TimeoutException;
 
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.RANGE;
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.TERMS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SORT_DISTANCE_FIELD;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EMPTY_STRING;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.NGRAM;
@@ -70,6 +77,7 @@ public class SchoolSearchServiceImpl extends AbstractSearchServiceImpl {
     private static Map<String, Float>           locationSearchFieldKeys;
     private        SearchAggregateHelper        searchAggregateHelper;
     private        PropertyReader               propertyReader;
+    private static DecimalFormat                df = new DecimalFormat("#.#");
 
     @PostConstruct
     private void init() {
@@ -137,9 +145,28 @@ public class SchoolSearchServiceImpl extends AbstractSearchServiceImpl {
                 searchAggregateHelper.getSchoolAggregateData(), SchoolSearch.class);
         populateSearchQueryType(elasticRequest, TIE_BREAKER);
 
-        schoolSearchRequest.setSortOrder(null);
+        /**
+         * Sort on geolocation when
+         * 1.Source geolocation is present
+         * 2.SortOrder contains "location" field
+         */
+        if (schoolSearchRequest.getGeoLocation() != null
+                && schoolSearchRequest.getSortOrder() != null
+                && schoolSearchRequest.getSortOrder().containsKey(SORT_DISTANCE_FIELD)) {
+            populateNearbyFilterFields(schoolSearchRequest, elasticRequest);
+        } else {
+            schoolSearchRequest.setSortOrder(null);
+        }
+
         populateSortFields(schoolSearchRequest, elasticRequest, SchoolSearch.class);
         return elasticRequest;
+    }
+
+    private void populateNearbyFilterFields(SearchRequest schoolSearchRequest,
+            ElasticRequest elasticRequest) {
+        GeoLocation geoLocationData = schoolSearchRequest.getGeoLocation();
+        elasticRequest.setLocationLatLon(Arrays.asList(geoLocationData.getLat(),
+                geoLocationData.getLon()));
     }
 
     private void populateSearchQueryType(ElasticRequest elasticRequest, Float tieBreaker) {
@@ -150,13 +177,23 @@ public class SchoolSearchServiceImpl extends AbstractSearchServiceImpl {
 
     @Override
     protected void populateSearchResults(SearchResponse searchResponse,
-            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties) {
+            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties,
+            ElasticRequest elasticRequest) {
         List<SchoolSearch> schoolSearches = elasticResponse.getDocuments();
         SearchResult searchResults = new SearchResult();
         Map<Long, SearchBaseData> schoolDataMap = new HashMap<Long, SearchBaseData>();
+        boolean isGeoDistanceSortRequest = isGeoDistanceSortRequest(elasticRequest);
+        Integer indexOfGeoDistanceSortInElasticRequest = null;
+
+        if (ArrayUtils.isNotEmpty(elasticRequest.getSortFields()) && isGeoDistanceSortRequest) {
+            indexOfGeoDistanceSortInElasticRequest = getIndexOfGeoDistanceSortInElasticRequest(
+                    elasticRequest.getSortFields());
+        }
+
         if (!CollectionUtils.isEmpty(schoolSearches)) {
             searchResults.setEntity(EducationEntity.SCHOOL);
             List<SearchBaseData> schoolDataList = new ArrayList<SearchBaseData>();
+            Integer finalIndexOfGeoDistance = indexOfGeoDistanceSortInElasticRequest;
             schoolSearches.forEach(schoolSearch -> {
                 SchoolSearchData schoolSearchData = new SchoolSearchData();
                 schoolSearchData.setSchoolId(schoolSearch.getSchoolId());
@@ -173,6 +210,10 @@ public class SchoolSearchServiceImpl extends AbstractSearchServiceImpl {
                                 schoolSearch.getCity(), null, null, null);
                 schoolSearchData.setOfficialAddress(officialAddress);
 
+                setSchoolGeoDistanceString(isGeoDistanceSortRequest, finalIndexOfGeoDistance,
+                        schoolSearch,
+                        schoolSearchData);
+
                 //"isClient" info will be used in future in get updates feature
                 schoolSearchData.setClient(false);
 
@@ -183,5 +224,49 @@ public class SchoolSearchServiceImpl extends AbstractSearchServiceImpl {
         }
         searchResponse.setEntityDataMap(schoolDataMap);
         searchResponse.setResults(searchResults);
+    }
+
+    private void setSchoolGeoDistanceString(boolean isGeoDistanceSortRequest,
+            Integer finalIndexOfGeoDistance, SchoolSearch schoolSearch,
+            SchoolSearchData schoolSearchData) {
+        if (!CollectionUtils.isEmpty(schoolSearch.getSort())
+                && isGeoDistanceSortRequest && finalIndexOfGeoDistance != null) {
+            Double distanceInKilometers =
+                    schoolSearch.getSort().get(finalIndexOfGeoDistance);
+            if (Double.isFinite(distanceInKilometers)) {
+                schoolSearchData.setDistance(df.format(distanceInKilometers)
+                        + ExploreConstants.DISTANCE_KILOMETERS);
+            }
+        }
+    }
+
+    private boolean isGeoDistanceSortRequest(ElasticRequest elasticRequest) {
+        if (CollectionUtils.isEmpty(elasticRequest.getLocationLatLon())
+                || elasticRequest.getLocationLatLon().size() != 2
+                || ArrayUtils.isEmpty(elasticRequest.getSortFields())) {
+            return false;
+        }
+        SortField[] sortFields = elasticRequest.getSortFields();
+
+        for (SortField sortField : sortFields) {
+            if (SORT_DISTANCE_FIELD.equalsIgnoreCase(sortField.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Integer getIndexOfGeoDistanceSortInElasticRequest(SortField[] sortFields) {
+        Integer indexOfGeoDistanceSort = null;
+        int currentSortFieldIndex = 0;
+        if (ArrayUtils.isNotEmpty(sortFields)) {
+            for (SortField sortField : sortFields) {
+                if (SORT_DISTANCE_FIELD.equalsIgnoreCase(sortField.getName())) {
+                    indexOfGeoDistanceSort = currentSortFieldIndex;
+                }
+                currentSortFieldIndex++;
+            }
+        }
+        return indexOfGeoDistanceSort;
     }
 }

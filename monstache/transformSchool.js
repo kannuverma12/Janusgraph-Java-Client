@@ -49,6 +49,17 @@ function transformSchool(dbDocument) {
     if (dbDocument.official_address !== undefined) {
         targetSchool.state = dbDocument.official_address.state;
         targetSchool.city = dbDocument.official_address.city;
+
+        if(dbDocument.official_address.lat_lon !== undefined) {
+            var locationData = {};
+            var latLonArray = dbDocument.official_address.lat_lon.split(',');
+
+            if(latLonArray.length == 2) {
+               locationData.lat = latLonArray[0];
+               locationData.lon = latLonArray[1];
+               targetSchool.location = locationData;
+            }
+        }
     }
 
     targetSchool.year_of_estd = dbDocument.established_year;
