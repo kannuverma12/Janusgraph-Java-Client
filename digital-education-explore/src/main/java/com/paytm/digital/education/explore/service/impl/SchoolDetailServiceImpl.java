@@ -178,7 +178,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
         if (Objects.isNull(searchRequest)) {
             return;
         }
-        SearchResponse searchResponse = searchService.search(searchRequest, null);
+        SearchResponse searchResponse = searchService.search(searchRequest, null, null);
         List<SearchBaseData> searchBaseDataList = searchResponse.getResults().getValues();
         if (CollectionUtils.isEmpty(searchBaseDataList)) {
             return;

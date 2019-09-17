@@ -136,7 +136,7 @@ public interface ExploreConstants {
     Float  EXAM_OFFICIAL_NAME_NGRAM_BOOST = 0.00001F;
     String DATE_TAB                       = "dates";
     String SYLLABUS_TAB                   = "syllabus";
-    String SEARCH_INDEX_INSTITUTE         = "education_search_institute_v2";
+    String SEARCH_INDEX_INSTITUTE         = "education_search_institute_v3";
     String SEARCH_ANALYZER_INSTITUTE      = "word_delimiter_analyzer";
     String SEARCH_NAMES                   = "names";
     String MAX_RANK                       = "max_rank";
@@ -302,7 +302,7 @@ public interface ExploreConstants {
     String SCHOOL_SEARCH_NAMESPACE = "school_search";
     String SCHOOL_FILTER_NAMESPACE = "school_filter";
     String SEARCH_ANALYZER_SCHOOL  = "word_delimiter_analyzer";
-    String SEARCH_INDEX_SCHOOL     = "education_search_school_v1";
+    String SEARCH_INDEX_SCHOOL     = "education_search_school_v2";
     String SCHOOL_FACILITY_KEY = "school_facility_map";
 
     String OTHER           = "Other";

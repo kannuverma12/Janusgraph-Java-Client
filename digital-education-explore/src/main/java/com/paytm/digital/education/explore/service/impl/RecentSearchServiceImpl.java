@@ -5,6 +5,7 @@ import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.explore.constants.ExploreConstants;
+import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.es.model.SearchHistoryEsDoc;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.search.RecentSearch;
@@ -56,7 +57,7 @@ public class RecentSearchServiceImpl extends AbstractSearchServiceImpl {
         ElasticResponse elasticResponse = initiateSearch(elasticRequest, SearchHistoryEsDoc.class);
         SearchResponse searchResponse = new SearchResponse(searchRequest.getTerm());
         buildSearchResponse(searchResponse, elasticResponse, elasticRequest, null, null, null,
-                null);
+                null, null);
         return searchResponse;
     }
 
@@ -84,7 +85,7 @@ public class RecentSearchServiceImpl extends AbstractSearchServiceImpl {
     @Override
     protected void populateSearchResults(SearchResponse searchResponse,
             ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties,
-            ElasticRequest elasticRequest) {
+            ElasticRequest elasticRequest, Client client) {
 
         List<SearchHistoryEsDoc> documents = elasticResponse.getDocuments();
         List<SearchBaseData> recentSearches = new ArrayList<>();

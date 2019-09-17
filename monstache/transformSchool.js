@@ -70,6 +70,9 @@ function transformSchool(dbDocument) {
     }
 
     targetSchool.is_client = dbDocument.is_client;
+    if (dbDocument.paytm_keys) {
+        targetSchool.paytm_keys = dbDocument.paytm_keys;
+    }
 
     targetSchool.facilities = [];
     targetSchool.lang_medium = [];
@@ -89,6 +92,7 @@ function transformSchool(dbDocument) {
                 singleBoard.ownership = dbSchoolBoard.data.ownership;
             singleBoard.affiliation_type = dbSchoolBoard.data.affiliation_type;
             singleBoard.residential_status = dbSchoolBoard.data.residential_status;
+            singleBoard.brochure_url = dbSchoolBoard.data.school_brochure_link;
 
             if (dbSchoolBoard.data.school_facilities !== undefined) {
                 targetSchool.facilities = merge_array(targetSchool.facilities, dbSchoolBoard.data.school_facilities);

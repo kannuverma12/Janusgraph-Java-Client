@@ -1,5 +1,6 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.search.InstituteData;
@@ -42,9 +43,10 @@ public class SearchServiceImpl {
     private RecentsSerivce             recentsSerivce;
     private SchoolSearchServiceImpl schoolSearchService;
 
-    public SearchResponse search(SearchRequest searchRequest, Long userId) {
+    public SearchResponse search(SearchRequest searchRequest, Long userId, Client client) {
         long startTime = System.currentTimeMillis();
         log.debug("Starting search at : " + startTime);
+        searchRequest.setClient(client);
         try {
             SearchResponse response = handler(searchRequest.getEntity()).search(searchRequest);
             log.debug("Search Response : {}", JsonUtils.toJson(response));
@@ -85,7 +87,7 @@ public class SearchServiceImpl {
      * @throws Exception when userid is null
      */
     public AutoSuggestResponse instituteSearch(SearchRequest searchRequest) throws Exception {
-        SearchResponse searchResponse = search(searchRequest, null);
+        SearchResponse searchResponse = search(searchRequest, null, null);
         AutoSuggestResponse autoSuggestResponse = new AutoSuggestResponse();
         List<AutoSuggestData> asDataList = new ArrayList<>();
 

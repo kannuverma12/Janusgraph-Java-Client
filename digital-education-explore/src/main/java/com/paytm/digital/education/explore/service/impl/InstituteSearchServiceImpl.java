@@ -49,7 +49,9 @@ import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.CrossField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
+import com.paytm.digital.education.explore.database.entity.InstiPaytmKeys;
 import com.paytm.digital.education.explore.database.entity.SearchSortParam;
+import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.es.model.InstituteSearch;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
@@ -142,7 +144,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
         ElasticResponse elasticResponse = initiateSearch(elasticRequest, InstituteSearch.class);
         buildSearchResponse(searchResponse, elasticResponse, elasticRequest, EXPLORE_COMPONENT,
                 INSTITUTE_FILTER_NAMESPACE, INSTITUTE_SEARCH_NAMESPACE,
-                searchRequest.getClassificationData());
+                searchRequest.getClassificationData(), searchRequest.getClient());
         return searchResponse;
     }
 
@@ -245,7 +247,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
     @Override
     protected void populateSearchResults(SearchResponse searchResponse,
             ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties,
-            ElasticRequest elasticRequest) {
+            ElasticRequest elasticRequest, Client client) {
         List<InstituteSearch> instituteSearches = elasticResponse.getDocuments();
         SearchResult searchResults = new SearchResult();
         Map<Long, SearchBaseData> instituteDataMap = new HashMap<Long, SearchBaseData>();
@@ -271,6 +273,13 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
                                 instituteSearch.getCity(), null, null, null);
                 instituteData.setOfficialAddress(officialAddress);
                 instituteData.setClient(instituteSearch.isClient());
+                instituteData.setBrochureUrl(instituteSearch.getBrochureUrl());
+                if (Objects.nonNull(instituteSearch.getPaytmKeys())) {
+                    InstiPaytmKeys instiPaytmKeys = instituteSearch.getPaytmKeys();
+                    instituteData.setPid(instiPaytmKeys.getPid());
+                    instituteData.setMid(instiPaytmKeys.getMid());
+                }
+                instituteData.setCtaList(ctaHelper.buildCTA(instituteData, client));
                 instituteDataMap.put(instituteSearch.getInstituteId(), instituteData);
                 instituteDataList.add(instituteData);
             });

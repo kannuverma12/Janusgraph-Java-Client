@@ -97,4 +97,8 @@ public class SchoolDetail implements CTAInfoHolder {
     public boolean hasCompareFeature() {
         return false;
     }
+
+    @Override public Long getCollegePredictorPid() {
+        return null;
+    }
 }

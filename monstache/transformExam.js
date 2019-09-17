@@ -45,6 +45,9 @@ module.exports = function(doc) {
 	targetExam.level = doc.level_of_exam;
 	targetExam.linguistic_medium = doc.linguistic_medium_exam; // array
 	targetExam.domain_name = doc.domains;
+	if (doc.paytm_keys) {
+		targetExam.paytm_keys = doc.paytm_keys;
+	}
 
 	//targetExam.logo_url = "";
 	// targetExam.type = doc.exam_category;

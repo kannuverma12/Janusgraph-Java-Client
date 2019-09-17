@@ -4,6 +4,8 @@ import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.CrossField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
+import com.paytm.digital.education.explore.database.entity.SchoolPaytmKeys;
+import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.elasticsearch.models.SortField;
 import com.paytm.digital.education.explore.constants.ExploreConstants;
 import com.paytm.digital.education.explore.enums.EducationEntity;
@@ -35,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.RANGE;
@@ -123,7 +126,7 @@ public class SchoolSearchServiceImpl extends AbstractSearchServiceImpl {
         ElasticResponse elasticResponse = initiateSearch(elasticRequest, SchoolSearch.class);
         buildSearchResponse(searchResponse, elasticResponse, elasticRequest, EXPLORE_COMPONENT,
                 SCHOOL_FILTER_NAMESPACE, SCHOOL_SEARCH_NAMESPACE,
-                schoolSearchRequest.getClassificationData());
+                schoolSearchRequest.getClassificationData(), schoolSearchRequest.getClient());
         return searchResponse;
     }
 
@@ -178,7 +181,7 @@ public class SchoolSearchServiceImpl extends AbstractSearchServiceImpl {
     @Override
     protected void populateSearchResults(SearchResponse searchResponse,
             ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties,
-            ElasticRequest elasticRequest) {
+            ElasticRequest elasticRequest, Client client) {
         List<SchoolSearch> schoolSearches = elasticResponse.getDocuments();
         SearchResult searchResults = new SearchResult();
         Map<Long, SearchBaseData> schoolDataMap = new HashMap<Long, SearchBaseData>();
@@ -216,7 +219,13 @@ public class SchoolSearchServiceImpl extends AbstractSearchServiceImpl {
 
                 //"isClient" info will be used in future in get updates feature
                 schoolSearchData.setClient(false);
-
+                schoolSearchData.setBrochureUrl(schoolSearch.getBrochureUrl());
+                if (Objects.nonNull(schoolSearch.getPaytmKeys())) {
+                    Optional<SchoolPaytmKeys> schoolPaytmKeys = Optional.ofNullable(schoolSearch.getPaytmKeys());
+                    schoolSearchData.setPid(schoolPaytmKeys.map(SchoolPaytmKeys::getPid).orElse(null));
+                    schoolSearchData.setFormId(schoolPaytmKeys.map(SchoolPaytmKeys::getFormId).orElse(null));
+                }
+                schoolSearchData.setCtaList(ctaHelper.buildCTA(schoolSearchData, client));
                 schoolDataMap.put(schoolSearch.getSchoolId(), schoolSearchData);
                 schoolDataList.add(schoolSearchData);
             });
