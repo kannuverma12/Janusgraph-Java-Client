@@ -13,6 +13,7 @@ import com.paytm.digital.education.explore.database.entity.SchoolOfficialAddress
 import com.paytm.digital.education.explore.database.entity.SchoolPaytmKeys;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.enums.Client;
+import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.es.model.GeoLocation;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
@@ -31,6 +32,7 @@ import com.paytm.digital.education.explore.service.helper.CTAHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.service.helper.FacilityDataHelper;
 import com.paytm.digital.education.explore.service.helper.SchoolDetailsResponseHelper;
+import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 
 import com.paytm.digital.education.utility.CommonUtils;
@@ -70,12 +72,13 @@ import static org.elasticsearch.common.geo.parsers.GeoWKTParser.COMMA;
 @Service
 public class SchoolDetailServiceImpl implements SchoolService {
 
-    private final CommonMongoRepository   commonMongoRepository;
-    private final DerivedAttributesHelper derivedAttributesHelper;
-    private final FacilityDataHelper      facilityDataHelper;
-    private final CTAHelper               ctaHelper;
-    private final SearchServiceImpl       searchService;
-    private final int                     similarSchoolsCount;
+    private final CommonMongoRepository    commonMongoRepository;
+    private final DerivedAttributesHelper  derivedAttributesHelper;
+    private final FacilityDataHelper       facilityDataHelper;
+    private final CTAHelper                ctaHelper;
+    private final SearchServiceImpl        searchService;
+    private final int                      similarSchoolsCount;
+    private final SubscriptionDetailHelper subscriptionDetailHelper;
 
     public SchoolDetailServiceImpl(
             CommonMongoRepository commonMongoRepository,
@@ -83,13 +86,15 @@ public class SchoolDetailServiceImpl implements SchoolService {
             FacilityDataHelper facilityDataHelper,
             CTAHelper ctaHelper,
             SearchServiceImpl searchService,
-            @Value("${similar.schools.count}") int similarSchoolsCount) {
+            @Value("${similar.schools.count}") int similarSchoolsCount,
+            SubscriptionDetailHelper subscriptionDetailHelper) {
         this.commonMongoRepository = commonMongoRepository;
         this.derivedAttributesHelper = derivedAttributesHelper;
         this.facilityDataHelper = facilityDataHelper;
         this.ctaHelper = ctaHelper;
         this.searchService = searchService;
         this.similarSchoolsCount = similarSchoolsCount;
+        this.subscriptionDetailHelper = subscriptionDetailHelper;
     }
 
     public List<School> getSchools(List<Long> entityIds, List<String> groupFields) {
@@ -110,7 +115,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
 
     @Override
     public SchoolDetail getSchoolDetails(Long schoolId, Client client, String schoolName,
-            List<String> fields, String fieldGroup) {
+            List<String> fields, String fieldGroup, Long userId) {
         List<String> fieldsToBeFetched =
                 commonMongoRepository
                         .getFieldsByGroupAndCollectioName(SchoolConstants.SCHOOL, fields,
@@ -169,8 +174,23 @@ public class SchoolDetailServiceImpl implements SchoolService {
             List<CTA> ctaList = ctaHelper.buildCTA(schoolDetail, client);
             schoolDetail.setCtaList(ctaList);
             addSimilarSchoolsInResponse(schoolDetail, school);
+
+            if (Objects.nonNull(userId) && userId > 0) {
+                updateShortist(schoolDetail, SCHOOL, userId);
+            }
         }
         return schoolDetail;
+    }
+
+    private void updateShortist(SchoolDetail schoolDetail, EducationEntity educationEntity,
+            Long userId) {
+        List<Long> schoolIds = new ArrayList<>();
+        schoolIds.add(schoolDetail.getSchoolId());
+
+        List<Long> subscribedEntities = subscriptionDetailHelper
+                .getSubscribedEntities(educationEntity, userId, schoolIds);
+
+        schoolDetail.setShortlisted(!CollectionUtils.isEmpty(subscribedEntities));
     }
 
     private void addSimilarSchoolsInResponse(SchoolDetail schoolDetail, School school) {

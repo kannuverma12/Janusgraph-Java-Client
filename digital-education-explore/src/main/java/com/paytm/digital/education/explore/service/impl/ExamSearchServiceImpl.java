@@ -179,6 +179,7 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
             ElasticRequest elasticRequest,  Client client) {
         List<ExamSearch> examSearches = elasticResponse.getDocuments();
         SearchResult searchResults = new SearchResult();
+        Map<Long, SearchBaseData> examDataMap = new HashMap<Long, SearchBaseData>();
         if (!CollectionUtils.isEmpty(examSearches)) {
             searchResults.setEntity(EducationEntity.EXAM);
             List<SearchBaseData> examDataList = new ArrayList<SearchBaseData>();
@@ -212,11 +213,13 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
                 }
                 examData.setCtaList(ctaHelper.buildCTA(examData, client));
                 examData.setDataAvailable(dataAvailable);
+                examDataMap.put(Long.valueOf(examSearch.getExamId()), examData);
                 examDataList.add(examData);
             });
             searchResults.setValues(examDataList);
         }
         searchResponse.setResults(searchResults);
+        searchResponse.setEntityDataMap(examDataMap);
     }
 
     private int getRelevantInstanceIndex(List<ExamInstance> instances, String type) {

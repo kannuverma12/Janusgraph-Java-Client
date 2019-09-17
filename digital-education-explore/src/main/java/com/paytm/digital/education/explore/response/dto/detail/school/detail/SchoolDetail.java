@@ -80,6 +80,9 @@ public class SchoolDetail implements CTAInfoHolder {
     @Accessors(fluent = true)
     private boolean shouldHaveApplyNowCTA = true;
 
+    @JsonProperty("shortlisted")
+    private boolean shortlisted;
+
     @Override
     @JsonIgnore
     public boolean isClient() {

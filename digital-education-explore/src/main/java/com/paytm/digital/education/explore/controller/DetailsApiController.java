@@ -90,7 +90,7 @@ public class DetailsApiController {
                                         Client client) {
         exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
         return schoolService
-                .getSchoolDetails(schoolId, client, schoolName, fields, fieldGroup);
+                .getSchoolDetails(schoolId, client, schoolName, fields, fieldGroup, userId);
     }
 
 }
