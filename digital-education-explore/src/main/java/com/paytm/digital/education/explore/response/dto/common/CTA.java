@@ -44,6 +44,10 @@ public class CTA {
 
         public static final String SHORTLISTED_SCHOOL_APP = "Shortlisted School";
 
+        public static final String SHORTLIST_EXAM_APP = "Shortlist Exam";
+
+        public static final String SHORTLISTED_EXAM_APP = "Shortlisted Exam";
+
         public static final String GET_UPDATES = "Get Update";
 
         public static final String STOP_UPDATES = "Stop Update";

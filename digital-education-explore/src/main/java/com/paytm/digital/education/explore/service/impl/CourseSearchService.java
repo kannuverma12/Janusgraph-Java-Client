@@ -302,6 +302,6 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
     @Override
     protected void populateSearchResults(SearchResponse searchResponse,
             ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties,
-            ElasticRequest elasticRequest) {
+            ElasticRequest elasticRequest, Client client) {
     }
 }

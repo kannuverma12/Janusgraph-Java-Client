@@ -5,6 +5,7 @@ import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.explore.enums.ClassifierDocType;
 import com.paytm.digital.education.explore.enums.ClassifierSortType;
+import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.es.model.ClassifierSearchDoc;
 import com.paytm.digital.education.explore.es.model.ClassifierSortField;
 import com.paytm.digital.education.explore.request.dto.search.Classification;
@@ -240,7 +241,7 @@ public class ClassifierSearchService extends AbstractSearchServiceImpl {
     @Override
     protected void populateSearchResults(SearchResponse searchResponse,
             ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties,
-            ElasticRequest elasticRequest) {
+            ElasticRequest elasticRequest, Client client) {
 
     }
 }

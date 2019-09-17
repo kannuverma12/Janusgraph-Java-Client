@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.List;
 
 @Data
-@Document("school")
+@Document
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
