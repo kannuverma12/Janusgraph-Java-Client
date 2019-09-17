@@ -252,11 +252,14 @@ public class ExamDetailServiceImpl {
         examDetail.setExamLevel(exam.getLevelOfExam());
         examDetail.setDocumentsRequiredAtExam(exam.getDocumentsExam());
         examDetail.setDocumentsRequiredAtCounselling(exam.getDocumentsCounselling());
-        examDetail.setAdmitCard("");
+        examDetail.setAdmitCard(exam.getAdmitCard());
         examDetail.setAnswerKey("");
-        examDetail.setApplicationProcess("");
         examDetail.setCounselling("");
-        examDetail.setResult("");
+        examDetail.setEligibility(exam.getEligibility());
+        examDetail.setApplicationForm(exam.getApplicationForm());
+        examDetail.setExamPattern(exam.getExamPattern());
+        examDetail.setResult(exam.getResult());
+        examDetail.setCutoff(exam.getCutoff());
         examDetail.setLogoUrl(examLogoHelper.getExamLogoUrl(exam.getExamId(), exam.getLogo()));
         examDetail.setExamCenters(getExamCenters(exam.getInstances()));
         List<Event> importantDates = new ArrayList<>();

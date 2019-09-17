@@ -101,6 +101,24 @@ public class Exam {
     @Field("paytm_keys")
     private ExamPaytmKeys paytmKeys;
 
+    @Field("cutoff")
+    private String cutoff;
+
+    @Field("exam_pattern")
+    private String examPattern;
+
+    @Field("admit_card")
+    private String admitCard;
+
+    @Field("eligibility")
+    private String eligibility;
+
+    @Field("application_form")
+    private String applicationForm;
+
+    @Field("result")
+    private String result;
+
     @JsonProperty("url_display_key")
     private String urlDisplayKey;
 
