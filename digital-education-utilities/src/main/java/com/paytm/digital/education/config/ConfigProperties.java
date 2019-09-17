@@ -37,43 +37,43 @@ public class ConfigProperties {
     }
 
     @Value("${ingestion.env.profile}")
-    public static void setEnvProfile(String envProfile) {
-        ConfigProperties.envProfile = envProfile;
+    public void setEnvProfile(String profile) {
+        envProfile = profile;
     }
 
     @Value("${coaching.s3.path}")
-    public static void setCoachingS3Path(String coachingS3Path) {
-        ConfigProperties.coachingS3Path = coachingS3Path;
+    public void setCoachingS3Path(String s3Path) {
+        coachingS3Path = s3Path;
     }
 
     @Value("${coaching.s3.bucketName}")
-    public static void setCoachingS3BucketName(String coachingS3BucketName) {
-        ConfigProperties.coachingS3BucketName = coachingS3BucketName;
+    public void setCoachingS3BucketName(String s3BucketName) {
+        coachingS3BucketName = s3BucketName;
     }
 
     @Value("${coaching.stream.logo.prefix}")
-    public static void setCoachingStreamLogoPrefix(String coachingStreamLogoPrefix) {
-        ConfigProperties.coachingStreamLogoPrefix = coachingStreamLogoPrefix;
+    public void setCoachingStreamLogoPrefix(String logoPrefix) {
+        coachingStreamLogoPrefix = logoPrefix;
     }
 
     @Value("${coaching.institute.image.prefix}")
-    public static void setCoachingInstituteImagePrefix(String coachingInstituteImagePrefix) {
-        ConfigProperties.coachingInstituteImagePrefix = coachingInstituteImagePrefix;
+    public void setCoachingInstituteImagePrefix(String imagePrefix) {
+        coachingInstituteImagePrefix = imagePrefix;
     }
 
     @Value("${coaching.banner.image.prefix}")
-    public static void setCoachingBannerImagePrefix(String coachingBannerImagePrefix) {
-        ConfigProperties.coachingBannerImagePrefix = coachingBannerImagePrefix;
+    public void setCoachingBannerImagePrefix(String imagePrefix) {
+        coachingBannerImagePrefix = imagePrefix;
     }
 
     @Value("${coaching.course.feature.logo.prefix}")
-    public static void setCoachingCourseFeatureLogoPrefix(String coachingCourseFeatureLogoPrefix) {
-        ConfigProperties.coachingCourseFeatureLogoPrefix = coachingCourseFeatureLogoPrefix;
+    public void setCoachingCourseFeatureLogoPrefix(String logoPrefix) {
+        coachingCourseFeatureLogoPrefix = logoPrefix;
     }
 
     @Value("${coaching.topranker.image.prefix}")
-    public static void setCoachingTopRankerImagePrefix(String coachingTopRankerImagePrefix) {
-        ConfigProperties.coachingTopRankerImagePrefix = coachingTopRankerImagePrefix;
+    public void setCoachingTopRankerImagePrefix(String imagePrefix) {
+        coachingTopRankerImagePrefix = imagePrefix;
     }
 
     @Value("${education.asset.baseurl}")
