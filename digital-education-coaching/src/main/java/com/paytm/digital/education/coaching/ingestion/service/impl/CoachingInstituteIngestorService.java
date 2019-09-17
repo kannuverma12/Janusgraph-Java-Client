@@ -10,6 +10,7 @@ import com.paytm.digital.education.coaching.ingestion.service.IngestorServiceHel
 import com.paytm.digital.education.coaching.ingestion.transformer.IngestorCoachingInstituteTransformer;
 import com.paytm.digital.education.coaching.producer.controller.ProducerCoachingInstituteController;
 import com.paytm.digital.education.coaching.producer.model.dto.CoachingInstituteDTO;
+import com.paytm.digital.education.coaching.producer.model.embedded.KeyHighlight;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingInstituteDataRequest;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -38,6 +41,8 @@ public class CoachingInstituteIngestorService extends IngestorServiceHelper
     protected String coachingInstituteLogoPrefix;
     @Value("${coaching.institute.image.prefix}")
     protected String coachingInstituteImagePrefix;
+    @Value("${coaching.institute.highlightlogo.prefix}")
+    protected String coachingInstituteHighlightLogoPrefix;
 
     @Autowired
     private ProducerCoachingInstituteController producerCoachingInstituteController;
@@ -113,6 +118,22 @@ public class CoachingInstituteIngestorService extends IngestorServiceHelper
         request.setLogo(this.uploadFile(request.getLogo(), this.coachingInstituteLogoPrefix));
         request.setCoverImage(this.uploadFile(request.getCoverImage(),
                 this.coachingInstituteImagePrefix));
+
+        fillHighlightLogos(request);
+
         return request;
+    }
+
+    private void fillHighlightLogos(final CoachingInstituteDataRequest request)
+            throws CoachingBaseException {
+        final List<KeyHighlight> highlights = request.getHighlights();
+        if (!CollectionUtils.isEmpty(highlights)) {
+            for (final KeyHighlight highlight : highlights) {
+                if (!StringUtils.isEmpty(highlight.getLogo())) {
+                    highlight.setLogo(this.uploadFile(highlight.getLogo(),
+                            this.coachingInstituteHighlightLogoPrefix));
+                }
+            }
+        }
     }
 }

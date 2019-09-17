@@ -35,6 +35,7 @@ public class IngestorCoachingInstituteTransformer {
                 .officialAddress(convertAddress(form))
                 .establishmentYear(form.getYearOfEstablishment())
                 .brochureUrl(form.getBrochure())
+                .extraInfo1(form.getStepsToApply())
                 .build();
 
         log.info("CoachingInstituteDataRequest: {}", request);

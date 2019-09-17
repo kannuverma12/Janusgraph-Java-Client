@@ -128,7 +128,8 @@ public abstract class IngestorServiceHelper {
 
         return IngestorResponse.builder()
                 .countOfNewRecordsProcessed(newFormList.size())
-                .countOfFailedRecordsProcessed(failedDataList.size())
+                .countOfFailedRecordsProcessed(failedFormList == null ? 0 : failedFormList.size())
+                .countOfFailedRecords(failedDataList.size())
                 .build();
     }
 

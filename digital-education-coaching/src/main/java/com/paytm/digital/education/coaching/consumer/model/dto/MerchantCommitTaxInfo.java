@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MerchantCommitTaxInfo {
 
-    private Double CGST;
-    private Double SGST;
-    private Double IGST;
-    private Double UTGST;
+    private Double cgst;
+    private Double sgst;
+    private Double igst;
+    private Double utgst;
     private Double total;
 }

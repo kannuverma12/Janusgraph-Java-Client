@@ -1,6 +1,7 @@
 package com.paytm.digital.education.coaching.ingestion.transformer;
 
 import com.paytm.digital.education.coaching.ingestion.model.googleform.CoachingCourseForm;
+import com.paytm.digital.education.coaching.producer.model.embedded.ImportantDate;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCourseDataRequest;
 import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.CourseType;
@@ -9,6 +10,10 @@ import com.paytm.digital.education.enums.Language;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -67,7 +72,30 @@ public class IngestorCoachingCourseTransformer {
                 .howToUse2(form.getHowToUse2())
                 .howToUse3(form.getHowToUse3())
                 .howToUse4(form.getHowToUse4())
+                .importantDates(buildImpDates(form))
                 .isEnabled(IngestorCommonTransformer.convertStringToBoolean(form.getStatusActive()))
                 .build();
+    }
+
+    private static List<ImportantDate> buildImpDates(final CoachingCourseForm form) {
+        final List<ImportantDate> importantDateList = new ArrayList<>();
+
+        if (!StringUtils.isEmpty(form.getImportantDateKey1())
+                && !StringUtils.isEmpty(form.getImportantDateVal1())) {
+            importantDateList.add(new ImportantDate(form.getImportantDateKey1(),
+                    form.getImportantDateVal1()));
+        }
+        if (!StringUtils.isEmpty(form.getImportantDateKey2())
+                && !StringUtils.isEmpty(form.getImportantDateVal2())) {
+            importantDateList.add(new ImportantDate(form.getImportantDateKey2(),
+                    form.getImportantDateVal2()));
+        }
+        if (!StringUtils.isEmpty(form.getImportantDateKey3())
+                && !StringUtils.isEmpty(form.getImportantDateVal3())) {
+            importantDateList.add(new ImportantDate(form.getImportantDateKey3(),
+                    form.getImportantDateVal3()));
+        }
+
+        return importantDateList;
     }
 }

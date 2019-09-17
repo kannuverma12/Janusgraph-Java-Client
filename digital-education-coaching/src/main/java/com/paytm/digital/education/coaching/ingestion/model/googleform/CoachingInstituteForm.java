@@ -25,6 +25,7 @@ public class CoachingInstituteForm {
 
     private String coverImage;
     private String logo;
+
     private String streamIds;
     private String examIds;
     private String courseTypes;
@@ -56,8 +57,8 @@ public class CoachingInstituteForm {
     private String faq3;
     private String faqAns3;
 
-    private String extraInfo1;
-    private String extraInfo2;
+    private String paytmMerchantId;
+    private String paytmProductId;
 
     private String  statusActive;
     private Integer globalPriority;

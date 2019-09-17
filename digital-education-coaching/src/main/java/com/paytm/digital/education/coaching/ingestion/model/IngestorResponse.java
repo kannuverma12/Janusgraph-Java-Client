@@ -13,4 +13,5 @@ public class IngestorResponse {
 
     private long countOfNewRecordsProcessed;
     private long countOfFailedRecordsProcessed;
+    private long countOfFailedRecords;
 }
