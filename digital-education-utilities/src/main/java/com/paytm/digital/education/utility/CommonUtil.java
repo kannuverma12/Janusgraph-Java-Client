@@ -310,6 +310,9 @@ public class CommonUtil {
     }
 
     public String convertNameToUrlDisplayName(String name) {
+        if (StringUtils.isEmpty(name)) {
+            return null;
+        }
         return name.replaceAll("[^a-zA-Z0-9]+", "-").toLowerCase();
     }
 }

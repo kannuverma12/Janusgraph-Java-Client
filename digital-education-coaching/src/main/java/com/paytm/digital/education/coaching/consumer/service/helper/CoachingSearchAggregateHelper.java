@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_CENTER_CITY;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_CENTER_STATE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_DURATION;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_EXAMS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_INSTITUTE;
@@ -98,6 +100,29 @@ public class CoachingSearchAggregateHelper {
             coachingInstituteAggregateData[i] = aggregateField;
         }
         return coachingInstituteAggregateData;
+    }
+
+    public AggregateField[] getCoachingCenterAggregateData() {
+        List<String> coachingCenterKeys =
+                Arrays.asList(COACHING_CENTER_CITY, COACHING_CENTER_STATE);
+        List<AggregationType> coachingCenterType =
+                Arrays.asList(TERMS, TERMS);
+        BucketSort countDescSort = BucketSort.builder().key(BucketAggregationSortParms.COUNT).order(
+                DataSortOrder.DESC).build();
+
+        List<BucketSort> coachingCenterSortOrder =
+                Arrays.asList(countDescSort, countDescSort);
+        AggregateField[] coachingCenterAggregateData =
+                new AggregateField[coachingCenterKeys.size()];
+
+        for (int i = 0; i < coachingCenterKeys.size(); i++) {
+            AggregateField aggregateField = new AggregateField();
+            aggregateField.setName(coachingCenterKeys.get(i));
+            aggregateField.setType(coachingCenterType.get(i));
+            aggregateField.setBucketsOrder(coachingCenterSortOrder.get(i));
+            coachingCenterAggregateData[i] = aggregateField;
+        }
+        return coachingCenterAggregateData;
     }
 
     public AggregateField[] getTopHitsAggregateData(String fieldName) {

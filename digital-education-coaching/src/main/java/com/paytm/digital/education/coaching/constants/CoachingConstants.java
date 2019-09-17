@@ -39,6 +39,10 @@ public class CoachingConstants {
     public static final String COACHING_INSTITUTE_STREAMS      = "stream_names";
     public static final String COACHING_INSTITUTE_EXAMS        = "exam_names";
     public static final String COACHING_INSTITUTE_COURSE_TYPES = "course_types";
+    public static final String COACHING_CENTER_CITY            = "city";
+    public static final String COACHING_CENTER_STATE           = "state";
+    public static final String COACHING_CENTER_LOCATION        = "location";
+    public static final String DISTANCE_KILOMETERS             = " km";
 
     public static final String EXAM_NOT_FOUND_ERROR                  =
             "No such exam exists. Please check your request.";
@@ -59,11 +63,11 @@ public class CoachingConstants {
     public static final String INSTITUTE_SHEET_RANGE_TEMPLATE        =
             "institute_sheet_range_template";
     public static final String INSTITUTE_SHEET_START_ROW             = "institute_sheet_start_row";
-    public static final String CENTRE_SHEET_ID                       = "centre_sheet_id";
-    public static final String CENTRE_SHEET_HEADER_RANGE             = "centre_sheet_header_range";
+    public static final String CENTRE_SHEET_ID                       = "center_sheet_id";
+    public static final String CENTRE_SHEET_HEADER_RANGE             = "center_sheet_header_range";
     public static final String CENTRE_SHEET_RANGE_TEMPLATE           =
-            "centre_sheet_range_template";
-    public static final String CENTRE_SHEET_START_ROW                = "centre_sheet_start_row";
+            "center_sheet_range_template";
+    public static final String CENTRE_SHEET_START_ROW                = "center_sheet_start_row";
     public static final String STUDENT_SELECTED_SHEET_ID             = "student_selected_sheet_id";
     public static final String STUDENT_SELECTED_SHEET_HEADER_RANGE   =
             "student_selected_sheet_header_range";
@@ -206,6 +210,7 @@ public class CoachingConstants {
         public static final String EXAM_INDEX                      = "education_search_exam_v2";
         public static final String SEARCH_INDEX_COACHING_COURSE    = "coaching_course_v1";
         public static final String SEARCH_INDEX_COACHING_INSTITUTE = "coaching_institute_v1";
+        public static final String SEARCH_INDEX_COACHING_CENTER    = "coaching_center_v1";
 
         public static final String IGNORE_GLOBAL_PRIORITY = "ignore_global_priority";
         public static final String IGNORE_ENTITY_POSITION = "ignore_entity_position";
@@ -213,6 +218,7 @@ public class CoachingConstants {
         public static final String EXAM_ANALYZER                      = "word_delimiter_analyzer_search";
         public static final String SEARCH_ANALYZER_COACHING_COURSE    = "word_delimiter_analyzer_search";
         public static final String SEARCH_ANALYZER_COACHING_INSTITUTE = "word_delimiter_analyzer_search";
+        public static final String SEARCH_ANALYZER_COACHING_CENTER    = "word_delimiter_analyzer_search";
 
         public static final String EXAM_SHORT_NAME                = "exam_short_name";
         public static final String EXAM_FULL_NAME                 = "exam_full_name";
@@ -227,15 +233,17 @@ public class CoachingConstants {
         public static final String APPLICATION                    = "APPLICATION";
         public static final String NON_TENTATIVE                  = "NON_TENTATIVE";
 
-        public static final String EXAM_IDS                       = "exam_ids";
-        public static final String EXAMS                          = "exams";
-        public static final String STREAM_IDS                     = "stream_ids";
-        public static final String STREAMS                        = "streams";
-        public static final String COACHING_INSTITUTE_ID          = "coaching_institute_id";
-        public static final String COACHING_INSTITUTE_BRAND       = "brand_name";
-        public static final Float  COACHING_INSTITUTE_BRAND_BOOST = 1F;
-        public static final String COACHING_COURSE_NAME           = "course_name";
-        public static final Float  COACHING_COURSE_NAME_BOOST     = 1F;
+        public static final String EXAM_IDS                         = "exam_ids";
+        public static final String EXAMS                            = "exams";
+        public static final String STREAM_IDS                       = "stream_ids";
+        public static final String STREAMS                          = "streams";
+        public static final String COACHING_INSTITUTE_ID            = "coaching_institute_id";
+        public static final String COACHING_INSTITUTE_BRAND         = "brand_name";
+        public static final Float  COACHING_INSTITUTE_BRAND_BOOST   = 1F;
+        public static final String COACHING_COURSE_NAME             = "course_name";
+        public static final Float  COACHING_COURSE_NAME_BOOST       = 1F;
+        public static final String COACHING_CENTER_NAME             = "official_name";
+        public static final Float  COACHING_CENTER_NAME_BRAND_BOOST = 1F;
 
         public static final String SEARCH_STREAM_PREFIX = "streams.";
         public static final String SEARCH_STREAM_SUFFIX = ".position";

@@ -3,6 +3,7 @@ package com.paytm.digital.education.coaching.consumer.service;
 import com.paytm.digital.education.coaching.consumer.model.request.SearchRequest;
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.builder.CoachingSearchResponseBuilder;
+import com.paytm.digital.education.coaching.es.model.CoachingCenterSearch;
 import com.paytm.digital.education.coaching.es.model.CoachingCourseSearch;
 import com.paytm.digital.education.coaching.es.model.CoachingInstituteSearch;
 import com.paytm.digital.education.coaching.es.model.ExamSearch;
@@ -59,6 +60,8 @@ public abstract class AbstractSearchService {
                 HierarchyIdentifierUtils.getClassHierarchy(ExamSearch.class));
         hierarchyMap.put(CoachingInstituteSearch.class,
                 HierarchyIdentifierUtils.getClassHierarchy(CoachingInstituteSearch.class));
+        hierarchyMap.put(CoachingCenterSearch.class,
+                HierarchyIdentifierUtils.getClassHierarchy(CoachingCenterSearch.class));
     }
 
 
@@ -204,7 +207,7 @@ public abstract class AbstractSearchService {
             ElasticResponse elasticResponse, ElasticRequest elasticRequest) {
         if (elasticRequest.isSearchRequest()) {
             Map<String, Map<String, Object>> propertyMap = null;
-            populateSearchResults(searchResponse, elasticResponse, propertyMap);
+            populateSearchResults(searchResponse, elasticResponse, propertyMap,elasticRequest);
             long total = elasticResponse.getTotalSearchResultsCount();
             searchResponse.setTotal(total);
         }
@@ -240,6 +243,7 @@ public abstract class AbstractSearchService {
     }
 
     protected abstract void populateSearchResults(SearchResponse searchResponse,
-            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties);
+            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties,
+            ElasticRequest elasticRequest);
 
 }

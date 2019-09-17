@@ -3,6 +3,7 @@ package com.paytm.digital.education.coaching.consumer.model.request;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.coaching.constants.CoachingConstants;
+import com.paytm.digital.education.coaching.es.model.GeoLocation;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.enums.EducationEntity;
@@ -11,6 +12,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -46,9 +48,6 @@ public class SearchRequest {
     @NotNull
     private Integer limit = CoachingConstants.Search.DEFAULT_SIZE;
 
-    @JsonProperty("clear_filter")
-    private boolean clearFilters = false;
-
     @JsonProperty("fetch_filter")
     @NotNull
     private Boolean fetchFilter = true;
@@ -67,5 +66,9 @@ public class SearchRequest {
 
     @JsonIgnore
     private Client client;
+
+    @Valid
+    @JsonProperty("location")
+    private GeoLocation geoLocation;
 
 }

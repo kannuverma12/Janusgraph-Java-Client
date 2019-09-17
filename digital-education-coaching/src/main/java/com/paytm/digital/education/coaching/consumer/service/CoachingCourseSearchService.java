@@ -118,7 +118,8 @@ public class CoachingCourseSearchService extends AbstractSearchService {
 
     @Override
     protected void populateSearchResults(SearchResponse searchResponse,
-            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties) {
+            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties,
+            ElasticRequest elasticRequest) {
         List<CoachingCourseSearch> coachingCourseSearches = elasticResponse.getDocuments();
         SearchResult searchResults = new SearchResult();
         if (!CollectionUtils.isEmpty(coachingCourseSearches)) {

@@ -16,6 +16,7 @@ public class SearchService {
     private CoachingCourseSearchService    coachingCourseSearchService;
     private CoachingInstituteSearchService coachingInstituteSearchService;
     private ExamSearchService              examSearchService;
+    private CoachingCenterSearchService    coachingCenterSearchService;
 
     public SearchResponse search(SearchRequest searchRequest, Long userId) throws Exception {
         long startTime = System.currentTimeMillis();
@@ -34,6 +35,8 @@ public class SearchService {
                 return coachingInstituteSearchService;
             case EXAM:
                 return examSearchService;
+            case COACHING_CENTER:
+                return coachingCenterSearchService;
             default:
                 throw new RuntimeException("Invalid entity requested.");
         }
