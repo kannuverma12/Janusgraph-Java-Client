@@ -202,6 +202,11 @@ public class CoachingConstants {
         public static final String GET_COCHING_AUTOSUGGESTIONS = "/autosuggest";
 
         public static final String LANDING_PAGE = "/page";
+
+        public static final String CHECKOUT_DATA = "/checkout-data";
+
+        public static final String VERIFY          = "/verify";
+        public static final String MERCHANT_NOTIFY = "/merchant-notify";
     }
 
 
@@ -215,10 +220,14 @@ public class CoachingConstants {
         public static final String IGNORE_GLOBAL_PRIORITY = "ignore_global_priority";
         public static final String IGNORE_ENTITY_POSITION = "ignore_entity_position";
 
-        public static final String EXAM_ANALYZER                      = "word_delimiter_analyzer_search";
-        public static final String SEARCH_ANALYZER_COACHING_COURSE    = "word_delimiter_analyzer_search";
-        public static final String SEARCH_ANALYZER_COACHING_INSTITUTE = "word_delimiter_analyzer_search";
-        public static final String SEARCH_ANALYZER_COACHING_CENTER    = "word_delimiter_analyzer_search";
+        public static final String EXAM_ANALYZER                      =
+                "word_delimiter_analyzer_search";
+        public static final String SEARCH_ANALYZER_COACHING_COURSE    =
+                "word_delimiter_analyzer_search";
+        public static final String SEARCH_ANALYZER_COACHING_INSTITUTE =
+                "word_delimiter_analyzer_search";
+        public static final String SEARCH_ANALYZER_COACHING_CENTER    =
+                "word_delimiter_analyzer_search";
 
         public static final String EXAM_SHORT_NAME                = "exam_short_name";
         public static final String EXAM_FULL_NAME                 = "exam_full_name";
@@ -287,6 +296,29 @@ public class CoachingConstants {
                 "Keep track of important dates like Last date of form submission, Examination date, etc.";
         public static final String LOGO        = "image_logo";
         public static final String BUTTON_TEXT = "View Dates";
+    }
+
+
+    public static class TransactionConstants {
+        public static final Float CONVENIENCE_FEE_PERCENTAGE       = 0F;
+        public static final Float CONVENIENCE_FEE_IGST_PERCENTAGE  = 0F;
+        public static final Float CONVENIENCE_FEE_CGST_PERCENTAGE  = 0F;
+        public static final Float CONVENIENCE_FEE_SGST_PERCENTAGE  = 0F;
+        public static final Float CONVENIENCE_FEE_UTGST_PERCENTAGE = 0F;
+
+        public static final Float ITEM_IGST_PERCENTAGE  = 0F;
+        public static final Float ITEM_CGST_PERCENTAGE  = 0F;
+        public static final Float ITEM_SGST_PERCENTAGE  = 0F;
+        public static final Float ITEM_UTGST_PERCENTAGE = 0F;
+
+        public static final Float TCS_IGST_PERCANTAGE  = 0F;
+        public static final Float TCS_CGST_PERCANTAGE  = 0F;
+        public static final Float TCS_SGST_PERCANTAGE  = 0F;
+        public static final Float TCS_UTGST_PERCANTAGE = 0F;
+
+        public static final Long SAC  = 999615L;
+        public static final Long SPIN = 400086L;
+        public static final Long DPIN = 400086L;
     }
 
 

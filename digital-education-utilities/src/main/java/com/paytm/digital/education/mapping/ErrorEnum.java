@@ -99,12 +99,14 @@ public enum ErrorEnum {
             HttpStatus.BAD_REQUEST, 0),
     INVALID_STREAM_NAME(4041, "Invalid stream name. Please provide a valid stream name.",
             HttpStatus.BAD_REQUEST, 0),
-    ENTITY_LIST_EMPTY(4042, "Atleast one entity is required.", HttpStatus.BAD_REQUEST, 0);
+    INVALID_CART_ITEMS(4042, "Invalid Cart Items. Please provide valid Cart Items",
+            HttpStatus.BAD_REQUEST, 0),
+    ENTITY_LIST_EMPTY(4043, "Atleast one entity is required.", HttpStatus.BAD_REQUEST, 0);
 
-    private final int internalCode;
-    private final String externalMessage;
+    private final int        internalCode;
+    private final String     externalMessage;
     private final HttpStatus httpStatus;
-    private final int numberOfArgs;
+    private final int        numberOfArgs;
 
     ErrorEnum(int internalCode, String externalMessage, HttpStatus httpStatus, int numberOfArgs) {
         this.internalCode = internalCode;
