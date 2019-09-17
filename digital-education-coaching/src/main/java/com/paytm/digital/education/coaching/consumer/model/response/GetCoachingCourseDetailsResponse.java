@@ -3,11 +3,11 @@ package com.paytm.digital.education.coaching.consumer.model.response;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.paytm.digital.education.coaching.consumer.model.dto.CoachingCourseFeature;
 import com.paytm.digital.education.coaching.consumer.model.dto.CoachingCourseImportantDate;
 import com.paytm.digital.education.coaching.consumer.model.dto.CoachingCourseSessionDetails;
 import com.paytm.digital.education.coaching.consumer.model.dto.Exam;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopRanker;
-import com.paytm.digital.education.database.embedded.CoachingCourseFeature;
 import com.paytm.digital.education.database.embedded.Currency;
 import com.paytm.digital.education.enums.CourseType;
 import lombok.Builder;
@@ -46,6 +46,7 @@ public class GetCoachingCourseDetailsResponse {
 
     private List<CoachingCourseSessionDetails> sessionDetails;
 
-    private String syllabus;
-    private String brochure;
+    private String       syllabus;
+    private String       brochure;
+    private List<String> sections;
 }

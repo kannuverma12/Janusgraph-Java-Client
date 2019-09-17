@@ -1,16 +1,20 @@
 package com.paytm.digital.education.coaching.consumer.service;
 
+import com.paytm.digital.education.coaching.consumer.model.dto.CoachingCourseFeature;
 import com.paytm.digital.education.coaching.consumer.model.dto.Exam;
 import com.paytm.digital.education.coaching.consumer.model.response.GetCoachingCourseDetailsResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingCourseData;
 import com.paytm.digital.education.coaching.consumer.service.helper.SearchDataHelper;
 import com.paytm.digital.education.coaching.consumer.transformer.CoachingCourseTransformer;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
+import com.paytm.digital.education.database.entity.CoachingCourseFeatureEntity;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
+import com.paytm.digital.education.database.repository.CoachingCourseFeatureRepository;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.BadRequestException;
+import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.CommonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,18 +33,17 @@ import java.util.Set;
 import static com.mongodb.QueryOperators.AND;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_IDS;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_INSTITUTE_PREFIX;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_TOP_RANKER_PREFIX;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_ID;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_FIELD_GROUP;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_COMPONENT;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_KEY;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_NAMESPACE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ID;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_PREFIX;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.NAME;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_IDS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_COURSE_ID_AND_URL_DISPLAY_KEY;
-import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 
 @Slf4j
 @Service
@@ -51,35 +54,43 @@ public class CoachingCourseService {
     private static final String AUXILIARY_EXAM  = "AUXILIARY_EXAM";
     private static final String TOP_RANKER_EXAM = "TOP_RANKER_EXAM";
 
-    private final CoachingCourseTransformer coachingCourseTransformer;
-    private final CommonMongoRepository     commonMongoRepository;
-    private final SearchDataHelper          searchDataHelper;
+    private static final List<String> COURSE_FIELDS     =
+            Arrays.asList("coaching_institute_id", "course_id", "name", "course_type",
+                    "description", "price", "currency", "primary_exam_ids", "auxiliary_exam_ids",
+                    "eligibility", "duration", "important_dates", "features", "inclusions",
+                    "session_details", "syllabus", "brochure", "classroom_lecture_count",
+                    "classroom_lecture_duration", "classroom_test_count",
+                    "classroom_teacher_student_ratio", "elearning_lecture_count",
+                    "elearning_lecture_duration", "elearning_online_test_count",
+                    "elearning_practice_paper_count", "test_count", "test_duration",
+                    "test_practice_paper_count", "distance_learning_assignment_count",
+                    "distance_learning_books_count", "distance_learning_solved_paper_count");
+    private static final List<String> EXAM_FIELDS       =
+            Arrays.asList("exam_id", "exam_full_name", "conducting_body");
+    private static final List<String> TOP_RANKER_FIELDS =
+            Arrays.asList("top_ranker_id", "institute_id", "center_id", "course_ids",
+                    "course_names", "exam_id", "exam_name", "student_name", "student_photo",
+                    "rank_obtained", "exam_year", "testimonial");
+    private static final List<String> INSTITUTE_FIELDS  =
+            Arrays.asList("brand_name", "logo");
+
+    private final CoachingCourseTransformer       coachingCourseTransformer;
+    private final CommonMongoRepository           commonMongoRepository;
+    private final SearchDataHelper                searchDataHelper;
+    private final PropertyReader                  propertyReader;
+    private final CoachingCourseFeatureRepository coachingCourseFeatureRepository;
 
     public GetCoachingCourseDetailsResponse getCourseDetailsByIdAndUrlDisplayKey(
             final long courseId, final String urlDisplayKey) {
-        final List<String> groupFields = this.commonMongoRepository.getFieldsByGroup(
-                CoachingCourseEntity.class, DETAILS_FIELD_GROUP);
-        if (CollectionUtils.isEmpty(groupFields)) {
-            log.error("Got empty groupFields for: {}", DETAILS_FIELD_GROUP);
-            throw new BadRequestException(INVALID_FIELD_GROUP,
-                    INVALID_FIELD_GROUP.getExternalMessage());
-        }
-
-        final List<String> courseFields = new ArrayList<>();
-        final List<String> examFields = new ArrayList<>();
-        final List<String> topRankerFields = new ArrayList<>();
-        final List<String> instituteFields = new ArrayList<>();
-        this.fillFields(groupFields, courseFields, examFields, topRankerFields, instituteFields);
-
         final CoachingCourseEntity course = this.fetchCourse(courseId, urlDisplayKey,
-                courseFields);
+                COURSE_FIELDS);
         if (course == null) {
             throw new BadRequestException(INVALID_COURSE_ID_AND_URL_DISPLAY_KEY,
                     INVALID_COURSE_ID_AND_URL_DISPLAY_KEY.getExternalMessage());
         }
 
         final CoachingInstituteEntity institute = this.fetchInstitute(
-                course.getCoachingInstituteId(), instituteFields);
+                course.getCoachingInstituteId(), INSTITUTE_FIELDS);
         if (institute == null) {
             log.warn("Got null CoachingInstitute for id: {}, courseId: {}",
                     course.getCoachingInstituteId(), courseId);
@@ -87,7 +98,7 @@ public class CoachingCourseService {
         }
 
         final List<TopRankerEntity> topRankerEntityList = this.fetchTopRankers(courseId,
-                topRankerFields, institute.getInstituteId());
+                TOP_RANKER_FIELDS, institute.getInstituteId());
 
         final Map<Long, String> examIdAndNameMap = new HashMap<>();
         Map<Long, String> courseIdAndNameMap = new HashMap<>();
@@ -103,7 +114,7 @@ public class CoachingCourseService {
         }
 
         final Map<String, List<Exam>> examTypeAndExamListMap = this.fetchExamTypeAndExamListMap(
-                course.getPrimaryExamIds(), course.getAuxiliaryExamIds(), examFields,
+                course.getPrimaryExamIds(), course.getAuxiliaryExamIds(), EXAM_FIELDS,
                 topRankerExamIds);
 
         if (!examTypeAndExamListMap.isEmpty()) {
@@ -115,33 +126,22 @@ public class CoachingCourseService {
             }
         }
 
+        final List<CoachingCourseFeature> coachingCourseFeatures =
+                this.fetchCoachingCourseFeatures(course.getCoachingInstituteId());
+
+        Map<String, Object> propertyMap = propertyReader.getPropertiesAsMapByKey(
+                DETAILS_PROPERTY_COMPONENT, DETAILS_PROPERTY_NAMESPACE, DETAILS_PROPERTY_KEY);
+
+        List<String> sections = (List<String>) propertyMap.getOrDefault(COURSE, new ArrayList<>());
+
         return this.buildResponse(course, institute, examTypeAndExamListMap, topRankerEntityList,
-                examIdAndNameMap, courseIdAndNameMap);
+                examIdAndNameMap, courseIdAndNameMap, coachingCourseFeatures, sections);
     }
 
-    private void fillFields(final List<String> groupFields, final List<String> courseFields,
-            final List<String> examFields, final List<String> topRankerFields,
-            final List<String> instituteFields) {
-        if (!CollectionUtils.isEmpty(groupFields)) {
-
-            for (String requestedField : groupFields) {
-
-                if (requestedField.contains(EXAM_PREFIX)) {
-                    examFields.add(requestedField.substring(EXAM_PREFIX.length()));
-
-                } else if (requestedField.contains(COACHING_TOP_RANKER_PREFIX)) {
-                    topRankerFields.add(requestedField.substring(
-                            COACHING_TOP_RANKER_PREFIX.length()));
-
-                } else if (requestedField.contains(COACHING_INSTITUTE_PREFIX)) {
-                    instituteFields.add(requestedField.substring(
-                            COACHING_INSTITUTE_PREFIX.length()));
-
-                } else {
-                    courseFields.add(requestedField);
-                }
-            }
-        }
+    private List<CoachingCourseFeature> fetchCoachingCourseFeatures(Long coachingInstituteId) {
+        List<CoachingCourseFeatureEntity> coachingCourseFeatureEntities =
+                coachingCourseFeatureRepository.findByInstituteId(coachingInstituteId);
+        return this.coachingCourseTransformer.convertCourseFeatures(coachingCourseFeatureEntities);
     }
 
     private CoachingCourseEntity fetchCourse(final long courseId,
@@ -268,11 +268,14 @@ public class CoachingCourseService {
         return topRankerEntityList;
     }
 
+
     private GetCoachingCourseDetailsResponse buildResponse(
             final CoachingCourseEntity course, final CoachingInstituteEntity institute,
             final Map<String, List<Exam>> examTypeAndExamListMap,
             final List<TopRankerEntity> topRankers, final Map<Long, String> examIdAndNameMap,
-            final Map<Long, String> courseIdAndNameMap) {
+            final Map<Long, String> courseIdAndNameMap,
+            List<CoachingCourseFeature> coachingCourseFeatures,
+            final List<String> sections) {
 
         return GetCoachingCourseDetailsResponse.builder()
                 .coachingInstituteId(course.getCoachingInstituteId())
@@ -293,9 +296,10 @@ public class CoachingCourseService {
                 .importantDates(this.coachingCourseTransformer.convertImportantDates(
                         course.getImportantDates()))
                 .sessionDetails(this.coachingCourseTransformer.convertSessionDetails(course))
-                //.courseFeatures(this.coachingCourseTransformer.convertCourseFeatures(course.getFeatureIds()))
+                .courseFeatures(coachingCourseFeatures)
                 .syllabus(course.getSyllabus())
                 .brochure(course.getBrochure())
+                .sections(sections)
                 .build();
     }
 

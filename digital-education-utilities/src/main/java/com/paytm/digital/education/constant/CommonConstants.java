@@ -7,6 +7,8 @@ public interface CommonConstants {
     String COACHING_TOP_EXAMS      = "coaching_top_exams";
     String LOGO                    = "logo";
     String COACHING_COURSES        = "coaching_courses";
+    String COACHING_COURSE_TYPES   = "coaching_course_types";
+    String COACHING_COURSE_FEATURE = "coaching_course_feature";
 
     //AutoSuggest constants
     String AUTOSUGGEST_INDEX    = "education_autosuggestion_v2";

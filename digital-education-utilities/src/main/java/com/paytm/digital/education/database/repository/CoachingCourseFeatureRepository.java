@@ -13,6 +13,7 @@ public interface CoachingCourseFeatureRepository
 
     CoachingCourseFeatureEntity findByCoachingCourseFeatureId(Long id);
 
-    List<CoachingCourseFeatureEntity> findByInstituteIdAndName(Long id,String name);
+    List<CoachingCourseFeatureEntity> findByInstituteIdAndName(Long id, String name);
 
+    List<CoachingCourseFeatureEntity> findByInstituteId(Long id);
 }

@@ -161,9 +161,13 @@ public class CoachingConstants {
 
     public static final String NON_TENTATIVE = "non_tentative";
 
-    public static final String EXAM_PLACEHOLDER            = "/exam_placeholder.svg";
-    public static final String INSTITUTE_PLACEHOLDER       = "/institute_placeholder.svg";
-    public static final String COACHING_COURSE_PLACEHOLDER = "/coaching_course_placeholder.svg";
+    public static final String EXAM_PLACEHOLDER                 = "/exam_placeholder.svg";
+    public static final String INSTITUTE_PLACEHOLDER            = "/institute_placeholder.svg";
+    public static final String COACHING_COURSE_PLACEHOLDER      =
+            "/coaching_course_placeholder.svg";
+    public static final String COACHING_COURSE_TYPE_PLACEHOLDER =
+            "/coaching_course_type_placeholder.svg";
+
 
 
     public static class S3RelativePath {

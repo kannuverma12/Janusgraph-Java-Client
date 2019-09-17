@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_COURSES;
+import static com.paytm.digital.education.constant.CommonConstants.COACHING_COURSE_FEATURE;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_STREAMS;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_EXAMS;
 import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES;
@@ -85,6 +86,12 @@ public class CommonUtil {
                         .append("/")
                         .append(ConfigProperties.getEnvProfile())
                         .append(ConfigProperties.getCoachingInstituteLogoPrefix());
+                break;
+            case COACHING_COURSE_FEATURE:
+                urlBuilder.append(ConfigProperties.getCoachingS3Path())
+                        .append("/")
+                        .append(ConfigProperties.getEnvProfile())
+                        .append(ConfigProperties.getCoachingCourseFeatureLogoPrefix());
                 break;
             default:
                 urlBuilder.append(ConfigProperties.getLogoImagePrefix());

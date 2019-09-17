@@ -5,6 +5,7 @@ import com.paytm.digital.education.coaching.ingestion.model.IngestorResponse;
 import com.paytm.digital.education.coaching.ingestion.service.IngestorService;
 import com.paytm.digital.education.coaching.ingestion.service.IngestorServiceFactory;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +22,10 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.U
 
 @RestController
 @RequestMapping(COACHING)
-@AllArgsConstructor
 public class IngestionController {
 
-    private final IngestorServiceFactory ingestorServiceFactory;
+    @Autowired
+    private IngestorServiceFactory ingestorServiceFactory;
     @Value("${coaching.ingestion.auth.token}")
     private String coachingIngestionAuthToken;
 
