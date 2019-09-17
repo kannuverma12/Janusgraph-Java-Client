@@ -216,7 +216,7 @@ public class DetailPageSectionHelper {
             List<String> fields = Arrays.asList(ATTRIBUTES);
 
             commonMongoRepository.updateFirst(query, fields, update,
-                    java.util.Properties.class);
+                    Properties.class);
         } else {
             return setErrorOrderResponse(orderResponse, "Sections update failed",
                     "Invalid section order passed");
