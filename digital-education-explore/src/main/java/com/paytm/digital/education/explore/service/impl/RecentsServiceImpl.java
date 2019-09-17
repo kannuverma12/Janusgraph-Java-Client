@@ -18,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Arrays;
 import java.util.Map;
@@ -26,6 +25,8 @@ import java.util.HashMap;
 import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.TimeoutException;
+
+import static com.paytm.digital.education.explore.constants.ExploreConstants.RECENT_SEARCHES_ID_SEPERATOR;
 
 @Slf4j
 @Service
@@ -38,7 +39,9 @@ public class RecentsServiceImpl implements RecentsSerivce {
 
     @Override
     public void recordSearches(String searchTerm, Long userId, EducationEntity educationEntity) {
-        String uniqueId = CommonUtil.convertNameToUrlDisplayName(searchTerm) + userId.toString();
+        String uniqueId = CommonUtil.convertNameToUrlDisplayName(searchTerm)
+                + RECENT_SEARCHES_ID_SEPERATOR + educationEntity.name().toLowerCase()
+                + RECENT_SEARCHES_ID_SEPERATOR + userId.toString();
         SearchHistoryEsDoc searchHistoryEsDoc = new SearchHistoryEsDoc();
         searchHistoryEsDoc.setId(uniqueId);
         searchHistoryEsDoc.setTerms(searchTerm);

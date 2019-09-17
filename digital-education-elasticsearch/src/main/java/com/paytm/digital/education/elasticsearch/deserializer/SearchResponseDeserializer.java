@@ -1,5 +1,6 @@
 package com.paytm.digital.education.elasticsearch.deserializer;
 
+import com.paytm.digital.education.elasticsearch.constants.ESConstants;
 import com.paytm.digital.education.elasticsearch.utils.JsonUtils;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
@@ -19,6 +20,7 @@ public class SearchResponseDeserializer {
 
         for (SearchHit searchHit : searchHits) {
             Map<String, Object> sourceAsMap = searchHit.getSourceAsMap();
+            sourceAsMap.put(ESConstants.SORT_FIELD, searchHit.getSortValues());
             T object = JsonUtils.convertValue(sourceAsMap, type);
             documents.add(object);
         }

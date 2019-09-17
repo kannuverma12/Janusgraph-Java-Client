@@ -12,6 +12,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.FEE
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_GENDER;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LINGUISTIC_MEDIUM;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OWNERSHIP;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_EXAM_DOMAIN;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_ACCEPTED;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_EDUCATION_LEVEL;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_ESTABLISHMENT_YEAR;
@@ -77,14 +78,14 @@ public class SearchAggregateHelper {
 
     public AggregateField[] getExamAggregateData() {
         List<String> examKeys =
-                Arrays.asList(LINGUISTIC_MEDIUM, SEARCH_EXAM_LEVEL);
+                Arrays.asList(LINGUISTIC_MEDIUM, SEARCH_EXAM_LEVEL, SEARCH_EXAM_DOMAIN);
         List<AggregationType> examAggregateType =
-                Arrays.asList(TERMS, TERMS);
+                Arrays.asList(TERMS, TERMS, TERMS);
         BucketSort countDescSort = BucketSort.builder().key(BucketAggregationSortParms.COUNT).order(
                 DataSortOrder.DESC).build();
 
         List<BucketSort> examSortOrder =
-                Arrays.asList(countDescSort, countDescSort);
+                Arrays.asList(countDescSort, countDescSort, countDescSort);
         AggregateField[] examAggregateData = new AggregateField[examKeys.size()];
 
         for (int i = 0; i < examKeys.size(); i++) {

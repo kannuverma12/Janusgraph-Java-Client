@@ -60,8 +60,15 @@ public class SearchQueryBuilderService {
     private void addSortFieldsIntoRequest(ElasticRequest request, SearchSourceBuilder source,
             Map<String, QueryBuilder> filterQueries) {
         for (SortField sortField : request.getSortFields()) {
+            List<Double> locationLatLong = request.getLocationLatLon();
             if (Objects.nonNull(sortField.getName())) {
-                source.sort(DataSortUtil.buildSort(sortField, filterQueries));
+                if (sortField.getName().equalsIgnoreCase(ESConstants.GEOLOCATION_FIELD)
+                        && !CollectionUtils.isEmpty(locationLatLong)
+                        && locationLatLong.size() == 2) {
+                    source.sort(DataSortUtil.buildGeoLocationSort(sortField, locationLatLong));
+                } else {
+                    source.sort(DataSortUtil.buildSort(sortField, filterQueries));
+                }
             }
         }
         /**

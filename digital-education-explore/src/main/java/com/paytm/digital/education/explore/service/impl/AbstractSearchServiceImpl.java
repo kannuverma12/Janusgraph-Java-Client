@@ -13,6 +13,8 @@ import com.paytm.digital.education.elasticsearch.models.Operator;
 import com.paytm.digital.education.elasticsearch.models.SearchField;
 import com.paytm.digital.education.elasticsearch.models.SortField;
 import com.paytm.digital.education.exception.EducationException;
+import com.paytm.digital.education.explore.enums.Client;
+import com.paytm.digital.education.explore.es.model.GeoLocation;
 import com.paytm.digital.education.explore.es.model.SchoolSearch;
 import com.paytm.digital.education.explore.es.model.SearchHistoryEsDoc;
 import com.paytm.digital.education.explore.es.model.InstituteSearch;
@@ -25,6 +27,7 @@ import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.builders.SearchResponseBuilder;
 import com.paytm.digital.education.explore.response.dto.search.ClassificationResponse;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
+import com.paytm.digital.education.explore.service.helper.CTAHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.property.reader.PropertyReader;
@@ -55,6 +58,8 @@ public abstract class AbstractSearchServiceImpl {
     private   SearchResponseBuilder           searchResponseBuilder;
     @Autowired
     private   PropertyReader                  propertyReader;
+
+    @Autowired CTAHelper ctaHelper;
 
     @PostConstruct
     private void generateLevelMap() {
@@ -87,6 +92,28 @@ public abstract class AbstractSearchServiceImpl {
                         "Applied filter is not present in filterQueryMap");
             }
         });
+        GeoLocation geoLocation = searchRequest.getGeoLocation();
+
+        if (geoLocation != null) {
+            validateGeoLocationRequest(geoLocation);
+        }
+    }
+
+    private void validateGeoLocationRequest(GeoLocation geoLocation) {
+        if (geoLocation.getLat() == null || geoLocation.getLon() == null) {
+            throw new EducationException(ErrorEnum.LAT_OR_LON_MISSING,
+                    "Latitude and longitude are mandatory in location.");
+        }
+
+        if (geoLocation.getLat() < -90 || geoLocation.getLat() > 90) {
+            throw new EducationException(ErrorEnum.LAT_INVALID,
+                    "Please provide valid latitude in request.");
+        }
+
+        if (geoLocation.getLon() < -180 || geoLocation.getLon() > 180) {
+            throw new EducationException(ErrorEnum.LON_INVALID,
+                    "Please provide valid longitude in request.");
+        }
     }
 
     protected <T> void populateSearchFields(SearchRequest searchRequest,
@@ -187,13 +214,13 @@ public abstract class AbstractSearchServiceImpl {
     protected void buildSearchResponse(SearchResponse searchResponse,
             ElasticResponse elasticResponse,
             ElasticRequest elasticRequest, String component, String filterNamespace,
-            String searchResultNamespace, Classification classificationData) {
+            String searchResultNamespace, Classification classificationData, Client client) {
         if (elasticRequest.isSearchRequest()) {
             Map<String, Map<String, Object>> propertyMap = null;
             if (StringUtils.isNotBlank(component)) {
                 propertyMap = propertyReader.getPropertiesAsMap(component, searchResultNamespace);
             }
-            populateSearchResults(searchResponse, elasticResponse, propertyMap);
+            populateSearchResults(searchResponse, elasticResponse, propertyMap, elasticRequest, client);
             long total = elasticResponse.getTotalSearchResultsCount();
             searchResponse.setTotal(total);
         }
@@ -243,6 +270,6 @@ public abstract class AbstractSearchServiceImpl {
     }
 
     protected abstract void populateSearchResults(SearchResponse searchResponse,
-            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties);
-
+            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties,
+            ElasticRequest elasticRequest, Client client);
 }

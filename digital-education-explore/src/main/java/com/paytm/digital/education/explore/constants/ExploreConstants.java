@@ -18,6 +18,8 @@ public interface ExploreConstants {
     int    DEFAULT_SIZE                = 10;
     int    DEFAULT_AUTOSUGGEST_SIZE    = 3;
     int    DEFAULT_AUTOSUGGEST_COMPARE = 10;
+    String SORT_DISTANCE_FIELD         = "location";
+    String DISTANCE_KILOMETERS         =  " km";
 
     ///// Exam Detail//////////
     String TENTATIVE     = "tentative";
@@ -134,7 +136,7 @@ public interface ExploreConstants {
     Float  EXAM_OFFICIAL_NAME_NGRAM_BOOST = 0.00001F;
     String DATE_TAB                       = "dates";
     String SYLLABUS_TAB                   = "syllabus";
-    String SEARCH_INDEX_INSTITUTE         = "education_search_institute_v2";
+    String SEARCH_INDEX_INSTITUTE         = "education_search_institute_v3";
     String SEARCH_ANALYZER_INSTITUTE      = "word_delimiter_analyzer";
     String SEARCH_NAMES                   = "names";
     String MAX_RANK                       = "max_rank";
@@ -162,6 +164,7 @@ public interface ExploreConstants {
     String EXAM_SEARCH_NAMESPACE       = "exam";
     String LINGUISTIC_MEDIUM           = "linguistic_medium";
     String SEARCH_EXAM_LEVEL           = "level";
+    String SEARCH_EXAM_DOMAIN          = "domain_name";
     String IGNORE_VALUES               = "ignore";
     String RANKING_STREAM_NAMESPACE    = "ranking_stream";
     String FACILITIES_MASTER_LIST      = "master_list";
@@ -281,7 +284,7 @@ public interface ExploreConstants {
     String EXAM_FOCUS_APP              = "exam_focus_app";
     String POPULAR_EXAMS_APP           = "popular_exams_app";
     String BROWSE_BY_EXAM_LEVEL        = "browse_by_exam_level";
-    String RECENT_SEARCHES_kAFKA_TOPIC = "recent_searches";
+    String RECENT_SEARCHES_kAFKA_TOPIC = "recent_searches_explore";
     String RECENT_SEARCHES_ES_INDEX    = "recent_searches";
     String RECENT_SEARCHES_ES_TYPE     = "education";
     String SEARCH_HISTORY_USERID       = "user_id";
@@ -289,6 +292,7 @@ public interface ExploreConstants {
     String SEARCH_HISTORY_UPDATEDAT    = "updated_at";
     int    DELETE_RECENTS_BATCH_SIZE   = 100;
     String RECENT_SEARCHES_ENTITY      = "entity";
+    String RECENT_SEARCHES_ID_SEPERATOR = "-";
 
     String CTA                  = "cta";
     String SELECTED             = "_selected";
@@ -298,7 +302,7 @@ public interface ExploreConstants {
     String SCHOOL_SEARCH_NAMESPACE = "school_search";
     String SCHOOL_FILTER_NAMESPACE = "school_filter";
     String SEARCH_ANALYZER_SCHOOL  = "word_delimiter_analyzer";
-    String SEARCH_INDEX_SCHOOL     = "education_search_school_v1";
+    String SEARCH_INDEX_SCHOOL     = "education_search_school_v2";
     String SCHOOL_FACILITY_KEY = "school_facility_map";
 
     String OTHER           = "Other";
@@ -321,4 +325,5 @@ public interface ExploreConstants {
     String SECTIONS                      = "sections";
     String NAME                          = "name";
     String FAILED                        = "failed";
+
 }

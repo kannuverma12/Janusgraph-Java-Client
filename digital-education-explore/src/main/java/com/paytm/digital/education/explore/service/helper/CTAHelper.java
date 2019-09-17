@@ -24,11 +24,15 @@ import java.util.Objects;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.explore.enums.Client.APP;
+import static com.paytm.digital.education.explore.enums.EducationEntity.EXAM;
+import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
 import static com.paytm.digital.education.explore.enums.EducationEntity.SCHOOL;
 import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST;
 import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLISTED_APP;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLISTED_EXAM_APP;
 import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLISTED_SCHOOL_APP;
 import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST_APP;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST_EXAM_APP;
 import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST_SCHOOL_APP;
 
 @Service
@@ -71,12 +75,22 @@ public class CTAHelper {
             ctas.add(getBrochureCTA(ctaInfoHolder.getBrochureUrl(), logosPerCta));
         }
 
-        ctas.add(getShortlistCTA(ctaInfoHolder, logosPerCta, client));
+        if (ctaInfoHolder.hasShortListFeature()) {
+            ctas.add(getShortlistCTA(ctaInfoHolder, logosPerCta, client));
+        }
 
         if (ctaInfoHolder.hasCompareFeature()) {
             if (!APP.equals(client)) {
                 ctas.add(getCompareCTA(logosPerCta));
             }
+        }
+
+        if (APP.equals(client) && StringUtils.isNotBlank(ctaInfoHolder.getFormId())) {
+            ctas.add(getFormsCTA(ctaInfoHolder.getFormId(), logosPerCta));
+        }
+
+        if (APP.equals(client) && Objects.nonNull(ctaInfoHolder.getCollegePredictorPid())) {
+            ctas.add(getPredictorCTA(ctaInfoHolder.getCollegePredictorPid(), logosPerCta));
         }
 
         addApplyNowCTAIfRequired(ctas, ctaInfoHolder, client, logosPerCta);
@@ -161,13 +175,23 @@ public class CTAHelper {
     }
 
     private String getAppShortListLabel(CTAInfoHolder ctaInfoHolder) {
-        return SCHOOL.equals(ctaInfoHolder.getCorrespondingEntity())
-                ? SHORTLIST_SCHOOL_APP : SHORTLIST_APP;
+        if (SCHOOL.equals(ctaInfoHolder.getCorrespondingEntity())) {
+            return SHORTLIST_SCHOOL_APP;
+        } else if (EXAM.equals(ctaInfoHolder.getCorrespondingEntity())) {
+            return SHORTLIST_EXAM_APP;
+        } else {
+            return SHORTLIST_APP;
+        }
     }
 
     private String getAppShortListedLabel(CTAInfoHolder ctaInfoHolder) {
-        return SCHOOL.equals(ctaInfoHolder.getCorrespondingEntity())
-                ? SHORTLISTED_SCHOOL_APP : SHORTLISTED_APP;
+        if (SCHOOL.equals(ctaInfoHolder.getCorrespondingEntity())) {
+            return SHORTLISTED_SCHOOL_APP;
+        } else if (EXAM.equals(ctaInfoHolder.getCorrespondingEntity())) {
+            return SHORTLISTED_EXAM_APP;
+        } else {
+            return SHORTLIST_APP;
+        }
     }
 
     private CTA getShortlistCTA(CTAInfoHolder ctaInfoHolder, Map<String, Object> logosPerCta,

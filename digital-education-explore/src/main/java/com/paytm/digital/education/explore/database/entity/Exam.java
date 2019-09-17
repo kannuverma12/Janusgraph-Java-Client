@@ -101,6 +101,9 @@ public class Exam {
     @Field("paytm_keys")
     private ExamPaytmKeys paytmKeys;
 
+    @JsonProperty("url_display_key")
+    private String urlDisplayKey;
+
     public Exam(long examId) {
         this.examId = examId;
     }

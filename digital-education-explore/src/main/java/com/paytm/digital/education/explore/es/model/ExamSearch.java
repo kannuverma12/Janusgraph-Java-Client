@@ -3,6 +3,7 @@ package com.paytm.digital.education.explore.es.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.explore.database.entity.ExamPaytmKeys;
 import lombok.Data;
 import java.util.List;
 
@@ -37,4 +38,8 @@ public class ExamSearch {
 
     @JsonProperty("domain_name")
     private List<String> domainName;
+
+    @JsonProperty("paytm_keys")
+    private ExamPaytmKeys paytmKeys;
+
 }

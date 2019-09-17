@@ -46,9 +46,21 @@ function transformSchool(dbDocument) {
     }
 
     targetSchool.area_name = dbDocument.area_name;
-    if (dbDocument.official_address !== undefined) {
-        targetSchool.state = dbDocument.official_address.state;
-        targetSchool.city = dbDocument.official_address.city;
+
+    if (dbDocument.address !== undefined) {
+        targetSchool.state = dbDocument.address.state;
+        targetSchool.city = dbDocument.address.city;
+
+        if(dbDocument.address.lat_lon !== undefined) {
+            var locationData = {};
+            var latLonArray = dbDocument.address.lat_lon.split(',');
+
+            if(latLonArray.length == 2) {
+                locationData.lat = latLonArray[0];
+                locationData.lon = latLonArray[1];
+                targetSchool.location = locationData;
+            }
+        }
     }
 
     targetSchool.year_of_estd = dbDocument.established_year;
@@ -58,6 +70,9 @@ function transformSchool(dbDocument) {
     }
 
     targetSchool.is_client = dbDocument.is_client;
+    if (dbDocument.paytm_keys) {
+        targetSchool.paytm_keys = dbDocument.paytm_keys;
+    }
 
     targetSchool.facilities = [];
     targetSchool.lang_medium = [];
@@ -77,6 +92,7 @@ function transformSchool(dbDocument) {
                 singleBoard.ownership = dbSchoolBoard.data.ownership;
             singleBoard.affiliation_type = dbSchoolBoard.data.affiliation_type;
             singleBoard.residential_status = dbSchoolBoard.data.residential_status;
+            singleBoard.brochure_url = dbSchoolBoard.data.school_brochure_link;
 
             if (dbSchoolBoard.data.school_facilities !== undefined) {
                 targetSchool.facilities = merge_array(targetSchool.facilities, dbSchoolBoard.data.school_facilities);

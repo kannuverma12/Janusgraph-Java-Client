@@ -83,14 +83,13 @@ public class DetailPageSectionHelper {
                     orderResponse.setStatus(SUCCESS);
                     orderResponse.setSectionOrder((List<String>) sectionMap.get(entity));
                 } else {
-                    orderResponse.setStatus(FAILED);
-                    orderResponse.setError("Sections order no found.");
-                    orderResponse.setMessage("No Entity Found.");
+
+                    return setErrorOrderResponse(orderResponse, "Sections order not found.",
+                            "No Entity Found.");
                 }
             } else {
-                orderResponse.setStatus(FAILED);
-                orderResponse.setError("Sections order no found.");
-                orderResponse.setMessage("No Entity Found.");
+                return setErrorOrderResponse(orderResponse, "Sections order not found.",
+                        "No Entity Found.");
             }
         } else if (page.equalsIgnoreCase(LANDING)) {
             Page pageEntity = pageRepository.getPageByName(entity);
@@ -104,15 +103,14 @@ public class DetailPageSectionHelper {
                     orderResponse.setSectionOrder(pageSectionNames);
                 }
             } else {
-                orderResponse.setStatus(FAILED);
-                orderResponse.setError("Sections order no found.");
-                orderResponse.setMessage("No Entity Found.");
-                log.info("No Entity Found.");
+
+                return setErrorOrderResponse(orderResponse, "Sections order not found.",
+                        "No Entity Found.");
             }
         } else {
-            orderResponse.setStatus(FAILED);
-            orderResponse.setError("Sections order no found.");
-            orderResponse.setMessage("Invalid Page.");
+
+            return setErrorOrderResponse(orderResponse, "Sections order not found.",
+                    "Invalid Page.");
         }
         if (CollectionUtils.isEmpty(orderResponse.getSectionOrder())) {
             orderResponse.setSectionOrder(Collections.emptyList());
@@ -130,14 +128,12 @@ public class DetailPageSectionHelper {
             } else if (page.equalsIgnoreCase(LANDING)) {
                 orderResponse = updateLandingSectionOrder(sectionOrderRequest);
             } else {
-                orderResponse.setStatus(FAILED);
-                orderResponse.setMessage("Sections update failed");
-                orderResponse.setError("Page not found");
+                return setErrorOrderResponse(orderResponse, "Page not found",
+                        "Sections update failed");
             }
         } else {
-            orderResponse.setStatus(FAILED);
-            orderResponse.setMessage("Sections update failed");
-            orderResponse.setError("Page not found");
+            return setErrorOrderResponse(orderResponse, "Page not found",
+                    "Sections update failed");
         }
         if (CollectionUtils.isEmpty(orderResponse.getSectionOrder())) {
             orderResponse.setSectionOrder(Collections.emptyList());
@@ -160,16 +156,13 @@ public class DetailPageSectionHelper {
                 update.set(SECTIONS, validatedSectionOrder);
                 commonMongoRepository.updateFirst(query, fields, update, Page.class);
             } else {
-                orderResponse.setStatus(FAILED);
-                orderResponse.setMessage("Sections update failed");
-                orderResponse.setError("Invalid section order passed");
-                return orderResponse;
+
+                return setErrorOrderResponse(orderResponse, "Sections update failed",
+                        "Invalid section order passed");
             }
         } else {
-            orderResponse.setStatus(FAILED);
-            orderResponse.setMessage("Sections update failed");
-            orderResponse.setError("Invalid Entity");
-            return orderResponse;
+            return setErrorOrderResponse(orderResponse, "Sections update failed",
+                    "Invalid Entity");
         }
 
         Page updatedPage = pageRepository.getPageByName(sectionOrderRequest.getEntity());
@@ -180,9 +173,8 @@ public class DetailPageSectionHelper {
                 orderResponse.setEntity(sectionOrderRequest.getEntity());
                 orderResponse.setSectionOrder(updatedPage.getSections());
             } else {
-                orderResponse.setStatus(FAILED);
-                orderResponse.setMessage("Sections update failed");
-                orderResponse.setError("Section order does not exists");
+                return setErrorOrderResponse(orderResponse, "Sections update failed",
+                        "Section order does not exists");
             }
         }
         return orderResponse;
@@ -226,10 +218,8 @@ public class DetailPageSectionHelper {
             commonMongoRepository.updateFirst(query, fields, update,
                     java.util.Properties.class);
         } else {
-            orderResponse.setStatus(FAILED);
-            orderResponse.setMessage("Sections update failed");
-            orderResponse.setError("Invalid section order passed");
-            return orderResponse;
+            return setErrorOrderResponse(orderResponse, "Sections update failed",
+                    "Invalid section order passed");
         }
 
         Properties properties = propertyRepository
@@ -266,5 +256,13 @@ public class DetailPageSectionHelper {
             }
         }
         return dbSections;
+    }
+
+    SectionOrderResponse setErrorOrderResponse(SectionOrderResponse orderResponse, String error,
+            String message) {
+        orderResponse.setStatus(FAILED);
+        orderResponse.setError(error);
+        orderResponse.setMessage(message);
+        return orderResponse;
     }
 }

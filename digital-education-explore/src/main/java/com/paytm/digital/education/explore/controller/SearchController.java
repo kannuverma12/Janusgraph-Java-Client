@@ -2,8 +2,10 @@ package com.paytm.digital.education.explore.controller;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EDUCATION_BASE_URL;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_ID;
+import static com.paytm.digital.education.explore.enums.Client.WEB;
 
 import com.paytm.digital.education.exception.BadRequestException;
+import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
@@ -32,14 +34,17 @@ public class SearchController {
 
     @PostMapping("/auth/v1/search")
     public @ResponseBody SearchResponse search(@RequestBody SearchRequest searchRequest,
-            @RequestHeader(value = "x-user-id", required = false) Long userId) throws Exception {
+            @RequestHeader(value = "x-user-id", required = false) Long userId,
+            @RequestHeader(value = "fe_client", defaultValue = "WEB",
+                    required = false) Client client) throws Exception {
         log.info("Search Request : {}", JsonUtils.toJson(searchRequest));
+        log.info("Client : " + client);
         exploreValidator.validateAndThrowException(searchRequest);
         if (searchRequest.getEntity().equals(EducationEntity.COURSE)) {
             CourseSearchValidator.validateRequest(searchRequest);
         }
 
-        SearchResponse searchResponse = searchServiceImpl.search(searchRequest, userId);
+        SearchResponse searchResponse = searchServiceImpl.search(searchRequest, userId, client);
         return searchResponse;
     }
 

@@ -45,6 +45,10 @@ public class School {
     @JsonProperty("official_address")
     private SchoolOfficialAddress officialAddress;
 
+    @Field("address")
+    @JsonProperty("address")
+    private SchoolOfficialAddress address;
+
     @Field("short_name")
     @JsonProperty("short_name")
     private String shortName;
@@ -102,6 +106,9 @@ public class School {
 
     @Field("paytm_keys")
     private SchoolPaytmKeys paytmKeys;
+
+    @JsonProperty("url_display_key")
+    private String urlDisplayKey;
 
     public School(String officialName, Long schoolId) {
         this.officialName = officialName;

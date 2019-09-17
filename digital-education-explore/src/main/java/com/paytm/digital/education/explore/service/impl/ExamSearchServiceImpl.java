@@ -33,6 +33,8 @@ import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
+import com.paytm.digital.education.explore.database.entity.ExamPaytmKeys;
+import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.es.model.Event;
 import com.paytm.digital.education.explore.es.model.ExamInstance;
@@ -59,6 +61,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.PostConstruct;
 
@@ -96,7 +99,7 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
         ElasticResponse elasticResponse = initiateSearch(elasticRequest, ExamSearch.class);
         SearchResponse searchResponse = new SearchResponse(searchRequest.getTerm());
         buildSearchResponse(searchResponse,elasticResponse, elasticRequest, EXPLORE_COMPONENT,
-                EXAM_FILTER_NAMESPACE, EXAM_SEARCH_NAMESPACE, null);
+                EXAM_FILTER_NAMESPACE, EXAM_SEARCH_NAMESPACE, null, searchRequest.getClient());
         return searchResponse;
     }
 
@@ -172,7 +175,8 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
 
     @Override
     protected void populateSearchResults(SearchResponse searchResponse,
-            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties) {
+            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties,
+            ElasticRequest elasticRequest,  Client client) {
         List<ExamSearch> examSearches = elasticResponse.getDocuments();
         SearchResult searchResults = new SearchResult();
         if (!CollectionUtils.isEmpty(examSearches)) {
@@ -201,6 +205,12 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
                     }
                     dataAvailable.add(DATE_TAB);
                 }
+                if (Objects.nonNull(examSearch.getPaytmKeys())) {
+                    ExamPaytmKeys examPaytmKeys = examSearch.getPaytmKeys();
+                    examData.setCollegePredictorPid(examPaytmKeys.getCollegePredictorId());
+                    examData.setFormId(examPaytmKeys.getFormId());
+                }
+                examData.setCtaList(ctaHelper.buildCTA(examData, client));
                 examData.setDataAvailable(dataAvailable);
                 examDataList.add(examData);
             });
