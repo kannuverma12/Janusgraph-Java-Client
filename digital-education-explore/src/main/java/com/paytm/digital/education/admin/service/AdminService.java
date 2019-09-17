@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface AdminService {
 
-    List<DocumentUploadResponse> uploadDocument(List<MultipartFile> files, String type, String prefix);
+    List<DocumentUploadResponse> uploadDocument(List<MultipartFile> files, String type,
+            String prefix, Long entityId);
 
 }

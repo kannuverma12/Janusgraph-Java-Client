@@ -31,6 +31,7 @@ public class AdminController {
     @PostMapping("/auth/admin/v1/file-upload")
     public List<DocumentUploadResponse> fileUpload(@RequestParam("files") List<MultipartFile> files,
             @RequestParam("entity") String entity,
+            @RequestParam("entity-id") Long entityId,
             @RequestParam("relative-url") String relativeUrl,
             @RequestHeader("x-user-id") Long userId) {
         log.info("User : {} going to upload files for entity : {} .", userId, entity);
@@ -44,7 +45,7 @@ public class AdminController {
             throw new BadRequestException(INVALID_UPLOAD_REQUEST,
                     INVALID_UPLOAD_REQUEST.getExternalMessage());
         }
-        return adminService.uploadDocument(files, entity, relativeUrl);
+        return adminService.uploadDocument(files, entity, relativeUrl, entityId);
     }
 
 
