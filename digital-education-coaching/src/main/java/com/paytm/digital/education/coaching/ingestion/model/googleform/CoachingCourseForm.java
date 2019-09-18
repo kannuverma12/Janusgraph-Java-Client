@@ -26,6 +26,7 @@ public class CoachingCourseForm {
     private String  levelOfEducation;
     private String  language;
     private String  syllabus;
+    private String courseCovers;
 
     private String howToUse1;
     private String howToUse2;

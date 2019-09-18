@@ -3,6 +3,7 @@ package com.paytm.digital.education.coaching.ingestion.transformer;
 import com.paytm.digital.education.coaching.ingestion.model.googleform.CoachingCourseForm;
 import com.paytm.digital.education.coaching.producer.model.embedded.ImportantDate;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCourseDataRequest;
+import com.paytm.digital.education.enums.CourseCover;
 import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.CourseType;
 import com.paytm.digital.education.enums.DurationType;
@@ -73,6 +74,7 @@ public class IngestorCoachingCourseTransformer {
                 .howToUse3(form.getHowToUse3())
                 .howToUse4(form.getHowToUse4())
                 .importantDates(buildImpDates(form))
+                .courseCover(CourseCover.fromString(form.getCourseCovers()))
                 .isEnabled(IngestorCommonTransformer.convertStringToBoolean(form.getStatusActive()))
                 .build();
     }
