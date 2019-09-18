@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.List;
+
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EDUCATION_BASE_URL;
 
 @Controller
@@ -24,9 +26,9 @@ public class RecentsController {
     public @ResponseBody SearchResponse recents(
             @RequestParam(value = "query", required = false) String query,
             @RequestParam(value = "size") int size,
-            @RequestParam(value = "entity", required = false) EducationEntity entity,
+            @RequestParam(value = "entity", required = false) List<EducationEntity> entities,
             @RequestHeader(value = "x-user-id") Long userId) {
-        return recentsSerivce.getRecentSearchTerms(query, userId, size, entity);
+        return recentsSerivce.getRecentSearchTerms(query, userId, size, entities);
     }
 
 
