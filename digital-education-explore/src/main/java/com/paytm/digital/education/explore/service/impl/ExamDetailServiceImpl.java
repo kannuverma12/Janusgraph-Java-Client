@@ -40,6 +40,7 @@ import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.service.helper.DetailPageSectionHelper;
 import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
+import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import com.paytm.digital.education.explore.service.helper.WidgetsDataHelper;
 import com.paytm.digital.education.explore.service.helper.CTAHelper;
 import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
@@ -62,16 +63,17 @@ import java.util.Objects;
 @Service
 public class ExamDetailServiceImpl {
 
-    private CommonMongoRepository   commonMongoRepository;
-    private ExamLogoHelper          examLogoHelper;
-    private ExamInstanceHelper      examInstanceHelper;
-    private PropertyReader          propertyReader;
-    private DerivedAttributesHelper derivedAttributesHelper;
-    private DetailPageSectionHelper detailPageSectionHelper;
-    private BannerDataHelper        bannerDataHelper;
-    private WidgetsDataHelper       widgetsDataHelper;
-    private LeadDetailHelper        leadDetailHelper;
-    private CTAHelper               ctaHelper;
+    private CommonMongoRepository    commonMongoRepository;
+    private ExamLogoHelper           examLogoHelper;
+    private ExamInstanceHelper       examInstanceHelper;
+    private PropertyReader           propertyReader;
+    private DerivedAttributesHelper  derivedAttributesHelper;
+    private DetailPageSectionHelper  detailPageSectionHelper;
+    private BannerDataHelper         bannerDataHelper;
+    private WidgetsDataHelper        widgetsDataHelper;
+    private LeadDetailHelper         leadDetailHelper;
+    private CTAHelper                ctaHelper;
+    private SubscriptionDetailHelper subscriptionDetailHelper;
 
     private static int EXAM_PREFIX_LENGTH = EXAM_PREFIX.length();
 
@@ -82,6 +84,7 @@ public class ExamDetailServiceImpl {
         ExamDetail examDetail = getExamDetail(entityId, examUrlKey, fieldGroup, fields, client);
         if (userId != null && userId > 0) {
             updateInterested(examDetail, userId);
+            updateShortlist(examDetail, userId);
         }
         List<CTA> ctas = ctaHelper.buildExamCTA(examDetail, client);
         if (!CollectionUtils.isEmpty(ctas)) {
@@ -316,7 +319,19 @@ public class ExamDetailServiceImpl {
         examDetail.setWidgets(widgetsDataHelper.getWidgets(entityName, exam.getExamId(),
                 getDomainName(exam.getDomains())
         ));
+
         return examDetail;
+    }
+
+    private void updateShortlist(ExamDetail examDetail,
+            Long userId) {
+        List<Long> examIds = new ArrayList<>();
+        examIds.add(examDetail.getExamId());
+
+        List<Long> subscribedEntities = subscriptionDetailHelper
+                .getSubscribedEntities(EXAM, userId, examIds);
+
+        examDetail.setShortlisted(!CollectionUtils.isEmpty(subscribedEntities));
     }
 
     private String getDomainName(List<String> domains) {

@@ -176,13 +176,13 @@ public class SchoolDetailServiceImpl implements SchoolService {
             addSimilarSchoolsInResponse(schoolDetail, school);
 
             if (Objects.nonNull(userId) && userId > 0) {
-                updateShortist(schoolDetail, SCHOOL, userId);
+                updateShortList(schoolDetail, SCHOOL, userId);
             }
         }
         return schoolDetail;
     }
 
-    private void updateShortist(SchoolDetail schoolDetail, EducationEntity educationEntity,
+    private void updateShortList(SchoolDetail schoolDetail, EducationEntity educationEntity,
             Long userId) {
         List<Long> schoolIds = new ArrayList<>();
         schoolIds.add(schoolDetail.getSchoolId());
