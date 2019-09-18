@@ -2,6 +2,7 @@ package com.paytm.digital.education.explore.service.impl;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.paytm.digital.education.config.SchoolConfig;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.constants.SchoolConstants;
@@ -9,6 +10,7 @@ import com.paytm.digital.education.explore.database.entity.Board;
 import com.paytm.digital.education.explore.database.entity.BoardData;
 import com.paytm.digital.education.explore.database.entity.RelevantLink;
 import com.paytm.digital.education.explore.database.entity.School;
+import com.paytm.digital.education.explore.database.entity.SchoolGallery;
 import com.paytm.digital.education.explore.database.entity.SchoolOfficialAddress;
 import com.paytm.digital.education.explore.database.entity.SchoolPaytmKeys;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
@@ -35,7 +37,7 @@ import com.paytm.digital.education.explore.service.helper.SchoolDetailsResponseH
 import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 
-import com.paytm.digital.education.utility.CommonUtils;
+import com.paytm.digital.education.explore.utility.SchoolUtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -79,6 +81,8 @@ public class SchoolDetailServiceImpl implements SchoolService {
     private final SearchServiceImpl        searchService;
     private final int                      similarSchoolsCount;
     private final SubscriptionDetailHelper subscriptionDetailHelper;
+    private final SchoolConfig             schoolConfig;
+    private final SchoolUtilService        schoolUtilService;
 
     public SchoolDetailServiceImpl(
             CommonMongoRepository commonMongoRepository,
@@ -87,7 +91,9 @@ public class SchoolDetailServiceImpl implements SchoolService {
             CTAHelper ctaHelper,
             SearchServiceImpl searchService,
             @Value("${similar.schools.count}") int similarSchoolsCount,
-            SubscriptionDetailHelper subscriptionDetailHelper) {
+            SubscriptionDetailHelper subscriptionDetailHelper,
+            SchoolConfig schoolConfig,
+            SchoolUtilService schoolUtilService) {
         this.commonMongoRepository = commonMongoRepository;
         this.derivedAttributesHelper = derivedAttributesHelper;
         this.facilityDataHelper = facilityDataHelper;
@@ -95,6 +101,8 @@ public class SchoolDetailServiceImpl implements SchoolService {
         this.searchService = searchService;
         this.similarSchoolsCount = similarSchoolsCount;
         this.subscriptionDetailHelper = subscriptionDetailHelper;
+        this.schoolConfig = schoolConfig;
+        this.schoolUtilService = schoolUtilService;
     }
 
     public List<School> getSchools(List<Long> entityIds, List<String> groupFields) {
@@ -136,7 +144,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
         if (Objects.nonNull(boards) && boards.size() > 0) {
             BoardData boardData = boards.get(0).getData();
             schoolDetail.setShiftDetailsList(
-                    boardData.getShifts().stream().map(ShiftDetailsResponse::new)
+                    boardData.getShifts().stream().map(x -> new ShiftDetailsResponse(x, schoolConfig))
                             .collect(Collectors.toList()));
             schoolDetail.setFacultyDetail(fetchFacultyDetailsIfPresent(boardData));
             schoolDetail.setFeesDetails(boardData.getFeesDetails());
@@ -152,7 +160,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
             ).collect(Collectors.toList());
             schoolDetail.setImportantDateSections(importantDates);
             schoolDetail.setGallery(
-                    Optional.ofNullable(school.getGallery()).map(SchoolGalleryResponse::new)
+                    Optional.ofNullable(school.getGallery()).map(x -> new SchoolGalleryResponse(x, schoolUtilService))
                             .orElse(null));
             String entityName = SCHOOL.name().toLowerCase();
             schoolDetail.setDerivedAttributes(
@@ -256,6 +264,8 @@ public class SchoolDetailServiceImpl implements SchoolService {
         FacultyDetail facultyDetail = new FacultyDetail(numberOfTeachers, studentRatio);
         facultyDetail.setNoOfTrainedTeachers(numberOfTrainedTeachers);
         facultyDetail.setNoOfUntrainedTeachers(numberOfUntrainedTeachers);
+        facultyDetail.setTotalTeachersImageUrl(schoolConfig.getTotalTeachersImageURL());
+        facultyDetail.setStudentToTeacherRatioImageUrl(schoolConfig.getStudentToTeachersImageURL());
         return facultyDetail;
     }
 
@@ -271,12 +281,9 @@ public class SchoolDetailServiceImpl implements SchoolService {
             generalInformation.setOfficialWebsiteLink(getOfficialWebsiteLinkFromData(boardData));
             generalInformation.setOfficialName(school.getOfficialName());
             generalInformation.setShortName(school.getShortName());
-            final String logoUrl = school.getGallery().getLogo();
-            generalInformation.setLogo(
-                    StringUtils.isNotBlank(logoUrl)
-                            ?
-                            CommonUtils.addCDNPrefixAndEncode(logoUrl) : ""
-            );
+            final String logoUrl =
+                    Optional.ofNullable(school.getGallery()).map(SchoolGallery::getLogo).orElse(null);
+            generalInformation.setLogo(schoolUtilService.buildLogoFullPathFromRelativePath(logoUrl));
             generalInformation.setCity(school.getAddress().getCity());
             generalInformation.setState(school.getAddress().getState());
             return generalInformation;

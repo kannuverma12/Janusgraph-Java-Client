@@ -1,5 +1,6 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import com.paytm.digital.education.config.SchoolConfig;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.CrossField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
@@ -80,6 +81,7 @@ public class SchoolSearchServiceImpl extends AbstractSearchServiceImpl {
     private static Map<String, Float>           locationSearchFieldKeys;
     private        SearchAggregateHelper        searchAggregateHelper;
     private        PropertyReader               propertyReader;
+    private        SchoolConfig                 schoolConfig;
     private static DecimalFormat                df = new DecimalFormat("#.#");
 
     @PostConstruct
@@ -203,11 +205,12 @@ public class SchoolSearchServiceImpl extends AbstractSearchServiceImpl {
                 schoolSearchData.setOfficialName(schoolSearch.getOfficialName());
                 schoolSearchData.setUrlDisplayName(
                         CommonUtil.convertNameToUrlDisplayName(schoolSearch.getOfficialName()));
-                if (StringUtils.isNotBlank(schoolSearch.getImageLink())) {
-                    schoolSearchData
-                            .setLogoUrl(CommonUtil.getLogoLink(schoolSearch.getImageLink(),
-                                    EducationEntity.SCHOOL));
-                }
+                schoolSearchData.setLogoUrl(
+                        StringUtils.isBlank(schoolSearch.getImageLink())
+                                ? schoolConfig.getSchoolPlaceholderLogoURL() :
+                                CommonUtil.getLogoLink(schoolSearch.getImageLink(),
+                                        EducationEntity.SCHOOL)
+                );
                 OfficialAddress officialAddress =
                         CommonUtil.getOfficialAddress(schoolSearch.getState(),
                                 schoolSearch.getCity(), null, null, null);

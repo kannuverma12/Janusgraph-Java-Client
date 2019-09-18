@@ -5,9 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import static com.paytm.digital.education.explore.constants.SchoolConstants.STUDENT_TO_TEACHERS_IMAGE_URL;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.TOTAL_TEACHERS_IMAGE_URL;
-
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor
@@ -16,7 +13,7 @@ public class FacultyDetail {
     private Integer totalTeachers;
 
     @JsonProperty("total_teachers_image_url")
-    private String totalTeachersImageUrl = TOTAL_TEACHERS_IMAGE_URL;
+    private String totalTeachersImageUrl;
 
     @JsonProperty("student_to_teacher_ratio")
     private String studentToTeacherRatio;
@@ -28,7 +25,7 @@ public class FacultyDetail {
     private Integer noOfUntrainedTeachers;
 
     @JsonProperty("student_to_teacher_ratio_image_url")
-    private String studentToTeacherRatioImageUrl = STUDENT_TO_TEACHERS_IMAGE_URL;
+    private String studentToTeacherRatioImageUrl;
 
     public FacultyDetail(Integer totalTeachers, String studentToTeacherRatio) {
         this.totalTeachers = totalTeachers;
