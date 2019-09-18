@@ -48,7 +48,7 @@ public class CoachingInstituteDataRequest {
     @ApiModelProperty(value = "description about coaching institute")
     private String aboutInstitute;
 
-    @NotNull
+    @NotEmpty
     @ApiModelProperty(value = "url of institute logo image")
     private String logo;
 
@@ -96,7 +96,6 @@ public class CoachingInstituteDataRequest {
     @Valid
     private List<Faq> faqs;
 
-    @URL
     private String extraInfo1;
 
     @Size(max = 200)

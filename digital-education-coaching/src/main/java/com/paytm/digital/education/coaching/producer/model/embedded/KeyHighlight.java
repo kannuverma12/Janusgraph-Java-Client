@@ -21,7 +21,7 @@ import javax.validation.constraints.Size;
 @Validated
 public class KeyHighlight {
 
-    @URL
+    @NotEmpty
     private String logo;
 
     @Size(max = 30)
