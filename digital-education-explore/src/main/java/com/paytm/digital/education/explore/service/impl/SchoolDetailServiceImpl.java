@@ -117,8 +117,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
     public SchoolDetail getSchoolDetails(Long schoolId, Client client, String schoolName,
             List<String> fields, String fieldGroup, Long userId) {
         List<String> fieldsToBeFetched =
-                commonMongoRepository
-                        .getFieldsByGroupAndCollectioName(SchoolConstants.SCHOOL, fields,
+                getFieldsByGroupAndCollectioName(SchoolConstants.SCHOOL, fields,
                                 fieldGroup);
         School school =
                 commonMongoRepository
@@ -292,5 +291,18 @@ public class SchoolDetailServiceImpl implements SchoolService {
                 .map(RelevantLink::getRelevantLinkUrl)
                 .findFirst()
                 .orElse(null);
+    }
+
+    private List<String> getFieldsByGroupAndCollectioName(String collectionName, List<String> fields,
+            String fieldGroup) {
+        if (CollectionUtils.isEmpty(fields)) {
+            List<String> dbFields = commonMongoRepository.getFieldsByGroupAndCollectioName(collectionName, fieldGroup);
+            if (CollectionUtils.isEmpty(dbFields)) {
+                throw new BadRequestException(INVALID_FIELD_GROUP,
+                        INVALID_FIELD_GROUP.getExternalMessage());
+            }
+            return dbFields;
+        }
+        return fields;
     }
 }

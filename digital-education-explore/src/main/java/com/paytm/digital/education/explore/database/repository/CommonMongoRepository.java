@@ -90,15 +90,6 @@ public class CommonMongoRepository {
 
     }
 
-    @Cacheable(value = "field_group", unless = "#result == null")
-    public List<String> getFieldsByGroupAndCollectioName(String collectionName, List<String> fields,
-                                                         String fieldGroup) {
-        if (CollectionUtils.isEmpty(fields)) {
-            return getFieldsByGroupAndCollectioName(collectionName, fieldGroup);
-        }
-        return fields;
-    }
-
     @Cacheable(value = "entities", unless = "#result == null")
     public <T> List<T> getEntitiesByIdAndFields(String key, long entityId, Class<T> type,
             List<String> fields) {
