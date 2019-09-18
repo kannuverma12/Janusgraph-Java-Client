@@ -69,7 +69,6 @@ public class SearchServiceImpl {
                         updateShortlist(entity, userId, searchBaseDataMap, entityIds);
                     }
                     updateInterested(searchRequest.getEntity(), userId, searchBaseDataMap, entityIds);
-                    response.getEntityDataMap().clear();
                 }
 
             }
@@ -146,9 +145,17 @@ public class SearchServiceImpl {
             Map<Long, SearchBaseData> searchBaseDataMap, List<Long> entityIds) {
         List<Long> subscribedEntities =
                 subscriptionDetailHelper.getSubscribedEntities(educationEntity, userId, entityIds);
-        if (!CollectionUtils.isEmpty(subscribedEntities)) {
-            subscribedEntities
-                    .forEach(entityId -> searchBaseDataMap.get(entityId).setShortlisted(true));
+
+        if (!CollectionUtils.isEmpty(searchBaseDataMap)) {
+            searchBaseDataMap.entrySet()
+                    .forEach(entityEntry -> {
+                        if (!CollectionUtils.isEmpty(subscribedEntities) && subscribedEntities
+                                .contains(entityEntry.getKey())) {
+                            entityEntry.getValue().setShortlisted(true);
+                        } else {
+                            entityEntry.getValue().setShortlisted(false);
+                        }
+                    });
         }
     }
 
@@ -161,8 +168,17 @@ public class SearchServiceImpl {
             leadEntities =
                     leadDetailHelper.getInterestedLeadInstituteIds(userId, entityIds);
         }
-        if (!CollectionUtils.isEmpty(leadEntities)) {
-            leadEntities.forEach(entityId -> searchBaseDataMap.get(entityId).setInterested(true));
+
+        if (!CollectionUtils.isEmpty(searchBaseDataMap)) {
+            searchBaseDataMap.entrySet()
+                    .forEach(entityEntry -> {
+                        if (!CollectionUtils.isEmpty(leadEntities) && leadEntities
+                                .contains(entityEntry.getKey())) {
+                            entityEntry.getValue().setInterested(true);
+                        } else {
+                            entityEntry.getValue().setInterested(false);
+                        }
+                    });
         }
     }
 }
