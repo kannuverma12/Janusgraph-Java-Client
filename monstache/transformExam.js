@@ -189,6 +189,18 @@ module.exports = function(doc) {
 		targetExam.tabs_available.push('Syllabus');
 	}
 
+	if (doc.priority) {
+		targetExam.global_priority = doc.priority;
+	}
+
+	if (Array.isArray(doc.stream_id)) {
+		targetExam.stream_ids = doc.stream_id;
+		targetExam.streams = {};
+		for (var i = 0; i < doc.stream_id.length; i++) {
+			targetExam.streams[doc.stream_id[i]] = {"position": (i+1)};
+		}
+	}
+
 	console.log ("exam: " + targetExam.exam_id);
 	return targetExam;
 }
