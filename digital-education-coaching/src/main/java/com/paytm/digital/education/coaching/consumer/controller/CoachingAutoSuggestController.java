@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.Min;
 import java.util.List;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING;
@@ -27,7 +28,7 @@ public class CoachingAutoSuggestController {
     @GetMapping(value = V1 + GET_COCHING_AUTOSUGGESTIONS)
     public @ResponseBody AutoSuggestResponse autosuggestion(@RequestParam("query") String query,
             @RequestParam(value = "entities") List<EducationEntity> entities,
-            @RequestParam(value = "size") int size) {
+            @RequestParam(value = "size") @Min(1) int size) {
 
         return coachingAutoSuggestService.getSuggestions(query, entities, size);
     }
