@@ -32,6 +32,10 @@ public class CoachingCourseFeatureDAO {
         return coachingCourseFeatureRepository.findByCoachingCourseFeatureId(id);
     }
 
+    public List<CoachingCourseFeatureEntity> findAllByCoachingCourseFeatureId(List<Long> id) {
+        return coachingCourseFeatureRepository.findAllByCoachingCourseFeatureId(id);
+    }
+
     public List<CoachingCourseFeatureEntity> findByInstituteIdAndName(Long id, String name) {
         return coachingCourseFeatureRepository.findByInstituteIdAndName(id, name);
     }

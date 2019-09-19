@@ -5,7 +5,6 @@ import com.paytm.digital.education.coaching.producer.ConverterUtil;
 import com.paytm.digital.education.coaching.producer.model.request.StreamDataRequest;
 import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.exception.InvalidRequestException;
-import com.paytm.digital.education.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -33,7 +32,8 @@ public class StreamService {
     public StreamEntity update(StreamDataRequest request) {
         StreamEntity existingStreamEntity =
                 Optional.ofNullable(coachingStreamDAO.findByStreamId(request.getStreamId()))
-                        .orElseThrow(() -> new InvalidRequestException("stream id not present"));
+                        .orElseThrow(() -> new InvalidRequestException(
+                                "stream id not present : " + request.getStreamId()));
         ConverterUtil.setStreamData(request, existingStreamEntity);
         try {
             return coachingStreamDAO.save(existingStreamEntity);
@@ -42,8 +42,8 @@ public class StreamService {
         }
     }
 
-    public List<StreamEntity> findAllByStreamId(List<Long> streamIds) {
-        return coachingStreamDAO.findAllByStreamId(streamIds);
+    public StreamEntity findByStreamName(String name) {
+        return coachingStreamDAO.findByStreamName(name);
     }
 
     public StreamEntity findByStreamId(Long instituteId) {
@@ -56,7 +56,8 @@ public class StreamService {
         List<Long> invalidStreamIds = ids.stream().filter(id -> !existingStreamIds.contains(id))
                 .collect(Collectors.toList());
         if (!invalidStreamIds.isEmpty()) {
-            throw new InvalidRequestException("Invalid StreamEntity ids given : " + invalidStreamIds);
+            throw new InvalidRequestException(
+                    "Invalid StreamEntity ids given : " + invalidStreamIds);
         }
         return true;
     }

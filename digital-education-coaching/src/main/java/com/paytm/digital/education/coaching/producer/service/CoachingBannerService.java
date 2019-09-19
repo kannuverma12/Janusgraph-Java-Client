@@ -31,7 +31,8 @@ public class CoachingBannerService {
 
         CoachingBannerEntity coachingBannerExistingEntity = Optional.ofNullable(
                 coachingBannerDAO.findByCoachingBannerId(request.getCoachingBannerId()))
-                .orElseThrow(() -> new InvalidRequestException("Coaching Banner not present"));
+                .orElseThrow(() -> new InvalidRequestException(
+                        "banner id not present : " + request.getCoachingBannerId()));
         ConverterUtil.setCoachingBannerData(request, coachingBannerExistingEntity);
         try {
             return coachingBannerDAO.save(coachingBannerExistingEntity);

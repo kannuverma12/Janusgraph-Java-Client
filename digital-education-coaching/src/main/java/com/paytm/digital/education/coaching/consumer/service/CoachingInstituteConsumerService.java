@@ -56,22 +56,20 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_NA
 @AllArgsConstructor
 public class CoachingInstituteConsumerService {
 
+    private static final List<String> COACHING_INSTITUTE_FIELDS =
+            Arrays.asList("institute_id", "brand_name", "cover_image", "about_institute",
+                    "key_highlights", "streams", "exams", "course_types");
+    private static final List<String> EXAM_FIELDS               =
+            Arrays.asList("exam_id", "exam_full_name", "exam_short_name", "logo");
+    private static final List<String> STREAM_FIELDS             =
+            Arrays.asList("stream_id", "name", "logo");
     private final CommonMongoRepository commonMongoRepository;
     private final TopRankerRepository   topRankerRepository;
     private final SearchDataHelper      searchDataHelper;
     private final PropertyReader        propertyReader;
 
-    private static final List<String> COACHING_INSTITUTE_FIELDS =
-            Arrays.asList("institute_id", "brand_name", "cover_image", "about_institute",
-                    "key_highlights", "streams", "exams","course_types");
-    private static final List<String> EXAM_FIELDS               =
-            Arrays.asList("exam_id", "exam_full_name", "exam_short_name", "logo");
-    private static final List<String> STREAM_FIELDS             =
-            Arrays.asList("stream_id", "name", "logo");
-
     public GetCoachingInstituteDetailsResponse getCoachingInstituteDetails(long instituteId,
             String urlDisplayKey) {
-
         CoachingInstituteEntity coachingInstituteEntity =
                 commonMongoRepository.getEntityByFields(
                         INSTITUTE_ID, instituteId, CoachingInstituteEntity.class,
@@ -94,8 +92,9 @@ public class CoachingInstituteConsumerService {
         List<TopRanker> topRankerList = getTopRankersForInstitute(instituteId);
         List<CoachingCourseTypeResponse> listOfCourseType = new ArrayList<>();
         if (Objects.nonNull(coachingInstituteEntity.getCourseTypes())) {
-            for (CourseType courseType : coachingInstituteEntity.getCourseTypes()) {
-                listOfCourseType.add(CoachingCourseType.getStaticDataByCourseType(courseType));
+            for (String courseType : coachingInstituteEntity.getCourseTypes()) {
+                listOfCourseType.add(CoachingCourseType
+                        .getStaticDataByCourseType(CourseType.fromString(courseType)));
             }
         }
 

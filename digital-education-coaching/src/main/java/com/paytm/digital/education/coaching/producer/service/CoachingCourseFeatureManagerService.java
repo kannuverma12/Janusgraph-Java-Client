@@ -22,16 +22,18 @@ public class CoachingCourseFeatureManagerService {
     public CoachingCourseFeatureDTO create(CoachingCourseFeatureDataRequest request) {
         if (Objects.nonNull(request.getCoachingCourseFeatureId())) {
             throw new InvalidRequestException(
-                    "coaching course feature id should be null in post request");
+                    "request should not have id : " + request.getCoachingCourseFeatureId());
         }
         Optional.ofNullable(
                 coachingInstituteService.findByInstituteId(request.getInstituteId()))
-                .orElseThrow(() -> new InvalidRequestException("institute id not present"));
+                .orElseThrow(() -> new InvalidRequestException(
+                        "institute id not present : " + request.getInstituteId()));
         if (!CollectionUtils.isEmpty(coachingCourseFeatureService
                 .findByInstituteIdAndName(request.getInstituteId(),
                         request.getCoachingCourseFeatureName().getText()))) {
             throw new InvalidRequestException(
-                    "Feature name in specified institute already exists");
+                    "Feature name in specified institute already exists : " + request
+                            .getCoachingCourseFeatureName());
         }
         return CoachingCourseFeatureDTO.builder()
                 .coachingCourseFeatureId(
@@ -46,12 +48,14 @@ public class CoachingCourseFeatureManagerService {
 
         Optional.ofNullable(
                 coachingInstituteService.findByInstituteId(request.getInstituteId()))
-                .orElseThrow(() -> new InvalidRequestException("institute id not present"));
+                .orElseThrow(() -> new InvalidRequestException(
+                        "institute id not present : " + request.getInstituteId()));
         if (!CollectionUtils.isEmpty(coachingCourseFeatureService
                 .findByInstituteIdAndName(request.getInstituteId(),
                         request.getCoachingCourseFeatureName().getText()))) {
             throw new InvalidRequestException(
-                    "Feature name in specified institute already exists");
+                    "Feature name in specified institute already exists : " + request
+                            .getCoachingCourseFeatureName());
         }
         return CoachingCourseFeatureDTO.builder()
                 .coachingCourseFeatureId(

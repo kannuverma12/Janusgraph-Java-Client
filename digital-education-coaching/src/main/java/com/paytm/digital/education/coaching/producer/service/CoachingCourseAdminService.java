@@ -4,7 +4,6 @@ import com.paytm.digital.education.coaching.db.dao.CoachingCourseDAO;
 import com.paytm.digital.education.coaching.producer.ConverterUtil;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCourseDataRequest;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
-import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.exception.InvalidRequestException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +37,7 @@ public class CoachingCourseAdminService {
         CoachingCourseEntity coachingCourseEntity = Optional.ofNullable(
                 coachingCourseDAO.findByProgramId(coachingCourseDataRequest.getCourseId()))
                 .orElseThrow(() -> new InvalidRequestException(
-                        "coaching course id not present"));
+                        "course id not present : " + coachingCourseDataRequest.getCourseId()));
 
         ConverterUtil.setCoachingCourse(coachingCourseDataRequest, coachingCourseEntity);
         try {
@@ -54,7 +53,7 @@ public class CoachingCourseAdminService {
         List<Long> invalidCourseIds = ids.stream().filter(id -> !existingCourseIds.contains(id))
                 .collect(Collectors.toList());
         if (!invalidCourseIds.isEmpty()) {
-            throw new InvalidRequestException("Invalid course ids given : " + invalidCourseIds);
+            throw new InvalidRequestException("invalid course ids given : " + invalidCourseIds);
         }
         return true;
     }

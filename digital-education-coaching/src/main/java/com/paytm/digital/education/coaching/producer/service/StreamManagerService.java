@@ -23,12 +23,23 @@ public class StreamManagerService {
             throw new InvalidRequestException(
                     "request should not have id : " + request.getStreamId());
         }
+
+        if (Objects.nonNull(streamService.findByStreamName(request.getName()))) {
+            throw new InvalidRequestException(
+                    "name already present : " + request.getName());
+        }
+
         return StreamDTO.builder().streamId(streamService.create(request).getStreamId()).build();
     }
 
     public StreamDTO update(StreamDataRequest request) {
         Optional.ofNullable(request.getStreamId())
                 .orElseThrow(() -> new InvalidRequestException("stream id should be present"));
+
+        if (Objects.nonNull(streamService.findByStreamName(request.getName()))) {
+            throw new InvalidRequestException(
+                    "name already present : " + request.getName());
+        }
         return StreamDTO.builder().streamId(streamService.update(request).getStreamId()).build();
     }
 }

@@ -16,6 +16,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.URL;
+import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
@@ -56,11 +57,13 @@ public class CoachingCourseDataRequest {
     private CourseType courseType;
 
     @NotEmpty
+    @UniqueElements
     @PositiveElementsCollection
     @ApiModelProperty(value = "id of existing streams")
     private List<Long> streamIds;
 
     @NotEmpty
+    @UniqueElements
     @PositiveElementsCollection
     @ApiModelProperty(value = "id of primary exams")
     private List<Long> primaryExamIds;
@@ -132,6 +135,7 @@ public class CoachingCourseDataRequest {
     private Boolean isRankAnalysisAvailable;
 
     @NotEmpty
+    @UniqueElements
     @PositiveElementsCollection
     @ApiModelProperty(value = "course feature ids provided at institute level")
     private List<Long> courseFeatureIds;
@@ -163,12 +167,12 @@ public class CoachingCourseDataRequest {
     private Integer distanceLearningBooksCount;
 
     @Positive
-    @Max(value = 100)
+    @Max(value = 50)
     @ApiModelProperty(value = "provided solved paper count in the course")
     private Integer distanceLearningSolvedPaperCount;
 
     @Positive
-    @Max(value = 100)
+    @Max(value = 50)
     @ApiModelProperty(value = "provided assignments count in the course")
     private Integer distanceLearningAssignmentsCount;
 
@@ -227,6 +231,7 @@ public class CoachingCourseDataRequest {
     private String howToUse4;
 
     @Valid
+    @UniqueElements
     private List<ImportantDate> importantDates;
 
     @ApiModelProperty(value = "flag is enable/disable course, default is true")

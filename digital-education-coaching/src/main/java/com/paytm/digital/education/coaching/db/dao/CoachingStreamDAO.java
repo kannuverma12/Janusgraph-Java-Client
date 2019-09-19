@@ -34,4 +34,8 @@ public class CoachingStreamDAO {
     public List<StreamEntity> findAllByStreamId(@NonNull List<Long> ids) {
         return streamRepository.findAllByStreamId(ids);
     }
+
+    public StreamEntity findByStreamName(@NonNull String name) {
+        return streamRepository.findByStreamName(name) ;
+    }
 }

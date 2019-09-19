@@ -29,7 +29,8 @@ public class CoachingCenterManagerService {
         CoachingInstituteEntity existingCoachingInstitutes =
                 coachingInstituteService.findByInstituteId(request.getInstituteId());
         if (Objects.isNull(existingCoachingInstitutes)) {
-            throw new InvalidRequestException("coaching institute not present");
+            throw new InvalidRequestException(
+                    "institute id not present : " + request.getInstituteId());
         }
 
         return CoachingCenterDTO.builder()
@@ -45,7 +46,8 @@ public class CoachingCenterManagerService {
         CoachingInstituteEntity existingCoachingInstitutes =
                 coachingInstituteService.findByInstituteId(request.getInstituteId());
         if (Objects.isNull(existingCoachingInstitutes)) {
-            throw new InvalidRequestException("coaching institute not present");
+            throw new InvalidRequestException(
+                    "institute id not present : " + request.getInstituteId());
         }
 
         return CoachingCenterDTO.builder()

@@ -33,7 +33,8 @@ public class CoachingInstituteService {
         CoachingInstituteEntity existingIntitute =
                 Optional.ofNullable(
                         coachingInstituteDAO.findByInstituteId(request.getInstituteId()))
-                        .orElseThrow(() -> new InvalidRequestException("institute not present"));
+                        .orElseThrow(() -> new InvalidRequestException(
+                                "institute id not present : " + request.getInstituteId()));
 
         ConverterUtil.setCoachingInstituteData(request, existingIntitute);
         try {

@@ -1,8 +1,6 @@
 package com.paytm.digital.education.coaching.producer.service;
 
-import com.paytm.digital.education.coaching.constants.CoachingConstants;
 import com.paytm.digital.education.coaching.db.dao.TopRankerDAO;
-import com.paytm.digital.education.coaching.exeptions.ResourceNotPresentException;
 import com.paytm.digital.education.coaching.producer.ConverterUtil;
 import com.paytm.digital.education.coaching.producer.model.request.TopRankerDataRequest;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
@@ -38,7 +36,8 @@ public class TopRankerService {
         final TopRankerEntity existingTopRankerEntity =
                 Optional.ofNullable(
                         topRankerDAO.findByTopRankerId(request.getTopRankerId()))
-                        .orElseThrow(() -> new InvalidRequestException("top ranker id not present"));
+                        .orElseThrow(() -> new InvalidRequestException(
+                                "top ranker id not present : " + request.getTopRankerId()));
         ConverterUtil.setTopRanker(request, existingTopRankerEntity);
 
         try {

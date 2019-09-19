@@ -5,7 +5,6 @@ import com.paytm.digital.education.coaching.producer.ConverterUtil;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCenterDataRequest;
 import com.paytm.digital.education.database.entity.CoachingCenterEntity;
 import com.paytm.digital.education.exception.InvalidRequestException;
-import com.paytm.digital.education.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -32,12 +31,17 @@ public class CoachingCenterServiceNew {
     public CoachingCenterEntity updateCoachingCenter(CoachingCenterDataRequest request) {
         CoachingCenterEntity existingCenter =
                 Optional.ofNullable(coachingCenterDAO.findByCenterId(request.getCenterId()))
-                        .orElseThrow(() -> new InvalidRequestException("coaching center not present"));
+                        .orElseThrow(() -> new InvalidRequestException(
+                                "center id not present : " + request.getCenterId()));
         ConverterUtil.setCoachingCenter(request, existingCenter);
         try {
             return coachingCenterDAO.save(existingCenter);
         } catch (DataIntegrityViolationException ex) {
             throw new InvalidRequestException(ex.getMessage(), ex);
         }
+    }
+
+    public CoachingCenterEntity findByCenterId(Long instituteId) {
+        return coachingCenterDAO.findByCenterId(instituteId);
     }
 }

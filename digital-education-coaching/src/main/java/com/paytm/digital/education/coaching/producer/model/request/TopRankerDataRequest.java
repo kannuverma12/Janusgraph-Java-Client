@@ -3,6 +3,7 @@ package com.paytm.digital.education.coaching.producer.model.request;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.paytm.digital.education.enums.StudentCategory;
+import com.paytm.digital.education.validator.PastYear;
 import com.paytm.digital.education.validator.PositiveElementsCollection;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -10,7 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.URL;
+import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.Min;
@@ -50,6 +51,7 @@ public class TopRankerDataRequest {
 
     @NotEmpty
     @Size(max = 30)
+    @Pattern(regexp = "^[a-zA-Z]+[a-zA-Z ]*$")
     @ApiModelProperty(value = "name of student")
     private String studentName;
 
@@ -58,6 +60,7 @@ public class TopRankerDataRequest {
     private String studentPhoto;
 
     @NotEmpty
+    @UniqueElements
     @PositiveElementsCollection
     @ApiModelProperty(value = "course ids studied")
     private List<Long> courseStudied;
@@ -72,7 +75,7 @@ public class TopRankerDataRequest {
     private String rankObtained;
 
     @NotEmpty
-    @Pattern(regexp = "^(19|20)\\d{2}$")
+    @PastYear
     @ApiModelProperty(value = "exam year of the rank holder")
     private String examYear;
 

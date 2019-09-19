@@ -6,12 +6,14 @@ import com.paytm.digital.education.coaching.consumer.model.response.GetCoachingC
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingCourseData;
 import com.paytm.digital.education.coaching.consumer.service.helper.SearchDataHelper;
 import com.paytm.digital.education.coaching.consumer.transformer.CoachingCourseTransformer;
+import com.paytm.digital.education.database.embedded.Currency;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.database.entity.CoachingCourseFeatureEntity;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
 import com.paytm.digital.education.database.repository.CoachingCourseFeatureRepository;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.enums.CourseType;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.property.reader.PropertyReader;
@@ -282,11 +284,11 @@ public class CoachingCourseService {
                 .coachingInstituteName(institute.getBrandName())
                 .courseId(course.getCourseId())
                 .courseName(course.getName())
-                .courseType(course.getCourseType())
+                .courseType(CourseType.fromString(course.getCourseType()))
                 .courseLogo(institute.getLogo())
                 .courseDescription(course.getDescription())
                 .coursePrice(course.getPrice())
-                .currency(course.getCurrency())
+                .currency(Currency.valueOf(course.getCurrency()))
                 .targetExams(examTypeAndExamListMap.get(TARGET_EXAM))
                 .auxiliaryExams(examTypeAndExamListMap.get(AUXILIARY_EXAM))
                 .eligibility(course.getEligibility())

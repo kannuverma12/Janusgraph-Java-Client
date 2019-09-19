@@ -10,6 +10,7 @@ import org.hibernate.validator.constraints.URL;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Data
@@ -24,9 +25,11 @@ public class KeyHighlight {
     @NotEmpty
     private String logo;
 
+    @NotNull
     @Size(max = 30)
     private String key;
 
+    @NotNull
     @Size(max = 30)
     private String value;
 }

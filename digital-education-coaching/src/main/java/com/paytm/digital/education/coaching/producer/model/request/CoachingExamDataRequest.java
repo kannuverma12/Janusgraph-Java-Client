@@ -1,7 +1,9 @@
 package com.paytm.digital.education.coaching.producer.model.request;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.paytm.digital.education.enums.ExamType;
 import com.paytm.digital.education.validator.PositiveElementsCollection;
 import io.swagger.annotations.ApiModel;
@@ -10,9 +12,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.UniqueElements;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -54,11 +57,13 @@ public class CoachingExamDataRequest {
     private String examDescription;
 
     @NotEmpty
+    @UniqueElements
     @PositiveElementsCollection
     @ApiModelProperty(value = "id of existing coaching institute program")
     private List<Long> courseIds;
 
     @NotEmpty
+    @UniqueElements
     @PositiveElementsCollection
     @ApiModelProperty(value = "id of existing stream")
     private List<Long> streamIds;
@@ -73,7 +78,8 @@ public class CoachingExamDataRequest {
     private Double maximumMarks;
 
     @ApiModelProperty(value = "exam date")
-    // TODO : add validation as dd/mm/yy
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime examDate;
 
     @NotEmpty

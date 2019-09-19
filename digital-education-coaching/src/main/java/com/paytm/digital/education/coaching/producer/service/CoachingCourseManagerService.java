@@ -27,6 +27,9 @@ public class CoachingCourseManagerService {
     @Autowired
     private TargetExamService targetExamService;
 
+    @Autowired
+    private CoachingCourseFeatureService coachingCourseFeatureService;
+
 
     public CoachingCourseDTO save(CoachingCourseDataRequest coachingCourseDataRequest) {
         if (Objects.nonNull(coachingCourseDataRequest.getCourseId())) {
@@ -38,11 +41,13 @@ public class CoachingCourseManagerService {
                 coachingInstituteService
                         .findByInstituteId(coachingCourseDataRequest.getInstituteId());
         if (Objects.isNull(existingCoachingInstitutes)) {
-            throw new InvalidRequestException("coaching institute not present");
+            throw new InvalidRequestException(
+                    "institute id not present : " + coachingCourseDataRequest.getInstituteId());
         }
         streamService.isValidStreamIds(coachingCourseDataRequest.getStreamIds());
         targetExamService.isValidExamIds(coachingCourseDataRequest.getPrimaryExamIds());
-
+        coachingCourseFeatureService
+                .isValidCourseFeatureIds(coachingCourseDataRequest.getCourseFeatureIds());
         return CoachingCourseDTO
                 .builder().courseId(programService.save(coachingCourseDataRequest).getCourseId())
                 .build();
@@ -57,11 +62,13 @@ public class CoachingCourseManagerService {
                 coachingInstituteService
                         .findByInstituteId(coachingCourseDataRequest.getInstituteId());
         if (Objects.isNull(existingCoachingInstitutes)) {
-            throw new InvalidRequestException("coaching institute not present");
+            throw new InvalidRequestException(
+                    "institute id not present" + coachingCourseDataRequest.getInstituteId());
         }
         streamService.isValidStreamIds(coachingCourseDataRequest.getStreamIds());
         targetExamService.isValidExamIds(coachingCourseDataRequest.getPrimaryExamIds());
-
+        coachingCourseFeatureService
+                .isValidCourseFeatureIds(coachingCourseDataRequest.getCourseFeatureIds());
         return CoachingCourseDTO
                 .builder()
                 .courseId(programService.update(coachingCourseDataRequest).getCourseId()).build();

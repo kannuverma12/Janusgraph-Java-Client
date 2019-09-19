@@ -4,12 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.paytm.digital.education.database.embedded.Faq;
 import com.paytm.digital.education.database.embedded.KeyHighlight;
 import com.paytm.digital.education.database.embedded.OfficialAddress;
-import com.paytm.digital.education.enums.CourseType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -52,7 +48,7 @@ public class CoachingInstituteEntity extends Base {
     private List<Long> exams;
 
     @Field("course_types")
-    private List<CourseType> courseTypes;
+    private List<String> courseTypes;
 
     @Field("establishment_year")
     private String establishmentYear;

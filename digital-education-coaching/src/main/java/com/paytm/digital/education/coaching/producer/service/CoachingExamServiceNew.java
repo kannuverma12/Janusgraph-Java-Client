@@ -5,7 +5,6 @@ import com.paytm.digital.education.coaching.producer.ConverterUtil;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingExamDataRequest;
 import com.paytm.digital.education.database.entity.CoachingExamEntity;
 import com.paytm.digital.education.exception.InvalidRequestException;
-import com.paytm.digital.education.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -16,7 +15,7 @@ import java.util.Optional;
 public class CoachingExamServiceNew {
 
     @Autowired
-    private        CoachingExamDAO coachingExamDAO;
+    private CoachingExamDAO coachingExamDAO;
 
     public CoachingExamEntity insertCoachingExam(CoachingExamDataRequest request) {
 
@@ -32,7 +31,8 @@ public class CoachingExamServiceNew {
     public CoachingExamEntity updateCoachingExam(CoachingExamDataRequest request) {
         CoachingExamEntity existingCoachingExam =
                 Optional.ofNullable(coachingExamDAO.findByExamId(request.getCoachingExamId()))
-                        .orElseThrow(() -> new InvalidRequestException("coaching exam not present"));
+                        .orElseThrow(() -> new InvalidRequestException(
+                                "exam id not present : " + request.getCoachingExamId()));
         ConverterUtil.setCoachingExam(request, existingCoachingExam);
         try {
             return coachingExamDAO.save(existingCoachingExam);

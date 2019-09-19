@@ -7,6 +7,7 @@ import com.paytm.digital.education.coaching.producer.model.embedded.KeyHighlight
 import com.paytm.digital.education.coaching.producer.model.embedded.OfficialAddress;
 import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.CourseType;
+import com.paytm.digital.education.validator.PastYear;
 import com.paytm.digital.education.validator.PositiveElementsCollection;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -15,13 +16,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.URL;
+import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.List;
 
@@ -57,13 +58,16 @@ public class CoachingInstituteDataRequest {
     private String coverImage;
 
     @Valid
+    @UniqueElements
     private List<KeyHighlight> highlights;
 
     @NotEmpty
+    @UniqueElements
     @PositiveElementsCollection
     private List<Long> streamIds;
 
     @NotEmpty
+    @UniqueElements
     @PositiveElementsCollection
     private List<Long> examIds;
 
@@ -76,17 +80,19 @@ public class CoachingInstituteDataRequest {
     private Boolean isEnabled = Boolean.TRUE;
 
     @NotEmpty
+    @UniqueElements
     @ApiModelProperty(value = "elements from predefined course types")
     private List<CourseType> courseTypes;
 
     @NotEmpty
+    @UniqueElements
     @ApiModelProperty(value = "elements from predefined course levels")
     private List<CourseLevel> courseLevels;
 
     @Valid
     private OfficialAddress officialAddress;
 
-    @Pattern(regexp = "^(19|20)\\d{2}$")
+    @PastYear
     private String establishmentYear;
 
     @URL
@@ -94,6 +100,7 @@ public class CoachingInstituteDataRequest {
     private String brochureUrl;
 
     @Valid
+    @UniqueElements
     private List<Faq> faqs;
 
     private String extraInfo1;

@@ -23,7 +23,6 @@ public class StreamEntity extends Base {
     @Indexed(unique = true)
     private Long streamId;
 
-    @Indexed(unique = true)
     private String name;
 
     private String logo;

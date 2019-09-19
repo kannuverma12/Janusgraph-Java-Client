@@ -1,7 +1,6 @@
 package com.paytm.digital.education.database.entity;
 
-import com.paytm.digital.education.enums.ExamType;
-import lombok.Builder;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
@@ -12,10 +11,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 @Data
 @NoArgsConstructor
@@ -35,7 +30,7 @@ public class CoachingExamEntity extends Base {
     private Long instituteId;
 
     @Field("exam_type")
-    private ExamType examType;
+    private String examType;
 
     @Field("exam_name")
     private String examName;

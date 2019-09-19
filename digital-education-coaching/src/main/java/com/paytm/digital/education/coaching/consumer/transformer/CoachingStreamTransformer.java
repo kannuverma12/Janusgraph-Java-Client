@@ -23,7 +23,7 @@ public class CoachingStreamTransformer {
                         .courseName(coachingCourseEntity.getName())
                         .courseType(
                                 Objects.nonNull(coachingCourseEntity.getCourseType())
-                                        ? coachingCourseEntity.getCourseType().getText() :
+                                        ? coachingCourseEntity.getCourseType() :
                                         null)
                         .duration(coachingCourseEntity.getDuration())
                         .eligibility(coachingCourseEntity.getEligibility())

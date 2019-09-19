@@ -1,8 +1,6 @@
 package com.paytm.digital.education.coaching.producer.service;
 
-import com.paytm.digital.education.coaching.constants.CoachingConstants;
 import com.paytm.digital.education.coaching.db.dao.TargetExamDAO;
-import com.paytm.digital.education.coaching.exeptions.ResourceNotPresentException;
 import com.paytm.digital.education.coaching.producer.ConverterUtil;
 import com.paytm.digital.education.coaching.producer.model.request.TargetExamUpdateRequest;
 import com.paytm.digital.education.database.entity.Exam;
@@ -25,7 +23,8 @@ public class TargetExamService {
 
         Exam existingExam =
                 Optional.ofNullable(targetExamDAO.findByExamId(request.getExamId()))
-                        .orElseThrow(() -> new InvalidRequestException("exam id not present"));
+                        .orElseThrow(() -> new InvalidRequestException(
+                                "exam id not present : " + request.getExamId()));
         ConverterUtil.setExamUpdateData(request, existingExam);
         try {
             return targetExamDAO.save(existingExam);

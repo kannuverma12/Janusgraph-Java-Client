@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.Min;
@@ -31,6 +32,7 @@ public class TargetExamUpdateRequest {
     private Long examId;
 
     @NotEmpty
+    @UniqueElements
     @PositiveElementsCollection
     private List<Long> streamIds;
 

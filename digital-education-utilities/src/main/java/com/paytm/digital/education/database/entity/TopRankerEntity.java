@@ -1,6 +1,5 @@
 package com.paytm.digital.education.database.entity;
 
-import com.paytm.digital.education.enums.StudentCategory;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
@@ -9,7 +8,6 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
@@ -59,7 +57,7 @@ public class TopRankerEntity extends Base {
     private String collegeAdmitted;
 
     @Field("student_category")
-    private StudentCategory studentCategory;
+    private String studentCategory;
 
     @Field("testimonial")
     private String testimonial;
