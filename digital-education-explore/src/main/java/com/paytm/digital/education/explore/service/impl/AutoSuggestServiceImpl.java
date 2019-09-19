@@ -177,7 +177,6 @@ public class AutoSuggestServiceImpl {
             searchRequest.setLimit(SIXTY - 1);
         }
         searchRequest.setOffset(Integer.parseInt(ZERO));
-        searchRequest.setFieldGroup(SUMMARY);
         searchRequest.setFilter(new HashMap<>());
         searchRequest.setTerm(BLANK);
 

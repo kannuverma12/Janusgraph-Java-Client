@@ -26,7 +26,7 @@ import java.util.Map;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SearchRequest extends FieldsAndFieldGroupRequest {
+public class SearchRequest {
 
     @JsonProperty("term")
     private String term;
@@ -39,14 +39,16 @@ public class SearchRequest extends FieldsAndFieldGroupRequest {
     private EducationEntity entity;
 
     @JsonProperty("offset")
-    @Min(0)
-    @Max(SEARCH_REQUEST_MAX_OFFSET)
+    @Min(value = 0, message = "Offset should be greater than or equal to 0")
+    @Max(value = SEARCH_REQUEST_MAX_OFFSET, message = "Offset should be less than or equal to  "
+            + SEARCH_REQUEST_MAX_OFFSET)
     @NotNull
     private Integer offset = DEFAULT_OFFSET;
 
     @JsonProperty("limit")
-    @Min(0)
-    @Max(SEARCH_REQUEST_MAX_LIMIT)
+    @Min(value = 0, message = "Limit should be greater than or equal to 0")
+    @Max(value = SEARCH_REQUEST_MAX_LIMIT, message = "Limit should be less than or equal to "
+            + SEARCH_REQUEST_MAX_LIMIT)
     @NotNull
     private Integer limit = DEFAULT_SIZE;
 
