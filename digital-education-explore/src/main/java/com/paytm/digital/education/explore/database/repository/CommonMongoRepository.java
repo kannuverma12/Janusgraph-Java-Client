@@ -71,6 +71,18 @@ public class CommonMongoRepository {
         return executeMongoQuery(mongoQuery, instance);
     }
 
+    @Cacheable(value = "cacheKey", unless = "#result == null", condition = "#cacheKey != "
+            + "\"paytm_keys\"")
+    public <T> List<T> getEntityFieldsByValuesIn(String key, List<Long> entityIds,
+            Class<T> instance,
+            List<String> fields, String cacheKey) {
+        Query mongoQuery = new Query(Criteria.where(key).in(entityIds));
+        if (!CollectionUtils.isEmpty(fields)) {
+            fields.forEach(field -> mongoQuery.fields().include(field));
+        }
+        return executeMongoQuery(mongoQuery, instance);
+    }
+
     @Cacheable(value = "field_group", unless = "#result == null")
     public <T> List<String> getFieldsByGroup(Class<T> collectionClass, String fieldGroup) {
         String collectionName = context.getPersistentEntity(collectionClass).getCollection();
