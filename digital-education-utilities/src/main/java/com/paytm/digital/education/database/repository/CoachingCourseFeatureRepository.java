@@ -18,4 +18,6 @@ public interface CoachingCourseFeatureRepository
     List<CoachingCourseFeatureEntity> findByInstituteIdAndName(Long id,String name);
 
     List<CoachingCourseFeatureEntity> findByInstituteId(Long id);
+
+    @Override List<CoachingCourseFeatureEntity> findAll();
 }

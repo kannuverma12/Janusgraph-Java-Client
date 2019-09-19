@@ -7,6 +7,7 @@ import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Objects;
 
 @Component
@@ -28,5 +29,9 @@ public class CoachingCenterDAO {
 
     public CoachingCenterEntity findByCenterId(@NonNull Long id) {
         return coachingCenterRepository.findByCenterId(id);
+    }
+
+    public List<CoachingCenterEntity> findAll() {
+        return this.coachingCenterRepository.findAll();
     }
 }

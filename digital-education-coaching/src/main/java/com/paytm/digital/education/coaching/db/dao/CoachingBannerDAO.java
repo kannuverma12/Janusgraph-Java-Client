@@ -6,6 +6,7 @@ import com.paytm.digital.education.database.repository.CoachingBannerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Objects;
 
 @Component
@@ -30,4 +31,7 @@ public class CoachingBannerDAO {
         return coachingBannerRepository.findByCoachingBannerId(coachingBannerEntity);
     }
 
+    public List<CoachingBannerEntity> findAll() {
+        return this.coachingBannerRepository.findAll();
+    }
 }

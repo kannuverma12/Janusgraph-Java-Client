@@ -15,4 +15,7 @@ public interface CoachingInstituteRepositoryNew
 
     @Query(fields = "{'institute_id':1, _id : 0}")
     List<CoachingInstituteEntity> findAllByInstituteId(List<Long> ids);
+
+    @Override List<CoachingInstituteEntity> findAll();
+
 }

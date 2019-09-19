@@ -56,6 +56,7 @@ public class CoachingConstants {
     public static final String COACHING_COMPONENT                    = "coaching";
     public static final String GOOGLE_SHEETS_INFO                    = "google_sheets_info";
     public static final String DATA_INGEST                           = "coaching_data_ingest";
+    public static final String DATA_EXPORT                           = "coaching_data_export";
     public static final String ATTRIBUTES                            = "attributes";
     public static final String INSTITUTE_SHEET_ID                    = "institute_sheet_id";
     public static final String INSTITUTE_SHEET_HEADER_RANGE          =

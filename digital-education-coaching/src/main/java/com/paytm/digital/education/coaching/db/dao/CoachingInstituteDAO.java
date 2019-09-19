@@ -1,6 +1,7 @@
 package com.paytm.digital.education.coaching.db.dao;
 
 import com.paytm.digital.education.coaching.database.repository.SequenceGenerator;
+import com.paytm.digital.education.database.entity.CoachingCenterEntity;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.database.repository.CoachingInstituteRepositoryNew;
 import lombok.NonNull;
@@ -36,4 +37,10 @@ public class CoachingInstituteDAO {
     public List<CoachingInstituteEntity> findAllByInstituteId(@NonNull List<Long> ids) {
         return coachingInstituteRepositoryNew.findAllByInstituteId(ids);
     }
+
+    public List<CoachingInstituteEntity> findAll() {
+        return this.coachingInstituteRepositoryNew.findAll();
+    }
+
+
 }

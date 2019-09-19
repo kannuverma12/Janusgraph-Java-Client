@@ -1,12 +1,14 @@
 package com.paytm.digital.education.coaching.db.dao;
 
 import com.paytm.digital.education.coaching.database.repository.SequenceGenerator;
+import com.paytm.digital.education.database.entity.CoachingCenterEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
 import com.paytm.digital.education.database.repository.TopRankerRepository;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Objects;
 
 @Component
@@ -29,4 +31,9 @@ public class TopRankerDAO {
     public TopRankerEntity findByTopRankerId(@NonNull Long id) {
         return topRankerRepository.findByTopRankerId(id);
     }
+
+    public List<TopRankerEntity> findAll() {
+        return this.topRankerRepository.findAll();
+    }
+
 }

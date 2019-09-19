@@ -67,6 +67,13 @@ public class CommonMongoRepository {
         return executeMongoQuery(mongoQuery, instance);
     }
 
+    @Cacheable(value = "fields", unless = "#result == null")
+    public <T> List<T> getEntityFieldsForCollection(Class<T> instance, List<String> fields) {
+        Query mongoQuery = new Query();
+        fields.forEach(field -> mongoQuery.fields().include(field));
+        return executeMongoQuery(mongoQuery, instance);
+    }
+
     @Cacheable(value = "field_group", unless = "#result == null")
     public <T> List<String> getFieldsByGroup(Class<T> collectionClass, String fieldGroup) {
         String collectionName = context.getPersistentEntity(collectionClass).getCollection();

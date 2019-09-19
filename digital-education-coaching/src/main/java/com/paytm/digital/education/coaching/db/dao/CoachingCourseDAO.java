@@ -1,6 +1,7 @@
 package com.paytm.digital.education.coaching.db.dao;
 
 import com.paytm.digital.education.coaching.database.repository.SequenceGenerator;
+import com.paytm.digital.education.database.entity.CoachingCenterEntity;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.database.repository.CoachingProgramRepository;
 import lombok.NonNull;
@@ -34,4 +35,9 @@ public class CoachingCourseDAO {
     public CoachingCourseEntity findByProgramId(@NonNull Long id) {
         return programRepository.findByCourseId(id);
     }
+
+    public List<CoachingCourseEntity> findAll() {
+        return this.programRepository.findAll();
+    }
+
 }

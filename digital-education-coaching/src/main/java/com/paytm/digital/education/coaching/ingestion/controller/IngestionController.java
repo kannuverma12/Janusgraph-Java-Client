@@ -1,10 +1,12 @@
 package com.paytm.digital.education.coaching.ingestion.controller;
 
-import com.paytm.digital.education.coaching.enums.IngestionFormEntity;
-import com.paytm.digital.education.coaching.ingestion.model.IngestorResponse;
-import com.paytm.digital.education.coaching.ingestion.service.IngestorService;
-import com.paytm.digital.education.coaching.ingestion.service.IngestorServiceFactory;
-import lombok.AllArgsConstructor;
+import com.paytm.digital.education.coaching.ingestion.model.ExportResponse;
+import com.paytm.digital.education.coaching.ingestion.model.ImportResponse;
+import com.paytm.digital.education.coaching.ingestion.model.IngestionFormEntity;
+import com.paytm.digital.education.coaching.ingestion.service.exportdata.ExportService;
+import com.paytm.digital.education.coaching.ingestion.service.exportdata.ExportServiceFactory;
+import com.paytm.digital.education.coaching.ingestion.service.importdata.ImportService;
+import com.paytm.digital.education.coaching.ingestion.service.importdata.ImportServiceFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -24,31 +26,52 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.U
 @RequestMapping(COACHING)
 public class IngestionController {
 
-    @Autowired
-    private IngestorServiceFactory ingestorServiceFactory;
     @Value("${coaching.ingestion.auth.token}")
     private String coachingIngestionAuthToken;
 
-    @GetMapping(V1 + "/ingest")
-    public ResponseEntity<IngestorResponse> ingestData(
+    @Autowired
+    private ImportServiceFactory importServiceFactory;
+    @Autowired
+    private ExportServiceFactory exportServiceFactory;
+
+    @GetMapping(V1 + "/import")
+    public ResponseEntity<ImportResponse> ingestData(
             @RequestHeader("token") String token,
             @RequestParam("form") @NotEmpty String form) {
 
         if (!this.coachingIngestionAuthToken.equals(token)) {
             return new ResponseEntity("Please try again with correct token",
-                    HttpStatus.BAD_REQUEST);
+                    HttpStatus.UNAUTHORIZED);
         }
 
-        final IngestorService ingestorService = this.ingestorServiceFactory.getIngestorService(
+        final ImportService importService = this.importServiceFactory.getIngestorService(
                 IngestionFormEntity.fromString(form));
+        if (null == importService) {
+            return new ResponseEntity("Please try again with correct params",
+                    HttpStatus.BAD_REQUEST);
+        }
+        final ImportResponse importResponse = importService.ingest();
+        return ResponseEntity.ok(importResponse);
+    }
 
-        if (null == ingestorService) {
+    @GetMapping(V1 + "/export")
+    public ResponseEntity<ExportResponse> exportData(
+            //            @RequestHeader("token") String token,
+            @RequestParam("form") @NotEmpty String form) {
+
+        //        if (!this.coachingIngestionAuthToken.equals(token)) {
+        //            return new ResponseEntity("Please try again with correct token",
+        //                    HttpStatus.UNAUTHORIZED);
+        //        }
+
+        final ExportService exportService = this.exportServiceFactory.getExportService(
+                IngestionFormEntity.fromString(form));
+        if (null == exportService) {
             return new ResponseEntity("Please try again with correct params",
                     HttpStatus.BAD_REQUEST);
         }
 
-        IngestorResponse ingestorResponse = ingestorService.ingest();
-
-        return ResponseEntity.ok(ingestorResponse);
+        final ExportResponse exportResponse = exportService.export();
+        return ResponseEntity.ok(exportResponse);
     }
 }

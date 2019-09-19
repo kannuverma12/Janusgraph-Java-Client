@@ -1,12 +1,14 @@
 package com.paytm.digital.education.coaching.db.dao;
 
 import com.paytm.digital.education.coaching.database.repository.SequenceGenerator;
+import com.paytm.digital.education.database.entity.CoachingCenterEntity;
 import com.paytm.digital.education.database.entity.CoachingExamEntity;
 import com.paytm.digital.education.database.repository.CoachingExamRepositoryNew;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Objects;
 
 @Component
@@ -29,4 +31,9 @@ public class CoachingExamDAO {
     public CoachingExamEntity findByExamId(@NonNull Long id) {
         return coachingCenterRepository.findByCoachingExamId(id);
     }
+
+    public List<CoachingExamEntity> findAll() {
+        return this.coachingCenterRepository.findAll();
+    }
+
 }

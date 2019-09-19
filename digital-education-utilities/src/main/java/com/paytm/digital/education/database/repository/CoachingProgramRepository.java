@@ -1,7 +1,6 @@
 package com.paytm.digital.education.database.repository;
 
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
-import com.paytm.digital.education.database.entity.StreamEntity;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
@@ -21,4 +20,6 @@ public interface CoachingProgramRepository
 
     @Query(value = "{course_id: { $in: ?0 } })", fields = "{'course_id':1, _id : 0}")
     List<CoachingCourseEntity> findAllByCourseId(List<Long> ids);
+
+    @Override List<CoachingCourseEntity> findAll();
 }

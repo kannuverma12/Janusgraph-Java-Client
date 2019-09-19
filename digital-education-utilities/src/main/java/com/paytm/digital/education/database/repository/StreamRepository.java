@@ -16,7 +16,9 @@ public interface StreamRepository extends MongoRepository<StreamEntity, ObjectId
     @Query(value = "{stream_id: { $in: ?0 }}", fields = "{'stream_id':1, _id : 0}")
     List<StreamEntity> findAllByStreamId(List<Long> ids);
 
+    @Override
+    List<StreamEntity> findAll();
+
     @Query(value = "{'name': {$regex : '^?0$', $options: 'i'}}", fields = "{'stream_id':1, _id : 0}")
     StreamEntity findByStreamName(String name);
-
 }
