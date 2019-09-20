@@ -63,30 +63,36 @@ public class RankingServiceImpl implements RankingService {
                 List<Institute> dbInstitutes = getPaytmRankedEntities(INSTITUTE_ID, type);
                 if (!CollectionUtils.isEmpty(dbInstitutes)) {
                     for (Institute institute : dbInstitutes) {
-                        rankingList.add(setRankingResponse(institute.getInstituteId(),
-                                institute.getPaytmKeys().getPaytmRank(),
-                                institute.getPaytmKeys().getPaytmPartnerRank(),
-                                institute.getOfficialName()));
+                        if (Objects.nonNull(institute.getPaytmKeys())) {
+                            rankingList.add(setRankingResponse(institute.getInstituteId(),
+                                    institute.getPaytmKeys().getPaytmRank(),
+                                    institute.getPaytmKeys().getPaytmPartnerRank(),
+                                    institute.getOfficialName()));
+                        }
                     }
                 }
             } else if (entity.equals(EducationEntity.EXAM)) {
                 List<Exam> dbExams = getPaytmRankedEntities(EXAM_ID, type);
                 if (!CollectionUtils.isEmpty(dbExams)) {
                     for (Exam exam : dbExams) {
-                        rankingList.add(setRankingResponse(exam.getExamId(),
-                                exam.getPaytmKeys().getPaytmRank(),
-                                exam.getPaytmKeys().getPaytmPartnerRank(),
-                                exam.getExamShortName()));
+                        if (Objects.nonNull(exam.getPaytmKeys())) {
+                            rankingList.add(setRankingResponse(exam.getExamId(),
+                                    exam.getPaytmKeys().getPaytmRank(),
+                                    exam.getPaytmKeys().getPaytmPartnerRank(),
+                                    exam.getExamShortName()));
+                        }
                     }
                 }
             } else if (entity.equals(EducationEntity.SCHOOL)) {
                 List<School> dbSchool = getPaytmRankedEntities(SCHOOL_ID, type);
                 if (!CollectionUtils.isEmpty(dbSchool)) {
                     for (School school : dbSchool) {
-                        rankingList.add(setRankingResponse(school.getSchoolId(),
-                                school.getPaytmKeys().getPaytmRank(),
-                                school.getPaytmKeys().getPaytmPartnerRank(),
-                                school.getOfficialName()));
+                        if (Objects.nonNull(school.getPaytmKeys())) {
+                            rankingList.add(setRankingResponse(school.getSchoolId(),
+                                    school.getPaytmKeys().getPaytmRank(),
+                                    school.getPaytmKeys().getPaytmPartnerRank(),
+                                    school.getOfficialName()));
+                        }
                     }
                 }
             }
@@ -95,10 +101,10 @@ public class RankingServiceImpl implements RankingService {
         return rankingResponse;
     }
 
-    private EntityRankingResponse setRankingResponse(Long instituteId, Long paytmRank,
+    private EntityRankingResponse setRankingResponse(Long entityId, Long paytmRank,
             Long paytmPartnerRank, String officialName) {
         EntityRankingResponse entityRankingResponse = new EntityRankingResponse();
-        entityRankingResponse.setEntityId(instituteId);
+        entityRankingResponse.setEntityId(entityId);
         entityRankingResponse.setPaytmRank(paytmRank);
         entityRankingResponse.setPaytmPartnerRank(paytmPartnerRank);
         entityRankingResponse.setOfficialName(officialName);
@@ -166,7 +172,7 @@ public class RankingServiceImpl implements RankingService {
             List<Long> entityIds, String key, Class type) {
         RankingResponse rankingResponse = new RankingResponse();
         List<EntityRankingResponse> rankResponseList = new ArrayList<>();
-        List<Institute> validInstitutes = validEntitites(entityIds, key, type);
+        List<Institute> validInstitutes = validEntitities(entityIds, key, type);
         if (validInstitutes.size() == rankRequest.getRankings().size()) {
             unsetPreviousPaytmRanksForInsitute(key, type);
 
@@ -201,7 +207,7 @@ public class RankingServiceImpl implements RankingService {
 
     private List<EntityRankingResponse> getUpdatedInstitutes(List<Long> instituteIds, String key,
             Class type) {
-        List<Institute> validInstitutes = validEntitites(instituteIds, key, type);
+        List<Institute> validInstitutes = validEntitities(instituteIds, key, type);
 
         List<EntityRankingResponse> rankingResponseList = new ArrayList<>();
         for (Institute institute : validInstitutes) {
@@ -216,7 +222,7 @@ public class RankingServiceImpl implements RankingService {
             String key, Class type) {
         RankingResponse rankingResponse = new RankingResponse();
         List<EntityRankingResponse> rankResponseList = new ArrayList<>();
-        List<Exam> validExams = validEntitites(entityIds, key, type);
+        List<Exam> validExams = validEntitities(entityIds, key, type);
         if (validExams.size() == rankRequest.getRankings().size()) {
             unsetPreviousPaytmRanksForExam(key, type);
             Map<Long, Exam> examMap = validExams.stream()
@@ -246,7 +252,7 @@ public class RankingServiceImpl implements RankingService {
     }
 
     private List<EntityRankingResponse> getUpdatedExams(List<Long> examIds, String key, Class type) {
-        List<Exam> validExams = validEntitites(examIds, key, type);
+        List<Exam> validExams = validEntitities(examIds, key, type);
         List<EntityRankingResponse> rankingResponseList = new ArrayList<>();
         for (Exam exam : validExams) {
             Long id = exam.getExamId();
@@ -261,7 +267,7 @@ public class RankingServiceImpl implements RankingService {
             List<Long> entityIds, String key, Class type) {
         RankingResponse rankingResponse = new RankingResponse();
         List<EntityRankingResponse> rankResponseList = new ArrayList<>();
-        List<School> validSchools = validEntitites(entityIds, key, type);
+        List<School> validSchools = validEntitities(entityIds, key, type);
         if (validSchools.size() == rankRequest.getRankings().size()) {
             unsetPreviousPaytmRanksForSchool(key, type);
             Map<Long, School> schoolMapMap = validSchools.stream()
@@ -290,7 +296,7 @@ public class RankingServiceImpl implements RankingService {
     }
 
     private List<EntityRankingResponse> getUpdatedSchools(List<Long> schoolIds, String key, Class type) {
-        List<School> validSchools = validEntitites(schoolIds, key, type);
+        List<School> validSchools = validEntitities(schoolIds, key, type);
         List<EntityRankingResponse> rankingResponseList = new ArrayList<>();
         for (School school : validSchools) {
             EntityRankingResponse rankingResponse =
@@ -311,7 +317,7 @@ public class RankingServiceImpl implements RankingService {
                 .findAll(objectMap, type, fields , AND);
     }
 
-    private <T> List<T> validEntitites(List<Long> entityIds, String key, Class<T> type) {
+    private <T> List<T> validEntitities(List<Long> entityIds, String key, Class<T> type) {
         return commonMongoRepository
                 .getEntityFieldsByValuesIn(key, entityIds, type,
                         Arrays.asList(key, PAYTM_KEYS), PAYTM_KEYS);
