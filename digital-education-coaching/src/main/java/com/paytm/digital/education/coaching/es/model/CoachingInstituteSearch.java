@@ -28,7 +28,7 @@ public class CoachingInstituteSearch {
     private Map<String, Map<String, String>>    exams;
     private List<Long>                          examIds;
     private List<String>                        examNames;
-    private List<CourseType>                    courseTypes;
+    private List<String>                        courseTypes;
     private Integer                             establishmentYear;
     private String                              brochure;
     private List<CoachingInstituteKeyHighlight> keyHighlights;
