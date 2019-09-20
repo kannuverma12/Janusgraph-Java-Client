@@ -33,14 +33,17 @@ public class ExportCoachingInstituteTransformer {
                                     ? EMPTY_STRING : StringUtils.join(entity.getStreams(), ","))
                             .examIds(entity.getExams() == null
                                     ? EMPTY_STRING : StringUtils.join(entity.getExams(), ","))
-                            //                            .courseTypes(ExportCommonTransformer.convertCourseTypes(
-                            //                                    entity.getCourseTypes()))
+                            .courseTypes(entity.getCourseTypes() == null
+                                    ? EMPTY_STRING : StringUtils.join(entity.getCourseTypes(), ","))
                             .yearOfEstablishment(entity.getEstablishmentYear())
                             .brochure(entity.getBrochure())
-                            //                            .courseLevel()
-                            //                            .levelOfEducation()
-                            //                            .stepsToApply()
-                            //                            .scholarshipMatrix()
+                            //TODO
+                            .levelOfEducation(EMPTY_STRING)
+                            //TODO
+                            .moreInfo1(entity.getMoreInfo1())
+                            .moreInfo2(entity.getMoreInfo2())
+                            .moreInfo3(entity.getMoreInfo3())
+                            .moreInfo4(entity.getMoreInfo4())
                             .statusActive(ExportCommonTransformer.convertBooleanToString(
                                     entity.getIsEnabled()))
                             .globalPriority(entity.getPriority())

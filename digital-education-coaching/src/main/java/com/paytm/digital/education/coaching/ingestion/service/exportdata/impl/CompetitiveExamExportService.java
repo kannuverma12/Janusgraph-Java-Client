@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.paytm.digital.education.coaching.constants.GoogleSheetExportConstants.COMPETITIVE_EXAM_SHEET_ID;
-import static com.paytm.digital.education.coaching.constants.GoogleSheetExportConstants.COMPETITIVE_EXAM_SHEET_RANGE;
 
 @Slf4j
 @Service
@@ -39,7 +38,6 @@ public class CompetitiveExamExportService extends AbstractExportService implemen
         final DataExportPropertiesResponse properties = super.getProperties(
                 DataExportPropertiesRequest.builder()
                         .sheetIdKey(COMPETITIVE_EXAM_SHEET_ID)
-                        .sheetRangeKey(COMPETITIVE_EXAM_SHEET_RANGE)
                         .build());
         if (null == properties) {
             return ExportResponse.builder().countOfRecordsWritten(0).build();
@@ -50,13 +48,13 @@ public class CompetitiveExamExportService extends AbstractExportService implemen
         final List<CompetitiveExamForm> formList = ExportCompetitiveExamTransformer.convert(
                 entityList);
 
-        boolean successful = super.processRecords(formList, CompetitiveExamForm.class,
-                properties.getSheetId(), properties.getRange());
+        final int recordsWritten = super.processRecords(formList, CompetitiveExamForm.class,
+                properties.getSheetId());
 
-        if (successful) {
-            return ExportResponse.builder().countOfRecordsWritten(formList.size()).build();
-        }
-        return ExportResponse.builder().countOfRecordsWritten(0).build();
+        return ExportResponse.builder()
+                .countOfRecordsPresentInDb(entityList.size())
+                .countOfRecordsWritten(recordsWritten)
+                .build();
     }
 }
 

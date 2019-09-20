@@ -103,9 +103,12 @@ public class CoachingInstituteDataRequest {
     @UniqueElements
     private List<Faq> faqs;
 
-    private String extraInfo1;
+    @NotEmpty
+    private String paytmMerchantId;
 
-    @Size(max = 200)
-    private String extraInfo2;
+    private String moreInfo1;
+    private String moreInfo2;
+    private String moreInfo3;
+    private String moreInfo4;
 
 }

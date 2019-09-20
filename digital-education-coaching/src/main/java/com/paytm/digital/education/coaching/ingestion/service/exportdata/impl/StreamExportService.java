@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 import static com.paytm.digital.education.coaching.constants.GoogleSheetExportConstants.STREAM_SHEET_ID;
-import static com.paytm.digital.education.coaching.constants.GoogleSheetExportConstants.STREAM_SHEET_RANGE;
 
 @Slf4j
 @Service
@@ -31,7 +30,6 @@ public class StreamExportService extends AbstractExportService implements Export
         final DataExportPropertiesResponse properties = super.getProperties(
                 DataExportPropertiesRequest.builder()
                         .sheetIdKey(STREAM_SHEET_ID)
-                        .sheetRangeKey(STREAM_SHEET_RANGE)
                         .build());
         if (null == properties) {
             return ExportResponse.builder().countOfRecordsWritten(0).build();
@@ -40,12 +38,12 @@ public class StreamExportService extends AbstractExportService implements Export
         final List<StreamEntity> entityList = this.coachingStreamDAO.findAll();
         final List<StreamForm> formList = ExportStreamTransformer.convert(entityList);
 
-        boolean successful = super.processRecords(formList, StreamForm.class,
-                properties.getSheetId(), properties.getRange());
+        final int recordsWritten = super.processRecords(formList, StreamForm.class,
+                properties.getSheetId());
 
-        if (successful) {
-            return ExportResponse.builder().countOfRecordsWritten(formList.size()).build();
-        }
-        return ExportResponse.builder().countOfRecordsWritten(0).build();
+        return ExportResponse.builder()
+                .countOfRecordsPresentInDb(entityList.size())
+                .countOfRecordsWritten(recordsWritten)
+                .build();
     }
 }

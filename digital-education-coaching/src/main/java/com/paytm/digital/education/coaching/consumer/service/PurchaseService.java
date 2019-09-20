@@ -83,7 +83,7 @@ public class PurchaseService {
         }
 
         //Verify Base Price
-        float price = (float) (double) (coachingCourseEntity.getPrice()) * cartItem.getQty();
+        float price = (float) (double) (coachingCourseEntity.getOriginalPrice()) * cartItem.getQty();
         if (price != cartItem.getBasePrice()) {
             return false;
         }

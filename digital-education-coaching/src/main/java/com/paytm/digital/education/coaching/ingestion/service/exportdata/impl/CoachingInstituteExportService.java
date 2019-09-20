@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 import static com.paytm.digital.education.coaching.constants.GoogleSheetExportConstants.COACHING_INSTITUTE_SHEET_ID;
-import static com.paytm.digital.education.coaching.constants.GoogleSheetExportConstants.COACHING_INSTITUTE_SHEET_RANGE;
 
 @Slf4j
 @Service
@@ -31,7 +30,6 @@ public class CoachingInstituteExportService extends AbstractExportService implem
         final DataExportPropertiesResponse properties = super.getProperties(
                 DataExportPropertiesRequest.builder()
                         .sheetIdKey(COACHING_INSTITUTE_SHEET_ID)
-                        .sheetRangeKey(COACHING_INSTITUTE_SHEET_RANGE)
                         .build());
         if (null == properties) {
             return ExportResponse.builder().countOfRecordsWritten(0).build();
@@ -41,12 +39,12 @@ public class CoachingInstituteExportService extends AbstractExportService implem
         final List<CoachingInstituteForm> formList =
                 ExportCoachingInstituteTransformer.convert(entityList);
 
-        boolean successful = super.processRecords(formList, CoachingInstituteForm.class,
-                properties.getSheetId(), properties.getRange());
+        final int recordsWritten = super.processRecords(formList, CoachingInstituteForm.class,
+                properties.getSheetId());
 
-        if (successful) {
-            return ExportResponse.builder().countOfRecordsWritten(formList.size()).build();
-        }
-        return ExportResponse.builder().countOfRecordsWritten(0).build();
+        return ExportResponse.builder()
+                .countOfRecordsPresentInDb(entityList.size())
+                .countOfRecordsWritten(recordsWritten)
+                .build();
     }
 }

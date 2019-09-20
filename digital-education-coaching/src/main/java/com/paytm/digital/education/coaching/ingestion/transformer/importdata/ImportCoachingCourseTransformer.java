@@ -8,17 +8,11 @@ import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.CourseType;
 import com.paytm.digital.education.enums.DurationType;
 import com.paytm.digital.education.enums.Language;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
-@Component
-@AllArgsConstructor
 public class ImportCoachingCourseTransformer {
 
     public static CoachingCourseDataRequest convert(final CoachingCourseForm form) {
@@ -41,7 +35,8 @@ public class ImportCoachingCourseTransformer {
                 .description(form.getCourseDescription())
                 .courseFeatureIds(ImportCommonTransformer.convertStringToListOfLong(
                         form.getFeatureIds()))
-                .price(form.getPrice())
+                .originalPrice(form.getOriginalPrice())
+                .discountedPrice(form.getDiscountedPrice())
                 .courseLevel(CourseLevel.fromString(form.getLevelOfEducation()))
                 .language(Language.fromString(form.getLanguage()))
                 .syllabusAndBrochure(form.getSyllabus())
@@ -73,8 +68,13 @@ public class ImportCoachingCourseTransformer {
                 .howToUse2(form.getHowToUse2())
                 .howToUse3(form.getHowToUse3())
                 .howToUse4(form.getHowToUse4())
+                .merchantProductId(form.getMerchantProductId())
                 .importantDates(buildImpDates(form))
                 .courseCover(CourseCover.fromString(form.getCourseCovers()))
+                .sgst(form.getSgst())
+                .cgst(form.getCgst())
+                .igst(form.getIgst())
+                .tcs(form.getTcs())
                 .isEnabled(ImportCommonTransformer.convertStringToBoolean(form.getStatusActive()))
                 .build();
     }

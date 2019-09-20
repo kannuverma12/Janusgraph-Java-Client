@@ -58,6 +58,24 @@ public class CoachingInstituteEntity extends Base {
     @Field("key_highlights")
     private List<KeyHighlight> keyHighlights;
 
-    @Field("Faqs")
+    @Field("faqs")
     private List<Faq> faqs;
+
+    @Field("course_levels")
+    private List<String> courseLevels;
+
+    @Field("paytm_merchant_id")
+    private String paytmMerchantId;
+
+    @Field("more_info1")
+    private String moreInfo1;
+
+    @Field("more_info2")
+    private String moreInfo2;
+
+    @Field("more_info3")
+    private String moreInfo3;
+
+    @Field("more_info4")
+    private String moreInfo4;
 }

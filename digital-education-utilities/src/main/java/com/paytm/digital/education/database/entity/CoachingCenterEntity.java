@@ -10,6 +10,9 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.time.LocalTime;
 import java.util.List;
 
 @Data
@@ -37,5 +40,14 @@ public class CoachingCenterEntity extends Base {
 
     @Field("course_types")
     private List<String> courseTypes;
+
+    @Field("opening_time")
+    private LocalTime openingTime;
+
+    @Field("closing_time")
+    private LocalTime closingTime;
+
+    @Field("center_image")
+    private String centerImage;
 
 }

@@ -3,14 +3,14 @@ package com.paytm.digital.education.coaching.ingestion.transformer.importdata;
 import com.paytm.digital.education.coaching.ingestion.model.googleform.CoachingExamForm;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingExamDataRequest;
 import com.paytm.digital.education.enums.ExamType;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public class ImportCoachingExamTransformer {
 
     public static CoachingExamDataRequest convert(final CoachingExamForm form) {
-
-        final CoachingExamDataRequest request = CoachingExamDataRequest.builder()
+        if (null == form) {
+            return null;
+        }
+        return CoachingExamDataRequest.builder()
                 .coachingExamId(form.getCoachingExamId())
                 .instituteId(form.getInstituteId())
                 .examType(ExamType.fromString(form.getExamType()))
@@ -24,13 +24,10 @@ public class ImportCoachingExamTransformer {
                 .maximumMarks(form.getMaximumMarks())
                 .examDate(null)
                 .eligibility(form.getEligibility())
+                .questionCount(form.getNumberOfQuestions())
                 .priority(form.getGlobalPriority())
                 .isEnabled(ImportCommonTransformer.convertStringToBoolean(
                         form.getStatusActive()))
                 .build();
-
-        log.info("CoachingExamDataRequest: {}", request);
-        return request;
     }
-
 }

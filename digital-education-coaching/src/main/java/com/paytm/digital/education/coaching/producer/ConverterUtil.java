@@ -21,8 +21,8 @@ import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
+import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.CourseType;
-import com.paytm.digital.education.enums.ExamType;
 
 import java.util.stream.Collectors;
 
@@ -65,6 +65,17 @@ public class ConverterUtil {
                         .logo(requestData.getLogo())
                         .value(requestData.getValue()).build()
         ).collect(Collectors.toList()));
+
+        coachingInstituteEntity.setCourseLevels(request.getCourseLevels().stream()
+                .map(CourseLevel::getDisplayName)
+                .collect(Collectors.toList()));
+
+        coachingInstituteEntity.setPaytmMerchantId(request.getPaytmMerchantId());
+        coachingInstituteEntity.setMoreInfo1(request.getMoreInfo1());
+        coachingInstituteEntity.setMoreInfo2(request.getMoreInfo2());
+        coachingInstituteEntity.setMoreInfo3(request.getMoreInfo3());
+        coachingInstituteEntity.setMoreInfo4(request.getMoreInfo4());
+
         coachingInstituteEntity.setIsEnabled(request.getIsEnabled());
         coachingInstituteEntity.setPriority(request.getPriority());
     }
@@ -90,6 +101,9 @@ public class ConverterUtil {
         coachingCenterEntity.setInstituteId(request.getInstituteId());
         coachingCenterEntity.setIsEnabled(request.getIsEnabled());
         coachingCenterEntity.setPriority(request.getPriority());
+        coachingCenterEntity.setOpeningTime(request.getOpeningTime());
+        coachingCenterEntity.setClosingTime(request.getClosingTime());
+        coachingCenterEntity.setCenterImage(request.getCenterImage());
     }
 
     public static void setCoachingExam(CoachingExamDataRequest request,
@@ -105,6 +119,7 @@ public class ConverterUtil {
         coachingExamEntity.setMaximumMarks(request.getMaximumMarks());
         coachingExamEntity.setExamDate(request.getExamDate());
         coachingExamEntity.setEligibility(request.getEligibility());
+        coachingExamEntity.setQuestionCount(request.getQuestionCount());
 
         coachingExamEntity.setIsEnabled(request.getIsEnabled());
         coachingExamEntity.setPriority(request.getPriority());
@@ -142,8 +157,8 @@ public class ConverterUtil {
         coachingCourseEntity.setEligibility(request.getEligibility());
         coachingCourseEntity.setInfo(request.getInfo());
         coachingCourseEntity.setDescription(request.getDescription());
-        coachingCourseEntity.setFeatures(request.getCourseFeatureIds());
-        coachingCourseEntity.setPrice(request.getPrice());
+        coachingCourseEntity.setOriginalPrice(request.getOriginalPrice());
+        coachingCourseEntity.setDiscountedPrice(request.getDiscountedPrice());
         coachingCourseEntity.setCourseLevel(request.getCourseLevel().getDisplayName());
         coachingCourseEntity.setLanguage(request.getLanguage().getText());
         coachingCourseEntity.setSyllabus(request.getSyllabusAndBrochure());
@@ -201,6 +216,13 @@ public class ConverterUtil {
         coachingCourseEntity.setHowToUse2(request.getHowToUse2());
         coachingCourseEntity.setHowToUse3(request.getHowToUse3());
         coachingCourseEntity.setHowToUse4(request.getHowToUse4());
+
+        coachingCourseEntity.setMerchantProductId(request.getMerchantProductId());
+
+        coachingCourseEntity.setSgst(request.getSgst());
+        coachingCourseEntity.setCgst(request.getCgst());
+        coachingCourseEntity.setIgst(request.getIgst());
+        coachingCourseEntity.setTcs(request.getTcs());
 
         coachingCourseEntity.setIsEnabled(request.getIsEnabled());
         coachingCourseEntity.setPriority(request.getPriority());

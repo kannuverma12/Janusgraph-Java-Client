@@ -6,7 +6,6 @@ import com.paytm.digital.education.coaching.consumer.model.response.GetCoachingC
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingCourseData;
 import com.paytm.digital.education.coaching.consumer.service.helper.SearchDataHelper;
 import com.paytm.digital.education.coaching.consumer.transformer.CoachingCourseTransformer;
-import com.paytm.digital.education.database.embedded.Currency;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.database.entity.CoachingCourseFeatureEntity;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
@@ -53,14 +52,13 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_COURSE_ID_AN
 public class CoachingCourseService {
 
     private static final String TARGET_EXAM     = "TARGET_EXAM";
-    private static final String AUXILIARY_EXAM  = "AUXILIARY_EXAM";
     private static final String TOP_RANKER_EXAM = "TOP_RANKER_EXAM";
 
     private static final List<String> COURSE_FIELDS     =
             Arrays.asList("coaching_institute_id", "course_id", "name", "course_type",
-                    "description", "price", "currency", "primary_exam_ids", "auxiliary_exam_ids",
+                    "description", "originalPrice", "primary_exam_ids",
                     "eligibility", "duration", "important_dates", "features", "inclusions",
-                    "session_details", "syllabus", "brochure", "classroom_lecture_count",
+                    "session_details", "syllabus", "classroom_lecture_count",
                     "classroom_lecture_duration", "classroom_test_count",
                     "classroom_teacher_student_ratio", "elearning_lecture_count",
                     "elearning_lecture_duration", "elearning_online_test_count",
@@ -116,7 +114,7 @@ public class CoachingCourseService {
         }
 
         final Map<String, List<Exam>> examTypeAndExamListMap = this.fetchExamTypeAndExamListMap(
-                course.getPrimaryExamIds(), course.getAuxiliaryExamIds(), EXAM_FIELDS,
+                course.getPrimaryExamIds(), EXAM_FIELDS,
                 topRankerExamIds);
 
         if (!examTypeAndExamListMap.isEmpty()) {
@@ -200,7 +198,7 @@ public class CoachingCourseService {
     }
 
     private Map<String, List<Exam>> fetchExamTypeAndExamListMap(List<Long> targetExamIdList,
-            List<Long> auxiliaryExamIdList, final List<String> fields,
+            final List<String> fields,
             final List<Long> topRankerExamIds) {
         final List<Long> examIdList = new ArrayList<>();
         examIdList.addAll(topRankerExamIds);
@@ -210,15 +208,8 @@ public class CoachingCourseService {
             targetExamIdList = new ArrayList<>();
         }
 
-        if (!CollectionUtils.isEmpty(auxiliaryExamIdList)) {
-            examIdList.addAll(auxiliaryExamIdList);
-        } else {
-            auxiliaryExamIdList = new ArrayList<>();
-        }
-
         final Map<String, List<Exam>> examTypeAndExamListMap = new HashMap<>();
         examTypeAndExamListMap.put(TARGET_EXAM, new ArrayList<>());
-        examTypeAndExamListMap.put(AUXILIARY_EXAM, new ArrayList<>());
         examTypeAndExamListMap.put(TOP_RANKER_EXAM, new ArrayList<>());
 
         final List<com.paytm.digital.education.database.entity.Exam> exams =
@@ -229,13 +220,9 @@ public class CoachingCourseService {
         }
 
         final Set<Long> targetExamIdsSet = new HashSet<>(targetExamIdList);
-        final Set<Long> auxiliaryExamIdsSet = new HashSet<>(auxiliaryExamIdList);
         for (final com.paytm.digital.education.database.entity.Exam exam : exams) {
             if (targetExamIdsSet.contains(exam.getExamId())) {
                 examTypeAndExamListMap.get(TARGET_EXAM)
-                        .add(this.coachingCourseTransformer.convertExam(exam));
-            } else if (auxiliaryExamIdsSet.contains(exam.getExamId())) {
-                examTypeAndExamListMap.get(AUXILIARY_EXAM)
                         .add(this.coachingCourseTransformer.convertExam(exam));
             }
             if (topRankerExamIds.contains(exam.getExamId())) {
@@ -287,20 +274,19 @@ public class CoachingCourseService {
                 .courseType(CourseType.fromString(course.getCourseType()))
                 .courseLogo(institute.getLogo())
                 .courseDescription(course.getDescription())
-                .coursePrice(course.getPrice())
-                .currency(Currency.valueOf(course.getCurrency()))
+                .originalPrice(course.getOriginalPrice())
+                .discountedPrice(course.getDiscountedPrice())
                 .targetExams(examTypeAndExamListMap.get(TARGET_EXAM))
-                .auxiliaryExams(examTypeAndExamListMap.get(AUXILIARY_EXAM))
                 .eligibility(course.getEligibility())
                 .duration(course.getDuration())
                 .topRankers(this.coachingCourseTransformer.convertTopRankers(topRankers,
                         examIdAndNameMap, courseIdAndNameMap))
                 .importantDates(this.coachingCourseTransformer.convertImportantDates(
                         course.getImportantDates()))
-                .sessionDetails(this.coachingCourseTransformer.convertSessionDetails(course))
+                .sessionDetails(
+                        this.coachingCourseTransformer.convertSessionDetails(course))
                 .courseFeatures(coachingCourseFeatures)
                 .syllabus(course.getSyllabus())
-                .brochure(course.getBrochure())
                 .sections(sections)
                 .build();
     }

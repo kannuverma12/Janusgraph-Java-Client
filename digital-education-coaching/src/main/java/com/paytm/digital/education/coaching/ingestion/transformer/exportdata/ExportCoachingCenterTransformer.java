@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.EMPTY_STRING;
+
 public class ExportCoachingCenterTransformer {
 
     public static List<CoachingCenterForm> convert(final List<CoachingCenterEntity> entityList) {
@@ -23,6 +25,9 @@ public class ExportCoachingCenterTransformer {
                             .instituteId(entity.getInstituteId())
                             .officialName(entity.getOfficialName())
                             .courseTypes(StringUtils.join(entity.getCourseTypes(), ","))
+                            .openingTime(EMPTY_STRING)
+                            .closingTime(EMPTY_STRING)
+                            .centerImage(entity.getCenterImage())
                             .globalPriority(entity.getPriority())
                             .statusActive(ExportCommonTransformer.convertBooleanToString(
                                     entity.getIsEnabled()))

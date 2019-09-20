@@ -13,5 +13,4 @@ import lombok.NoArgsConstructor;
 public class DataExportPropertiesRequest {
 
     private String sheetIdKey;
-    private String sheetRangeKey;
 }

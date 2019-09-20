@@ -2,8 +2,6 @@ package com.paytm.digital.education.coaching.ingestion.model.googleform;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.paytm.digital.education.coaching.ingestion.model.GoogleSheetColumnName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +15,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class CoachingCourseForm {
 
     @JsonProperty("course_id")
@@ -68,9 +65,13 @@ public class CoachingCourseForm {
     @GoogleSheetColumnName("Feature Ids")
     private String featureIds;
 
-    @JsonProperty("price")
-    @GoogleSheetColumnName("Price")
-    private Double price;
+    @JsonProperty("original_price")
+    @GoogleSheetColumnName("Original Price")
+    private Double originalPrice;
+
+    @JsonProperty("discounted_price")
+    @GoogleSheetColumnName("Discounted Price")
+    private Double discountedPrice;
 
     @JsonProperty("level_of_education")
     @GoogleSheetColumnName("Level Of Education")
@@ -231,5 +232,4 @@ public class CoachingCourseForm {
     @JsonProperty("status_active")
     @GoogleSheetColumnName("Status Active")
     private String statusActive;
-
 }

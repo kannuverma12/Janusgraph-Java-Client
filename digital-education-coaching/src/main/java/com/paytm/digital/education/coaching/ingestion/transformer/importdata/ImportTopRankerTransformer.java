@@ -3,16 +3,14 @@ package com.paytm.digital.education.coaching.ingestion.transformer.importdata;
 import com.paytm.digital.education.coaching.ingestion.model.googleform.TopRankerForm;
 import com.paytm.digital.education.coaching.producer.model.request.TopRankerDataRequest;
 import com.paytm.digital.education.enums.StudentCategory;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public class ImportTopRankerTransformer {
 
     public static TopRankerDataRequest convert(final TopRankerForm form) {
         if (null == form) {
             return null;
         }
-        final TopRankerDataRequest request = TopRankerDataRequest.builder()
+        return TopRankerDataRequest.builder()
                 .topRankerId(form.getTopRankerId())
                 .instituteId(form.getInstituteId())
                 .centerId(form.getCenterId())
@@ -31,8 +29,5 @@ public class ImportTopRankerTransformer {
                 .isEnabled(ImportCommonTransformer.convertStringToBoolean(
                         form.getStatusActive()))
                 .build();
-
-        log.info("TopRankerDataRequest: {}", request);
-        return request;
     }
 }

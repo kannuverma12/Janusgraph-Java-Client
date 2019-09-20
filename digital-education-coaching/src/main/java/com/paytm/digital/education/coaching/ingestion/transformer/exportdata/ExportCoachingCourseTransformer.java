@@ -37,9 +37,11 @@ public class ExportCoachingCourseTransformer {
                             .eligibilityCriteria(entity.getEligibility())
                             .courseIntroduction(entity.getInfo())
                             .courseDescription(entity.getDescription())
-                            .featureIds(entity.getFeatures() == null
-                                    ? EMPTY_STRING : StringUtils.join(entity.getFeatures(), ","))
-                            .price(entity.getPrice())
+                            .featureIds(entity.getCourseFeatureIds() == null
+                                    ? EMPTY_STRING :
+                                    StringUtils.join(entity.getCourseFeatureIds(), ","))
+                            .originalPrice(entity.getOriginalPrice())
+                            .discountedPrice(entity.getDiscountedPrice())
                             .levelOfEducation(entity.getCourseLevel())
                             .language(entity.getLanguage())
                             .syllabus(entity.getSyllabus())
@@ -74,6 +76,11 @@ public class ExportCoachingCourseTransformer {
                             .durationOfClassroomLectures(entity.getClassroomLectureDuration())
                             .numberOfClassroomTests(entity.getClassroomTestCount())
                             .teacherToStudentRatio(entity.getClassroomTeacherStudentRatio())
+                            .merchantProductId(entity.getMerchantProductId())
+                            .sgst(entity.getSgst())
+                            .cgst(entity.getCgst())
+                            .igst(entity.getIgst())
+                            .tcs(entity.getTcs())
                             .globalPriority(entity.getPriority())
                             .statusActive(ExportCommonTransformer.convertBooleanToString(
                                     entity.getIsEnabled()))

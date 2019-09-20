@@ -2,9 +2,11 @@ package com.paytm.digital.education.coaching.ingestion.service.exportdata;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.paytm.digital.education.coaching.ingestion.model.GoogleSheetColumnName;
 import com.paytm.digital.education.coaching.ingestion.model.properties.DataExportPropertiesRequest;
 import com.paytm.digital.education.coaching.ingestion.model.properties.DataExportPropertiesResponse;
+import com.paytm.digital.education.coaching.ingestion.service.IngestionHelper;
 import com.paytm.digital.education.config.GoogleConfig;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.GoogleDriveUtil;
@@ -45,9 +47,8 @@ public abstract class AbstractExportService {
         }
         try {
             final String sheetId = (String) propertyMap.get(request.getSheetIdKey());
-            final String range = (String) propertyMap.get(request.getSheetRangeKey());
-            log.debug("Got: sheetId: {}, range: {}", sheetId, range);
-            return DataExportPropertiesResponse.builder().sheetId(sheetId).range(range).build();
+            log.debug("Got: sheetId: {}", sheetId);
+            return DataExportPropertiesResponse.builder().sheetId(sheetId).build();
         } catch (final NullPointerException e) {
             log.error("Got exception for exportData, propertiesRequest: {}, exception: ",
                     request, e);
@@ -55,21 +56,26 @@ public abstract class AbstractExportService {
         }
     }
 
-    protected <T> boolean processRecords(final List<T> list, final Class clazz,
-            final String sheetId, final String range) {
+    protected <T> int processRecords(final List<T> list, final Class clazz,
+            final String sheetId) {
         final List<List<Object>> values = this.convertListToObjectList(list, clazz);
         if (CollectionUtils.isEmpty(values)) {
-            return true;
+            return 0;
         }
+
+        final String range =
+                "A1:" + IngestionHelper.convertNumberToA1Notation(values.get(0).size());
+        log.debug("Clazz: {}, Range: {}", clazz, range);
+
         try {
-            GoogleDriveUtil.writeDataToSheet(sheetId, range, values,
-                    GoogleConfig.getCoachingCredentialFileName(),
+            UpdateValuesResponse updateValuesResponse = GoogleDriveUtil.writeDataToSheet(
+                    sheetId, range, values, GoogleConfig.getCoachingCredentialFileName(),
                     GoogleConfig.getCoachingCredentialFolderPath());
-            return true;
+            return updateValuesResponse.getUpdatedRows();
         } catch (final IOException | GeneralSecurityException e) {
             log.error("Got exception in processRecords, list: {}, clazz:{}, sheetId: {}, "
                     + "range: {}, exception: ", list, clazz, sheetId, range, e);
-            return false;
+            return 0;
         }
     }
 

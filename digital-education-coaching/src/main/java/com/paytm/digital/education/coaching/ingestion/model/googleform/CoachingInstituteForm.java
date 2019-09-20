@@ -93,10 +93,6 @@ public class CoachingInstituteForm {
     @GoogleSheetColumnName("Level Of Education")
     private String levelOfEducation;
 
-    @JsonProperty("steps_to_apply")
-    @GoogleSheetColumnName("Steps To Apply")
-    private String stepsToApply;
-
     @JsonProperty("scholarship_matrix")
     @GoogleSheetColumnName("Scholarship Matrix")
     private String scholarshipMatrix;
@@ -177,9 +173,21 @@ public class CoachingInstituteForm {
     @GoogleSheetColumnName("Paytm Merchant Id")
     private String paytmMerchantId;
 
-    @JsonProperty("paytm_product_id")
-    @GoogleSheetColumnName("Paytm Product Id")
-    private String paytmProductId;
+    @JsonProperty("more_info1")
+    @GoogleSheetColumnName("More Info1")
+    private String moreInfo1;
+
+    @JsonProperty("more_info2")
+    @GoogleSheetColumnName("More Info2")
+    private String moreInfo2;
+
+    @JsonProperty("more_info3")
+    @GoogleSheetColumnName("More Info3")
+    private String moreInfo3;
+
+    @JsonProperty("more_info4")
+    @GoogleSheetColumnName("More Info4")
+    private String moreInfo4;
 
     @JsonProperty("status_active")
     @GoogleSheetColumnName("Status Active")

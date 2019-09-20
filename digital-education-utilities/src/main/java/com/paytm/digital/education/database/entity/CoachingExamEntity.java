@@ -56,5 +56,8 @@ public class CoachingExamEntity extends Base {
     @Field("eligibility")
     private String eligibility;
 
+    @Field("question_count")
+    private long questionCount;
+
 }
 

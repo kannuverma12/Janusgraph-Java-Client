@@ -17,6 +17,8 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Data
@@ -49,6 +51,15 @@ public class CoachingCenterDataRequest {
     @NotEmpty
     @ApiModelProperty(value = "elements from predefined course types")
     private List<CourseType> courseTypes;
+
+    @NotNull
+    private LocalTime openingTime;
+
+    @NotNull
+    private LocalTime closingTime;
+
+    @NotEmpty
+    private String centerImage;
 
     @NotNull
     @Min(value = 1)

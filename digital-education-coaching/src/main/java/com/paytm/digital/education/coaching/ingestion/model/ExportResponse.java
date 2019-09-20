@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ExportResponse {
 
-    private long countOfRecordsWritten;
+    private int countOfRecordsPresentInDb;
+    private int countOfRecordsWritten;
 }

@@ -61,7 +61,7 @@ public class CoachingExamForm {
 
     @JsonProperty("number_of_questions")
     @GoogleSheetColumnName("Number Of Questions")
-    private String numberOfQuestions;
+    private Long numberOfQuestions;
 
     @JsonProperty("global_priority")
     @GoogleSheetColumnName("Global Priority")

@@ -16,12 +16,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 import static com.paytm.digital.education.coaching.constants.GoogleSheetExportConstants.COACHING_CENTER_SHEET_ID;
-import static com.paytm.digital.education.coaching.constants.GoogleSheetExportConstants.COACHING_CENTER_SHEET_RANGE;
 
 @Slf4j
 @Service
-public class CoachingCenterExportService extends AbstractExportService
-        implements ExportService {
+public class CoachingCenterExportService extends AbstractExportService implements ExportService {
 
     @Autowired
     private CoachingCenterDAO coachingCenterDAO;
@@ -32,7 +30,6 @@ public class CoachingCenterExportService extends AbstractExportService
         final DataExportPropertiesResponse properties = super.getProperties(
                 DataExportPropertiesRequest.builder()
                         .sheetIdKey(COACHING_CENTER_SHEET_ID)
-                        .sheetRangeKey(COACHING_CENTER_SHEET_RANGE)
                         .build());
         if (null == properties) {
             return ExportResponse.builder().countOfRecordsWritten(0).build();
@@ -42,12 +39,12 @@ public class CoachingCenterExportService extends AbstractExportService
         final List<CoachingCenterForm> formList =
                 ExportCoachingCenterTransformer.convert(entityList);
 
-        boolean successful = super.processRecords(formList, CoachingCenterForm.class,
-                properties.getSheetId(), properties.getRange());
+        final int recordsWritten = super.processRecords(formList, CoachingCenterForm.class,
+                properties.getSheetId());
 
-        if (successful) {
-            return ExportResponse.builder().countOfRecordsWritten(formList.size()).build();
-        }
-        return ExportResponse.builder().countOfRecordsWritten(0).build();
+        return ExportResponse.builder()
+                .countOfRecordsPresentInDb(entityList.size())
+                .countOfRecordsWritten(recordsWritten)
+                .build();
     }
 }

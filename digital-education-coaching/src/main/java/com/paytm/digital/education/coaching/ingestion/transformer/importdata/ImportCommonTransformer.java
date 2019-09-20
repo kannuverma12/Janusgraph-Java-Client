@@ -2,26 +2,24 @@ package com.paytm.digital.education.coaching.ingestion.transformer.importdata;
 
 import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.CourseType;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
 public class ImportCommonTransformer {
 
     private static final String YES             = "Yes";
     private static final String DELIMITER_COMMA = ",";
 
-    public static boolean convertStringToBoolean(final String input) {
+    static boolean convertStringToBoolean(final String input) {
         if (StringUtils.isEmpty(input)) {
             return false;
         }
         return YES.equalsIgnoreCase(input);
     }
 
-    public static List<CourseType> convertCourseTypes(final String courseType) {
+    static List<CourseType> convertCourseTypes(final String courseType) {
         if (StringUtils.isEmpty(courseType)) {
             return new ArrayList<>();
         }
@@ -53,7 +51,7 @@ public class ImportCommonTransformer {
         return courseLevelEnumList;
     }
 
-    public static List<Long> convertStringToListOfLong(final String input) {
+    static List<Long> convertStringToListOfLong(final String input) {
         if (StringUtils.isEmpty(input)) {
             return new ArrayList<>();
         }

@@ -12,5 +12,4 @@ import lombok.NoArgsConstructor;
 public class DataExportPropertiesResponse {
 
     private String sheetId;
-    private String range;
 }

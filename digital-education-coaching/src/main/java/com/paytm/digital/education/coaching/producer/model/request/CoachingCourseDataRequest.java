@@ -94,8 +94,13 @@ public class CoachingCourseDataRequest {
 
     @NotNull
     @Min(value = 0)
-    @ApiModelProperty(value = "mrp of for coaching course")
-    private Double price;
+    @ApiModelProperty(value = "originalPrice of for coaching course")
+    private Double originalPrice;
+
+    @NotNull
+    @Min(value = 0)
+    @ApiModelProperty(value = "discountedPrice of for coaching course")
+    private Double discountedPrice;
 
     @NotNull
     @ApiModelProperty(value = "existing education level of applicant")
@@ -197,7 +202,6 @@ public class CoachingCourseDataRequest {
     @ApiModelProperty(value = "practice paper count in the course")
     private Integer elearningPracticePaperCount;
 
-
     @Positive
     @Max(value = 100)
     @ApiModelProperty(value = "provided lecture count in the course")
@@ -233,6 +237,16 @@ public class CoachingCourseDataRequest {
     @Valid
     @UniqueElements
     private List<ImportantDate> importantDates;
+
+    private String sgst;
+
+    private String cgst;
+
+    private String igst;
+
+    private String tcs;
+
+    private String merchantProductId;
 
     @ApiModelProperty(value = "flag is enable/disable course, default is true")
     private Boolean isEnabled = Boolean.TRUE;

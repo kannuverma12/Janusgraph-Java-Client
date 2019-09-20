@@ -34,7 +34,7 @@ public class ExportCoachingExamTransformer {
                         .examDates(entity.getExamDate() == null
                                 ? EMPTY_STRING : StringUtils.join(entity.getExamDate(), ","))
                         .eligibility(entity.getEligibility())
-                        //                        .numberOfQuestions(entity.get)
+                        .numberOfQuestions(entity.getQuestionCount())
                         .globalPriority(entity.getPriority())
                         .statusActive(ExportCommonTransformer.convertBooleanToString(
                                 entity.getIsEnabled()))

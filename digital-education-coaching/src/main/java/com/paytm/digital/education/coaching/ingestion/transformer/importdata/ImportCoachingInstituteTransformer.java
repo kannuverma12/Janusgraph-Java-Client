@@ -5,18 +5,18 @@ import com.paytm.digital.education.coaching.producer.model.embedded.Faq;
 import com.paytm.digital.education.coaching.producer.model.embedded.KeyHighlight;
 import com.paytm.digital.education.coaching.producer.model.embedded.OfficialAddress;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingInstituteDataRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
 public class ImportCoachingInstituteTransformer {
 
     public static CoachingInstituteDataRequest convert(final CoachingInstituteForm form) {
-
-        final CoachingInstituteDataRequest request = CoachingInstituteDataRequest.builder()
+        if (null == form) {
+            return null;
+        }
+        return CoachingInstituteDataRequest.builder()
                 .instituteId(form.getInstituteId())
                 .brandName(form.getBrandName())
                 .aboutInstitute(form.getAboutInstitute())
@@ -36,11 +36,11 @@ public class ImportCoachingInstituteTransformer {
                 .establishmentYear(form.getYearOfEstablishment())
                 .brochureUrl(form.getBrochure())
                 .faqs(buildFaqs(form))
-                .extraInfo1(form.getStepsToApply())
+                .moreInfo1(form.getMoreInfo1())
+                .moreInfo2(form.getMoreInfo2())
+                .moreInfo3(form.getMoreInfo3())
+                .moreInfo4(form.getMoreInfo4())
                 .build();
-
-        log.info("CoachingInstituteDataRequest: {}", request);
-        return request;
     }
 
     private static List<KeyHighlight> buildHighlights(final CoachingInstituteForm form) {
@@ -74,7 +74,7 @@ public class ImportCoachingInstituteTransformer {
         if (null == form) {
             return null;
         }
-        final OfficialAddress officialAddress = OfficialAddress.builder()
+        return OfficialAddress.builder()
                 .addressLine1(form.getAddress())
                 .city(form.getCity())
                 .state(form.getState())
@@ -84,9 +84,6 @@ public class ImportCoachingInstituteTransformer {
                 .email(form.getEmailId())
                 .phone(form.getPhoneNumber())
                 .build();
-
-        log.info("OfficialAddress: {}", officialAddress);
-        return officialAddress;
     }
 
     private static List<Faq> buildFaqs(final CoachingInstituteForm form) {
