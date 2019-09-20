@@ -1,5 +1,7 @@
 package com.paytm.digital.education.explore.response.dto.detail;
 
+import static com.paytm.digital.education.explore.constants.ExploreConstants.CTA;
+
 import com.paytm.digital.education.explore.enums.EducationEntity;
 
 public interface CTAInfoHolder {
@@ -29,5 +31,9 @@ public interface CTAInfoHolder {
 
     default Long getCollegePredictorPid() {
         return null;
+    }
+
+    default String ctaDbPropertyKey() {
+        return CTA;
     }
 }

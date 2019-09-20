@@ -296,6 +296,9 @@ public interface ExploreConstants {
     String RECENT_SEARCHES_ID_SEPERATOR = "-";
 
     String CTA                  = "cta";
+    String EXAM_SEARCH_CTA      = "exam_search_cta";
+    String SCHOOL_SEARCH_CTA    = "school_search_cta";
+    String INSTITUTE_SEARCH_CTA = "institute_search_cta";
     String SELECTED             = "_selected";
     String CTA_LOGO_PLACEHOLDER = "/placeholder.svg";
 

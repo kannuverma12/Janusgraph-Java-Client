@@ -1,5 +1,7 @@
 package com.paytm.digital.education.explore.response.dto.search;
 
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_SEARCH_CTA;
+
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -96,5 +98,9 @@ public class ExamData extends SearchBaseData implements CTAInfoHolder {
     public boolean hasCompareFeature() {
         return false;
     }
+
+    @JsonIgnore
+    @Accessors(fluent = true)
+    private String ctaDbPropertyKey = EXAM_SEARCH_CTA;
 
 }

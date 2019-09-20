@@ -1,5 +1,7 @@
 package com.paytm.digital.education.explore.response.dto.search;
 
+import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_SEARCH_CTA;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SCHOOL_SEARCH_CTA;
 import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -72,4 +74,7 @@ public class InstituteData extends SearchBaseData implements CTAInfoHolder {
         return INSTITUTE;
     }
 
+    @JsonIgnore
+    @Accessors(fluent = true)
+    private String ctaDbPropertyKey = INSTITUTE_SEARCH_CTA;
 }

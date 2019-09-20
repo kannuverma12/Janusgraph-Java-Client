@@ -1,5 +1,16 @@
 package com.paytm.digital.education.explore.service.helper;
 
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.explore.enums.Client.APP;
+import static com.paytm.digital.education.explore.enums.EducationEntity.EXAM;
+import static com.paytm.digital.education.explore.enums.EducationEntity.SCHOOL;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLISTED_EXAM_APP;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLISTED_SCHOOL_APP;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST_APP;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST_EXAM_APP;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST_SCHOOL_APP;
+
 import com.paytm.digital.education.explore.constants.ExploreConstants;
 import com.paytm.digital.education.explore.enums.CTAType;
 import com.paytm.digital.education.explore.enums.Client;
@@ -16,24 +27,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
 import java.util.Objects;
-
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.explore.enums.Client.APP;
-import static com.paytm.digital.education.explore.enums.EducationEntity.EXAM;
-import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
-import static com.paytm.digital.education.explore.enums.EducationEntity.SCHOOL;
-import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST;
-import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLISTED_APP;
-import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLISTED_EXAM_APP;
-import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLISTED_SCHOOL_APP;
-import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST_APP;
-import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST_EXAM_APP;
-import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST_SCHOOL_APP;
 
 @Service
 public class CTAHelper {
@@ -52,11 +50,17 @@ public class CTAHelper {
 
     public List<CTA> buildCTA(CTAInfoHolder ctaInfoHolder, Client client) {
         // Logos are not required for web.
-        Map<String, Object> logosPerCta = APP.equals(client)
-                ? propertyReader.getPropertiesAsMapByKey(
-                ExploreConstants.EXPLORE_COMPONENT,
-                ctaInfoHolder.getCorrespondingEntity().name().toLowerCase(),
-                ExploreConstants.CTA) : Collections.emptyMap();
+        Map<String, Object> logosPerCta = null;
+        if (APP.equals(client)) {
+            logosPerCta = propertyReader.getPropertiesAsMapByKey(
+                    ExploreConstants.EXPLORE_COMPONENT,
+                    ctaInfoHolder.getCorrespondingEntity().name().toLowerCase(),
+                    ctaInfoHolder.ctaDbPropertyKey());
+        }
+
+        if (CollectionUtils.isEmpty(logosPerCta)) {
+            logosPerCta = Collections.emptyMap();
+        }
 
         List<CTA> ctas = new ArrayList<>();
 
