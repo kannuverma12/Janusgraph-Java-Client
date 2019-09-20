@@ -55,6 +55,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.HashMap;
@@ -62,6 +63,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.PostConstruct;
 
@@ -72,7 +74,7 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
 
     private static Map<String, Float>                   searchFieldKeys;
     private static Map<String, FilterQueryType>         filterQueryTypeMap;
-    private static LinkedHashMap<String, DataSortOrder> sortKeysInOrder;
+    private static Set<String> sortFields;
     private        SearchAggregateHelper                searchAggregateHelper;
     private        ExamLogoHelper                       examLogoHelper;
 
@@ -89,6 +91,7 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
         searchFieldKeys.put(EXAM_OFFICIAL_NAME, EXAM_OFFICIAL_NAME_BOOST);
         searchFieldKeys.put(EXAM_OFFICIAL_NAME_NGRAM, EXAM_OFFICIAL_NAME_NGRAM_BOOST);
 
+        sortFields = new HashSet<>();
     }
 
     @Override
@@ -112,6 +115,7 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
         populateFilterFields(searchRequest, elasticRequest, ExamSearch.class, filterQueryTypeMap);
         populateAggregateFields(searchRequest, elasticRequest,
                 searchAggregateHelper.getExamAggregateData(), ExamSearch.class);
+        validateSortFields(searchRequest, sortFields);
         populateSortFields(searchRequest, elasticRequest, ExamSearch.class);
         return elasticRequest;
     }

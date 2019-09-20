@@ -9,6 +9,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EXA
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.FACILITIES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.FEES_INSTITUTE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.FE_RELEVANCE_SORT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_FILTER_NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_GENDER;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
@@ -71,12 +72,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.LinkedHashMap;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.PostConstruct;
 
@@ -88,6 +91,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
 
     private static Map<String, FilterQueryType> filterQueryTypeMap;
     private static Map<String, Float>           searchFieldKeys;
+    private static Set<String> sortFields;
     private static Map<String, Float>           locationSearchFieldKeys;
     private        SearchAggregateHelper        searchAggregateHelper;
     private        ClassifierSearchService      classifierSearchService;
@@ -122,6 +126,10 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
         searchFieldKeys.put(ALTERNATE_NAMES + NGRAM, OTHER_NAMES_NGRAM_BOOST);
         searchFieldKeys.put(UNIVERSITY_NAME_SEARCH + NGRAM, OTHER_NAMES_NGRAM_BOOST);
         searchFieldKeys.put(OFFICIAL_NAME + NGRAM, OTHER_NAMES_NGRAM_BOOST);
+
+        sortFields = new HashSet<>();
+        sortFields.add(FE_RANK_SORT);
+        sortFields.add(FE_RELEVANCE_SORT);
     }
 
     @Override
@@ -225,6 +233,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
         populateAggregateFields(searchRequest, elasticRequest,
                 searchAggregateHelper.getInstituteAggregateData(), InstituteSearch.class);
         populateSearchQueryType(elasticRequest, TIE_BREAKER);
+        validateSortFields(searchRequest, sortFields);
         /*
          * Sort on rank will be done
          * 1. when search term is empty

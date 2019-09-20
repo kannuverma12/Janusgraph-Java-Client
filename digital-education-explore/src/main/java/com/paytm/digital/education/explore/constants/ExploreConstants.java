@@ -100,6 +100,7 @@ public interface ExploreConstants {
     Float  UNIVERSITY_NAME_SEARCH_BOOST = 1F;
     Float  OTHER_NAMES_NGRAM_BOOST      = 0.00001F;
     String FE_RANK_SORT                 = "ranking";
+    String FE_RELEVANCE_SORT            = "relevance";
     String DB_RANK_OVERALL              = "overall";
 
     SimpleDateFormat MMM_YYYY    = new SimpleDateFormat("MMM,yyyy");

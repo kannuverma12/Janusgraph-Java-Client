@@ -35,14 +35,17 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.RANGE;
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.TERMS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.LOCATIONS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SORT_DISTANCE_FIELD;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EMPTY_STRING;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
@@ -78,6 +81,7 @@ public class SchoolSearchServiceImpl extends AbstractSearchServiceImpl {
 
     private static Map<String, FilterQueryType> filterQueryTypeMap;
     private static Map<String, Float>           searchFieldKeys;
+    private static Set<String>                  sortFields;
     private static Map<String, Float>           locationSearchFieldKeys;
     private        SearchAggregateHelper        searchAggregateHelper;
     private        PropertyReader               propertyReader;
@@ -106,6 +110,9 @@ public class SchoolSearchServiceImpl extends AbstractSearchServiceImpl {
         searchFieldKeys.put(NAMES, NAMES_SEARCH_BOOST);
         searchFieldKeys.put(OFFICIAL_NAME + NGRAM, OTHER_NAMES_NGRAM_BOOST);
         searchFieldKeys.put(NAMES + NGRAM, OTHER_NAMES_NGRAM_BOOST);
+
+        sortFields = new HashSet<>();
+        sortFields.add(SORT_DISTANCE_FIELD);
     }
 
     @Override
@@ -159,10 +166,8 @@ public class SchoolSearchServiceImpl extends AbstractSearchServiceImpl {
                 && schoolSearchRequest.getSortOrder() != null
                 && schoolSearchRequest.getSortOrder().containsKey(SORT_DISTANCE_FIELD)) {
             populateNearbyFilterFields(schoolSearchRequest, elasticRequest);
-        } else {
-            schoolSearchRequest.setSortOrder(null);
         }
-
+        validateSortFields(schoolSearchRequest, sortFields);
         populateSortFields(schoolSearchRequest, elasticRequest, SchoolSearch.class);
         return elasticRequest;
     }

@@ -1,6 +1,7 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.RANGE;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_SORT_FIELD;
 
 import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
@@ -12,16 +13,17 @@ import com.paytm.digital.education.elasticsearch.models.FilterField;
 import com.paytm.digital.education.elasticsearch.models.Operator;
 import com.paytm.digital.education.elasticsearch.models.SearchField;
 import com.paytm.digital.education.elasticsearch.models.SortField;
+import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.exception.EducationException;
 import com.paytm.digital.education.explore.enums.Client;
+import com.paytm.digital.education.explore.es.model.ClassifierSearchDoc;
+import com.paytm.digital.education.explore.es.model.CourseSearch;
+import com.paytm.digital.education.explore.es.model.ExamSearch;
 import com.paytm.digital.education.explore.es.model.GeoLocation;
+import com.paytm.digital.education.explore.es.model.InstituteSearch;
+import com.paytm.digital.education.explore.es.model.NestedCourseSearch;
 import com.paytm.digital.education.explore.es.model.SchoolSearch;
 import com.paytm.digital.education.explore.es.model.SearchHistoryEsDoc;
-import com.paytm.digital.education.explore.es.model.InstituteSearch;
-import com.paytm.digital.education.explore.es.model.CourseSearch;
-import com.paytm.digital.education.explore.es.model.NestedCourseSearch;
-import com.paytm.digital.education.explore.es.model.ExamSearch;
-import com.paytm.digital.education.explore.es.model.ClassifierSearchDoc;
 import com.paytm.digital.education.explore.request.dto.search.Classification;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.builders.SearchResponseBuilder;
@@ -44,6 +46,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.PostConstruct;
 
@@ -208,6 +211,17 @@ public abstract class AbstractSearchServiceImpl {
                 sortFields[i++] = sortField;
             }
             elasticRequest.setSortFields(sortFields);
+        }
+    }
+
+    protected void validateSortFields(SearchRequest searchRequest, Set<String> allowedSortFields) {
+        if (!CollectionUtils.isEmpty(searchRequest.getSortOrder())) {
+            searchRequest.getSortOrder().forEach((s, dataSortOrder) -> {
+                if (!allowedSortFields.contains(s)) {
+                    throw new BadRequestException(INVALID_SORT_FIELD,
+                            INVALID_SORT_FIELD.getExternalMessage());
+                }
+            });
         }
     }
 

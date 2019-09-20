@@ -121,7 +121,8 @@ public enum ErrorEnum {
     LAT_INVALID(4056, "Please provide valid latitude in request.",
             HttpStatus.BAD_REQUEST, 0),
     LON_INVALID(4057, "Please provide valid longitude in request.",
-            HttpStatus.BAD_REQUEST, 0);
+            HttpStatus.BAD_REQUEST, 0),
+    INVALID_SORT_FIELD(4058, "Invalid requested sort field(s).", HttpStatus.BAD_REQUEST,0);
 
     private final int        internalCode;
     private final String     externalMessage;
