@@ -46,6 +46,7 @@ import static com.paytm.digital.education.explore.constants.CampusEngagementCons
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.ARTICLES;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.XCEL_SUBMITTED_DATE_FORMAT;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.DRIVE_URL;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.DIRECTORY_SEPARATOR_SLASH;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
 
 @Slf4j
@@ -430,7 +431,8 @@ public class CampusAdminServiceImpl implements CampusAdminService {
                 GoogleConfig.getCampusCredentialFileName(),
                 GoogleConfig.getExploreCredentialFolderPath()).getKey();
         if (Objects.nonNull(imageUrl)) {
-            ambassador.setImageUrl(imageUrl);
+            log.info("Setting image URL : " + (DIRECTORY_SEPARATOR_SLASH + imageUrl));
+            ambassador.setImageUrl(DIRECTORY_SEPARATOR_SLASH + imageUrl);
             return true;
         } else {
             return false;
