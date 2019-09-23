@@ -82,7 +82,7 @@ public class CoachingCourseFeatureImportService extends AbstractImportService
             failureMessage = e.getMessage();
         }
         if (null == response || !response.getStatusCode().is2xxSuccessful()
-                || null == response.getBody() || null == response.getBody().getInstituteId()) {
+                || null == response.getBody() || null == response.getBody().getCoachingCourseFeatureId()) {
             if (EMPTY_STRING.equals(failureMessage)) {
                 failureMessage = "Failed to put new data in CoachingCourseFeature collection";
             }
