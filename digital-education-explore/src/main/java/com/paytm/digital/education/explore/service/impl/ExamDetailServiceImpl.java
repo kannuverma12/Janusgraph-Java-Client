@@ -18,6 +18,8 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.ZER
 import static com.paytm.digital.education.explore.enums.EducationEntity.EXAM;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.empty;
 
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.database.entity.Exam;
@@ -58,6 +60,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -266,31 +269,33 @@ public class ExamDetailServiceImpl {
         examDetail.setLogoUrl(examLogoHelper.getExamLogoUrl(exam.getExamId(), exam.getLogo()));
         examDetail.setExamCenters(getExamCenters(exam.getInstances()));
         List<Event> importantDates = new ArrayList<>();
-        int instanceIndex = -1;
+        Optional<Instance> nearestInstance = empty();
         if (!CollectionUtils.isEmpty(exam.getInstances())) {
-            instanceIndex =
-                    examInstanceHelper.getRelevantInstanceIndex(exam.getInstances(), APPLICATION);
-            if (!CollectionUtils.isEmpty(exam.getInstances().get(instanceIndex).getExamCenters())) {
-                int centersCount = exam.getInstances().get(instanceIndex).getExamCenters().size();
+            nearestInstance =
+                    examInstanceHelper.getNearestInstance(exam.getInstances());
+            if (nearestInstance.isPresent()) {
+                List<com.paytm.digital.education.explore.database.entity.Event> events =
+                        nearestInstance.map(Instance::getEvents).orElse(emptyList());
+                int centersCount = nearestInstance.map(Instance::getExamCenters).map(List::size).orElse(0);
                 examDetail.setCentersCount(centersCount);
+                importantDates
+                        .addAll(examInstanceHelper
+                                .convertEntityEventToResponse(exam.getExamFullName(), events));
             }
-            importantDates
-                    .addAll(examInstanceHelper.convertEntityEventToResponse(exam.getExamFullName(),
-                            exam.getInstances().get(instanceIndex).getEvents()));
         }
-        if (!CollectionUtils.isEmpty(exam.getSubExams()) && instanceIndex != -1) {
-            int parentInstanceId = exam.getInstances().get(instanceIndex).getInstanceId();
+        if (!CollectionUtils.isEmpty(exam.getSubExams()) && nearestInstance.isPresent()) {
+            int parentInstanceId = nearestInstance.get().getInstanceId();
             examDetail.setDurationInHour(exam.getSubExams().get(0).getDurationHours());
             addSubExamData(parentInstanceId, exam.getSubExams(), examDetail, importantDates);
         }
         examDetail.setImportantDates(importantDates);
         if (CollectionUtils.isEmpty(examDetail.getSyllabus())) {
             List<Syllabus> syllabusList = new ArrayList<>();
-            if (!CollectionUtils
-                    .isEmpty(exam.getInstances().get(instanceIndex).getSyllabusList())) {
+            List<com.paytm.digital.education.explore.database.entity.Syllabus> syllabusListFromInstance
+                    = nearestInstance.map(Instance::getSyllabusList).orElse(emptyList());
+            if (!CollectionUtils.isEmpty(syllabusListFromInstance)) {
                 List<Section> sections =
-                        getSectionsFromEntitySyllabus(
-                                exam.getInstances().get(instanceIndex).getSyllabusList());
+                        getSectionsFromEntitySyllabus(syllabusListFromInstance);
                 syllabusList.add(new Syllabus(exam.getExamFullName(), sections));
             } else if (!CollectionUtils.isEmpty(exam.getSyllabus())) {
                 List<Section> sections = getSectionsFromEntitySyllabus(exam.getSyllabus());

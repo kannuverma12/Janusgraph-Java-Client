@@ -2,8 +2,11 @@ package com.paytm.digital.education.utility;
 
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.LocalDate;
 import org.slf4j.helpers.MessageFormatter;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.Date;
 
 @UtilityClass
 public class CommonUtils {
@@ -52,5 +55,11 @@ public class CommonUtils {
 
     public String addCDNPrefixAndEncode(String s) {
         return encodeUrl(ASSET_CDN_PREFIX + s);
+    }
+
+    public boolean isDateEqualsOrAfter(Date d1, Date d2) {
+        LocalDate jodaDate1 = LocalDate.fromDateFields(d1);
+        LocalDate jodaDate2 = LocalDate.fromDateFields(d2);
+        return jodaDate1.equals(jodaDate2) || jodaDate1.isAfter(jodaDate2);
     }
 }
