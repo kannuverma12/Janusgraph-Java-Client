@@ -33,14 +33,12 @@ public class RankingAdminController {
     public @ResponseBody RankingResponse updateRankings(
             @RequestBody @Valid
                     RankingsRequest rankingsRequest) {
-        log.info("Updating Paytm ranking");
         return rankingService.updateRankings(rankingsRequest);
     }
 
     @GetMapping ("/admin/v1/rankings")
     public @ResponseBody RankingResponse getRankings(@RequestParam(value = "entity")
             @NotNull EducationEntity entity) {
-        log.info("Getting rankings");
         return rankingService.getPaytmRankings(entity);
     }
 }
