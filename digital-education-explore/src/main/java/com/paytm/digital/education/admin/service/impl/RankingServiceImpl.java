@@ -52,9 +52,7 @@ public class RankingServiceImpl implements RankingService {
 
         List<EntityRankingResponse> rankingList = new ArrayList<>();
 
-        Class type = entity.equals(EducationEntity.INSTITUTE) ? Institute.class :
-                entity.equals(EducationEntity.EXAM) ? Exam.class :
-                        entity.equals(EducationEntity.SCHOOL) ? School.class : null;
+        Class type = getEntityClass(entity);
 
         if (Objects.nonNull(type)) {
             rankingResponse.setEntity(entity.name());
@@ -97,8 +95,16 @@ public class RankingServiceImpl implements RankingService {
                 }
             }
             rankingResponse.setRankings(rankingList);
+        } else {
+            return getResponse(rankingResponse, "Invalid Entity", 412);
         }
         return rankingResponse;
+    }
+
+    private Class getEntityClass(EducationEntity entity) {
+        return entity.equals(EducationEntity.INSTITUTE) ? Institute.class :
+                entity.equals(EducationEntity.EXAM) ? Exam.class :
+                        entity.equals(EducationEntity.SCHOOL) ? School.class : null;
     }
 
     private EntityRankingResponse setRankingResponse(Long entityId, Long paytmRank,
@@ -116,13 +122,8 @@ public class RankingServiceImpl implements RankingService {
 
         RankingResponse rankingResponse = new RankingResponse();
         EducationEntity entity = rankRequest.getEntity();
-        Class type = entity.equals(EducationEntity.INSTITUTE) ? Institute.class :
-                entity.equals(EducationEntity.EXAM) ? Exam.class :
-                        entity.equals(EducationEntity.SCHOOL) ? School.class : null;
-
-        String key = entity.equals(EducationEntity.INSTITUTE) ? INSTITUTE_ID :
-            entity.equals(EducationEntity.EXAM) ? EXAM_ID :
-                    entity.equals(EducationEntity.SCHOOL) ? SCHOOL_ID : null;
+        Class type = getEntityClass(entity);
+        String key = getEntityKey(entity);
 
         if (!StringUtils.isEmpty(type) && !StringUtils.isEmpty(key)) {
             rankingResponse.setEntity(entity.name());
@@ -159,6 +160,12 @@ public class RankingServiceImpl implements RankingService {
             return getResponse(rankingResponse, "Paytm Ranks updated", 200);
         }
         return rankingResponse;
+    }
+
+    private String getEntityKey(EducationEntity entity) {
+        return entity.equals(EducationEntity.INSTITUTE) ? INSTITUTE_ID :
+                entity.equals(EducationEntity.EXAM) ? EXAM_ID :
+                        entity.equals(EducationEntity.SCHOOL) ? SCHOOL_ID : null;
     }
 
     private RankingResponse getResponse(RankingResponse rankingResponse, String message,
