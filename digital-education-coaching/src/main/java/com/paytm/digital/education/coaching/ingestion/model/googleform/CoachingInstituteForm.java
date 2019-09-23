@@ -93,10 +93,6 @@ public class CoachingInstituteForm {
     @GoogleSheetColumnName("Level Of Education")
     private String levelOfEducation;
 
-    @JsonProperty("scholarship_matrix")
-    @GoogleSheetColumnName("Scholarship Matrix")
-    private String scholarshipMatrix;
-
     @JsonProperty("highlight_attribute_name1")
     @GoogleSheetColumnName("Highlight Attribute Name1")
     private String highlightAttributeName1;

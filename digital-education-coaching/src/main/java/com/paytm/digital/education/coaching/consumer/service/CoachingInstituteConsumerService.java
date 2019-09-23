@@ -92,9 +92,9 @@ public class CoachingInstituteConsumerService {
         List<TopRanker> topRankerList = getTopRankersForInstitute(instituteId);
         List<CoachingCourseTypeResponse> listOfCourseType = new ArrayList<>();
         if (Objects.nonNull(coachingInstituteEntity.getCourseTypes())) {
-            for (String courseType : coachingInstituteEntity.getCourseTypes()) {
+            for (CourseType courseType : coachingInstituteEntity.getCourseTypes()) {
                 listOfCourseType.add(CoachingCourseType
-                        .getStaticDataByCourseType(CourseType.fromString(courseType)));
+                        .getStaticDataByCourseType(courseType));
             }
         }
 

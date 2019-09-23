@@ -40,6 +40,7 @@ public class ExportCoachingInstituteTransformer {
                             //TODO
                             .levelOfEducation(EMPTY_STRING)
                             //TODO
+                            .paytmMerchantId(entity.getPaytmMerchantId())
                             .moreInfo1(entity.getMoreInfo1())
                             .moreInfo2(entity.getMoreInfo2())
                             .moreInfo3(entity.getMoreInfo3())
@@ -75,7 +76,6 @@ public class ExportCoachingInstituteTransformer {
         if (CollectionUtils.isEmpty(faqs)) {
             return;
         }
-
         if (null != faqs.get(0)) {
             form.setFaq1(faqs.get(0).getQuestion());
             form.setFaqAns1(faqs.get(0).getAnswers());
@@ -95,7 +95,6 @@ public class ExportCoachingInstituteTransformer {
         if (CollectionUtils.isEmpty(keyHighlights)) {
             return;
         }
-
         if (null != keyHighlights.get(0)) {
             form.setHighlightAttributeName1(keyHighlights.get(0).getKey());
             form.setHighlightLogo1(keyHighlights.get(0).getLogo());

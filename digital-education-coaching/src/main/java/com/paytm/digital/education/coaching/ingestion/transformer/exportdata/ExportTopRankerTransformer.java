@@ -32,7 +32,7 @@ public class ExportTopRankerTransformer {
                         .examYear(entity.getExamYear())
                         .collegeAdmitted(entity.getCollegeAdmitted())
                         .testimonial(entity.getTestimonial())
-                        .category(entity.getStudentCategory())
+                        .category(entity.getStudentCategory().getText())
                         .globalPriority(entity.getPriority())
                         .statusActive(ExportCommonTransformer.convertBooleanToString(
                                 entity.getIsEnabled()))

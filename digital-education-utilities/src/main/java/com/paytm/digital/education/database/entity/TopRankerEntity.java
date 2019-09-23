@@ -1,5 +1,6 @@
 package com.paytm.digital.education.database.entity;
 
+import com.paytm.digital.education.enums.StudentCategory;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
@@ -57,7 +58,7 @@ public class TopRankerEntity extends Base {
     private String collegeAdmitted;
 
     @Field("student_category")
-    private String studentCategory;
+    private StudentCategory studentCategory;
 
     @Field("testimonial")
     private String testimonial;

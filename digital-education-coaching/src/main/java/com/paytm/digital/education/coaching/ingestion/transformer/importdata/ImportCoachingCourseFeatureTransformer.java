@@ -18,8 +18,6 @@ public class ImportCoachingCourseFeatureTransformer {
                 .logo(form.getLogo())
                 .description(form.getFacilityDescription())
                 .priority(form.getPriority())
-                .coachingCourseFeatureName(CoachingCourseFeatureName.fromString(
-                        form.getFacilityType()))
                 .isEnabled(ImportCommonTransformer.convertStringToBoolean(
                         form.getStatusActive()))
                 .build();

@@ -271,7 +271,7 @@ public class CoachingCourseService {
                 .coachingInstituteName(institute.getBrandName())
                 .courseId(course.getCourseId())
                 .courseName(course.getName())
-                .courseType(CourseType.fromString(course.getCourseType()))
+                .courseType(course.getCourseType())
                 .courseLogo(institute.getLogo())
                 .courseDescription(course.getDescription())
                 .originalPrice(course.getOriginalPrice())

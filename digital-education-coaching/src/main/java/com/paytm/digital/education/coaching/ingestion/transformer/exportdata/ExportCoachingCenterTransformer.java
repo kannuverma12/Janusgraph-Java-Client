@@ -25,8 +25,8 @@ public class ExportCoachingCenterTransformer {
                             .instituteId(entity.getInstituteId())
                             .officialName(entity.getOfficialName())
                             .courseTypes(StringUtils.join(entity.getCourseTypes(), ","))
-                            .openingTime(EMPTY_STRING)
-                            .closingTime(EMPTY_STRING)
+                            .openingTime(entity.getOpeningTime().toString())
+                            .closingTime(entity.getClosingTime().toString())
                             .centerImage(entity.getCenterImage())
                             .globalPriority(entity.getPriority())
                             .statusActive(ExportCommonTransformer.convertBooleanToString(

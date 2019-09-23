@@ -21,7 +21,7 @@ public class ExportCoachingExamTransformer {
                 .map(entity -> CoachingExamForm.builder()
                         .coachingExamId(entity.getCoachingExamId())
                         .instituteId(entity.getInstituteId())
-                        .examType(entity.getExamType())
+                        .examType(entity.getExamType().getText())
                         .examName(entity.getExamName())
                         .examDescription(entity.getExamDescription())
                         .streamIds(entity.getStreamIds() == null

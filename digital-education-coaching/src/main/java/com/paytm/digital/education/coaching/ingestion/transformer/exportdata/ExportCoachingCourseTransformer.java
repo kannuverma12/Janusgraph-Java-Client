@@ -25,15 +25,14 @@ public class ExportCoachingCourseTransformer {
                             .courseId(entity.getCourseId())
                             .courseName(entity.getName())
                             .instituteId(entity.getCoachingInstituteId())
-                            .courseType(entity.getCourseType())
+                            .courseType(entity.getCourseType().getText())
                             .streamIds(entity.getStreamIds() == null
                                     ? EMPTY_STRING : StringUtils.join(entity.getStreamIds(), ","))
                             .examPreparedIds(entity.getPrimaryExamIds() == null
-                                    ?
-                                    EMPTY_STRING :
+                                    ? EMPTY_STRING :
                                     StringUtils.join(entity.getPrimaryExamIds(), ","))
                             .courseDurationValue(entity.getDuration())
-                            .courseDurationType(entity.getDurationType())
+                            .courseDurationType(entity.getDurationType().getText())
                             .eligibilityCriteria(entity.getEligibility())
                             .courseIntroduction(entity.getInfo())
                             .courseDescription(entity.getDescription())
@@ -42,9 +41,10 @@ public class ExportCoachingCourseTransformer {
                                     StringUtils.join(entity.getCourseFeatureIds(), ","))
                             .originalPrice(entity.getOriginalPrice())
                             .discountedPrice(entity.getDiscountedPrice())
-                            .levelOfEducation(entity.getCourseLevel())
-                            .language(entity.getLanguage())
+                            .levelOfEducation(entity.getCourseLevel().getDisplayName())
+                            .language(entity.getLanguage().getText())
                             .syllabus(entity.getSyllabus())
+                            .courseCovers(entity.getCourseCover().getText())
                             .howToUse1(entity.getHowToUse1())
                             .howToUse2(entity.getHowToUse2())
                             .howToUse3(entity.getHowToUse3())

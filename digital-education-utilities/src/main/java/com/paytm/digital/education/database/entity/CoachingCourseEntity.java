@@ -3,6 +3,11 @@ package com.paytm.digital.education.database.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.paytm.digital.education.database.embedded.CoachingCourseImportantDate;
 import com.paytm.digital.education.database.embedded.Faq;
+import com.paytm.digital.education.enums.CourseCover;
+import com.paytm.digital.education.enums.CourseLevel;
+import com.paytm.digital.education.enums.CourseType;
+import com.paytm.digital.education.enums.DurationType;
+import com.paytm.digital.education.enums.Language;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
@@ -37,7 +42,7 @@ public class CoachingCourseEntity extends Base {
     private Long coachingInstituteId;
 
     @Field("course_type")
-    private String courseType;
+    private CourseType courseType;
 
     @Field("stream_ids")
     private List<Long> streamIds;
@@ -46,7 +51,7 @@ public class CoachingCourseEntity extends Base {
     private List<Long> primaryExamIds;
 
     @Field("duration_type")
-    private String durationType;
+    private DurationType durationType;
 
     @Field("duration")
     private Integer duration;
@@ -67,13 +72,13 @@ public class CoachingCourseEntity extends Base {
     private Double discountedPrice;
 
     @Field("level")
-    private String courseLevel;
+    private CourseLevel courseLevel;
 
     @Field("course_cover")
-    private String courseCover;
+    private CourseCover courseCover;
 
     @Field("language")
-    private String language;
+    private Language language;
 
     @Field("syllabus")
     private String syllabus;

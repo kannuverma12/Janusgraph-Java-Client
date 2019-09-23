@@ -2,6 +2,7 @@ package com.paytm.digital.education.database.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.paytm.digital.education.database.embedded.OfficialAddress;
+import com.paytm.digital.education.enums.CourseType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
@@ -10,8 +11,6 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -39,7 +38,7 @@ public class CoachingCenterEntity extends Base {
     private OfficialAddress officialAddress;
 
     @Field("course_types")
-    private List<String> courseTypes;
+    private List<CourseType> courseTypes;
 
     @Field("opening_time")
     private LocalTime openingTime;
@@ -49,5 +48,4 @@ public class CoachingCenterEntity extends Base {
 
     @Field("center_image")
     private String centerImage;
-
 }

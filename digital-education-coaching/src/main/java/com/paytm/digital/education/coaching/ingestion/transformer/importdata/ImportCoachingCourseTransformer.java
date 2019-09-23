@@ -40,7 +40,6 @@ public class ImportCoachingCourseTransformer {
                 .courseLevel(CourseLevel.fromString(form.getLevelOfEducation()))
                 .language(Language.fromString(form.getLanguage()))
                 .syllabusAndBrochure(form.getSyllabus())
-                .priority(form.getGlobalPriority())
                 .isCertificateAvailable(ImportCommonTransformer.convertStringToBoolean(
                         form.getCertificate()))
                 .isDoubtSolvingForumAvailable(ImportCommonTransformer.convertStringToBoolean(
@@ -75,6 +74,7 @@ public class ImportCoachingCourseTransformer {
                 .cgst(form.getCgst())
                 .igst(form.getIgst())
                 .tcs(form.getTcs())
+                .priority(form.getGlobalPriority())
                 .isEnabled(ImportCommonTransformer.convertStringToBoolean(form.getStatusActive()))
                 .build();
     }

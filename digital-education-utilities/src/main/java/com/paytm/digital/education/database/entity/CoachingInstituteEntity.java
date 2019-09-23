@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.paytm.digital.education.database.embedded.Faq;
 import com.paytm.digital.education.database.embedded.KeyHighlight;
 import com.paytm.digital.education.database.embedded.OfficialAddress;
+import com.paytm.digital.education.enums.CourseLevel;
+import com.paytm.digital.education.enums.CourseType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
@@ -48,7 +50,7 @@ public class CoachingInstituteEntity extends Base {
     private List<Long> exams;
 
     @Field("course_types")
-    private List<String> courseTypes;
+    private List<CourseType> courseTypes;
 
     @Field("establishment_year")
     private String establishmentYear;
@@ -62,7 +64,7 @@ public class CoachingInstituteEntity extends Base {
     private List<Faq> faqs;
 
     @Field("course_levels")
-    private List<String> courseLevels;
+    private List<CourseLevel> courseLevels;
 
     @Field("paytm_merchant_id")
     private String paytmMerchantId;

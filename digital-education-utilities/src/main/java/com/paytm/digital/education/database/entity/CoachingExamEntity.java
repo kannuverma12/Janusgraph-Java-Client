@@ -1,6 +1,7 @@
 package com.paytm.digital.education.database.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.paytm.digital.education.enums.ExamType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
@@ -30,7 +31,7 @@ public class CoachingExamEntity extends Base {
     private Long instituteId;
 
     @Field("exam_type")
-    private String examType;
+    private ExamType examType;
 
     @Field("exam_name")
     private String examName;
