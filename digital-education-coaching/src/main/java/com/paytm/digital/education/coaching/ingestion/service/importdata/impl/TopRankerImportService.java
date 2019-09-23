@@ -80,6 +80,7 @@ public class TopRankerImportService extends AbstractImportService implements Imp
 
         if (null == response || !response.getStatusCode().is2xxSuccessful()
                 || null == response.getBody() || null == response.getBody().getTopRankerId()) {
+            log.error("Response: {}", response);
             if (EMPTY_STRING.equals(failureMessage)) {
                 failureMessage = "Failed to put new data in TopRanker collection";
             }

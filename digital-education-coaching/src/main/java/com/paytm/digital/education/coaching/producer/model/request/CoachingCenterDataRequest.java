@@ -16,9 +16,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 @Data
@@ -53,10 +52,12 @@ public class CoachingCenterDataRequest {
     private List<CourseType> courseTypes;
 
     @NotNull
-    private LocalTime openingTime;
+    @Pattern(regexp = "^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$")
+    private String openingTime;
 
     @NotNull
-    private LocalTime closingTime;
+    @Pattern(regexp = "^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$")
+    private String closingTime;
 
     @NotEmpty
     private String centerImage;

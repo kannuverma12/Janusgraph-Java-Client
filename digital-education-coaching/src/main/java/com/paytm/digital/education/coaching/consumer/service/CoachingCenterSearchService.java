@@ -137,7 +137,7 @@ public class CoachingCenterSearchService extends AbstractSearchService {
                 .centerId(coachingCenterSearch.getCenterId())
                 .instituteId(coachingCenterSearch.getInstituteId())
                 .officialName(coachingCenterSearch.getOfficialName())
-                .imageUrl(coachingCenterSearch.getImageUrl())
+                .centerImage(coachingCenterSearch.getCenterImage())
                 .openingTime(coachingCenterSearch.getOpeningTime())
                 .closingTime(coachingCenterSearch.getClosingTime())
                 .addressLine1(coachingCenterSearch.getAddressLine1())

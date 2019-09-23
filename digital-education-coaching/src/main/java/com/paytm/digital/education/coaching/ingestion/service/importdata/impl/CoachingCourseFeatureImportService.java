@@ -71,10 +71,10 @@ public class CoachingCourseFeatureImportService extends AbstractImportService
         try {
             final CoachingCourseFeatureDataRequest request = this.buildRequest(featureForm);
             if (null == featureForm.getCourseFacilityId()) {
-                response = this.producerCoachingCourseFeatureController.createCoachingBanner(
+                response = this.producerCoachingCourseFeatureController.createCoachingCourseFeature(
                         request);
             } else {
-                response = this.producerCoachingCourseFeatureController.updateCoachingBanner(
+                response = this.producerCoachingCourseFeatureController.updateCoachingCourseFeature(
                         request);
             }
         } catch (final Exception e) {
@@ -82,7 +82,9 @@ public class CoachingCourseFeatureImportService extends AbstractImportService
             failureMessage = e.getMessage();
         }
         if (null == response || !response.getStatusCode().is2xxSuccessful()
-                || null == response.getBody() || null == response.getBody().getCoachingCourseFeatureId()) {
+                || null == response.getBody() || null == response.getBody()
+                .getCoachingCourseFeatureId()) {
+            log.error("Response: {}", response);
             if (EMPTY_STRING.equals(failureMessage)) {
                 failureMessage = "Failed to put new data in CoachingCourseFeature collection";
             }
@@ -97,9 +99,9 @@ public class CoachingCourseFeatureImportService extends AbstractImportService
         try {
             final CoachingCourseFeatureDataRequest request = this.buildRequest(featureForm);
             if (null == featureForm.getInstituteId()) {
-                this.producerCoachingCourseFeatureController.createCoachingBanner(request);
+                this.producerCoachingCourseFeatureController.createCoachingCourseFeature(request);
             } else {
-                this.producerCoachingCourseFeatureController.updateCoachingBanner(request);
+                this.producerCoachingCourseFeatureController.updateCoachingCourseFeature(request);
             }
         } catch (final Exception e) {
             log.error("Got Exception in upsertFailedRecords for input: {}, exception: ", form, e);

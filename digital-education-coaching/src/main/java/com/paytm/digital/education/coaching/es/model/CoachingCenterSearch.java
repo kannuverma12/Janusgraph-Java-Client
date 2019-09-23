@@ -2,7 +2,6 @@ package com.paytm.digital.education.coaching.es.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
@@ -18,7 +17,7 @@ public class CoachingCenterSearch {
     private Long         centerId;
     private Long         instituteId;
     private String       officialName;
-    private String       imageUrl;
+    private String       centerImage;
     private String       openingTime;
     private String       closingTime;
     private String       addressLine1;

@@ -36,7 +36,7 @@ public class ProducerCoachingCourseFeatureController {
     @ApiOperation(
             value = "creates a coaching course feature",
             notes = "Adds new banner in the coaching course feature collection")
-    public ResponseEntity<CoachingCourseFeatureDTO> createCoachingBanner(
+    public ResponseEntity<CoachingCourseFeatureDTO> createCoachingCourseFeature(
             @Valid @RequestBody CoachingCourseFeatureDataRequest request) {
         return new ResponseEntity<>(coachingCourseFeatureManagerService.create(request), HttpStatus.OK);
     }
@@ -48,7 +48,7 @@ public class ProducerCoachingCourseFeatureController {
     @ApiOperation(
             value = "update existing coaching course feature",
             notes = "update coaching course feature in the coaching banner collection")
-    public ResponseEntity<CoachingCourseFeatureDTO> updateCoachingBanner(
+    public ResponseEntity<CoachingCourseFeatureDTO> updateCoachingCourseFeature(
             @Valid @RequestBody CoachingCourseFeatureDataRequest request) {
         return new ResponseEntity<>(coachingCourseFeatureManagerService.update(request), HttpStatus.OK);
     }

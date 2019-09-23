@@ -94,7 +94,7 @@ public class StreamImportService extends AbstractImportService implements Import
 
         if (null == response || !response.getStatusCode().is2xxSuccessful()
                 || null == response.getBody() || null == response.getBody().getStreamId()) {
-
+            log.error("Response: {}", response);
             if (EMPTY_STRING.equals(failureMessage)) {
                 failureMessage = "Failed to put data in Stream collection";
             }

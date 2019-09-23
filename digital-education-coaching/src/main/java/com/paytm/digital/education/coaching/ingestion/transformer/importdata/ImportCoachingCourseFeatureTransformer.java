@@ -13,8 +13,8 @@ public class ImportCoachingCourseFeatureTransformer {
         return CoachingCourseFeatureDataRequest.builder()
                 .coachingCourseFeatureId(form.getCourseFacilityId())
                 .instituteId(form.getInstituteId())
-                .coachingCourseFeatureName(
-                        CoachingCourseFeatureName.fromString(form.getFacilityType()))
+                .coachingCourseFeatureName(CoachingCourseFeatureName.fromString(
+                        form.getFacilityType()))
                 .logo(form.getLogo())
                 .description(form.getFacilityDescription())
                 .priority(form.getPriority())

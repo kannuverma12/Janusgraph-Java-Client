@@ -82,6 +82,7 @@ public class CoachingBannerImportService extends AbstractImportService
 
         if (null == response || !response.getStatusCode().is2xxSuccessful()
                 || null == response.getBody() || null == response.getBody().getCoachingBannerId()) {
+            log.error("Response: {}", response);
             if (EMPTY_STRING.equals(failureMessage)) {
                 failureMessage = "Failed to put new data in CoachingBanner collection";
             }

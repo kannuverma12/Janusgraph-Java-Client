@@ -4,8 +4,6 @@ import com.paytm.digital.education.coaching.ingestion.model.googleform.CoachingC
 import com.paytm.digital.education.coaching.producer.model.embedded.OfficialAddress;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCenterDataRequest;
 
-import java.time.LocalTime;
-
 public class ImportCoachingCenterTransformer {
 
     public static CoachingCenterDataRequest convert(final CoachingCenterForm form) {
@@ -19,8 +17,8 @@ public class ImportCoachingCenterTransformer {
                 .officialAddress(convertAddress(form))
                 .courseTypes(ImportCommonTransformer.convertCourseTypes(
                         form.getCourseTypes()))
-                .openingTime(LocalTime.MAX)
-                .closingTime(LocalTime.MAX)
+                .openingTime(form.getOpeningTime())
+                .closingTime(form.getClosingTime())
                 .centerImage(form.getCenterImage())
                 .priority(form.getGlobalPriority())
                 .isEnabled(ImportCommonTransformer.convertStringToBoolean(

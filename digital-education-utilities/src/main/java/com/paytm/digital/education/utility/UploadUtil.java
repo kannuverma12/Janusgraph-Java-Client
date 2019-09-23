@@ -48,7 +48,7 @@ public class UploadUtil {
             String imageUrl =
                     s3Service.uploadFile(inputStream, fileName, entityId,
                             relativePath, s3BucketName);
-            log.info("imageUrl: {}", imageUrl);
+            log.info("centerImage: {}", imageUrl);
             return new Pair<>(imageUrl, mimeType);
         } catch (Exception e) {
             log.error("Unable to upload file for file : {} and the error:",

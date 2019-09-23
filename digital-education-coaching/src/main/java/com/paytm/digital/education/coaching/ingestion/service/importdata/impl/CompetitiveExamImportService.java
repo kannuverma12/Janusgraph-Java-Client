@@ -86,7 +86,7 @@ public class CompetitiveExamImportService extends AbstractImportService
 
         if (null == response || !response.getStatusCode().is2xxSuccessful()
                 || null == response.getBody() || null == response.getBody().getExamId()) {
-
+            log.error("Response: {}", response);
             if (EMPTY_STRING.equals(failureMessage)) {
                 failureMessage = "Failed to put data in CompetitiveExam collection";
             }

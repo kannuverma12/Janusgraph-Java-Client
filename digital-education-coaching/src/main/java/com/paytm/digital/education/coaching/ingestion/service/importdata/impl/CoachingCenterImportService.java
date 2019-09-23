@@ -1,5 +1,6 @@
 package com.paytm.digital.education.coaching.ingestion.service.importdata.impl;
 
+import com.paytm.digital.education.coaching.exeptions.CoachingBaseException;
 import com.paytm.digital.education.coaching.ingestion.model.ImportResponse;
 import com.paytm.digital.education.coaching.ingestion.model.googleform.CoachingCenterForm;
 import com.paytm.digital.education.coaching.ingestion.model.properties.DataImportPropertiesRequest;
@@ -13,6 +14,7 @@ import com.paytm.digital.education.coaching.producer.model.request.CoachingCente
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,9 @@ public class CoachingCenterImportService extends AbstractImportService
         implements ImportService {
 
     private static final String TYPE = "CoachingCenter";
+
+    @Value("{$coaching.center.image.prefix}")
+    private String coachingCenterImagePrefix;
 
     @Autowired
     private ProducerCoachingCenterController producerCoachingCenterController;
@@ -65,8 +70,7 @@ public class CoachingCenterImportService extends AbstractImportService
         ResponseEntity<CoachingCenterDTO> response = null;
         String failureMessage = EMPTY_STRING;
         try {
-            final CoachingCenterDataRequest request = ImportCoachingCenterTransformer.convert(
-                    centerForm);
+            final CoachingCenterDataRequest request = this.buildRequest(centerForm);
             if (null == centerForm.getCenterId()) {
                 response = this.producerCoachingCenterController.insertCoachingCenter(request);
             } else {
@@ -79,7 +83,7 @@ public class CoachingCenterImportService extends AbstractImportService
 
         if (null == response || !response.getStatusCode().is2xxSuccessful()
                 || null == response.getBody() || null == response.getBody().getCenterId()) {
-
+            log.error("Response: {}", response);
             if (EMPTY_STRING.equals(failureMessage)) {
                 failureMessage = "Failed to put new data in CoachingCenter collection";
             }
@@ -93,8 +97,7 @@ public class CoachingCenterImportService extends AbstractImportService
     protected <T> void upsertFailedRecords(T form, Class<T> clazz) {
         final CoachingCenterForm centerForm = (CoachingCenterForm) clazz.cast(form);
         try {
-            final CoachingCenterDataRequest request = ImportCoachingCenterTransformer.convert(
-                    centerForm);
+            final CoachingCenterDataRequest request = this.buildRequest(centerForm);
             if (null == centerForm.getCenterId()) {
                 this.producerCoachingCenterController.insertCoachingCenter(request);
             } else {
@@ -103,5 +106,14 @@ public class CoachingCenterImportService extends AbstractImportService
         } catch (final Exception e) {
             log.error("Got Exception in upsertFailedRecords for input: {}, exception: ", form, e);
         }
+    }
+
+    private CoachingCenterDataRequest buildRequest(final CoachingCenterForm form)
+            throws CoachingBaseException {
+        final CoachingCenterDataRequest request = ImportCoachingCenterTransformer.convert(
+                form);
+        request.setCenterImage(this.uploadFile(request.getCenterImage(),
+                this.coachingCenterImagePrefix));
+        return request;
     }
 }

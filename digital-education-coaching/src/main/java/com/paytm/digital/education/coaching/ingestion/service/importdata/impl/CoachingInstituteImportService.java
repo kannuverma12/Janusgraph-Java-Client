@@ -89,6 +89,7 @@ public class CoachingInstituteImportService extends AbstractImportService
 
         if (null == response || !response.getStatusCode().is2xxSuccessful()
                 || null == response.getBody() || null == response.getBody().getInstituteId()) {
+            log.error("Response: {}", response);
             if (EMPTY_STRING.equals(failureMessage)) {
                 failureMessage = "Failed to put new data in CoachingInstitute collection";
             }

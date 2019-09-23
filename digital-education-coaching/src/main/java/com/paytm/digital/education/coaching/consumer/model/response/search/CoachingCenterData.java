@@ -16,7 +16,7 @@ public class CoachingCenterData extends SearchBaseData {
     private Long        centerId;
     private Long        instituteId;
     private String      officialName;
-    private String      imageUrl;
+    private String      centerImage;
     private String      openingTime;
     private String      closingTime;
     private String      addressLine1;

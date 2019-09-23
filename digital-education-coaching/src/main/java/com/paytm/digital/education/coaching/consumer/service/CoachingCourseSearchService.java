@@ -134,11 +134,9 @@ public class CoachingCourseSearchService extends AbstractSearchService {
                         .coachingInstituteId(coachingCourseSearch.getCoachingInstituteId())
                         .coachingInstituteName(coachingCourseSearch.getCoachingInstituteName())
                         .courseType(coachingCourseSearch.getCourseType())
-                        .courseDurationDays(coachingCourseSearch.getCourseDurationDays())
                         .price(coachingCourseSearch.getPrice())
                         .currency(coachingCourseSearch.getCurrency())
                         .courseLevel(coachingCourseSearch.getCourseLevel())
-                        .eligibility(coachingCourseSearch.getEligibility())
                         .urlDisplayKey(CommonUtil
                                 .convertNameToUrlDisplayName(coachingCourseSearch.getCourseName()))
                         .build();

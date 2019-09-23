@@ -41,7 +41,7 @@ public class CoachingCourseForm {
     @GoogleSheetColumnName("Exam Prepared Ids")
     private String examPreparedIds;
 
-    @JsonProperty("course_durationValue")
+    @JsonProperty("course_duration_value")
     @GoogleSheetColumnName("Course Duration Value")
     private Integer courseDurationValue;
 

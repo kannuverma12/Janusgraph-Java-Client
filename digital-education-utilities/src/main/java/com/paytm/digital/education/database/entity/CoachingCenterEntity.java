@@ -41,10 +41,10 @@ public class CoachingCenterEntity extends Base {
     private List<CourseType> courseTypes;
 
     @Field("opening_time")
-    private LocalTime openingTime;
+    private String openingTime;
 
     @Field("closing_time")
-    private LocalTime closingTime;
+    private String closingTime;
 
     @Field("center_image")
     private String centerImage;

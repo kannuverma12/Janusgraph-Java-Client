@@ -36,8 +36,7 @@ public class IngestionController {
 
     @GetMapping(V1 + "/import")
     public ResponseEntity<ImportResponse> ingestData(
-            @RequestHeader("token") String token,
-            @RequestParam("form") @NotEmpty String form) {
+            @RequestHeader("token") String token, @RequestParam("form") @NotEmpty String form) {
 
         if (!this.coachingIngestionAuthToken.equals(token)) {
             return new ResponseEntity("Please try again with correct token",
@@ -56,13 +55,12 @@ public class IngestionController {
 
     @GetMapping(V1 + "/export")
     public ResponseEntity<ExportResponse> exportData(
-            //            @RequestHeader("token") String token,
-            @RequestParam("form") @NotEmpty String form) {
+            @RequestHeader("token") String token, @RequestParam("form") @NotEmpty String form) {
 
-        //        if (!this.coachingIngestionAuthToken.equals(token)) {
-        //            return new ResponseEntity("Please try again with correct token",
-        //                    HttpStatus.UNAUTHORIZED);
-        //        }
+        if (!this.coachingIngestionAuthToken.equals(token)) {
+            return new ResponseEntity("Please try again with correct token",
+                    HttpStatus.UNAUTHORIZED);
+        }
 
         final ExportService exportService = this.exportServiceFactory.getExportService(
                 IngestionFormEntity.fromString(form));

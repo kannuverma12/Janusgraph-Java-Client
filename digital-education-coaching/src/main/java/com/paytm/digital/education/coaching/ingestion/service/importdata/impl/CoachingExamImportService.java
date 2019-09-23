@@ -76,7 +76,7 @@ public class CoachingExamImportService extends AbstractImportService implements 
 
         if (null == response || !response.getStatusCode().is2xxSuccessful()
                 || null == response.getBody() || null == response.getBody().getCoachingExamId()) {
-
+            log.error("Response: {}", response);
             if (EMPTY_STRING.equals(failureMessage)) {
                 failureMessage = "Failed to put new data in CoachingExam collection";
             }

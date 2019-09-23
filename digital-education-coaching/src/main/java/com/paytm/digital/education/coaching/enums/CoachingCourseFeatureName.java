@@ -1,15 +1,17 @@
 package com.paytm.digital.education.coaching.enums;
 
 import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public enum CoachingCourseFeatureName {
 
     TEACHING_METHODOLOGY("Teaching methodology"),
     ONLINE_TEST_SERIES("Online test series"),
     ONE_ON_ONE_COUNSELLING("One on one counselling"),
-    COURSE_MATERAL("Course material"),
+    COURSE_MATERIAL("Course material"),
     PERFORMANCE_TRACKER("Performance tracker"),
-    BOARD_EXAM_PREPERATION("Board Exam Preparation"),
+    BOARD_EXAM_PREPARATION("Board Exam Preparation"),
     DOUBT_SOLVING_SESSIONS("Doubt Solving Sessions"),
     PARENT_TEACHER_MEETING("Parent Teacher Meeting"),
     NATIONAL_LEVEL_TEST_SERIES("National level test series"),
@@ -35,11 +37,13 @@ public enum CoachingCourseFeatureName {
     }
 
     public static CoachingCourseFeatureName fromString(String text) {
-        for (CoachingCourseFeatureName coachingCourseFeatureName : CoachingCourseFeatureName.values()) {
+        for (CoachingCourseFeatureName coachingCourseFeatureName :
+                CoachingCourseFeatureName.values()) {
             if (coachingCourseFeatureName.getText().equalsIgnoreCase(text)) {
                 return coachingCourseFeatureName;
             }
         }
+        log.error("Could not convert text to enum val, text: {}", text);
         return null;
     }
 
