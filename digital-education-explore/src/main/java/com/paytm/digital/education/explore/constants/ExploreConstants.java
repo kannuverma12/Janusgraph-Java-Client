@@ -265,6 +265,7 @@ public interface ExploreConstants {
     String COLLEGE_FOCUS   = "colleges_focus";
     String TOP_COLLEGES    = "top_colleges";
     String TOP_SCHOOLS    = "top_schools";
+    String SCHOOLS_IN_FOCUS    = "schools_focus";
     String TOP_EXAMS       = "top_exams";
     String TOP_EXAMS_APP   = "top_exams_app";
     String ICON            = "icon";

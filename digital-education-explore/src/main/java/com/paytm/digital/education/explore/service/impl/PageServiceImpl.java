@@ -30,6 +30,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EXA
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ICON;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.IMAGE_URL;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.POPULAR_EXAMS_APP;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SCHOOLS_IN_FOCUS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SUB_ITEMS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LOCATIONS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LOGO;
@@ -73,6 +74,7 @@ public class PageServiceImpl implements PageService {
                     case POPULAR_EXAMS_APP:
                     case EXAM_FOCUS_APP:
                     case BROWSE_BY_EXAM_LEVEL:
+                    case SCHOOLS_IN_FOCUS:
                         logoFieldName = LOGO;
                         break;
                     case STREAMS:
