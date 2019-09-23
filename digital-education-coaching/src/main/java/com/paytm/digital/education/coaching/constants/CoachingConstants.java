@@ -115,6 +115,8 @@ public class CoachingConstants {
     public static final String COACHING_COURSE_ID                    = "course_id";
     public static final String COACHING_COURSE_IDS                   = "course_ids";
     public static final String NAME                                  = "name";
+    public static final String PAYTM_REQUEST_ID                      = "PaytmRequestId";
+    public static final String CHECKSUM_HASH                         = "ChecksumHash";
 
     public static final String RESOURCE_NOT_PRESENT = "resource not available";
 
@@ -328,5 +330,15 @@ public class CoachingConstants {
         public static final String TYPE          = "type";
         public static final String HAS_IMPORTED  = "has_imported";
         public static final String IS_IMPORTABLE = "is_importable";
+    }
+
+
+    public static class RestTemplateConstants {
+        public static final Integer HTTP_MAX_CONNECTION_ALLOWED     = 200;
+        public static final Integer HTTP_MAX_CONNECTION_PER_REQUEST = 50;
+
+        public static final Integer MERCHANT_COMMIT_TIMEOUT_MS = 10000;
+
+        public static final String PAYTM_HOST_FOR_SIGNATURE = "https://paytm.com";
     }
 }

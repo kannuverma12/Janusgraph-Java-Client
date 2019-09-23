@@ -2,8 +2,11 @@ package com.paytm.digital.education.coaching.consumer.service;
 
 import com.paytm.digital.education.coaching.consumer.model.dto.CartItem;
 import com.paytm.digital.education.coaching.consumer.model.dto.ConvTaxInfo;
+import com.paytm.digital.education.coaching.consumer.model.dto.MerchantNotifyCartItem;
 import com.paytm.digital.education.coaching.consumer.model.dto.MerchantOrderData;
+import com.paytm.digital.education.coaching.consumer.model.dto.NotifyMerchantInfo;
 import com.paytm.digital.education.coaching.consumer.model.dto.TaxInfo;
+import com.paytm.digital.education.coaching.consumer.model.request.MerchantCommitRequest;
 import com.paytm.digital.education.coaching.consumer.model.request.MerchantNotifyRequest;
 import com.paytm.digital.education.coaching.consumer.model.request.VerifyRequest;
 import com.paytm.digital.education.coaching.consumer.model.response.MerchantNotifyResponse;
@@ -33,6 +36,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.T
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.TransactionConstants.ITEM_SGST_PERCENTAGE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.TransactionConstants.ITEM_UTGST_PERCENTAGE;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_CART_ITEMS;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_MERCHANT_DATA;
 
 @Slf4j
 @Service
@@ -40,6 +44,7 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_CART_ITEMS;
 public class PurchaseService {
 
     private CoachingCourseDAO coachingCourseDAO;
+    private MerchantCall      merchantCall;
 
     public VerifyResponse verify(VerifyRequest request) throws PurchaseException {
         List<CartItem> cartItems = request.getCartItems();
@@ -141,7 +146,29 @@ public class PurchaseService {
     }
 
     public MerchantNotifyResponse notify(MerchantNotifyRequest request) {
-        //TODO: Add the merchant notify integration here
+        List<MerchantNotifyCartItem> cartItems = request.getCartItems();
+
+        if (CollectionUtils.isEmpty(cartItems)) {
+            throw new BadRequestException(INVALID_CART_ITEMS);
+        }
+
+        if (CollectionUtils.isEmpty(request.getMerchantData())) {
+            throw new BadRequestException(INVALID_MERCHANT_DATA);
+        }
+
+        long merchantId = request.getCartItems().get(0).getMerchantId();
+        NotifyMerchantInfo merchantInfo = request.getMerchantData().get(merchantId);
+
+        if (Objects.isNull(merchantInfo)) {
+            throw new BadRequestException(INVALID_MERCHANT_DATA);
+        }
+
+        MerchantCommitRequest requestBody = merchantCall.getMerchantCommitRequestBody(cartItems,
+                request.getUserData());
+
+        MerchantNotifyResponse response = merchantCall.commitMerchantOrder(requestBody,
+                merchantInfo);
+
         double temp = Math.random();
 
         if (temp <= 0.5) {

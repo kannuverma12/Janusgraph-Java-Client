@@ -101,7 +101,9 @@ public enum ErrorEnum {
             HttpStatus.BAD_REQUEST, 0),
     INVALID_CART_ITEMS(4042, "Invalid Cart Items. Please provide valid Cart Items",
             HttpStatus.BAD_REQUEST, 0),
-    ENTITY_LIST_EMPTY(4043, "Atleast one entity is required.", HttpStatus.BAD_REQUEST, 0);
+    ENTITY_LIST_EMPTY(4043, "Atleast one entity is required.", HttpStatus.BAD_REQUEST, 0),
+    INVALID_MERCHANT_DATA(4044, "Invalid merchant info. Please provide valid merchant info.",
+            HttpStatus.BAD_REQUEST, 0);
 
     private final int        internalCode;
     private final String     externalMessage;
