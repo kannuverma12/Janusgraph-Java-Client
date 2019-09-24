@@ -12,6 +12,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EXP
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_SEARCH_NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DATES;
 import static com.paytm.digital.education.explore.enums.Gender.OTHERS;
+import static java.util.Collections.emptyList;
 
 import com.paytm.digital.education.explore.database.entity.Event;
 import com.paytm.digital.education.explore.database.entity.Exam;
@@ -161,8 +162,8 @@ public class ExamInstanceHelper {
             Comparator<EventInstanceDateHolder> comparator) {
         return instances.stream()
             .flatMap(instance ->
-                instance
-                    .getEvents()
+                Optional.ofNullable(instance.getEvents())
+                    .orElse(emptyList())
                     .stream()
                     .map(event ->
                         new EventInstanceDateHolder(event, instance, event.calculateCorrespondingDate())))
@@ -175,7 +176,7 @@ public class ExamInstanceHelper {
         Date presentDate = new Date();
 
         Optional<Instance> nearestFutureInstance = getInstanceAccordingToFilterAndComparator(
-            instances,
+            Optional.ofNullable(instances).orElse(emptyList()),
             holder -> CommonUtils.isDateEqualsOrAfter(holder.getDate(), presentDate),
             Comparator.comparing(EventInstanceDateHolder::getDate));
 
