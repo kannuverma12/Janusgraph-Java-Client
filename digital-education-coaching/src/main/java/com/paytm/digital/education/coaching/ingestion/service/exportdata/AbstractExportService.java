@@ -3,7 +3,6 @@ package com.paytm.digital.education.coaching.ingestion.service.exportdata;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
-import com.paytm.digital.education.coaching.ingestion.model.GoogleSheetColumnName;
 import com.paytm.digital.education.coaching.ingestion.model.properties.DataExportPropertiesRequest;
 import com.paytm.digital.education.coaching.ingestion.model.properties.DataExportPropertiesResponse;
 import com.paytm.digital.education.coaching.ingestion.service.IngestionHelper;
@@ -12,7 +11,6 @@ import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.GoogleDriveUtil;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.lucene.util.CollectionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -59,7 +57,7 @@ public abstract class AbstractExportService {
 
     protected <T> int processRecords(final List<T> list, final Class clazz,
             final String sheetId) {
-        if(CollectionUtils.isEmpty(list)) {
+        if (CollectionUtils.isEmpty(list)) {
             return 0;
         }
 
