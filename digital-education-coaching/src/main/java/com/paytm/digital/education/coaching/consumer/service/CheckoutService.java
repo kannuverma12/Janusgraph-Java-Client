@@ -87,7 +87,7 @@ public class CheckoutService {
                 .convTaxInfo(metaData.getConvTaxInfo())
                 .taxInfo(metaData.getTaxInfo())
                 .tcs(tcs)
-                .courseType(metaData.getCourseType())
+                .courseType(metaData.getCourseType().getText())
                 .courseId(metaData.getCourseId())
                 .userId(metaData.getUserId())
                 .build();

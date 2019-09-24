@@ -1,35 +1,33 @@
-package com.paytm.digital.education.coaching.consumer.model.dto;
+package com.paytm.digital.education.coaching.consumer.model.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.paytm.digital.education.enums.CourseType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class MetaData {
+public class PostMerchantProductsRequest {
+
+    @NotNull
+    private Long merchantId;
+
+    @NotNull
+    private Long userId;
 
     @Valid
-    private ConvTaxInfo convTaxInfo;
+    @NotNull
+    List<MerchantProduct> merchantProductList;
 
-    @Valid
-    private TaxInfo taxInfo;
-
-    @Valid
-    private TCS tcs;
-
-    private String courseType;
-    private Long   courseId;
-    private Long   userId;
-    private Long   merchantProductId;
 }

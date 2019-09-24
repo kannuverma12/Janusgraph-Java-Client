@@ -33,7 +33,7 @@ public class TaxInfo {
     @JsonProperty("totalUTGST")
     private Float totalUTGST;
 
-    @NotEmpty
+    @NotNull
     @JsonProperty("gstin")
     private String gstin;
 }
