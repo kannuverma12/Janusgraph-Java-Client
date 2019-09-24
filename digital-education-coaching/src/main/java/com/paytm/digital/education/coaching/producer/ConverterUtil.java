@@ -210,6 +210,7 @@ public class ConverterUtil {
         coachingCourseEntity.setHowToUse4(request.getHowToUse4());
 
         coachingCourseEntity.setMerchantProductId(request.getMerchantProductId());
+        coachingCourseEntity.setPaytmProductId(request.getPaytmProductId());
 
         coachingCourseEntity.setSgst(request.getSgst());
         coachingCourseEntity.setCgst(request.getCgst());

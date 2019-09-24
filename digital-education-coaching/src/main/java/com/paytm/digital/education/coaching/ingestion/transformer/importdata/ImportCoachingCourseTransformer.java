@@ -76,6 +76,7 @@ public class ImportCoachingCourseTransformer {
                 .tcs(form.getTcs())
                 .priority(form.getGlobalPriority())
                 .isEnabled(ImportCommonTransformer.convertStringToBoolean(form.getStatusActive()))
+                .paytmProductId(form.getPaytmProductId())
                 .build();
     }
 

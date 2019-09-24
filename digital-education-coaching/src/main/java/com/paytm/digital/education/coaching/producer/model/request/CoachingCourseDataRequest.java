@@ -248,6 +248,8 @@ public class CoachingCourseDataRequest {
 
     private String merchantProductId;
 
+    private Long paytmProductId;
+
     @ApiModelProperty(value = "flag is enable/disable course, default is true")
     private Boolean isEnabled = Boolean.TRUE;
 }

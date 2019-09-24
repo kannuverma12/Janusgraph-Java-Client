@@ -232,4 +232,8 @@ public class CoachingCourseForm {
     @JsonProperty("status_active")
     @GoogleSheetColumnName("Status Active")
     private String statusActive;
+
+    @JsonProperty("paytm_product_id")
+    @GoogleSheetColumnName("Paytm Product Id")
+    private Long paytmProductId;
 }

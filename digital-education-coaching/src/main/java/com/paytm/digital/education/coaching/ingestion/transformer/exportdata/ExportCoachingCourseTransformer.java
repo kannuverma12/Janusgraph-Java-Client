@@ -84,6 +84,7 @@ public class ExportCoachingCourseTransformer {
                             .globalPriority(entity.getPriority())
                             .statusActive(ExportCommonTransformer.convertBooleanToString(
                                     entity.getIsEnabled()))
+                            .paytmProductId(entity.getPaytmProductId())
                             .build();
                     fillImportantDates(form, entity.getImportantDates());
                     return form;
