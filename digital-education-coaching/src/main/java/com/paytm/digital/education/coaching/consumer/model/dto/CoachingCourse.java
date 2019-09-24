@@ -19,10 +19,10 @@ public class CoachingCourse {
     private String     description;
     private String     targetExam;
     private String     eligibility;
-    private Integer        duration;
+    private Integer    duration;
     private BigDecimal price;
     private String     imageUrl;
     private String     courseLevel;
-    private Integer        priority;
+    private Integer    priority;
     private String     courseType;
 }

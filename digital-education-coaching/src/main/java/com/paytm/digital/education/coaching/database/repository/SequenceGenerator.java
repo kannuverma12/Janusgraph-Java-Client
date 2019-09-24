@@ -1,8 +1,5 @@
 package com.paytm.digital.education.coaching.database.repository;
 
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.KEY_STRING;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.SEQUENCE;
-
 import com.paytm.digital.education.coaching.database.entity.Counter;
 import lombok.AllArgsConstructor;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
@@ -12,7 +9,11 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Objects;
+
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.KEY_STRING;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.SEQUENCE;
 
 @Repository
 @AllArgsConstructor

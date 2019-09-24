@@ -34,7 +34,8 @@ public class CoachingExamManagerService {
         CoachingInstituteEntity existingCoachingInstitute =
                 coachingInstituteService.findByInstituteId(request.getInstituteId());
         if (Objects.isNull(existingCoachingInstitute)) {
-            throw new InvalidRequestException("institute id not present : " + request.getInstituteId());
+            throw new InvalidRequestException(
+                    "institute id not present : " + request.getInstituteId());
         }
         coachingCourseAdminService.isValidCourseIds(request.getCourseIds());
         streamService.isValidStreamIds(request.getStreamIds());
@@ -45,13 +46,14 @@ public class CoachingExamManagerService {
 
     public CoachingExamDTO updateCoachingExam(CoachingExamDataRequest request) {
         Optional.ofNullable(request.getCoachingExamId())
-                .orElseThrow(
-                    () -> new InvalidRequestException("coaching exams id should be present"));
+                .orElseThrow(() -> new InvalidRequestException(
+                        "coaching exams id should be present"));
 
         CoachingInstituteEntity existingCoachingInstitutes =
                 coachingInstituteService.findByInstituteId(request.getInstituteId());
         if (Objects.isNull(existingCoachingInstitutes)) {
-            throw new InvalidRequestException("institute id not present" + request.getInstituteId());
+            throw new InvalidRequestException(
+                    "institute id not present" + request.getInstituteId());
         }
         coachingCourseAdminService.isValidCourseIds(request.getCourseIds());
         streamService.isValidStreamIds(request.getStreamIds());

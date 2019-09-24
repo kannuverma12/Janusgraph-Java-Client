@@ -1,15 +1,5 @@
 package com.paytm.digital.education.coaching.database.repository;
 
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.ACTIVE;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_CENTER;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_CENTER_ID;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.UPDATED_AT;
-import static com.paytm.digital.education.mapping.ErrorEnum.ENTITY_ID_NOT_PRESENT;
-import static com.paytm.digital.education.mapping.ErrorEnum.NO_SUCH_ENTITY_EXISTS;
-import static com.paytm.digital.education.utility.DateUtil.getCurrentDate;
-
 import com.mongodb.client.result.UpdateResult;
 import com.paytm.digital.education.coaching.database.entity.CoachingCenter;
 import com.paytm.digital.education.coaching.database.entity.CoachingInstitute;
@@ -21,12 +11,21 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.ACTIVE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_CENTER;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_CENTER_ID;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.UPDATED_AT;
+import static com.paytm.digital.education.mapping.ErrorEnum.ENTITY_ID_NOT_PRESENT;
+import static com.paytm.digital.education.mapping.ErrorEnum.NO_SUCH_ENTITY_EXISTS;
+import static com.paytm.digital.education.utility.DateUtil.getCurrentDate;
 
 @Slf4j
 @AllArgsConstructor
@@ -105,11 +104,13 @@ public class CoachingInstituteRepository {
     }
 
     public long updateCoachingCenterStatus(long instituteId, long centerId, boolean activate) {
-        Query mongoQuery = new Query(Criteria.where(INSTITUTE_ID).is(instituteId).and(COACHING_CENTER_ID).is(centerId));
+        Query mongoQuery = new Query(
+                Criteria.where(INSTITUTE_ID).is(instituteId).and(COACHING_CENTER_ID).is(centerId));
         Update updateRequest = new Update();
         updateRequest.set(ACTIVE, activate);
         updateRequest.set(UPDATED_AT, getCurrentDate());
-        UpdateResult updateResult = mongoOperations.updateFirst(mongoQuery, updateRequest, CoachingCenter.class);
+        UpdateResult updateResult =
+                mongoOperations.updateFirst(mongoQuery, updateRequest, CoachingCenter.class);
         if (updateResult.isModifiedCountAvailable()) {
             return updateResult.getModifiedCount();
         }
@@ -117,7 +118,8 @@ public class CoachingInstituteRepository {
     }
 
     private List<CoachingCenter> findCoachingCentersByInstituteId(long instituteId) {
-        Query mongoQuery = new Query(Criteria.where(INSTITUTE_ID).is(instituteId).and(ACTIVE).is(true));
+        Query mongoQuery =
+                new Query(Criteria.where(INSTITUTE_ID).is(instituteId).and(ACTIVE).is(true));
         return mongoOperations.find(mongoQuery, CoachingCenter.class);
     }
 

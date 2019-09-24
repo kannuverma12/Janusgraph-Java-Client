@@ -38,7 +38,8 @@ public class ProducerCoachingCourseFeatureController {
             notes = "Adds new banner in the coaching course feature collection")
     public ResponseEntity<CoachingCourseFeatureDTO> createCoachingCourseFeature(
             @Valid @RequestBody CoachingCourseFeatureDataRequest request) {
-        return new ResponseEntity<>(coachingCourseFeatureManagerService.create(request), HttpStatus.OK);
+        return new ResponseEntity<>(coachingCourseFeatureManagerService.create(request),
+                HttpStatus.OK);
     }
 
     @PutMapping(
@@ -50,7 +51,8 @@ public class ProducerCoachingCourseFeatureController {
             notes = "update coaching course feature in the coaching banner collection")
     public ResponseEntity<CoachingCourseFeatureDTO> updateCoachingCourseFeature(
             @Valid @RequestBody CoachingCourseFeatureDataRequest request) {
-        return new ResponseEntity<>(coachingCourseFeatureManagerService.update(request), HttpStatus.OK);
+        return new ResponseEntity<>(coachingCourseFeatureManagerService.update(request),
+                HttpStatus.OK);
     }
 
 }

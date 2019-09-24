@@ -1,8 +1,5 @@
 package com.paytm.digital.education.coaching.data.service;
 
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_NOT_FOUND_ERROR;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.SUCCESS_MESSAGE;
-
 import com.paytm.digital.education.coaching.database.entity.CoachingCourse;
 import com.paytm.digital.education.coaching.database.repository.CoachingCourseRepositoryOld;
 import com.paytm.digital.education.coaching.response.dto.ResponseDto;
@@ -10,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_NOT_FOUND_ERROR;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.SUCCESS_MESSAGE;
 
 @Service
 public class CoachingCourseServiceOld {

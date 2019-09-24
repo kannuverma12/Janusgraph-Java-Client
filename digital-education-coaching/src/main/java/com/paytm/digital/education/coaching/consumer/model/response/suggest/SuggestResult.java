@@ -12,7 +12,7 @@ import lombok.Data;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class SuggestResult {
 
-    private long entityId;
+    private long   entityId;
     private String urlDisplayKey;
     private String officialName;
     private String logo;

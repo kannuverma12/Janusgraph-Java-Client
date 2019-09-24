@@ -16,14 +16,13 @@ import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_PLACEHOLDER;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_COURSE_FEATURE;
-import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_EXAMS;
 
 @Slf4j
 @Component
@@ -76,7 +75,7 @@ public class CoachingCourseTransformer {
     public List<CoachingCourseFeature> convertCourseFeatures(
             final List<CoachingCourseFeatureEntity> features) {
         if (CollectionUtils.isEmpty(features)) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
         return features.stream()
                 .map(feature -> CoachingCourseFeature.builder()
@@ -100,19 +99,17 @@ public class CoachingCourseTransformer {
                             .get(course.getCourseType())) {
                 String value;
                 try {
-                    final Field field =
-                            CoachingCourseEntity.class.getField(session.getDbFieldName());
+                    final Field field = CoachingCourseEntity.class.getField(
+                            session.getDbFieldName());
                     value = ((Integer) field.get(course)).toString();
                 } catch (final Exception ex) {
                     log.error("Got exception, course: {}", course, ex);
                     continue;
                 }
-
                 sessionDetails.add(CoachingCourseSessionDetails.builder()
                         .key(session.getDisplayName())
                         .value(value)
                         .build());
-
             }
         }
         return sessionDetails;

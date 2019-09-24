@@ -1,7 +1,6 @@
 package com.paytm.digital.education.coaching.db.dao;
 
 import com.paytm.digital.education.coaching.database.repository.SequenceGenerator;
-import com.paytm.digital.education.database.entity.CoachingCenterEntity;
 import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.database.repository.StreamRepository;
 import lombok.NonNull;
@@ -41,6 +40,6 @@ public class CoachingStreamDAO {
     }
 
     public StreamEntity findByStreamName(@NonNull String name) {
-        return streamRepository.findByStreamName(name) ;
+        return streamRepository.findByStreamName(name);
     }
 }

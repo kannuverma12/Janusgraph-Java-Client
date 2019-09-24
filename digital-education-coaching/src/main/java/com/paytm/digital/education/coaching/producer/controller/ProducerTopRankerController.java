@@ -4,7 +4,6 @@ import com.paytm.digital.education.coaching.constants.CoachingConstants;
 import com.paytm.digital.education.coaching.producer.model.dto.TopRankerDTO;
 import com.paytm.digital.education.coaching.producer.model.request.TopRankerDataRequest;
 import com.paytm.digital.education.coaching.producer.service.TopRankerManagerService;
-import com.paytm.digital.education.database.entity.TopRankerEntity;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +44,7 @@ public class ProducerTopRankerController {
     }
 
     @PutMapping(
-            value = V1  + "/admin/top-ranker",
+            value = V1 + "/admin/top-ranker",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(

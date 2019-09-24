@@ -51,9 +51,9 @@ public enum CoachingCourseType {
                     .name(CourseType.E_LEARNING.getText())
                     .build());
 
+    private static Map<CourseType, CoachingCourseTypeResponse> COURSE_TYPE_STATIC_DATA_MAP;
     private final  CourseType                                  courseType;
     private final  CoachingCourseTypeResponse                  coachingCourseTypeResponse;
-    private static Map<CourseType, CoachingCourseTypeResponse> COURSE_TYPE_STATIC_DATA_MAP;
 
     CoachingCourseType(CourseType courseType,
             CoachingCourseTypeResponse coachingCourseTypeResponse) {

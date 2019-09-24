@@ -18,14 +18,14 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class GetCoachingInstituteDetailsResponse {
 
-    private long                     instituteId;
-    private String                   instituteName;
-    private String                   imageUrl;
-    private String                   description;
-    private List<InstituteHighLight> instituteHighlights;
-    private List<Stream>             streams;
-    private List<Exam>               exams;
-    private List<TopRanker>          topRankers;
-    private List<CoachingCourseTypeResponse>             coachingCourseTypes;
-    private List<String>             sections;
+    private long                             instituteId;
+    private String                           instituteName;
+    private String                           imageUrl;
+    private String                           description;
+    private List<InstituteHighLight>         instituteHighlights;
+    private List<Stream>                     streams;
+    private List<Exam>                       exams;
+    private List<TopRanker>                  topRankers;
+    private List<CoachingCourseTypeResponse> coachingCourseTypes;
+    private List<String>                     sections;
 }

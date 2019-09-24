@@ -26,8 +26,8 @@ public class GetCoachingCourseDetailsResponse {
     private String     courseLogo;
     private String     courseDescription;
 
-    private Double     originalPrice;
-    private Double     discountedPrice;
+    private Double originalPrice;
+    private Double discountedPrice;
 
     private long   coachingInstituteId;
     private String coachingInstituteName;

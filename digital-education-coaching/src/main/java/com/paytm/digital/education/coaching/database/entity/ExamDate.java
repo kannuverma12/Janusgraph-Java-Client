@@ -1,7 +1,5 @@
 package com.paytm.digital.education.coaching.database.entity;
 
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.YYYY_MM_DD;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -10,6 +8,8 @@ import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Date;
+
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.YYYY_MM_DD;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)

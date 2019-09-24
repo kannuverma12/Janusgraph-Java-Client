@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.EMPTY_STRING;
-
 public class ExportCoachingCenterTransformer {
 
     public static List<CoachingCenterForm> convert(final List<CoachingCenterEntity> entityList) {

@@ -1,31 +1,31 @@
 package com.paytm.digital.education.coaching.consumer.model.response.search.builder;
 
 import com.paytm.digital.education.coaching.constants.CoachingConstants;
-import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResponse;
-import com.paytm.digital.education.coaching.consumer.model.response.search.FilterData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.FilterBucket;
-import com.paytm.digital.education.coaching.consumer.model.response.search.TermFilterData;
+import com.paytm.digital.education.coaching.consumer.model.response.search.FilterData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.MultipleRangeData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.RangeFilterData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.RangeFilterValue;
+import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResponse;
+import com.paytm.digital.education.coaching.consumer.model.response.search.TermFilterData;
 import com.paytm.digital.education.elasticsearch.enums.AggregationType;
-import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
-import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.AggregationResponse;
-import com.paytm.digital.education.elasticsearch.models.FilterField;
 import com.paytm.digital.education.elasticsearch.models.BucketAggregationResponse;
+import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
+import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
+import com.paytm.digital.education.elasticsearch.models.FilterField;
 import com.paytm.digital.education.elasticsearch.models.MetricAggregationResponse;
 import com.paytm.digital.education.utility.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Map;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Service

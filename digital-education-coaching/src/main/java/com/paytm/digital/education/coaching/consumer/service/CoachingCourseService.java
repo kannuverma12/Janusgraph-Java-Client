@@ -12,7 +12,6 @@ import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
 import com.paytm.digital.education.database.repository.CoachingCourseFeatureRepository;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.enums.CourseType;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.property.reader.PropertyReader;
@@ -54,25 +53,33 @@ public class CoachingCourseService {
     private static final String TARGET_EXAM     = "TARGET_EXAM";
     private static final String TOP_RANKER_EXAM = "TOP_RANKER_EXAM";
 
-    private static final List<String> COURSE_FIELDS     =
-            Arrays.asList("coaching_institute_id", "course_id", "name", "course_type",
-                    "description", "originalPrice", "primary_exam_ids",
-                    "eligibility", "duration", "important_dates", "features", "inclusions",
-                    "session_details", "syllabus", "classroom_lecture_count",
-                    "classroom_lecture_duration", "classroom_test_count",
-                    "classroom_teacher_student_ratio", "elearning_lecture_count",
+    private static final List<String> COURSE_FIELDS =
+            Arrays.asList("faqs", "course_id", "name", "coaching_institute_id", "course_type",
+                    "stream_ids", "primary_exam_ids", "duration_type", "duration", "eligibility",
+                    "info", "description", "original_price", "discounted_price", "level",
+                    "course_cover", "language", "syllabus", "important_dates", "how_to_use_1",
+                    "how_to_use_2", "how_to_use_3", "how_to_use_4", "is_certificate_available",
+                    "is_doubt_solving_forum_available", "is_progress_analysis_available",
+                    "is_rank_analysis_available", "course_features",
+                    "classroom_teacher_student_ratio", "test_count", "test_duration",
+                    "test_question_count", "test_practice_paper_count",
+                    "distance_learning_books_count", "distance_learning_solved_paper_count",
+                    "distance_learning_assignment_count", "elearning_lecture_count",
                     "elearning_lecture_duration", "elearning_online_test_count",
-                    "elearning_practice_paper_count", "test_count", "test_duration",
-                    "test_practice_paper_count", "distance_learning_assignment_count",
-                    "distance_learning_books_count", "distance_learning_solved_paper_count");
-    private static final List<String> EXAM_FIELDS       =
+                    "elearning_practice_paper_count", "classroom_lecture_count",
+                    "classroom_lecture_duration", "classroom_test_count", "sgst", "cgst", "igst",
+                    "tcs", "merchant_product_id");
+
+    private static final List<String> EXAM_FIELDS =
             Arrays.asList("exam_id", "exam_full_name", "conducting_body");
+
     private static final List<String> TOP_RANKER_FIELDS =
             Arrays.asList("top_ranker_id", "institute_id", "center_id", "course_ids",
-                    "course_names", "exam_id", "exam_name", "student_name", "student_photo",
+                    "exam_id", "exam_name", "student_name", "student_photo",
                     "rank_obtained", "exam_year", "testimonial");
-    private static final List<String> INSTITUTE_FIELDS  =
-            Arrays.asList("brand_name", "logo");
+
+    private static final List<String> INSTITUTE_FIELDS =
+            Arrays.asList("institute_id", "brand_name", "logo");
 
     private final CoachingCourseTransformer       coachingCourseTransformer;
     private final CommonMongoRepository           commonMongoRepository;
@@ -90,7 +97,7 @@ public class CoachingCourseService {
         }
 
         final CoachingInstituteEntity institute = this.fetchInstitute(
-                course.getCoachingInstituteId(), INSTITUTE_FIELDS);
+                course.getCoachingInstituteId());
         if (institute == null) {
             log.warn("Got null CoachingInstitute for id: {}, courseId: {}",
                     course.getCoachingInstituteId(), courseId);
@@ -127,20 +134,25 @@ public class CoachingCourseService {
         }
 
         final List<CoachingCourseFeature> coachingCourseFeatures =
-                this.fetchCoachingCourseFeatures(course.getCoachingInstituteId());
+                this.fetchCoachingCourseFeatures(course.getCourseFeatureIds());
 
         Map<String, Object> propertyMap = propertyReader.getPropertiesAsMapByKey(
                 DETAILS_PROPERTY_COMPONENT, DETAILS_PROPERTY_NAMESPACE, DETAILS_PROPERTY_KEY);
 
-        List<String> sections = (List<String>) propertyMap.getOrDefault(COURSE, new ArrayList<>());
+        List<String> sections = (List<String>) propertyMap.getOrDefault(COURSE,
+                Collections.EMPTY_LIST);
 
         return this.buildResponse(course, institute, examTypeAndExamListMap, topRankerEntityList,
                 examIdAndNameMap, courseIdAndNameMap, coachingCourseFeatures, sections);
     }
 
-    private List<CoachingCourseFeature> fetchCoachingCourseFeatures(Long coachingInstituteId) {
+    private List<CoachingCourseFeature> fetchCoachingCourseFeatures(
+            List<Long> courseFeatureIds) {
+        if (CollectionUtils.isEmpty(courseFeatureIds)) {
+            return Collections.emptyList();
+        }
         List<CoachingCourseFeatureEntity> coachingCourseFeatureEntities =
-                coachingCourseFeatureRepository.findByInstituteId(coachingInstituteId);
+                coachingCourseFeatureRepository.findByCoachingCourseFeatureIdIn(courseFeatureIds);
         return this.coachingCourseTransformer.convertCourseFeatures(coachingCourseFeatureEntities);
     }
 
@@ -164,10 +176,9 @@ public class CoachingCourseService {
         return coachingCourseEntityList.get(0);
     }
 
-    private CoachingInstituteEntity fetchInstitute(final long coachingInstituteId,
-            final List<String> fields) {
+    private CoachingInstituteEntity fetchInstitute(final long coachingInstituteId) {
         return this.commonMongoRepository.getEntityByFields(INSTITUTE_ID, coachingInstituteId,
-                CoachingInstituteEntity.class, fields);
+                CoachingInstituteEntity.class, INSTITUTE_FIELDS);
     }
 
     private Map<Long, String> getCourseIdAndNameMap(final List<Long> coachingCourseIdList) {

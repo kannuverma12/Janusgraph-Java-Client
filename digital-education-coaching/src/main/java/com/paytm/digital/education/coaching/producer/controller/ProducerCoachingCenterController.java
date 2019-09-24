@@ -3,7 +3,6 @@ package com.paytm.digital.education.coaching.producer.controller;
 import com.paytm.digital.education.coaching.producer.model.dto.CoachingCenterDTO;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCenterDataRequest;
 import com.paytm.digital.education.coaching.producer.service.CoachingCenterManagerService;
-import com.paytm.digital.education.database.entity.CoachingCenterEntity;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;

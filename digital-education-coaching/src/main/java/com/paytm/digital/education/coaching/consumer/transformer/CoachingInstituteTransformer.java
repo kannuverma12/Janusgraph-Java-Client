@@ -17,7 +17,8 @@ import java.util.Map;
 @UtilityClass
 public class CoachingInstituteTransformer {
 
-    public static List<InstituteHighLight> convertInstituteHighlights(List<KeyHighlight> keyHighlights) {
+    public static List<InstituteHighLight> convertInstituteHighlights(
+            List<KeyHighlight> keyHighlights) {
         List<InstituteHighLight> instituteHighLightList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(keyHighlights)) {
             for (KeyHighlight keyHighlight : keyHighlights) {
@@ -69,8 +70,9 @@ public class CoachingInstituteTransformer {
                         .image(topRankerEntity.getStudentPhoto())
                         .coachingInstituteId(topRankerEntity.getInstituteId())
                         .examName(examIdsAndNameMap.get(topRankerEntity.getExamId()))
-                        .coachingCourseNames(getCoachingCoursesNameFromIds(coachingCourseIdsAndNameMap,
-                                topRankerEntity))
+                        .coachingCourseNames(
+                                getCoachingCoursesNameFromIds(coachingCourseIdsAndNameMap,
+                                        topRankerEntity))
                         .rank(topRankerEntity.getRankObtained()).build();
                 topRankerList.add(topRanker);
             }

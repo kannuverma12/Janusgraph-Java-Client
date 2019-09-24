@@ -10,6 +10,6 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class AutoSuggestData {
 
-    private String entityType;
+    private String              entityType;
     private List<SuggestResult> results;
 }

@@ -19,5 +19,7 @@ public interface CoachingCourseFeatureRepository
 
     List<CoachingCourseFeatureEntity> findByInstituteId(Long id);
 
+    List<CoachingCourseFeatureEntity> findByCoachingCourseFeatureIdIn(List<Long> featureIds);
+
     @Override List<CoachingCourseFeatureEntity> findAll();
 }

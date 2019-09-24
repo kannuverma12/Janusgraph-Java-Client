@@ -7,7 +7,6 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.ExamD
 import com.paytm.digital.education.coaching.es.model.Event;
 import com.paytm.digital.education.coaching.es.model.ExamInstance;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
-
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.utility.DateUtil;
 import lombok.experimental.UtilityClass;

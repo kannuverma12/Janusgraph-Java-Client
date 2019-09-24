@@ -28,6 +28,7 @@ public class CoachingInstituteController {
     public GetCoachingInstituteDetailsResponse getCoachingInstituteDetails(
             @RequestParam(value = "instituteId") @NotNull final Long instituteId,
             @RequestParam(value = "url_display_key") final @NotEmpty String urlDisplayKey) {
-        return coachingInstituteConsumerService.getCoachingInstituteDetails(instituteId,urlDisplayKey);
+        return coachingInstituteConsumerService
+                .getCoachingInstituteDetails(instituteId, urlDisplayKey);
     }
 }

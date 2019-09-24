@@ -15,11 +15,11 @@ public class Faq {
 
     @Field("question_number")
     @JsonProperty("question_number")
-    private Integer      quesNo;
+    private Integer quesNo;
 
     @Field("question")
     @JsonProperty("question")
-    private String       question;
+    private String question;
 
     @Field("answers")
     @JsonProperty("answers")

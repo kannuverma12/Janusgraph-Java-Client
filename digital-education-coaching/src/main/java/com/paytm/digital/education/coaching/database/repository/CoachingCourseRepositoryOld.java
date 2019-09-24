@@ -1,13 +1,5 @@
 package com.paytm.digital.education.coaching.database.repository;
 
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.ACTIVE;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_ID;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.UPDATED_AT;
-import static com.paytm.digital.education.mapping.ErrorEnum.ENTITY_ID_NOT_PRESENT;
-import static com.paytm.digital.education.mapping.ErrorEnum.NO_SUCH_ENTITY_EXISTS;
-import static com.paytm.digital.education.utility.DateUtil.getCurrentDate;
-
 import com.mongodb.client.result.UpdateResult;
 import com.paytm.digital.education.coaching.database.entity.CoachingCourse;
 import com.paytm.digital.education.exception.BadRequestException;
@@ -20,6 +12,14 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Objects;
+
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.ACTIVE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_ID;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.UPDATED_AT;
+import static com.paytm.digital.education.mapping.ErrorEnum.ENTITY_ID_NOT_PRESENT;
+import static com.paytm.digital.education.mapping.ErrorEnum.NO_SUCH_ENTITY_EXISTS;
+import static com.paytm.digital.education.utility.DateUtil.getCurrentDate;
 
 @Repository
 @AllArgsConstructor

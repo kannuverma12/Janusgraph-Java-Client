@@ -1,7 +1,6 @@
 package com.paytm.digital.education.coaching.db.dao;
 
 import com.paytm.digital.education.coaching.database.repository.SequenceGenerator;
-import com.paytm.digital.education.database.entity.CoachingCenterEntity;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.database.repository.CoachingInstituteRepositoryNew;
 import lombok.NonNull;

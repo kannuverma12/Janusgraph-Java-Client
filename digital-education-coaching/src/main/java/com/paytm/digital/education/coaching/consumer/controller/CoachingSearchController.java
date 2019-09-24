@@ -21,8 +21,8 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.C
 @AllArgsConstructor
 @RequestMapping(COACHING)
 public class CoachingSearchController {
-    
-    private SearchService   searchService;
+
+    private SearchService searchService;
 
     @PostMapping("/auth/v1/search")
     public @ResponseBody SearchResponse search(@RequestBody @Valid SearchRequest searchRequest,

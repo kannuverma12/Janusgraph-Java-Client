@@ -51,7 +51,7 @@ public class SearchRequest {
     @JsonProperty("fetch_filter")
     @NotNull
     private Boolean fetchFilter = true;
-    
+
     @JsonProperty("sort_order")
     private LinkedHashMap<String, DataSortOrder> sortOrder;
 
