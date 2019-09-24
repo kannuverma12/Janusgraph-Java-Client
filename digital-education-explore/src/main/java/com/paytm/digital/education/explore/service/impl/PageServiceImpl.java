@@ -72,7 +72,6 @@ public class PageServiceImpl implements PageService {
                 switch (section.getType()) {
                     case TOP_EXAMS_APP:
                     case COLLEGE_FOCUS:
-                    case POPULAR_EXAMS_APP:
                     case EXAM_FOCUS_APP:
                     case BROWSE_BY_EXAM_LEVEL:
                     case SCHOOLS_IN_FOCUS:
@@ -83,6 +82,7 @@ public class PageServiceImpl implements PageService {
                     case TOP_SCHOOLS:
                     case LOCATIONS:
                     case APP_FOOTER:
+                    case POPULAR_EXAMS_APP:
                         logoFieldName = ICON;
                         break;
                     case BANNER_MID:
