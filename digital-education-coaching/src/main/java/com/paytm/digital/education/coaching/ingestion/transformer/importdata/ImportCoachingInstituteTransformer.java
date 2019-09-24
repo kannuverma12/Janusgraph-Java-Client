@@ -40,6 +40,9 @@ public class ImportCoachingInstituteTransformer {
                 .moreInfo2(form.getMoreInfo2())
                 .moreInfo3(form.getMoreInfo3())
                 .moreInfo4(form.getMoreInfo4())
+                .courseLevels(ImportCommonTransformer.convertCourseLevels(
+                        form.getLevelOfEducation()))
+                .paytmMerchantId(form.getPaytmMerchantId())
                 .build();
     }
 

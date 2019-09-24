@@ -12,6 +12,7 @@ import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.GoogleDriveUtil;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.lucene.util.CollectionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -58,6 +59,10 @@ public abstract class AbstractExportService {
 
     protected <T> int processRecords(final List<T> list, final Class clazz,
             final String sheetId) {
+        if(CollectionUtils.isEmpty(list)) {
+            return 0;
+        }
+
         final List<List<Object>> values = this.convertListToObjectList(list, clazz);
         if (CollectionUtils.isEmpty(values)) {
             return 0;

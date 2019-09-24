@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -14,11 +15,11 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 public class ImportantDate {
 
-    @NotNull
+    @NotEmpty
     @Size(max = 50)
     private String key;
 
-    @NotNull
+    @NotEmpty
     @Size(max = 50)
     private String value;
 }

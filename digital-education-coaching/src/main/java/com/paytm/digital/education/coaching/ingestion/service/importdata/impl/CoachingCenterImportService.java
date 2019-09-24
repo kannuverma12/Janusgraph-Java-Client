@@ -31,7 +31,7 @@ public class CoachingCenterImportService extends AbstractImportService
 
     private static final String TYPE = "CoachingCenter";
 
-    @Value("{$coaching.center.image.prefix}")
+    @Value("${coaching.center.image.prefix}")
     private String coachingCenterImagePrefix;
 
     @Autowired
