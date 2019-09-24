@@ -24,7 +24,7 @@ public class MerchantProductController {
     @Autowired
     private MerchantProductsTransformerService merchantProductsTransformerService;
 
-    @PostMapping("/v1/merchant-products")
+    @PostMapping("/merchant-products")
     public CartDataResponse postMerchantProducts(@Valid @RequestBody
             PostMerchantProductsRequest request) {
         return merchantProductsTransformerService.getCartDataFromVertical(request);
