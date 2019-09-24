@@ -217,6 +217,8 @@ public class ConverterUtil {
         coachingCourseEntity.setIgst(request.getIgst());
         coachingCourseEntity.setTcs(request.getTcs());
 
+        coachingCourseEntity.setCourseFeatureIds(request.getCourseFeatureIds());
+
         coachingCourseEntity.setIsEnabled(request.getIsEnabled());
         coachingCourseEntity.setPriority(request.getPriority());
     }

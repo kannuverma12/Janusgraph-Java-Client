@@ -102,12 +102,12 @@ public class ExportCoachingCourseTransformer {
             form.setImportantDateVal1(importantDates.get(0).getValue());
         }
         if (importantDates.size() > 1 && null != importantDates.get(1)) {
-            form.setImportantDateKey1(importantDates.get(1).getKey());
-            form.setImportantDateVal1(importantDates.get(1).getValue());
+            form.setImportantDateKey2(importantDates.get(1).getKey());
+            form.setImportantDateVal2(importantDates.get(1).getValue());
         }
         if (importantDates.size() > 2 && null != importantDates.get(2)) {
-            form.setImportantDateKey1(importantDates.get(2).getKey());
-            form.setImportantDateVal1(importantDates.get(2).getValue());
+            form.setImportantDateKey3(importantDates.get(2).getKey());
+            form.setImportantDateVal3(importantDates.get(2).getValue());
         }
     }
 }
