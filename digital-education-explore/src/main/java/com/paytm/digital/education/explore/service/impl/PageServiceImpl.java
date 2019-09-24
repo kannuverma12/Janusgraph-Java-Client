@@ -11,6 +11,7 @@ import com.paytm.digital.education.explore.utility.CommonUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -90,7 +91,7 @@ public class PageServiceImpl implements PageService {
                         break;
                     default:
                 }
-                if (Objects.nonNull(logoFieldName)) {
+                if (Objects.nonNull(logoFieldName) && !CollectionUtils.isEmpty(section.getItems())) {
                     for (Map<String, Object> item : section.getItems()) {
                         if (TOP_EXAMS_APP.equals(section.getType()) || BROWSE_BY_EXAM_LEVEL.equals(section.getType())) {
                             for (Map.Entry<String, Object> topExamsPerLevel : item.entrySet()) {
