@@ -120,7 +120,8 @@ public class MerchantCallImpl implements MerchantCall {
             return CoachingRestTemplate.getRequestTemplate(MERCHANT_COMMIT_TIMEOUT_MS)
                     .postForObject(
                             UriComponentsBuilder.fromHttpUrl(completeEndpoint).toUriString(),
-                            HeaderTemplate.getMerchantHeader(MDC.get(PAYTM_REQUEST_ID), signature),
+                            HeaderTemplate.getMerchantHeader(MDC.get(PAYTM_REQUEST_ID), signature,
+                            merchantInfo.getAccessKey()),
                             request,
                             MerchantNotifyResponse.class, queryParams);
         } catch (Exception e) {

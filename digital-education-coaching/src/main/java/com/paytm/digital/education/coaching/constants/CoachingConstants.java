@@ -4,7 +4,6 @@ import com.paytm.digital.education.coaching.consumer.model.dto.ExamAdditionalInf
 import com.paytm.digital.education.config.AwsConfig;
 
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -118,6 +117,7 @@ public class CoachingConstants {
     public static final String NAME                                  = "name";
     public static final String PAYTM_REQUEST_ID                      = "PaytmRequestId";
     public static final String CHECKSUM_HASH                         = "ChecksumHash";
+    public static final String ACCESS_KEY                            = "AccessKey";
 
     public static final String RESOURCE_NOT_PRESENT = "resource not available";
 
@@ -131,30 +131,32 @@ public class CoachingConstants {
     public static final SimpleDateFormat YYYY_MM     = new SimpleDateFormat("yyyy-MM");
 
     public static final List<ExamAdditionalInfoData>
-            EXAM_ADDITIONAL_INFO_PARAMS = new ArrayList<ExamAdditionalInfoData>();
-    public static final String DETAILS_PROPERTY_KEY       = "detail_page_section_order";
-    public static final String DETAILS_PROPERTY_COMPONENT = "coaching";
-    public static final String DETAILS_PROPERTY_NAMESPACE = "section_order";
-    public static final List<String> EXAM_DETAILS_FIELDS = new ArrayList<>(
+                                     EXAM_ADDITIONAL_INFO_PARAMS      =
+            new ArrayList<ExamAdditionalInfoData>();
+    public static final String       DETAILS_PROPERTY_KEY             = "detail_page_section_order";
+    public static final String       DETAILS_PROPERTY_COMPONENT       = "coaching";
+    public static final String       DETAILS_PROPERTY_NAMESPACE       = "section_order";
+    public static final List<String> EXAM_DETAILS_FIELDS              = new ArrayList<>(
             Arrays.asList("exam_id", "exam_full_name", "exam_short_name", "about_exam",
                     "instances", "logo", "stream_ids"));
-    public static final List<String> STREAM_DETAILS_FIELDS = new ArrayList<>(
+    public static final List<String> STREAM_DETAILS_FIELDS            = new ArrayList<>(
             Arrays.asList("stream_id", "name", "is_enabled"));
-    public static final String DETAILS_FIELD_GROUP        = "details_coaching";
-    public static final String COACHING_INSTITUTE_PREFIX  = "coaching_institute.";
-    public static final String COACHING_COURSE_PREFIX     = "coaching_course.";
-    public static final String COACHING_STREAM_PREFIX     = "stream.";
-    public static final String COACHING_TOP_RANKER_PREFIX = "coaching_top_ranker.";
-    public static final String EXAM_PREFIX                = "exam.";
-    public static final String TOP_RANKER                 = "top_ranker";
-    public static final String NON_TENTATIVE = "non_tentative";
-    public static final String EXAM_PLACEHOLDER                 = "/exam_placeholder.svg";
-    public static final String INSTITUTE_PLACEHOLDER            = "/institute_placeholder.svg";
-    public static final String COACHING_COURSE_PLACEHOLDER      =
+    public static final String       DETAILS_FIELD_GROUP              = "details_coaching";
+    public static final String       COACHING_INSTITUTE_PREFIX        = "coaching_institute.";
+    public static final String       COACHING_COURSE_PREFIX           = "coaching_course.";
+    public static final String       COACHING_STREAM_PREFIX           = "stream.";
+    public static final String       COACHING_TOP_RANKER_PREFIX       = "coaching_top_ranker.";
+    public static final String       EXAM_PREFIX                      = "exam.";
+    public static final String       TOP_RANKER                       = "top_ranker";
+    public static final String       NON_TENTATIVE                    = "non_tentative";
+    public static final String       EXAM_PLACEHOLDER                 = "/exam_placeholder.svg";
+    public static final String       INSTITUTE_PLACEHOLDER            =
+            "/institute_placeholder.svg";
+    public static final String       COACHING_COURSE_PLACEHOLDER      =
             "/coaching_course_placeholder.svg";
-    public static final String COACHING_COURSE_TYPE_PLACEHOLDER =
+    public static final String       COACHING_COURSE_TYPE_PLACEHOLDER =
             "/coaching_course_type_placeholder.svg";
-    public static final String EMPTY_STRING = "";
+    public static final String       EMPTY_STRING                     = "";
 
     static {
         EXAM_ADDITIONAL_INFO_PARAMS.add(
