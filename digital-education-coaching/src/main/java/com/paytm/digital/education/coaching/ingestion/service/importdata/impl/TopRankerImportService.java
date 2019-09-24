@@ -22,10 +22,7 @@ import java.util.List;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EMPTY_STRING;
-import static com.paytm.digital.education.coaching.constants.GoogleSheetIngestionConstants.TOP_RANKER_SHEET_HEADER_RANGE;
-import static com.paytm.digital.education.coaching.constants.GoogleSheetIngestionConstants.TOP_RANKER_SHEET_ID;
-import static com.paytm.digital.education.coaching.constants.GoogleSheetIngestionConstants.TOP_RANKER_SHEET_RANGE_TEMPLATE;
-import static com.paytm.digital.education.coaching.constants.GoogleSheetIngestionConstants.TOP_RANKER_SHEET_START_ROW;
+import static com.paytm.digital.education.coaching.constants.GoogleSheetImportConstants.TOP_RANKER_SHEET_ID;
 
 @Slf4j
 @Service
@@ -43,11 +40,9 @@ public class TopRankerImportService extends AbstractImportService implements Imp
     public ImportResponse ingest() {
 
         final DataImportPropertiesResponse dataImportPropertiesResponse = this.getProperties(
+                TopRankerForm.class,
                 DataImportPropertiesRequest.builder()
                         .sheetIdKey(TOP_RANKER_SHEET_ID)
-                        .sheetHeaderRangeKey(TOP_RANKER_SHEET_HEADER_RANGE)
-                        .sheetStartRowKey(TOP_RANKER_SHEET_START_ROW)
-                        .sheetRangeTemplateKey(TOP_RANKER_SHEET_RANGE_TEMPLATE)
                         .build());
 
         final List<Object> topRankerFormData = this.getFormData(dataImportPropertiesResponse);

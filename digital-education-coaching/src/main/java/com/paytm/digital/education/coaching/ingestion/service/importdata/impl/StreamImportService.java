@@ -22,10 +22,7 @@ import java.util.List;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EMPTY_STRING;
-import static com.paytm.digital.education.coaching.constants.GoogleSheetIngestionConstants.STREAM_SHEET_HEADER_RANGE;
-import static com.paytm.digital.education.coaching.constants.GoogleSheetIngestionConstants.STREAM_SHEET_ID;
-import static com.paytm.digital.education.coaching.constants.GoogleSheetIngestionConstants.STREAM_SHEET_RANGE_TEMPLATE;
-import static com.paytm.digital.education.coaching.constants.GoogleSheetIngestionConstants.STREAM_SHEET_START_ROW;
+import static com.paytm.digital.education.coaching.constants.GoogleSheetImportConstants.STREAM_SHEET_ID;
 
 @Slf4j
 @Service
@@ -43,11 +40,9 @@ public class StreamImportService extends AbstractImportService implements Import
     public ImportResponse ingest() {
 
         final DataImportPropertiesResponse dataImportPropertiesResponse = this.getProperties(
+                StreamForm.class,
                 DataImportPropertiesRequest.builder()
                         .sheetIdKey(STREAM_SHEET_ID)
-                        .sheetHeaderRangeKey(STREAM_SHEET_HEADER_RANGE)
-                        .sheetStartRowKey(STREAM_SHEET_START_ROW)
-                        .sheetRangeTemplateKey(STREAM_SHEET_RANGE_TEMPLATE)
                         .build());
 
         final List<Object> streamFormData = this.getFormData(dataImportPropertiesResponse);

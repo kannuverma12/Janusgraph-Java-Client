@@ -19,10 +19,7 @@ import java.util.List;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EMPTY_STRING;
-import static com.paytm.digital.education.coaching.constants.GoogleSheetIngestionConstants.COMPETITIVE_EXAM_SHEET_HEADER_RANGE;
-import static com.paytm.digital.education.coaching.constants.GoogleSheetIngestionConstants.COMPETITIVE_EXAM_SHEET_ID;
-import static com.paytm.digital.education.coaching.constants.GoogleSheetIngestionConstants.COMPETITIVE_EXAM_SHEET_RANGE_TEMPLATE;
-import static com.paytm.digital.education.coaching.constants.GoogleSheetIngestionConstants.COMPETITIVE_EXAM_SHEET_START_ROW;
+import static com.paytm.digital.education.coaching.constants.GoogleSheetImportConstants.COMPETITIVE_EXAM_SHEET_ID;
 
 @Slf4j
 @Service
@@ -38,11 +35,9 @@ public class CompetitiveExamImportService extends AbstractImportService
     public ImportResponse ingest() {
 
         final DataImportPropertiesResponse dataImportPropertiesResponse = this.getProperties(
+                CompetitiveExamForm.class,
                 DataImportPropertiesRequest.builder()
                         .sheetIdKey(COMPETITIVE_EXAM_SHEET_ID)
-                        .sheetHeaderRangeKey(COMPETITIVE_EXAM_SHEET_HEADER_RANGE)
-                        .sheetStartRowKey(COMPETITIVE_EXAM_SHEET_START_ROW)
-                        .sheetRangeTemplateKey(COMPETITIVE_EXAM_SHEET_RANGE_TEMPLATE)
                         .build());
 
         final List<Object> competitiveExamFormData = this.getFormData(

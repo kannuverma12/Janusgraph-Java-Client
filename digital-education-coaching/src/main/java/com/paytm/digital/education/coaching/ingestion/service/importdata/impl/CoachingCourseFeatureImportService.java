@@ -22,10 +22,7 @@ import java.util.List;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EMPTY_STRING;
-import static com.paytm.digital.education.coaching.constants.GoogleSheetIngestionConstants.COACHING_COURSE_FEATURE_SHEET_HEADER_RANGE;
-import static com.paytm.digital.education.coaching.constants.GoogleSheetIngestionConstants.COACHING_COURSE_FEATURE_SHEET_ID;
-import static com.paytm.digital.education.coaching.constants.GoogleSheetIngestionConstants.COACHING_COURSE_FEATURE_SHEET_RANGE_TEMPLATE;
-import static com.paytm.digital.education.coaching.constants.GoogleSheetIngestionConstants.COACHING_COURSE_FEATURE_SHEET_START_ROW;
+import static com.paytm.digital.education.coaching.constants.GoogleSheetImportConstants.COACHING_COURSE_FEATURE_SHEET_ID;
 
 @Slf4j
 @Service
@@ -44,11 +41,9 @@ public class CoachingCourseFeatureImportService extends AbstractImportService
     public ImportResponse ingest() {
 
         final DataImportPropertiesResponse dataImportPropertiesResponse = this.getProperties(
+                CoachingCourseFeatureForm.class,
                 DataImportPropertiesRequest.builder()
                         .sheetIdKey(COACHING_COURSE_FEATURE_SHEET_ID)
-                        .sheetHeaderRangeKey(COACHING_COURSE_FEATURE_SHEET_HEADER_RANGE)
-                        .sheetStartRowKey(COACHING_COURSE_FEATURE_SHEET_START_ROW)
-                        .sheetRangeTemplateKey(COACHING_COURSE_FEATURE_SHEET_RANGE_TEMPLATE)
                         .build());
 
         final List<Object> courseFeatureData = this.getFormData(dataImportPropertiesResponse);

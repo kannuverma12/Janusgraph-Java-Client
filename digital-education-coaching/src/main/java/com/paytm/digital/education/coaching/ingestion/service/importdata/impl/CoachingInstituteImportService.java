@@ -25,10 +25,7 @@ import java.util.List;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EMPTY_STRING;
-import static com.paytm.digital.education.coaching.constants.GoogleSheetIngestionConstants.COACHING_INSTITUTE_SHEET_HEADER_RANGE;
-import static com.paytm.digital.education.coaching.constants.GoogleSheetIngestionConstants.COACHING_INSTITUTE_SHEET_ID;
-import static com.paytm.digital.education.coaching.constants.GoogleSheetIngestionConstants.COACHING_INSTITUTE_SHEET_RANGE_TEMPLATE;
-import static com.paytm.digital.education.coaching.constants.GoogleSheetIngestionConstants.COACHING_INSTITUTE_SHEET_START_ROW;
+import static com.paytm.digital.education.coaching.constants.GoogleSheetImportConstants.COACHING_INSTITUTE_SHEET_ID;
 
 @Slf4j
 @Service
@@ -51,11 +48,9 @@ public class CoachingInstituteImportService extends AbstractImportService
     public ImportResponse ingest() {
 
         final DataImportPropertiesResponse dataImportPropertiesResponse = this.getProperties(
+                CoachingInstituteForm.class,
                 DataImportPropertiesRequest.builder()
                         .sheetIdKey(COACHING_INSTITUTE_SHEET_ID)
-                        .sheetHeaderRangeKey(COACHING_INSTITUTE_SHEET_HEADER_RANGE)
-                        .sheetStartRowKey(COACHING_INSTITUTE_SHEET_START_ROW)
-                        .sheetRangeTemplateKey(COACHING_INSTITUTE_SHEET_RANGE_TEMPLATE)
                         .build());
 
         final List<Object> instituteFormData = this.getFormData(dataImportPropertiesResponse);

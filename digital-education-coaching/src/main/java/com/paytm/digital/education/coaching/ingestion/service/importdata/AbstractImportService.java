@@ -4,6 +4,7 @@ import com.paytm.digital.education.coaching.exeptions.CoachingBaseException;
 import com.paytm.digital.education.coaching.ingestion.model.ImportResponse;
 import com.paytm.digital.education.coaching.ingestion.model.properties.DataImportPropertiesRequest;
 import com.paytm.digital.education.coaching.ingestion.model.properties.DataImportPropertiesResponse;
+import com.paytm.digital.education.coaching.ingestion.service.IngestionHelper;
 import com.paytm.digital.education.coaching.service.helper.IngestDataHelper;
 import com.paytm.digital.education.config.GoogleConfig;
 import com.paytm.digital.education.database.entity.FailedData;
@@ -43,6 +44,10 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.F
 @Component
 public abstract class AbstractImportService {
 
+    private static final int    PADDING              = 2;
+    private static final String SHEET_HEADER_RANGE   = "A1:";
+    private static final String SHEET_RANGE_TEMPLATE = "A2:";
+
     @Value("${ingestion.env.profile}")
     protected String envProfile;
     @Value("${coaching.s3.bucketName}")
@@ -57,7 +62,7 @@ public abstract class AbstractImportService {
     @Autowired
     private   FailedDataRepository failedDataRepository;
 
-    protected DataImportPropertiesResponse getProperties(
+    protected DataImportPropertiesResponse getProperties(final Class clazz,
             final DataImportPropertiesRequest request) {
         if (null == request) {
             log.error("Got null properties request.");
@@ -71,11 +76,15 @@ public abstract class AbstractImportService {
         }
 
         try {
+            final List<Object> headersList = IngestionHelper.getHeaderKeysList(clazz);
+            final String range = IngestionHelper.convertNumberToA1Notation(headersList.size(),
+                    PADDING);
+
             final String sheetId = (String) propertyMap.get(request.getSheetIdKey());
-            final String headerRange = (String) propertyMap.get(request.getSheetHeaderRangeKey());
-            final double startRow = (double) propertyMap.get(request.getSheetStartRowKey());
-            final String dataRangeTemplate = (String) propertyMap.get(
-                    request.getSheetRangeTemplateKey());
+            final String headerRange = SHEET_HEADER_RANGE + range + "1";
+            final double startRow = 2;
+            final String dataRangeTemplate = SHEET_RANGE_TEMPLATE + range;
+
             log.debug("Got: sheetId: {}, headerRange: {}, startRow: {}, dataRangeTemplate: {}",
                     sheetId, headerRange, startRow, dataRangeTemplate);
 

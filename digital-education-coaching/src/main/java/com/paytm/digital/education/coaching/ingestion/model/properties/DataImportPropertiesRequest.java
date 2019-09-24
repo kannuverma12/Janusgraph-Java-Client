@@ -13,7 +13,4 @@ import lombok.NoArgsConstructor;
 public class DataImportPropertiesRequest {
 
     private String sheetIdKey;
-    private String sheetHeaderRangeKey;
-    private String sheetStartRowKey;
-    private String sheetRangeTemplateKey;
 }

@@ -94,7 +94,7 @@ public abstract class AbstractExportService {
             return values;
         }
 
-        final List<Object> headerKeysList = this.getHeaderKeysList(clazz);
+        final List<Object> headerKeysList = IngestionHelper.getHeaderKeysList(clazz);
         if (CollectionUtils.isEmpty(headerKeysList)) {
             log.error("Got empty headers, inputList: {}, clazz: {}", inputList, clazz);
             return values;
@@ -133,22 +133,6 @@ public abstract class AbstractExportService {
 
         for (final Field field : fields) {
             final String name = field.getAnnotation(JsonProperty.class).value();
-            headersList.add(name);
-        }
-        return headersList;
-    }
-
-    private List<Object> getHeaderKeysList(final Class clazz) {
-        if (null == clazz) {
-            log.error("Got null clazz");
-            return new ArrayList<>();
-        }
-
-        final Field[] fields = clazz.getDeclaredFields();
-        final List<Object> headersList = new ArrayList<>();
-
-        for (final Field field : fields) {
-            final String name = field.getAnnotation(GoogleSheetColumnName.class).value();
             headersList.add(name);
         }
         return headersList;
