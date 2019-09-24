@@ -334,4 +334,12 @@ public interface ExploreConstants {
     String NAME                          = "name";
     String FAILED                        = "failed";
 
+    //Sections constants
+    String BROWSE_BY_EXAM_LEVEL_APP         = "browse_by_exam_level_app";
+    String EXAM_LEVEL                       = "level";
+    String EXAM_STREAM_IDS                  = "stream_ids";
+    String EXAM_GLOBAL_PRIORITY             = "global_priority";
+    String FILTERS                          = "filters";
+    String LEVEL                            = "level";
+    int    EXAMS_BROWSE_BY_LEVEL_QUERY_SIZE = 2;
 }

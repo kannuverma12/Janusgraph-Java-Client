@@ -304,10 +304,22 @@ public class AggregationQueryBuilderService {
                             topHitsAggregation.sort(DataSortUtil.buildSort(sortField, null));
                         }
                     }
-                    TermsAggregationBuilder termsAggregation = AggregationBuilders.terms(fieldName);
+                    TermsAggregationBuilder termsAggregation = AggregationBuilders.terms(
+                            fieldName);
                     termsAggregation.field(fieldName);
                     termsAggregation.size(DEFAULT_TERMS_AGGREGATION_BUCKETS_SIZE);
-                    termsAggregation.subAggregation(topHitsAggregation);
+
+                    if (StringUtils.isNotEmpty(field.getChildTermsFieldName())) {
+                        TermsAggregationBuilder nestedAggregation = AggregationBuilders.terms(
+                                field.getChildTermsFieldName());
+                        nestedAggregation.field(field.getChildTermsFieldName());
+                        nestedAggregation.size(DEFAULT_TERMS_AGGREGATION_BUCKETS_SIZE);
+                        nestedAggregation.subAggregation(topHitsAggregation);
+                        termsAggregation.subAggregation(nestedAggregation);
+
+                    } else {
+                        termsAggregation.subAggregation(topHitsAggregation);
+                    }
                     if (DUMMY_PATH_FOR_OUTERMOST_FIELDS.equals(path)) {
                         filterAggregation.subAggregation(termsAggregation);
                     } else {
@@ -318,7 +330,6 @@ public class AggregationQueryBuilderService {
                     }
                     source.aggregation(filterAggregation);
                 }
-
             }
         }
     }

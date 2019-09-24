@@ -18,13 +18,19 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SearchRequest {
 
@@ -73,4 +79,10 @@ public class SearchRequest {
 
     @JsonProperty("location")
     private GeoLocation geoLocation;
+
+    @JsonIgnore
+    private List<String> dataPerFilter;
+
+    @JsonIgnore
+    private boolean fetchSearchResultsPerFilter;
 }

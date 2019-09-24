@@ -40,10 +40,13 @@ import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.BucketSort;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import com.paytm.digital.education.explore.enums.Client;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 @Service
 public class SearchAggregateHelper {
@@ -167,5 +170,18 @@ public class SearchAggregateHelper {
             schoolAggregateData[i] = aggregateField;
         }
         return schoolAggregateData;
+    }
+
+    public AggregateField[] getTopHitsAggregateData(List<String> dataPerFilter) {
+        AggregateField[] aggregateFields = new AggregateField[1];
+        aggregateFields[0] = new AggregateField();
+        if (!CollectionUtils.isEmpty(dataPerFilter)) {
+            aggregateFields[0].setName(dataPerFilter.get(0));
+            if (dataPerFilter.size() == 2 && StringUtils.isNotBlank(dataPerFilter.get(1))) {
+                aggregateFields[0].setChildTermsFieldName(dataPerFilter.get(1));
+            }
+        }
+        aggregateFields[0].setType(TOP_HITS);
+        return aggregateFields;
     }
 }

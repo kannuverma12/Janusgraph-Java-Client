@@ -42,4 +42,7 @@ public class ExamSearch {
     @JsonProperty("paytm_keys")
     private ExamPaytmKeys paytmKeys;
 
+    @JsonProperty("exam_short_name")
+    private String examShortName;
+
 }

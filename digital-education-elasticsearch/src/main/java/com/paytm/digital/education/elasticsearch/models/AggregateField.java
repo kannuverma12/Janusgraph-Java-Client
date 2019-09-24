@@ -17,4 +17,7 @@ public class AggregateField {
     private SortField[]     sortFields;
 
     private String[]        values;
+
+    private String childTermsFieldName;
+
 }

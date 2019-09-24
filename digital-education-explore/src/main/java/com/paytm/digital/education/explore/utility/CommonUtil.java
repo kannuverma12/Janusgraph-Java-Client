@@ -22,6 +22,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.AUT
 import static com.paytm.digital.education.explore.constants.ExploreConstants.BANNER_MID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.BROWSE_BY_EXAM_LEVEL;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CAROUSEL;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.CAROUSEL;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CONSTITUENT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CONSTITUENT_OF;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CTA;
