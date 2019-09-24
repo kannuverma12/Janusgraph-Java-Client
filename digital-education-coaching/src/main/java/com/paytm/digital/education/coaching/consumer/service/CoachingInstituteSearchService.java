@@ -7,7 +7,6 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.Searc
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResult;
 import com.paytm.digital.education.coaching.consumer.service.helper.CoachingSearchAggregateHelper;
 import com.paytm.digital.education.coaching.es.model.CoachingInstituteSearch;
-import com.paytm.digital.education.coaching.es.model.ExamSearch;
 import com.paytm.digital.education.coaching.utils.SearchUtils;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
@@ -22,12 +21,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_INSTITUTE_COURSE_TYPES;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_INSTITUTE_EXAMS;
@@ -49,9 +46,9 @@ import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.TE
 @AllArgsConstructor
 public class CoachingInstituteSearchService extends AbstractSearchService {
 
-    private        CoachingSearchAggregateHelper coachingSearchAggregateHelper;
     private static Map<String, Float>            searchFieldKeys;
     private static Map<String, FilterQueryType>  filterQueryTypeMap;
+    private        CoachingSearchAggregateHelper coachingSearchAggregateHelper;
 
     @PostConstruct
     public void init() {

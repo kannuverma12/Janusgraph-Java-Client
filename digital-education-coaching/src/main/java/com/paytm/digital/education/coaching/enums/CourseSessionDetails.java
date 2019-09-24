@@ -15,10 +15,6 @@ import java.util.Map;
 @Component
 public class CourseSessionDetails {
 
-    public static Map<CourseType, List<Session>> getCourseTypeAndSessionsMap() {
-        return COURSE_TYPE_AND_SESSIONS_MAP;
-    }
-
     private static final Map<CourseType, List<Session>> COURSE_TYPE_AND_SESSIONS_MAP =
             new HashMap<>();
 
@@ -71,6 +67,10 @@ public class CourseSessionDetails {
                         "distanceLearningSolvedPaperCount"));
             }
         });
+    }
+
+    public static Map<CourseType, List<Session>> getCourseTypeAndSessionsMap() {
+        return COURSE_TYPE_AND_SESSIONS_MAP;
     }
 
 

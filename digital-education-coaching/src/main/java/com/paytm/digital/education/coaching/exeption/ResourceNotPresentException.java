@@ -1,4 +1,4 @@
-package com.paytm.digital.education.coaching.exeptions;
+package com.paytm.digital.education.coaching.exeption;
 
 public class ResourceNotPresentException extends RuntimeException {
 

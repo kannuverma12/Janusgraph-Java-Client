@@ -1,6 +1,6 @@
 package com.paytm.digital.education.coaching.ingestion.model;
 
-import com.paytm.digital.education.coaching.exeptions.InvalidRequestException;
+import com.paytm.digital.education.coaching.exeption.InvalidRequestException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

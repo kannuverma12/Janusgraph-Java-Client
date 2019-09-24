@@ -1,11 +1,11 @@
 package com.paytm.digital.education.coaching.ingestion.service.importdata;
 
-import com.paytm.digital.education.coaching.exeptions.CoachingBaseException;
+import com.paytm.digital.education.coaching.exeption.CoachingBaseException;
 import com.paytm.digital.education.coaching.ingestion.model.ImportResponse;
 import com.paytm.digital.education.coaching.ingestion.model.properties.DataImportPropertiesRequest;
 import com.paytm.digital.education.coaching.ingestion.model.properties.DataImportPropertiesResponse;
+import com.paytm.digital.education.coaching.ingestion.service.IngestDataHelper;
 import com.paytm.digital.education.coaching.ingestion.service.IngestionHelper;
-import com.paytm.digital.education.coaching.service.helper.IngestDataHelper;
 import com.paytm.digital.education.config.GoogleConfig;
 import com.paytm.digital.education.database.entity.FailedData;
 import com.paytm.digital.education.database.repository.FailedDataRepository;

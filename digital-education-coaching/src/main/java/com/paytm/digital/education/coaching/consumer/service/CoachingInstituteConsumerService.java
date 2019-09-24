@@ -56,17 +56,17 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_NA
 @AllArgsConstructor
 public class CoachingInstituteConsumerService {
 
-    private static final List<String> COACHING_INSTITUTE_FIELDS =
+    private static final List<String>          COACHING_INSTITUTE_FIELDS =
             Arrays.asList("institute_id", "brand_name", "cover_image", "about_institute",
                     "key_highlights", "streams", "exams", "course_types");
-    private static final List<String> EXAM_FIELDS               =
+    private static final List<String>          EXAM_FIELDS               =
             Arrays.asList("exam_id", "exam_full_name", "exam_short_name", "logo");
-    private static final List<String> STREAM_FIELDS             =
+    private static final List<String>          STREAM_FIELDS             =
             Arrays.asList("stream_id", "name", "logo");
-    private final CommonMongoRepository commonMongoRepository;
-    private final TopRankerRepository   topRankerRepository;
-    private final SearchDataHelper      searchDataHelper;
-    private final PropertyReader        propertyReader;
+    private final        CommonMongoRepository commonMongoRepository;
+    private final        TopRankerRepository   topRankerRepository;
+    private final        SearchDataHelper      searchDataHelper;
+    private final        PropertyReader        propertyReader;
 
     public GetCoachingInstituteDetailsResponse getCoachingInstituteDetails(long instituteId,
             String urlDisplayKey) {

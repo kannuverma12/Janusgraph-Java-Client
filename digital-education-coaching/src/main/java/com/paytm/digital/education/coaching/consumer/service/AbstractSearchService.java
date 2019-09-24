@@ -207,7 +207,7 @@ public abstract class AbstractSearchService {
             ElasticResponse elasticResponse, ElasticRequest elasticRequest) {
         if (elasticRequest.isSearchRequest()) {
             Map<String, Map<String, Object>> propertyMap = null;
-            populateSearchResults(searchResponse, elasticResponse, propertyMap,elasticRequest);
+            populateSearchResults(searchResponse, elasticResponse, propertyMap, elasticRequest);
             long total = elasticResponse.getTotalSearchResultsCount();
             searchResponse.setTotal(total);
         }

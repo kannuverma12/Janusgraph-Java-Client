@@ -1,4 +1,4 @@
-package com.paytm.digital.education.coaching.exeptions;
+package com.paytm.digital.education.coaching.exeption;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;

@@ -1,8 +1,8 @@
 package com.paytm.digital.education.coaching.db.dao;
 
-import com.paytm.digital.education.coaching.database.repository.SequenceGenerator;
 import com.paytm.digital.education.database.entity.CoachingExamEntity;
 import com.paytm.digital.education.database.repository.CoachingExamRepositoryNew;
+import com.paytm.digital.education.database.repository.SequenceGenerator;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

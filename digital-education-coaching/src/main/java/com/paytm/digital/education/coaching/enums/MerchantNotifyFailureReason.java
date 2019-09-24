@@ -1,7 +1,9 @@
 package com.paytm.digital.education.coaching.enums;
 
 import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public enum MerchantNotifyFailureReason {
 
     MERCHANT_INFRA_DOWN("merchant infra down");
@@ -18,6 +20,7 @@ public enum MerchantNotifyFailureReason {
                 return reason;
             }
         }
+        log.error("Could not find MerchantNotifyFailureReason for text: {}", text);
         return null;
     }
 

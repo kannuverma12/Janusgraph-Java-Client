@@ -15,7 +15,7 @@ public class FilterBucket {
     private String displayName;
 
     @JsonProperty("count")
-    private long   docCount;
+    private long docCount;
 
     @JsonProperty("selected")
     private boolean isSelected;

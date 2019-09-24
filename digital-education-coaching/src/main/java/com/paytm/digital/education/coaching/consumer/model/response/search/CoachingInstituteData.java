@@ -12,8 +12,8 @@ import lombok.Data;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class CoachingInstituteData extends SearchBaseData {
 
-    private Long    coachingInstituteId;
-    private String  urlDisplayKey;
-    private String  brandName;
-    private String  logo;
+    private Long   coachingInstituteId;
+    private String urlDisplayKey;
+    private String brandName;
+    private String logo;
 }

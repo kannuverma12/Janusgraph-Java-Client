@@ -9,7 +9,6 @@ import com.paytm.digital.education.coaching.consumer.service.helper.SearchDataHe
 import com.paytm.digital.education.database.entity.Section;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.enums.EducationEntity;
-import com.paytm.digital.education.utility.CommonUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -26,15 +25,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_PLACEHOLDER;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_PLACEHOLDER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.LandingPage.FULL_NAME;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.LandingPage.ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.LandingPage.LOGO;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.LandingPage.NAME;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.LandingPage.URL_DISPLAY_KEY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.IGNORE_ENTITY_POSITION;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.KEY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_STREAMS;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_EXAMS;

@@ -1,6 +1,6 @@
 package com.paytm.digital.education.coaching.ingestion.service.importdata.impl;
 
-import com.paytm.digital.education.coaching.exeptions.CoachingBaseException;
+import com.paytm.digital.education.coaching.exeption.CoachingBaseException;
 import com.paytm.digital.education.coaching.ingestion.model.ImportResponse;
 import com.paytm.digital.education.coaching.ingestion.model.googleform.CoachingCenterForm;
 import com.paytm.digital.education.coaching.ingestion.model.properties.DataImportPropertiesRequest;

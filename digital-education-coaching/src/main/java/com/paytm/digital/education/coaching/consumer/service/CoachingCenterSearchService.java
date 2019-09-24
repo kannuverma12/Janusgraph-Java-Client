@@ -46,9 +46,9 @@ import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.TE
 public class CoachingCenterSearchService extends AbstractSearchService {
 
     private static DecimalFormat                 df = new DecimalFormat("#.#");
-    private        CoachingSearchAggregateHelper coachingSearchAggregateHelper;
     private static Map<String, Float>            searchFieldKeys;
     private static Map<String, FilterQueryType>  filterQueryTypeMap;
+    private        CoachingSearchAggregateHelper coachingSearchAggregateHelper;
 
     @PostConstruct
     public void init() {

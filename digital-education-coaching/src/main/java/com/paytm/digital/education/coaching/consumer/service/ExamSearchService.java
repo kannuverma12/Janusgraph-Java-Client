@@ -8,7 +8,6 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.Searc
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResult;
 import com.paytm.digital.education.coaching.consumer.service.helper.CoachingSearchAggregateHelper;
-
 import com.paytm.digital.education.coaching.es.model.ExamSearch;
 import com.paytm.digital.education.coaching.utils.SearchUtils;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
@@ -18,7 +17,6 @@ import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationResponse;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.utility.CommonUtil;
-
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -57,9 +55,9 @@ import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.TE
 @AllArgsConstructor
 public class ExamSearchService extends AbstractSearchService {
 
-    private        CoachingSearchAggregateHelper coachingSearchAggregateHelper;
     private static Map<String, Float>            searchFieldKeys;
     private static Map<String, FilterQueryType>  filterQueryTypeMap;
+    private        CoachingSearchAggregateHelper coachingSearchAggregateHelper;
 
     @PostConstruct
     private void init() {

@@ -1,7 +1,7 @@
 package com.paytm.digital.education.coaching.db.dao;
 
-import com.paytm.digital.education.coaching.database.repository.SequenceGenerator;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
+import com.paytm.digital.education.database.repository.SequenceGenerator;
 import com.paytm.digital.education.database.repository.TopRankerRepository;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
