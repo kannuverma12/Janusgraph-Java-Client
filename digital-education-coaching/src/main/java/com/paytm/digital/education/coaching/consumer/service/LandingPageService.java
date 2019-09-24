@@ -34,7 +34,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.S
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_STREAMS;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_EXAMS;
-import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES;
+import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES_LOGO;
 import static com.paytm.digital.education.elasticsearch.enums.DataSortOrder.ASC;
 import static com.paytm.digital.education.enums.EducationEntity.EXAM;
 
@@ -49,7 +49,7 @@ public class LandingPageService {
     public void addDynamicData(List<Section> sections) {
         for (Section section : sections) {
             switch (section.getType()) {
-                case TOP_COACHING_INSTITUTES:
+                case TOP_COACHING_INSTITUTES_LOGO:
                     addTopCoachingInstitutes(section);
                     break;
                 case COACHING_TOP_EXAMS:

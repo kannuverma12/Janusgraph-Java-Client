@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_COURSE_FEATURE;
+import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_RANKER;
 
 @Slf4j
 @Component
@@ -42,7 +43,7 @@ public class CoachingCourseTransformer {
                                 courseIdAndNameMap))
                         .examName(examIdAndNameMap.getOrDefault(tr.getExamId(), null))
                         .studentName(tr.getStudentName())
-                        .image(tr.getStudentPhoto())
+                        .image(CommonUtil.getAbsoluteUrl(tr.getStudentPhoto(), COACHING_TOP_RANKER))
                         .rank(tr.getRankObtained())
                         .examDate(tr.getExamYear())
                         .testimonial(tr.getTestimonial())
@@ -103,7 +104,7 @@ public class CoachingCourseTransformer {
                             session.getDbFieldName());
                     value = ((Integer) field.get(course)).toString();
                 } catch (final Exception ex) {
-                    log.error("Got exception, course: {}", course, ex);
+                    log.error("Got exception, course: {}, exception: ", course, ex);
                     continue;
                 }
                 sessionDetails.add(CoachingCourseSessionDetails.builder()

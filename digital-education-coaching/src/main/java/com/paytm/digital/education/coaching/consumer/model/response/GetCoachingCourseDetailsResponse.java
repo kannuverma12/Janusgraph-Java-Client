@@ -28,20 +28,20 @@ public class GetCoachingCourseDetailsResponse {
 
     private Double originalPrice;
     private Double discountedPrice;
+    private String discountPercentage;
 
     private long   coachingInstituteId;
     private String coachingInstituteName;
 
     private List<Exam> targetExams;
     private String     eligibility;
-    private Integer    duration;
+    private String    duration;
 
     private List<TopRanker> topRankers;
 
     private List<CoachingCourseImportantDate> importantDates;
 
     private List<CoachingCourseFeature> courseFeatures;
-    private List<String>                courseInclusions;
 
     private List<CoachingCourseSessionDetails> sessionDetails;
 

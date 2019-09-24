@@ -3,12 +3,15 @@ package com.paytm.digital.education.coaching.ingestion.transformer.exportdata;
 import com.paytm.digital.education.coaching.ingestion.model.googleform.CoachingCenterForm;
 import com.paytm.digital.education.database.embedded.OfficialAddress;
 import com.paytm.digital.education.database.entity.CoachingCenterEntity;
+import com.paytm.digital.education.utility.CommonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.paytm.digital.education.constant.CommonConstants.COACHING_CENTER;
 
 public class ExportCoachingCenterTransformer {
 
@@ -25,7 +28,8 @@ public class ExportCoachingCenterTransformer {
                             .courseTypes(StringUtils.join(entity.getCourseTypes(), ","))
                             .openingTime(entity.getOpeningTime())
                             .closingTime(entity.getClosingTime())
-                            .centerImage(entity.getCenterImage())
+                            .centerImage(CommonUtil.getAbsoluteUrl(entity.getCenterImage(),
+                                    COACHING_CENTER))
                             .globalPriority(entity.getPriority())
                             .statusActive(ExportCommonTransformer.convertBooleanToString(
                                     entity.getIsEnabled()))

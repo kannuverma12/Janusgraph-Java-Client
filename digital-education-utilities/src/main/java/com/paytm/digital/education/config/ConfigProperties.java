@@ -31,6 +31,7 @@ public class ConfigProperties {
     private static String coachingBannerImagePrefix;
     private static String coachingCourseFeatureLogoPrefix;
     private static String coachingTopRankerImagePrefix;
+    private static String coachingCenterImagePrefix;
 
     public static String getEnvProfile() {
         return envProfile;
@@ -146,6 +147,11 @@ public class ConfigProperties {
         coachingInstituteLogoPrefix = logoPrefix;
     }
 
+    @Value("${coaching.center.image.prefix}")
+    public void setCoachingCenterImagePrefix(String imagePrefix) {
+        coachingCenterImagePrefix = imagePrefix;
+    }
+
     public static String getBaseUrl() {
         return mediaBaseUrl;
     }
@@ -228,5 +234,9 @@ public class ConfigProperties {
 
     public static String getCoachingTopRankerImagePrefix() {
         return coachingTopRankerImagePrefix;
+    }
+
+    public static String getCoachingCenterImagePrefix() {
+        return coachingCenterImagePrefix;
     }
 }

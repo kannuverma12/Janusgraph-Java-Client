@@ -43,6 +43,7 @@ public class CoachingInstituteEntity extends Base {
     @Field("cover_image")
     private String coverImage;
 
+    @Field("logo")
     private String logo;
 
     private List<Long> streams;

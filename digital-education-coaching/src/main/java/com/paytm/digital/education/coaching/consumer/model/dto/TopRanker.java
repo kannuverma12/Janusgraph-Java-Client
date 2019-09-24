@@ -24,5 +24,4 @@ public class TopRanker {
     private String       rank;
     private String       examDate;
     private String       testimonial;
-    private String       signatureImage;
 }

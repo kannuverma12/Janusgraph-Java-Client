@@ -13,11 +13,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.paytm.digital.education.constant.CommonConstants.COACHING_BANNER;
+import static com.paytm.digital.education.constant.CommonConstants.COACHING_CENTER;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_COURSES;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_COURSE_FEATURE;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_STREAMS;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_EXAMS;
-import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES;
+import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_RANKER;
+import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES_IMAGE;
+import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES_LOGO;
 import static com.paytm.digital.education.constant.ExploreConstants.AFFILIATED;
 import static com.paytm.digital.education.constant.ExploreConstants.AFFILIATED_TO;
 import static com.paytm.digital.education.constant.ExploreConstants.APPROVED_BY;
@@ -81,17 +85,41 @@ public class CommonUtil {
                         .append(ConfigProperties.getEnvProfile())
                         .append(ConfigProperties.getCoachingCourseLogoPrefix());
                 break;
-            case TOP_COACHING_INSTITUTES:
+            case TOP_COACHING_INSTITUTES_LOGO:
                 urlBuilder.append(ConfigProperties.getCoachingS3Path())
                         .append("/")
                         .append(ConfigProperties.getEnvProfile())
                         .append(ConfigProperties.getCoachingInstituteLogoPrefix());
+                break;
+            case TOP_COACHING_INSTITUTES_IMAGE:
+                urlBuilder.append(ConfigProperties.getCoachingS3Path())
+                        .append("/")
+                        .append(ConfigProperties.getEnvProfile())
+                        .append(ConfigProperties.getCoachingInstituteImagePrefix());
                 break;
             case COACHING_COURSE_FEATURE:
                 urlBuilder.append(ConfigProperties.getCoachingS3Path())
                         .append("/")
                         .append(ConfigProperties.getEnvProfile())
                         .append(ConfigProperties.getCoachingCourseFeatureLogoPrefix());
+                break;
+            case COACHING_TOP_RANKER:
+                urlBuilder.append(ConfigProperties.getCoachingS3Path())
+                        .append("/")
+                        .append(ConfigProperties.getEnvProfile())
+                        .append(ConfigProperties.getCoachingTopRankerImagePrefix());
+                break;
+            case COACHING_BANNER:
+                urlBuilder.append(ConfigProperties.getCoachingS3Path())
+                        .append("/")
+                        .append(ConfigProperties.getEnvProfile())
+                        .append(ConfigProperties.getCoachingBannerImagePrefix());
+                break;
+            case COACHING_CENTER:
+                urlBuilder.append(ConfigProperties.getCoachingS3Path())
+                        .append("/")
+                        .append(ConfigProperties.getEnvProfile())
+                        .append(ConfigProperties.getCoachingCenterImagePrefix());
                 break;
             default:
                 urlBuilder.append(ConfigProperties.getLogoImagePrefix());

@@ -38,7 +38,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.S
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.SEARCH_ANALYZER_COACHING_INSTITUTE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.SEARCH_INDEX_COACHING_INSTITUTE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
-import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES;
+import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES_LOGO;
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.TERMS;
 
 @Slf4j
@@ -124,10 +124,10 @@ public class CoachingInstituteSearchService extends AbstractSearchService {
 
                 if (!StringUtils.isBlank(coachingInstituteSearch.getLogo())) {
                     toAdd.setLogo(CommonUtil.getAbsoluteUrl(coachingInstituteSearch.getLogo(),
-                            TOP_COACHING_INSTITUTES));
+                            TOP_COACHING_INSTITUTES_LOGO));
                 } else {
                     toAdd.setLogo(CommonUtil.getAbsoluteUrl(INSTITUTE_PLACEHOLDER,
-                            TOP_COACHING_INSTITUTES));
+                            TOP_COACHING_INSTITUTES_LOGO));
                 }
 
                 instituteDataList.add(toAdd);

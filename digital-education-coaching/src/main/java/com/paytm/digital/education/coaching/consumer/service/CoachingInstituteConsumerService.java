@@ -28,6 +28,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -87,8 +88,8 @@ public class CoachingInstituteConsumerService {
         }
 
         List<Stream> streamList =
-                getStreamsByStreamIds(coachingInstituteEntity.getStreams(), STREAM_FIELDS);
-        List<Exam> examList = getExamsByExamIds(coachingInstituteEntity.getExams(), EXAM_FIELDS);
+                getStreamsByStreamIds(coachingInstituteEntity.getStreams());
+        List<Exam> examList = getExamsByExamIds(coachingInstituteEntity.getExams());
         List<TopRanker> topRankerList = getTopRankersForInstitute(instituteId);
         List<CoachingCourseTypeResponse> listOfCourseType = new ArrayList<>();
         if (Objects.nonNull(coachingInstituteEntity.getCourseTypes())) {
@@ -120,25 +121,26 @@ public class CoachingInstituteConsumerService {
 
     }
 
-    private List<Exam> getExamsByExamIds(List<Long> examIds, List<String> examFields) {
+    private List<Exam> getExamsByExamIds(List<Long> examIds) {
         List<Exam> examList = new ArrayList<>();
         if (CollectionUtils.isEmpty(examIds)) {
             return examList;
         }
         List<com.paytm.digital.education.database.entity.Exam> examEntityList =
                 commonMongoRepository.getEntityFieldsByValuesIn(EXAM_ID, examIds,
-                        com.paytm.digital.education.database.entity.Exam.class, examFields);
+                        com.paytm.digital.education.database.entity.Exam.class,
+                        CoachingInstituteConsumerService.EXAM_FIELDS);
         return CoachingInstituteTransformer.convertExamEntityToDto(examList, examEntityList);
     }
 
-    private List<Stream> getStreamsByStreamIds(List<Long> streamIds, List<String> streamFields) {
+    private List<Stream> getStreamsByStreamIds(List<Long> streamIds) {
         List<Stream> streamList = new ArrayList<>();
         if (CollectionUtils.isEmpty(streamIds)) {
             return streamList;
         }
         List<com.paytm.digital.education.database.entity.StreamEntity> streamEntityList =
                 commonMongoRepository.getEntityFieldsByValuesIn(STREAM_ID, streamIds,
-                        StreamEntity.class, streamFields);
+                        StreamEntity.class, CoachingInstituteConsumerService.STREAM_FIELDS);
         return CoachingInstituteTransformer
                 .convertStreamEntityToStreamDto(streamList, streamEntityList);
     }
@@ -214,7 +216,7 @@ public class CoachingInstituteConsumerService {
         return coachingCourseIdsAndNameMap;
     }
 
-    public List<CoachingInstituteData> getTopCoachingInstitutesByExamId(Long examId) {
+    List<CoachingInstituteData> getTopCoachingInstitutesByExamId(Long examId) {
         Map<String, List<Object>> filter = new HashMap<>();
         filter.put(EXAM_IDS, Arrays.asList(examId));
 
@@ -225,9 +227,9 @@ public class CoachingInstituteConsumerService {
                 .getTopSearchData(filter, EducationEntity.COACHING_INSTITUTE, sortOrder);
     }
 
-    public List<CoachingInstituteData> getTopCoachingInstitutesByStreamId(Long streamId) {
+    List<CoachingInstituteData> getTopCoachingInstitutesByStreamId(Long streamId) {
         Map<String, List<Object>> filter = new HashMap<>();
-        filter.put(STREAM_IDS, Arrays.asList(streamId));
+        filter.put(STREAM_IDS, Collections.singletonList(streamId));
 
         LinkedHashMap<String, DataSortOrder> sortOrder = new LinkedHashMap<>();
         sortOrder.put(IGNORE_GLOBAL_PRIORITY, ASC);

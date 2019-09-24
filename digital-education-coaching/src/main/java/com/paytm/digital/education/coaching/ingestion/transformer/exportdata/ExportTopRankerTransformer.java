@@ -2,6 +2,7 @@ package com.paytm.digital.education.coaching.ingestion.transformer.exportdata;
 
 import com.paytm.digital.education.coaching.ingestion.model.googleform.TopRankerForm;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
+import com.paytm.digital.education.utility.CommonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EMPTY_STRING;
+import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_RANKER;
 
 public class ExportTopRankerTransformer {
 
@@ -24,7 +26,8 @@ public class ExportTopRankerTransformer {
                         .centerId(entity.getCenterId())
                         .examId(entity.getExamId())
                         .studentName(entity.getStudentName())
-                        .studentPhoto(entity.getStudentPhoto())
+                        .studentPhoto(CommonUtil.getAbsoluteUrl(entity.getStudentPhoto(),
+                                COACHING_TOP_RANKER))
                         .courseIds(entity.getCourseIds() == null
                                 ? EMPTY_STRING : StringUtils.join(entity.getCourseIds(), ","))
                         .yearAndBatch(entity.getBatch())
