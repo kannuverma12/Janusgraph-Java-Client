@@ -6,15 +6,16 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.common.BannerData;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.common.Widget;
 import lombok.Data;
-import org.springframework.data.mongodb.core.mapping.Field;
+import lombok.experimental.Accessors;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ExamDetail {
+public class ExamDetail implements CTAInfoHolder {
 
     @JsonProperty("exam_id")
     private Long examId;
@@ -139,4 +140,48 @@ public class ExamDetail {
     @JsonIgnore
     private String formId;
 
+    public Long getPid() {
+        return null;
+    }
+
+    @JsonIgnore
+    @Accessors(fluent = true)
+    private boolean shouldHaveLeadCTA = true;
+
+    @JsonIgnore
+    @Accessors(fluent = true)
+    private boolean shouldHaveApplyNowCTA = true;
+
+    @JsonIgnore
+    public boolean isClient() {
+        return false;
+    }
+
+    @JsonIgnore
+    @Override
+    public String getBrochureUrl() {
+        return null;
+    }
+
+    @JsonIgnore
+    @Override
+    public EducationEntity getCorrespondingEntity() {
+        return EducationEntity.EXAM;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean hasCompareFeature() {
+        return false;
+    }
+
+    @Override
+    public Long getCollegePredictorPid() {
+        return collegePredictorPid;
+    }
+
+    @Override
+    public String getFormId(){
+        return formId;
+    }
 }

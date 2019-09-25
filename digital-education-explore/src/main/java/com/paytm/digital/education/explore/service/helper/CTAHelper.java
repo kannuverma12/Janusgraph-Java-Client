@@ -1,6 +1,5 @@
 package com.paytm.digital.education.explore.service.helper;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.explore.enums.Client.APP;
 import static com.paytm.digital.education.explore.enums.EducationEntity.EXAM;
 import static com.paytm.digital.education.explore.enums.EducationEntity.SCHOOL;
@@ -14,10 +13,8 @@ import static com.paytm.digital.education.explore.response.dto.common.CTA.Consta
 import com.paytm.digital.education.explore.constants.ExploreConstants;
 import com.paytm.digital.education.explore.enums.CTAType;
 import com.paytm.digital.education.explore.enums.Client;
-import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.detail.CTAInfoHolder;
-import com.paytm.digital.education.explore.response.dto.detail.ExamDetail;
 import com.paytm.digital.education.explore.service.external.FeeUrlGenerator;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
@@ -89,10 +86,6 @@ public class CTAHelper {
             }
         }
 
-        if (APP.equals(client) && StringUtils.isNotBlank(ctaInfoHolder.getFormId())) {
-            ctas.add(getFormsCTA(ctaInfoHolder.getFormId(), logosPerCta));
-        }
-
         if (APP.equals(client) && Objects.nonNull(ctaInfoHolder.getCollegePredictorPid())) {
             ctas.add(getPredictorCTA(ctaInfoHolder.getCollegePredictorPid(), logosPerCta));
         }
@@ -111,25 +104,6 @@ public class CTAHelper {
         if (APP.equals(client) && StringUtils.isNotBlank(ctaDetail.getFormId())) {
             ctas.add(getFormsCTA(ctaDetail.getFormId(), logosPerCta));
         }
-    }
-
-    public List<CTA> buildExamCTA(ExamDetail examDetail, Client client) {
-        List<CTA> ctas = new ArrayList<>();
-        Map<String, Object> logosPerCta = propertyReader
-                .getPropertiesAsMapByKey(EXPLORE_COMPONENT,
-                        EducationEntity.EXAM.name().toLowerCase(),
-                        ExploreConstants.CTA);
-
-        if (APP.equals(client) && StringUtils.isNotBlank(examDetail.getFormId())) {
-            ctas.add(getFormsCTA(examDetail.getFormId(), logosPerCta));
-        }
-
-        if (APP.equals(client) && Objects.nonNull(examDetail.getCollegePredictorPid())) {
-            ctas.add(getPredictorCTA(examDetail.getCollegePredictorPid(), logosPerCta));
-        }
-
-        ctas.add(getLeadCTA(false, logosPerCta));
-        return ctas;
     }
 
     private CTA getPredictorCTA(Long predictorId, Map<String, Object> logosPerCta) {

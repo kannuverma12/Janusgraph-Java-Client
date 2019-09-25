@@ -100,7 +100,23 @@ public class ExamData extends SearchBaseData implements CTAInfoHolder {
     }
 
     @JsonIgnore
+    @Override
+    public boolean hasShortListFeature() {
+        return false;
+    }
+
+    @JsonIgnore
     @Accessors(fluent = true)
     private String ctaDbPropertyKey = EXAM_SEARCH_CTA;
+
+    @Override
+    public Long getCollegePredictorPid() {
+        return collegePredictorPid;
+    }
+
+    @Override
+    public String getFormId(){
+        return formId;
+    }
 
 }

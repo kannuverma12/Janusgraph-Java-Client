@@ -89,7 +89,7 @@ public class ExamDetailServiceImpl {
             updateInterested(examDetail, userId);
             updateShortlist(examDetail, userId);
         }
-        List<CTA> ctas = ctaHelper.buildExamCTA(examDetail, client);
+        List<CTA> ctas = ctaHelper.buildCTA(examDetail, client);
         if (!CollectionUtils.isEmpty(ctas)) {
             examDetail.setCtaList(ctas);
         }
