@@ -20,6 +20,7 @@ public class ArticleRequest {
     @JsonProperty("article_title")
     private String articleTitle;
 
+    @NotBlank
     @JsonProperty("article_short_description")
     private String articleShortDescription;
 
@@ -36,6 +37,7 @@ public class ArticleRequest {
     @JsonProperty("institute_id")
     private Long instituteId;
 
+    @NotBlank
     @JsonProperty("submitted_date")
     private String submittedDate;
 
