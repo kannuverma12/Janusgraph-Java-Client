@@ -5,26 +5,28 @@ import static com.paytm.digital.education.explore.constants.CampusEngagementCons
 import com.paytm.digital.education.explore.service.impl.ImportAmbassadorServiceImpl;
 import com.paytm.digital.education.explore.service.impl.ImportArticleServiceImpl;
 import com.paytm.digital.education.explore.service.impl.ImportEventServiceImpl;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import com.paytm.digital.education.explore.database.entity.CronProperties;
 import com.paytm.digital.education.explore.database.repository.CronPropertiesRepository;
-import lombok.extern.slf4j.Slf4j;
-import net.javacrumbs.shedlock.core.SchedulerLock;
+
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.text.ParseException;
 import java.util.Objects;
 
-@Slf4j
+
 @AllArgsConstructor
 @Configuration
 @EnableScheduling
 public class CampusEngagementScheduler {
+
+    private static Logger log = LoggerFactory.getLogger(CampusEngagementScheduler.class);
 
     private ImportArticleServiceImpl    importArticleService;
     private ImportEventServiceImpl      importEventService;

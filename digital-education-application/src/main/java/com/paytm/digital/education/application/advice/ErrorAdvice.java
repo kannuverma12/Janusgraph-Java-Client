@@ -18,10 +18,12 @@ import com.paytm.digital.education.mapping.ErrorEnum;
 import java.util.Optional;
 import java.util.Set;
 import javax.validation.ConstraintViolationException;
+
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -38,9 +40,10 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @RestController
-@Slf4j
 @RestControllerAdvice
 public class ErrorAdvice extends ResponseEntityExceptionHandler {
+
+    private static Logger log = LoggerFactory.getLogger(ErrorAdvice.class);
 
     @ExceptionHandler(MissingRequestHeaderException.class)
     public final ResponseEntity handleMissingHeader(MissingRequestHeaderException ex, WebRequest request) {

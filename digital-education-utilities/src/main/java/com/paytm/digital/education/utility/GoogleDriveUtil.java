@@ -15,9 +15,10 @@ import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.ValueRange;
-import com.paytm.digital.education.config.GoogleConfig;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
+
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,9 +42,10 @@ import static com.paytm.digital.education.constant.GoogleUtilConstant.OFFLINE;
 import static com.paytm.digital.education.constant.GoogleUtilConstant.USER;
 
 @UtilityClass
-@Slf4j
+
 public class GoogleDriveUtil {
 
+    private static final Logger log = LoggerFactory.getLogger(GoogleDriveUtil.class);
     private static final String       APPLICATION_NAME        = "Education";
     private static final JsonFactory  JSON_FACTORY            = JacksonFactory.getDefaultInstance();
     /*

@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.paytm.digital.education.application.config.metric.DataDogClient;
 import com.paytm.digital.education.application.constant.Constant;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
+
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -16,10 +18,12 @@ import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
-@Slf4j
+
 @Aspect
 @Component
 public class TimedAdvice {
+
+    private static Logger log = LoggerFactory.getLogger(TimedAdvice.class);
 
     private static final String EXECUTION_TIME = "ExecutionTime(ms)";
     private static final String METHOD_NAME    = "MethodName";

@@ -5,14 +5,14 @@ import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.elasticsearch.service.ElasticSearchService;
 import com.paytm.digital.education.search.service.ISearchService;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-@Slf4j
+
 @Service
 @AllArgsConstructor
 public class ExploreSearchService implements ISearchService {

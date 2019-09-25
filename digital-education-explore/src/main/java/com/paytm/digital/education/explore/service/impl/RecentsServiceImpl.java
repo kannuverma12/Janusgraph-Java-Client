@@ -13,8 +13,10 @@ import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.service.RecentsSerivce;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.utility.JsonUtils;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -31,10 +33,11 @@ import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.RECENT_SEARCHES_ID_SEPERATOR;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class RecentsServiceImpl implements RecentsSerivce {
+
+    private static final Logger log = LoggerFactory.getLogger(RecentsServiceImpl.class);
 
     private ElasticSearchService    elasticSearchService;
     private KafkaProducer           kafkaProducer;

@@ -15,6 +15,7 @@ import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
 import de.flapdoodle.embed.process.runtime.Network;
+import org.apache.logging.log4j.core.lookup.MainMapLookup;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -44,7 +45,7 @@ public class LeadRepositoryTest {
 
     @BeforeClass
     public static void setUp() throws Exception {
-
+        MainMapLookup.setMainArguments("digital-education-service");
         setUpMongo(mongoHost, mongoPort);
 
         leadRepository = new LeadRepository(mongoTemplate);

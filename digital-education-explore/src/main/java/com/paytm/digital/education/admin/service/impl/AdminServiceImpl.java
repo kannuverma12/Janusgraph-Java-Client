@@ -20,8 +20,10 @@ import com.paytm.digital.education.explore.database.entity.School;
 
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.service.S3Service;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
@@ -36,10 +38,11 @@ import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class AdminServiceImpl implements AdminService {
+
+    private static final Logger log = LoggerFactory.getLogger(AdminServiceImpl.class);
 
     private S3Service s3Service;
     private CommonMongoRepository commonMongoRepository;

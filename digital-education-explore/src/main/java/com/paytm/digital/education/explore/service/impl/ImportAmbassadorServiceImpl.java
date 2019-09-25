@@ -15,7 +15,7 @@ import com.paytm.digital.education.explore.xcel.model.XcelCampusAmbassador;
 import com.paytm.digital.education.utility.JsonUtils;
 import com.paytm.digital.education.utility.UploadUtil;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
@@ -51,7 +51,7 @@ import static com.paytm.digital.education.explore.constants.CampusEngagementCons
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
 
-@Slf4j
+
 @Service
 @AllArgsConstructor
 public class ImportAmbassadorServiceImpl implements ImportDataService {

@@ -35,7 +35,7 @@ import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.search.service.ISearchService;
 import com.paytm.digital.education.utility.HierarchyIdentifierUtils;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -50,7 +50,7 @@ import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.PostConstruct;
 
-@Slf4j
+
 @Component
 public abstract class AbstractSearchServiceImpl {
 

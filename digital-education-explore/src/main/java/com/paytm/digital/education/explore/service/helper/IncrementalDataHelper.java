@@ -11,8 +11,10 @@ import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.service.SftpService;
 import com.paytm.digital.education.utility.JsonUtils;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
@@ -63,10 +65,13 @@ import static com.paytm.digital.education.explore.constants.IncrementalDataInges
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SCHOOL_ENTITY;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SFTP_SCHOOL_FILE_NAME_FORMAT;
 
-@Slf4j
+
 @Service
 @AllArgsConstructor
 public class IncrementalDataHelper {
+
+    private static Logger log = LoggerFactory.getLogger(IncrementalDataHelper.class);
+
     private SftpService           sftpService;
     private PropertyReader        propertyReader;
     private CommonMongoRepository commonMongoRepository;

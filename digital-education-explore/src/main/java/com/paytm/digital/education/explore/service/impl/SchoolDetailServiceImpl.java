@@ -38,7 +38,6 @@ import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelp
 import com.paytm.digital.education.explore.utility.CommonUtil;
 
 import com.paytm.digital.education.explore.utility.SchoolUtilService;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -70,7 +69,7 @@ import static com.paytm.digital.education.utility.CommonUtils.isNullOrZero;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.elasticsearch.common.geo.parsers.GeoWKTParser.COMMA;
 
-@Slf4j
+
 @Service
 public class SchoolDetailServiceImpl implements SchoolService {
 

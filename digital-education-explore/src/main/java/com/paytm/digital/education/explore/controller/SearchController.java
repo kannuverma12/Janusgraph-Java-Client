@@ -15,8 +15,10 @@ import com.paytm.digital.education.explore.validators.CourseSearchValidator;
 import com.paytm.digital.education.explore.validators.ExploreValidator;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.utility.JsonUtils;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -24,11 +26,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-@Slf4j
+
 @RestController
 @AllArgsConstructor
 @RequestMapping(EDUCATION_BASE_URL)
 public class SearchController {
+
+    private static Logger log = LoggerFactory.getLogger(SearchController.class);
+
     private SearchServiceImpl searchServiceImpl;
     private ExploreValidator  exploreValidator;
 

@@ -23,12 +23,12 @@ import com.paytm.digital.education.explore.service.impl.ExamDetailServiceImpl;
 import com.paytm.digital.education.explore.service.impl.InstituteDetailServiceImpl;
 import com.paytm.digital.education.explore.validators.ExploreValidator;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 
-@Slf4j
+
 @AllArgsConstructor
 @RestController
 @Validated

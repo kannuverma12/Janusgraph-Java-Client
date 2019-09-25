@@ -14,8 +14,10 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.IN_
 import com.mongodb.client.result.UpdateResult;
 import com.paytm.digital.education.explore.database.entity.FieldGroup;
 import com.paytm.digital.education.explore.database.entity.FtlTemplate;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -33,10 +35,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@Slf4j
+
 @AllArgsConstructor
 @Repository
 public class CommonMongoRepository {
+
+    private static Logger log = LoggerFactory.getLogger(CommonMongoRepository.class);
 
     private MongoOperations     mongoOperation;
     private MongoMappingContext context;

@@ -3,7 +3,9 @@ package com.paytm.digital.education.explore.service.external;
 import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.thirdparty.catalog.Attributes;
 import com.paytm.digital.education.explore.thirdparty.catalog.CatalogProduct;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,8 +16,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-@Slf4j
 public class FeeUrlGenerator {
+
+    private static final Logger log = LoggerFactory.getLogger(FeeUrlGenerator.class);
 
     @Autowired
     private BaseRestApiService baseRestApiService;
@@ -44,7 +47,8 @@ public class FeeUrlGenerator {
             return createWebUrl(attributes);
         } catch (Exception e) {
             log.error("Received unexpected response from catalog : {}",
-                    e.getLocalizedMessage(), e);
+                    e, e.getLocalizedMessage());
+
             return null;
         }
     }

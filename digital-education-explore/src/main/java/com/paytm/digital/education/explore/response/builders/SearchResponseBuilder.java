@@ -16,7 +16,7 @@ import com.paytm.digital.education.explore.response.dto.search.TermFilterData;
 import com.paytm.digital.education.explore.response.dto.search.MultipleRangeData;
 import com.paytm.digital.education.explore.response.dto.search.RangeFilterValue;
 import com.paytm.digital.education.explore.utility.CommonUtil;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -31,7 +31,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.FEE
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DISPLAY_NAME;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.KEY;
 
-@Slf4j
+
 @Service
 public class SearchResponseBuilder {
 

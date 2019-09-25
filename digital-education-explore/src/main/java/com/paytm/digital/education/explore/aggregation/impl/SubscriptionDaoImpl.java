@@ -16,7 +16,7 @@ import com.paytm.digital.education.explore.database.entity.Subscription;
 import com.paytm.digital.education.explore.enums.SubscribableEntityType;
 import com.paytm.digital.education.explore.enums.SubscriptionStatus;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -32,7 +32,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @Service
-@Slf4j
+
 public class SubscriptionDaoImpl implements SubscriptionDao {
 
     private final MongoTemplate mongoTemplate;

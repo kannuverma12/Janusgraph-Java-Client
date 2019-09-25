@@ -3,8 +3,11 @@ package com.paytm.digital.education.explore.service.external;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.config.RestConfig;
 import com.paytm.digital.education.mapping.ErrorEnum;
+import com.paytm.digital.education.utility.JsonUtils;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -22,9 +25,10 @@ import java.util.Map;
 import java.util.Objects;
 
 @Service
-@Slf4j
 @AllArgsConstructor
 public class BaseRestApiService {
+
+    private static final Logger log = LoggerFactory.getLogger(BaseRestApiService.class);
 
     private RestConfig rest;
 
@@ -71,6 +75,7 @@ public class BaseRestApiService {
         HttpEntity<Object> httpEntity = new HttpEntity<Object>(requestBody, httpHeaders);
         ResponseEntity<T> responseEntity =
                 rest.getRestTemplate().exchange(url, HttpMethod.POST, httpEntity, clazz);
+        log.info("Http request : {}", httpEntity.toString());
         if (responseEntity.getStatusCodeValue() != 200) {
             throw new BadRequestException(ErrorEnum.HTTP_REQUEST_FAILED,
                     ErrorEnum.HTTP_REQUEST_FAILED.getExternalMessage());

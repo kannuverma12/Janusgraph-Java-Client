@@ -6,13 +6,13 @@ import com.paytm.digital.education.explore.database.repository.collegepredictor.
 import com.paytm.digital.education.explore.dto.CollegePredictorDetailsDto;
 import com.paytm.digital.education.explore.service.CollegePredictorService;
 import com.paytm.digital.education.mapping.ErrorEnum;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Slf4j
+
 @Service
 public class CollegePredictorsServiceImpl implements CollegePredictorService {
 
