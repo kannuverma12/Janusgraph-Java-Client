@@ -18,6 +18,8 @@ public interface ExploreConstants {
     int    DEFAULT_SIZE                = 10;
     int    DEFAULT_AUTOSUGGEST_SIZE    = 3;
     int    DEFAULT_AUTOSUGGEST_COMPARE = 10;
+    String SORT_DISTANCE_FIELD         = "location";
+    String DISTANCE_KILOMETERS         =  " km";
 
     ///// Exam Detail//////////
     String TENTATIVE     = "tentative";
@@ -98,6 +100,7 @@ public interface ExploreConstants {
     Float  UNIVERSITY_NAME_SEARCH_BOOST = 1F;
     Float  OTHER_NAMES_NGRAM_BOOST      = 0.00001F;
     String FE_RANK_SORT                 = "ranking";
+    String FE_RELEVANCE_SORT            = "relevance";
     String DB_RANK_OVERALL              = "overall";
 
     SimpleDateFormat MMM_YYYY    = new SimpleDateFormat("MMM,yyyy");
@@ -134,7 +137,7 @@ public interface ExploreConstants {
     Float  EXAM_OFFICIAL_NAME_NGRAM_BOOST = 0.00001F;
     String DATE_TAB                       = "dates";
     String SYLLABUS_TAB                   = "syllabus";
-    String SEARCH_INDEX_INSTITUTE         = "education_search_institute_v2";
+    String SEARCH_INDEX_INSTITUTE         = "education_search_institute_v3";
     String SEARCH_ANALYZER_INSTITUTE      = "word_delimiter_analyzer";
     String SEARCH_NAMES                   = "names";
     String MAX_RANK                       = "max_rank";
@@ -262,6 +265,7 @@ public interface ExploreConstants {
     String COLLEGE_FOCUS   = "colleges_focus";
     String TOP_COLLEGES    = "top_colleges";
     String TOP_SCHOOLS    = "top_schools";
+    String SCHOOLS_IN_FOCUS    = "schools_focus";
     String TOP_EXAMS       = "top_exams";
     String TOP_EXAMS_APP   = "top_exams_app";
     String ICON            = "icon";
@@ -293,6 +297,9 @@ public interface ExploreConstants {
     String RECENT_SEARCHES_ID_SEPERATOR = "-";
 
     String CTA                  = "cta";
+    String EXAM_SEARCH_CTA      = "exam_search_cta";
+    String SCHOOL_SEARCH_CTA    = "school_search_cta";
+    String INSTITUTE_SEARCH_CTA = "institute_search_cta";
     String SELECTED             = "_selected";
     String CTA_LOGO_PLACEHOLDER = "/placeholder.svg";
 
@@ -300,7 +307,7 @@ public interface ExploreConstants {
     String SCHOOL_SEARCH_NAMESPACE = "school_search";
     String SCHOOL_FILTER_NAMESPACE = "school_filter";
     String SEARCH_ANALYZER_SCHOOL  = "word_delimiter_analyzer";
-    String SEARCH_INDEX_SCHOOL     = "education_search_school_v1";
+    String SEARCH_INDEX_SCHOOL     = "education_search_school_v2";
     String SCHOOL_FACILITY_KEY = "school_facility_map";
 
     String OTHER           = "Other";
@@ -318,4 +325,21 @@ public interface ExploreConstants {
     String CLIENT                        = "client";
     String FIELD_POST_FIX                = "_id";
     String ERROR_IN_FIELD_VALUE_TEMPLATE = "Incorrect value %s for field %s";
+    String SCHOOL                        = "school";
+    String COLLEGE                       = "college";
+    String HIGHLIGHT                     = "highlight";
+    String DETAILS                       = "details";
+    String LANDING                       = "landing";
+    String SECTIONS                      = "sections";
+    String NAME                          = "name";
+    String FAILED                        = "failed";
+
+    //Sections constants
+    String BROWSE_BY_EXAM_LEVEL_APP         = "browse_by_exam_level_app";
+    String EXAM_LEVEL                       = "level";
+    String EXAM_STREAM_IDS                  = "stream_ids";
+    String EXAM_GLOBAL_PRIORITY             = "global_priority";
+    String FILTERS                          = "filters";
+    String LEVEL                            = "level";
+    int    EXAMS_BROWSE_BY_LEVEL_QUERY_SIZE = 2;
 }

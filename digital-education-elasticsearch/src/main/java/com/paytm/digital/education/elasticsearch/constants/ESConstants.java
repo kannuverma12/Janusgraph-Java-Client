@@ -28,4 +28,7 @@ public final class ESConstants {
 
     public static final int MAX_BULK_SIZE = 200;
 
+    public static final String GEOLOCATION_FIELD = "location";
+    public static final String SORT_FIELD        = "sort";
+    public static final String KEY_SEPERATOR     = ":";
 }

@@ -11,6 +11,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.ToString;
 
+import static com.paytm.digital.education.explore.constants.ExploreConstants.NON_TENTATIVE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.YYYY_MM;
+import static com.paytm.digital.education.utility.DateUtil.stringToDate;
+
 @Data
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -51,4 +55,15 @@ public class Event {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date dateRangeEnd;
 
+    public Date calculateCorrespondingDate() {
+        Date eventDate;
+        if (NON_TENTATIVE.equalsIgnoreCase(this.getCertainty())) {
+            eventDate = this.getDate() != null
+                    ? this.getDate()
+                    : this.getDateRangeStart();
+        } else {
+            eventDate = stringToDate(this.getMonthDate(), YYYY_MM);
+        }
+        return eventDate;
+    }
 }

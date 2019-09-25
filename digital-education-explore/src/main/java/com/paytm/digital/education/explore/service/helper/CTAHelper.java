@@ -1,12 +1,21 @@
 package com.paytm.digital.education.explore.service.helper;
 
+import static com.paytm.digital.education.explore.enums.Client.APP;
+import static com.paytm.digital.education.explore.enums.EducationEntity.EXAM;
+import static com.paytm.digital.education.explore.enums.EducationEntity.SCHOOL;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.COMPARE_ACTIVE_LABEL_WEB;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLISTED_EXAM_APP;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLISTED_SCHOOL_APP;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST_APP;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST_EXAM_APP;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST_SCHOOL_APP;
+
 import com.paytm.digital.education.explore.constants.ExploreConstants;
 import com.paytm.digital.education.explore.enums.CTAType;
 import com.paytm.digital.education.explore.enums.Client;
-import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.detail.CTAInfoHolder;
-import com.paytm.digital.education.explore.response.dto.detail.ExamDetail;
 import com.paytm.digital.education.explore.service.external.FeeUrlGenerator;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
@@ -16,20 +25,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
 import java.util.Objects;
-
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.explore.enums.Client.APP;
-import static com.paytm.digital.education.explore.enums.EducationEntity.SCHOOL;
-import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST;
-import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLISTED_APP;
-import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLISTED_SCHOOL_APP;
-import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST_APP;
-import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST_SCHOOL_APP;
 
 @Service
 public class CTAHelper {
@@ -48,11 +48,17 @@ public class CTAHelper {
 
     public List<CTA> buildCTA(CTAInfoHolder ctaInfoHolder, Client client) {
         // Logos are not required for web.
-        Map<String, Object> logosPerCta = APP.equals(client)
-                ? propertyReader.getPropertiesAsMapByKey(
-                ExploreConstants.EXPLORE_COMPONENT,
-                ctaInfoHolder.getCorrespondingEntity().name().toLowerCase(),
-                ExploreConstants.CTA) : Collections.emptyMap();
+        Map<String, Object> logosPerCta = null;
+        if (APP.equals(client)) {
+            logosPerCta = propertyReader.getPropertiesAsMapByKey(
+                    ExploreConstants.EXPLORE_COMPONENT,
+                    ctaInfoHolder.getCorrespondingEntity().name().toLowerCase(),
+                    ctaInfoHolder.ctaDbPropertyKey());
+        }
+
+        if (CollectionUtils.isEmpty(logosPerCta)) {
+            logosPerCta = Collections.emptyMap();
+        }
 
         List<CTA> ctas = new ArrayList<>();
 
@@ -71,15 +77,21 @@ public class CTAHelper {
             ctas.add(getBrochureCTA(ctaInfoHolder.getBrochureUrl(), logosPerCta));
         }
 
-        ctas.add(getShortlistCTA(ctaInfoHolder, logosPerCta, client));
-
         if (ctaInfoHolder.hasCompareFeature()) {
             if (!APP.equals(client)) {
                 ctas.add(getCompareCTA(logosPerCta));
             }
         }
 
+        if (APP.equals(client) && Objects.nonNull(ctaInfoHolder.getCollegePredictorPid())) {
+            ctas.add(getPredictorCTA(ctaInfoHolder.getCollegePredictorPid(), logosPerCta));
+        }
+
         addApplyNowCTAIfRequired(ctas, ctaInfoHolder, client, logosPerCta);
+
+        if (ctaInfoHolder.hasShortListFeature()) {
+            ctas.add(getShortlistCTA(ctaInfoHolder, logosPerCta, client));
+        }
 
         return ctas;
     }
@@ -93,25 +105,6 @@ public class CTAHelper {
         if (APP.equals(client) && StringUtils.isNotBlank(ctaDetail.getFormId())) {
             ctas.add(getFormsCTA(ctaDetail.getFormId(), logosPerCta));
         }
-    }
-
-    public List<CTA> buildExamCTA(ExamDetail examDetail, Client client) {
-        List<CTA> ctas = new ArrayList<>();
-        Map<String, Object> logosPerCta = propertyReader
-                .getPropertiesAsMapByKey(EXPLORE_COMPONENT,
-                        EducationEntity.EXAM.name().toLowerCase(),
-                        ExploreConstants.CTA);
-
-        if (APP.equals(client) && StringUtils.isNotBlank(examDetail.getFormId())) {
-            ctas.add(getFormsCTA(examDetail.getFormId(), logosPerCta));
-        }
-
-        if (APP.equals(client) && Objects.nonNull(examDetail.getCollegePredictorPid())) {
-            ctas.add(getPredictorCTA(examDetail.getCollegePredictorPid(), logosPerCta));
-        }
-
-        ctas.add(getLeadCTA(false, logosPerCta));
-        return ctas;
     }
 
     private CTA getPredictorCTA(Long predictorId, Map<String, Object> logosPerCta) {
@@ -161,13 +154,23 @@ public class CTAHelper {
     }
 
     private String getAppShortListLabel(CTAInfoHolder ctaInfoHolder) {
-        return SCHOOL.equals(ctaInfoHolder.getCorrespondingEntity())
-                ? SHORTLIST_SCHOOL_APP : SHORTLIST_APP;
+        if (SCHOOL.equals(ctaInfoHolder.getCorrespondingEntity())) {
+            return SHORTLIST_SCHOOL_APP;
+        } else if (EXAM.equals(ctaInfoHolder.getCorrespondingEntity())) {
+            return SHORTLIST_EXAM_APP;
+        } else {
+            return SHORTLIST_APP;
+        }
     }
 
     private String getAppShortListedLabel(CTAInfoHolder ctaInfoHolder) {
-        return SCHOOL.equals(ctaInfoHolder.getCorrespondingEntity())
-                ? SHORTLISTED_SCHOOL_APP : SHORTLISTED_APP;
+        if (SCHOOL.equals(ctaInfoHolder.getCorrespondingEntity())) {
+            return SHORTLISTED_SCHOOL_APP;
+        } else if (EXAM.equals(ctaInfoHolder.getCorrespondingEntity())) {
+            return SHORTLISTED_EXAM_APP;
+        } else {
+            return SHORTLIST_APP;
+        }
     }
 
     private CTA getShortlistCTA(CTAInfoHolder ctaInfoHolder, Map<String, Object> logosPerCta,
@@ -213,7 +216,7 @@ public class CTAHelper {
     private CTA getCompareCTA(Map<String, Object> logosPerCta) {
         String absoluteUrl = getAbsoluteLogoUrl(logosPerCta, CTAType.COMPARE.name().toLowerCase());
         return CTA.builder().type(CTAType.COMPARE).label(CTA.Constants.COMPARE).logo(absoluteUrl)
-                .build();
+                .activeText(COMPARE_ACTIVE_LABEL_WEB).build();
     }
 
 }

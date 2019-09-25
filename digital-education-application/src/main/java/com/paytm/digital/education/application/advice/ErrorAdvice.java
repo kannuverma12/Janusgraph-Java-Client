@@ -8,6 +8,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.paytm.digital.education.exception.EducationException;
@@ -128,6 +129,19 @@ public class ErrorAdvice extends ResponseEntityExceptionHandler {
                     cause.getValue(), fieldName.orElse(EMPTY));
             return new ResponseEntity<>(new ErrorDetails(1, errorMessage, errorMessage),
                 HttpStatus.BAD_REQUEST);
+        } else if (throwableCause instanceof JsonMappingException) {
+            JsonMappingException cause = (JsonMappingException) throwableCause;
+            String errorMessage = StringUtils.isNotBlank(cause.getOriginalMessage())
+                    ? cause.getOriginalMessage() :
+                    EMPTY;
+            return new ResponseEntity<>(new ErrorDetails(1, errorMessage, errorMessage),
+                    HttpStatus.BAD_REQUEST);
+        } else if (throwableCause instanceof JsonParseException) {
+            JsonParseException cause = (JsonParseException) throwableCause;
+            String errorMessage = StringUtils.isNotBlank(cause.getMessage()) ? cause.getMessage() :
+                    EMPTY;
+            return new ResponseEntity<>(new ErrorDetails(1, errorMessage, errorMessage),
+                    HttpStatus.BAD_REQUEST);
         }
         return super.handleHttpMessageNotReadable(ex, headers, status, request);
     }

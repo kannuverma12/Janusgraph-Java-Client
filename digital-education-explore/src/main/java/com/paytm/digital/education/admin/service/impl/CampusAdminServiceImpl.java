@@ -1,5 +1,8 @@
 package com.paytm.digital.education.admin.service.impl;
 
+import com.paytm.digital.education.admin.request.AmbassadorRequest;
+import com.paytm.digital.education.admin.request.ArticleRequest;
+import com.paytm.digital.education.admin.request.EventRequest;
 import com.paytm.digital.education.admin.response.CampusAdminResponse;
 import com.paytm.digital.education.admin.service.CampusAdminService;
 import com.paytm.digital.education.config.AwsConfig;
@@ -48,6 +51,7 @@ import static com.paytm.digital.education.explore.constants.CampusEngagementCons
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.ARTICLES;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.XCEL_SUBMITTED_DATE_FORMAT;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.DRIVE_URL;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.DIRECTORY_SEPARATOR_SLASH;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
 
 @Service
@@ -61,7 +65,7 @@ public class CampusAdminServiceImpl implements CampusAdminService {
     private MongoOperations mongoOperations;
 
     @Override
-    public CampusAdminResponse addAmbassadors(XcelCampusAmbassador ambassador) {
+    public CampusAdminResponse addAmbassadors(AmbassadorRequest ambassador) {
         CampusAdminResponse campusAdminResponse = new CampusAdminResponse();
 
         if (Objects.nonNull(ambassador)) {
@@ -192,7 +196,7 @@ public class CampusAdminServiceImpl implements CampusAdminService {
     }
 
     @Override
-    public CampusAdminResponse addArticles(XcelArticle xcelArticle) {
+    public CampusAdminResponse addArticles(ArticleRequest xcelArticle) {
         CampusAdminResponse campusAdminResponse = new CampusAdminResponse();
 
         if (Objects.nonNull(xcelArticle)) {
@@ -296,7 +300,7 @@ public class CampusAdminServiceImpl implements CampusAdminService {
         return articleList;
     }
 
-    @Override public CampusAdminResponse addEvents(XcelEvent xcelEvent) {
+    @Override public CampusAdminResponse addEvents(EventRequest xcelEvent) {
         CampusAdminResponse campusAdminResponse = new CampusAdminResponse();
 
         if (Objects.nonNull(xcelEvent)) {
@@ -433,7 +437,8 @@ public class CampusAdminServiceImpl implements CampusAdminService {
                 GoogleConfig.getCampusCredentialFileName(),
                 GoogleConfig.getExploreCredentialFolderPath()).getKey();
         if (Objects.nonNull(imageUrl)) {
-            ambassador.setImageUrl(imageUrl);
+            log.info("Setting image URL : " + (DIRECTORY_SEPARATOR_SLASH + imageUrl));
+            ambassador.setImageUrl(DIRECTORY_SEPARATOR_SLASH + imageUrl);
             return true;
         } else {
             return false;

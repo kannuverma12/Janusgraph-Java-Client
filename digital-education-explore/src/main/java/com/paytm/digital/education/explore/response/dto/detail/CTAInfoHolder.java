@@ -1,5 +1,7 @@
 package com.paytm.digital.education.explore.response.dto.detail;
 
+import static com.paytm.digital.education.explore.constants.ExploreConstants.CTA;
+
 import com.paytm.digital.education.explore.enums.EducationEntity;
 
 public interface CTAInfoHolder {
@@ -15,9 +17,23 @@ public interface CTAInfoHolder {
 
     EducationEntity getCorrespondingEntity();
 
-    String getFormId();
+    default String getFormId() {
+        return null;
+    }
 
     default boolean hasCompareFeature() {
         return true;
+    }
+
+    default boolean hasShortListFeature() {
+        return true;
+    }
+
+    default Long getCollegePredictorPid() {
+        return null;
+    }
+
+    default String ctaDbPropertyKey() {
+        return CTA;
     }
 }

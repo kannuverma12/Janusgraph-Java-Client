@@ -10,6 +10,7 @@ import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.detail.Attribute;
 import com.paytm.digital.education.explore.response.dto.detail.CTAInfoHolder;
 import com.paytm.digital.education.explore.response.dto.detail.ClassInfoLegend;
+import com.paytm.digital.education.explore.response.dto.search.SchoolSearchData;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -59,6 +60,9 @@ public class SchoolDetail implements CTAInfoHolder {
     @JsonProperty("cta_list")
     private List<CTA> ctaList;
 
+    @JsonProperty("similar_schools")
+    private List<SchoolSearchData> similarSchools;
+
     @JsonIgnore
     private Long pid;
 
@@ -76,18 +80,28 @@ public class SchoolDetail implements CTAInfoHolder {
     @Accessors(fluent = true)
     private boolean shouldHaveApplyNowCTA = true;
 
+    @JsonProperty("shortlisted")
+    private boolean shortlisted;
+
     @Override
+    @JsonIgnore
     public boolean isClient() {
         return false;
     }
 
     @Override
+    @JsonIgnore
     public EducationEntity getCorrespondingEntity() {
         return SCHOOL;
     }
 
     @Override
+    @JsonIgnore
     public boolean hasCompareFeature() {
         return false;
+    }
+
+    @Override public Long getCollegePredictorPid() {
+        return null;
     }
 }

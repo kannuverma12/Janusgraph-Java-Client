@@ -1,5 +1,6 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.search.InstituteData;
@@ -21,10 +22,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeoutException;
 
 import static com.paytm.digital.education.explore.enums.EducationEntity.COURSE;
 import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
@@ -44,36 +47,40 @@ public class SearchServiceImpl {
     private RecentsSerivce             recentsSerivce;
     private SchoolSearchServiceImpl schoolSearchService;
 
-    public SearchResponse search(SearchRequest searchRequest, Long userId) throws Exception {
+    public SearchResponse search(SearchRequest searchRequest, Long userId, Client client) {
         long startTime = System.currentTimeMillis();
         log.debug("Starting search at : " + startTime);
-        SearchResponse response = handler(searchRequest.getEntity()).search(searchRequest);
-        log.debug("Search Response : {}", JsonUtils.toJson(response));
+        searchRequest.setClient(client);
+        try {
+            SearchResponse response = handler(searchRequest.getEntity()).search(searchRequest);
+            log.debug("Search Response : {}", JsonUtils.toJson(response));
 
-        if (Objects.nonNull(userId) && userId > 0 && response.isSearchResponse()) {
+            if (Objects.nonNull(userId) && userId > 0 && response.isSearchResponse()) {
 
-            if (StringUtils.isNotBlank(response.getSearchTerm()) && !CollectionUtils
-                    .isEmpty(response.getResults().getValues())) {
-                recentsSerivce
-                        .recordSearches(response.getSearchTerm(), userId, searchRequest.getEntity());
-            }
-
-            if (!CollectionUtils.isEmpty(response.getEntityDataMap())) {
-                Map<Long, SearchBaseData> searchBaseDataMap = response.getEntityDataMap();
-                List<Long> entityIds = new ArrayList<>(searchBaseDataMap.keySet());
-                EducationEntity entity = searchRequest.getEntity();
-                if (entity.equals(COURSE)) {
-                    updateShortlist(INSTITUTE, userId, searchBaseDataMap, entityIds);
-                } else {
-                    updateShortlist(entity, userId, searchBaseDataMap, entityIds);
+                if (StringUtils.isNotBlank(response.getSearchTerm()) && !CollectionUtils
+                        .isEmpty(response.getResults().getValues())) {
+                    recentsSerivce
+                            .recordSearches(response.getSearchTerm(), userId, searchRequest.getEntity());
                 }
-                updateInterested(searchRequest.getEntity(), userId, searchBaseDataMap, entityIds);
-                response.getEntityDataMap().clear();
-            }
 
+                if (!CollectionUtils.isEmpty(response.getEntityDataMap())) {
+                    Map<Long, SearchBaseData> searchBaseDataMap = response.getEntityDataMap();
+                    List<Long> entityIds = new ArrayList<>(searchBaseDataMap.keySet());
+                    EducationEntity entity = searchRequest.getEntity();
+                    if (entity.equals(COURSE)) {
+                        updateShortlist(INSTITUTE, userId, searchBaseDataMap, entityIds);
+                    } else {
+                        updateShortlist(entity, userId, searchBaseDataMap, entityIds);
+                    }
+                    updateInterested(searchRequest.getEntity(), userId, searchBaseDataMap, entityIds);
+                }
+
+            }
+            log.debug("Time taken in search : " + (System.currentTimeMillis() - startTime));
+            return response;
+        } catch (IOException | TimeoutException e) {
+            return null;
         }
-        log.debug("Time taken in search : " + (System.currentTimeMillis() - startTime));
-        return response;
     }
 
     /**
@@ -83,7 +90,7 @@ public class SearchServiceImpl {
      * @throws Exception when userid is null
      */
     public AutoSuggestResponse instituteSearch(SearchRequest searchRequest) throws Exception {
-        SearchResponse searchResponse = search(searchRequest, null);
+        SearchResponse searchResponse = search(searchRequest, null, null);
         AutoSuggestResponse autoSuggestResponse = new AutoSuggestResponse();
         List<AutoSuggestData> asDataList = new ArrayList<>();
 
@@ -142,9 +149,17 @@ public class SearchServiceImpl {
             Map<Long, SearchBaseData> searchBaseDataMap, List<Long> entityIds) {
         List<Long> subscribedEntities =
                 subscriptionDetailHelper.getSubscribedEntities(educationEntity, userId, entityIds);
-        if (!CollectionUtils.isEmpty(subscribedEntities)) {
-            subscribedEntities
-                    .forEach(entityId -> searchBaseDataMap.get(entityId).setShortlisted(true));
+
+        if (!CollectionUtils.isEmpty(searchBaseDataMap)) {
+            searchBaseDataMap.entrySet()
+                    .forEach(entityEntry -> {
+                        if (!CollectionUtils.isEmpty(subscribedEntities) && subscribedEntities
+                                .contains(entityEntry.getKey())) {
+                            entityEntry.getValue().setShortlisted(true);
+                        } else {
+                            entityEntry.getValue().setShortlisted(false);
+                        }
+                    });
         }
     }
 
@@ -157,8 +172,17 @@ public class SearchServiceImpl {
             leadEntities =
                     leadDetailHelper.getInterestedLeadInstituteIds(userId, entityIds);
         }
-        if (!CollectionUtils.isEmpty(leadEntities)) {
-            leadEntities.forEach(entityId -> searchBaseDataMap.get(entityId).setInterested(true));
+
+        if (!CollectionUtils.isEmpty(searchBaseDataMap)) {
+            searchBaseDataMap.entrySet()
+                    .forEach(entityEntry -> {
+                        if (!CollectionUtils.isEmpty(leadEntities) && leadEntities
+                                .contains(entityEntry.getKey())) {
+                            entityEntry.getValue().setInterested(true);
+                        } else {
+                            entityEntry.getValue().setInterested(false);
+                        }
+                    });
         }
     }
 }
