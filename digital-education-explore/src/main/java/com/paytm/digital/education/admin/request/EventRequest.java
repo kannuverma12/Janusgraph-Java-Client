@@ -22,6 +22,7 @@ public class EventRequest {
     @JsonProperty("event_title")
     private String eventTitle;
 
+    @NotBlank
     @JsonProperty("event_description")
     private String eventDescription;
 
@@ -34,6 +35,7 @@ public class EventRequest {
     @JsonProperty("institute_id")
     private Long instituteId;
 
+    @NotBlank
     @JsonProperty("timestamp")
     private String timestamp;
 
