@@ -3,7 +3,8 @@ package com.paytm.digital.education.application.config.security;
 import com.paytm.digital.education.constant.ErrorCode;
 import com.paytm.digital.education.exception.InvalidRequestException;
 import com.paytm.digital.education.utility.CommonUtils;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.ThreadContext;
 import org.slf4j.MDC;
@@ -15,9 +16,10 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@Slf4j
 @Component
 public class RequestIdInterceptor implements HandlerInterceptor {
+
+    private static Logger log = LoggerFactory.getLogger(RequestIdInterceptor.class);
 
     private static final String REQUEST_ID = "RequestId";
     private static final String CLIENT_ID = "ClientId";

@@ -2,7 +2,9 @@ package com.paytm.digital.education.application.config.aspect;
 
 import com.paytm.digital.education.application.config.metric.DataDogClient;
 import com.paytm.digital.education.application.constant.Constant;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
+
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -14,10 +16,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@Slf4j
+
 @Aspect
 @Component
 public class MetricAdvice {
+
+    private static Logger log = LoggerFactory.getLogger(MetricAdvice.class);
 
     private static Map<String, AtomicInteger> requestRateMap = new ConcurrentHashMap<>();
 

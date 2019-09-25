@@ -1,16 +1,5 @@
 package com.paytm.digital.education.explore.response.builders;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_PREFIX;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.APPROVALS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.OVERALL_RANKING;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKING_CAREER;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKING_NIRF;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.NIRF_LOGO;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.CAREER_LOGO;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.NOTABLE_ALUMNI_PLACEHOLDER;
-import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKING_LOGO;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paytm.digital.education.explore.database.entity.Alumni;
@@ -27,46 +16,57 @@ import com.paytm.digital.education.explore.response.dto.common.BannerData;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
 import com.paytm.digital.education.explore.response.dto.detail.Ranking;
-import com.paytm.digital.education.explore.service.helper.CampusEngagementHelper;
-import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
-import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
-import com.paytm.digital.education.explore.service.helper.PlacementDataHelper;
-import com.paytm.digital.education.explore.service.helper.CourseDetailHelper;
-import com.paytm.digital.education.explore.service.helper.GalleryDataHelper;
-import com.paytm.digital.education.explore.service.helper.FacilityDataHelper;
-import com.paytm.digital.education.explore.service.helper.DetailPageSectionHelper;
 import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
+import com.paytm.digital.education.explore.service.helper.CampusEngagementHelper;
+import com.paytm.digital.education.explore.service.helper.CourseDetailHelper;
+import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
+import com.paytm.digital.education.explore.service.helper.DetailPageSectionHelper;
+import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
+import com.paytm.digital.education.explore.service.helper.FacilityDataHelper;
+import com.paytm.digital.education.explore.service.helper.GalleryDataHelper;
+import com.paytm.digital.education.explore.service.helper.PlacementDataHelper;
 import com.paytm.digital.education.explore.service.helper.StreamDataHelper;
 import com.paytm.digital.education.explore.service.impl.SimilarInstituteServiceImpl;
 import com.paytm.digital.education.explore.utility.CommonUtil;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.TreeMap;
-import java.util.HashMap;
-import java.util.stream.Collectors;
-
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import javafx.util.Pair;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
+
+import static com.paytm.digital.education.explore.constants.ExploreConstants.APPROVALS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.CAREER_LOGO;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_PREFIX;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.NIRF_LOGO;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.NOTABLE_ALUMNI_PLACEHOLDER;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.OVERALL_RANKING;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKING_CAREER;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKING_LOGO;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKING_NIRF;
+import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
 
 @Service
 @AllArgsConstructor
-@Slf4j
 public class InstituteDetailResponseBuilder {
+
+    private static final Logger log = LoggerFactory.getLogger(InstituteDetailResponseBuilder.class);
 
     private ExamInstanceHelper          examInstanceHelper;
     private DerivedAttributesHelper     derivedAttributesHelper;

@@ -1,9 +1,12 @@
 package com.paytm.digital.education.utility;
 
 import com.paytm.digital.education.service.S3Service;
+import com.paytm.digital.education.service.SftpService;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import javafx.util.Pair;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -20,13 +23,15 @@ import static com.paytm.digital.education.constant.GoogleUtilConstant.GOOGLE_DRI
 import static com.paytm.digital.education.constant.GoogleUtilConstant.INPUTSTREAM;
 import static com.paytm.digital.education.constant.GoogleUtilConstant.MIMETYPE;
 
-@Slf4j
+
 @Service
 @AllArgsConstructor
 public class UploadUtil {
     /*
      ** Upload to S3
      */
+    private static final Logger log = LoggerFactory.getLogger(UploadUtil.class);
+
     private S3Service s3Service;
 
     public Pair<String, String> uploadFile(String fileUrl, String fileName, Long instituteId,
@@ -80,12 +85,11 @@ public class UploadUtil {
                 return s3RelativeUrl;
             }
         } catch (MalformedURLException e) {
-            log.error("Url building malformed for url string :{} and error is {} ", fileUrl,
-                    JsonUtils.toJson(e.getMessage()));
+            log.error("Url building malformed for url string :{} and error is {} ",
+                    fileUrl, JsonUtils.toJson(e.getMessage()));
         } catch (IOException e) {
             log.error("IO Exception while downloading file for url :{} and the error is {}",
                     fileUrl, JsonUtils.toJson(e.getMessage()));
-            e.printStackTrace();
         }
         return null;
     }

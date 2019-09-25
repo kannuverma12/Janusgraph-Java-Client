@@ -6,7 +6,7 @@ import static com.paytm.digital.education.constant.DBConstants.NAMESPACE;
 
 import com.paytm.digital.education.database.entity.Properties;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Slf4j
+
 @AllArgsConstructor
 @Repository
 public class PropertyRepository {

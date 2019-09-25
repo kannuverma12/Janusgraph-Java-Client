@@ -47,7 +47,7 @@ import com.paytm.digital.education.explore.service.helper.SearchAggregateHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.utility.DateUtil;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -62,7 +62,7 @@ import java.util.Date;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.PostConstruct;
 
-@Slf4j
+
 @Service
 @AllArgsConstructor
 public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {

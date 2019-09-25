@@ -13,8 +13,10 @@ import com.paytm.digital.education.explore.dto.RankingDto;
 import com.paytm.digital.education.explore.service.helper.IncrementalDataHelper;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.utility.UploadUtil;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -32,8 +34,10 @@ import static com.paytm.digital.education.explore.constants.IncrementalDataInges
 
 @Service
 @AllArgsConstructor
-@Slf4j
 public class TransformInstituteService {
+
+    private static Logger log = LoggerFactory.getLogger(TransformInstituteService.class);
+
     private UploadUtil            uploadUtil;
     private CommonMongoRepository commonMongoRepository;
     private IncrementalDataHelper incrementalDataHelper;

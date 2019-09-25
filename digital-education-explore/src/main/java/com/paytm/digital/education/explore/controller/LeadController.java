@@ -9,8 +9,10 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import com.paytm.digital.education.utility.JsonUtils;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,12 +23,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EDUCATION_BASE_URL;
 
-@Slf4j
+
 @RestController
 @RequestMapping(EDUCATION_BASE_URL)
 @AllArgsConstructor
 @Validated
 public class LeadController {
+    private static final Logger log = LoggerFactory.getLogger(LeadController.class);
     private LeadService           leadService;
 
     @PostMapping("/auth/v1/lead")

@@ -15,9 +15,11 @@ import com.paytm.digital.education.explore.xcel.model.XcelArticle;
 import com.paytm.digital.education.explore.xcel.model.XcelCampusAmbassador;
 import com.paytm.digital.education.explore.xcel.model.XcelEvent;
 import com.paytm.digital.education.utility.UploadUtil;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import javafx.util.Pair;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -48,10 +50,11 @@ import static com.paytm.digital.education.explore.constants.CampusEngagementCons
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.DRIVE_URL;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class CampusAdminServiceImpl implements CampusAdminService {
+    private static final Logger log = LoggerFactory.getLogger(CampusAdminServiceImpl.class);
+
     private CommonMongoRepository  commonMongoRepository;
     private CampusEngagementHelper campusEngagementHelper;
     private UploadUtil uploadUtil;

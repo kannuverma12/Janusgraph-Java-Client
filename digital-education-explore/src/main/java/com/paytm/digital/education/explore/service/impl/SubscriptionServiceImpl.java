@@ -24,8 +24,10 @@ import com.paytm.digital.education.explore.service.SubscriptionService;
 import com.paytm.digital.education.explore.sro.request.SubscriptionRequest;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -36,10 +38,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Date;
 
-@Slf4j
+
 @Service
 @AllArgsConstructor
 public class SubscriptionServiceImpl implements SubscriptionService {
+
+    private static Logger log = LoggerFactory.getLogger(SubscriptionServiceImpl.class);
 
     private SubscriptionRepository subscriptionRepository;
 

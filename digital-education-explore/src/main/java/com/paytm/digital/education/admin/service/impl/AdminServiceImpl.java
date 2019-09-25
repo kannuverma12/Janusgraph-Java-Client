@@ -7,8 +7,10 @@ import com.paytm.digital.education.admin.response.DocumentUploadResponse;
 import com.paytm.digital.education.admin.service.AdminService;
 import com.paytm.digital.education.config.AwsConfig;
 import com.paytm.digital.education.service.S3Service;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,10 +20,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class AdminServiceImpl implements AdminService {
+
+    private static final Logger log = LoggerFactory.getLogger(AdminServiceImpl.class);
 
     private S3Service s3Service;
 

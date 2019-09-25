@@ -13,8 +13,10 @@ import com.paytm.digital.education.explore.service.RecentsSerivce;
 import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
 import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import com.paytm.digital.education.utility.JsonUtils;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -27,10 +29,12 @@ import java.util.Objects;
 import static com.paytm.digital.education.explore.enums.EducationEntity.COURSE;
 import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
 
-@Slf4j
+
 @Service
 @AllArgsConstructor
 public class SearchServiceImpl {
+
+    private static Logger log = LoggerFactory.getLogger(SearchServiceImpl.class);
 
     private InstituteSearchServiceImpl instituteSearchService;
     private LeadDetailHelper           leadDetailHelper;

@@ -28,7 +28,7 @@ import com.paytm.digital.education.explore.utility.CommonUtil;
 
 import com.paytm.digital.education.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -54,7 +54,7 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_SCHOOL_NAME;
 import static com.paytm.digital.education.mapping.ErrorEnum.NO_ENTITY_FOUND;
 import static com.paytm.digital.education.utility.CommonUtils.isNullOrZero;
 
-@Slf4j
+
 @Service
 @RequiredArgsConstructor
 public class SchoolDetailServiceImpl implements SchoolService {

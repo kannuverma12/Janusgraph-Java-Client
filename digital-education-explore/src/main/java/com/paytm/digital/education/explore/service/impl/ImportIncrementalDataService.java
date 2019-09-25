@@ -7,8 +7,10 @@ import com.paytm.digital.education.explore.dto.InstituteDto;
 import com.paytm.digital.education.explore.dto.SchoolDto;
 import com.paytm.digital.education.explore.service.helper.IncrementalDataHelper;
 import com.paytm.digital.education.mapping.ErrorEnum;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,8 +24,10 @@ import static com.paytm.digital.education.explore.constants.IncrementalDataInges
 
 @AllArgsConstructor
 @Service
-@Slf4j
 public class ImportIncrementalDataService {
+
+    private static Logger log = LoggerFactory.getLogger(ImportIncrementalDataService.class);
+
     private IncrementalDataHelper         incrementalDataHelper;
     private TransformAndSaveCourseService transformAndSaveCourseService;
     private TransformAndSaveExamService   transformAndSaveExamService;

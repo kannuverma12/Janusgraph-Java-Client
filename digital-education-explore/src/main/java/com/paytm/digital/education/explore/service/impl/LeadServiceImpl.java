@@ -13,8 +13,10 @@ import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.service.LeadService;
 import com.paytm.digital.education.explore.service.external.LeadCareer360Service;
 import com.paytm.digital.education.mapping.ErrorEnum;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -30,8 +32,11 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EXA
 
 @Service
 @AllArgsConstructor
-@Slf4j
+
 public class LeadServiceImpl implements LeadService {
+
+    private static final Logger log = LoggerFactory.getLogger(LeadServiceImpl.class);
+
     private LeadRepository        leadRepository;
     private CommonMongoRepository commonMongoRepository;
     private LeadCareer360Service  leadCareer360Service;

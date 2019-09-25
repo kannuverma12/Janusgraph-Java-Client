@@ -5,11 +5,17 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import org.apache.commons.lang3.StringUtils;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
+import org.apache.commons.lang3.StringUtils;
+
+
+
 public class DateUtil {
+
+    private static final Logger log = LoggerFactory.getLogger(DateUtil.class);
+
 
     public static Date stringToDate(String dateString, SimpleDateFormat dateFormatter) {
         if (StringUtils.isNotBlank(dateString)) {
@@ -18,7 +24,7 @@ public class DateUtil {
             } catch (ParseException ex) {
                 log.error(
                         "ParseException caught while parsing the dateString : {}, formatter : {}, Exception : {}",
-                        dateString, dateFormatter, ex);
+                         dateString, dateFormatter, ex);
             } catch (Exception ex) {
                 log.error(
                         "Error caught while parsing the dateString : {}, formatter : {}, Exception : {}",

@@ -1,11 +1,14 @@
 package com.paytm.digital.education.explore.kafka.impl;
 
+import com.paytm.digital.education.explore.controller.DataIngestionController;
 import com.paytm.digital.education.explore.es.model.SearchHistoryEsDoc;
 import com.paytm.digital.education.explore.kafka.KafkaConsumer;
 import com.paytm.digital.education.explore.kafka.model.KafkaConsumerState;
 import com.paytm.digital.education.explore.service.RecentsSerivce;
 import com.paytm.digital.education.utility.JsonUtils;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
+
 import org.apache.kafka.common.TopicPartition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,8 +27,10 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-@Slf4j
 public class KafkaConsumerImpl implements KafkaConsumer {
+
+
+    private static Logger log = LoggerFactory.getLogger(KafkaConsumerImpl.class);
 
     private ConsumerSeekAware.ConsumerSeekCallback consumerSeekCallback;
     private KafkaConsumerState                     kafkaConsumerState;

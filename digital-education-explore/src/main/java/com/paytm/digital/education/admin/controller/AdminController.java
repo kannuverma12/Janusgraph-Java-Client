@@ -7,8 +7,10 @@ import static com.paytm.digital.education.mapping.ErrorEnum.UNAUTHORIZED_REQUEST
 import com.paytm.digital.education.admin.response.DocumentUploadResponse;
 import com.paytm.digital.education.admin.service.AdminService;
 import com.paytm.digital.education.exception.BadRequestException;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -20,11 +22,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Objects;
 
-@Slf4j
 @RestController
 @RequestMapping(EDUCATION_BASE_URL)
 @AllArgsConstructor
 public class AdminController {
+
+    private static final Logger log = LoggerFactory.getLogger(AdminController.class);
 
     private AdminService adminService;
 

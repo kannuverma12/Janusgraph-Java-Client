@@ -6,7 +6,7 @@ import com.paytm.digital.education.explore.database.entity.FtlTemplate;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.utility.FileUtility;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -20,7 +20,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import javax.validation.constraints.Min;
 
-@Slf4j
+
 @RestController
 @AllArgsConstructor
 @RequestMapping(EDUCATION_BASE_URL)

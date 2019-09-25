@@ -16,7 +16,7 @@ import com.paytm.digital.education.explore.service.helper.SearchAggregateHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -60,7 +60,7 @@ import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHO
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_MEDIUM;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_STATE;
 
-@Slf4j
+
 @Service
 @AllArgsConstructor
 public class SchoolSearchServiceImpl extends AbstractSearchServiceImpl {

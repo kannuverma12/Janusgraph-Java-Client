@@ -2,8 +2,10 @@ package com.paytm.digital.education.explore.controller;
 
 import com.paytm.digital.education.explore.dto.CollegePredictorDetailsDto;
 import com.paytm.digital.education.explore.service.CollegePredictorService;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -14,9 +16,10 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EDU
 
 @Controller
 @AllArgsConstructor
-@Slf4j
 @RequestMapping(EDUCATION_BASE_URL)
 public class CollegePredictorsController {
+
+    private static Logger log = LoggerFactory.getLogger(CollegePredictorsController.class);
 
     private CollegePredictorService collegePredictorService;
 
