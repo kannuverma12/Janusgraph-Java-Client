@@ -3,6 +3,7 @@ package com.paytm.digital.education.explore.service.helper;
 import static com.paytm.digital.education.explore.enums.Client.APP;
 import static com.paytm.digital.education.explore.enums.EducationEntity.EXAM;
 import static com.paytm.digital.education.explore.enums.EducationEntity.SCHOOL;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.COMPARE_ACTIVE_LABEL_WEB;
 import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST;
 import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLISTED_EXAM_APP;
 import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLISTED_SCHOOL_APP;
@@ -215,7 +216,7 @@ public class CTAHelper {
     private CTA getCompareCTA(Map<String, Object> logosPerCta) {
         String absoluteUrl = getAbsoluteLogoUrl(logosPerCta, CTAType.COMPARE.name().toLowerCase());
         return CTA.builder().type(CTAType.COMPARE).label(CTA.Constants.COMPARE).logo(absoluteUrl)
-                .build();
+                .activeText(COMPARE_ACTIVE_LABEL_WEB).build();
     }
 
 }
