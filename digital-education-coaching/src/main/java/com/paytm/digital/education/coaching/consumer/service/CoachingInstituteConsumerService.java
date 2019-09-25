@@ -61,7 +61,8 @@ public class CoachingInstituteConsumerService {
 
     private static final List<String>          COACHING_INSTITUTE_FIELDS =
             Arrays.asList("institute_id", "brand_name", "cover_image", "about_institute",
-                    "key_highlights", "streams", "exams", "course_types");
+                    "key_highlights", "streams", "exams", "course_types", "faqs",
+                    "more_info1", "more_info2", "more_info3", "more_info4");
     private static final List<String>          EXAM_FIELDS               =
             Arrays.asList("exam_id", "exam_full_name", "exam_short_name", "logo");
     private static final List<String>          STREAM_FIELDS             =
