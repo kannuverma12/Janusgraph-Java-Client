@@ -21,8 +21,8 @@ public class AmbassadorRequest {
     @JsonProperty("name")
     private String name;
 
-    @Size(min = 10, max = 10)
-    @Min(1000000000)
+    @Size(min = 10, max = 10, message = "Enter 10 digits mobile number")
+    @Min(value = 1000000000, message = "Enter 10 digits mobile number")
     @JsonProperty("paytm_mobile_number")
     private String paytmMobileNumber;
 
