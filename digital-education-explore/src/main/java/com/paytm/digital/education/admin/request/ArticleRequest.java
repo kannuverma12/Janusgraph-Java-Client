@@ -27,8 +27,8 @@ public class ArticleRequest {
     @JsonProperty("submitted_by")
     private String submittedBy;
 
-    @Size(min = 10, max = 10)
-    @Min(1000000000)
+    @Size(min = 10, max = 10, message = "Enter 10 digits mobile number")
+    @Min(value = 1000000000, message = "Enter 10 digits mobile number")
     @JsonProperty("student_paytm_mobile_number")
     private String studentPaytmMobileNumber;
 

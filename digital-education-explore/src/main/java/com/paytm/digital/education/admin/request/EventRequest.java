@@ -25,8 +25,8 @@ public class EventRequest {
     @JsonProperty("event_description")
     private String eventDescription;
 
-    @Size(min = 10, max = 10)
-    @Min(1000000000)
+    @Size(min = 10, max = 10, message = "Enter 10 digits mobile number")
+    @Min(value = 1000000000, message = "Enter 10 digits mobile number")
     @JsonProperty("submitted_by_:_institute_paytm_phone_number")
     private String submittedBy;
 
