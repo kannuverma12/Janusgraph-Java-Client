@@ -181,7 +181,7 @@ public class ExamDetail implements CTAInfoHolder {
     }
 
     @Override
-    public String getFormId(){
+    public String getFormId() {
         return formId;
     }
 }

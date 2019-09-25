@@ -76,10 +76,6 @@ public class CTAHelper {
             ctas.add(getBrochureCTA(ctaInfoHolder.getBrochureUrl(), logosPerCta));
         }
 
-        if (ctaInfoHolder.hasShortListFeature()) {
-            ctas.add(getShortlistCTA(ctaInfoHolder, logosPerCta, client));
-        }
-
         if (ctaInfoHolder.hasCompareFeature()) {
             if (!APP.equals(client)) {
                 ctas.add(getCompareCTA(logosPerCta));
@@ -91,6 +87,10 @@ public class CTAHelper {
         }
 
         addApplyNowCTAIfRequired(ctas, ctaInfoHolder, client, logosPerCta);
+
+        if (ctaInfoHolder.hasShortListFeature()) {
+            ctas.add(getShortlistCTA(ctaInfoHolder, logosPerCta, client));
+        }
 
         return ctas;
     }

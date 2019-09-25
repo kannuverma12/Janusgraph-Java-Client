@@ -100,12 +100,6 @@ public class ExamData extends SearchBaseData implements CTAInfoHolder {
     }
 
     @JsonIgnore
-    @Override
-    public boolean hasShortListFeature() {
-        return false;
-    }
-
-    @JsonIgnore
     @Accessors(fluent = true)
     private String ctaDbPropertyKey = EXAM_SEARCH_CTA;
 
@@ -115,7 +109,7 @@ public class ExamData extends SearchBaseData implements CTAInfoHolder {
     }
 
     @Override
-    public String getFormId(){
+    public String getFormId() {
         return formId;
     }
 
