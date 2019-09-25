@@ -1,5 +1,8 @@
 package com.paytm.digital.education.admin.service.impl;
 
+import com.paytm.digital.education.admin.request.AmbassadorRequest;
+import com.paytm.digital.education.admin.request.ArticleRequest;
+import com.paytm.digital.education.admin.request.EventRequest;
 import com.paytm.digital.education.admin.response.CampusAdminResponse;
 import com.paytm.digital.education.admin.service.CampusAdminService;
 import com.paytm.digital.education.config.AwsConfig;
@@ -59,7 +62,7 @@ public class CampusAdminServiceImpl implements CampusAdminService {
     private MongoOperations mongoOperations;
 
     @Override
-    public CampusAdminResponse addAmbassadors(XcelCampusAmbassador ambassador) {
+    public CampusAdminResponse addAmbassadors(AmbassadorRequest ambassador) {
         CampusAdminResponse campusAdminResponse = new CampusAdminResponse();
 
         if (Objects.nonNull(ambassador)) {
@@ -190,7 +193,7 @@ public class CampusAdminServiceImpl implements CampusAdminService {
     }
 
     @Override
-    public CampusAdminResponse addArticles(XcelArticle xcelArticle) {
+    public CampusAdminResponse addArticles(ArticleRequest xcelArticle) {
         CampusAdminResponse campusAdminResponse = new CampusAdminResponse();
 
         if (Objects.nonNull(xcelArticle)) {
@@ -294,7 +297,7 @@ public class CampusAdminServiceImpl implements CampusAdminService {
         return articleList;
     }
 
-    @Override public CampusAdminResponse addEvents(XcelEvent xcelEvent) {
+    @Override public CampusAdminResponse addEvents(EventRequest xcelEvent) {
         CampusAdminResponse campusAdminResponse = new CampusAdminResponse();
 
         if (Objects.nonNull(xcelEvent)) {
