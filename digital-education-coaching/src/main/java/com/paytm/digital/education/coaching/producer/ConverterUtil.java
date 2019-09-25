@@ -10,6 +10,7 @@ import com.paytm.digital.education.coaching.producer.model.request.StreamDataReq
 import com.paytm.digital.education.coaching.producer.model.request.TargetExamUpdateRequest;
 import com.paytm.digital.education.coaching.producer.model.request.TopRankerDataRequest;
 import com.paytm.digital.education.database.embedded.CoachingCourseImportantDate;
+import com.paytm.digital.education.database.embedded.Faq;
 import com.paytm.digital.education.database.embedded.KeyHighlight;
 import com.paytm.digital.education.database.embedded.OfficialAddress;
 import com.paytm.digital.education.database.entity.CoachingBannerEntity;
@@ -69,6 +70,12 @@ public class ConverterUtil {
         coachingInstituteEntity.setMoreInfo2(request.getMoreInfo2());
         coachingInstituteEntity.setMoreInfo3(request.getMoreInfo3());
         coachingInstituteEntity.setMoreInfo4(request.getMoreInfo4());
+        coachingInstituteEntity.setFaqs(request.getFaqs().stream()
+                .map(faq -> Faq.builder()
+                        .question(faq.getQuestion())
+                        .answers(faq.getAnswers())
+                        .build())
+                .collect(Collectors.toList()));
 
         coachingInstituteEntity.setIsEnabled(request.getIsEnabled());
         coachingInstituteEntity.setPriority(request.getPriority());

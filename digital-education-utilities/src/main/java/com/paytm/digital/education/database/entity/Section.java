@@ -32,6 +32,10 @@ public class Section {
     private Action action;
     private String type;
 
+    @JsonProperty("storefront_key")
+    @Field("storefront_key")
+    private String storefrontKey;
+
     @Field("sub_label")
     private String subLabel;
 

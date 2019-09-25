@@ -28,10 +28,10 @@ public class CoachingCourseEntity extends Base {
     @Id
     @Field("_id")
     @JsonIgnore
-    ObjectId id;
+    private ObjectId id;
 
     @Field("faqs")
-    List<Faq> faqs;
+    private List<Faq> faqs;
 
     @Field("course_id")
     @Indexed(unique = true)

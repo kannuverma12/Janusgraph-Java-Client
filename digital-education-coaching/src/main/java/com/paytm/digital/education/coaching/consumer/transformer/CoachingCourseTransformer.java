@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.EMPTY_STRING;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_COURSE_FEATURE;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_RANKER;
 
@@ -41,7 +42,7 @@ public class CoachingCourseTransformer {
                         .coachingCentreId(tr.getCenterId())
                         .coachingCourseNames(this.getCourseNameFromIds(tr.getCourseIds(),
                                 courseIdAndNameMap))
-                        .examName(examIdAndNameMap.getOrDefault(tr.getExamId(), null))
+                        .examName(examIdAndNameMap.getOrDefault(tr.getExamId(), EMPTY_STRING))
                         .studentName(tr.getStudentName())
                         .image(CommonUtil.getAbsoluteUrl(tr.getStudentPhoto(), COACHING_TOP_RANKER))
                         .rank(tr.getRankObtained())
@@ -55,6 +56,7 @@ public class CoachingCourseTransformer {
         return Exam.builder()
                 .id(exam.getExamId())
                 .examFullName(exam.getExamFullName())
+                .examShortName(exam.getExamShortName())
                 .conductedBy(exam.getConductingBody())
                 .build();
     }

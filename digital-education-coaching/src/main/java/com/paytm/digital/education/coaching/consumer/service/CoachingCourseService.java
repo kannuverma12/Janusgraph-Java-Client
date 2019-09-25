@@ -143,7 +143,7 @@ public class CoachingCourseService {
             final List<Exam> topRankerExams = examTypeAndExamListMap.get(TOP_RANKER_EXAM);
             if (!topRankerExams.isEmpty()) {
                 for (final Exam exam : topRankerExams) {
-                    examIdAndNameMap.put(exam.getId(), exam.getExamFullName());
+                    examIdAndNameMap.put(exam.getId(), exam.getExamShortName());
                 }
             }
         }
@@ -298,7 +298,7 @@ public class CoachingCourseService {
                 .discountedPrice(course.getDiscountedPrice())
                 .discountPercentage(this.calculateDiscountPercentage(course.getOriginalPrice(),
                         course.getDiscountedPrice()))
-                .targetExams(examTypeAndExamListMap.get(TARGET_EXAM))
+                .targetExam(this.fillTargetExam(examTypeAndExamListMap))
                 .eligibility(course.getEligibility())
                 .duration(course.getDuration() + course.getDurationType().getText())
                 .topRankers(this.coachingCourseTransformer.convertTopRankers(topRankers,
@@ -342,7 +342,17 @@ public class CoachingCourseService {
         if (originalPrice == discountedPrice) {
             return EMPTY_STRING;
         }
-        final double percentage = (((originalPrice - discountedPrice) / originalPrice) * 100);
+        double percentage = (((originalPrice - discountedPrice) / originalPrice) * 100);
+        percentage = Math.round(percentage * 100.0) / 100.0;
         return percentage + "%";
+    }
+
+    private Exam fillTargetExam(final Map<String, List<Exam>> examTypeAndExamListMap) {
+        if (CollectionUtils.isEmpty(examTypeAndExamListMap)
+                || null == examTypeAndExamListMap.get(TARGET_EXAM)
+                || CollectionUtils.isEmpty(examTypeAndExamListMap.get(TARGET_EXAM))) {
+            return null;
+        }
+        return examTypeAndExamListMap.get(TARGET_EXAM).get(0);
     }
 }

@@ -1,6 +1,7 @@
 package com.paytm.digital.education.coaching.consumer.service;
 
 import com.paytm.digital.education.coaching.consumer.model.dto.Exam;
+import com.paytm.digital.education.coaching.consumer.model.dto.Faq;
 import com.paytm.digital.education.coaching.consumer.model.dto.Stream;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopRanker;
 import com.paytm.digital.education.coaching.consumer.model.response.CoachingCourseTypeResponse;
@@ -36,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_COMPONENT;
@@ -116,9 +118,21 @@ public class CoachingInstituteConsumerService {
                 .exams(examList)
                 .topRankers(topRankerList)
                 .coachingCourseTypes(listOfCourseType)
+                .faqs(this.fillFaqs(coachingInstituteEntity.getFaqs()))
                 .sections(sections)
                 .build();
+    }
 
+    private List<Faq> fillFaqs(final List<com.paytm.digital.education.database.embedded.Faq> faqs) {
+        if (CollectionUtils.isEmpty(faqs)) {
+            return Collections.EMPTY_LIST;
+        }
+        return faqs.stream()
+                .map(faq -> Faq.builder()
+                        .question(faq.getQuestion())
+                        .answer(faq.getAnswers())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     private List<Exam> getExamsByExamIds(List<Long> examIds) {

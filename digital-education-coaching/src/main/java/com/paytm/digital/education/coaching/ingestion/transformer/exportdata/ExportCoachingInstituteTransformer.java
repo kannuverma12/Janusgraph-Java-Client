@@ -42,9 +42,8 @@ public class ExportCoachingInstituteTransformer {
                                     ? EMPTY_STRING : StringUtils.join(entity.getCourseTypes(), ","))
                             .yearOfEstablishment(entity.getEstablishmentYear())
                             .brochure(entity.getBrochure())
-                            //TODO
-                            .levelOfEducation(EMPTY_STRING)
-                            //TODO
+                            .levelOfEducation(ExportCommonTransformer.convertCourseLevels(
+                                    entity.getCourseLevels()))
                             .paytmMerchantId(entity.getPaytmMerchantId())
                             .moreInfo1(entity.getMoreInfo1())
                             .moreInfo2(entity.getMoreInfo2())
