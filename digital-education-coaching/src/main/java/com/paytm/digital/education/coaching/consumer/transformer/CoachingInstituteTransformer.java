@@ -8,10 +8,8 @@ import com.paytm.digital.education.coaching.utils.ImageUtils;
 import com.paytm.digital.education.database.embedded.KeyHighlight;
 import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
-import com.paytm.digital.education.utility.CommonUtil;
 import lombok.experimental.UtilityClass;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,14 +96,17 @@ public class CoachingInstituteTransformer {
                         .id(topRankerEntity.getTopRankerId())
                         .studentName(topRankerEntity.getStudentName())
                         .coachingInstituteId(topRankerEntity.getInstituteId())
+                        .coachingCentreId(topRankerEntity.getCenterId())
                         .examName(examIdsAndNameMap.get(topRankerEntity.getExamId()))
                         .coachingCourseNames(
                                 getCoachingCoursesNameFromIds(coachingCourseIdsAndNameMap,
                                         topRankerEntity))
                         .rank(topRankerEntity.getRankObtained())
+                        .examYear(topRankerEntity.getExamYear())
                         .image(ImageUtils
                                 .getImageWithAbsolutePath(topRankerEntity.getStudentPhoto(),
                                         TOP_RANKER_PLACEHOLDER, COACHING_TOP_RANKER))
+                        .testimonial(topRankerEntity.getTestimonial())
                         .build();
 
                 topRankerList.add(topRanker);

@@ -46,7 +46,7 @@ public class CoachingCourseTransformer {
                         .studentName(tr.getStudentName())
                         .image(CommonUtil.getAbsoluteUrl(tr.getStudentPhoto(), COACHING_TOP_RANKER))
                         .rank(tr.getRankObtained())
-                        .examDate(tr.getExamYear())
+                        .examYear(tr.getExamYear())
                         .testimonial(tr.getTestimonial())
                         .build())
                 .collect(Collectors.toList());

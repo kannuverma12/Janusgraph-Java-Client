@@ -18,7 +18,6 @@ import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.database.repository.TopRankerRepository;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.enums.CourseType;
 import com.paytm.digital.education.enums.EducationEntity;
@@ -27,6 +26,7 @@ import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.CommonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -42,6 +42,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.mongodb.QueryOperators.AND;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_COMPONENT;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_KEY;
@@ -79,7 +80,6 @@ public class CoachingInstituteService {
             Arrays.asList("stream_id", "name", "logo");
 
     private final CommonMongoRepository commonMongoRepository;
-    private final TopRankerRepository   topRankerRepository;
     private final SearchDataHelper      searchDataHelper;
     private final PropertyReader        propertyReader;
 
@@ -118,6 +118,7 @@ public class CoachingInstituteService {
         return GetCoachingInstituteDetailsResponse.builder()
                 .instituteId(coachingInstituteEntity.getInstituteId())
                 .instituteName(coachingInstituteEntity.getBrandName())
+                .description(coachingInstituteEntity.getAboutInstitute())
                 .imageUrl(ImageUtils
                         .getImageWithAbsolutePath(coachingInstituteEntity.getCoverImage(),
                                 INSTITUTE_COVER_IMAGE_PLACEHOLDER, TOP_COACHING_INSTITUTES_IMAGE))
@@ -205,17 +206,23 @@ public class CoachingInstituteService {
             Long examId) {
         Set<Long> examIds = new HashSet<>();
         Set<Long> courseIds = new HashSet<>();
-        List<TopRankerEntity> topRankerEntityList;
+
+        final Map<Sort.Direction, String> sortMap = new HashMap<>();
+        sortMap.put(Sort.Direction.DESC, "exam_year");
+        sortMap.put(Sort.Direction.ASC, "priority");
+
+        final Map<String, Object> searchRequest = new HashMap<>();
+        searchRequest.put(INSTITUTE_ID, instituteId);
 
         if (Objects.nonNull(examId)) {
-            topRankerEntityList = topRankerRepository.findByInstituteIdAndExamId(
-                    instituteId, examId);
+            searchRequest.put(EXAM_ID, examId);
         } else if (Objects.nonNull(streamId)) {
-            topRankerEntityList = topRankerRepository.findByInstituteIdAndStreamIds(
-                    instituteId, streamId);
-        } else {
-            topRankerEntityList = topRankerRepository.findByInstituteId(instituteId);
+            searchRequest.put(STREAM_IDS, streamId);
         }
+
+        List<TopRankerEntity> topRankerEntityList = commonMongoRepository.findAllAndSortBy(
+                searchRequest, TopRankerEntity.class, CoachingCourseService.TOP_RANKER_FIELDS, AND,
+                sortMap);
 
         final List<TopRanker> topRankerList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(topRankerEntityList)) {

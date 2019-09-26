@@ -78,7 +78,7 @@ public class CoachingCourseService {
             Arrays.asList("exam_id", "exam_full_name", "exam_short_name", "conducting_body",
                     "priority", "logo");
 
-    private static final List<String> TOP_RANKER_FIELDS =
+    public static final List<String> TOP_RANKER_FIELDS =
             Arrays.asList("top_ranker_id", "institute_id", "center_id", "course_ids",
                     "exam_id", "exam_name", "student_name", "student_photo",
                     "rank_obtained", "exam_year", "testimonial", "priority");
@@ -261,8 +261,8 @@ public class CoachingCourseService {
     private List<TopRankerEntity> fetchTopRankers(final long courseId, final Long instituteId) {
 
         final Map<Sort.Direction, String> sortMap = new HashMap<>();
-        sortMap.put(Sort.Direction.ASC, "priority");
         sortMap.put(Sort.Direction.DESC, "exam_year");
+        sortMap.put(Sort.Direction.ASC, "priority");
 
         List<TopRankerEntity> topRankerEntityList = this.commonMongoRepository
                 .getEntityFieldsByValuesInAndSortBy(COACHING_COURSE_IDS,

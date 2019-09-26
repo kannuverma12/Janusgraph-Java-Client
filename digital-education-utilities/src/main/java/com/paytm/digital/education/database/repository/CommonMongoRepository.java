@@ -179,6 +179,18 @@ public class CommonMongoRepository {
         return null;
     }
 
+    public <T> List<T> findAllAndSortBy(Map<String, Object> searchRequest, Class<T> instance,
+            List<String> fields, String queryOperatorType, Map<Sort.Direction, String> sortMap) {
+        if (queryOperatorType.equals((AND))) {
+            return executeMongoQuery(createMongoSortQuery(searchRequest, fields, sortMap),
+                    instance);
+        } else if (queryOperatorType.equals(OR)) {
+            return executeMongoQuery(createOrMongoSortQuery(searchRequest, fields, sortMap),
+                    instance);
+        }
+        return null;
+    }
+
     public <T> List<T> findAllDistinctValues(Map<String, Object> searchRequest, Class<?> instance,
             String field, Class<T> result) {
         return executeMongoQueryDistinct(createMongoQuery(searchRequest, new ArrayList<>()),
@@ -261,6 +273,30 @@ public class CommonMongoRepository {
         fields.forEach(field -> {
             mongoQuery.fields().include(field);
         });
+        return mongoQuery;
+    }
+
+    private Query createMongoSortQuery(Map<String, Object> searchRequest, List<String> fields,
+            Map<Sort.Direction, String> sortMap) {
+        Query mongoQuery = this.createMongoQuery(searchRequest, fields);
+
+        if (!CollectionUtils.isEmpty(sortMap)) {
+            for (Map.Entry<Sort.Direction, String> entry : sortMap.entrySet()) {
+                mongoQuery.with(new Sort(entry.getKey(), (String) entry.getValue()));
+            }
+        }
+        return mongoQuery;
+    }
+
+    private Query createOrMongoSortQuery(Map<String, Object> searchRequest, List<String> fields,
+            Map<Sort.Direction, String> sortMap) {
+        Query mongoQuery = this.createOrMongoQuery(searchRequest, fields);
+
+        if (!CollectionUtils.isEmpty(sortMap)) {
+            for (Map.Entry<Sort.Direction, String> entry : sortMap.entrySet()) {
+                mongoQuery.with(new Sort(entry.getKey(), (String) entry.getValue()));
+            }
+        }
         return mongoQuery;
     }
 }

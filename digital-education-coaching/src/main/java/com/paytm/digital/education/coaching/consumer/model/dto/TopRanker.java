@@ -22,6 +22,6 @@ public class TopRanker {
     private String       studentName;
     private String       image;
     private String       rank;
-    private String       examDate;
+    private String       examYear;
     private String       testimonial;
 }
