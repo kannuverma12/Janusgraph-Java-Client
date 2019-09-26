@@ -251,6 +251,10 @@ function transformCollege(superDoc) {
   transformedCollege.year_of_estd = superDoc.established_year;
   transformedCollege.institute_type = superDoc.entity_type;
   transformedCollege.is_client = superDoc.is_client;
+  transformedCollege.brochure_url = superDoc.official_url_brochure;
+  if (superDoc.paytm_keys) {
+    transformedCollege.paytm_keys = superDoc.paytm_keys;
+  }
   //transformedCollege.institute_gender = superDoc.genders_accepted; //array
 
 

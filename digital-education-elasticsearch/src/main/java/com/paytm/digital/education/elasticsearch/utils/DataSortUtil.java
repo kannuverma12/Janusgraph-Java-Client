@@ -1,10 +1,14 @@
 package com.paytm.digital.education.elasticsearch.utils;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.GeoDistanceSortBuilder;
 import org.elasticsearch.search.sort.NestedSortBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
@@ -70,6 +74,24 @@ public class DataSortUtil {
         } else {
             sortBuilder = buildNestedSort(fieldName, path, order, filterQueries);
 
+        }
+        return sortBuilder;
+    }
+
+    public static GeoDistanceSortBuilder buildGeoLocationSort(SortField sortField,
+            List<Double> latLonList) {
+        SortOrder sortOrder = Optional.ofNullable(sortField)
+                .map(SortField::getOrder)
+                .map(x -> x.equals(DataSortOrder.DESC) ? SortOrder.DESC : SortOrder.ASC)
+                .orElse(SortOrder.ASC);
+        GeoDistanceSortBuilder sortBuilder = null;
+
+        if (!CollectionUtils.isEmpty(latLonList) && latLonList.size() == 2) {
+            sortBuilder =
+                    SortBuilders.geoDistanceSort(sortField.getName(), latLonList.get(0),
+                            latLonList.get(1))
+                            .unit(DistanceUnit.KILOMETERS)
+                            .order(sortOrder);
         }
         return sortBuilder;
     }

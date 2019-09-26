@@ -14,7 +14,7 @@ import com.paytm.digital.education.explore.service.helper.GenderAndCasteGroupHel
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.explore.utility.FieldsRetrievalUtil;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -47,7 +47,7 @@ import static com.paytm.digital.education.explore.enums.Gender.OTHERS;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 import static com.paytm.digital.education.mapping.ErrorEnum.NO_CUTOFF_EXISTS;
 
-@Slf4j
+
 @AllArgsConstructor
 @Service
 

@@ -8,12 +8,11 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EVE
 import static com.paytm.digital.education.explore.constants.ExploreConstants.YYYY_MM;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.APPLICATION;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.MMM_YYYY;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.NON_TENTATIVE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_SEARCH_NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DATES;
 import static com.paytm.digital.education.explore.enums.Gender.OTHERS;
-import static com.paytm.digital.education.utility.DateUtil.stringToDate;
+import static java.util.Collections.emptyList;
 
 import com.paytm.digital.education.explore.database.entity.Event;
 import com.paytm.digital.education.explore.database.entity.Exam;
@@ -23,17 +22,23 @@ import com.paytm.digital.education.explore.enums.Gender;
 import com.paytm.digital.education.explore.response.dto.detail.ExamAndCutOff;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
+import com.paytm.digital.education.utility.CommonUtils;
 import com.paytm.digital.education.utility.DateUtil;
 import lombok.AllArgsConstructor;
+import org.joda.time.LocalDate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -151,6 +156,41 @@ public class ExamInstanceHelper {
         return null;
     }
 
+    private Optional<Instance> getInstanceAccordingToFilterAndComparator(
+            List<Instance> instances,
+            Predicate<EventInstanceDateHolder> predicate,
+            Comparator<EventInstanceDateHolder> comparator) {
+        return instances.stream()
+            .flatMap(instance ->
+                Optional.ofNullable(instance.getEvents())
+                    .orElse(emptyList())
+                    .stream()
+                    .map(event ->
+                        new EventInstanceDateHolder(event, instance, event.calculateCorrespondingDate())))
+            .filter(predicate)
+            .min(comparator)
+            .map(EventInstanceDateHolder::getInstance);
+    }
+
+    public Optional<Instance> getNearestInstance(List<Instance> instances) {
+        Date presentDate = new Date();
+
+        Optional<Instance> nearestFutureInstance = getInstanceAccordingToFilterAndComparator(
+            Optional.ofNullable(instances).orElse(emptyList()),
+            holder -> CommonUtils.isDateEqualsOrAfter(holder.getDate(), presentDate),
+            Comparator.comparing(EventInstanceDateHolder::getDate));
+
+        if (nearestFutureInstance.isPresent()) {
+            return nearestFutureInstance;
+        } else {
+            Optional<Instance> nearestPastInstance = getInstanceAccordingToFilterAndComparator(
+                instances,
+                x -> true,
+                Comparator.comparing(EventInstanceDateHolder::getDate).reversed());
+            return nearestPastInstance;
+        }
+    }
+
     public int getRelevantInstanceIndex(List<Instance> instances, String eventType) {
         int instanceIndex = 0;
         if (!CollectionUtils.isEmpty(instances) || instances.size() > 1) {
@@ -164,14 +204,7 @@ public class ExamInstanceHelper {
                             instances.get(index).getEvents();
 
                     for (Event event : events) {
-                        Date eventDate = null;
-                        if (NON_TENTATIVE.equalsIgnoreCase(event.getCertainty())) {
-                            eventDate = event.getDate() != null
-                                    ? event.getDate()
-                                    : event.getDateRangeStart();
-                        } else {
-                            eventDate = stringToDate(event.getMonthDate(), YYYY_MM);
-                        }
+                        Date eventDate = event.calculateCorrespondingDate();
 
                         if (eventDate != null && minApplicationDate.after(eventDate)) {
                             minApplicationDate = eventDate;

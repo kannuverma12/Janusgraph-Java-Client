@@ -18,6 +18,8 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.ZER
 import static com.paytm.digital.education.explore.enums.EducationEntity.EXAM;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.empty;
 
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.database.entity.Exam;
@@ -40,6 +42,7 @@ import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.service.helper.DetailPageSectionHelper;
 import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
+import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import com.paytm.digital.education.explore.service.helper.WidgetsDataHelper;
 import com.paytm.digital.education.explore.service.helper.CTAHelper;
 import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
@@ -57,21 +60,23 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Service
 public class ExamDetailServiceImpl {
 
-    private CommonMongoRepository   commonMongoRepository;
-    private ExamLogoHelper          examLogoHelper;
-    private ExamInstanceHelper      examInstanceHelper;
-    private PropertyReader          propertyReader;
-    private DerivedAttributesHelper derivedAttributesHelper;
-    private DetailPageSectionHelper detailPageSectionHelper;
-    private BannerDataHelper        bannerDataHelper;
-    private WidgetsDataHelper       widgetsDataHelper;
-    private LeadDetailHelper        leadDetailHelper;
-    private CTAHelper               ctaHelper;
+    private CommonMongoRepository    commonMongoRepository;
+    private ExamLogoHelper           examLogoHelper;
+    private ExamInstanceHelper       examInstanceHelper;
+    private PropertyReader           propertyReader;
+    private DerivedAttributesHelper  derivedAttributesHelper;
+    private DetailPageSectionHelper  detailPageSectionHelper;
+    private BannerDataHelper         bannerDataHelper;
+    private WidgetsDataHelper        widgetsDataHelper;
+    private LeadDetailHelper         leadDetailHelper;
+    private CTAHelper                ctaHelper;
+    private SubscriptionDetailHelper subscriptionDetailHelper;
 
     private static int EXAM_PREFIX_LENGTH = EXAM_PREFIX.length();
 
@@ -82,8 +87,9 @@ public class ExamDetailServiceImpl {
         ExamDetail examDetail = getExamDetail(entityId, examUrlKey, fieldGroup, fields, client);
         if (userId != null && userId > 0) {
             updateInterested(examDetail, userId);
+            updateShortlist(examDetail, userId);
         }
-        List<CTA> ctas = ctaHelper.buildExamCTA(examDetail, client);
+        List<CTA> ctas = ctaHelper.buildCTA(examDetail, client);
         if (!CollectionUtils.isEmpty(ctas)) {
             examDetail.setCtaList(ctas);
         }
@@ -252,39 +258,44 @@ public class ExamDetailServiceImpl {
         examDetail.setExamLevel(exam.getLevelOfExam());
         examDetail.setDocumentsRequiredAtExam(exam.getDocumentsExam());
         examDetail.setDocumentsRequiredAtCounselling(exam.getDocumentsCounselling());
-        examDetail.setAdmitCard("");
+        examDetail.setAdmitCard(exam.getAdmitCard());
         examDetail.setAnswerKey("");
-        examDetail.setApplicationProcess("");
         examDetail.setCounselling("");
-        examDetail.setResult("");
+        examDetail.setEligibility(exam.getEligibility());
+        examDetail.setApplicationForm(exam.getApplicationForm());
+        examDetail.setExamPattern(exam.getExamPattern());
+        examDetail.setResult(exam.getResult());
+        examDetail.setCutoff(exam.getCutoff());
         examDetail.setLogoUrl(examLogoHelper.getExamLogoUrl(exam.getExamId(), exam.getLogo()));
         examDetail.setExamCenters(getExamCenters(exam.getInstances()));
         List<Event> importantDates = new ArrayList<>();
-        int instanceIndex = -1;
+        Optional<Instance> nearestInstance = empty();
         if (!CollectionUtils.isEmpty(exam.getInstances())) {
-            instanceIndex =
-                    examInstanceHelper.getRelevantInstanceIndex(exam.getInstances(), APPLICATION);
-            if (!CollectionUtils.isEmpty(exam.getInstances().get(instanceIndex).getExamCenters())) {
-                int centersCount = exam.getInstances().get(instanceIndex).getExamCenters().size();
+            nearestInstance =
+                    examInstanceHelper.getNearestInstance(exam.getInstances());
+            if (nearestInstance.isPresent()) {
+                List<com.paytm.digital.education.explore.database.entity.Event> events =
+                        nearestInstance.map(Instance::getEvents).orElse(emptyList());
+                int centersCount = nearestInstance.map(Instance::getExamCenters).map(List::size).orElse(0);
                 examDetail.setCentersCount(centersCount);
+                importantDates
+                        .addAll(examInstanceHelper
+                                .convertEntityEventToResponse(exam.getExamFullName(), events));
             }
-            importantDates
-                    .addAll(examInstanceHelper.convertEntityEventToResponse(exam.getExamFullName(),
-                            exam.getInstances().get(instanceIndex).getEvents()));
         }
-        if (!CollectionUtils.isEmpty(exam.getSubExams()) && instanceIndex != -1) {
-            int parentInstanceId = exam.getInstances().get(instanceIndex).getInstanceId();
+        if (!CollectionUtils.isEmpty(exam.getSubExams()) && nearestInstance.isPresent()) {
+            int parentInstanceId = nearestInstance.get().getInstanceId();
             examDetail.setDurationInHour(exam.getSubExams().get(0).getDurationHours());
             addSubExamData(parentInstanceId, exam.getSubExams(), examDetail, importantDates);
         }
         examDetail.setImportantDates(importantDates);
         if (CollectionUtils.isEmpty(examDetail.getSyllabus())) {
             List<Syllabus> syllabusList = new ArrayList<>();
-            if (!CollectionUtils
-                    .isEmpty(exam.getInstances().get(instanceIndex).getSyllabusList())) {
+            List<com.paytm.digital.education.explore.database.entity.Syllabus> syllabusListFromInstance
+                    = nearestInstance.map(Instance::getSyllabusList).orElse(emptyList());
+            if (!CollectionUtils.isEmpty(syllabusListFromInstance)) {
                 List<Section> sections =
-                        getSectionsFromEntitySyllabus(
-                                exam.getInstances().get(instanceIndex).getSyllabusList());
+                        getSectionsFromEntitySyllabus(syllabusListFromInstance);
                 syllabusList.add(new Syllabus(exam.getExamFullName(), sections));
             } else if (!CollectionUtils.isEmpty(exam.getSyllabus())) {
                 List<Section> sections = getSectionsFromEntitySyllabus(exam.getSyllabus());
@@ -313,7 +324,19 @@ public class ExamDetailServiceImpl {
         examDetail.setWidgets(widgetsDataHelper.getWidgets(entityName, exam.getExamId(),
                 getDomainName(exam.getDomains())
         ));
+
         return examDetail;
+    }
+
+    private void updateShortlist(ExamDetail examDetail,
+            Long userId) {
+        List<Long> examIds = new ArrayList<>();
+        examIds.add(examDetail.getExamId());
+
+        List<Long> subscribedEntities = subscriptionDetailHelper
+                .getSubscribedEntities(EXAM, userId, examIds);
+
+        examDetail.setShortlisted(!CollectionUtils.isEmpty(subscribedEntities));
     }
 
     private String getDomainName(List<String> domains) {

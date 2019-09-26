@@ -12,7 +12,7 @@ import com.mongodb.client.result.UpdateResult;
 import com.paytm.digital.education.coaching.database.entity.CoachingExam;
 import com.paytm.digital.education.exception.BadRequestException;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Objects;
 
-@Slf4j
+
 @Repository
 @AllArgsConstructor
 public class CoachingExamRepository {

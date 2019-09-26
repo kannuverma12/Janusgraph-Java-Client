@@ -2,8 +2,8 @@ package com.paytm.digital.education.utility;
 
 
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.net.URI;

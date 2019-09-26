@@ -3,7 +3,9 @@ package com.paytm.digital.education.explore.service.external;
 import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.thirdparty.catalog.Attributes;
 import com.paytm.digital.education.explore.thirdparty.catalog.CatalogProduct;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,8 +16,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-@Slf4j
 public class FeeUrlGenerator {
+
+    private static final Logger log = LoggerFactory.getLogger(FeeUrlGenerator.class);
 
     @Autowired
     private BaseRestApiService baseRestApiService;
@@ -33,8 +36,8 @@ public class FeeUrlGenerator {
     private String feeAppUrlSuffix;
 
     public String generateUrl(Long pid, Client client) {
-        CatalogProduct catalogProduct = getCollegeInfo(pid);
         try {
+            CatalogProduct catalogProduct = getCollegeInfo(pid);
             Attributes attributes =
                     catalogProduct.getVariants().get(0).getVariants().get(0).getProducts().get(0)
                             .getAttributes();
@@ -42,9 +45,10 @@ public class FeeUrlGenerator {
                 return createAppUrl(attributes);
             }
             return createWebUrl(attributes);
-        } catch (NullPointerException | IndexOutOfBoundsException e) {
+        } catch (Exception e) {
             log.error("Received unexpected response from catalog : {}",
-                    e.getLocalizedMessage());
+                    e, e.getLocalizedMessage());
+
             return null;
         }
     }
@@ -52,7 +56,7 @@ public class FeeUrlGenerator {
     private String createWebUrl(Attributes attributes) {
         String state = "/" + attributes.getState();
         String city = "/" + attributes.getCity();
-        String name = "/" + attributes.getOperator();
+        String name = "/" + attributes.getSchool();
         URI uri = baseRestApiService.getURI(feeUrlWeb, null, Arrays.asList(state, city, name));
         return uri.toString();
     }
@@ -60,7 +64,7 @@ public class FeeUrlGenerator {
 
     private String createAppUrl(Attributes attributes) {
         String dynamicUrl =
-                Constants.SCHOOL + attributes.getOperator() + Constants.STATE + attributes
+                Constants.SCHOOL + attributes.getSchool() + Constants.STATE + attributes
                         .getState() + Constants.CITY + attributes.getCity() + Constants.PAY_TYPE
                         + attributes.getPayType();
         return feeAppUrlPrefix + dynamicUrl + feeAppUrlSuffix;

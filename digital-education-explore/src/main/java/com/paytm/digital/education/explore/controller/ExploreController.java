@@ -20,6 +20,8 @@ import com.paytm.digital.education.explore.validators.SubscriptionRequestValidat
 import com.paytm.digital.education.explore.validators.UrlParamsValidator;
 import com.paytm.digital.education.service.notification.NotificationServiceImpl;
 import com.paytm.digital.education.utility.JsonUtils;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -41,14 +43,16 @@ import com.paytm.digital.education.explore.sro.request.FetchSubscriptionsRequest
 import com.paytm.digital.education.explore.sro.request.SubscriptionRequest;
 import com.paytm.digital.education.explore.validators.ExploreValidator;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 
 @AllArgsConstructor
 @RestController
 @RequestMapping(EDUCATION_BASE_URL)
-@Slf4j
 @Validated
 public class ExploreController {
+
+    private static Logger log = LoggerFactory.getLogger(ExploreController.class);
+
     private static final SubscriptionStatus SUBSCRIBED_STATUS = SubscriptionStatus.SUBSCRIBED;
 
     private UrlParamsValidator           urlParamsValidator;

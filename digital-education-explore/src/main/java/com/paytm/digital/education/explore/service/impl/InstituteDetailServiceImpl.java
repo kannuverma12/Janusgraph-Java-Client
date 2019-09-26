@@ -40,7 +40,7 @@ import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
 import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -58,7 +58,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
-@Slf4j
+
 @Service
 @AllArgsConstructor
 public class InstituteDetailServiceImpl {
@@ -91,7 +91,7 @@ public class InstituteDetailServiceImpl {
             updateShortist(instituteDetail, INSTITUTE, userId, client);
             updateInterested(instituteDetail, INSTITUTE, userId);
         }
-        List<CTA> ctaList = ctaHelper.buildInstituteCTA(instituteDetail, client);
+        List<CTA> ctaList = ctaHelper.buildCTA(instituteDetail, client);
         if (!CollectionUtils.isEmpty(ctaList)) {
             instituteDetail.setCtaList(ctaList);
         }

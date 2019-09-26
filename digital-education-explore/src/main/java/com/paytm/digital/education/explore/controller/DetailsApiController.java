@@ -23,12 +23,12 @@ import com.paytm.digital.education.explore.service.impl.ExamDetailServiceImpl;
 import com.paytm.digital.education.explore.service.impl.InstituteDetailServiceImpl;
 import com.paytm.digital.education.explore.validators.ExploreValidator;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 
-@Slf4j
+
 @AllArgsConstructor
 @RestController
 @Validated
@@ -86,10 +86,11 @@ public class DetailsApiController {
                                 @RequestParam(name = "field_group", required = false) String fieldGroup,
                                 @RequestParam(name = "fields", required = false) List<String> fields,
                                 @RequestHeader(value = "x-user-id", required = false) Long userId,
-                                @RequestHeader(value = "fe_client", required = false) Client client) {
+                                @RequestHeader(value = "fe_client", required = false, defaultValue = "WEB")
+                                        Client client) {
         exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
         return schoolService
-                .getSchoolDetails(schoolId, client, schoolName, fields, fieldGroup);
+                .getSchoolDetails(schoolId, client, schoolName, fields, fieldGroup, userId);
     }
 
 }

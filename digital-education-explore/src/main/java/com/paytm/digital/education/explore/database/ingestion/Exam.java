@@ -122,6 +122,30 @@ public class Exam {
     @JsonProperty("status")
     private String status;
 
+    @Field("cutoff")
+    @JsonProperty("cutoff")
+    private String cutoff;
+
+    @Field("exam_pattern")
+    @JsonProperty("exam_pattern")
+    private String examPattern;
+
+    @Field("admit_card")
+    @JsonProperty("admit_card")
+    private String admitCard;
+
+    @Field("eligibility")
+    @JsonProperty("eligibility")
+    private String eligibility;
+
+    @Field("application_form")
+    @JsonProperty("application_form")
+    private String applicationForm;
+
+    @Field("result")
+    @JsonProperty("result")
+    private String result;
+
     @Field("paytm_keys")
     @JsonProperty("paytm_keys")
     private PaytmKeys paytmKeys;

@@ -36,7 +36,7 @@ import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.explore.utility.FieldsRetrievalUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -48,7 +48,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Arrays;
 
-@Slf4j
+
 @AllArgsConstructor
 @Service
 public class CourseDetailServiceImpl {

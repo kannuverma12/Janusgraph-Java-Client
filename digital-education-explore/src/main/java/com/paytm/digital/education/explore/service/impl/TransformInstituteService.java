@@ -12,9 +12,11 @@ import com.paytm.digital.education.explore.dto.InstituteDto;
 import com.paytm.digital.education.explore.dto.RankingDto;
 import com.paytm.digital.education.explore.service.helper.IncrementalDataHelper;
 import com.paytm.digital.education.mapping.ErrorEnum;
+import com.paytm.digital.education.utility.CommonUtils;
 import com.paytm.digital.education.utility.UploadUtil;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -24,16 +26,18 @@ import java.util.Set;
 import java.util.Map;
 import java.util.Objects;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.INSTITUTE_FILE_VERSION;
 
 @Service
 @AllArgsConstructor
-@Slf4j
 public class TransformInstituteService {
+
+    private static Logger log = LoggerFactory.getLogger(TransformInstituteService.class);
+
     private UploadUtil            uploadUtil;
     private CommonMongoRepository commonMongoRepository;
     private IncrementalDataHelper incrementalDataHelper;
@@ -81,8 +85,7 @@ public class TransformInstituteService {
     }
 
     public List<Institute> transformInstituteDtos(List<InstituteDto> dtos) {
-        Set<Institute> institutes = new HashSet<>();
-        Set<Long> instituteIdSet = new HashSet<>();
+        Stream.Builder<Institute> instituteStreamBuilder = Stream.builder();
 
         for (InstituteDto dto : dtos) {
             Institute institute =
@@ -112,15 +115,13 @@ public class TransformInstituteService {
             // S3 upload
             uploadImages(institute);
 
-            if (!instituteIdSet.contains(institute.getInstituteId())) {
-                institutes.add(institute);
-                instituteIdSet.add(institute.getInstituteId());
-
-            }
-
+            institute.setRankings(rankings);
+            instituteStreamBuilder.accept(institute);
         }
 
-        return new ArrayList<>(institutes);
+        return instituteStreamBuilder.build()
+                .filter(CommonUtils.distinctBy(Institute::getId))
+                .collect(Collectors.toList());
     }
 
     private void updateNotableAlumniDetails(Institute institute) {
