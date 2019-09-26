@@ -2,6 +2,7 @@ package com.paytm.digital.education.coaching.consumer.service;
 
 import com.paytm.digital.education.coaching.consumer.model.request.SearchRequest;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingCourseData;
+import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingCoursesTopHitsData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchBaseData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResult;
@@ -10,8 +11,10 @@ import com.paytm.digital.education.coaching.es.model.CoachingCourseSearch;
 import com.paytm.digital.education.coaching.es.model.CoachingInstituteSearch;
 import com.paytm.digital.education.coaching.utils.SearchUtils;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
+import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
+import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationResponse;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.utility.CommonUtil;
 import lombok.AllArgsConstructor;
@@ -86,6 +89,10 @@ public class CoachingCourseSearchService extends AbstractSearchService {
             elasticResponse = new ElasticResponse();
         }
         SearchResponse searchResponse = new SearchResponse(searchRequest.getTerm());
+        if (searchRequest.isFetchSearchResultsPerFilter()) {
+            populateSearchResultPerLevel(searchResponse, elasticResponse);
+        }
+
         buildSearchResponse(searchResponse, elasticResponse, elasticRequest);
         return searchResponse;
     }
@@ -98,10 +105,19 @@ public class CoachingCourseSearchService extends AbstractSearchService {
                 CoachingCourseSearch.class);
         populateFilterFields(searchRequest, elasticRequest, CoachingCourseSearch.class,
                 filterQueryTypeMap);
+        if (StringUtils.isBlank(searchRequest.getTerm())) {
+            SearchUtils.setSortKeysInOrder(searchRequest);
+        } else {
+            searchRequest.setSortOrder(null);
+        }
+        AggregateField[] aggregateFields = searchRequest.isFetchSearchResultsPerFilter()
+                ? coachingSearchAggregateHelper
+                .getTopHitsAggregateData(searchRequest.getDataPerFilter())
+                : coachingSearchAggregateHelper.getExamAggregateData();
+
         if (searchRequest.getFetchFilter()) {
             populateAggregateFields(searchRequest, elasticRequest,
-                    coachingSearchAggregateHelper.getCoachingCourseAggregateData(),
-                    CoachingInstituteSearch.class);
+                    aggregateFields, CoachingInstituteSearch.class);
         }
         if (StringUtils.isBlank(searchRequest.getTerm())) {
             SearchUtils.setSortKeysInOrder(searchRequest);
@@ -151,5 +167,57 @@ public class CoachingCourseSearchService extends AbstractSearchService {
             searchResults.setValues(courseDataList);
         }
         searchResponse.setResults(searchResults);
+    }
+
+    private void populateSearchResultPerLevel(SearchResponse searchResponse,
+            ElasticResponse elasticResponse) {
+        SearchResult searchResults = new SearchResult();
+        if (elasticResponse.getAggregationResponse().containsKey(STREAM_IDS)) {
+            TopHitsAggregationResponse<CoachingCourseSearch> topHitsAggregationResponse =
+                    (TopHitsAggregationResponse<CoachingCourseSearch>) elasticResponse
+                            .getAggregationResponse().get(STREAM_IDS);
+            Map<String, List<CoachingCourseData>> coursesPerStream = new HashMap<>();
+            topHitsAggregationResponse.getDocumentsPerEntity().forEach((key, documents) -> {
+                List<CoachingCourseData> coursesDataList = new ArrayList<>();
+                documents.forEach(courseSearch -> {
+                    coursesDataList.add(toCoachingCourseData(courseSearch));
+                });
+                coursesPerStream.put(key.getKey(), coursesDataList);
+            });
+            CoachingCoursesTopHitsData examsTopHitsData = CoachingCoursesTopHitsData.builder()
+                    .coursesPerStream(coursesPerStream).build();
+
+            List<SearchBaseData> values = new ArrayList<>();
+            values.add(examsTopHitsData);
+            searchResults.setValues(values);
+        }
+        searchResponse.setResults(searchResults);
+    }
+
+    private CoachingCourseData toCoachingCourseData(CoachingCourseSearch coachingCourseSearch) {
+
+        CoachingCourseData toAdd = CoachingCourseData
+                .builder()
+                .courseId(coachingCourseSearch.getCourseId())
+                .courseName(coachingCourseSearch.getCourseName())
+                .coachingInstituteId(coachingCourseSearch.getCoachingInstituteId())
+                .coachingInstituteName(coachingCourseSearch.getCoachingInstituteName())
+                .courseType(coachingCourseSearch.getCourseType())
+                .price(coachingCourseSearch.getPrice())
+                .currency(coachingCourseSearch.getCurrency())
+                .courseLevel(coachingCourseSearch.getCourseLevel())
+                .urlDisplayKey(CommonUtil
+                        .convertNameToUrlDisplayName(coachingCourseSearch.getCourseName()))
+                .build();
+
+        if (!StringUtils.isBlank(coachingCourseSearch.getLogo())) {
+            toAdd.setLogo(CommonUtil.getAbsoluteUrl(coachingCourseSearch.getLogo(),
+                    COACHING_COURSES));
+        } else {
+            toAdd.setLogo(CommonUtil.getAbsoluteUrl(COACHING_COURSE_PLACEHOLDER,
+                    COACHING_COURSES));
+        }
+
+        return toAdd;
     }
 }

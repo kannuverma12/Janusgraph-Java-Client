@@ -1,6 +1,9 @@
 package com.paytm.digital.education.coaching.consumer.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.paytm.digital.education.coaching.consumer.model.request.SearchRequest;
+import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingCourseData;
+import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingCoursesTopHitsData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingInstituteData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.ExamData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.ExamsTopHitsData;
@@ -9,6 +12,7 @@ import com.paytm.digital.education.coaching.consumer.service.helper.SearchDataHe
 import com.paytm.digital.education.database.entity.Section;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -33,9 +37,11 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.L
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.IGNORE_ENTITY_POSITION;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_STREAMS;
+import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_COURSES;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_EXAMS;
 import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES;
 import static com.paytm.digital.education.elasticsearch.enums.DataSortOrder.ASC;
+import static com.paytm.digital.education.enums.EducationEntity.COACHING_COURSE;
 import static com.paytm.digital.education.enums.EducationEntity.EXAM;
 
 @Service
@@ -45,6 +51,7 @@ public class LandingPageService {
 
     private SearchDataHelper  searchDataHelper;
     private ExamSearchService examSearchService;
+    private CoachingCourseSearchService courseSearchService;
 
     public void addDynamicData(List<Section> sections) {
         for (Section section : sections) {
@@ -55,6 +62,8 @@ public class LandingPageService {
                 case COACHING_TOP_EXAMS:
                     addTopExams(section, sections);
                     break;
+                case COACHING_TOP_COURSES:
+                    addTopCourses(section, sections);
                 default:
             }
         }
@@ -114,6 +123,42 @@ public class LandingPageService {
         return null;
     }
 
+    private void addTopCourses(Section section, List<Section> sections) {
+        List<CoachingCourseData> courses = getTopCoursesPerStream(sections);
+        List<Map<String, Object>> itemList = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(courses)) {
+            for (CoachingCourseData course : courses) {
+                final Map<String, Object> courseDataMap = JsonUtils.convertValue(course,
+                        new TypeReference<Map<String, Object>>() {});
+
+                itemList.add(courseDataMap);
+            }
+            section.setItems(itemList);
+        }
+    }
+
+    private List<CoachingCourseData> getTopCoursesPerStream(List<Section> sections) {
+        LinkedHashMap<String, DataSortOrder> sortOrderMap = new LinkedHashMap<>();
+        sortOrderMap.put(IGNORE_ENTITY_POSITION, ASC);
+        SearchRequest searchRequest = SearchRequest.builder()
+                .fetchSearchResults(false)
+                .entity(COACHING_COURSE)
+                .sortOrder(sortOrderMap)
+                .dataPerFilter(STREAM_IDS)
+                .fetchFilter(true)
+                .fetchSearchResultsPerFilter(true)
+                .limit(1)
+                .build();
+        try {
+            SearchResponse searchResponse = courseSearchService.search(searchRequest);
+            return fetchTopCoursesPerStreamFromSearchResponse(searchResponse, sections);
+        } catch (Exception e) {
+            log.error("Exception for fetching top exams per stream ", e);
+        }
+
+        return null;
+    }
+
     private List<String> getStreamsInOrder(List<Section> sections) {
         List<String> streams = new ArrayList<>();
         for (Section section : sections) {
@@ -147,6 +192,29 @@ public class LandingPageService {
             }
         }
         return exams;
+    }
+
+    private List<CoachingCourseData> fetchTopCoursesPerStreamFromSearchResponse(SearchResponse searchResponse,
+            List<Section> sections) {
+        Map<String, List<CoachingCourseData>> coursesPerStream =
+                ((CoachingCoursesTopHitsData) searchResponse.getResults().getValues().get(0))
+                        .getCoursesPerStream();
+        List<String> streamsInOrder = getStreamsInOrder(sections);
+        List<CoachingCourseData> courses = new ArrayList<>();
+        Set<Long> courseIds = new HashSet<>();
+        for (String stream : streamsInOrder) {
+            List<CoachingCourseData> courseData = coursesPerStream.get(stream);
+            if (!CollectionUtils.isEmpty(courseData)) {
+                for (CoachingCourseData course : courseData) {
+                    if (courseIds.add(course.getCourseId())) {
+                        courses.add(course);
+                        break;
+                    }
+                }
+            }
+        }
+
+        return courses;
     }
 
     private Map<String, Object> getItem(String name, String urlDisplayKey, Object id, String logo,

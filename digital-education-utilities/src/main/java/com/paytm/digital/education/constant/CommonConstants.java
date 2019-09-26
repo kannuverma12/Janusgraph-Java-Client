@@ -7,6 +7,7 @@ public interface CommonConstants {
     String TOP_COACHING_INSTITUTES_LOGO = "coaching_top_institutes_logo";
     String TOP_COACHING_INSTITUTES_IMAGE = "coaching_top_institutes_image";
     String COACHING_TOP_EXAMS           = "coaching_top_exams";
+    String COACHING_TOP_COURSES         = "coaching_top_courses";
     String LOGO                         = "logo";
     String COACHING_COURSES             = "coaching_courses";
     String COACHING_COURSE_TYPES        = "coaching_course_types";
