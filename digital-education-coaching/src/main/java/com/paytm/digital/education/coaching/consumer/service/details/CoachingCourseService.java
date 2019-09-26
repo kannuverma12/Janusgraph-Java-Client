@@ -56,6 +56,18 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.I
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.NAME;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_IDS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.COURSE_DETAILS;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.COURSE_FEATURES_AVAILABLE;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.COURSE_FEE;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.COURSE_TYPE;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.DOUBT_SOLVING_SESSIONS;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.DOWNLOAD_SYLLABUS_AND_BROCHURE;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.IMPORTANT_DATES;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.LANGUAGE;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.PROGRESS_ANALYSIS;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.PROVIDES_CERTIFICATE;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.RANK_ANALYSIS;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_RANKERS;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_COURSES;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_COURSE_ID_AND_URL_DISPLAY_KEY;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
@@ -316,30 +328,30 @@ public class CoachingCourseService {
                 .duration(course.getDuration() + " " + (null == course.getDurationType()
                         ? EMPTY_STRING : course.getDurationType().getText()))
                 .topRankers(TopRankers.builder()
-                        .header("Top Rankers")
+                        .header(TOP_RANKERS.getValue())
                         .results(this.coachingCourseTransformer.convertTopRankers(topRankers,
                                 examIdAndNameMap, courseIdAndNameMap))
                         .build())
                 .importantDates(CoachingCourseImportantDates.builder()
-                        .header("Important Dates")
+                        .header(IMPORTANT_DATES.getValue())
                         .results(this.coachingCourseTransformer.convertImportantDates(
                                 course.getImportantDates()))
                         .build())
                 .courseFeatures(CoachingCourseFeatures.builder()
-                        .header("Features Available")
+                        .header(COURSE_FEATURES_AVAILABLE.getValue())
                         .results(coachingCourseFeatures)
                         .build())
                 .coachingCourseDetails(CoachingCourseDetails.builder()
-                        .header("Course Details")
+                        .header(COURSE_DETAILS.getValue())
                         .courseDetailsInfo(this.getCourseDetailsInfo(course))
                         .courseDetailsMoreInfo(this.getMoreInfoMap(course))
                         .courseSyllabusAndBrochure(CourseSyllabusAndBrochure.builder()
-                                .header("Download Syllabus & Brochure")
+                                .header(DOWNLOAD_SYLLABUS_AND_BROCHURE.getValue())
                                 .syllabus(course.getSyllabus())
                                 .build())
                         .build())
                 .coachingCourseFee(CoachingCourseFee.builder()
-                        .header("Course Fee")
+                        .header(COURSE_FEE.getValue())
                         .currency(Currency.INR.name())
                         .originalPrice(course.getOriginalPrice())
                         .discountedPrice(course.getDiscountedPrice())
@@ -353,20 +365,20 @@ public class CoachingCourseService {
     private Map<String, String> getCourseDetailsInfo(final CoachingCourseEntity course) {
 
         final Map<String, String> infoMap = new LinkedHashMap<>();
-        infoMap.put("Course Type", null == course.getCourseType()
+        infoMap.put(COURSE_TYPE.getValue(), null == course.getCourseType()
                 ? EMPTY_STRING : course.getCourseType().getText());
-        infoMap.put("Language", null == course.getLanguage()
+        infoMap.put(LANGUAGE.getValue(), null == course.getLanguage()
                 ? EMPTY_STRING : course.getLanguage().getText());
 
-        infoMap.put("Provides Certification", this.coachingCourseTransformer.convertBooleanToString(
-                course.getIsCertificateAvailable()));
-        infoMap.put("Doubt Solving Sessions ",
+        infoMap.put(PROVIDES_CERTIFICATE.getValue(), this.coachingCourseTransformer
+                .convertBooleanToString(course.getIsCertificateAvailable()));
+        infoMap.put(DOUBT_SOLVING_SESSIONS.getValue(),
                 this.coachingCourseTransformer.convertBooleanToString(
                         course.getIsDoubtSolvingForumAvailable()));
-        infoMap.put("Progress Analysis", this.coachingCourseTransformer.convertBooleanToString(
-                course.getIsProgressAnalysisAvailable()));
-        infoMap.put("Rank Analysis", this.coachingCourseTransformer.convertBooleanToString(
-                course.getIsRankAnalysisAvailable()));
+        infoMap.put(PROGRESS_ANALYSIS.getValue(), this.coachingCourseTransformer
+                .convertBooleanToString(course.getIsProgressAnalysisAvailable()));
+        infoMap.put(RANK_ANALYSIS.getValue(), this.coachingCourseTransformer
+                .convertBooleanToString(course.getIsRankAnalysisAvailable()));
 
         return infoMap;
     }
