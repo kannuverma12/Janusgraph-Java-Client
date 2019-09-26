@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class CoachingBannerService {
+public class ProducerCoachingBannerService {
 
     @Autowired
     private CoachingBannerDAO coachingBannerDAO;

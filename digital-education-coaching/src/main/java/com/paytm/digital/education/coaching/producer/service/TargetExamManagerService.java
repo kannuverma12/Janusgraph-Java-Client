@@ -9,16 +9,16 @@ import org.springframework.stereotype.Service;
 public class TargetExamManagerService {
 
     @Autowired
-    private TargetExamService targetExamService;
+    private ProducerTargetExamService producerTargetExamService;
 
     @Autowired
-    private StreamService streamService;
+    private ProducerStreamService producerStreamService;
 
     public TargetExamDTO update(TargetExamUpdateRequest request) {
 
-        streamService.isValidStreamIds(request.getStreamIds());
+        producerStreamService.isValidStreamIds(request.getStreamIds());
 
-        return TargetExamDTO.builder().examId(targetExamService.update(request).getExamId())
+        return TargetExamDTO.builder().examId(producerTargetExamService.update(request).getExamId())
                 .build();
     }
 }

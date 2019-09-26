@@ -13,32 +13,32 @@ import java.util.Optional;
 public class CoachingInstituteManagerService {
 
     @Autowired
-    private CoachingInstituteService coachingInstituteService;
+    private ProducerCoachingInstituteService producerCoachingInstituteService;
 
     @Autowired
-    private StreamService streamService;
+    private ProducerStreamService producerStreamService;
 
     @Autowired
-    private TargetExamService targetExamService;
+    private ProducerTargetExamService producerTargetExamService;
 
     public CoachingInstituteDTO create(CoachingInstituteDataRequest request) {
         if (Objects.nonNull(request.getInstituteId())) {
             throw new InvalidRequestException(
                     "request should not have id : " + request.getInstituteId());
         }
-        streamService.isValidStreamIds(request.getStreamIds());
-        targetExamService.isValidExamIds(request.getExamIds());
+        producerStreamService.isValidStreamIds(request.getStreamIds());
+        producerTargetExamService.isValidExamIds(request.getExamIds());
 
         return CoachingInstituteDTO.builder()
-                .instituteId(coachingInstituteService.create(request).getInstituteId()).build();
+                .instituteId(producerCoachingInstituteService.create(request).getInstituteId()).build();
     }
 
     public CoachingInstituteDTO update(CoachingInstituteDataRequest request) {
         Optional.ofNullable(request.getInstituteId())
                 .orElseThrow(() -> new InvalidRequestException("institute id should be present"));
-        streamService.isValidStreamIds(request.getStreamIds());
-        targetExamService.isValidExamIds(request.getExamIds());
+        producerStreamService.isValidStreamIds(request.getStreamIds());
+        producerTargetExamService.isValidExamIds(request.getExamIds());
         return CoachingInstituteDTO.builder()
-                .instituteId(coachingInstituteService.update(request).getInstituteId()).build();
+                .instituteId(producerCoachingInstituteService.update(request).getInstituteId()).build();
     }
 }

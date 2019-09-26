@@ -14,16 +14,16 @@ import java.util.Optional;
 public class CoachingExamManagerService {
 
     @Autowired
-    private CoachingExamServiceNew coachingExamService;
+    private ProducerCoachingExamService coachingExamService;
 
     @Autowired
-    private CoachingInstituteService coachingInstituteService;
+    private ProducerCoachingInstituteService producerCoachingInstituteService;
 
     @Autowired
-    private StreamService streamService;
+    private ProducerStreamService producerStreamService;
 
     @Autowired
-    private CoachingCourseAdminService coachingCourseAdminService;
+    private ProducerCoachingCourseService producerCoachingCourseService;
 
     public CoachingExamDTO insertCoachingExam(CoachingExamDataRequest request) {
         if (Objects.nonNull(request.getCoachingExamId())) {
@@ -32,13 +32,13 @@ public class CoachingExamManagerService {
         }
 
         CoachingInstituteEntity existingCoachingInstitute =
-                coachingInstituteService.findByInstituteId(request.getInstituteId());
+                producerCoachingInstituteService.findByInstituteId(request.getInstituteId());
         if (Objects.isNull(existingCoachingInstitute)) {
             throw new InvalidRequestException(
                     "institute id not present : " + request.getInstituteId());
         }
-        coachingCourseAdminService.isValidCourseIds(request.getCourseIds());
-        streamService.isValidStreamIds(request.getStreamIds());
+        producerCoachingCourseService.isValidCourseIds(request.getCourseIds());
+        producerStreamService.isValidStreamIds(request.getStreamIds());
         return CoachingExamDTO.builder()
                 .coachingExamId(coachingExamService.insertCoachingExam(request).getCoachingExamId())
                 .build();
@@ -50,13 +50,13 @@ public class CoachingExamManagerService {
                         "coaching exams id should be present"));
 
         CoachingInstituteEntity existingCoachingInstitutes =
-                coachingInstituteService.findByInstituteId(request.getInstituteId());
+                producerCoachingInstituteService.findByInstituteId(request.getInstituteId());
         if (Objects.isNull(existingCoachingInstitutes)) {
             throw new InvalidRequestException(
                     "institute id not present" + request.getInstituteId());
         }
-        coachingCourseAdminService.isValidCourseIds(request.getCourseIds());
-        streamService.isValidStreamIds(request.getStreamIds());
+        producerCoachingCourseService.isValidCourseIds(request.getCourseIds());
+        producerStreamService.isValidStreamIds(request.getStreamIds());
         return CoachingExamDTO.builder()
                 .coachingExamId(coachingExamService.updateCoachingExam(request).getCoachingExamId())
                 .build();

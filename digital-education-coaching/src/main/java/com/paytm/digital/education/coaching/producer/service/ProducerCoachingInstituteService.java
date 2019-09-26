@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class CoachingInstituteService {
+public class ProducerCoachingInstituteService {
 
     @Autowired
     private CoachingInstituteDAO coachingInstituteDAO;

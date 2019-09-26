@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class CoachingCourseFeatureService {
+public class ProducerCoachingCourseFeatureService {
 
     @Autowired
     private CoachingCourseFeatureDAO coachingCourseFeatureDAO;

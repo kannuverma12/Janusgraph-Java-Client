@@ -20,19 +20,19 @@ import java.util.Optional;
 public class TopRankerManagerService {
 
     @Autowired
-    private final TopRankerService topRankerService;
+    private final ProducerTopRankerService producerTopRankerService;
 
     @Autowired
-    private CoachingInstituteService coachingInstituteService;
+    private ProducerCoachingInstituteService producerCoachingInstituteService;
 
     @Autowired
-    private CoachingCenterServiceNew coachingCenterService;
+    private ProducerCoachingCenterService coachingCenterService;
 
     @Autowired
-    private TargetExamService targetExamService;
+    private ProducerTargetExamService producerTargetExamService;
 
     @Autowired
-    private CoachingCourseAdminService coachingCourseAdminService;
+    private ProducerCoachingCourseService producerCoachingCourseService;
 
 
     public TopRankerDTO create(final TopRankerDataRequest request) {
@@ -43,7 +43,7 @@ public class TopRankerManagerService {
         }
 
         CoachingInstituteEntity existingCoachingInstitutes =
-                coachingInstituteService.findByInstituteId(request.getInstituteId());
+                producerCoachingInstituteService.findByInstituteId(request.getInstituteId());
         if (Objects.isNull(existingCoachingInstitutes)) {
             throw new InvalidRequestException(
                     "institute id not present : " + request.getInstituteId());
@@ -55,10 +55,10 @@ public class TopRankerManagerService {
             throw new InvalidRequestException("center id not present : " + request.getCenterId());
         }
 
-        targetExamService.isValidExamIds(Arrays.asList(request.getExamId()));
-        coachingCourseAdminService.isValidCourseIds(request.getCourseStudied());
+        producerTargetExamService.isValidExamIds(Arrays.asList(request.getExamId()));
+        producerCoachingCourseService.isValidCourseIds(request.getCourseStudied());
 
-        return TopRankerDTO.builder().topRankerId(topRankerService.create(request).getTopRankerId())
+        return TopRankerDTO.builder().topRankerId(producerTopRankerService.create(request).getTopRankerId())
                 .build();
     }
 
@@ -69,7 +69,7 @@ public class TopRankerManagerService {
 
 
         CoachingInstituteEntity existingCoachingInstitutes =
-                coachingInstituteService.findByInstituteId(request.getInstituteId());
+                producerCoachingInstituteService.findByInstituteId(request.getInstituteId());
         if (Objects.isNull(existingCoachingInstitutes)) {
             throw new InvalidRequestException(
                     "institute id not present : " + request.getInstituteId());
@@ -81,10 +81,10 @@ public class TopRankerManagerService {
             throw new InvalidRequestException("center not present : " + request.getCenterId());
         }
 
-        targetExamService.isValidExamIds(Arrays.asList(request.getExamId()));
-        coachingCourseAdminService.isValidCourseIds(request.getCourseStudied());
+        producerTargetExamService.isValidExamIds(Arrays.asList(request.getExamId()));
+        producerCoachingCourseService.isValidCourseIds(request.getCourseStudied());
 
-        return TopRankerDTO.builder().topRankerId(topRankerService.update(request).getTopRankerId())
+        return TopRankerDTO.builder().topRankerId(producerTopRankerService.update(request).getTopRankerId())
                 .build();
 
     }

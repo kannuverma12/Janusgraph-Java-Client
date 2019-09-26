@@ -33,8 +33,10 @@ public class GetCoachingCourseDetailsResponse {
     private long   coachingInstituteId;
     private String coachingInstituteName;
 
-    private Exam   targetExam;
+    private Exam targetExam;
+
     private String eligibility;
+
     private String duration;
 
     private List<TopRanker> topRankers;

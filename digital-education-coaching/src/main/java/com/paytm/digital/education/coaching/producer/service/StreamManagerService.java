@@ -13,10 +13,10 @@ import java.util.Optional;
 public class StreamManagerService {
 
     @Autowired
-    private StreamService streamService;
+    private ProducerStreamService producerStreamService;
 
     @Autowired
-    private CoachingInstituteService coachingInstituteService;
+    private ProducerCoachingInstituteService producerCoachingInstituteService;
 
     public StreamDTO create(StreamDataRequest request) {
         if (Objects.nonNull(request.getStreamId())) {
@@ -24,22 +24,22 @@ public class StreamManagerService {
                     "request should not have id : " + request.getStreamId());
         }
 
-        if (Objects.nonNull(streamService.findByStreamName(request.getName()))) {
+        if (Objects.nonNull(producerStreamService.findByStreamName(request.getName()))) {
             throw new InvalidRequestException(
                     "name already present : " + request.getName());
         }
 
-        return StreamDTO.builder().streamId(streamService.create(request).getStreamId()).build();
+        return StreamDTO.builder().streamId(producerStreamService.create(request).getStreamId()).build();
     }
 
     public StreamDTO update(StreamDataRequest request) {
         Optional.ofNullable(request.getStreamId())
                 .orElseThrow(() -> new InvalidRequestException("stream id should be present"));
 
-        if (Objects.nonNull(streamService.findByStreamName(request.getName()))) {
+        if (Objects.nonNull(producerStreamService.findByStreamName(request.getName()))) {
             throw new InvalidRequestException(
                     "name already present : " + request.getName());
         }
-        return StreamDTO.builder().streamId(streamService.update(request).getStreamId()).build();
+        return StreamDTO.builder().streamId(producerStreamService.update(request).getStreamId()).build();
     }
 }

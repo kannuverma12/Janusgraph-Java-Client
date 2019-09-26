@@ -13,7 +13,7 @@ import java.util.Optional;
 public class CoachingBannerMangerService {
 
     @Autowired
-    CoachingBannerService coachingBannerService;
+    ProducerCoachingBannerService producerCoachingBannerService;
 
     public CoachingBannerDTO create(CoachingBannerDataRequest request) {
         if (Objects.nonNull(request.getCoachingBannerId())) {
@@ -21,7 +21,7 @@ public class CoachingBannerMangerService {
                     "request should not have id : " + request.getCoachingBannerId());
         }
         return CoachingBannerDTO.builder()
-                .coachingBannerId(coachingBannerService.create(request).getCoachingBannerId())
+                .coachingBannerId(producerCoachingBannerService.create(request).getCoachingBannerId())
                 .build();
     }
 
@@ -31,7 +31,7 @@ public class CoachingBannerMangerService {
                 .orElseThrow(() -> new InvalidRequestException("banner id should be present"));
 
         return CoachingBannerDTO.builder()
-                .coachingBannerId(coachingBannerService.update(request).getCoachingBannerId())
+                .coachingBannerId(producerCoachingBannerService.update(request).getCoachingBannerId())
                 .build();
     }
 

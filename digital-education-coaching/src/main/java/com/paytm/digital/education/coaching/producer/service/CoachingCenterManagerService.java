@@ -14,10 +14,10 @@ import java.util.Optional;
 public class CoachingCenterManagerService {
 
     @Autowired
-    private CoachingCenterServiceNew coachingCenterService;
+    private ProducerCoachingCenterService coachingCenterService;
 
     @Autowired
-    private CoachingInstituteService coachingInstituteService;
+    private ProducerCoachingInstituteService producerCoachingInstituteService;
 
     public CoachingCenterDTO insertCoachingCenter(CoachingCenterDataRequest request) {
 
@@ -27,7 +27,7 @@ public class CoachingCenterManagerService {
         }
 
         CoachingInstituteEntity existingCoachingInstitutes =
-                coachingInstituteService.findByInstituteId(request.getInstituteId());
+                producerCoachingInstituteService.findByInstituteId(request.getInstituteId());
         if (Objects.isNull(existingCoachingInstitutes)) {
             throw new InvalidRequestException(
                     "institute id not present : " + request.getInstituteId());
@@ -44,7 +44,7 @@ public class CoachingCenterManagerService {
                 .orElseThrow(() -> new InvalidRequestException("center id should be present"));
 
         CoachingInstituteEntity existingCoachingInstitutes =
-                coachingInstituteService.findByInstituteId(request.getInstituteId());
+                producerCoachingInstituteService.findByInstituteId(request.getInstituteId());
         if (Objects.isNull(existingCoachingInstitutes)) {
             throw new InvalidRequestException(
                     "institute id not present : " + request.getInstituteId());

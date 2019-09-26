@@ -14,10 +14,10 @@ import java.util.Optional;
 public class CoachingCourseFeatureManagerService {
 
     @Autowired
-    private CoachingCourseFeatureService coachingCourseFeatureService;
+    private ProducerCoachingCourseFeatureService producerCoachingCourseFeatureService;
 
     @Autowired
-    private CoachingInstituteService coachingInstituteService;
+    private ProducerCoachingInstituteService producerCoachingInstituteService;
 
     public CoachingCourseFeatureDTO create(CoachingCourseFeatureDataRequest request) {
         if (Objects.nonNull(request.getCoachingCourseFeatureId())) {
@@ -25,10 +25,10 @@ public class CoachingCourseFeatureManagerService {
                     "request should not have id : " + request.getCoachingCourseFeatureId());
         }
         Optional.ofNullable(
-                coachingInstituteService.findByInstituteId(request.getInstituteId()))
+                producerCoachingInstituteService.findByInstituteId(request.getInstituteId()))
                 .orElseThrow(() -> new InvalidRequestException(
                         "institute id not present : " + request.getInstituteId()));
-        if (!CollectionUtils.isEmpty(coachingCourseFeatureService
+        if (!CollectionUtils.isEmpty(producerCoachingCourseFeatureService
                 .findByInstituteIdAndName(request.getInstituteId(),
                         request.getCoachingCourseFeatureName().getText()))) {
             throw new InvalidRequestException(
@@ -37,7 +37,7 @@ public class CoachingCourseFeatureManagerService {
         }
         return CoachingCourseFeatureDTO.builder()
                 .coachingCourseFeatureId(
-                        coachingCourseFeatureService.create(request).getCoachingCourseFeatureId())
+                        producerCoachingCourseFeatureService.create(request).getCoachingCourseFeatureId())
                 .build();
     }
 
@@ -47,10 +47,10 @@ public class CoachingCourseFeatureManagerService {
                 .orElseThrow(() -> new InvalidRequestException("feature id should be present"));
 
         Optional.ofNullable(
-                coachingInstituteService.findByInstituteId(request.getInstituteId()))
+                producerCoachingInstituteService.findByInstituteId(request.getInstituteId()))
                 .orElseThrow(() -> new InvalidRequestException(
                         "institute id not present : " + request.getInstituteId()));
-        if (!CollectionUtils.isEmpty(coachingCourseFeatureService
+        if (!CollectionUtils.isEmpty(producerCoachingCourseFeatureService
                 .findByInstituteIdAndName(request.getInstituteId(),
                         request.getCoachingCourseFeatureName().getText()))) {
             throw new InvalidRequestException(
@@ -59,7 +59,7 @@ public class CoachingCourseFeatureManagerService {
         }
         return CoachingCourseFeatureDTO.builder()
                 .coachingCourseFeatureId(
-                        coachingCourseFeatureService.update(request).getCoachingCourseFeatureId()
+                        producerCoachingCourseFeatureService.update(request).getCoachingCourseFeatureId()
                 )
                 .build();
     }

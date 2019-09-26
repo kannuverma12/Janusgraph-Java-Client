@@ -15,7 +15,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class TopRankerService {
+public class ProducerTopRankerService {
 
     private final TopRankerDAO topRankerDAO;
 

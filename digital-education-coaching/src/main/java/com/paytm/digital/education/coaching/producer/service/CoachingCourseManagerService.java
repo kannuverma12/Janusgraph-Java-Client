@@ -16,19 +16,19 @@ import java.util.Optional;
 public class CoachingCourseManagerService {
 
     @Autowired
-    private CoachingCourseAdminService programService;
+    private ProducerCoachingCourseService programService;
 
     @Autowired
-    private CoachingInstituteService coachingInstituteService;
+    private ProducerCoachingInstituteService producerCoachingInstituteService;
 
     @Autowired
-    private StreamService streamService;
+    private ProducerStreamService producerStreamService;
 
     @Autowired
-    private TargetExamService targetExamService;
+    private ProducerTargetExamService producerTargetExamService;
 
     @Autowired
-    private CoachingCourseFeatureService coachingCourseFeatureService;
+    private ProducerCoachingCourseFeatureService producerCoachingCourseFeatureService;
 
 
     public CoachingCourseDTO save(CoachingCourseDataRequest coachingCourseDataRequest) {
@@ -38,15 +38,15 @@ public class CoachingCourseManagerService {
         }
 
         CoachingInstituteEntity existingCoachingInstitutes =
-                coachingInstituteService
+                producerCoachingInstituteService
                         .findByInstituteId(coachingCourseDataRequest.getInstituteId());
         if (Objects.isNull(existingCoachingInstitutes)) {
             throw new InvalidRequestException(
                     "institute id not present : " + coachingCourseDataRequest.getInstituteId());
         }
-        streamService.isValidStreamIds(coachingCourseDataRequest.getStreamIds());
-        targetExamService.isValidExamIds(coachingCourseDataRequest.getPrimaryExamIds());
-        coachingCourseFeatureService
+        producerStreamService.isValidStreamIds(coachingCourseDataRequest.getStreamIds());
+        producerTargetExamService.isValidExamIds(coachingCourseDataRequest.getPrimaryExamIds());
+        producerCoachingCourseFeatureService
                 .isValidCourseFeatureIds(coachingCourseDataRequest.getCourseFeatureIds());
         return CoachingCourseDTO
                 .builder().courseId(programService.save(coachingCourseDataRequest).getCourseId())
@@ -59,15 +59,15 @@ public class CoachingCourseManagerService {
                 .orElseThrow(() -> new InvalidRequestException("course id should be present"));
 
         CoachingInstituteEntity existingCoachingInstitutes =
-                coachingInstituteService
+                producerCoachingInstituteService
                         .findByInstituteId(coachingCourseDataRequest.getInstituteId());
         if (Objects.isNull(existingCoachingInstitutes)) {
             throw new InvalidRequestException(
                     "institute id not present" + coachingCourseDataRequest.getInstituteId());
         }
-        streamService.isValidStreamIds(coachingCourseDataRequest.getStreamIds());
-        targetExamService.isValidExamIds(coachingCourseDataRequest.getPrimaryExamIds());
-        coachingCourseFeatureService
+        producerStreamService.isValidStreamIds(coachingCourseDataRequest.getStreamIds());
+        producerTargetExamService.isValidExamIds(coachingCourseDataRequest.getPrimaryExamIds());
+        producerCoachingCourseFeatureService
                 .isValidCourseFeatureIds(coachingCourseDataRequest.getCourseFeatureIds());
         return CoachingCourseDTO
                 .builder()
