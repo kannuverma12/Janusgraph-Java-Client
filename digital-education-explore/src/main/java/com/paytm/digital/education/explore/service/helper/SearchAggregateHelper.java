@@ -12,6 +12,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.FEE
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_GENDER;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LINGUISTIC_MEDIUM;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OWNERSHIP;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_EXAM_DOMAIN;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_ACCEPTED;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_EDUCATION_LEVEL;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_ESTABLISHMENT_YEAR;
@@ -39,10 +40,13 @@ import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.BucketSort;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import com.paytm.digital.education.explore.enums.Client;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 @Service
 public class SearchAggregateHelper {
@@ -77,14 +81,14 @@ public class SearchAggregateHelper {
 
     public AggregateField[] getExamAggregateData() {
         List<String> examKeys =
-                Arrays.asList(LINGUISTIC_MEDIUM, SEARCH_EXAM_LEVEL);
+                Arrays.asList(LINGUISTIC_MEDIUM, SEARCH_EXAM_LEVEL, SEARCH_EXAM_DOMAIN);
         List<AggregationType> examAggregateType =
-                Arrays.asList(TERMS, TERMS);
+                Arrays.asList(TERMS, TERMS, TERMS);
         BucketSort countDescSort = BucketSort.builder().key(BucketAggregationSortParms.COUNT).order(
                 DataSortOrder.DESC).build();
 
         List<BucketSort> examSortOrder =
-                Arrays.asList(countDescSort, countDescSort);
+                Arrays.asList(countDescSort, countDescSort, countDescSort);
         AggregateField[] examAggregateData = new AggregateField[examKeys.size()];
 
         for (int i = 0; i < examKeys.size(); i++) {
@@ -166,5 +170,18 @@ public class SearchAggregateHelper {
             schoolAggregateData[i] = aggregateField;
         }
         return schoolAggregateData;
+    }
+
+    public AggregateField[] getTopHitsAggregateData(List<String> dataPerFilter) {
+        AggregateField[] aggregateFields = new AggregateField[1];
+        aggregateFields[0] = new AggregateField();
+        if (!CollectionUtils.isEmpty(dataPerFilter)) {
+            aggregateFields[0].setName(dataPerFilter.get(0));
+            if (dataPerFilter.size() == 2 && StringUtils.isNotBlank(dataPerFilter.get(1))) {
+                aggregateFields[0].setChildTermsFieldName(dataPerFilter.get(1));
+            }
+        }
+        aggregateFields[0].setType(TOP_HITS);
+        return aggregateFields;
     }
 }

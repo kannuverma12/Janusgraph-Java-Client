@@ -13,22 +13,31 @@ import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.service.RecentsSerivce;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.utility.JsonUtils;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Date;
+import java.util.Objects;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
-@Slf4j
+import static com.paytm.digital.education.explore.constants.ExploreConstants.RECENT_SEARCHES_ID_SEPERATOR;
+
 @Service
 @AllArgsConstructor
 public class RecentsServiceImpl implements RecentsSerivce {
+
+    private static final Logger log = LoggerFactory.getLogger(RecentsServiceImpl.class);
 
     private ElasticSearchService    elasticSearchService;
     private KafkaProducer           kafkaProducer;
@@ -36,7 +45,9 @@ public class RecentsServiceImpl implements RecentsSerivce {
 
     @Override
     public void recordSearches(String searchTerm, Long userId, EducationEntity educationEntity) {
-        String uniqueId = CommonUtil.convertNameToUrlDisplayName(searchTerm) + userId.toString();
+        String uniqueId = CommonUtil.convertNameToUrlDisplayName(searchTerm)
+                + RECENT_SEARCHES_ID_SEPERATOR + educationEntity.name().toLowerCase()
+                + RECENT_SEARCHES_ID_SEPERATOR + userId.toString();
         SearchHistoryEsDoc searchHistoryEsDoc = new SearchHistoryEsDoc();
         searchHistoryEsDoc.setId(uniqueId);
         searchHistoryEsDoc.setTerms(searchTerm);
@@ -51,12 +62,19 @@ public class RecentsServiceImpl implements RecentsSerivce {
     }
 
     @Override
-    public SearchResponse getRecentSearchTerms(String term, Long userId, int size) {
+    public SearchResponse getRecentSearchTerms(String term, Long userId, int size, List<EducationEntity> entities) {
 
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.setTerm(term);
         Map<String, List<Object>> filters = new HashMap<>();
         filters.put(ExploreConstants.SEARCH_HISTORY_USERID, Arrays.asList(userId));
+
+        if (!CollectionUtils.isEmpty(entities)) {
+            List<Object> entitiesAsString = entities.stream()
+                    .map(educationEntity -> educationEntity.name())
+                    .collect(Collectors.toList());
+            filters.put(ExploreConstants.RECENT_SEARCHES_ENTITY, entitiesAsString);
+        }
         searchRequest.setFilter(filters);
         searchRequest.setEntity(EducationEntity.RECENT_SEARCHES);
         searchRequest.setOffset(ExploreConstants.DEFAULT_OFFSET);

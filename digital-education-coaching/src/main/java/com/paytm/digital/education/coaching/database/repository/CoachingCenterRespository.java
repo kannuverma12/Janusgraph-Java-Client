@@ -2,7 +2,7 @@ package com.paytm.digital.education.coaching.database.repository;
 
 import com.paytm.digital.education.coaching.database.entity.CoachingCenter;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -15,7 +15,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.C
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_CENTER_ID;
 import static com.paytm.digital.education.utility.DateUtil.getCurrentDate;
 
-@Slf4j
+
 @Repository
 @AllArgsConstructor
 public class CoachingCenterRespository {

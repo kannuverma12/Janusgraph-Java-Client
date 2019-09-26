@@ -1,6 +1,7 @@
 package com.paytm.digital.education.application;
 
 import com.paytm.digital.education.application.constant.Constant;
+import org.apache.logging.log4j.core.lookup.MainMapLookup;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
@@ -14,6 +15,10 @@ import paytm.auth.personaaclclient.config.EnableACLPersonaAuth;
 @EnableMongoRepositories(basePackages = Constant.EDUCATION_BASE_PACKAGE)
 @ComponentScan({Constant.EDUCATION_BASE_PACKAGE, Constant.PERSONA_APPLICATION_PACKAGE})
 public class Application {
+
+    static {
+        MainMapLookup.setMainArguments("digital-education-service");
+    }
 
     public static void main(String[] args) {
 

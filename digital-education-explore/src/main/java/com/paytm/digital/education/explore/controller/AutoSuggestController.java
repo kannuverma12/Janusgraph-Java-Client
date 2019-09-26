@@ -5,8 +5,10 @@ import com.paytm.digital.education.explore.enums.UserAction;
 import com.paytm.digital.education.explore.response.dto.suggest.AutoSuggestResponse;
 import com.paytm.digital.education.explore.service.impl.AutoSuggestServiceImpl;
 import com.paytm.digital.education.explore.validators.AutoSuggestValidator;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -24,10 +26,11 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EDU
 
 @Controller
 @AllArgsConstructor
-@Slf4j
 @RequestMapping(EDUCATION_BASE_URL)
 @Validated
 public class AutoSuggestController {
+
+    private static Logger log = LoggerFactory.getLogger(AutoSuggestController.class);
 
     private AutoSuggestServiceImpl autoSuggestServiceImpl;
     private AutoSuggestValidator   autoSuggestValidator;
@@ -62,7 +65,7 @@ public class AutoSuggestController {
 
     @RequestMapping(method = RequestMethod.GET, path = "/v1/institute/autosuggest")
     public @ResponseBody AutoSuggestResponse autosuggestInstitute(
-            @RequestParam("query") String query,
+            @RequestParam(name = "query", required = false) String query,
             @RequestParam(value = "limit", required = false) @Min(2) Integer limit) {
         log.info("Received autosuggest request for institutes ");
         return autoSuggestServiceImpl.autosuggestInstitute(query, limit);

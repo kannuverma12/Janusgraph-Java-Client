@@ -5,6 +5,7 @@ import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.explore.constants.ExploreConstants;
+import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.es.model.SearchHistoryEsDoc;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.search.RecentSearch;
@@ -12,22 +13,22 @@ import com.paytm.digital.education.explore.response.dto.search.SearchBaseData;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.response.dto.search.SearchResult;
 import com.paytm.digital.education.explore.service.helper.SearchAggregateHelper;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.Map;
-import java.util.LinkedHashMap;
-import java.util.HashMap;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 @Service
-@Slf4j
+
 public class RecentSearchServiceImpl extends AbstractSearchServiceImpl {
 
     private static  Map<String, Float>                   searchFieldKeys;
@@ -44,6 +45,7 @@ public class RecentSearchServiceImpl extends AbstractSearchServiceImpl {
         searchFieldKeys.put(ExploreConstants.SEARCH_HISTORY_TERMS, 1F);
         filterQueryTypeMap = new HashMap<>();
         filterQueryTypeMap.put(ExploreConstants.SEARCH_HISTORY_USERID, FilterQueryType.TERMS);
+        filterQueryTypeMap.put(ExploreConstants.RECENT_SEARCHES_ENTITY, FilterQueryType.TERMS);
         defaultSortKeysInOrder = new LinkedHashMap<>();
         defaultSortKeysInOrder.put(ExploreConstants.SEARCH_HISTORY_UPDATEDAT, DataSortOrder.DESC);
     }
@@ -55,7 +57,7 @@ public class RecentSearchServiceImpl extends AbstractSearchServiceImpl {
         ElasticResponse elasticResponse = initiateSearch(elasticRequest, SearchHistoryEsDoc.class);
         SearchResponse searchResponse = new SearchResponse(searchRequest.getTerm());
         buildSearchResponse(searchResponse, elasticResponse, elasticRequest, null, null, null,
-                null);
+                null, null);
         return searchResponse;
     }
 
@@ -82,7 +84,8 @@ public class RecentSearchServiceImpl extends AbstractSearchServiceImpl {
 
     @Override
     protected void populateSearchResults(SearchResponse searchResponse,
-            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties) {
+            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties,
+            ElasticRequest elasticRequest, Client client) {
 
         List<SearchHistoryEsDoc> documents = elasticResponse.getDocuments();
         List<SearchBaseData> recentSearches = new ArrayList<>();

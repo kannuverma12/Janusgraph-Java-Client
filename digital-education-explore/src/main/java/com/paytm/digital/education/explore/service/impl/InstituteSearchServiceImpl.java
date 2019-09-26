@@ -9,6 +9,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EXA
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.FACILITIES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.FEES_INSTITUTE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.FE_RELEVANCE_SORT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_FILTER_NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_GENDER;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
@@ -49,7 +50,9 @@ import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.CrossField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
+import com.paytm.digital.education.explore.database.entity.InstiPaytmKeys;
 import com.paytm.digital.education.explore.database.entity.SearchSortParam;
+import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.es.model.InstituteSearch;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
@@ -62,30 +65,33 @@ import com.paytm.digital.education.explore.service.helper.SearchAggregateHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.LinkedHashMap;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.PostConstruct;
 
 
-@Slf4j
+
 @Service
 @AllArgsConstructor
 public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
 
     private static Map<String, FilterQueryType> filterQueryTypeMap;
     private static Map<String, Float>           searchFieldKeys;
+    private static Set<String> sortFields;
     private static Map<String, Float>           locationSearchFieldKeys;
     private        SearchAggregateHelper        searchAggregateHelper;
     private        ClassifierSearchService      classifierSearchService;
@@ -120,6 +126,10 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
         searchFieldKeys.put(ALTERNATE_NAMES + NGRAM, OTHER_NAMES_NGRAM_BOOST);
         searchFieldKeys.put(UNIVERSITY_NAME_SEARCH + NGRAM, OTHER_NAMES_NGRAM_BOOST);
         searchFieldKeys.put(OFFICIAL_NAME + NGRAM, OTHER_NAMES_NGRAM_BOOST);
+
+        sortFields = new HashSet<>();
+        sortFields.add(FE_RANK_SORT);
+        sortFields.add(FE_RELEVANCE_SORT);
     }
 
     @Override
@@ -142,7 +152,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
         ElasticResponse elasticResponse = initiateSearch(elasticRequest, InstituteSearch.class);
         buildSearchResponse(searchResponse, elasticResponse, elasticRequest, EXPLORE_COMPONENT,
                 INSTITUTE_FILTER_NAMESPACE, INSTITUTE_SEARCH_NAMESPACE,
-                searchRequest.getClassificationData());
+                searchRequest.getClassificationData(), searchRequest.getClient());
         return searchResponse;
     }
 
@@ -223,6 +233,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
         populateAggregateFields(searchRequest, elasticRequest,
                 searchAggregateHelper.getInstituteAggregateData(), InstituteSearch.class);
         populateSearchQueryType(elasticRequest, TIE_BREAKER);
+        validateSortFields(searchRequest, sortFields);
         /*
          * Sort on rank will be done
          * 1. when search term is empty
@@ -244,7 +255,8 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
 
     @Override
     protected void populateSearchResults(SearchResponse searchResponse,
-            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties) {
+            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties,
+            ElasticRequest elasticRequest, Client client) {
         List<InstituteSearch> instituteSearches = elasticResponse.getDocuments();
         SearchResult searchResults = new SearchResult();
         Map<Long, SearchBaseData> instituteDataMap = new HashMap<Long, SearchBaseData>();
@@ -270,6 +282,13 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
                                 instituteSearch.getCity(), null, null, null);
                 instituteData.setOfficialAddress(officialAddress);
                 instituteData.setClient(instituteSearch.isClient());
+                instituteData.setBrochureUrl(instituteSearch.getBrochureUrl());
+                if (Objects.nonNull(instituteSearch.getPaytmKeys())) {
+                    InstiPaytmKeys instiPaytmKeys = instituteSearch.getPaytmKeys();
+                    instituteData.setPid(instiPaytmKeys.getPid());
+                    instituteData.setMid(instiPaytmKeys.getMid());
+                }
+                instituteData.setCtaList(ctaHelper.buildCTA(instituteData, client));
                 instituteDataMap.put(instituteSearch.getInstituteId(), instituteData);
                 instituteDataList.add(instituteData);
             });

@@ -6,6 +6,7 @@ import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -77,6 +78,7 @@ public class FacilityDataHelper {
                 propertyReader.getPropertiesAsMapByKey(
                         EXPLORE_COMPONENT, FACILITIES_NAMESPACE, SCHOOL_FACILITY_KEY);
         List<FacilityResponse> facilities = facilitiesAsString.stream()
+                .filter(StringUtils::isNotBlank)
                 .map(key -> fetchAndMapToFacilityResponse(key, map))
                 .peek(x -> x.setLogoUrl(CommonUtil.getAbsoluteUrl(x.getLogoUrl(), FACILITIES)))
                 .collect(Collectors.toList());

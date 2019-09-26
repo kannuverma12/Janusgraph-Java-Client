@@ -1,29 +1,26 @@
 package com.paytm.digital.education.explore.response.dto.detail.school.detail;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.config.SchoolConfig;
 import com.paytm.digital.education.explore.database.entity.ShiftDetails;
 import lombok.Data;
-
-import static com.paytm.digital.education.explore.constants.SchoolConstants.DEFAULT_SHIFT_IMAGE_LINK_URL;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.EVENING_SHIFT_IMAGE_LINK_URL;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.MORNING_SHIFT_IMAGE_LINK_URL;
 
 @Data
 public class ShiftDetailsResponse extends ShiftDetails {
     @JsonProperty("shift_image_link_url")
     private String shiftImageLinkUrl;
 
-    public ShiftDetailsResponse(ShiftDetails shiftDetails) {
+    public ShiftDetailsResponse(ShiftDetails shiftDetails, SchoolConfig schoolConfig) {
         super(shiftDetails);
         switch (shiftDetails.getShiftType()) {
             case Morning:
-                shiftImageLinkUrl = MORNING_SHIFT_IMAGE_LINK_URL;
+                shiftImageLinkUrl = schoolConfig.getMorningShiftImageURL();
                 break;
             case Afternoon:
-                shiftImageLinkUrl = EVENING_SHIFT_IMAGE_LINK_URL;
+                shiftImageLinkUrl = schoolConfig.getEveningShiftImageURL();
                 break;
             default:
-                shiftImageLinkUrl = DEFAULT_SHIFT_IMAGE_LINK_URL;
+                shiftImageLinkUrl = schoolConfig.getDefaultShiftImageURL();
         }
     }
 }

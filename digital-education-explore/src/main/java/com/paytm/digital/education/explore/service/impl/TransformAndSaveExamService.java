@@ -5,8 +5,10 @@ import com.paytm.digital.education.explore.database.ingestion.Exam;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.service.helper.IncrementalDataHelper;
 import com.paytm.digital.education.mapping.ErrorEnum;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -24,8 +26,11 @@ import static com.paytm.digital.education.explore.constants.IncrementalDataInges
 
 @AllArgsConstructor
 @Service
-@Slf4j
+
 public class TransformAndSaveExamService {
+
+    private static Logger log = LoggerFactory.getLogger(TransformAndSaveExamService.class);
+
     private IncrementalDataHelper incrementalDataHelper;
     private CommonMongoRepository commonMongoRepository;
 
@@ -42,16 +47,20 @@ public class TransformAndSaveExamService {
                 }
             }
 
-            Map<Long, Exam> map = new HashMap<>();
+            Map<Long, com.paytm.digital.education.explore.database.entity.Exam> map =
+                    new HashMap<>();
             if (!examIds.isEmpty()) {
-                List<Exam> existingExams =
-                        incrementalDataHelper.getExistingData(Exam.class, EXAM_ID,
+                List<com.paytm.digital.education.explore.database.entity.Exam> existingExams =
+                        incrementalDataHelper.getExistingData(
+                                com.paytm.digital.education.explore.database.entity.Exam.class,
+                                EXAM_ID,
                                 new ArrayList<>(examIdSet));
                 map = existingExams.stream()
                         .collect(Collectors.toMap(c -> c.getExamId(), c -> c));
             }
             for (Exam exam : examSet) {
-                Exam currentExam = map.get(exam.getExamId());
+                com.paytm.digital.education.explore.database.entity.Exam currentExam =
+                        map.get(exam.getExamId());
                 if (Objects.nonNull(currentExam)) {
                     String id = currentExam.getId();
                     if (StringUtils.isNotBlank(id)) {

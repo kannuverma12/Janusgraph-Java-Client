@@ -2,7 +2,6 @@ package com.paytm.digital.education.database.repository;
 
 import com.paytm.digital.education.database.entity.FailedData;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Map;
 
-@Slf4j
 @AllArgsConstructor
 @Repository
 public class FailedDataRepository {

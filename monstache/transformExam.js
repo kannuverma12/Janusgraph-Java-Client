@@ -44,6 +44,10 @@ module.exports = function(doc) {
 
 	targetExam.level = doc.level_of_exam;
 	targetExam.linguistic_medium = doc.linguistic_medium_exam; // array
+	targetExam.domain_name = doc.domains;
+	if (doc.paytm_keys) {
+		targetExam.paytm_keys = doc.paytm_keys;
+	}
 
 	//targetExam.logo_url = "";
 	// targetExam.type = doc.exam_category;
@@ -183,6 +187,18 @@ module.exports = function(doc) {
 	}
 	if (syllabus_available){
 		targetExam.tabs_available.push('Syllabus');
+	}
+
+	if (doc.priority) {
+		targetExam.global_priority = doc.priority;
+	}
+
+	if (Array.isArray(doc.stream_id)) {
+		targetExam.stream_ids = doc.stream_id;
+		targetExam.streams = {};
+		for (var i = 0; i < doc.stream_id.length; i++) {
+			targetExam.streams[doc.stream_id[i]] = {"position": (i+1)};
+		}
 	}
 
 	console.log ("exam: " + targetExam.exam_id);

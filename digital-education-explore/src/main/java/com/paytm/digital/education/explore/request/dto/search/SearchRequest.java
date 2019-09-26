@@ -11,21 +11,28 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.paytm.digital.education.explore.es.model.GeoLocation;
 import com.paytm.digital.education.explore.sro.request.FieldsAndFieldGroupRequest;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SearchRequest extends FieldsAndFieldGroupRequest {
+public class SearchRequest {
 
     @JsonProperty("term")
     private String term;
@@ -38,14 +45,16 @@ public class SearchRequest extends FieldsAndFieldGroupRequest {
     private EducationEntity entity;
 
     @JsonProperty("offset")
-    @Min(0)
-    @Max(SEARCH_REQUEST_MAX_OFFSET)
+    @Min(value = 0, message = "Offset should be greater than or equal to 0")
+    @Max(value = SEARCH_REQUEST_MAX_OFFSET, message = "Offset should be less than or equal to  "
+            + SEARCH_REQUEST_MAX_OFFSET)
     @NotNull
     private Integer offset = DEFAULT_OFFSET;
 
     @JsonProperty("limit")
-    @Min(0)
-    @Max(SEARCH_REQUEST_MAX_LIMIT)
+    @Min(value = 0, message = "Limit should be greater than or equal to 0")
+    @Max(value = SEARCH_REQUEST_MAX_LIMIT, message = "Limit should be less than or equal to "
+            + SEARCH_REQUEST_MAX_LIMIT)
     @NotNull
     private Integer limit = DEFAULT_SIZE;
 
@@ -67,4 +76,13 @@ public class SearchRequest extends FieldsAndFieldGroupRequest {
 
     @JsonProperty("sort_order")
     private LinkedHashMap<String, DataSortOrder> sortOrder;
+
+    @JsonProperty("location")
+    private GeoLocation geoLocation;
+
+    @JsonIgnore
+    private List<String> dataPerFilter;
+
+    @JsonIgnore
+    private boolean fetchSearchResultsPerFilter;
 }

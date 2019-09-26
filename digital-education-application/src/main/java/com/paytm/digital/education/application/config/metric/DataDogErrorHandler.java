@@ -1,12 +1,15 @@
 package com.paytm.digital.education.application.config.metric;
 
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import com.timgroup.statsd.StatsDClientErrorHandler;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Component;
 
 @Component
-@Slf4j
 public class DataDogErrorHandler implements StatsDClientErrorHandler {
+
+    private static Logger log = LoggerFactory.getLogger(DataDogErrorHandler.class);
 
     @Override
     public void handle(Exception ex) {

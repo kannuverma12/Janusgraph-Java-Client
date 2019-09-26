@@ -3,8 +3,10 @@ package com.paytm.digital.education.explore.scheduler;
 import com.paytm.digital.education.explore.database.entity.CronProperties;
 import com.paytm.digital.education.explore.database.repository.CronPropertiesRepository;
 import com.paytm.digital.education.explore.service.impl.ImportIncrementalDataService;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import net.javacrumbs.shedlock.core.SchedulerLock;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.context.annotation.Configuration;
@@ -15,11 +17,13 @@ import java.util.Objects;
 
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.DATA_INGESTION_IMPORT;
 
-@Slf4j
+
 @AllArgsConstructor
 @Configuration
 @EnableScheduling
 public class DataIngestionScheduler {
+
+    private static Logger log = LoggerFactory.getLogger(DataIngestionScheduler.class);
 
     private ImportIncrementalDataService importIncrementalDataService;
     private CronPropertiesRepository     cronPropertiesRepository;

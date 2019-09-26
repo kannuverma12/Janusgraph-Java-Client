@@ -5,13 +5,17 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 
-@Slf4j
+
 public class JsonUtils {
+
+    private static final Logger log = LoggerFactory.getLogger(JsonUtils.class);
 
     private static ObjectMapper objectMapper =
             new ObjectMapper().configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
@@ -67,8 +71,8 @@ public class JsonUtils {
         } catch (IllegalArgumentException ex) {
             log.error("Illegal argument : [ " + object.toString() + " ]", ex);
         } catch (Exception ex) {
-            log.error("Error caught while converting object : [ " + object.toString() + " ] to object type: "
-                    + typeReference.getType(), ex);
+            log.error("Error caught while converting object : [ " + object.toString()
+                    + " ] to object type: " + typeReference.getType(), ex);
         }
         return null;
     }
@@ -79,8 +83,8 @@ public class JsonUtils {
         } catch (IllegalArgumentException ex) {
             log.error("Illegal argument : [ " + object.toString() + " ]", ex);
         } catch (Exception ex) {
-            log.error("Error caught while converting object : [ " + object.toString() + " ] to object type: "
-                    + type, ex);
+            log.error("Error caught while converting object : [ " + object.toString()
+                    + " ] to object type: " + type, ex);
         }
         return null;
     }

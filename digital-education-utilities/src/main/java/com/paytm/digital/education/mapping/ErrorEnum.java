@@ -110,7 +110,19 @@ public enum ErrorEnum {
     PREDICTOR_ID_MISSING(4050, "COLLEGE PREDICTOR ID doesnot exists for entity %s",
             HttpStatus.BAD_REQUEST, 1),
     INVALID_SCHOOL_NAME(4051, "Provided name doesnot match with actual school name",
-            HttpStatus.BAD_REQUEST, 0);
+            HttpStatus.BAD_REQUEST, 0),
+    INVALID_UPLOAD_REQUEST(4052, "Please choose at least one file to upload",
+            HttpStatus.BAD_REQUEST, 0),
+    INVALID_ENTITY_ID(4053, "Invalid %1$s ID. Please provide a valid %1$s ID.",
+            HttpStatus.BAD_REQUEST, 1),
+    ENTITY_MISSING(4054, "entity field is required.", HttpStatus.BAD_REQUEST, 0),
+    LAT_OR_LON_MISSING(4055, "Latitude and longitude are mandatory in location.",
+            HttpStatus.BAD_REQUEST, 0),
+    LAT_INVALID(4056, "Please provide valid latitude in request.",
+            HttpStatus.BAD_REQUEST, 0),
+    LON_INVALID(4057, "Please provide valid longitude in request.",
+            HttpStatus.BAD_REQUEST, 0),
+    INVALID_SORT_FIELD(4058, "Invalid requested sort field(s).", HttpStatus.BAD_REQUEST,0);
 
     private final int        internalCode;
     private final String     externalMessage;
