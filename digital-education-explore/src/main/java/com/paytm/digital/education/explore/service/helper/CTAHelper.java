@@ -83,8 +83,13 @@ public class CTAHelper {
             }
         }
 
-        if (APP.equals(client) && Objects.nonNull(ctaInfoHolder.getCollegePredictorPid())) {
-            ctas.add(getPredictorCTA(ctaInfoHolder.getCollegePredictorPid(), logosPerCta));
+        if (APP.equals(client)) {
+            if (Objects.nonNull(ctaInfoHolder.getCollegePredictorPid())) {
+                ctas.add(getPredictorCTA(ctaInfoHolder.getCollegePredictorPid(), logosPerCta));
+            }
+            if (ctaInfoHolder.hasShareFeature()) {
+                ctas.add(getShareCTA(logosPerCta));
+            }
         }
 
         addApplyNowCTAIfRequired(ctas, ctaInfoHolder, client, logosPerCta);
@@ -97,7 +102,8 @@ public class CTAHelper {
     }
 
     private void addApplyNowCTAIfRequired(
-            List<CTA> ctas, CTAInfoHolder ctaDetail, Client client, Map<String, Object> logosPerCta) {
+            List<CTA> ctas, CTAInfoHolder ctaDetail, Client client,
+            Map<String, Object> logosPerCta) {
         if (!ctaDetail.shouldHaveApplyNowCTA()) {
             return;
         }
@@ -217,6 +223,12 @@ public class CTAHelper {
         String absoluteUrl = getAbsoluteLogoUrl(logosPerCta, CTAType.COMPARE.name().toLowerCase());
         return CTA.builder().type(CTAType.COMPARE).label(CTA.Constants.COMPARE).logo(absoluteUrl)
                 .activeText(COMPARE_ACTIVE_LABEL_WEB).build();
+    }
+
+    private CTA getShareCTA(Map<String, Object> logosPerCta) {
+        String absoluteUrl = getAbsoluteLogoUrl(logosPerCta, CTAType.SHARE.name().toLowerCase());
+        return CTA.builder().type(CTAType.SHARE).label(CTA.Constants.SHARE).logo(absoluteUrl)
+                .build();
     }
 
 }

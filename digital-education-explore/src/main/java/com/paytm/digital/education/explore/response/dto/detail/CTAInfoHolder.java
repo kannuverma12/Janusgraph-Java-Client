@@ -29,6 +29,10 @@ public interface CTAInfoHolder {
         return true;
     }
 
+    default boolean hasShareFeature() {
+        return false;
+    }
+
     default Long getCollegePredictorPid() {
         return null;
     }

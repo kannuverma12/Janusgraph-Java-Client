@@ -74,6 +74,8 @@ public class CTA {
 
         public static final String PREDICT_COLLEGE = "Predict College";
 
+        public static final String SHARE = "Share";
+
     }
 
 

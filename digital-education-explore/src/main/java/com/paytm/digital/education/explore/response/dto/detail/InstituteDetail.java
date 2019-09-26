@@ -137,6 +137,12 @@ public class InstituteDetail implements CTAInfoHolder {
     @Accessors(fluent = true)
     private boolean shouldHaveApplyNowCTA = false;
 
+    @JsonIgnore
+    @Override
+    public boolean hasShareFeature() {
+        return true;
+    }
+
     @Override
     public EducationEntity getCorrespondingEntity() {
         return INSTITUTE;

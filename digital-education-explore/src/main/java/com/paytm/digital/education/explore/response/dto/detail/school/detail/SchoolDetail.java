@@ -101,6 +101,12 @@ public class SchoolDetail implements CTAInfoHolder {
         return false;
     }
 
+    @JsonIgnore
+    @Override
+    public boolean hasShareFeature() {
+        return true;
+    }
+
     @Override public Long getCollegePredictorPid() {
         return null;
     }
