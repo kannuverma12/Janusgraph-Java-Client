@@ -1,6 +1,6 @@
 package com.paytm.digital.education.coaching.enums;
 
-import com.paytm.digital.education.coaching.consumer.model.response.transactionalflow.CoachingCourseTypeResponse;
+import com.paytm.digital.education.coaching.consumer.model.response.details.CoachingCourseTypeResponse;
 import com.paytm.digital.education.enums.CourseType;
 import com.paytm.digital.education.utility.CommonUtil;
 import lombok.Getter;

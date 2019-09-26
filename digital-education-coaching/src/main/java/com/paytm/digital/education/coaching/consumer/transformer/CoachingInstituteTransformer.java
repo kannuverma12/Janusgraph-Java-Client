@@ -9,6 +9,7 @@ import com.paytm.digital.education.database.embedded.KeyHighlight;
 import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.text.WordUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -75,7 +76,7 @@ public class CoachingInstituteTransformer {
                 Stream stream = Stream
                         .builder()
                         .id(streamEntity.getStreamId())
-                        .name(streamEntity.getName())
+                        .name(WordUtils.capitalizeFully(streamEntity.getName()))
                         .logo(ImageUtils.getImageWithAbsolutePath(streamEntity.getLogo(),
                                 STREAM_PLACEHOLDER, COACHING_STREAMS))
                         .build();
