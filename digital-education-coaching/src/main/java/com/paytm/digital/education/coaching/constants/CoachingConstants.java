@@ -55,25 +55,37 @@ public class CoachingConstants {
     public static final SimpleDateFormat YYYY_MM     = new SimpleDateFormat("yyyy-MM");
 
     public static final List<ExamAdditionalInfoData>
-                                     EXAM_ADDITIONAL_INFO_PARAMS      =
+                                     EXAM_ADDITIONAL_INFO_PARAMS                  =
             new ArrayList<ExamAdditionalInfoData>();
-    public static final String       DETAILS_PROPERTY_KEY             = "detail_page_section_order";
-    public static final String       DETAILS_PROPERTY_COMPONENT       = "coaching";
-    public static final String       DETAILS_PROPERTY_NAMESPACE       = "section_order";
-    public static final List<String> EXAM_DETAILS_FIELDS              = new ArrayList<>(
+    public static final String       DETAILS_PROPERTY_KEY                         =
+            "detail_page_section_order";
+    public static final String       DETAILS_PROPERTY_COMPONENT                   = "coaching";
+    public static final String       DETAILS_PROPERTY_NAMESPACE                   = "section_order";
+    public static final List<String> EXAM_DETAILS_FIELDS                          = new ArrayList<>(
             Arrays.asList("exam_id", "exam_full_name", "exam_short_name", "about_exam",
                     "instances", "logo", "stream_ids"));
-    public static final List<String> STREAM_DETAILS_FIELDS            = new ArrayList<>(
+    public static final List<String> STREAM_DETAILS_FIELDS                        = new ArrayList<>(
             Arrays.asList("stream_id", "name", "is_enabled"));
-    public static final String       NON_TENTATIVE                    = "non_tentative";
-    public static final String       EXAM_PLACEHOLDER                 = "/exam_placeholder.svg";
-    public static final String       INSTITUTE_PLACEHOLDER            =
+    public static final String       NON_TENTATIVE                                = "non_tentative";
+    public static final String       STREAM_PLACEHOLDER                           =
+            "/stream_placeholder.svg";
+    public static final String       EXAM_PLACEHOLDER                             =
+            "/exam_placeholder.svg";
+    public static final String       INSTITUTE_PLACEHOLDER                        =
             "/institute_placeholder.svg";
-    public static final String       COACHING_COURSE_PLACEHOLDER      =
+    public static final String       INSTITUTE_COVER_IMAGE_PLACEHOLDER            =
+            "/institute_cover_image_placeholder.svg";
+    public static final String       COACHING_COURSE_PLACEHOLDER                  =
             "/coaching_course_placeholder.svg";
-    public static final String       COACHING_COURSE_TYPE_PLACEHOLDER =
+    public static final String       COACHING_COURSE_TYPE_PLACEHOLDER             =
             "/coaching_course_type_placeholder.svg";
-    public static final String       EMPTY_STRING                     = "";
+    public static final String       TOP_RANKER_PLACEHOLDER                       =
+            "/top_ranker_placeholder.svg";
+    public static final String       COACHING_INSTITUTE_KEY_HIGHLIGHT_PLACEHOLDER =
+            "/key_highlight_placeholder.svg";
+    public static final String       COACHING_CENTER_PLACEHOLDER                  =
+            "/coaching_center_placeholder.svg";
+    public static final String       EMPTY_STRING                                 = "";
 
     static {
         EXAM_ADDITIONAL_INFO_PARAMS.add(

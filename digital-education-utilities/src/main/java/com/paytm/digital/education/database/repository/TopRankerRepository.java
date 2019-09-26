@@ -17,4 +17,8 @@ public interface TopRankerRepository extends MongoRepository<TopRankerEntity, Ob
 
     @Override List<TopRankerEntity> findAll();
 
+    List<TopRankerEntity> findByInstituteIdAndExamId(Long instituteId, Long examId);
+
+    List<TopRankerEntity> findByInstituteIdAndStreamIds(Long instituteId, Long streamId);
+
 }

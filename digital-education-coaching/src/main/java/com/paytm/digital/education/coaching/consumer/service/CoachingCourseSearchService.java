@@ -9,6 +9,7 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.Searc
 import com.paytm.digital.education.coaching.consumer.service.helper.CoachingSearchAggregateHelper;
 import com.paytm.digital.education.coaching.es.model.CoachingCourseSearch;
 import com.paytm.digital.education.coaching.es.model.CoachingInstituteSearch;
+import com.paytm.digital.education.coaching.utils.ImageUtils;
 import com.paytm.digital.education.coaching.utils.SearchUtils;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_DURATION;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_EXAMS;
@@ -146,20 +148,22 @@ public class CoachingCourseSearchService extends AbstractSearchService {
                         .courseName(coachingCourseSearch.getCourseName())
                         .coachingInstituteId(coachingCourseSearch.getCoachingInstituteId())
                         .coachingInstituteName(coachingCourseSearch.getCoachingInstituteName())
-                        .courseType(coachingCourseSearch.getCourseType())
                         .price(coachingCourseSearch.getPrice())
                         .currency(coachingCourseSearch.getCurrency())
-                        .courseLevel(coachingCourseSearch.getCourseLevel())
+                        .eligibility(coachingCourseSearch.getEligibility())
+                        .courseDurationDays(coachingCourseSearch.getCourseDurationDays())
                         .urlDisplayKey(CommonUtil
                                 .convertNameToUrlDisplayName(coachingCourseSearch.getCourseName()))
+                        .logo(ImageUtils.getImageWithAbsolutePath(coachingCourseSearch.getLogo(),
+                                COACHING_COURSE_PLACEHOLDER, COACHING_COURSES))
                         .build();
 
-                if (!StringUtils.isBlank(coachingCourseSearch.getLogo())) {
-                    toAdd.setLogo(CommonUtil.getAbsoluteUrl(coachingCourseSearch.getLogo(),
-                            COACHING_COURSES));
-                } else {
-                    toAdd.setLogo(CommonUtil.getAbsoluteUrl(COACHING_COURSE_PLACEHOLDER,
-                            COACHING_COURSES));
+                if (Objects.nonNull(coachingCourseSearch.getCourseLevel())) {
+                    toAdd.setCourseLevel(coachingCourseSearch.getCourseLevel().getDisplayName());
+                }
+
+                if (Objects.nonNull(coachingCourseSearch.getCourseType())) {
+                    toAdd.setCourseType(coachingCourseSearch.getCourseType().getText());
                 }
 
                 courseDataList.add(toAdd);

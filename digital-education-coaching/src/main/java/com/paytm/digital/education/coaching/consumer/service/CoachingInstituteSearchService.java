@@ -7,6 +7,7 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.Searc
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResult;
 import com.paytm.digital.education.coaching.consumer.service.helper.CoachingSearchAggregateHelper;
 import com.paytm.digital.education.coaching.es.model.CoachingInstituteSearch;
+import com.paytm.digital.education.coaching.utils.ImageUtils;
 import com.paytm.digital.education.coaching.utils.SearchUtils;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
@@ -120,15 +121,9 @@ public class CoachingInstituteSearchService extends AbstractSearchService {
                         .urlDisplayKey(CommonUtil.convertNameToUrlDisplayName(
                                 coachingInstituteSearch.getBrandName()))
                         .brandName(coachingInstituteSearch.getBrandName())
+                        .logo(ImageUtils.getImageWithAbsolutePath(coachingInstituteSearch.getLogo(),
+                                INSTITUTE_PLACEHOLDER, TOP_COACHING_INSTITUTES_LOGO))
                         .build();
-
-                if (!StringUtils.isBlank(coachingInstituteSearch.getLogo())) {
-                    toAdd.setLogo(CommonUtil.getAbsoluteUrl(coachingInstituteSearch.getLogo(),
-                            TOP_COACHING_INSTITUTES_LOGO));
-                } else {
-                    toAdd.setLogo(CommonUtil.getAbsoluteUrl(INSTITUTE_PLACEHOLDER,
-                            TOP_COACHING_INSTITUTES_LOGO));
-                }
 
                 instituteDataList.add(toAdd);
             }

@@ -9,6 +9,7 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.Searc
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResult;
 import com.paytm.digital.education.coaching.consumer.service.helper.CoachingSearchAggregateHelper;
 import com.paytm.digital.education.coaching.es.model.ExamSearch;
+import com.paytm.digital.education.coaching.utils.ImageUtils;
 import com.paytm.digital.education.coaching.utils.SearchUtils;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
@@ -183,13 +184,9 @@ public class ExamSearchService extends AbstractSearchService {
                     examData.setExamShortName(examSearch.getExamShortName());
                     examData.setUrlDisplayKey(
                             CommonUtil.convertNameToUrlDisplayName(examSearch.getOfficialName()));
-                    if (!StringUtils.isBlank(examSearch.getImageLink())) {
-                        examData.setLogoUrl(CommonUtil.getAbsoluteUrl(examSearch.getImageLink(),
-                                COACHING_TOP_EXAMS));
-                    } else {
-                        examData.setLogoUrl(CommonUtil.getAbsoluteUrl(EXAM_PLACEHOLDER,
-                                COACHING_TOP_EXAMS));
-                    }
+                    examData.setLogoUrl(ImageUtils
+                            .getImageWithAbsolutePath(examSearch.getImageLink(), EXAM_PLACEHOLDER,
+                                    COACHING_TOP_EXAMS));
                     List<String> dataAvailable = new ArrayList<>();
                     if (!CollectionUtils.isEmpty(examSearch.getDataAvailable())) {
                         dataAvailable.addAll(examSearch.getDataAvailable());

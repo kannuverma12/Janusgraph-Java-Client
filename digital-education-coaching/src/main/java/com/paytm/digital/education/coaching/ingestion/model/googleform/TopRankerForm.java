@@ -31,6 +31,10 @@ public class TopRankerForm {
     @GoogleSheetColumnName("Exam Id")
     private Long examId;
 
+    @JsonProperty("stream_ids")
+    @GoogleSheetColumnName("Stream Ids")
+    private String streamIds;
+
     @JsonProperty("student_name")
     @GoogleSheetColumnName("Student Name")
     private String studentName;

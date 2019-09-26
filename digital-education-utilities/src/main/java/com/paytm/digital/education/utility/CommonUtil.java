@@ -17,6 +17,7 @@ import static com.paytm.digital.education.constant.CommonConstants.COACHING_BANN
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_CENTER;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_COURSES;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_COURSE_FEATURE;
+import static com.paytm.digital.education.constant.CommonConstants.COACHING_INSTITUTE_HIGHLIGHT_LOGO;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_STREAMS;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_EXAMS;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_RANKER;
@@ -120,6 +121,12 @@ public class CommonUtil {
                         .append("/")
                         .append(ConfigProperties.getEnvProfile())
                         .append(ConfigProperties.getCoachingCenterImagePrefix());
+                break;
+            case COACHING_INSTITUTE_HIGHLIGHT_LOGO:
+                urlBuilder.append(ConfigProperties.getCoachingS3Path())
+                        .append(("/"))
+                        .append(ConfigProperties.getEnvProfile())
+                        .append(ConfigProperties.getCoachingInstituteHighlightLogoPrefix());
                 break;
             default:
                 urlBuilder.append(ConfigProperties.getLogoImagePrefix());

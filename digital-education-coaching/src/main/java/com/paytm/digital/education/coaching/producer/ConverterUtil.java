@@ -130,6 +130,7 @@ public class ConverterUtil {
         topRankerEntity.setBatch(request.getBatchInfo());
         topRankerEntity.setCourseIds(request.getCourseStudied());
         topRankerEntity.setExamId(request.getExamId());
+        topRankerEntity.setStreamIds(request.getStreamIds());
         topRankerEntity.setExamYear(request.getExamYear());
         topRankerEntity.setRankObtained(request.getRankObtained());
         topRankerEntity.setStudentName(request.getStudentName());

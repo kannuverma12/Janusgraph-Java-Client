@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class InstituteHighLight {
+public class InstituteHighlight {
 
     private String key;
     private String value;

@@ -26,9 +26,11 @@ public class CoachingInstituteController {
 
     @GetMapping(value = GET_COACHING_INSTITUTE_DETAILS)
     public GetCoachingInstituteDetailsResponse getCoachingInstituteDetails(
-            @RequestParam(value = "instituteId") @NotNull final Long instituteId,
-            @RequestParam(value = "url_display_key") final @NotEmpty String urlDisplayKey) {
+            @RequestParam(value = "institute_id") @NotNull final Long instituteId,
+            @RequestParam(value = "url_display_key") @NotEmpty final String urlDisplayKey,
+            @RequestParam(value = "stream_id", required = false) final Long streamId,
+            @RequestParam(value = "exam_id", required = false) final Long examId) {
         return coachingInstituteConsumerService
-                .getCoachingInstituteDetails(instituteId, urlDisplayKey);
+                .getCoachingInstituteDetails(instituteId, urlDisplayKey, streamId, examId);
     }
 }

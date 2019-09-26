@@ -5,8 +5,9 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.paytm.digital.education.coaching.consumer.model.dto.Exam;
 import com.paytm.digital.education.coaching.consumer.model.dto.Faq;
-import com.paytm.digital.education.coaching.consumer.model.dto.InstituteHighLight;
+import com.paytm.digital.education.coaching.consumer.model.dto.InstituteHighlight;
 import com.paytm.digital.education.coaching.consumer.model.dto.Stream;
+import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingCourses;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopRanker;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,12 +23,14 @@ public class GetCoachingInstituteDetailsResponse {
     private long                             instituteId;
     private String                           instituteName;
     private String                           imageUrl;
+    private String                           logo;
     private String                           description;
-    private List<InstituteHighLight>         instituteHighlights;
+    private List<InstituteHighlight>         instituteHighlights;
     private List<Stream>                     streams;
     private List<Exam>                       exams;
     private List<TopRanker>                  topRankers;
     private List<Faq>                        faqs;
     private List<CoachingCourseTypeResponse> coachingCourseTypes;
+    private TopCoachingCourses               topCoachingCourses;
     private List<String>                     sections;
 }

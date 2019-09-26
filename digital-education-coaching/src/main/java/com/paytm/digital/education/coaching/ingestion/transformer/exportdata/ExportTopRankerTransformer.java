@@ -25,6 +25,8 @@ public class ExportTopRankerTransformer {
                         .instituteId(entity.getInstituteId())
                         .centerId(entity.getCenterId())
                         .examId(entity.getExamId())
+                        .streamIds(entity.getStreamIds() == null
+                                ? EMPTY_STRING : StringUtils.join(entity.getStreamIds(), ","))
                         .studentName(entity.getStudentName())
                         .studentPhoto(CommonUtil.getAbsoluteUrl(entity.getStudentPhoto(),
                                 COACHING_TOP_RANKER))

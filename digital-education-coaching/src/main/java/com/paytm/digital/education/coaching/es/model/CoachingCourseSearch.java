@@ -34,4 +34,8 @@ public class CoachingCourseSearch {
     private Map<String, Map<String, Long>> exams;
     private List<Long>                     examIds;
     private List<String>                   examNames;
+    private String                         eligibility;
+    private Double                         courseDurationDays;
+    private String                         merchantProductId;
+    private Long                           paytmProductId;
 }

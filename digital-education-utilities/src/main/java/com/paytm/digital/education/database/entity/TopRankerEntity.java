@@ -33,6 +33,9 @@ public class TopRankerEntity extends Base {
     @Field("exam_id")
     private Long examId;
 
+    @Field("stream_ids")
+    private List<Long> streamIds;
+
     @Field("student_name")
     private String studentName;
 

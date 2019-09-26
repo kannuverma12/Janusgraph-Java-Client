@@ -15,6 +15,7 @@ public class ImportTopRankerTransformer {
                 .instituteId(form.getInstituteId())
                 .centerId(form.getCenterId())
                 .examId(form.getExamId())
+                .streamIds(ImportCommonTransformer.convertStringToListOfLong(form.getStreamIds()))
                 .studentName(form.getStudentName())
                 .studentPhoto(form.getStudentPhoto())
                 .courseStudied(ImportCommonTransformer.convertStringToListOfLong(

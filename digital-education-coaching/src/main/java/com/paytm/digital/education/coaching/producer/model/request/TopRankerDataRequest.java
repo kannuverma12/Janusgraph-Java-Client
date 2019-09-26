@@ -50,6 +50,12 @@ public class TopRankerDataRequest {
     private Long examId;
 
     @NotEmpty
+    @UniqueElements
+    @PositiveElementsCollection
+    @ApiModelProperty(value = "stream ids of the exam given")
+    private List<Long> streamIds;
+
+    @NotEmpty
     @Size(max = 30)
     @Pattern(regexp = "^[a-zA-Z]+[a-zA-Z ]*$")
     @ApiModelProperty(value = "name of student")

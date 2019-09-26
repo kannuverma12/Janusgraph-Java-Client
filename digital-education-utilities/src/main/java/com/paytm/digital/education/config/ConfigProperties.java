@@ -32,6 +32,7 @@ public class ConfigProperties {
     private static String coachingCourseFeatureLogoPrefix;
     private static String coachingTopRankerImagePrefix;
     private static String coachingCenterImagePrefix;
+    private static String coachingInstituteHighlightLogoPrefix;
 
     public static String getEnvProfile() {
         return envProfile;
@@ -75,6 +76,11 @@ public class ConfigProperties {
     @Value("${coaching.topranker.image.prefix}")
     public void setCoachingTopRankerImagePrefix(String imagePrefix) {
         coachingTopRankerImagePrefix = imagePrefix;
+    }
+
+    @Value(("${coaching.institute.highlightlogo.prefix}"))
+    public void setCoachingInstituteHighlightLogoPrefix(String logoPrefix) {
+        coachingInstituteHighlightLogoPrefix = logoPrefix;
     }
 
     @Value("${education.asset.baseurl}")
@@ -238,5 +244,9 @@ public class ConfigProperties {
 
     public static String getCoachingCenterImagePrefix() {
         return coachingCenterImagePrefix;
+    }
+
+    public static String getCoachingInstituteHighlightLogoPrefix() {
+        return coachingInstituteHighlightLogoPrefix;
     }
 }

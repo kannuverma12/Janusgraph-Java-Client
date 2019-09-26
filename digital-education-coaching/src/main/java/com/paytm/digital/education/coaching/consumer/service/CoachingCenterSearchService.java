@@ -9,6 +9,7 @@ import com.paytm.digital.education.coaching.consumer.service.helper.CoachingSear
 import com.paytm.digital.education.coaching.es.model.CoachingCenterSearch;
 import com.paytm.digital.education.coaching.es.model.CoachingInstituteSearch;
 import com.paytm.digital.education.coaching.es.model.GeoLocation;
+import com.paytm.digital.education.coaching.utils.ImageUtils;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
@@ -31,6 +32,7 @@ import java.util.Map;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_CENTER_CITY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_CENTER_LOCATION;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_CENTER_PLACEHOLDER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_CENTER_STATE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DISTANCE_KILOMETERS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_ID;
@@ -38,6 +40,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.S
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_CENTER_NAME_BRAND_BOOST;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.SEARCH_ANALYZER_COACHING_CENTER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.SEARCH_INDEX_COACHING_CENTER;
+import static com.paytm.digital.education.constant.CommonConstants.COACHING_CENTER;
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.TERMS;
 
 @Slf4j
@@ -137,7 +140,9 @@ public class CoachingCenterSearchService extends AbstractSearchService {
                 .centerId(coachingCenterSearch.getCenterId())
                 .instituteId(coachingCenterSearch.getInstituteId())
                 .officialName(coachingCenterSearch.getOfficialName())
-                .centerImage(coachingCenterSearch.getCenterImage())
+                .centerImage(ImageUtils
+                        .getImageWithAbsolutePath(coachingCenterSearch.getCenterImage(),
+                                COACHING_CENTER_PLACEHOLDER, COACHING_CENTER))
                 .openingTime(coachingCenterSearch.getOpeningTime())
                 .closingTime(coachingCenterSearch.getClosingTime())
                 .addressLine1(coachingCenterSearch.getAddressLine1())
