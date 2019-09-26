@@ -73,14 +73,9 @@ public class CommonMongoRepository {
             Class<T> instance, List<String> fields, Map<Sort.Direction, String> sortMap) {
         Query mongoQuery = new Query(Criteria.where(key).in(entityIds));
 
-        if (!CollectionUtils.isEmpty(sortMap)) {
-            for (Map.Entry<Sort.Direction, String> entry : sortMap.entrySet()) {
-                mongoQuery.with(new Sort(entry.getKey(), (String) entry.getValue()));
-            }
-        }
-
-        fields.forEach(field -> mongoQuery.fields().include(field));
-        return executeMongoQuery(mongoQuery, instance);
+        Query mongoQueryWithSortParams = this.addSortParamsToQuery(mongoQuery, sortMap);
+        fields.forEach(field -> mongoQueryWithSortParams.fields().include(field));
+        return executeMongoQuery(mongoQueryWithSortParams, instance);
     }
 
     @Cacheable(value = "fields", unless = "#result == null")
@@ -279,19 +274,16 @@ public class CommonMongoRepository {
     private Query createMongoSortQuery(Map<String, Object> searchRequest, List<String> fields,
             Map<Sort.Direction, String> sortMap) {
         Query mongoQuery = this.createMongoQuery(searchRequest, fields);
-
-        if (!CollectionUtils.isEmpty(sortMap)) {
-            for (Map.Entry<Sort.Direction, String> entry : sortMap.entrySet()) {
-                mongoQuery.with(new Sort(entry.getKey(), (String) entry.getValue()));
-            }
-        }
-        return mongoQuery;
+        return this.addSortParamsToQuery(mongoQuery, sortMap);
     }
 
     private Query createOrMongoSortQuery(Map<String, Object> searchRequest, List<String> fields,
             Map<Sort.Direction, String> sortMap) {
         Query mongoQuery = this.createOrMongoQuery(searchRequest, fields);
+        return this.addSortParamsToQuery(mongoQuery, sortMap);
+    }
 
+    private Query addSortParamsToQuery(Query mongoQuery, Map<Sort.Direction, String> sortMap) {
         if (!CollectionUtils.isEmpty(sortMap)) {
             for (Map.Entry<Sort.Direction, String> entry : sortMap.entrySet()) {
                 mongoQuery.with(new Sort(entry.getKey(), (String) entry.getValue()));
