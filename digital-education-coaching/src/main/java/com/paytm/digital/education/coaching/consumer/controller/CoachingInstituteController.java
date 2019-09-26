@@ -1,7 +1,7 @@
 package com.paytm.digital.education.coaching.consumer.controller;
 
 import com.paytm.digital.education.coaching.consumer.model.response.GetCoachingInstituteDetailsResponse;
-import com.paytm.digital.education.coaching.consumer.service.CoachingInstituteConsumerService;
+import com.paytm.digital.education.coaching.consumer.service.details.CoachingInstituteService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +22,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.U
 public class CoachingInstituteController {
 
     @Autowired
-    private CoachingInstituteConsumerService coachingInstituteConsumerService;
+    private CoachingInstituteService coachingInstituteService;
 
     @GetMapping(value = GET_COACHING_INSTITUTE_DETAILS)
     public GetCoachingInstituteDetailsResponse getCoachingInstituteDetails(
@@ -30,7 +30,7 @@ public class CoachingInstituteController {
             @RequestParam(value = "url_display_key") @NotEmpty final String urlDisplayKey,
             @RequestParam(value = "stream_id", required = false) final Long streamId,
             @RequestParam(value = "exam_id", required = false) final Long examId) {
-        return coachingInstituteConsumerService
+        return coachingInstituteService
                 .getCoachingInstituteDetails(instituteId, urlDisplayKey, streamId, examId);
     }
 }

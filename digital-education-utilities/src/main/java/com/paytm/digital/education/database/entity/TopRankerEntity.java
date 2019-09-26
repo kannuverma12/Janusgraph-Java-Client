@@ -45,9 +45,6 @@ public class TopRankerEntity extends Base {
     @Field("course_ids")
     private List<Long> courseIds;
 
-    @Field("year")
-    private String year;
-
     @Field("batch")
     private String batch;
 

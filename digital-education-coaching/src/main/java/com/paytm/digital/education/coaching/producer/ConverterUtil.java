@@ -136,7 +136,6 @@ public class ConverterUtil {
         topRankerEntity.setStudentName(request.getStudentName());
         topRankerEntity.setStudentPhoto(request.getStudentPhoto());
         topRankerEntity.setTestimonial(request.getTestimonial());
-        topRankerEntity.setYear(request.getExamYear());
         topRankerEntity.setStudentCategory(request.getStudentCategory());
         topRankerEntity.setCollegeAdmitted(request.getCollegeAdmitted());
 

@@ -1,6 +1,6 @@
 package com.paytm.digital.education.coaching.consumer.controller;
 
-import com.paytm.digital.education.coaching.consumer.service.LandingPageService;
+import com.paytm.digital.education.coaching.consumer.service.details.LandingPageService;
 import com.paytm.digital.education.database.entity.Section;
 import com.paytm.digital.education.service.PageService;
 import lombok.AllArgsConstructor;

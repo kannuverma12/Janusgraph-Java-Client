@@ -1,4 +1,4 @@
-package com.paytm.digital.education.coaching.consumer.service;
+package com.paytm.digital.education.coaching.consumer.service.details;
 
 import com.paytm.digital.education.coaching.consumer.model.dto.ExamAdditionalInfo;
 import com.paytm.digital.education.coaching.consumer.model.dto.ImportantDatesBannerDetails;
@@ -48,11 +48,11 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
 @AllArgsConstructor
 public class ExamService {
 
-    private final CommonMongoRepository            commonMongoRepository;
-    private final CoachingCourseService            coachingCourseService;
-    private final CoachingInstituteConsumerService coachingInstituteService;
-    private final SearchDataHelper                 searchDataHelper;
-    private final PropertyReader                   propertyReader;
+    private final CommonMongoRepository    commonMongoRepository;
+    private final CoachingCourseService    coachingCourseService;
+    private final CoachingInstituteService coachingInstituteService;
+    private final SearchDataHelper         searchDataHelper;
+    private final PropertyReader           propertyReader;
 
     public GetExamDetailsResponse getExamDetails(final Long examId, final String urlDisplayKey) {
         Exam exam = this.commonMongoRepository.getEntityByFields(

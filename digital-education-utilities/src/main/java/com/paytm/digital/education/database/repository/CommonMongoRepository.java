@@ -5,6 +5,7 @@ import com.paytm.digital.education.database.entity.FtlTemplate;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
@@ -64,6 +65,21 @@ public class CommonMongoRepository {
         fields.forEach(field -> {
             mongoQuery.fields().include(field);
         });
+        return executeMongoQuery(mongoQuery, instance);
+    }
+
+    @Cacheable(value = "fields", unless = "#result == null")
+    public <T> List<T> getEntityFieldsByValuesInAndSortBy(String key, List<Long> entityIds,
+            Class<T> instance, List<String> fields, Map<Sort.Direction, String> sortMap) {
+        Query mongoQuery = new Query(Criteria.where(key).in(entityIds));
+
+        if (!CollectionUtils.isEmpty(sortMap)) {
+            for (Map.Entry<Sort.Direction, String> entry : sortMap.entrySet()) {
+                mongoQuery.with(new Sort(entry.getKey(), (String) entry.getValue()));
+            }
+        }
+
+        fields.forEach(field -> mongoQuery.fields().include(field));
         return executeMongoQuery(mongoQuery, instance);
     }
 

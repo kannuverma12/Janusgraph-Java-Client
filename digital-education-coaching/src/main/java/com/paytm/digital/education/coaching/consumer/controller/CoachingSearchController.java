@@ -2,7 +2,7 @@ package com.paytm.digital.education.coaching.consumer.controller;
 
 import com.paytm.digital.education.coaching.consumer.model.request.SearchRequest;
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResponse;
-import com.paytm.digital.education.coaching.consumer.service.SearchService;
+import com.paytm.digital.education.coaching.consumer.service.search.SearchService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;

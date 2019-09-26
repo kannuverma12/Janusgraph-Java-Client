@@ -1,4 +1,4 @@
-package com.paytm.digital.education.coaching.consumer.service;
+package com.paytm.digital.education.coaching.consumer.service.details;
 
 import com.paytm.digital.education.coaching.consumer.model.dto.CoachingCourseFeature;
 import com.paytm.digital.education.coaching.consumer.model.dto.Exam;
@@ -18,6 +18,7 @@ import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.utility.CommonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -80,7 +81,7 @@ public class CoachingCourseService {
     private static final List<String> TOP_RANKER_FIELDS =
             Arrays.asList("top_ranker_id", "institute_id", "center_id", "course_ids",
                     "exam_id", "exam_name", "student_name", "student_photo",
-                    "rank_obtained", "exam_year", "testimonial");
+                    "rank_obtained", "exam_year", "testimonial", "priority");
 
     private static final List<String> INSTITUTE_FIELDS =
             Arrays.asList("institute_id", "brand_name", "logo");
@@ -257,20 +258,26 @@ public class CoachingCourseService {
                 CoachingCourseService.EXAM_FIELDS);
     }
 
-    private List<TopRankerEntity> fetchTopRankers(final long courseId,
-            Long instituteId) {
-        List<TopRankerEntity> topRankerEntityList = this.commonMongoRepository
-                .getEntityFieldsByValuesIn(COACHING_COURSE_IDS,
-                        Collections.singletonList(courseId), TopRankerEntity.class,
-                        CoachingCourseService.TOP_RANKER_FIELDS);
-        if (CollectionUtils.isEmpty(topRankerEntityList)) {
-            log.error("Got no topRankers for courseId: {}", courseId);
+    private List<TopRankerEntity> fetchTopRankers(final long courseId, final Long instituteId) {
 
-            topRankerEntityList = this.commonMongoRepository.getEntityFieldsByValuesIn(INSTITUTE_ID,
-                    Collections.singletonList(instituteId), TopRankerEntity.class,
-                    CoachingCourseService.TOP_RANKER_FIELDS);
+        final Map<Sort.Direction, String> sortMap = new HashMap<>();
+        sortMap.put(Sort.Direction.ASC, "priority");
+        sortMap.put(Sort.Direction.DESC, "exam_year");
+
+        List<TopRankerEntity> topRankerEntityList = this.commonMongoRepository
+                .getEntityFieldsByValuesInAndSortBy(COACHING_COURSE_IDS,
+                        Collections.singletonList(courseId), TopRankerEntity.class,
+                        TOP_RANKER_FIELDS, sortMap);
+
+        if (CollectionUtils.isEmpty(topRankerEntityList)) {
+            log.warn("Got no topRankers for courseId: {}", courseId);
+
+            topRankerEntityList = this.commonMongoRepository.getEntityFieldsByValuesInAndSortBy(
+                    INSTITUTE_ID, Collections.singletonList(instituteId), TopRankerEntity.class,
+                    CoachingCourseService.TOP_RANKER_FIELDS, sortMap);
+
             if (CollectionUtils.isEmpty(topRankerEntityList)) {
-                log.error("Got no topRankers for instituteId: {}", instituteId);
+                log.warn("Got no topRankers for instituteId: {}", instituteId);
                 return new ArrayList<>();
             }
         }
@@ -313,7 +320,7 @@ public class CoachingCourseService {
                 .build();
     }
 
-    List<CoachingCourseData> getTopCoachingCoursesForExamId(Long examId) {
+    public List<CoachingCourseData> getTopCoachingCoursesForExamId(Long examId) {
         Map<String, List<Object>> filter = new HashMap<>();
         filter.put(EXAM_IDS, Collections.singletonList(examId));
 
@@ -321,7 +328,7 @@ public class CoachingCourseService {
                 .getTopSearchData(filter, EducationEntity.COACHING_COURSE, null);
     }
 
-    List<CoachingCourseData> getTopCoachingCoursesForStreamId(Long streamId) {
+    public List<CoachingCourseData> getTopCoachingCoursesForStreamId(Long streamId) {
         Map<String, List<Object>> filter = new HashMap<>();
         filter.put(STREAM_IDS, Collections.singletonList(streamId));
 

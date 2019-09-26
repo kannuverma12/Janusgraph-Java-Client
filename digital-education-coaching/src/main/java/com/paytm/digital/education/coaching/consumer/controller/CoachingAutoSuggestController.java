@@ -1,7 +1,7 @@
 package com.paytm.digital.education.coaching.consumer.controller;
 
 import com.paytm.digital.education.coaching.consumer.model.response.suggest.AutoSuggestResponse;
-import com.paytm.digital.education.coaching.consumer.service.CoachingAutoSuggestService;
+import com.paytm.digital.education.coaching.consumer.service.search.CoachingAutoSuggestService;
 import com.paytm.digital.education.enums.EducationEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.validation.annotation.Validated;

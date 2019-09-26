@@ -1,7 +1,7 @@
 package com.paytm.digital.education.coaching.consumer.controller;
 
 import com.paytm.digital.education.coaching.consumer.model.response.GetCoachingCourseDetailsResponse;
-import com.paytm.digital.education.coaching.consumer.service.CoachingCourseService;
+import com.paytm.digital.education.coaching.consumer.service.details.CoachingCourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

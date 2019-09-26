@@ -1,4 +1,4 @@
-package com.paytm.digital.education.coaching.consumer.service;
+package com.paytm.digital.education.coaching.consumer.service.details;
 
 import com.paytm.digital.education.coaching.consumer.model.dto.ImportantDatesBannerDetails;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingCourses;
@@ -42,11 +42,11 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_STREAM_NAME;
 @AllArgsConstructor
 public class CoachingStreamService {
 
-    private final CommonMongoRepository            commonMongoRepository;
-    private final CoachingCourseService            coachingCourseService;
-    private final CoachingInstituteConsumerService coachingInstituteService;
-    private final ExamService                      examService;
-    private final PropertyReader                   propertyReader;
+    private final CommonMongoRepository    commonMongoRepository;
+    private final CoachingCourseService    coachingCourseService;
+    private final CoachingInstituteService coachingInstituteService;
+    private final ExamService              examService;
+    private final PropertyReader           propertyReader;
 
     public GetStreamDetailsResponse getStreamDetails(final long streamId,
             final String urlDisplayKey) {

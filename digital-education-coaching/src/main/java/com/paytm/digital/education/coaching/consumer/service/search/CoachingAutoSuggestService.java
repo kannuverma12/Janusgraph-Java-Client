@@ -1,4 +1,4 @@
-package com.paytm.digital.education.coaching.consumer.service;
+package com.paytm.digital.education.coaching.consumer.service.search;
 
 import com.paytm.digital.education.coaching.consumer.model.response.suggest.AutoSuggestData;
 import com.paytm.digital.education.coaching.consumer.model.response.suggest.AutoSuggestResponse;

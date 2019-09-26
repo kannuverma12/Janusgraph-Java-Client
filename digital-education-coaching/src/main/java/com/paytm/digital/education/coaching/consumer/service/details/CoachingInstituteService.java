@@ -1,4 +1,4 @@
-package com.paytm.digital.education.coaching.consumer.service;
+package com.paytm.digital.education.coaching.consumer.service.details;
 
 import com.paytm.digital.education.coaching.consumer.model.dto.Exam;
 import com.paytm.digital.education.coaching.consumer.model.dto.Faq;
@@ -24,13 +24,11 @@ import com.paytm.digital.education.enums.CourseType;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.property.reader.PropertyReader;
-import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.utility.CommonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,20 +65,23 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_NA
 @Slf4j
 @Service
 @AllArgsConstructor
-public class CoachingInstituteConsumerService {
+public class CoachingInstituteService {
 
-    private static final List<String>          COACHING_INSTITUTE_FIELDS =
+    private static final List<String> COACHING_INSTITUTE_FIELDS =
             Arrays.asList("institute_id", "brand_name", "cover_image", "about_institute",
                     "key_highlights", "streams", "exams", "course_types", "faqs",
                     "more_info1", "more_info2", "more_info3", "more_info4", "logo");
-    private static final List<String>          EXAM_FIELDS               =
+
+    private static final List<String> EXAM_FIELDS =
             Arrays.asList("exam_id", "exam_full_name", "exam_short_name", "logo");
-    private static final List<String>          STREAM_FIELDS             =
+
+    private static final List<String> STREAM_FIELDS =
             Arrays.asList("stream_id", "name", "logo");
-    private final        CommonMongoRepository commonMongoRepository;
-    private final        TopRankerRepository   topRankerRepository;
-    private final        SearchDataHelper      searchDataHelper;
-    private final        PropertyReader        propertyReader;
+
+    private final CommonMongoRepository commonMongoRepository;
+    private final TopRankerRepository   topRankerRepository;
+    private final SearchDataHelper      searchDataHelper;
+    private final PropertyReader        propertyReader;
 
     public GetCoachingInstituteDetailsResponse getCoachingInstituteDetails(long instituteId,
             String urlDisplayKey, Long streamId, Long examId) {
@@ -184,7 +185,7 @@ public class CoachingInstituteConsumerService {
         List<com.paytm.digital.education.database.entity.Exam> examEntityList =
                 commonMongoRepository.getEntityFieldsByValuesIn(EXAM_ID, examIds,
                         com.paytm.digital.education.database.entity.Exam.class,
-                        CoachingInstituteConsumerService.EXAM_FIELDS);
+                        CoachingInstituteService.EXAM_FIELDS);
         return CoachingInstituteTransformer.convertExamEntityToDto(examList, examEntityList);
     }
 
@@ -195,7 +196,7 @@ public class CoachingInstituteConsumerService {
         }
         List<com.paytm.digital.education.database.entity.StreamEntity> streamEntityList =
                 commonMongoRepository.getEntityFieldsByValuesIn(STREAM_ID, streamIds,
-                        StreamEntity.class, CoachingInstituteConsumerService.STREAM_FIELDS);
+                        StreamEntity.class, CoachingInstituteService.STREAM_FIELDS);
         return CoachingInstituteTransformer
                 .convertStreamEntityToStreamDto(streamList, streamEntityList);
     }
@@ -207,11 +208,11 @@ public class CoachingInstituteConsumerService {
         List<TopRankerEntity> topRankerEntityList;
 
         if (Objects.nonNull(examId)) {
-            topRankerEntityList =
-                    topRankerRepository.findByInstituteIdAndExamId(instituteId, examId);
+            topRankerEntityList = topRankerRepository.findByInstituteIdAndExamId(
+                    instituteId, examId);
         } else if (Objects.nonNull(streamId)) {
-            topRankerEntityList =
-                    topRankerRepository.findByInstituteIdAndStreamIds(instituteId, streamId);
+            topRankerEntityList = topRankerRepository.findByInstituteIdAndStreamIds(
+                    instituteId, streamId);
         } else {
             topRankerEntityList = topRankerRepository.findByInstituteId(instituteId);
         }
@@ -282,7 +283,7 @@ public class CoachingInstituteConsumerService {
         return coachingCourseIdsAndNameMap;
     }
 
-    List<CoachingInstituteData> getTopCoachingInstitutesByExamId(Long examId) {
+    public List<CoachingInstituteData> getTopCoachingInstitutesByExamId(Long examId) {
         Map<String, List<Object>> filter = new HashMap<>();
         filter.put(EXAM_IDS, Arrays.asList(examId));
 
@@ -293,7 +294,7 @@ public class CoachingInstituteConsumerService {
                 .getTopSearchData(filter, EducationEntity.COACHING_INSTITUTE, sortOrder);
     }
 
-    List<CoachingInstituteData> getTopCoachingInstitutesByStreamId(Long streamId) {
+    public List<CoachingInstituteData> getTopCoachingInstitutesByStreamId(Long streamId) {
         Map<String, List<Object>> filter = new HashMap<>();
         filter.put(STREAM_IDS, Collections.singletonList(streamId));
 

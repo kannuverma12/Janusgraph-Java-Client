@@ -1,4 +1,4 @@
-package com.paytm.digital.education.coaching.consumer.service;
+package com.paytm.digital.education.coaching.consumer.service.details;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.paytm.digital.education.coaching.consumer.model.request.SearchRequest;
@@ -9,6 +9,8 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.ExamD
 import com.paytm.digital.education.coaching.consumer.model.response.search.ExamsTopHitsData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResponse;
 import com.paytm.digital.education.coaching.consumer.service.helper.SearchDataHelper;
+import com.paytm.digital.education.coaching.consumer.service.search.CoachingCourseSearchService;
+import com.paytm.digital.education.coaching.consumer.service.search.ExamSearchService;
 import com.paytm.digital.education.database.entity.Section;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.enums.EducationEntity;
@@ -49,8 +51,8 @@ import static com.paytm.digital.education.enums.EducationEntity.EXAM;
 @Slf4j
 public class LandingPageService {
 
-    private SearchDataHelper  searchDataHelper;
-    private ExamSearchService examSearchService;
+    private SearchDataHelper            searchDataHelper;
+    private ExamSearchService           examSearchService;
     private CoachingCourseSearchService courseSearchService;
 
     public void addDynamicData(List<Section> sections) {
@@ -130,7 +132,8 @@ public class LandingPageService {
         if (!CollectionUtils.isEmpty(courses)) {
             for (CoachingCourseData course : courses) {
                 final Map<String, Object> courseDataMap = JsonUtils.convertValue(course,
-                        new TypeReference<Map<String, Object>>() {});
+                        new TypeReference<Map<String, Object>>() {
+                        });
 
                 itemList.add(courseDataMap);
             }
@@ -195,7 +198,8 @@ public class LandingPageService {
         return exams;
     }
 
-    private List<CoachingCourseData> fetchTopCoursesPerStreamFromSearchResponse(SearchResponse searchResponse,
+    private List<CoachingCourseData> fetchTopCoursesPerStreamFromSearchResponse(
+            SearchResponse searchResponse,
             List<Section> sections) {
         Map<String, List<CoachingCourseData>> coursesPerStream =
                 ((CoachingCoursesTopHitsData) searchResponse.getResults().getValues().get(0))
