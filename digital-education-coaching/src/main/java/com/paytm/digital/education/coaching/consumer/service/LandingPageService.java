@@ -64,6 +64,7 @@ public class LandingPageService {
                     break;
                 case COACHING_TOP_COURSES:
                     addTopCourses(section, sections);
+                    break;
                 default:
             }
         }
