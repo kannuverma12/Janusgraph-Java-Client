@@ -1,6 +1,6 @@
 var database_name = "digital_education";
 var school_collection = "school";
-var target_collection = "education_search_school_v1";
+var target_collection = "education_search_school_v2";
 var target_doc_type = "education";
 var MAX_SAFE_INTEGER = 9007199254740991;
 

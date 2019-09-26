@@ -175,6 +175,12 @@ public class ExamDetail implements CTAInfoHolder {
         return false;
     }
 
+    @JsonIgnore
+    @Override
+    public boolean hasShortListFeature() {
+        return false;
+    }
+
     @Override
     public Long getCollegePredictorPid() {
         return collegePredictorPid;
