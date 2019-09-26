@@ -206,20 +206,20 @@ public class CoachingCourseSearchService extends AbstractSearchService {
                 .courseName(coachingCourseSearch.getCourseName())
                 .coachingInstituteId(coachingCourseSearch.getCoachingInstituteId())
                 .coachingInstituteName(coachingCourseSearch.getCoachingInstituteName())
-                .courseType(coachingCourseSearch.getCourseType().getText())
                 .price(coachingCourseSearch.getPrice())
                 .currency(coachingCourseSearch.getCurrency())
-                .courseLevel(coachingCourseSearch.getCourseLevel().getDisplayName())
                 .urlDisplayKey(CommonUtil
                         .convertNameToUrlDisplayName(coachingCourseSearch.getCourseName()))
+                .logo(ImageUtils.getImageWithAbsolutePath(coachingCourseSearch.getLogo(),
+                        COACHING_COURSE_PLACEHOLDER, COACHING_COURSES))
                 .build();
 
-        if (!StringUtils.isBlank(coachingCourseSearch.getLogo())) {
-            toAdd.setLogo(CommonUtil.getAbsoluteUrl(coachingCourseSearch.getLogo(),
-                    COACHING_COURSES));
-        } else {
-            toAdd.setLogo(CommonUtil.getAbsoluteUrl(COACHING_COURSE_PLACEHOLDER,
-                    COACHING_COURSES));
+        if (Objects.nonNull(coachingCourseSearch.getCourseLevel())) {
+            toAdd.setCourseLevel(coachingCourseSearch.getCourseLevel().getDisplayName());
+        }
+
+        if (Objects.nonNull(coachingCourseSearch.getCourseType())) {
+            toAdd.setCourseType(coachingCourseSearch.getCourseType().getText());
         }
 
         return toAdd;
