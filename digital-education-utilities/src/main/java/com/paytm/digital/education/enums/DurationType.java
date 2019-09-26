@@ -1,5 +1,7 @@
 package com.paytm.digital.education.enums;
 
+import static com.sun.org.apache.xerces.internal.util.XMLSymbols.EMPTY_STRING;
+
 public enum DurationType {
     YEAR("year"),
     MONTH("month"),

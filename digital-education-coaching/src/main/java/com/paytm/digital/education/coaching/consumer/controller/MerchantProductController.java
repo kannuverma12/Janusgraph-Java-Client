@@ -2,8 +2,8 @@ package com.paytm.digital.education.coaching.consumer.controller;
 
 
 import com.paytm.digital.education.coaching.consumer.model.request.PostMerchantProductsRequest;
-import com.paytm.digital.education.coaching.consumer.model.response.CartDataResponse;
-import com.paytm.digital.education.coaching.consumer.service.MerchantProductsTransformerService;
+import com.paytm.digital.education.coaching.consumer.model.response.transactionalflow.CartDataResponse;
+import com.paytm.digital.education.coaching.consumer.service.transactionalflow.MerchantProductsTransformerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;

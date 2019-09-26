@@ -2,9 +2,9 @@ package com.paytm.digital.education.coaching.consumer.controller;
 
 import com.paytm.digital.education.coaching.consumer.model.request.MerchantNotifyRequest;
 import com.paytm.digital.education.coaching.consumer.model.request.VerifyRequest;
-import com.paytm.digital.education.coaching.consumer.model.response.MerchantNotifyResponse;
-import com.paytm.digital.education.coaching.consumer.model.response.VerifyResponse;
-import com.paytm.digital.education.coaching.consumer.service.PurchaseService;
+import com.paytm.digital.education.coaching.consumer.model.response.transactionalflow.MerchantNotifyResponse;
+import com.paytm.digital.education.coaching.consumer.model.response.transactionalflow.VerifyResponse;
+import com.paytm.digital.education.coaching.consumer.service.transactionalflow.PurchaseService;
 import com.paytm.digital.education.exception.PurchaseException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

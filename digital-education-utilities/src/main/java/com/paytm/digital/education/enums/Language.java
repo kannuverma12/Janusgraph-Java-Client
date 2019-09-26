@@ -1,18 +1,18 @@
 package com.paytm.digital.education.enums;
 
 public enum Language {
-    HINDI("hindi"),
-    ENGLISH("english"),
-    BENGALI("bengali"),
-    TELUGU("telugu"),
-    MARATHI("marathi"),
-    TAMIL("tamil"),
-    URDU("urdu"),
-    KANNADA("kannada"),
-    GUJRATI("gujrati"),
-    ODIA("odia"),
-    MALAYALAM("malayalam"),
-    PUNJABI("punjabi");
+    HINDI("Hindi"),
+    ENGLISH("English"),
+    BENGALI("Bengali"),
+    TELUGU("Telugu"),
+    MARATHI("Marathi"),
+    TAMIL("Tamil"),
+    URDU("Urdu"),
+    KANNADA("Kannada"),
+    GUJRATI("Gujrati"),
+    ODIA("Odia"),
+    MALAYALAM("Malayalam"),
+    PUNJABI("Punjabi");
 
     private String text;
 

@@ -1,11 +1,19 @@
 package com.paytm.digital.education.coaching.consumer.service.details;
 
-import com.paytm.digital.education.coaching.consumer.model.dto.CoachingCourseFeature;
 import com.paytm.digital.education.coaching.consumer.model.dto.Exam;
-import com.paytm.digital.education.coaching.consumer.model.response.GetCoachingCourseDetailsResponse;
+import com.paytm.digital.education.coaching.consumer.model.dto.TopRankers;
+import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseDetails;
+import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseFeature;
+import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseFeatures;
+import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseFee;
+import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseImportantDates;
+import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CourseSyllabusAndBrochure;
+import com.paytm.digital.education.coaching.consumer.model.response.details.GetCoachingCourseDetailsResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingCourseData;
-import com.paytm.digital.education.coaching.consumer.service.helper.SearchDataHelper;
+import com.paytm.digital.education.coaching.consumer.service.search.helper.SearchDataHelper;
 import com.paytm.digital.education.coaching.consumer.transformer.CoachingCourseTransformer;
+import com.paytm.digital.education.coaching.enums.CourseSessionDetails;
+import com.paytm.digital.education.database.embedded.Currency;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
@@ -22,13 +30,16 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import static com.mongodb.QueryOperators.AND;
@@ -294,33 +305,94 @@ public class CoachingCourseService {
             final List<String> sections) {
 
         return GetCoachingCourseDetailsResponse.builder()
-                .coachingInstituteId(course.getCoachingInstituteId())
-                .coachingInstituteName(institute.getBrandName())
                 .courseId(course.getCourseId())
                 .courseName(course.getName())
-                .courseType(course.getCourseType())
                 .courseLogo(CommonUtil.getAbsoluteUrl(institute.getLogo(), COACHING_COURSES))
                 .courseDescription(course.getDescription())
-                .originalPrice(course.getOriginalPrice())
-                .discountedPrice(course.getDiscountedPrice())
-                .discountPercentage(this.calculateDiscountPercentage(course.getOriginalPrice(),
-                        course.getDiscountedPrice()))
+                .coachingInstituteId(course.getCoachingInstituteId())
+                .coachingInstituteName(institute.getBrandName())
                 .targetExam(this.fillTargetExam(examTypeAndExamListMap))
                 .eligibility(course.getEligibility())
-                .duration(course.getDuration() + course.getDurationType().getText())
-                .topRankers(this.coachingCourseTransformer.convertTopRankers(topRankers,
-                        examIdAndNameMap, courseIdAndNameMap))
-                .importantDates(this.coachingCourseTransformer.convertImportantDates(
-                        course.getImportantDates()))
-                .sessionDetails(
-                        this.coachingCourseTransformer.convertSessionDetails(course))
-                .courseFeatures(coachingCourseFeatures)
-                .syllabus(course.getSyllabus())
+                .duration(course.getDuration() + " " + (null == course.getDurationType()
+                        ? EMPTY_STRING : course.getDurationType().getText()))
+                .topRankers(TopRankers.builder()
+                        .header("Top Rankers")
+                        .results(this.coachingCourseTransformer.convertTopRankers(topRankers,
+                                examIdAndNameMap, courseIdAndNameMap))
+                        .build())
+                .importantDates(CoachingCourseImportantDates.builder()
+                        .header("Important Dates")
+                        .results(this.coachingCourseTransformer.convertImportantDates(
+                                course.getImportantDates()))
+                        .build())
+                .courseFeatures(CoachingCourseFeatures.builder()
+                        .header("Features Available")
+                        .results(coachingCourseFeatures)
+                        .build())
+                .coachingCourseDetails(CoachingCourseDetails.builder()
+                        .header("Course Details")
+                        .courseDetailsInfo(this.getCourseDetailsInfo(course))
+                        .courseDetailsMoreInfo(this.getMoreInfoMap(course))
+                        .courseSyllabusAndBrochure(CourseSyllabusAndBrochure.builder()
+                                .header("Download Syllabus & Brochure")
+                                .syllabus(course.getSyllabus())
+                                .build())
+                        .build())
+                .coachingCourseFee(CoachingCourseFee.builder()
+                        .header("Course Fee")
+                        .currency(Currency.INR.name())
+                        .originalPrice(course.getOriginalPrice())
+                        .discountedPrice(course.getDiscountedPrice())
+                        .discountPercentage(this.calculateDiscountPercentage(
+                                course.getOriginalPrice(), course.getDiscountedPrice()))
+                        .build())
                 .sections(sections)
                 .build();
     }
 
-    public List<CoachingCourseData> getTopCoachingCoursesForExamId(Long examId) {
+    private Map<String, String> getCourseDetailsInfo(final CoachingCourseEntity course) {
+
+        final Map<String, String> infoMap = new LinkedHashMap<>();
+        infoMap.put("Course Type", null == course.getCourseType()
+                ? EMPTY_STRING : course.getCourseType().getText());
+        infoMap.put("Language", null == course.getLanguage()
+                ? EMPTY_STRING : course.getLanguage().getText());
+
+        infoMap.put("Provides Certification", this.coachingCourseTransformer.convertBooleanToString(
+                course.getIsCertificateAvailable()));
+        infoMap.put("Doubt Solving Sessions ",
+                this.coachingCourseTransformer.convertBooleanToString(
+                        course.getIsDoubtSolvingForumAvailable()));
+        infoMap.put("Progress Analysis", this.coachingCourseTransformer.convertBooleanToString(
+                course.getIsProgressAnalysisAvailable()));
+        infoMap.put("Rank Analysis", this.coachingCourseTransformer.convertBooleanToString(
+                course.getIsRankAnalysisAvailable()));
+
+        return infoMap;
+    }
+
+    private Map<String, String> getMoreInfoMap(final CoachingCourseEntity course) {
+        final Map<String, String> courseMoreInfoMap = new HashMap<>();
+
+        if (Objects.nonNull(course.getCourseType())) {
+            for (final CourseSessionDetails.Session session : CourseSessionDetails
+                    .getCourseTypeAndSessionsMap().get(course.getCourseType())) {
+
+                Field field = null;
+                try {
+                    field = CoachingCourseEntity.class.getField(session.getDbFieldName());
+                    final String value = ((Integer) field.get(course)).toString();
+                    courseMoreInfoMap.put(session.getDisplayName(), value);
+                } catch (final Exception ex) {
+                    log.error("Got exception, course: {}, field: {}, exception: ",
+                            course, field, ex);
+                }
+            }
+        }
+        return courseMoreInfoMap;
+    }
+
+    List<CoachingCourseData> getTopCoachingCoursesForExamId(Long examId) {
         Map<String, List<Object>> filter = new HashMap<>();
         filter.put(EXAM_IDS, Collections.singletonList(examId));
 
@@ -328,7 +400,7 @@ public class CoachingCourseService {
                 .getTopSearchData(filter, EducationEntity.COACHING_COURSE, null);
     }
 
-    public List<CoachingCourseData> getTopCoachingCoursesForStreamId(Long streamId) {
+    List<CoachingCourseData> getTopCoachingCoursesForStreamId(Long streamId) {
         Map<String, List<Object>> filter = new HashMap<>();
         filter.put(STREAM_IDS, Collections.singletonList(streamId));
 

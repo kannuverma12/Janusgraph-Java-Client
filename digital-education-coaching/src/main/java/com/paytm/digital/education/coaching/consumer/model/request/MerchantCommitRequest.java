@@ -1,8 +1,8 @@
 package com.paytm.digital.education.coaching.consumer.model.request;
 
-import com.paytm.digital.education.coaching.consumer.model.dto.MerchantCommitOrderInfo;
-import com.paytm.digital.education.coaching.consumer.model.dto.MerchantCommitPaymentInfo;
-import com.paytm.digital.education.coaching.consumer.model.dto.MerchantCommitUserInfo;
+import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.MerchantCommitOrderInfo;
+import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.MerchantCommitPaymentInfo;
+import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.MerchantCommitUserInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

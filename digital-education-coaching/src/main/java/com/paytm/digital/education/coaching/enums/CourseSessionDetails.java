@@ -48,10 +48,8 @@ public class CourseSessionDetails {
 
         COURSE_TYPE_AND_SESSIONS_MAP.put(CourseType.TEST_SERIES_OFFLINE, new ArrayList<Session>() {
             {
-                this.add(new Session("Test Count",
-                        "testCount"));
-                this.add(new Session("Test Duration",
-                        "testDuration"));
+                this.add(new Session("Test Count", "testCount"));
+                this.add(new Session("Test Duration", "testDuration"));
                 this.add(new Session("Test Practice Paper Count",
                         "testPracticePaperCount"));
             }

@@ -8,7 +8,7 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.Coach
 import com.paytm.digital.education.coaching.consumer.model.response.search.ExamData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.ExamsTopHitsData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResponse;
-import com.paytm.digital.education.coaching.consumer.service.helper.SearchDataHelper;
+import com.paytm.digital.education.coaching.consumer.service.search.helper.SearchDataHelper;
 import com.paytm.digital.education.coaching.consumer.service.search.CoachingCourseSearchService;
 import com.paytm.digital.education.coaching.consumer.service.search.ExamSearchService;
 import com.paytm.digital.education.database.entity.Section;

@@ -1,6 +1,6 @@
 package com.paytm.digital.education.coaching.consumer.controller;
 
-import com.paytm.digital.education.coaching.consumer.model.response.GetCoachingInstituteDetailsResponse;
+import com.paytm.digital.education.coaching.consumer.model.response.details.GetCoachingInstituteDetailsResponse;
 import com.paytm.digital.education.coaching.consumer.service.details.CoachingInstituteService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

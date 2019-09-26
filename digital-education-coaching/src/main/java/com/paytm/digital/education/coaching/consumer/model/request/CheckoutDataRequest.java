@@ -2,7 +2,7 @@ package com.paytm.digital.education.coaching.consumer.model.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.coaching.consumer.model.dto.CheckoutCartItem;
+import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.CheckoutCartItem;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;

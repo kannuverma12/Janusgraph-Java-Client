@@ -4,11 +4,11 @@ import com.paytm.digital.education.coaching.consumer.model.dto.ExamAdditionalInf
 import com.paytm.digital.education.coaching.consumer.model.dto.ImportantDatesBannerDetails;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingCourses;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingInstitutes;
-import com.paytm.digital.education.coaching.consumer.model.response.GetExamDetailsResponse;
+import com.paytm.digital.education.coaching.consumer.model.response.details.GetExamDetailsResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingCourseData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingInstituteData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.ExamData;
-import com.paytm.digital.education.coaching.consumer.service.helper.SearchDataHelper;
+import com.paytm.digital.education.coaching.consumer.service.search.helper.SearchDataHelper;
 import com.paytm.digital.education.coaching.consumer.service.utils.CommonServiceUtils;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;

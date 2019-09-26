@@ -1,12 +1,9 @@
 package com.paytm.digital.education.coaching.consumer.transformer;
 
-import com.paytm.digital.education.coaching.consumer.model.dto.CoachingCourseFeature;
-import com.paytm.digital.education.coaching.consumer.model.dto.CoachingCourseImportantDate;
-import com.paytm.digital.education.coaching.consumer.model.dto.CoachingCourseSessionDetails;
+import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseFeature;
+import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseImportantDate;
 import com.paytm.digital.education.coaching.consumer.model.dto.Exam;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopRanker;
-import com.paytm.digital.education.coaching.enums.CourseSessionDetails;
-import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.database.entity.CoachingCourseFeatureEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
 import com.paytm.digital.education.utility.CommonUtil;
@@ -14,12 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EMPTY_STRING;
@@ -29,6 +24,9 @@ import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_
 @Slf4j
 @Component
 public class CoachingCourseTransformer {
+
+    private static final String YES = "Yes";
+    private static final String NO  = "No";
 
     public List<TopRanker> convertTopRankers(final List<TopRankerEntity> topRankerEntityList,
             final Map<Long, String> examIdAndNameMap, final Map<Long, String> courseIdAndNameMap) {
@@ -92,32 +90,6 @@ public class CoachingCourseTransformer {
                 .collect(Collectors.toList());
     }
 
-    public List<CoachingCourseSessionDetails> convertSessionDetails(
-            final CoachingCourseEntity course) {
-        final List<CoachingCourseSessionDetails> sessionDetails = new ArrayList<>();
-
-        if (Objects.nonNull(course.getCourseType())) {
-            for (final CourseSessionDetails.Session session :
-                    CourseSessionDetails.getCourseTypeAndSessionsMap()
-                            .get(course.getCourseType())) {
-                String value;
-                try {
-                    final Field field = CoachingCourseEntity.class.getField(
-                            session.getDbFieldName());
-                    value = ((Integer) field.get(course)).toString();
-                } catch (final Exception ex) {
-                    log.error("Got exception, course: {}, exception: ", course, ex);
-                    continue;
-                }
-                sessionDetails.add(CoachingCourseSessionDetails.builder()
-                        .key(session.getDisplayName())
-                        .value(value)
-                        .build());
-            }
-        }
-        return sessionDetails;
-    }
-
     private List<String> getCourseNameFromIds(final List<Long> courseIds,
             final Map<Long, String> courseIdAndNameMap) {
         if (courseIds.isEmpty() || courseIdAndNameMap.isEmpty()) {
@@ -131,5 +103,12 @@ public class CoachingCourseTransformer {
             }
         }
         return courseNames;
+    }
+
+    public String convertBooleanToString(final Boolean value) {
+        if (null == value) {
+            return NO;
+        }
+        return value ? YES : NO;
     }
 }

@@ -4,7 +4,7 @@ import com.paytm.digital.education.coaching.consumer.model.dto.ImportantDatesBan
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingCourses;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingInstitutes;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopExams;
-import com.paytm.digital.education.coaching.consumer.model.response.GetStreamDetailsResponse;
+import com.paytm.digital.education.coaching.consumer.model.response.details.GetStreamDetailsResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingCourseData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingInstituteData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.ExamData;
