@@ -294,7 +294,7 @@ public class InstituteDetailResponseBuilder {
         Map<String, String> streamMap = streamDataHelper.getStreamLabelMap();
         String key = null;
         if (StringUtils.isNotBlank(dbRanking.getStream())) {
-            key = dbRanking.getStream();
+            key = dbRanking.getStream().toLowerCase();
         } else if (StringUtils.isNotBlank(dbRanking.getRankingStream())) {
             key = dbRanking.getRankingStream().toLowerCase();
         }
@@ -345,7 +345,6 @@ public class InstituteDetailResponseBuilder {
     private Map<String, List<Ranking>> getRankingDetails(
             List<com.paytm.digital.education.explore.database.entity.Ranking> rankingList) {
         if (!CollectionUtils.isEmpty(rankingList)) {
-            Map<String, List<Ranking>> rankingresponse = new HashMap<>();
             Map<String, List<Ranking>> ratingMap = rankingList.stream()
                     .filter(r -> (Objects.nonNull(r.getStream()) || Objects
                             .nonNull(r.getRankingStream())) && (Objects.nonNull(r.getRank())
