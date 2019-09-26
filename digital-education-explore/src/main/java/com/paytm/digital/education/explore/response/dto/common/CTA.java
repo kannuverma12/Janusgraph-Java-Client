@@ -66,7 +66,7 @@ public class CTA {
 
         public static final String COMPARE = "+ Add To Compare";
 
-        public static final String COMPARE_ACTIVE_LABEL_WEB = "+ Added To Compare";
+        public static final String COMPARE_ACTIVE_LABEL_WEB = "Added To Compare";
 
         public static final String APPLY = "Apply";
 
