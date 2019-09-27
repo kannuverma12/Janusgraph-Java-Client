@@ -1,6 +1,5 @@
 package com.paytm.digital.education.coaching.consumer.service.details;
 
-import com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute.CoachingCourseTypeInfo;
 import com.paytm.digital.education.coaching.consumer.model.dto.Exam;
 import com.paytm.digital.education.coaching.consumer.model.dto.Faq;
 import com.paytm.digital.education.coaching.consumer.model.dto.Stream;
@@ -10,6 +9,7 @@ import com.paytm.digital.education.coaching.consumer.model.dto.TopRanker;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopRankers;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopStreams;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseTypeResponse;
+import com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute.CoachingCourseTypeInfo;
 import com.paytm.digital.education.coaching.consumer.model.response.details.GetCoachingInstituteDetailsResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingCourseData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingInstituteData;
@@ -61,6 +61,11 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.S
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_IDS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.IGNORE_GLOBAL_PRIORITY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.BROWSE_BY_COURSE_TYPE;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.STREAMS_PREPARED_FOR_BY;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_COACHING_COURSES_BY;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_EXAMS_PREPARED_FOR_BY;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_RANKERS;
 import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES_IMAGE;
 import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES_LOGO;
 import static com.paytm.digital.education.elasticsearch.enums.DataSortOrder.ASC;
@@ -89,10 +94,9 @@ public class CoachingInstituteService {
 
     public GetCoachingInstituteDetailsResponse getCoachingInstituteDetails(long instituteId,
             String urlDisplayKey, Long streamId, Long examId) {
-        CoachingInstituteEntity coachingInstituteEntity =
-                commonMongoRepository.getEntityByFields(
-                        INSTITUTE_ID, instituteId, CoachingInstituteEntity.class,
-                        COACHING_INSTITUTE_FIELDS);
+        CoachingInstituteEntity coachingInstituteEntity = commonMongoRepository.getEntityByFields(
+                INSTITUTE_ID, instituteId, CoachingInstituteEntity.class,
+                COACHING_INSTITUTE_FIELDS);
         if (Objects.isNull(coachingInstituteEntity)) {
             log.error("Institute with id: {} does not exist", instituteId);
             throw new BadRequestException(INVALID_INSTITUTE_ID);
@@ -100,36 +104,33 @@ public class CoachingInstituteService {
         if (!CommonUtils.convertNameToUrlDisplayName(coachingInstituteEntity.getBrandName())
                 .equals(urlDisplayKey)) {
             log.error("Institute with url display key: {} does not exist for institute_id: {}",
-                    urlDisplayKey,
-                    instituteId);
+                    urlDisplayKey, instituteId);
             throw new BadRequestException(INVALID_INSTITUTE_NAME);
         }
 
         Map<String, Object> propertyMap = propertyReader.getPropertiesAsMapByKey(
                 DETAILS_PROPERTY_COMPONENT, DETAILS_PROPERTY_NAMESPACE, DETAILS_PROPERTY_KEY);
 
-        List<String> sections =
-                (List<String>) propertyMap.getOrDefault(INSTITUTE, new ArrayList<>());
+        List<String> sections = (List<String>) propertyMap.getOrDefault(INSTITUTE,
+                new ArrayList<>());
 
         return GetCoachingInstituteDetailsResponse.builder()
                 .instituteId(coachingInstituteEntity.getInstituteId())
                 .instituteName(coachingInstituteEntity.getBrandName())
                 .description(coachingInstituteEntity.getAboutInstitute())
-                .imageUrl(ImageUtils
-                        .getImageWithAbsolutePath(coachingInstituteEntity.getCoverImage(),
-                                INSTITUTE_COVER_IMAGE_PLACEHOLDER, TOP_COACHING_INSTITUTES_IMAGE))
+                .imageUrl(ImageUtils.getImageWithAbsolutePath(
+                        coachingInstituteEntity.getCoverImage(), INSTITUTE_COVER_IMAGE_PLACEHOLDER,
+                        TOP_COACHING_INSTITUTES_IMAGE))
                 .logo(ImageUtils.getImageWithAbsolutePath(coachingInstituteEntity.getLogo(),
                         INSTITUTE_PLACEHOLDER, TOP_COACHING_INSTITUTES_LOGO))
-                .instituteHighlights(
-                        CoachingInstituteTransformer.convertInstituteHighlights(
-                                coachingInstituteEntity.getKeyHighlights()))
+                .instituteHighlights(CoachingInstituteTransformer.convertInstituteHighlights(
+                        coachingInstituteEntity.getKeyHighlights()))
                 .streams(this.getStreamsForInstitute(coachingInstituteEntity))
                 .exams(this.getExamsForInstitute(coachingInstituteEntity))
                 .topRankers(this.getTopRankersForInstitute(instituteId, streamId, examId))
                 .coachingCourseTypes(this.getCoachingCourseTypes(coachingInstituteEntity))
-                .topCoachingCourses(
-                        this.getTopCoachingCoursesForInstitute(coachingInstituteEntity, streamId,
-                                examId))
+                .topCoachingCourses(this.getTopCoachingCoursesForInstitute(coachingInstituteEntity,
+                        streamId, examId))
                 .faqs(this.fillFaqs(coachingInstituteEntity.getFaqs()))
                 .sections(sections)
                 .build();
@@ -144,10 +145,8 @@ public class CoachingInstituteService {
                         .getStaticDataByCourseType(courseType));
             }
         }
-
-        return CoachingCourseTypeInfo
-                .builder()
-                .header("Browse by Course Type")
+        return CoachingCourseTypeInfo.builder()
+                .header(BROWSE_BY_COURSE_TYPE.getValue())
                 .results(listOfCourseType)
                 .build();
     }
@@ -155,8 +154,8 @@ public class CoachingInstituteService {
     private TopCoachingCourses getTopCoachingCoursesForInstitute(
             CoachingInstituteEntity coachingInstituteEntity, Long streamId, Long examId) {
         Map<String, List<Object>> filter = new HashMap<>();
-        filter.put(COACHING_INSTITUTE_ID,
-                Collections.singletonList(coachingInstituteEntity.getInstituteId()));
+        filter.put(COACHING_INSTITUTE_ID, Collections.singletonList(
+                coachingInstituteEntity.getInstituteId()));
 
         if (Objects.nonNull(examId)) {
             filter.put(EXAM_IDS, Collections.singletonList(examId));
@@ -165,16 +164,15 @@ public class CoachingInstituteService {
         }
 
         List<CoachingCourseData> topCoachingCourses =
-                (List<CoachingCourseData>) (List<?>) searchDataHelper
-                        .getTopSearchData(filter, EducationEntity.COACHING_COURSE, null);
+                (List<CoachingCourseData>) (List<?>) searchDataHelper.getTopSearchData(filter,
+                        EducationEntity.COACHING_COURSE, null);
 
         if (CollectionUtils.isEmpty(topCoachingCourses)) {
             topCoachingCourses = new ArrayList<>();
         }
 
-        return TopCoachingCourses
-                .builder()
-                .header("Top Coaching Courses by " + coachingInstituteEntity.getBrandName())
+        return TopCoachingCourses.builder()
+                .header(TOP_COACHING_COURSES_BY.getValue() + coachingInstituteEntity.getBrandName())
                 .results(topCoachingCourses)
                 .build();
     }
@@ -195,22 +193,22 @@ public class CoachingInstituteService {
             CoachingInstituteEntity coachingInstituteEntity) {
         List<Exam> examList = new ArrayList<>();
         if (CollectionUtils.isEmpty(coachingInstituteEntity.getExams())) {
-            return TopExamsInstitute
-                    .builder()
-                    .header("Top Exams prepared for by " + coachingInstituteEntity.getBrandName())
+            return TopExamsInstitute.builder()
+                    .header(TOP_EXAMS_PREPARED_FOR_BY.getValue()
+                            + coachingInstituteEntity.getBrandName())
                     .results(examList)
                     .build();
         }
 
         List<com.paytm.digital.education.database.entity.Exam> examEntityList =
-                commonMongoRepository
-                        .getEntityFieldsByValuesIn(EXAM_ID, coachingInstituteEntity.getExams(),
-                                com.paytm.digital.education.database.entity.Exam.class,
-                                CoachingInstituteService.EXAM_FIELDS);
+                commonMongoRepository.getEntityFieldsByValuesIn(EXAM_ID,
+                        coachingInstituteEntity.getExams(),
+                        com.paytm.digital.education.database.entity.Exam.class,
+                        CoachingInstituteService.EXAM_FIELDS);
 
-        return TopExamsInstitute
-                .builder()
-                .header("Top Exams prepared for by " + coachingInstituteEntity.getBrandName())
+        return TopExamsInstitute.builder()
+                .header(TOP_EXAMS_PREPARED_FOR_BY.getValue()
+                        + coachingInstituteEntity.getBrandName())
                 .results(CoachingInstituteTransformer.convertExamEntityToDto(examList,
                         examEntityList))
                 .build();
@@ -219,28 +217,26 @@ public class CoachingInstituteService {
     private TopStreams getStreamsForInstitute(CoachingInstituteEntity coachingInstituteEntity) {
         List<Stream> streamList = new ArrayList<>();
         if (CollectionUtils.isEmpty(coachingInstituteEntity.getStreams())) {
-            return TopStreams
-                    .builder()
-                    .header("Streams prepared for by " + coachingInstituteEntity.getBrandName())
+            return TopStreams.builder()
+                    .header(STREAMS_PREPARED_FOR_BY.getValue()
+                            + coachingInstituteEntity.getBrandName())
                     .results(streamList)
                     .build();
         }
 
         List<com.paytm.digital.education.database.entity.StreamEntity> streamEntityList =
-                commonMongoRepository
-                        .getEntityFieldsByValuesIn(STREAM_ID, coachingInstituteEntity.getStreams(),
-                                StreamEntity.class, CoachingInstituteService.STREAM_FIELDS);
+                commonMongoRepository.getEntityFieldsByValuesIn(STREAM_ID,
+                        coachingInstituteEntity.getStreams(), StreamEntity.class,
+                        CoachingInstituteService.STREAM_FIELDS);
 
-        return TopStreams
-                .builder()
-                .header("Streams prepared for by " + coachingInstituteEntity.getBrandName())
+        return TopStreams.builder()
+                .header(STREAMS_PREPARED_FOR_BY.getValue() + coachingInstituteEntity.getBrandName())
                 .results(CoachingInstituteTransformer
                         .convertStreamEntityToStreamDto(streamList, streamEntityList))
                 .build();
     }
 
-    private TopRankers getTopRankersForInstitute(long instituteId, Long streamId,
-            Long examId) {
+    private TopRankers getTopRankersForInstitute(long instituteId, Long streamId, Long examId) {
         Set<Long> examIds = new HashSet<>();
         Set<Long> courseIds = new HashSet<>();
 
@@ -274,16 +270,14 @@ public class CoachingInstituteService {
         }
 
         Map<Long, String> examIdsAndNameMap = getExamIdsToNameMap((new ArrayList<>(examIds)));
-        Map<Long, String> coachingCourseIdsAndNameMap =
-                getCoachingCourseIdsToNameMap((new ArrayList<>(courseIds)));
+        Map<Long, String> coachingCourseIdsAndNameMap = getCoachingCourseIdsToNameMap(
+                new ArrayList<>(courseIds));
 
-        return TopRankers
-                .builder()
-                .header("Top Rankers")
-                .results(CoachingInstituteTransformer
-                        .convertTopRankerEntityToTopRankerDto(examIdsAndNameMap,
-                                coachingCourseIdsAndNameMap,
-                                topRankerEntityList, topRankerList))
+        return TopRankers.builder()
+                .header(TOP_RANKERS.getValue())
+                .results(CoachingInstituteTransformer.convertTopRankerEntityToTopRankerDto(
+                        examIdsAndNameMap, coachingCourseIdsAndNameMap, topRankerEntityList,
+                        topRankerList))
                 .build();
     }
 
@@ -320,9 +314,9 @@ public class CoachingInstituteService {
                 add("name");
             }
         };
-        List<CoachingCourseEntity> coachingCourseEntityList =
-                commonMongoRepository.getEntityFieldsByValuesIn(COURSE_ID, courseIds,
-                        CoachingCourseEntity.class, coachingCourseFields);
+        List<CoachingCourseEntity> coachingCourseEntityList = commonMongoRepository
+                .getEntityFieldsByValuesIn(COURSE_ID, courseIds, CoachingCourseEntity.class,
+                        coachingCourseFields);
         if (!CollectionUtils.isEmpty(coachingCourseEntityList)) {
             for (CoachingCourseEntity coachingCourseEntity : coachingCourseEntityList) {
                 coachingCourseIdsAndNameMap.put(coachingCourseEntity.getCourseId(),
@@ -332,20 +326,17 @@ public class CoachingInstituteService {
         return coachingCourseIdsAndNameMap;
     }
 
-    public List<CoachingInstituteData> getTopCoachingInstitutesByExamId(Long examId) {
-        Map<String, List<Object>> filter = new HashMap<>();
-        filter.put(EXAM_IDS, Arrays.asList(examId));
-
-        LinkedHashMap<String, DataSortOrder> sortOrder = new LinkedHashMap<>();
-        sortOrder.put(IGNORE_GLOBAL_PRIORITY, ASC);
-
-        return (List<CoachingInstituteData>) (List<?>) searchDataHelper
-                .getTopSearchData(filter, EducationEntity.COACHING_INSTITUTE, sortOrder);
+    List<CoachingInstituteData> getTopCoachingInstitutesByExamId(Long examId) {
+        return getCoachingInstituteData(examId, EXAM_IDS);
     }
 
-    public List<CoachingInstituteData> getTopCoachingInstitutesByStreamId(Long streamId) {
+    List<CoachingInstituteData> getTopCoachingInstitutesByStreamId(Long streamId) {
+        return getCoachingInstituteData(streamId, STREAM_IDS);
+    }
+
+    private List<CoachingInstituteData> getCoachingInstituteData(Long id, String idFieldName) {
         Map<String, List<Object>> filter = new HashMap<>();
-        filter.put(STREAM_IDS, Collections.singletonList(streamId));
+        filter.put(idFieldName, Collections.singletonList(id));
 
         LinkedHashMap<String, DataSortOrder> sortOrder = new LinkedHashMap<>();
         sortOrder.put(IGNORE_GLOBAL_PRIORITY, ASC);

@@ -34,6 +34,10 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.I
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_DETAILS_FIELDS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_ID;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.COACHING_FOR;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.EXAMS;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_COACHING_COURSES_FOR;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_COACHING_INSTITUTES_FOR;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_STREAM_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_STREAM_NAME;
 
@@ -50,18 +54,17 @@ public class CoachingStreamService {
 
     public GetStreamDetailsResponse getStreamDetails(final long streamId,
             final String urlDisplayKey) {
-        StreamEntity streamEntity = commonMongoRepository.getEntityByFields(
-                STREAM_ID, streamId, StreamEntity.class, STREAM_DETAILS_FIELDS);
+        StreamEntity streamEntity = commonMongoRepository.getEntityByFields(STREAM_ID, streamId,
+                StreamEntity.class, STREAM_DETAILS_FIELDS);
 
         if (Objects.isNull(streamEntity) || !streamEntity.getIsEnabled()) {
-            log.error("stream with id: {} does not exist", streamId);
+            log.error("Stream with id: {} does not exist", streamId);
             throw new BadRequestException(INVALID_STREAM_ID);
         }
         if (!CommonUtils.convertNameToUrlDisplayName(streamEntity.getName())
                 .equals(urlDisplayKey)) {
             log.error("Stream with url display key: {} does not exist for stream_id: {}",
-                    urlDisplayKey,
-                    streamId);
+                    urlDisplayKey, streamId);
             throw new BadRequestException(INVALID_STREAM_NAME);
         }
 
@@ -82,16 +85,16 @@ public class CoachingStreamService {
     }
 
     private TopCoachingCourses getTopCoachingCoursesForStream(StreamEntity stream) {
-        List<CoachingCourseData> courses = coachingCourseService
-                .getTopCoachingCoursesForStreamId(stream.getStreamId());
+        List<CoachingCourseData> courses = coachingCourseService.getTopCoachingCoursesForStreamId(
+                stream.getStreamId());
 
         if (CollectionUtils.isEmpty(courses)) {
             courses = new ArrayList<>();
         }
 
-        return TopCoachingCourses
-                .builder()
-                .header("Top Coaching Courses for " + WordUtils.capitalizeFully(stream.getName()))
+        return TopCoachingCourses.builder()
+                .header(TOP_COACHING_COURSES_FOR.getValue()
+                        + WordUtils.capitalizeFully(stream.getName()))
                 .results(courses)
                 .build();
     }
@@ -104,17 +107,15 @@ public class CoachingStreamService {
             institutes = new ArrayList<>();
         }
 
-        return TopCoachingInstitutes
-                .builder()
-                .header("Top Coaching Institutes for " + WordUtils
-                        .capitalizeFully(stream.getName()))
+        return TopCoachingInstitutes.builder()
+                .header(TOP_COACHING_INSTITUTES_FOR.getValue()
+                        + WordUtils.capitalizeFully(stream.getName()))
                 .results(institutes)
                 .build();
     }
 
     private ImportantDatesBannerDetails getImportantDatesBannerDetails() {
-        return ImportantDatesBannerDetails
-                .builder()
+        return ImportantDatesBannerDetails.builder()
                 .header(HEADER)
                 .description(DESCRIPTION)
                 .logo(LOGO)
@@ -123,17 +124,16 @@ public class CoachingStreamService {
     }
 
     private TopExams getTopExamsForStream(StreamEntity stream) {
-        List<ExamData> topExams = examService.getTopExamsbyStreamId(stream.getStreamId());
+        List<ExamData> topExams = examService.getTopExamsByStreamId(stream.getStreamId());
 
         if (CollectionUtils.isEmpty(topExams)) {
             topExams = new ArrayList<>();
         }
 
-        return TopExams
-                .builder()
-                .header("Coaching for " + WordUtils.capitalizeFully(stream.getName()) + " Exams")
+        return TopExams.builder()
+                .header(COACHING_FOR.getValue() + WordUtils.capitalizeFully(stream.getName())
+                        + EXAMS.getValue())
                 .results(topExams)
                 .build();
     }
-
 }

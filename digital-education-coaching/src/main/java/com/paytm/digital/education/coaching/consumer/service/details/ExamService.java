@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +40,11 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.I
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.ImportantDates.HEADER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.ImportantDates.LOGO;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.ALL_YOU_NEED_TO_KNOW_ABOUT;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.SIMILAR_COACHING_COURSES;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.SIMILAR_COACHING_INSTITUTES;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_COACHING_COURSES_FOR;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_COACHING_INSTITUTES_FOR;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
 
@@ -55,16 +60,16 @@ public class ExamService {
     private final PropertyReader           propertyReader;
 
     public GetExamDetailsResponse getExamDetails(final Long examId, final String urlDisplayKey) {
-        Exam exam = this.commonMongoRepository.getEntityByFields(
-                EXAM_ID, examId, Exam.class, EXAM_DETAILS_FIELDS);
+        Exam exam = this.commonMongoRepository.getEntityByFields(EXAM_ID, examId, Exam.class,
+                EXAM_DETAILS_FIELDS);
         if (Objects.isNull(exam)) {
             log.error("Exam with id: {} does not exist", examId);
             throw new BadRequestException(INVALID_EXAM_ID);
         }
         if (!CommonUtils.convertNameToUrlDisplayName(exam.getExamFullName())
                 .equals(urlDisplayKey)) {
-            log.error("Exam with url display key: {} does not exist for exam_id: {}", urlDisplayKey,
-                    examId);
+            log.error("Exam with url display key: {} does not exist for exam_id: {}",
+                    urlDisplayKey, examId);
             throw new BadRequestException(INVALID_EXAM_NAME);
         }
 
@@ -89,13 +94,12 @@ public class ExamService {
     }
 
     private TopCoachingCourses getTopCoachingCourses(Exam exam) {
-        List<CoachingCourseData> courses = coachingCourseService
-                .getTopCoachingCoursesForExamId(exam.getExamId());
+        List<CoachingCourseData> courses = coachingCourseService.getTopCoachingCoursesForExamId(
+                exam.getExamId());
 
         if (!CollectionUtils.isEmpty(courses)) {
-            return TopCoachingCourses
-                    .builder()
-                    .header("Top Coaching Courses for " + exam.getExamShortName())
+            return TopCoachingCourses.builder()
+                    .header(TOP_COACHING_COURSES_FOR.getValue() + exam.getExamShortName())
                     .results(courses)
                     .build();
         }
@@ -103,17 +107,16 @@ public class ExamService {
         if (CollectionUtils.isEmpty(exam.getStreamIds())) {
             courses = new ArrayList<>();
         } else {
-            courses = coachingCourseService
-                    .getTopCoachingCoursesForStreamId(exam.getStreamIds().get(0));
+            courses = coachingCourseService.getTopCoachingCoursesForStreamId(
+                    exam.getStreamIds().get(0));
         }
 
         if (CollectionUtils.isEmpty(courses)) {
             courses = new ArrayList<>();
         }
 
-        return TopCoachingCourses
-                .builder()
-                .header("Similar Coaching Courses")
+        return TopCoachingCourses.builder()
+                .header(SIMILAR_COACHING_COURSES.getValue())
                 .results(courses)
                 .build();
     }
@@ -123,9 +126,8 @@ public class ExamService {
                 .getTopCoachingInstitutesByExamId(exam.getExamId());
 
         if (!CollectionUtils.isEmpty(institutes)) {
-            return TopCoachingInstitutes
-                    .builder()
-                    .header("Top Coaching Institutes for " + exam.getExamShortName())
+            return TopCoachingInstitutes.builder()
+                    .header(TOP_COACHING_INSTITUTES_FOR.getValue() + exam.getExamShortName())
                     .results(institutes)
                     .build();
         }
@@ -133,32 +135,29 @@ public class ExamService {
         if (CollectionUtils.isEmpty(exam.getStreamIds())) {
             institutes = new ArrayList<>();
         } else {
-            institutes = coachingInstituteService
-                    .getTopCoachingInstitutesByStreamId(exam.getStreamIds().get(0));
+            institutes = coachingInstituteService.getTopCoachingInstitutesByStreamId(
+                    exam.getStreamIds().get(0));
         }
 
         if (CollectionUtils.isEmpty(institutes)) {
             institutes = new ArrayList<>();
         }
 
-        return TopCoachingInstitutes
-                .builder()
-                .header("Similar Coaching Institutes")
+        return TopCoachingInstitutes.builder()
+                .header(SIMILAR_COACHING_INSTITUTES.getValue())
                 .results(institutes)
                 .build();
     }
 
     private ExamAdditionalInfo getExamAdditionalInfo(Exam exam) {
-        return ExamAdditionalInfo
-                .builder()
-                .header("All you need to know about " + exam.getExamShortName())
+        return ExamAdditionalInfo.builder()
+                .header(ALL_YOU_NEED_TO_KNOW_ABOUT.getValue() + exam.getExamShortName())
                 .results(EXAM_ADDITIONAL_INFO_PARAMS)
                 .build();
     }
 
     private ImportantDatesBannerDetails getImportantDatesBannerDetails() {
-        return ImportantDatesBannerDetails
-                .builder()
+        return ImportantDatesBannerDetails.builder()
                 .header(HEADER)
                 .description(DESCRIPTION)
                 .logo(LOGO)
@@ -166,9 +165,9 @@ public class ExamService {
                 .build();
     }
 
-    public List<ExamData> getTopExamsbyStreamId(Long streamId) {
+    List<ExamData> getTopExamsByStreamId(Long streamId) {
         Map<String, List<Object>> filter = new HashMap<>();
-        filter.put(STREAM_IDS, Arrays.asList(streamId));
+        filter.put(STREAM_IDS, Collections.singletonList(streamId));
 
         return (List<ExamData>) (List<?>) searchDataHelper
                 .getTopSearchData(filter, EducationEntity.EXAM, null);
