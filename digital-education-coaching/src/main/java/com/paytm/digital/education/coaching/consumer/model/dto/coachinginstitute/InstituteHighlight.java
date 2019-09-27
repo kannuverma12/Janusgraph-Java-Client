@@ -1,4 +1,4 @@
-package com.paytm.digital.education.coaching.consumer.model.dto;
+package com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute;
 
 import lombok.Builder;
 import lombok.Getter;

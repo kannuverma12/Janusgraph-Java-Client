@@ -1,7 +1,7 @@
 package com.paytm.digital.education.coaching.consumer.transformer;
 
 import com.paytm.digital.education.coaching.consumer.model.dto.Exam;
-import com.paytm.digital.education.coaching.consumer.model.dto.InstituteHighlight;
+import com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute.InstituteHighlight;
 import com.paytm.digital.education.coaching.consumer.model.dto.Stream;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopRanker;
 import com.paytm.digital.education.coaching.utils.ImageUtils;

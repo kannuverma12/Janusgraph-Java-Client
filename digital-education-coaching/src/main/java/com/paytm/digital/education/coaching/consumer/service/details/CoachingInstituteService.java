@@ -1,6 +1,6 @@
 package com.paytm.digital.education.coaching.consumer.service.details;
 
-import com.paytm.digital.education.coaching.consumer.model.dto.CoachingCourseTypeInfo;
+import com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute.CoachingCourseTypeInfo;
 import com.paytm.digital.education.coaching.consumer.model.dto.Exam;
 import com.paytm.digital.education.coaching.consumer.model.dto.Faq;
 import com.paytm.digital.education.coaching.consumer.model.dto.Stream;
@@ -9,7 +9,7 @@ import com.paytm.digital.education.coaching.consumer.model.dto.TopExamsInstitute
 import com.paytm.digital.education.coaching.consumer.model.dto.TopRanker;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopRankers;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopStreams;
-import com.paytm.digital.education.coaching.consumer.model.response.details.CoachingCourseTypeResponse;
+import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseTypeResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.details.GetCoachingInstituteDetailsResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingCourseData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingInstituteData;

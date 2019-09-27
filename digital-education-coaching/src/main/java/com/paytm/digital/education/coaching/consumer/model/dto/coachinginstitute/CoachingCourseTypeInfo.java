@@ -1,9 +1,9 @@
-package com.paytm.digital.education.coaching.consumer.model.dto;
+package com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.paytm.digital.education.coaching.consumer.model.response.details.CoachingCourseTypeResponse;
+import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseTypeResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
