@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.explore.database.entity.SchoolFeeDetails;
 import com.paytm.digital.education.explore.database.entity.ShiftDetails;
 import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.paytm.digital.education.explore.response.dto.common.BannerData;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.detail.Attribute;
 import com.paytm.digital.education.explore.response.dto.detail.CTAInfoHolder;
@@ -82,6 +83,9 @@ public class SchoolDetail implements CTAInfoHolder {
 
     @JsonProperty("shortlisted")
     private boolean shortlisted;
+
+    @JsonProperty("banners")
+    private List<BannerData> banners;
 
     @Override
     @JsonIgnore

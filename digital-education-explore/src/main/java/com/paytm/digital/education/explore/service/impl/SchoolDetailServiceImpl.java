@@ -30,24 +30,28 @@ import com.paytm.digital.education.explore.response.dto.search.SchoolSearchData;
 import com.paytm.digital.education.explore.response.dto.search.SearchBaseData;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.service.SchoolService;
+import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
 import com.paytm.digital.education.explore.service.helper.CTAHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.service.helper.FacilityDataHelper;
 import com.paytm.digital.education.explore.service.helper.SchoolDetailsResponseHelper;
 import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
-
 import com.paytm.digital.education.explore.utility.SchoolUtilService;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -71,6 +75,7 @@ import static org.elasticsearch.common.geo.parsers.GeoWKTParser.COMMA;
 
 
 @Service
+@RequiredArgsConstructor
 public class SchoolDetailServiceImpl implements SchoolService {
 
     private final CommonMongoRepository    commonMongoRepository;
@@ -78,31 +83,12 @@ public class SchoolDetailServiceImpl implements SchoolService {
     private final FacilityDataHelper       facilityDataHelper;
     private final CTAHelper                ctaHelper;
     private final SearchServiceImpl        searchService;
-    private final int                      similarSchoolsCount;
     private final SubscriptionDetailHelper subscriptionDetailHelper;
     private final SchoolConfig             schoolConfig;
     private final SchoolUtilService        schoolUtilService;
-
-    public SchoolDetailServiceImpl(
-            CommonMongoRepository commonMongoRepository,
-            DerivedAttributesHelper derivedAttributesHelper,
-            FacilityDataHelper facilityDataHelper,
-            CTAHelper ctaHelper,
-            SearchServiceImpl searchService,
-            @Value("${similar.schools.count}") int similarSchoolsCount,
-            SubscriptionDetailHelper subscriptionDetailHelper,
-            SchoolConfig schoolConfig,
-            SchoolUtilService schoolUtilService) {
-        this.commonMongoRepository = commonMongoRepository;
-        this.derivedAttributesHelper = derivedAttributesHelper;
-        this.facilityDataHelper = facilityDataHelper;
-        this.ctaHelper = ctaHelper;
-        this.searchService = searchService;
-        this.similarSchoolsCount = similarSchoolsCount;
-        this.subscriptionDetailHelper = subscriptionDetailHelper;
-        this.schoolConfig = schoolConfig;
-        this.schoolUtilService = schoolUtilService;
-    }
+    private final BannerDataHelper         bannerDataHelper;
+    @Value("${similar.schools.count}")
+    private       int                      similarSchoolsCount;
 
     public List<School> getSchools(List<Long> entityIds, List<String> groupFields) {
         if (CollectionUtils.isEmpty(groupFields)) {
@@ -186,6 +172,10 @@ public class SchoolDetailServiceImpl implements SchoolService {
             if (Objects.nonNull(userId) && userId > 0) {
                 updateShortList(schoolDetail, SCHOOL, userId);
             }
+
+            if (!Client.APP.equals(client)) {
+                schoolDetail.setBanners(bannerDataHelper.getBannerData(entityName, client));
+            }
         }
         return schoolDetail;
     }
@@ -202,37 +192,64 @@ public class SchoolDetailServiceImpl implements SchoolService {
     }
 
     private void addSimilarSchoolsInResponse(SchoolDetail schoolDetail, School school) {
-        SearchRequest searchRequest = buildSearchRequestForSchool(school);
+        SearchRequest searchRequest = buildSearchRequestForSchool(school, true);
         if (Objects.isNull(searchRequest)) {
             return;
         }
         SearchResponse searchResponse = searchService.search(searchRequest, null, null);
         List<SearchBaseData> searchBaseDataList = searchResponse.getResults().getValues();
+
         if (CollectionUtils.isEmpty(searchBaseDataList)) {
-            return;
+            /*** If there are no nearby schools from location or in same city,
+             * search for schools in same state**/
+            searchRequest = buildSearchRequestForSchool(school, false);
+            if (Objects.isNull(searchRequest)) {
+                return;
+            }
+            searchResponse = searchService.search(searchRequest, null, null);
+            searchBaseDataList = searchResponse.getResults().getValues();
+            if (CollectionUtils.isEmpty(searchBaseDataList)) {
+                return;
+            }
         }
         List<SchoolSearchData> schoolSearchDataList =
                 searchBaseDataList
                         .stream()
-                        .map(x -> (SchoolSearchData)  x)
+                        .map(x -> (SchoolSearchData) x)
                         .filter(x -> !school.getSchoolId().equals(x.getSchoolId()))
                         .collect(Collectors.toList());
         schoolDetail.setSimilarSchools(schoolSearchDataList);
     }
 
-    private SearchRequest buildSearchRequestForSchool(School school) {
+
+
+    private SearchRequest buildSearchRequestForSchool(School school, boolean isSameCityRequest) {
+
+        SearchRequest searchRequest = new SearchRequest();
+        searchRequest.setEntity(SCHOOL);
+        searchRequest.setLimit(similarSchoolsCount + 1);
         GeoLocation geoLocation = buildGeoLocationFromSchool(school);
-        if (Objects.isNull(geoLocation)) {
+        Map<String, List<Object>> filters = new HashMap<>();
+
+        if (Objects.isNull(geoLocation) && Objects.isNull(school.getAddress())) {
             return null;
         }
-        SearchRequest searchRequest = new SearchRequest();
-        searchRequest.setGeoLocation(geoLocation);
-        searchRequest.setEntity(SCHOOL);
-        searchRequest.setFilter(Collections.emptyMap());
-        searchRequest.setLimit(similarSchoolsCount + 1);
-        LinkedHashMap<String, DataSortOrder> sortOrder = new LinkedHashMap<>();
-        sortOrder.put(SORT_DISTANCE_FIELD, ASC);
-        searchRequest.setSortOrder(sortOrder);
+
+        if (Objects.nonNull(geoLocation)) {
+            searchRequest.setGeoLocation(geoLocation);
+            LinkedHashMap<String, DataSortOrder> sortOrder = new LinkedHashMap<>();
+            sortOrder.put(SORT_DISTANCE_FIELD, ASC);
+            searchRequest.setSortOrder(sortOrder);
+        } else if (isSameCityRequest) {
+            filters.put(SchoolConstants.SCHOOL_CITY,
+                    Arrays.asList(school.getAddress().getCity()));
+            filters.put(SchoolConstants.SCHOOL_STATE,
+                    Arrays.asList(school.getAddress().getState()));
+        } else {
+            filters.put(SchoolConstants.SCHOOL_STATE,
+                    Arrays.asList(school.getAddress().getState()));
+        }
+        searchRequest.setFilter(filters);
         return searchRequest;
     }
 
