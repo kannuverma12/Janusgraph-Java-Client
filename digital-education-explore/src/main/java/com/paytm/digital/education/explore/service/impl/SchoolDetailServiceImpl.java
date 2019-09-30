@@ -14,11 +14,15 @@ import com.paytm.digital.education.explore.database.entity.SchoolGallery;
 import com.paytm.digital.education.explore.database.entity.SchoolOfficialAddress;
 import com.paytm.digital.education.explore.database.entity.SchoolPaytmKeys;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.explore.enums.ClassLevel;
+import com.paytm.digital.education.explore.enums.ClassType;
 import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.es.model.GeoLocation;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
+import com.paytm.digital.education.explore.response.dto.detail.ClassLevelRow;
+import com.paytm.digital.education.explore.response.dto.detail.school.detail.ClassLevelTable;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.FacilityResponse;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.FacultyDetail;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.GeneralInformation;
@@ -41,6 +45,7 @@ import com.paytm.digital.education.explore.utility.SchoolUtilService;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -72,7 +77,6 @@ import static com.paytm.digital.education.mapping.ErrorEnum.NO_ENTITY_FOUND;
 import static com.paytm.digital.education.utility.CommonUtils.isNullOrZero;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.elasticsearch.common.geo.parsers.GeoWKTParser.COMMA;
-
 
 @Service
 @RequiredArgsConstructor
@@ -111,7 +115,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
             List<String> fields, String fieldGroup, Long userId) {
         List<String> fieldsToBeFetched =
                 getFieldsByGroupAndCollectioName(SchoolConstants.SCHOOL, fields,
-                                fieldGroup);
+                        fieldGroup);
         School school =
                 commonMongoRepository
                         .getEntityByFields(SCHOOL_ID, schoolId, School.class, fieldsToBeFetched);
@@ -129,7 +133,9 @@ public class SchoolDetailServiceImpl implements SchoolService {
         if (Objects.nonNull(boards) && boards.size() > 0) {
             BoardData boardData = boards.get(0).getData();
             schoolDetail.setShiftDetailsList(
-                    boardData.getShifts().stream().map(x -> new ShiftDetailsResponse(x, schoolConfig))
+                    boardData.getShifts()
+                            .stream()
+                            .map(x -> new ShiftDetailsResponse(x, schoolConfig))
                             .collect(Collectors.toList()));
             schoolDetail.setFacultyDetail(fetchFacultyDetailsIfPresent(boardData));
             schoolDetail.setFeesDetails(boardData.getFeesDetails());
@@ -147,7 +153,8 @@ public class SchoolDetailServiceImpl implements SchoolService {
             ).collect(Collectors.toList());
             schoolDetail.setImportantDateSections(importantDates);
             schoolDetail.setGallery(
-                    Optional.ofNullable(school.getGallery()).map(x -> new SchoolGalleryResponse(x, schoolUtilService))
+                    Optional.ofNullable(school.getGallery())
+                            .map(x -> new SchoolGalleryResponse(x, schoolUtilService))
                             .orElse(null));
             String entityName = SCHOOL.name().toLowerCase();
             schoolDetail.setDerivedAttributes(
@@ -177,7 +184,32 @@ public class SchoolDetailServiceImpl implements SchoolService {
                 schoolDetail.setBanners(bannerDataHelper.getBannerData(entityName, client));
             }
         }
+        schoolDetail.setClassInfoTable(
+                school.getBoardList()
+                        .stream()
+                        .filter(schoolUtilService::isClassLevelInfoValid)
+                        .map(this::convertBoardToClassLevelTable)
+                        .collect(Collectors.toList()));
         return schoolDetail;
+    }
+
+    private ClassLevelTable convertBoardToClassLevelTable(Board board) {
+        return new ClassLevelTable(
+                board.getName(),
+                schoolUtilService.generateClassInfoTable(board)
+                        .stream()
+                        .map(this::convertClassLevelTripleToClassLevelRow)
+                        .collect(Collectors.toList())
+        );
+    }
+
+    private ClassLevelRow convertClassLevelTripleToClassLevelRow(
+            Triple<ClassType, ClassType, ClassLevel> classLevelTriple) {
+        return ClassLevelRow.builder()
+                .classFrom(classLevelTriple.getLeft())
+                .classTo(classLevelTriple.getMiddle())
+                .educationLevel(classLevelTriple.getRight())
+                .build();
     }
 
     private void updateShortList(SchoolDetail schoolDetail, EducationEntity educationEntity,
@@ -276,7 +308,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
         Integer numberOfUntrainedTeachers = boardData.getNoOfUntrainedTeachers();
         String studentRatio = boardData.getStudentRatio();
         if (isNullOrZero(numberOfTeachers)
-            || StringUtils.isBlank(studentRatio)) {
+                || StringUtils.isBlank(studentRatio)) {
             return null;
         }
         FacultyDetail facultyDetail = new FacultyDetail(numberOfTeachers, studentRatio);
@@ -300,8 +332,10 @@ public class SchoolDetailServiceImpl implements SchoolService {
             generalInformation.setOfficialName(school.getOfficialName());
             generalInformation.setShortName(school.getShortName());
             final String logoUrl =
-                    Optional.ofNullable(school.getGallery()).map(SchoolGallery::getLogo).orElse(null);
-            generalInformation.setLogo(schoolUtilService.buildLogoFullPathFromRelativePath(logoUrl));
+                    Optional.ofNullable(school.getGallery()).map(SchoolGallery::getLogo)
+                            .orElse(null);
+            generalInformation
+                    .setLogo(schoolUtilService.buildLogoFullPathFromRelativePath(logoUrl));
             generalInformation.setCity(school.getAddress().getCity());
             generalInformation.setState(school.getAddress().getState());
             return generalInformation;
@@ -318,10 +352,11 @@ public class SchoolDetailServiceImpl implements SchoolService {
                 .orElse(null);
     }
 
-    private List<String> getFieldsByGroupAndCollectioName(String collectionName, List<String> fields,
-            String fieldGroup) {
+    private List<String> getFieldsByGroupAndCollectioName(String collectionName,
+            List<String> fields, String fieldGroup) {
         if (CollectionUtils.isEmpty(fields)) {
-            List<String> dbFields = commonMongoRepository.getFieldsByGroupAndCollectioName(collectionName, fieldGroup);
+            List<String> dbFields = commonMongoRepository
+                    .getFieldsByGroupAndCollectioName(collectionName, fieldGroup);
             if (CollectionUtils.isEmpty(dbFields)) {
                 throw new BadRequestException(INVALID_FIELD_GROUP,
                         INVALID_FIELD_GROUP.getExternalMessage());

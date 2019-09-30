@@ -10,7 +10,6 @@ import com.paytm.digital.education.explore.response.dto.common.BannerData;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.detail.Attribute;
 import com.paytm.digital.education.explore.response.dto.detail.CTAInfoHolder;
-import com.paytm.digital.education.explore.response.dto.detail.ClassInfoLegend;
 import com.paytm.digital.education.explore.response.dto.search.SchoolSearchData;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -50,7 +49,7 @@ public class SchoolDetail implements CTAInfoHolder {
     private Map<String, List<Attribute>> derivedAttributes;
 
     @JsonProperty("class_info")
-    private List<ClassInfoLegend> classInfoLegend = ClassInfoLegend.CLASS_INFO_STATIC_CONTENT_LIST;
+    private List<ClassLevelTable> classInfoTable;
 
     @JsonProperty("streams")
     private List<String> streams;
