@@ -11,12 +11,12 @@ import com.paytm.digital.education.coaching.consumer.service.search.helper.Coach
 import com.paytm.digital.education.coaching.es.model.ExamSearch;
 import com.paytm.digital.education.coaching.utils.ImageUtils;
 import com.paytm.digital.education.coaching.utils.SearchUtils;
-import com.paytm.digital.education.enums.es.enums.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationResponse;
 import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.enums.es.FilterQueryType;
 import com.paytm.digital.education.utility.CommonUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +49,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.S
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_EXAMS;
 import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_MEDIUM;
 import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_EXAM_LEVEL;
-import static com.paytm.digital.education.enums.es.enums.enums.FilterQueryType.TERMS;
+import static com.paytm.digital.education.enums.es.FilterQueryType.TERMS;
 
 @Slf4j
 @Service

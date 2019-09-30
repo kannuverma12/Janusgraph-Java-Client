@@ -36,8 +36,17 @@ public class ConfigProperties {
     private static String coachingCourseLogoPrefix;
     private static String coachingInstituteLogoPrefix;
 
+    private static String examPlaceholderLogoURL;
+
+
     public static String getEnvProfile() {
         return envProfile;
+    }
+
+
+    @Value("${exam.placeholder.logo.url}")
+    public void setExamPlaceHolderLogo(String logo) {
+        examPlaceholderLogoURL = logo;
     }
 
     @Value("${ingestion.env.profile}")
@@ -269,4 +278,9 @@ public class ConfigProperties {
     public static String getCtaLogoPrefix() {
         return ctaLogoPrefix;
     }
+
+    public static String getExamPlaceholderLogoURL() {
+        return examPlaceholderLogoURL;
+    }
+
 }

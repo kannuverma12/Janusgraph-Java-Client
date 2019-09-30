@@ -1,7 +1,7 @@
 package com.paytm.digital.education.explore.service.helper;
 
-import com.paytm.digital.education.explore.database.entity.Event;
-import com.paytm.digital.education.explore.database.entity.Instance;
+import com.paytm.digital.education.database.entity.Event;
+import com.paytm.digital.education.database.entity.Instance;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import org.joda.time.LocalDateTime;
 import org.junit.Assert;
@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.NON_TENTATIVE;
+import static com.paytm.digital.education.constant.ExploreConstants.NON_TENTATIVE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ExamInstanceHelperTest {

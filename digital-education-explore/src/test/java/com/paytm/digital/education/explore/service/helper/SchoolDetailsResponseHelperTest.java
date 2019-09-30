@@ -13,8 +13,8 @@ import static com.paytm.digital.education.enums.ClassType.NURSERY;
 import static com.paytm.digital.education.enums.ClassType.PRE_NURSERY;
 import static com.paytm.digital.education.enums.ClassType.SIX;
 import static com.paytm.digital.education.enums.ClassType.THREE;
-import static com.paytm.digital.education.explore.enums.ShiftType.Afternoon;
-import static com.paytm.digital.education.explore.enums.ShiftType.Morning;
+import static com.paytm.digital.education.enums.ShiftType.Afternoon;
+import static com.paytm.digital.education.enums.ShiftType.Morning;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SchoolDetailsResponseHelperTest {

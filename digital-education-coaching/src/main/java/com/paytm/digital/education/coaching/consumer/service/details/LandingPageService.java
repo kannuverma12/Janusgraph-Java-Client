@@ -8,12 +8,12 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.Coach
 import com.paytm.digital.education.coaching.consumer.model.response.search.ExamData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.ExamsTopHitsData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResponse;
-import com.paytm.digital.education.coaching.consumer.service.search.helper.SearchDataHelper;
 import com.paytm.digital.education.coaching.consumer.service.search.CoachingCourseSearchService;
 import com.paytm.digital.education.coaching.consumer.service.search.ExamSearchService;
+import com.paytm.digital.education.coaching.consumer.service.search.helper.SearchDataHelper;
 import com.paytm.digital.education.database.entity.Section;
-import com.paytm.digital.education.enums.es.enums.enums.DataSortOrder;
 import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.enums.es.DataSortOrder;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,9 +42,9 @@ import static com.paytm.digital.education.constant.CommonConstants.COACHING_STRE
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_COURSES;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_EXAMS;
 import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES;
-import static com.paytm.digital.education.enums.es.enums.enums.DataSortOrder.ASC;
 import static com.paytm.digital.education.enums.EducationEntity.COACHING_COURSE;
 import static com.paytm.digital.education.enums.EducationEntity.EXAM;
+import static com.paytm.digital.education.enums.es.DataSortOrder.ASC;
 
 @Service
 @AllArgsConstructor

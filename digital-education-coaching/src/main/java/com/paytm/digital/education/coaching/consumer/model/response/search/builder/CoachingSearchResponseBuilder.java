@@ -8,7 +8,6 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.Range
 import com.paytm.digital.education.coaching.consumer.model.response.search.RangeFilterValue;
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.TermFilterData;
-import com.paytm.digital.education.enums.es.enums.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.AggregationResponse;
 import com.paytm.digital.education.elasticsearch.models.BucketAggregationResponse;
@@ -16,6 +15,7 @@ import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.elasticsearch.models.FilterField;
 import com.paytm.digital.education.elasticsearch.models.MetricAggregationResponse;
+import com.paytm.digital.education.enums.es.AggregationType;
 import com.paytm.digital.education.utility.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

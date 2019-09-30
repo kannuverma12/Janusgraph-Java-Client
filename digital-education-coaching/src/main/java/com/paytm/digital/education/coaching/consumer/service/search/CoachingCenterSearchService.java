@@ -10,11 +10,11 @@ import com.paytm.digital.education.coaching.es.model.CoachingCenterSearch;
 import com.paytm.digital.education.coaching.es.model.CoachingInstituteSearch;
 import com.paytm.digital.education.coaching.es.model.GeoLocation;
 import com.paytm.digital.education.coaching.utils.ImageUtils;
-import com.paytm.digital.education.enums.es.enums.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.elasticsearch.models.SortField;
 import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.enums.es.FilterQueryType;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
@@ -41,7 +41,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.S
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.SEARCH_ANALYZER_COACHING_CENTER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.SEARCH_INDEX_COACHING_CENTER;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_CENTER;
-import static com.paytm.digital.education.enums.es.enums.enums.FilterQueryType.TERMS;
+import static com.paytm.digital.education.enums.es.FilterQueryType.TERMS;
 
 @Slf4j
 @Service

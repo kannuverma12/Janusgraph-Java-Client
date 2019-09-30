@@ -7,8 +7,8 @@ import com.paytm.digital.education.coaching.consumer.service.search.AbstractSear
 import com.paytm.digital.education.coaching.consumer.service.search.CoachingCourseSearchService;
 import com.paytm.digital.education.coaching.consumer.service.search.CoachingInstituteSearchService;
 import com.paytm.digital.education.coaching.consumer.service.search.ExamSearchService;
-import com.paytm.digital.education.enums.es.enums.enums.DataSortOrder;
 import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.enums.es.DataSortOrder;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -6,8 +6,8 @@ import com.paytm.digital.education.coaching.consumer.model.request.SearchRequest
 import com.paytm.digital.education.coaching.consumer.model.response.search.ExamData;
 import com.paytm.digital.education.coaching.es.model.Event;
 import com.paytm.digital.education.coaching.es.model.ExamInstance;
-import com.paytm.digital.education.enums.es.enums.enums.DataSortOrder;
 import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.enums.es.DataSortOrder;
 import com.paytm.digital.education.utility.DateUtil;
 import lombok.experimental.UtilityClass;
 import org.springframework.util.CollectionUtils;
@@ -32,7 +32,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.S
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.SEARCH_STREAM_SUFFIX;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.YYYY_MM;
-import static com.paytm.digital.education.enums.es.enums.enums.DataSortOrder.ASC;
+import static com.paytm.digital.education.enums.es.DataSortOrder.ASC;
 
 @UtilityClass
 public class SearchUtils {

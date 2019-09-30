@@ -1,5 +1,6 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import com.paytm.digital.education.config.ConfigProperties;
 import com.paytm.digital.education.elasticsearch.constants.ESConstants;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
@@ -8,7 +9,6 @@ import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationRespon
 import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.enums.es.FilterQueryType;
-import com.paytm.digital.education.explore.config.ConfigProperties;
 import com.paytm.digital.education.explore.es.model.ExamSearch;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.search.ExamSectionData;

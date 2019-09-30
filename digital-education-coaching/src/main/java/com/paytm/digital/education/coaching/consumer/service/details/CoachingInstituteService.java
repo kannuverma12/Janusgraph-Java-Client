@@ -22,9 +22,9 @@ import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.enums.es.enums.enums.DataSortOrder;
 import com.paytm.digital.education.enums.CourseType;
 import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.enums.es.DataSortOrder;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.CommonUtils;
@@ -68,7 +68,7 @@ import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_EXA
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_RANKERS;
 import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES_IMAGE;
 import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES_LOGO;
-import static com.paytm.digital.education.enums.es.enums.enums.DataSortOrder.ASC;
+import static com.paytm.digital.education.enums.es.DataSortOrder.ASC;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_NAME;
 
