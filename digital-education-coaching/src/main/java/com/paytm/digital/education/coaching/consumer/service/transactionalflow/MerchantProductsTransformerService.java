@@ -60,7 +60,7 @@ public class MerchantProductsTransformerService {
                         .productId(itemEntity.getPaytmProductId())
                         .categoryId(EDUCATION_CATEGORY_ID)
                         .educationVertical(EDUCATION_VERTICAL_ID)
-                        .qty(DEFAULT_QUANTITY)
+                        .quantity(DEFAULT_QUANTITY)
                         .metaData(getMetaData(merchantProduct, request))
                         .referenceId("")
                         .basePrice(merchantProduct.getPrice())

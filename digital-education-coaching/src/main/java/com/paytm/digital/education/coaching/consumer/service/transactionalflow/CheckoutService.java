@@ -41,7 +41,7 @@ public class CheckoutService {
             responseCartItems.add(CartItem
                     .builder()
                     .productId(cartItem.getProductId())
-                    .qty(cartItem.getQty())
+                    .quantity(cartItem.getQuantity())
                     .basePrice(cartItem.getBasePrice())
                     .convFee(cartItem.getConvFee())
                     .sellingPrice(cartItem.getSellingPrice())

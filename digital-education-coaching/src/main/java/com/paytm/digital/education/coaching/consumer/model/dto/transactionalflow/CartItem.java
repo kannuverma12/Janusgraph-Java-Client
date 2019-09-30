@@ -24,7 +24,7 @@ public class CartItem {
     private Long productId;
 
     @NotNull
-    private Integer qty;
+    private Integer quantity;
 
     @NotNull
     private Float basePrice;
