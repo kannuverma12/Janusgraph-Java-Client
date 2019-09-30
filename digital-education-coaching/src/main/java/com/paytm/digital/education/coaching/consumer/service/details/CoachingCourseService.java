@@ -14,6 +14,7 @@ import com.paytm.digital.education.coaching.consumer.service.search.helper.Searc
 import com.paytm.digital.education.coaching.consumer.transformer.CoachingCourseTransformer;
 import com.paytm.digital.education.coaching.enums.CourseSessionDetails;
 import com.paytm.digital.education.database.embedded.Currency;
+import com.paytm.digital.education.database.entity.CoachingCenterEntity;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
@@ -41,8 +42,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.mongodb.QueryOperators.AND;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.CENTER_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_IDS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE;
@@ -103,13 +106,17 @@ public class CoachingCourseService {
             Arrays.asList("exam_id", "exam_full_name", "exam_short_name", "conducting_body",
                     "priority", "logo");
 
-    public static final List<String> TOP_RANKER_FIELDS =
+    static final List<String> TOP_RANKER_FIELDS =
             Arrays.asList("top_ranker_id", "institute_id", "center_id", "course_ids",
                     "exam_id", "exam_name", "student_name", "student_photo",
                     "rank_obtained", "exam_year", "testimonial", "priority");
 
     private static final List<String> INSTITUTE_FIELDS =
             Arrays.asList("institute_id", "brand_name", "logo");
+
+    public static final List<String> CENTER_FIELDS =
+            Arrays.asList("institute_id", "center_id", "official_name", "official_address",
+                    "course_types", "opening_time", "closing_time", "center_image");
 
     private final CoachingCourseTransformer       coachingCourseTransformer;
     private final CommonMongoRepository           commonMongoRepository;
@@ -137,8 +144,11 @@ public class CoachingCourseService {
         final Map<String, List<Exam>> examTypeAndExamListMap = this.buildExamIdAndExamListMap(
                 course, examIdAndNameMap, topRankerExamIds);
 
+        final Map<Long, CoachingCenterEntity> centerIdAndCenterMap = this.fetchCenterByCenterIds(
+                topRankerEntityList);
+
         return this.buildResponse(course, institute, examTypeAndExamListMap,
-                topRankerEntityList, examIdAndNameMap, courseIdAndNameMap,
+                topRankerEntityList, centerIdAndCenterMap, examIdAndNameMap, courseIdAndNameMap,
                 this.fetchCoachingCourseFeatures(course.getCourseFeatureIds()),
                 this.fetchSections());
     }
@@ -310,10 +320,33 @@ public class CoachingCourseService {
         return topRankerEntityList;
     }
 
+    private Map<Long, CoachingCenterEntity> fetchCenterByCenterIds(
+            final List<TopRankerEntity> topRankerEntityList) {
+        if (CollectionUtils.isEmpty(topRankerEntityList)) {
+            return Collections.EMPTY_MAP;
+        }
+
+        final List<Long> centerIdList = topRankerEntityList.stream()
+                .map(TopRankerEntity::getCenterId)
+                .collect(Collectors.toList());
+
+        List<CoachingCenterEntity> coachingCenterEntityList = this.commonMongoRepository
+                .getEntityFieldsByValuesIn(CENTER_ID, centerIdList, CoachingCenterEntity.class,
+                        CENTER_FIELDS);
+
+        if (CollectionUtils.isEmpty(coachingCenterEntityList)) {
+            return Collections.EMPTY_MAP;
+        }
+
+        return coachingCenterEntityList.stream()
+                .collect(Collectors.toMap(CoachingCenterEntity::getCenterId, center -> center));
+    }
+
     private GetCoachingCourseDetailsResponse buildResponse(final CoachingCourseEntity course,
             final CoachingInstituteEntity institute,
             final Map<String, List<Exam>> examTypeAndExamListMap,
             final List<TopRankerEntity> topRankers,
+            final Map<Long, CoachingCenterEntity> centerIdAndCenterMap,
             final Map<Long, String> examIdAndNameMap,
             final Map<Long, String> courseIdAndNameMap,
             final List<CoachingCourseFeature> coachingCourseFeatures,
@@ -333,7 +366,7 @@ public class CoachingCourseService {
                 .topRankers(TopRankers.builder()
                         .header(TOP_RANKERS.getValue())
                         .results(this.coachingCourseTransformer.convertTopRankers(topRankers,
-                                examIdAndNameMap, courseIdAndNameMap))
+                                examIdAndNameMap, courseIdAndNameMap, centerIdAndCenterMap))
                         .build())
                 .importantDates(CoachingCourseImportantDates.builder()
                         .header(IMPORTANT_DATES.getValue())

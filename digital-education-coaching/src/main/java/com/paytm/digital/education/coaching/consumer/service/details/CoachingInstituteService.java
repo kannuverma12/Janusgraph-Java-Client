@@ -21,6 +21,7 @@ import com.paytm.digital.education.coaching.consumer.service.search.helper.Searc
 import com.paytm.digital.education.coaching.consumer.transformer.CoachingInstituteTransformer;
 import com.paytm.digital.education.coaching.enums.CoachingCourseType;
 import com.paytm.digital.education.coaching.utils.ImageUtils;
+import com.paytm.digital.education.database.entity.CoachingCenterEntity;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.database.entity.StreamEntity;
@@ -71,6 +72,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.S
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_IDS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.IGNORE_GLOBAL_PRIORITY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
+import static com.paytm.digital.education.coaching.consumer.service.details.CoachingCourseService.CENTER_FIELDS;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.BROWSE_BY_COURSE_TYPE;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.DOWNLOAD_BROCHURE;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.FIND_CENTERS;
@@ -128,6 +130,9 @@ public class CoachingInstituteService {
         List<String> sections = (List<String>) propertyMap.getOrDefault(INSTITUTE,
                 new ArrayList<>());
 
+        final Map<Long, CoachingCenterEntity> coachingCenterIdAndCenterMap =
+                this.fetchCoachingCentersByInstituteId(instituteId);
+
         return GetCoachingInstituteDetailsResponse.builder()
                 .instituteId(coachingInstituteEntity.getInstituteId())
                 .instituteName(coachingInstituteEntity.getBrandName())
@@ -142,7 +147,8 @@ public class CoachingInstituteService {
                 .centerAndBrochureInfo(this.getCenterAndBrochureInfo(coachingInstituteEntity))
                 .streams(this.getStreamsForInstitute(coachingInstituteEntity))
                 .exams(this.getExamsForInstitute(coachingInstituteEntity))
-                .topRankers(this.getTopRankersForInstitute(instituteId, streamId, examId))
+                .topRankers(this.getTopRankersForInstitute(instituteId, streamId, examId,
+                        coachingCenterIdAndCenterMap))
                 .coachingCourseTypes(this.getCoachingCourseTypes(coachingInstituteEntity))
                 .topCoachingCourses(this.getTopCoachingCoursesForInstitute(coachingInstituteEntity,
                         streamId, examId))
@@ -150,6 +156,20 @@ public class CoachingInstituteService {
                 .faqs(this.fillFaqs(coachingInstituteEntity.getFaqs()))
                 .sections(sections)
                 .build();
+    }
+
+    private Map<Long, CoachingCenterEntity> fetchCoachingCentersByInstituteId(
+            final long instituteId) {
+        List<CoachingCenterEntity> coachingCenterEntityList = this.commonMongoRepository
+                .getEntitiesByIdAndFields(INSTITUTE_ID, instituteId, CoachingCenterEntity.class,
+                        CENTER_FIELDS);
+
+        if (CollectionUtils.isEmpty(coachingCenterEntityList)) {
+            return Collections.EMPTY_MAP;
+        }
+
+        return coachingCenterEntityList.stream()
+                .collect(Collectors.toMap(CoachingCenterEntity::getCenterId, center -> center));
     }
 
     public static MockTest getMockTestInfo(String name) {
@@ -281,7 +301,8 @@ public class CoachingInstituteService {
                 .build();
     }
 
-    private TopRankers getTopRankersForInstitute(long instituteId, Long streamId, Long examId) {
+    private TopRankers getTopRankersForInstitute(long instituteId, Long streamId, Long examId,
+            final Map<Long, CoachingCenterEntity> coachingCenterIdAndCenterMap) {
         Set<Long> examIds = new HashSet<>();
         Set<Long> courseIds = new HashSet<>();
 
@@ -322,7 +343,7 @@ public class CoachingInstituteService {
                 .header(TOP_RANKERS.getValue())
                 .results(CoachingInstituteTransformer.convertTopRankerEntityToTopRankerDto(
                         examIdsAndNameMap, coachingCourseIdsAndNameMap, topRankerEntityList,
-                        topRankerList))
+                        topRankerList, coachingCenterIdAndCenterMap))
                 .build();
     }
 

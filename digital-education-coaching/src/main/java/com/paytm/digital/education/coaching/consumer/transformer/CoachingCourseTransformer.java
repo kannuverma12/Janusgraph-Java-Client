@@ -1,9 +1,10 @@
 package com.paytm.digital.education.coaching.consumer.transformer;
 
-import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseFeature;
-import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseImportantDate;
 import com.paytm.digital.education.coaching.consumer.model.dto.Exam;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopRanker;
+import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseFeature;
+import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseImportantDate;
+import com.paytm.digital.education.database.entity.CoachingCenterEntity;
 import com.paytm.digital.education.database.entity.CoachingCourseFeatureEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
 import com.paytm.digital.education.utility.CommonUtil;
@@ -29,7 +30,8 @@ public class CoachingCourseTransformer {
     private static final String NO  = "No";
 
     public List<TopRanker> convertTopRankers(final List<TopRankerEntity> topRankerEntityList,
-            final Map<Long, String> examIdAndNameMap, final Map<Long, String> courseIdAndNameMap) {
+            final Map<Long, String> examIdAndNameMap, final Map<Long, String> courseIdAndNameMap,
+            final Map<Long, CoachingCenterEntity> centerIdAndCenterMap) {
         if (CollectionUtils.isEmpty(topRankerEntityList)) {
             return new ArrayList<>();
         }
@@ -46,8 +48,27 @@ public class CoachingCourseTransformer {
                         .rank(tr.getRankObtained())
                         .examYear(tr.getExamYear())
                         .testimonial(tr.getTestimonial())
+                        .centerCity(getCenterCity(tr, centerIdAndCenterMap))
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    public static String getCenterCity(final TopRankerEntity topRankerEntity,
+            final Map<Long, CoachingCenterEntity> centerIdAndCenterMap) {
+
+        if (CollectionUtils.isEmpty(centerIdAndCenterMap)) {
+            return EMPTY_STRING;
+        }
+
+        final CoachingCenterEntity coachingCenterEntity = centerIdAndCenterMap.get(
+                topRankerEntity.getCenterId());
+
+        if (null != coachingCenterEntity && null != coachingCenterEntity.getOfficialAddress()) {
+            return coachingCenterEntity.getOfficialAddress().getCity();
+        }
+        log.warn("Got null center city for topRanker: {}, center: {}",
+                topRankerEntity, coachingCenterEntity);
+        return EMPTY_STRING;
     }
 
     public Exam convertExam(final com.paytm.digital.education.database.entity.Exam exam) {

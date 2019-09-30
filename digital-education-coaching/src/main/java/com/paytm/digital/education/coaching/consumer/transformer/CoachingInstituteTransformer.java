@@ -6,6 +6,7 @@ import com.paytm.digital.education.coaching.consumer.model.dto.Stream;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopRanker;
 import com.paytm.digital.education.coaching.utils.ImageUtils;
 import com.paytm.digital.education.database.embedded.KeyHighlight;
+import com.paytm.digital.education.database.entity.CoachingCenterEntity;
 import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
 import lombok.experimental.UtilityClass;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_INSTITUTE_KEY_HIGHLIGHT_PLACEHOLDER;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.EMPTY_STRING;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_PLACEHOLDER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_PLACEHOLDER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.TOP_RANKER_PLACEHOLDER;
@@ -89,7 +91,9 @@ public class CoachingInstituteTransformer {
 
     public static List<TopRanker> convertTopRankerEntityToTopRankerDto(
             Map<Long, String> examIdsAndNameMap, Map<Long, String> coachingCourseIdsAndNameMap,
-            List<TopRankerEntity> topRankerEntityList, List<TopRanker> topRankerList) {
+            List<TopRankerEntity> topRankerEntityList, List<TopRanker> topRankerList,
+            Map<Long, CoachingCenterEntity> coachingCenterIdAndCenterMap) {
+
         if (!CollectionUtils.isEmpty(topRankerEntityList)) {
             for (TopRankerEntity topRankerEntity : topRankerEntityList) {
                 TopRanker topRanker = TopRanker
@@ -108,6 +112,8 @@ public class CoachingInstituteTransformer {
                                 .getImageWithAbsolutePath(topRankerEntity.getStudentPhoto(),
                                         TOP_RANKER_PLACEHOLDER, COACHING_TOP_RANKER))
                         .testimonial(topRankerEntity.getTestimonial())
+                        .centerCity(CoachingCourseTransformer.getCenterCity(
+                                topRankerEntity, coachingCenterIdAndCenterMap))
                         .build();
 
                 topRankerList.add(topRanker);
@@ -115,6 +121,7 @@ public class CoachingInstituteTransformer {
         }
         return topRankerList;
     }
+
 
     private List<String> getCoachingCoursesNameFromIds(
             Map<Long, String> coachingCourseIdsAndNameMap,
