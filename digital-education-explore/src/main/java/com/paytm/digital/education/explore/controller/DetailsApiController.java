@@ -48,10 +48,19 @@ public class DetailsApiController {
             @RequestParam(name = "field_group", required = false) String fieldGroup,
             @RequestParam(name = "fields", required = false) List<String> fields,
             @RequestHeader(value = "x-user-id", required = false) Long userId,
-            @RequestHeader(value = "fe_client", required = false) Client client) throws Exception {
+            @RequestHeader(value = "fe_client", required = false) Client client,
+            @RequestHeader(value = "syllabus", required = false) Boolean syllabus,
+            @RequestHeader(value = "important_dates", required = false) Boolean importantDates,
+            @RequestHeader(value = "derived_attributes", required = false) Boolean derivedAttributes,
+            @RequestHeader(value = "exam-centers", required = false) Boolean examCenters,
+            @RequestHeader(value = "sections", required = false) Boolean sections,
+            @RequestHeader(value = "widgets", required = false) Boolean widgets) throws Exception {
         exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
+
         return examDetailService
-                .getDetail(examId, examName, userId, fieldGroup, fields, client);
+                .getDetail(examId, examName, userId, fieldGroup, fields, client, syllabus,
+                        importantDates, derivedAttributes, examCenters, sections,
+                        widgets);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/institute/{instituteId}/{instituteName}")
