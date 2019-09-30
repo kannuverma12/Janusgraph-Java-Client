@@ -18,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class PostMerchantProductsRequest {
+public class FetchCartItemsRequestBody {
 
     @NotNull
     private Long merchantId;

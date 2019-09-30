@@ -33,17 +33,25 @@ public class CoachingConstants {
     public static final String COACHING_CENTER_LOCATION        = "location";
     public static final String DISTANCE_KILOMETERS             = " km";
 
-    public static final String COACHING_COMPONENT  = "coaching";
-    public static final String GOOGLE_SHEETS_INFO  = "google_sheets_info";
-    public static final String DATA_INGEST         = "coaching_data_ingest";
-    public static final String DATA_EXPORT         = "coaching_data_export";
-    public static final String TYPE                = "type";
-    public static final String COACHING_COURSE_ID  = "course_id";
-    public static final String COACHING_COURSE_IDS = "course_ids";
-    public static final String NAME                = "name";
-    public static final String PAYTM_REQUEST_ID    = "PaytmRequestId";
-    public static final String CHECKSUM_HASH       = "ChecksumHash";
-    public static final String ACCESS_KEY          = "AccessKey";
+    public static final String COACHING_COMPONENT         = "coaching";
+    public static final String GOOGLE_SHEETS_INFO         = "google_sheets_info";
+    public static final String DATA_INGEST                = "coaching_data_ingest";
+    public static final String DATA_EXPORT                = "coaching_data_export";
+    public static final String TYPE                       = "type";
+    public static final String COACHING_COURSE_ID         = "course_id";
+    public static final String COACHING_COURSE_IDS        = "course_ids";
+    public static final String NAME                       = "name";
+    public static final String PAYTM_REQUEST_ID           = "PaytmRequestId";
+    public static final String CHECKSUM_HASH              = "ChecksumHash";
+    public static final String ACCESS_KEY                 = "AccessKey";
+    public static final String EXAM_FILTER_NAMESPACE      = "exam_filter";
+    public static final String EXAM_SEARCH_NAMESPACE      = "exam_search";
+    public static final String INSTITUTE_FILTER_NAMESPACE = "institute_filter";
+    public static final String INSTITUTE_SEARCH_NAMESPACE = "institute_search";
+    public static final String CENTER_FILTER_NAMESPACE    = "center_filter";
+    public static final String CENTER_SEARCH_NAMESPACE    = "center_search";
+    public static final String COURSE_FILTER_NAMESPACE    = "course_filter";
+    public static final String COURSE_SEARCH_NAMESPACE    = "course_search";
 
     public static final String INSTITUTES_GOOGLE_SHEET =
             "https://docs.google.com/spreadsheets/u/1/d/1gXwzFk3tLldPBYkgWZZINAc4gNJBSyItINeLLg4Bqs8/edit#gid=1844071691";

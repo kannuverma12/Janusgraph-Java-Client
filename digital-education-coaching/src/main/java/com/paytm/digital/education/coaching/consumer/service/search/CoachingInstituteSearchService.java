@@ -27,11 +27,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COMPONENT;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_INSTITUTE_COURSE_TYPES;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_INSTITUTE_EXAMS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_INSTITUTE_STREAMS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ID;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_FILTER_NAMESPACE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_PLACEHOLDER;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_SEARCH_NAMESPACE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_INSTITUTE_BRAND;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_INSTITUTE_BRAND_BOOST;
@@ -78,7 +81,8 @@ public class CoachingInstituteSearchService extends AbstractSearchService {
             elasticResponse = new ElasticResponse();
         }
         SearchResponse searchResponse = new SearchResponse(searchRequest.getTerm());
-        buildSearchResponse(searchResponse, elasticResponse, elasticRequest);
+        buildSearchResponse(searchResponse, elasticResponse, elasticRequest,COACHING_COMPONENT,
+                INSTITUTE_FILTER_NAMESPACE,INSTITUTE_SEARCH_NAMESPACE);
         return searchResponse;
     }
 
