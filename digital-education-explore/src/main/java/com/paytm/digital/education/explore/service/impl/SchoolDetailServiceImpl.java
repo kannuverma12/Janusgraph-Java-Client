@@ -153,8 +153,10 @@ public class SchoolDetailServiceImpl implements SchoolService {
             schoolDetail.setFacilities(facilityResponseList);
             List<ImportantDate> importantDates = Stream.concat(
                     boardData.getSchoolAdmissionList().stream()
+                            .filter(x -> StringUtils.isNotBlank(x.getDateType()))
                             .map(x -> new ImportantDate(x, ACTUAL)),
                     boardData.getSchoolAdmissionTentativeList().stream()
+                            .filter(x -> StringUtils.isNotBlank(x.getDateType()))
                             .map(x -> new ImportantDate(x, TENTATIVE))
             ).collect(Collectors.toList());
             schoolDetail.setImportantDateSections(importantDates);
