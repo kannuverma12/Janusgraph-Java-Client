@@ -130,7 +130,7 @@ public class CoachingCourseSearchService extends AbstractSearchService {
         AggregateField[] aggregateFields = searchRequest.isFetchSearchResultsPerFilter()
                 ? coachingSearchAggregateHelper
                 .getTopHitsAggregateData(searchRequest.getDataPerFilter())
-                : coachingSearchAggregateHelper.getExamAggregateData();
+                : coachingSearchAggregateHelper.getCoachingCourseAggregateData();
 
         if (searchRequest.getFetchFilter()) {
             populateAggregateFields(searchRequest, elasticRequest,
