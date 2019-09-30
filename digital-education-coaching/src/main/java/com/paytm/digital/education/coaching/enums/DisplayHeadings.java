@@ -31,19 +31,21 @@ public enum DisplayHeadings {
     BOOKS_COUNT("Books Count"),
     SOLVED_PAPER_COUNT("Solved Paper Count"),
 
+    FIND_CENTERS("Find Centers"),
+    FIND_CENTERS_DESCRIPTION("Locate %s Centers near you"),
+    DOWNLOAD_BROCHURE("Download Brochure"),
     BROWSE_BY_COURSE_TYPE("Browse by Course Type"),
-    TOP_COACHING_COURSES_BY("Top Coaching Courses by "),
-    TOP_EXAMS_PREPARED_FOR_BY("Top Exams prepared for by "),
-    STREAMS_PREPARED_FOR_BY("Streams prepared for by "),
+    TOP_COACHING_COURSES_BY("Top Coaching Courses by %s"),
+    TOP_EXAMS_PREPARED_FOR_BY("Top Exams prepared for by %s"),
+    STREAMS_PREPARED_FOR_BY("Streams prepared for by %s"),
 
-    TOP_COACHING_COURSES_FOR("Top Coaching Courses for "),
-    TOP_COACHING_INSTITUTES_FOR("Top Coaching Institutes for "),
-    COACHING_FOR("Coaching for "),
-    EXAMS(" Exams"),
+    TOP_COACHING_COURSES_FOR("Top Coaching Courses for %s"),
+    TOP_COACHING_INSTITUTES_FOR("Top Coaching Institutes for %s"),
+    COACHING_FOR("Coaching for %s Exams"),
 
     SIMILAR_COACHING_COURSES("Similar Coaching Courses"),
     SIMILAR_COACHING_INSTITUTES("Similar Coaching Institutes"),
-    ALL_YOU_NEED_TO_KNOW_ABOUT("All you need to know about ");
+    ALL_YOU_NEED_TO_KNOW_ABOUT("All you need to know about %s");
 
     private String value;
 }

@@ -3,7 +3,6 @@ package com.paytm.digital.education.coaching.consumer.model.dto.transactionalflo
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.paytm.digital.education.enums.CourseType;
 import lombok.Data;
 
 import javax.validation.Valid;
@@ -19,7 +18,7 @@ public class CheckoutMetaData {
     @Valid
     private TaxInfo taxInfo;
 
-    private CourseType courseType;
-    private Long       courseId;
-    private Long       userId;
+    private String courseType;
+    private Long   courseId;
+    private Long   userId;
 }

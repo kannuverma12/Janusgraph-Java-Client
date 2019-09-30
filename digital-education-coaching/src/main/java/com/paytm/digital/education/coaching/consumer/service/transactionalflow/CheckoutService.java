@@ -41,7 +41,7 @@ public class CheckoutService {
             responseCartItems.add(CartItem
                     .builder()
                     .productId(cartItem.getProductId())
-                    .qty(cartItem.getQty())
+                    .quantity(cartItem.getQuantity())
                     .basePrice(cartItem.getBasePrice())
                     .convFee(cartItem.getConvFee())
                     .sellingPrice(cartItem.getSellingPrice())
@@ -87,7 +87,7 @@ public class CheckoutService {
                 .convTaxInfo(metaData.getConvTaxInfo())
                 .taxInfo(metaData.getTaxInfo())
                 .tcs(tcs)
-                .courseType(metaData.getCourseType().getText())
+                .courseType(metaData.getCourseType())
                 .courseId(metaData.getCourseId())
                 .userId(metaData.getUserId())
                 .build();

@@ -2,14 +2,18 @@ package com.paytm.digital.education.coaching.consumer.service.details;
 
 import com.paytm.digital.education.coaching.consumer.model.dto.Exam;
 import com.paytm.digital.education.coaching.consumer.model.dto.Faq;
+import com.paytm.digital.education.coaching.consumer.model.dto.MockTest;
 import com.paytm.digital.education.coaching.consumer.model.dto.Stream;
+import com.paytm.digital.education.coaching.consumer.model.dto.SyllabusAndBrochure;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingCourses;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopExamsInstitute;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopRanker;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopRankers;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopStreams;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseTypeResponse;
+import com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute.CenterAndBrochureInfo;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute.CoachingCourseTypeInfo;
+import com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute.InstituteCenterSection;
 import com.paytm.digital.education.coaching.consumer.model.response.details.GetCoachingInstituteDetailsResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingCourseData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingInstituteData;
@@ -47,6 +51,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.mongodb.QueryOperators.AND;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_INSTITUTE_FIND_CENTERS_LOGO;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_COMPONENT;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_KEY;
@@ -56,12 +61,20 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.I
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_COVER_IMAGE_PLACEHOLDER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_PLACEHOLDER;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.MockTestBanner.BUTTON_TEXT;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.MockTestBanner.DESCRIPTION;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.MockTestBanner.HEADER;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.MockTestBanner.LOGO;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.MockTestBanner.TAG_TEXT;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_INSTITUTE_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_IDS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.IGNORE_GLOBAL_PRIORITY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.BROWSE_BY_COURSE_TYPE;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.DOWNLOAD_BROCHURE;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.FIND_CENTERS;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.FIND_CENTERS_DESCRIPTION;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.STREAMS_PREPARED_FOR_BY;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_COACHING_COURSES_BY;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_EXAMS_PREPARED_FOR_BY;
@@ -80,7 +93,7 @@ public class CoachingInstituteService {
     private static final List<String> COACHING_INSTITUTE_FIELDS =
             Arrays.asList("institute_id", "brand_name", "cover_image", "about_institute",
                     "key_highlights", "streams", "exams", "course_types", "faqs",
-                    "more_info1", "more_info2", "more_info3", "more_info4", "logo");
+                    "more_info1", "more_info2", "more_info3", "more_info4", "logo", "brochure");
 
     private static final List<String> EXAM_FIELDS =
             Arrays.asList("exam_id", "exam_full_name", "exam_short_name", "logo");
@@ -125,14 +138,43 @@ public class CoachingInstituteService {
                         INSTITUTE_PLACEHOLDER, TOP_COACHING_INSTITUTES_LOGO))
                 .instituteHighlights(CoachingInstituteTransformer.convertInstituteHighlights(
                         coachingInstituteEntity.getKeyHighlights()))
+                .centerAndBrochureInfo(this.getCenterAndBrochureInfo(coachingInstituteEntity))
                 .streams(this.getStreamsForInstitute(coachingInstituteEntity))
                 .exams(this.getExamsForInstitute(coachingInstituteEntity))
                 .topRankers(this.getTopRankersForInstitute(instituteId, streamId, examId))
                 .coachingCourseTypes(this.getCoachingCourseTypes(coachingInstituteEntity))
                 .topCoachingCourses(this.getTopCoachingCoursesForInstitute(coachingInstituteEntity,
                         streamId, examId))
+                .mockTest(this.getMockTestInfo(coachingInstituteEntity))
                 .faqs(this.fillFaqs(coachingInstituteEntity.getFaqs()))
                 .sections(sections)
+                .build();
+    }
+
+    private MockTest getMockTestInfo(CoachingInstituteEntity coachingInstituteEntity) {
+        return MockTest.builder()
+                .logo(LOGO)
+                .header(String.format(HEADER, coachingInstituteEntity.getBrandName()))
+                .description(DESCRIPTION)
+                .tagText(TAG_TEXT)
+                .buttonText(BUTTON_TEXT)
+                .redirectUrl("")
+                .build();
+    }
+
+    private CenterAndBrochureInfo getCenterAndBrochureInfo(
+            CoachingInstituteEntity coachingInstituteEntity) {
+        return CenterAndBrochureInfo.builder()
+                .centers(InstituteCenterSection.builder()
+                        .header(FIND_CENTERS.getValue())
+                        .description(String.format(FIND_CENTERS_DESCRIPTION.getValue(),
+                                coachingInstituteEntity.getBrandName()))
+                        .logo(COACHING_INSTITUTE_FIND_CENTERS_LOGO)
+                        .build())
+                .brochure(SyllabusAndBrochure.builder()
+                        .header(DOWNLOAD_BROCHURE.getValue())
+                        .url(coachingInstituteEntity.getBrochure())
+                        .build())
                 .build();
     }
 
@@ -172,7 +214,8 @@ public class CoachingInstituteService {
         }
 
         return TopCoachingCourses.builder()
-                .header(TOP_COACHING_COURSES_BY.getValue() + coachingInstituteEntity.getBrandName())
+                .header(String.format(TOP_COACHING_COURSES_BY.getValue(),
+                        coachingInstituteEntity.getBrandName()))
                 .results(topCoachingCourses)
                 .build();
     }
@@ -194,8 +237,8 @@ public class CoachingInstituteService {
         List<Exam> examList = new ArrayList<>();
         if (CollectionUtils.isEmpty(coachingInstituteEntity.getExams())) {
             return TopExamsInstitute.builder()
-                    .header(TOP_EXAMS_PREPARED_FOR_BY.getValue()
-                            + coachingInstituteEntity.getBrandName())
+                    .header(String.format(TOP_EXAMS_PREPARED_FOR_BY.getValue(),
+                            coachingInstituteEntity.getBrandName()))
                     .results(examList)
                     .build();
         }
@@ -207,8 +250,8 @@ public class CoachingInstituteService {
                         CoachingInstituteService.EXAM_FIELDS);
 
         return TopExamsInstitute.builder()
-                .header(TOP_EXAMS_PREPARED_FOR_BY.getValue()
-                        + coachingInstituteEntity.getBrandName())
+                .header(String.format(TOP_EXAMS_PREPARED_FOR_BY.getValue(),
+                        coachingInstituteEntity.getBrandName()))
                 .results(CoachingInstituteTransformer.convertExamEntityToDto(examList,
                         examEntityList))
                 .build();
@@ -218,8 +261,8 @@ public class CoachingInstituteService {
         List<Stream> streamList = new ArrayList<>();
         if (CollectionUtils.isEmpty(coachingInstituteEntity.getStreams())) {
             return TopStreams.builder()
-                    .header(STREAMS_PREPARED_FOR_BY.getValue()
-                            + coachingInstituteEntity.getBrandName())
+                    .header(String.format(STREAMS_PREPARED_FOR_BY.getValue(),
+                            coachingInstituteEntity.getBrandName()))
                     .results(streamList)
                     .build();
         }
@@ -230,7 +273,8 @@ public class CoachingInstituteService {
                         CoachingInstituteService.STREAM_FIELDS);
 
         return TopStreams.builder()
-                .header(STREAMS_PREPARED_FOR_BY.getValue() + coachingInstituteEntity.getBrandName())
+                .header(String.format(STREAMS_PREPARED_FOR_BY.getValue(),
+                        coachingInstituteEntity.getBrandName()))
                 .results(CoachingInstituteTransformer
                         .convertStreamEntityToStreamDto(streamList, streamEntityList))
                 .build();

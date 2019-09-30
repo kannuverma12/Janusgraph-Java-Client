@@ -32,12 +32,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COMPONENT;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_DURATION;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_EXAMS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_INSTITUTE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_LEVEL;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_PLACEHOLDER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_STREAMS;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_FILTER_NAMESPACE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_SEARCH_NAMESPACE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_TYPE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_ID;
@@ -95,7 +98,8 @@ public class CoachingCourseSearchService extends AbstractSearchService {
             populateSearchResultPerLevel(searchResponse, elasticResponse);
         }
 
-        buildSearchResponse(searchResponse, elasticResponse, elasticRequest);
+        buildSearchResponse(searchResponse, elasticResponse, elasticRequest,COACHING_COMPONENT,
+                COURSE_FILTER_NAMESPACE,COURSE_SEARCH_NAMESPACE);
         return searchResponse;
     }
 

@@ -1,4 +1,4 @@
-package com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow;
+package com.paytm.digital.education.coaching.consumer.model.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -9,8 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Data
 @Builder
@@ -18,31 +18,16 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class CartItem {
+public class FetchCartItemsRequestBody {
 
     @NotNull
-    private Long productId;
+    private Long merchantId;
 
     @NotNull
-    private Integer quantity;
-
-    @NotNull
-    private Float basePrice;
-
-    @NotNull
-    private Float convFee;
-
-    @NotNull
-    private Float sellingPrice;
-
-    private String categoryId;
-
-    @NotEmpty
-    private String educationVertical;
-
-    @NotEmpty
-    private String referenceId;
+    private Long userId;
 
     @Valid
-    private MetaData metaData;
+    @NotNull
+    List<MerchantProduct> merchantProductList;
+
 }

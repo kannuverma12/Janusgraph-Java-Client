@@ -19,6 +19,7 @@ import com.paytm.digital.education.enums.es.DataSortOrder;
 import com.paytm.digital.education.enums.es.FilterQueryType;
 import com.paytm.digital.education.exception.EducationException;
 import com.paytm.digital.education.mapping.ErrorEnum;
+import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.search.service.ISearchService;
 import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.utility.HierarchyIdentifierUtils;
@@ -50,6 +51,9 @@ public abstract class AbstractSearchService {
 
     @Autowired
     private CoachingSearchResponseBuilder coachingSearchResponseBuilder;
+
+    @Autowired
+    private PropertyReader propertyReader;
 
     @PostConstruct
     private void generateLevelMap() {
@@ -204,15 +208,24 @@ public abstract class AbstractSearchService {
     }
 
     protected void buildSearchResponse(SearchResponse searchResponse,
-            ElasticResponse elasticResponse, ElasticRequest elasticRequest) {
+            ElasticResponse elasticResponse, ElasticRequest elasticRequest,
+            String component, String filterNamespace,
+            String searchResultNamespace) {
         if (elasticRequest.isSearchRequest()) {
             Map<String, Map<String, Object>> propertyMap = null;
+            if (StringUtils.isNotBlank(component)) {
+                propertyMap = propertyReader.getPropertiesAsMap(component, searchResultNamespace);
+            }
             populateSearchResults(searchResponse, elasticResponse, propertyMap, elasticRequest);
             long total = elasticResponse.getTotalSearchResultsCount();
             searchResponse.setTotal(total);
         }
         if (elasticRequest.isAggregationRequest()) {
             Map<String, Map<String, Object>> propertyMap = null;
+            if (StringUtils.isNotBlank(component)) {
+                propertyMap = propertyReader
+                        .getPropertiesAsMap(component, filterNamespace);
+            }
             coachingSearchResponseBuilder
                     .populateSearchFilters(searchResponse, elasticResponse, elasticRequest,
                             propertyMap);

@@ -6,8 +6,8 @@ import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.MetaData;
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.TCS;
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.TaxInfo;
+import com.paytm.digital.education.coaching.consumer.model.request.FetchCartItemsRequestBody;
 import com.paytm.digital.education.coaching.consumer.model.request.MerchantProduct;
-import com.paytm.digital.education.coaching.consumer.model.request.PostMerchantProductsRequest;
 import com.paytm.digital.education.coaching.consumer.model.response.transactionalflow.CartDataResponse;
 import com.paytm.digital.education.database.entity.ItemEntity;
 import com.paytm.digital.education.database.repository.ItemRepository;
@@ -43,7 +43,7 @@ public class MerchantProductsTransformerService {
     @Autowired
     private ItemRepository itemRepository;
 
-    public CartDataResponse getCartDataFromVertical(PostMerchantProductsRequest request) {
+    public CartDataResponse fetchCartDataFromVertical(FetchCartItemsRequestBody request) {
 
         log.info("Got merchant product data request {}", request);
         List<ItemEntity> itemEntityList = itemRepository.findByMerchantId(request.getMerchantId());
@@ -60,7 +60,7 @@ public class MerchantProductsTransformerService {
                         .productId(itemEntity.getPaytmProductId())
                         .categoryId(EDUCATION_CATEGORY_ID)
                         .educationVertical(EDUCATION_VERTICAL_ID)
-                        .qty(DEFAULT_QUANTITY)
+                        .quantity(DEFAULT_QUANTITY)
                         .metaData(getMetaData(merchantProduct, request))
                         .referenceId("")
                         .basePrice(merchantProduct.getPrice())
@@ -75,7 +75,7 @@ public class MerchantProductsTransformerService {
         return CartDataResponse.builder().cartItems(cartItemList).build();
     }
 
-    private String getCacheKey(PostMerchantProductsRequest request, ItemEntity itemEntity,
+    private String getCacheKey(FetchCartItemsRequestBody request, ItemEntity itemEntity,
             MerchantProduct merchantProduct) {
         return String.valueOf(request.getUserId())
                 + CACHE_KEY_DELIMITER + String.valueOf(merchantProduct.getProductId())
@@ -83,7 +83,7 @@ public class MerchantProductsTransformerService {
     }
 
     private MetaData getMetaData(MerchantProduct merchantProduct,
-            PostMerchantProductsRequest request) {
+            FetchCartItemsRequestBody request) {
         TCS tcs = TCS
                 .builder()
                 .basePrice(0F)

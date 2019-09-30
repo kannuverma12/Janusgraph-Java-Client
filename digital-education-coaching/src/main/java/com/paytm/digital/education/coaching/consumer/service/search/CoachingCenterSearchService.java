@@ -30,10 +30,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.CENTER_FILTER_NAMESPACE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.CENTER_SEARCH_NAMESPACE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_CENTER_CITY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_CENTER_LOCATION;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_CENTER_PLACEHOLDER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_CENTER_STATE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COMPONENT;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DISTANCE_KILOMETERS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_CENTER_NAME;
@@ -77,7 +80,8 @@ public class CoachingCenterSearchService extends AbstractSearchService {
             elasticResponse = new ElasticResponse();
         }
         SearchResponse searchResponse = new SearchResponse(searchRequest.getTerm());
-        buildSearchResponse(searchResponse, elasticResponse, elasticRequest);
+        buildSearchResponse(searchResponse, elasticResponse, elasticRequest,COACHING_COMPONENT,
+                CENTER_FILTER_NAMESPACE,CENTER_SEARCH_NAMESPACE);
         return searchResponse;
     }
 

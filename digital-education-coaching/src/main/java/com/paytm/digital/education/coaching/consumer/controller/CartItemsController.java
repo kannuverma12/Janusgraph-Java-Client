@@ -1,7 +1,7 @@
 package com.paytm.digital.education.coaching.consumer.controller;
 
 
-import com.paytm.digital.education.coaching.consumer.model.request.PostMerchantProductsRequest;
+import com.paytm.digital.education.coaching.consumer.model.request.FetchCartItemsRequestBody;
 import com.paytm.digital.education.coaching.consumer.model.response.transactionalflow.CartDataResponse;
 import com.paytm.digital.education.coaching.consumer.service.transactionalflow.MerchantProductsTransformerService;
 import lombok.extern.slf4j.Slf4j;
@@ -19,14 +19,14 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.U
 @Slf4j
 @RestController
 @RequestMapping(value = COACHING_BASE + V1)
-public class MerchantProductController {
+public class CartItemsController {
 
     @Autowired
     private MerchantProductsTransformerService merchantProductsTransformerService;
 
-    @PostMapping("/merchant-products")
-    public CartDataResponse postMerchantProducts(@Valid @RequestBody
-            PostMerchantProductsRequest request) {
-        return merchantProductsTransformerService.getCartDataFromVertical(request);
+    @PostMapping("/fetch-cart-items")
+    public CartDataResponse fetchCartItems(@Valid @RequestBody
+            FetchCartItemsRequestBody request) {
+        return merchantProductsTransformerService.fetchCartDataFromVertical(request);
     }
 }

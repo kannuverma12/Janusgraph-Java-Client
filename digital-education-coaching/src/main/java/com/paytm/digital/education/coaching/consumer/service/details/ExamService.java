@@ -99,7 +99,8 @@ public class ExamService {
 
         if (!CollectionUtils.isEmpty(courses)) {
             return TopCoachingCourses.builder()
-                    .header(TOP_COACHING_COURSES_FOR.getValue() + exam.getExamShortName())
+                    .header(String.format(TOP_COACHING_COURSES_FOR.getValue(),
+                            exam.getExamShortName()))
                     .results(courses)
                     .build();
         }
@@ -127,7 +128,8 @@ public class ExamService {
 
         if (!CollectionUtils.isEmpty(institutes)) {
             return TopCoachingInstitutes.builder()
-                    .header(TOP_COACHING_INSTITUTES_FOR.getValue() + exam.getExamShortName())
+                    .header(String.format(TOP_COACHING_INSTITUTES_FOR.getValue(),
+                            exam.getExamShortName()))
                     .results(institutes)
                     .build();
         }
@@ -151,7 +153,8 @@ public class ExamService {
 
     private ExamAdditionalInfo getExamAdditionalInfo(Exam exam) {
         return ExamAdditionalInfo.builder()
-                .header(ALL_YOU_NEED_TO_KNOW_ABOUT.getValue() + exam.getExamShortName())
+                .header(String.format(ALL_YOU_NEED_TO_KNOW_ABOUT.getValue(),
+                        exam.getExamShortName()))
                 .results(EXAM_ADDITIONAL_INFO_PARAMS)
                 .build();
     }

@@ -33,8 +33,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COMPONENT;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_EXAM_STREAMS;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_FILTER_NAMESPACE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_PLACEHOLDER;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_SEARCH_NAMESPACE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_FULL_NAME;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_FULL_NAME_BOOST;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_NAME_SYNONYMS;
@@ -91,7 +94,8 @@ public class ExamSearchService extends AbstractSearchService {
         if (searchRequest.isFetchSearchResultsPerFilter()) {
             populateSearchResultPerLevel(searchResponse, elasticResponse);
         }
-        buildSearchResponse(searchResponse, elasticResponse, elasticRequest);
+        buildSearchResponse(searchResponse, elasticResponse, elasticRequest,COACHING_COMPONENT,
+                EXAM_FILTER_NAMESPACE,EXAM_SEARCH_NAMESPACE);
         return searchResponse;
     }
 
