@@ -27,6 +27,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.C
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_SEARCH_NAMESPACE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_TYPE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ID;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.IS_ENABLED;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_COURSE_NAME;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_COURSE_NAME_BOOST;
@@ -77,6 +79,7 @@ public class CoachingCourseSearchService extends AbstractSearchService {
         filterQueryTypeMap.put(COACHING_COURSE_INSTITUTE, TERMS);
         filterQueryTypeMap.put(COACHING_COURSE_LEVEL, TERMS);
         filterQueryTypeMap.put(COACHING_COURSE_DURATION, TERMS);
+        filterQueryTypeMap.put(IS_ENABLED, TERMS);
         searchFieldKeys = new HashMap<>();
         searchFieldKeys.put(COACHING_COURSE_NAME, COACHING_COURSE_NAME_BOOST);
     }
@@ -109,6 +112,14 @@ public class CoachingCourseSearchService extends AbstractSearchService {
                 SEARCH_ANALYZER_COACHING_COURSE, SEARCH_INDEX_COACHING_COURSE);
         populateSearchFields(searchRequest, elasticRequest, searchFieldKeys,
                 CoachingCourseSearch.class);
+
+        Map<String, List<Object>> filters = searchRequest.getFilter();
+        if (CollectionUtils.isEmpty(filters)) {
+            filters = new HashMap<>();
+        }
+        filters.put(IS_ENABLED, Collections.singletonList(true));
+        searchRequest.setFilter(filters);
+
         populateFilterFields(searchRequest, elasticRequest, CoachingCourseSearch.class,
                 filterQueryTypeMap);
         if (StringUtils.isBlank(searchRequest.getTerm())) {

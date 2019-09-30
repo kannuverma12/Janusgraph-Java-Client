@@ -23,6 +23,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.E
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_FILTER_NAMESPACE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_PLACEHOLDER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_SEARCH_NAMESPACE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.IS_ENABLED;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_INSTITUTE_BRAND;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_INSTITUTE_BRAND_BOOST;
@@ -64,6 +66,7 @@ public class CoachingInstituteSearchService extends AbstractSearchService {
         filterQueryTypeMap.put(COACHING_INSTITUTE_STREAMS, TERMS);
         filterQueryTypeMap.put(COACHING_INSTITUTE_EXAMS, TERMS);
         filterQueryTypeMap.put(COACHING_INSTITUTE_COURSE_TYPES, TERMS);
+        filterQueryTypeMap.put(IS_ENABLED, TERMS);
         searchFieldKeys = new HashMap<>();
         searchFieldKeys.put(COACHING_INSTITUTE_BRAND, COACHING_INSTITUTE_BRAND_BOOST);
     }
@@ -81,8 +84,8 @@ public class CoachingInstituteSearchService extends AbstractSearchService {
             elasticResponse = new ElasticResponse();
         }
         SearchResponse searchResponse = new SearchResponse(searchRequest.getTerm());
-        buildSearchResponse(searchResponse, elasticResponse, elasticRequest,COACHING_COMPONENT,
-                INSTITUTE_FILTER_NAMESPACE,INSTITUTE_SEARCH_NAMESPACE);
+        buildSearchResponse(searchResponse, elasticResponse, elasticRequest, COACHING_COMPONENT,
+                INSTITUTE_FILTER_NAMESPACE, INSTITUTE_SEARCH_NAMESPACE);
         return searchResponse;
     }
 
@@ -92,6 +95,14 @@ public class CoachingInstituteSearchService extends AbstractSearchService {
                 SEARCH_ANALYZER_COACHING_INSTITUTE, SEARCH_INDEX_COACHING_INSTITUTE);
         populateSearchFields(searchRequest, elasticRequest, searchFieldKeys,
                 CoachingInstituteSearch.class);
+
+        Map<String, List<Object>> filters = searchRequest.getFilter();
+        if (CollectionUtils.isEmpty(filters)) {
+            filters = new HashMap<>();
+        }
+        filters.put(IS_ENABLED, Collections.singletonList(true));
+        searchRequest.setFilter(filters);
+
         populateFilterFields(searchRequest, elasticRequest, CoachingInstituteSearch.class,
                 filterQueryTypeMap);
         if (searchRequest.getFetchFilter()) {

@@ -1,13 +1,13 @@
 package com.paytm.digital.education.coaching.consumer.service.details;
 
 import com.paytm.digital.education.coaching.consumer.model.dto.Exam;
+import com.paytm.digital.education.coaching.consumer.model.dto.SyllabusAndBrochure;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopRankers;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseDetails;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseFeature;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseFeatures;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseFee;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseImportantDates;
-import com.paytm.digital.education.coaching.consumer.model.dto.SyllabusAndBrochure;
 import com.paytm.digital.education.coaching.consumer.model.response.details.GetCoachingCourseDetailsResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingCourseData;
 import com.paytm.digital.education.coaching.consumer.service.search.helper.SearchDataHelper;
@@ -95,7 +95,7 @@ public class CoachingCourseService {
                     "elearning_lecture_duration", "elearning_online_test_count",
                     "elearning_practice_paper_count", "classroom_lecture_count",
                     "classroom_lecture_duration", "classroom_test_count", "sgst", "cgst", "igst",
-                    "tcs", "merchant_product_id");
+                    "tcs", "merchant_product_id", "is_enabled");
 
     private static final List<String> EXAM_FIELDS =
             Arrays.asList("exam_id", "exam_full_name", "exam_short_name", "conducting_body",
@@ -196,7 +196,8 @@ public class CoachingCourseService {
         if (CollectionUtils.isEmpty(coachingCourseEntityList)
                 || coachingCourseEntityList.size() > 1
                 || !urlDisplayKey.equalsIgnoreCase(CommonUtils.convertNameToUrlDisplayName(
-                coachingCourseEntityList.get(0).getName()))) {
+                coachingCourseEntityList.get(0).getName()))
+                || !coachingCourseEntityList.get(0).getIsEnabled()) {
             log.error("Got no coachingCourse for courseId: {}, urlDisplayKey: {}",
                     courseId, urlDisplayKey);
             throw new BadRequestException(INVALID_COURSE_ID_AND_URL_DISPLAY_KEY,

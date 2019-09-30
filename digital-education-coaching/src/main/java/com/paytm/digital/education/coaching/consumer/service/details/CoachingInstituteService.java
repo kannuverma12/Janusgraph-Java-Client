@@ -93,7 +93,8 @@ public class CoachingInstituteService {
     private static final List<String> COACHING_INSTITUTE_FIELDS =
             Arrays.asList("institute_id", "brand_name", "cover_image", "about_institute",
                     "key_highlights", "streams", "exams", "course_types", "faqs",
-                    "more_info1", "more_info2", "more_info3", "more_info4", "logo", "brochure");
+                    "more_info1", "more_info2", "more_info3", "more_info4", "logo", "brochure",
+                    "is_enabled");
 
     private static final List<String> EXAM_FIELDS =
             Arrays.asList("exam_id", "exam_full_name", "exam_short_name", "logo");
@@ -110,7 +111,7 @@ public class CoachingInstituteService {
         CoachingInstituteEntity coachingInstituteEntity = commonMongoRepository.getEntityByFields(
                 INSTITUTE_ID, instituteId, CoachingInstituteEntity.class,
                 COACHING_INSTITUTE_FIELDS);
-        if (Objects.isNull(coachingInstituteEntity)) {
+        if (Objects.isNull(coachingInstituteEntity) || !coachingInstituteEntity.getIsEnabled()) {
             log.error("Institute with id: {} does not exist", instituteId);
             throw new BadRequestException(INVALID_INSTITUTE_ID);
         }

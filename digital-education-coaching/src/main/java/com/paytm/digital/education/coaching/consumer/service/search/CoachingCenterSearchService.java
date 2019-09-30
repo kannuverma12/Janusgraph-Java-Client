@@ -26,6 +26,7 @@ import javax.annotation.PostConstruct;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.C
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COMPONENT;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DISTANCE_KILOMETERS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.IS_ENABLED;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_CENTER_NAME;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_CENTER_NAME_BRAND_BOOST;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.SEARCH_ANALYZER_COACHING_CENTER;
@@ -62,6 +64,7 @@ public class CoachingCenterSearchService extends AbstractSearchService {
         filterQueryTypeMap.put(INSTITUTE_ID, TERMS);
         filterQueryTypeMap.put(COACHING_CENTER_CITY, TERMS);
         filterQueryTypeMap.put(COACHING_CENTER_STATE, TERMS);
+        filterQueryTypeMap.put(IS_ENABLED, TERMS);
         searchFieldKeys = new HashMap<>();
         searchFieldKeys.put(COACHING_CENTER_NAME, COACHING_CENTER_NAME_BRAND_BOOST);
     }
@@ -91,6 +94,14 @@ public class CoachingCenterSearchService extends AbstractSearchService {
                 SEARCH_ANALYZER_COACHING_CENTER, SEARCH_INDEX_COACHING_CENTER);
         populateSearchFields(searchRequest, elasticRequest, searchFieldKeys,
                 CoachingInstituteSearch.class);
+
+        Map<String, List<Object>> filters = searchRequest.getFilter();
+        if (CollectionUtils.isEmpty(filters)) {
+            filters = new HashMap<>();
+        }
+        filters.put(IS_ENABLED, Collections.singletonList(true));
+        searchRequest.setFilter(filters);
+
         populateFilterFields(searchRequest, elasticRequest, CoachingCenterSearch.class,
                 filterQueryTypeMap);
         if (searchRequest.getFetchFilter()) {

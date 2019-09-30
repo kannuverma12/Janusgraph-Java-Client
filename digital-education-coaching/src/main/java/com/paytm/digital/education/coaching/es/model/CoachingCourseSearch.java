@@ -38,4 +38,5 @@ public class CoachingCourseSearch {
     private Double                         courseDurationDays;
     private String                         merchantProductId;
     private Long                           paytmProductId;
+    private Boolean                        isEnabled;
 }
