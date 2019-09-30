@@ -26,4 +26,5 @@ public class CoachingInstituteSearch {
     private List<String>                     examNames;
     private List<String>                     courseTypes;
     private Integer                          globalPriority;
+    private Boolean                          isEnabled;
 }

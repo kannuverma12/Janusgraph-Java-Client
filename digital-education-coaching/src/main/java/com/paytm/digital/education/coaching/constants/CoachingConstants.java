@@ -32,6 +32,7 @@ public class CoachingConstants {
     public static final String COACHING_CENTER_STATE           = "state";
     public static final String COACHING_CENTER_LOCATION        = "location";
     public static final String DISTANCE_KILOMETERS             = " km";
+    public static final String IS_ENABLED                      = "is_enabled";
 
     public static final String COACHING_COMPONENT         = "coaching";
     public static final String GOOGLE_SHEETS_INFO         = "google_sheets_info";

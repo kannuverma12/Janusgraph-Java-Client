@@ -30,4 +30,5 @@ public class CoachingCenterSearch {
     private String       phone;
     private GeoLocation  location;
     private List<Double> sort;
+    private Boolean      isEnabled;
 }
