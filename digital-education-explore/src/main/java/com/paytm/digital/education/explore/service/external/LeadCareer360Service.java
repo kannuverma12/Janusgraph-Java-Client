@@ -1,15 +1,16 @@
 package com.paytm.digital.education.explore.service.external;
 
-import com.paytm.digital.education.explore.database.entity.BaseLeadResponse;
-import com.paytm.digital.education.explore.database.entity.Lead;
+import com.paytm.digital.education.database.entity.BaseLeadResponse;
+import com.paytm.digital.education.database.entity.Lead;
 import com.paytm.digital.education.enums.EducationEntity;
-import com.paytm.digital.education.explore.enums.LeadAction;
+import com.paytm.digital.education.enums.LeadAction;
 import com.paytm.digital.education.explore.thirdparty.lead.Career360LeadRequest;
 import com.paytm.digital.education.explore.thirdparty.lead.Career360LeadResponse;
 import com.paytm.digital.education.explore.thirdparty.lead.Career360UnfollowRequest;
 import com.paytm.digital.education.explore.thirdparty.lead.Career360UnfollowResponse;
 import com.paytm.digital.education.utility.JsonUtils;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,8 +19,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-@Slf4j
 public class LeadCareer360Service {
+
+    private static final Logger log = LoggerFactory.getLogger(LeadCareer360Service.class);
 
     @Value("${thirdparty.explore.career360.lead.follow}")
     private String c360LeadFollow;
@@ -38,6 +40,7 @@ public class LeadCareer360Service {
         String jsonStr = JsonUtils.toJson(career360UnfollowRequest);
         Career360UnfollowResponse response = restApiService
                 .post(c360LeadUnfollow, Career360UnfollowResponse.class, jsonStr, getHeaders());
+        log.info("Careers360 lead response : {}", JsonUtils.toJson(response));
         return buildUnfollowResponse(response);
     }
 
@@ -46,6 +49,7 @@ public class LeadCareer360Service {
         String jsonStr = JsonUtils.toJson(career360LeadRequest);
         Career360LeadResponse response = restApiService
                 .post(c360LeadFollow, Career360LeadResponse.class, jsonStr, getHeaders());
+        log.info("Careers360 lead response : {}", JsonUtils.toJson(response));
         return buildResponse(response);
     }
 

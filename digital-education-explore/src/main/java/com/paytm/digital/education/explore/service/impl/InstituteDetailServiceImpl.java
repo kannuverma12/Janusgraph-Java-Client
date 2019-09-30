@@ -30,15 +30,17 @@ import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.enums.Gender;
 import com.paytm.digital.education.enums.PublishStatus;
 import com.paytm.digital.education.explore.response.builders.InstituteDetailResponseBuilder;
+import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.common.Widget;
 import com.paytm.digital.education.explore.response.dto.common.WidgetData;
 import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
+import com.paytm.digital.education.explore.service.helper.CTAHelper;
 import com.paytm.digital.education.explore.service.helper.GenderAndCasteGroupHelper;
 import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
 import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import com.paytm.digital.education.utility.CommonUtil;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -56,7 +58,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
-@Slf4j
+
 @Service
 @AllArgsConstructor
 public class InstituteDetailServiceImpl {
@@ -65,6 +67,7 @@ public class InstituteDetailServiceImpl {
     private InstituteDetailResponseBuilder instituteDetailResponseBuilder;
     private LeadDetailHelper               leadDetailHelper;
     private SubscriptionDetailHelper       subscriptionDetailHelper;
+    private CTAHelper                      ctaHelper;
 
     private static int EXAM_PREFIX_LENGTH   = EXAM_PREFIX.length();
     private static int COURSE_PREFIX_LENGTH = COURSE_PREFIX.length();
@@ -82,12 +85,15 @@ public class InstituteDetailServiceImpl {
             String fieldGroup, List<String> fields, Client client)
             throws IOException, TimeoutException {
         // fields are not being supported currently. Part of discussion
-
         InstituteDetail instituteDetail = getinstituteDetail(entityId, instituteUrlKey,
                 fieldGroup, client);
         if (userId != null && userId > 0) {
             updateShortist(instituteDetail, INSTITUTE, userId, client);
             updateInterested(instituteDetail, INSTITUTE, userId);
+        }
+        List<CTA> ctaList = ctaHelper.buildCTA(instituteDetail, client);
+        if (!CollectionUtils.isEmpty(ctaList)) {
+            instituteDetail.setCtaList(ctaList);
         }
         return instituteDetail;
     }

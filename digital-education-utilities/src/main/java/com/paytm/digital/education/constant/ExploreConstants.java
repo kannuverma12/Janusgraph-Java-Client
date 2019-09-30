@@ -16,8 +16,10 @@ public interface ExploreConstants {
     String IS_CLIENT                   = "is_client";
     int    DEFAULT_OFFSET              = 0;
     int    DEFAULT_SIZE                = 10;
-    int    DEFAULT_AUTOSUGGEST_SIZE    = 4;
+    int    DEFAULT_AUTOSUGGEST_SIZE    = 3;
     int    DEFAULT_AUTOSUGGEST_COMPARE = 10;
+    String SORT_DISTANCE_FIELD         = "location";
+    String DISTANCE_KILOMETERS         =  " km";
 
     ///// Exam Detail//////////
     String TENTATIVE     = "tentative";
@@ -98,6 +100,7 @@ public interface ExploreConstants {
     Float  UNIVERSITY_NAME_SEARCH_BOOST = 1F;
     Float  OTHER_NAMES_NGRAM_BOOST      = 0.00001F;
     String FE_RANK_SORT                 = "ranking";
+    String FE_RELEVANCE_SORT            = "relevance";
     String DB_RANK_OVERALL              = "overall";
 
     SimpleDateFormat MMM_YYYY    = new SimpleDateFormat("MMM,yyyy");
@@ -118,7 +121,7 @@ public interface ExploreConstants {
 
     ///////// Explore search Constatnts ///////////
     // Exam
-    String SEARCH_INDEX_EXAM              = "education_search_exam_v2";
+    String SEARCH_INDEX_EXAM              = "education_search_exam_v3";
     String SEARCH_ANALYZER_EXAM           = "word_delimiter_analyzer_search";
     String SEARCH_NAMES_EXAM              = "names";
     String EXAM_FULL_NAME_SEARCH          = "exam_full_name";
@@ -126,6 +129,7 @@ public interface ExploreConstants {
     String EXAM_OFFICIAL_NAME             = "official_name";
     String EXAM_OFFICIAL_NAME_NGRAM       = "official_name.raw";
     String EXAM_NAME_SYNONYMS             = "exam_name_synonyms";
+    String EXAM_DOMAIN_NAME               = "domain_name";
     Float  EXAM_FULL_NAME_BOOST           = 1F;
     Float  EXAM_SHORT_NAME_BOOST          = 1F;
     Float  EXAM_OFFICIAL_NAME_BOOST       = 1F;
@@ -133,7 +137,7 @@ public interface ExploreConstants {
     Float  EXAM_OFFICIAL_NAME_NGRAM_BOOST = 0.00001F;
     String DATE_TAB                       = "dates";
     String SYLLABUS_TAB                   = "syllabus";
-    String SEARCH_INDEX_INSTITUTE         = "education_search_institute_v2";
+    String SEARCH_INDEX_INSTITUTE         = "education_search_institute_v3";
     String SEARCH_ANALYZER_INSTITUTE      = "word_delimiter_analyzer";
     String SEARCH_NAMES                   = "names";
     String MAX_RANK                       = "max_rank";
@@ -161,6 +165,7 @@ public interface ExploreConstants {
     String EXAM_SEARCH_NAMESPACE       = "exam";
     String LINGUISTIC_MEDIUM           = "linguistic_medium";
     String SEARCH_EXAM_LEVEL           = "level";
+    String SEARCH_EXAM_DOMAIN          = "domain_name";
     String IGNORE_VALUES               = "ignore";
     String RANKING_STREAM_NAMESPACE    = "ranking_stream";
     String FACILITIES_MASTER_LIST      = "master_list";
@@ -259,12 +264,15 @@ public interface ExploreConstants {
 
     String COLLEGE_FOCUS   = "colleges_focus";
     String TOP_COLLEGES    = "top_colleges";
+    String TOP_SCHOOLS    = "top_schools";
+    String SCHOOLS_IN_FOCUS    = "schools_focus";
     String TOP_EXAMS       = "top_exams";
     String TOP_EXAMS_APP   = "top_exams_app";
     String ICON            = "icon";
     String LOCATIONS       = "locations";
     String APP_FOOTER      = "app_footer";
     String BANNER_MID      = "banner_mid";
+    String CAROUSEL        = "CAROUSEL";
     String IMAGE_URL       = "image_url";
     String DUMMY_EXAM_ICON = "/exam_placeholder.svg";
     String ID              = "id";
@@ -273,13 +281,65 @@ public interface ExploreConstants {
     String RANKING_CAREER  = "CAREERS360";
     String NIRF_LOGO       = "/nirf.jpg";
     String CAREER_LOGO     = "/career360.jpg";
+    String EMPTY_STRING    = " ";
 
-    String RECENT_SEARCHES_kAFKA_TOPIC = "recent_searches";
+    String EXAM_FOCUS_APP              = "exam_focus_app";
+    String POPULAR_EXAMS_APP           = "popular_exams_app";
+    String BROWSE_BY_EXAM_LEVEL        = "browse_by_exam_level";
+    String RECENT_SEARCHES_kAFKA_TOPIC = "recent_searches_explore";
     String RECENT_SEARCHES_ES_INDEX    = "recent_searches";
     String RECENT_SEARCHES_ES_TYPE     = "education";
     String SEARCH_HISTORY_USERID       = "user_id";
     String SEARCH_HISTORY_TERMS        = "terms";
     String SEARCH_HISTORY_UPDATEDAT    = "updated_at";
     int    DELETE_RECENTS_BATCH_SIZE   = 100;
+    String RECENT_SEARCHES_ENTITY      = "entity";
+    String RECENT_SEARCHES_ID_SEPERATOR = "-";
 
+    String CTA                  = "cta";
+    String EXAM_SEARCH_CTA      = "exam_search_cta";
+    String SCHOOL_SEARCH_CTA    = "school_search_cta";
+    String INSTITUTE_SEARCH_CTA = "institute_search_cta";
+    String SELECTED             = "_selected";
+    String CTA_LOGO_PLACEHOLDER = "/placeholder.svg";
+
+    //School Constants
+    String SCHOOL_SEARCH_NAMESPACE = "school_search";
+    String SCHOOL_FILTER_NAMESPACE = "school_filter";
+    String SEARCH_ANALYZER_SCHOOL  = "word_delimiter_analyzer";
+    String SEARCH_INDEX_SCHOOL     = "education_search_school_v2";
+    String SCHOOL_FACILITY_KEY = "school_facility_map";
+
+    String OTHER           = "Other";
+    String SUMMARY         = "Summary";
+    String BLANK           = "";
+    String RANKING_OVERALL = "ranking_overall";
+    int    MINUS_TEN       = -10;
+    int    SIXTY           = 60;
+    String YEARS           = "years";
+    int    SIX             = 6;
+    String P_TOP_INS       = "P_TOP_INS";
+
+    String EDUCATION_EXPLORE_PREFIX      = "education/explore/";
+    String DIRECTORY_SEPARATOR_SLASH     = "/";
+    String CLIENT                        = "client";
+    String FIELD_POST_FIX                = "_id";
+    String ERROR_IN_FIELD_VALUE_TEMPLATE = "Incorrect value %s for field %s";
+    String SCHOOL                        = "school";
+    String COLLEGE                       = "college";
+    String HIGHLIGHT                     = "highlight";
+    String DETAILS                       = "details";
+    String LANDING                       = "landing";
+    String SECTIONS                      = "sections";
+    String NAME                          = "name";
+    String FAILED                        = "failed";
+
+    //Sections constants
+    String BROWSE_BY_EXAM_LEVEL_APP         = "browse_by_exam_level_app";
+    String EXAM_LEVEL                       = "level";
+    String EXAM_STREAM_IDS                  = "stream_ids";
+    String EXAM_GLOBAL_PRIORITY             = "global_priority";
+    String FILTERS                          = "filters";
+    String LEVEL                            = "level";
+    int    EXAMS_BROWSE_BY_LEVEL_QUERY_SIZE = 2;
 }

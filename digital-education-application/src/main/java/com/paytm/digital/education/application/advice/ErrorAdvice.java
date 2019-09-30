@@ -1,22 +1,21 @@
 package com.paytm.digital.education.application.advice;
 
-import static com.paytm.digital.education.constant.ExploreConstants.USER_UNAUTHORIZED_MESSAGE;
-import static com.paytm.digital.education.utility.ArrayUtils.padArray;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.paytm.digital.education.exception.EducationException;
 import com.paytm.digital.education.exception.InvalidRequestException;
 import com.paytm.digital.education.exception.ValidationException;
 import com.paytm.digital.education.mapping.ErrorEnum;
-import java.util.Set;
-import javax.validation.ConstraintViolationException;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,10 +30,20 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.validation.ConstraintViolationException;
+import java.util.Optional;
+import java.util.Set;
+
+import static com.paytm.digital.education.constant.ExploreConstants.ERROR_IN_FIELD_VALUE_TEMPLATE;
+import static com.paytm.digital.education.constant.ExploreConstants.USER_UNAUTHORIZED_MESSAGE;
+import static com.paytm.digital.education.utility.ArrayUtils.padArray;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+
 @RestController
-@Slf4j
 @RestControllerAdvice
 public class ErrorAdvice extends ResponseEntityExceptionHandler {
+
+    private static Logger log = LoggerFactory.getLogger(ErrorAdvice.class);
 
     @ExceptionHandler(MissingRequestHeaderException.class)
     public final ResponseEntity handleMissingHeader(MissingRequestHeaderException ex, WebRequest request) {
@@ -113,10 +122,26 @@ public class ErrorAdvice extends ResponseEntityExceptionHandler {
         logException(ex.getLocalizedMessage(), ex);
         if (throwableCause instanceof InvalidFormatException) {
             InvalidFormatException cause = (InvalidFormatException) throwableCause;
-            String path = cause.getPath().get(0).getFieldName();
-            String errorMessage = String.format("Incorrect value %s for field %s", cause.getValue(), path);
+            Optional<String> fieldName = cause.getPath().stream().map(
+                    JsonMappingException.Reference::getFieldName).filter(
+                    StringUtils::isNotBlank).findFirst();
+            String errorMessage = String.format(ERROR_IN_FIELD_VALUE_TEMPLATE,
+                    cause.getValue(), fieldName.orElse(EMPTY));
             return new ResponseEntity<>(new ErrorDetails(1, errorMessage, errorMessage),
                 HttpStatus.BAD_REQUEST);
+        } else if (throwableCause instanceof JsonMappingException) {
+            JsonMappingException cause = (JsonMappingException) throwableCause;
+            String errorMessage = StringUtils.isNotBlank(cause.getOriginalMessage())
+                    ? cause.getOriginalMessage() :
+                    EMPTY;
+            return new ResponseEntity<>(new ErrorDetails(1, errorMessage, errorMessage),
+                    HttpStatus.BAD_REQUEST);
+        } else if (throwableCause instanceof JsonParseException) {
+            JsonParseException cause = (JsonParseException) throwableCause;
+            String errorMessage = StringUtils.isNotBlank(cause.getMessage()) ? cause.getMessage() :
+                    EMPTY;
+            return new ResponseEntity<>(new ErrorDetails(1, errorMessage, errorMessage),
+                    HttpStatus.BAD_REQUEST);
         }
         return super.handleHttpMessageNotReadable(ex, headers, status, request);
     }

@@ -1,6 +1,6 @@
 package com.paytm.digital.education.explore.database.repository;
 
-import com.paytm.digital.education.explore.database.entity.Lead;
+import com.paytm.digital.education.database.entity.Lead;
 import com.paytm.digital.education.enums.EducationEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;

@@ -1,10 +1,12 @@
 package com.paytm.digital.education.explore.scheduler;
 
-import com.paytm.digital.education.explore.database.entity.CronProperties;
+import com.paytm.digital.education.database.entity.CronProperties;
 import com.paytm.digital.education.explore.database.repository.CronPropertiesRepository;
 import com.paytm.digital.education.explore.service.impl.ImportIncrementalDataService;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import net.javacrumbs.shedlock.core.SchedulerLock;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.context.annotation.Configuration;
@@ -15,17 +17,19 @@ import java.util.Objects;
 
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.DATA_INGESTION_IMPORT;
 
-@Slf4j
+
 @AllArgsConstructor
 @Configuration
 @EnableScheduling
 public class DataIngestionScheduler {
 
+    private static Logger log = LoggerFactory.getLogger(DataIngestionScheduler.class);
+
     private ImportIncrementalDataService importIncrementalDataService;
     private CronPropertiesRepository     cronPropertiesRepository;
 
-    //@Scheduled(fixedDelayString = "${data-ingestion.import.cron.fixed.delay}")
-    //@SchedulerLock(name = "dataIngestionImport")
+    @Scheduled(fixedDelayString = "${data-ingestion.import.cron.fixed.delay}")
+    @SchedulerLock(name = "dataIngestionImport")
     public void importFailedArticleScheduler() {
         CronProperties dataIngestionCronProperty =
                 cronPropertiesRepository.findByCronName(DATA_INGESTION_IMPORT);
@@ -35,7 +39,7 @@ public class DataIngestionScheduler {
         } else {
             if (BooleanUtils.isTrue(dataIngestionCronProperty.getIsActive())) {
                 log.info("Starting Data Ingestion Import via scheduler");
-                importIncrementalDataService.importData();
+                importIncrementalDataService.importData(null, null, null);
                 log.info("Finished Data Ingestion Import via scheduler");
 
             }

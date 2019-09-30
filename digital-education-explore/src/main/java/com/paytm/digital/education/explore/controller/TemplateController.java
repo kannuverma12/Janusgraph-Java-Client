@@ -1,12 +1,9 @@
 package com.paytm.digital.education.explore.controller;
 
-import static com.paytm.digital.education.constant.ExploreConstants.EDUCATION_BASE_URL;
-
 import com.paytm.digital.education.database.entity.FtlTemplate;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.utility.FileUtility;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -14,13 +11,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.Min;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
-import javax.validation.constraints.Min;
 
-@Slf4j
+import static com.paytm.digital.education.constant.ExploreConstants.EDUCATION_BASE_URL;
+
+
 @RestController
 @AllArgsConstructor
 @RequestMapping(EDUCATION_BASE_URL)

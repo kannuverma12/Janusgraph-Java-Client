@@ -1,13 +1,13 @@
 package com.paytm.digital.education.elasticsearch.query;
 
 import com.paytm.digital.education.elasticsearch.constants.ESConstants;
-import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
-import com.paytm.digital.education.elasticsearch.models.SortField;
-import com.paytm.digital.education.elasticsearch.models.Operator;
 import com.paytm.digital.education.elasticsearch.models.FilterField;
+import com.paytm.digital.education.elasticsearch.models.Operator;
+import com.paytm.digital.education.elasticsearch.models.SortField;
 import com.paytm.digital.education.elasticsearch.query.helper.PathWiseMultiMatchQueryMapBuilder;
 import com.paytm.digital.education.elasticsearch.utils.DataSortUtil;
+import com.paytm.digital.education.enums.es.FilterQueryType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequest;
@@ -19,11 +19,11 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.HashMap;
-import java.util.Collection;
-import java.util.List;
 
 @Service
 public class SearchQueryBuilderService {

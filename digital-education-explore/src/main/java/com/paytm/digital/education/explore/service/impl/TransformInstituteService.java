@@ -1,78 +1,95 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import com.paytm.digital.education.config.AwsConfig;
-import com.paytm.digital.education.explore.constants.AWSConstants;
 import com.paytm.digital.education.database.entity.Alumni;
 import com.paytm.digital.education.database.entity.Gallery;
 import com.paytm.digital.education.database.entity.Institute;
 import com.paytm.digital.education.database.entity.Ranking;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.exception.BadRequestException;
+import com.paytm.digital.education.explore.constants.AWSConstants;
 import com.paytm.digital.education.explore.dto.InstituteDto;
 import com.paytm.digital.education.explore.dto.RankingDto;
 import com.paytm.digital.education.explore.service.helper.IncrementalDataHelper;
+import com.paytm.digital.education.mapping.ErrorEnum;
+import com.paytm.digital.education.utility.CommonUtils;
 import com.paytm.digital.education.utility.UploadUtil;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.Map;
 import java.util.Objects;
-import java.util.ArrayList;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static com.paytm.digital.education.constant.ExploreConstants.ID;
 import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.INSTITUTE_FILE_VERSION;
 
 @Service
 @AllArgsConstructor
-@Slf4j
 public class TransformInstituteService {
-    private UploadUtil                 uploadUtil;
-    private InstituteDetailServiceImpl instituteDetailService;
-    private CommonMongoRepository      commonMongoRepository;
-    private IncrementalDataHelper      incrementalDataHelper;
 
-    public Integer transformAndSaveInstituteData(List<InstituteDto> dtos) {
+    private static Logger log = LoggerFactory.getLogger(TransformInstituteService.class);
+
+    private UploadUtil            uploadUtil;
+    private CommonMongoRepository commonMongoRepository;
+    private IncrementalDataHelper incrementalDataHelper;
+
+    public Integer transformAndSaveInstituteData(List<InstituteDto> dtos, Boolean versionUpdate) {
         List<Institute> institutes = transformInstituteDtos(dtos);
 
-        Set<Long> ids =
-                institutes.stream().map(i -> i.getInstituteId()).collect(Collectors.toSet());
-
-        List<String> fields = new ArrayList<>();
-        fields.add(ID);
-        fields.add(INSTITUTE_ID);
-        List<Institute> dbIstitutes = new ArrayList<>();
         try {
-            dbIstitutes = instituteDetailService.getInstitutes(new ArrayList<>(ids),fields);
-        } catch (Exception e) {
-            log.error("Error getting institutes : " + e.getMessage());
-        }
+            Set<Long> ids =
+                    institutes.stream().map(i -> i.getInstituteId()).collect(Collectors.toSet());
 
-        Map<Long, String> ojbIdToInstIdMap = dbIstitutes.stream()
-                .collect(Collectors.toMap(i -> i.getInstituteId(), i -> i.getId()));
-
-        for (Institute institute : institutes) {
-            Long id = institute.getInstituteId();
-            if (ojbIdToInstIdMap.containsKey(id)) {
-                institute.setId(ojbIdToInstIdMap.get(id));
+            List<Institute> dbInstitutes = new ArrayList<>();
+            try {
+                dbInstitutes = incrementalDataHelper
+                        .getExistingData(Institute.class, INSTITUTE_ID, new ArrayList<>(ids));
+            } catch (Exception e) {
+                log.error("Error getting institutes : " + e.getMessage());
             }
-            commonMongoRepository.saveOrUpdate(institute);
-        }
-        incrementalDataHelper.incrementFileVersion(INSTITUTE_FILE_VERSION);
 
-        return institutes.size();
+            Map<Long, Institute> ojbIdToInstIdMap = dbInstitutes.stream()
+                    .collect(Collectors.toMap(i -> i.getInstituteId(), i -> i));
+
+            for (Institute institute : institutes) {
+                Long id = institute.getInstituteId();
+                Institute existingInstitute = ojbIdToInstIdMap.get(id);
+                if (Objects.nonNull(existingInstitute)) {
+                    institute.setId(existingInstitute.getId());
+                    institute.setPaytmKeys(existingInstitute.getPaytmKeys());
+                }
+                commonMongoRepository.saveOrUpdate(institute);
+            }
+            if (Objects.isNull(versionUpdate) || versionUpdate) {
+                incrementalDataHelper.incrementFileVersion(INSTITUTE_FILE_VERSION);
+            }
+
+            return institutes.size();
+        } catch (Exception e) {
+            log.info("Course ingestion exceptions : " + e.getMessage());
+            if (Objects.nonNull(versionUpdate)) {
+                throw new BadRequestException(ErrorEnum.CORRUPTED_FILE,
+                        ErrorEnum.CORRUPTED_FILE.getExternalMessage());
+            }
+            return null;
+        }
     }
 
     public List<Institute> transformInstituteDtos(List<InstituteDto> dtos) {
-        List<Institute> institutes = new ArrayList<>();
+        Stream.Builder<Institute> instituteStreamBuilder = Stream.builder();
 
         for (InstituteDto dto : dtos) {
-            Institute institute = new Institute(dto.getCommonName(), Long.valueOf(dto.getInstituteId()));
+            Institute institute =
+                    new Institute(dto.getCommonName(), Long.valueOf(dto.getInstituteId()));
 
             BeanUtils.copyProperties(dto, institute);
 
@@ -98,10 +115,13 @@ public class TransformInstituteService {
             // S3 upload
             uploadImages(institute);
 
-            institutes.add(institute);
+            institute.setRankings(rankings);
+            instituteStreamBuilder.accept(institute);
         }
 
-        return institutes;
+        return instituteStreamBuilder.build()
+                .filter(CommonUtils.distinctBy(Institute::getId))
+                .collect(Collectors.toList());
     }
 
     private void updateNotableAlumniDetails(Institute institute) {
@@ -116,7 +136,7 @@ public class TransformInstituteService {
                             institute.getInstituteId(), AwsConfig.getS3ExploreBucketName(),
                             AWSConstants.S3_RELATIVE_PATH_FOR_EXPLORE);
                     if (Objects.nonNull(imageUrl)) {
-                        alumni.setAlumniPhoto(imageUrl);
+                        alumni.setAlumniPhoto("/" + imageUrl);
                     } else {
                         log.info("Some issue with alumni picture");
                     }
@@ -139,13 +159,15 @@ public class TransformInstituteService {
 
                     for (String url : urls) {
                         String imageName = getImageName(url);
-                        String imageUrl = uploadUtil.uploadImage(url, imageName,
-                                institute.getInstituteId(), AwsConfig.getS3ExploreBucketName(),
-                                AWSConstants.S3_RELATIVE_PATH_FOR_EXPLORE);
-                        if (Objects.nonNull(imageUrl)) {
-                            newUrls.add(imageUrl);
-                        } else {
-                            // TODO add fail over strategy
+                        if (Objects.nonNull(imageName)) {
+                            String imageUrl = uploadUtil.uploadImage(url, imageName,
+                                    institute.getInstituteId(), AwsConfig.getS3ExploreBucketName(),
+                                    AWSConstants.S3_RELATIVE_PATH_FOR_EXPLORE);
+                            if (Objects.nonNull(imageUrl)) {
+                                newUrls.add("/" + imageUrl);
+                            } else {
+                                // TODO add fail over strategy
+                            }
                         }
                     }
                     images.put(key, newUrls);
@@ -157,22 +179,28 @@ public class TransformInstituteService {
 
             String logoUrl = g.getLogo();
             String logoName = getImageName(logoUrl);
-            String logoS3Url = uploadUtil.uploadImage(logoUrl, logoName,
-                    institute.getInstituteId(), AwsConfig.getS3ExploreBucketName(),
-                    AWSConstants.S3_RELATIVE_PATH_FOR_EXPLORE);
+            if (Objects.nonNull(logoName)) {
+                String logoS3Url = uploadUtil.uploadImage(logoUrl, logoName,
+                        institute.getInstituteId(), AwsConfig.getS3ExploreBucketName(),
+                        AWSConstants.S3_RELATIVE_PATH_FOR_EXPLORE);
 
-            if (Objects.nonNull(logoS3Url)) {
-                g.setLogo(logoS3Url);
-            } else {
-                // TODO add fail over strategy
+                if (Objects.nonNull(logoS3Url)) {
+                    g.setLogo("/" + logoS3Url);
+                } else {
+                    // TODO add fail over strategy
+                }
             }
+
         }
         log.info("Images uploaded successfully for institute id {}", institute.getInstituteId());
     }
 
     private String getImageName(String url) {
-        String[] arr = url.split("/");
-        return arr[arr.length - 1];
+        if (Objects.nonNull(url)) {
+            String[] arr = url.split("/");
+            return arr[arr.length - 1];
+        }
+        return null;
     }
 
 }

@@ -5,7 +5,7 @@ import com.paytm.digital.education.config.GoogleConfig;
 import com.paytm.digital.education.database.entity.FailedData;
 import com.paytm.digital.education.database.repository.FailedDataRepository;
 import com.paytm.digital.education.database.entity.Article;
-import com.paytm.digital.education.explore.database.entity.CampusEngagement;
+import com.paytm.digital.education.database.entity.CampusEngagement;
 import com.paytm.digital.education.database.entity.Institute;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.service.ImportDataService;
@@ -15,7 +15,7 @@ import com.paytm.digital.education.explore.xcel.model.XcelArticle;
 import com.paytm.digital.education.utility.JsonUtils;
 import com.paytm.digital.education.utility.UploadUtil;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
@@ -52,7 +52,7 @@ import static com.paytm.digital.education.explore.constants.CampusEngagementCons
 import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
 
-@Slf4j
+
 @Service
 @AllArgsConstructor
 public class ImportArticleServiceImpl implements ImportDataService {

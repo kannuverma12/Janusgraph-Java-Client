@@ -1,11 +1,15 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.database.ingestion.Course;
 import com.paytm.digital.education.explore.database.ingestion.Cutoff;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.service.helper.IncrementalDataHelper;
+import com.paytm.digital.education.mapping.ErrorEnum;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.constant.ExploreConstants.COURSE_ID;
@@ -23,12 +29,15 @@ import static com.paytm.digital.education.explore.constants.IncrementalDataInges
 
 @Service
 @AllArgsConstructor
-@Slf4j
+
 public class TransformAndSaveCourseService {
+
+    private static Logger log = LoggerFactory.getLogger(TransformAndSaveCourseService.class);
+
     private IncrementalDataHelper incrementalDataHelper;
     private CommonMongoRepository commonMongoRepository;
 
-    public void transformAndSave(List<Course> courseDtos) {
+    public void transformAndSave(List<Course> courseDtos, Boolean versionUpdate) {
         try {
             Map<String, Object> courseData = transformData(courseDtos);
             List<Long> courseIds = (List<Long>) courseData.get(COURSE_IDS);
@@ -48,15 +57,23 @@ public class TransformAndSaveCourseService {
                 }
                 commonMongoRepository.saveOrUpdate(course);
             }
-            incrementalDataHelper.incrementFileVersion(COURSE_FILE_VERSION);
+            if (Objects.isNull(versionUpdate) || versionUpdate == true) {
+                incrementalDataHelper.incrementFileVersion(COURSE_FILE_VERSION);
+            }
         } catch (Exception e) {
             log.info("Course ingestion exception : " + e.getMessage());
+            if (Objects.nonNull(versionUpdate)) {
+                throw new BadRequestException(ErrorEnum.CORRUPTED_FILE,
+                        ErrorEnum.CORRUPTED_FILE.getExternalMessage());
+            }
         }
     }
 
     private Map<String, Object> transformData(List<Course> courses) {
         Map<String, Object> response = new HashMap<>();
-        List<Long> courseIds = new ArrayList<>();
+        Set<Long> courseIds = new HashSet<>();
+        Set<Course> courseSet = new HashSet<>();
+
         for (Course course : courses) {
             List<Cutoff> cutoffs = course.getCutoffs();
             if (Objects.nonNull(cutoffs)) {
@@ -78,9 +95,14 @@ public class TransformAndSaveCourseService {
                 }
             }
             course.setCutoffs(cutoffs);
+            if (!courseIds.contains(course.getCourseId())) {
+                courseIds.add(course.getCourseId());
+                courseSet.add(course);
+            }
         }
-        response.put(COURSE_IDS, courseIds);
-        response.put(COURSES, courses);
+        log.info("courseIds : " + courseIds.size() + ", courseSet : " + courseSet.size());
+        response.put(COURSE_IDS, new ArrayList<>(courseIds));
+        response.put(COURSES, new ArrayList<>(courseSet));
         return response;
     }
 }

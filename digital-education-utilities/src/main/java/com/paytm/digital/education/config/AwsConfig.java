@@ -1,22 +1,30 @@
 package com.paytm.digital.education.config;
 
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
-@Slf4j
+
 @Configuration
 public class AwsConfig {
 
     private static String clientRegion;
     private static String s3ExploreBucketName;
+    private static String educationExploreBucketName;
     private static String s3CoachingBucketName;
     private static String relativePathPrefix;
     private static String mediaBaseUrl;
+    private static String s3ExploreBucketNameWithoutSuffix;
+    private static String explorePrefix;
 
     @Value("${aws.s3.region}")
     public void setClientRegion(String region) {
         clientRegion = region;
+    }
+
+    @Value("${aws.s3.education.explore.bucketname}")
+    public void setEducationExploreBucketName(String bucketName) {
+        educationExploreBucketName = bucketName;
     }
 
     @Value("${aws.s3.explore.bucketname}")
@@ -39,6 +47,16 @@ public class AwsConfig {
         mediaBaseUrl = baseUrl;
     }
 
+    @Value("${aws.s3.explore.bucketname.without.suffix}")
+    public void setS3ExploreBucketNameWithoutSuffix(String bucketName) {
+        s3ExploreBucketNameWithoutSuffix = bucketName;
+    }
+
+    @Value("${aws.s3.explore.prefix}")
+    public void setExplorePrefix(String expPrefix) {
+        explorePrefix = expPrefix;
+    }
+
     public static String getMediaBaseUrl() {
         return mediaBaseUrl;
     }
@@ -47,8 +65,16 @@ public class AwsConfig {
         return relativePathPrefix;
     }
 
+    public static String getEducationExploreBucketName() {
+        return educationExploreBucketName;
+    }
+
     public static String getS3ExploreBucketName() {
         return s3ExploreBucketName;
+    }
+
+    public static String getS3ExploreBucketNameWithoutSuffix() {
+        return s3ExploreBucketNameWithoutSuffix;
     }
 
     public static String getS3CoachingBucketName() {
@@ -57,6 +83,10 @@ public class AwsConfig {
 
     public static String getClientRegion() {
         return clientRegion;
+    }
+
+    public static String getExplorePrefix() {
+        return explorePrefix;
     }
 
 }

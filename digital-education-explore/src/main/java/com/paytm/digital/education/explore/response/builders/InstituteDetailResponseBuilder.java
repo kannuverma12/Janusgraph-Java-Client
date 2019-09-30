@@ -1,71 +1,72 @@
 package com.paytm.digital.education.explore.response.builders;
 
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_PREFIX;
-import static com.paytm.digital.education.constant.ExploreConstants.APPROVALS;
-import static com.paytm.digital.education.constant.ExploreConstants.OVERALL_RANKING;
-import static com.paytm.digital.education.constant.ExploreConstants.RANKING_CAREER;
-import static com.paytm.digital.education.constant.ExploreConstants.RANKING_NIRF;
-import static com.paytm.digital.education.constant.ExploreConstants.NIRF_LOGO;
-import static com.paytm.digital.education.constant.ExploreConstants.CAREER_LOGO;
-import static com.paytm.digital.education.constant.ExploreConstants.NOTABLE_ALUMNI_PLACEHOLDER;
-import static com.paytm.digital.education.enums.EducationEntity.INSTITUTE;
-import static com.paytm.digital.education.constant.ExploreConstants.RANKING_LOGO;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paytm.digital.education.database.entity.Alumni;
 import com.paytm.digital.education.database.entity.CampusAmbassador;
-import com.paytm.digital.education.explore.database.entity.CampusEngagement;
 import com.paytm.digital.education.database.entity.Course;
 import com.paytm.digital.education.database.entity.Exam;
+import com.paytm.digital.education.database.entity.InstiPaytmKeys;
 import com.paytm.digital.education.database.entity.Institute;
+import com.paytm.digital.education.dto.OfficialAddress;
 import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.PublishStatus;
+import com.paytm.digital.education.database.entity.CampusEngagement;
 import com.paytm.digital.education.explore.response.dto.common.BannerData;
-import com.paytm.digital.education.dto.OfficialAddress;
 import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
 import com.paytm.digital.education.explore.response.dto.detail.Ranking;
-import com.paytm.digital.education.explore.service.helper.CampusEngagementHelper;
-import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
-import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
-import com.paytm.digital.education.explore.service.helper.PlacementDataHelper;
-import com.paytm.digital.education.explore.service.helper.CourseDetailHelper;
-import com.paytm.digital.education.explore.service.helper.GalleryDataHelper;
-import com.paytm.digital.education.explore.service.helper.FacilityDataHelper;
-import com.paytm.digital.education.explore.service.helper.DetailPageSectionHelper;
 import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
+import com.paytm.digital.education.explore.service.helper.CampusEngagementHelper;
+import com.paytm.digital.education.explore.service.helper.CourseDetailHelper;
+import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
+import com.paytm.digital.education.explore.service.helper.DetailPageSectionHelper;
+import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
+import com.paytm.digital.education.explore.service.helper.FacilityDataHelper;
+import com.paytm.digital.education.explore.service.helper.GalleryDataHelper;
+import com.paytm.digital.education.explore.service.helper.PlacementDataHelper;
 import com.paytm.digital.education.explore.service.helper.StreamDataHelper;
 import com.paytm.digital.education.explore.service.impl.SimilarInstituteServiceImpl;
 import com.paytm.digital.education.utility.CommonUtil;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.TreeMap;
-import java.util.HashMap;
-import java.util.stream.Collectors;
-
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import javafx.util.Pair;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
+
+import static com.paytm.digital.education.constant.ExploreConstants.APPROVALS;
+import static com.paytm.digital.education.constant.ExploreConstants.CAREER_LOGO;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_PREFIX;
+import static com.paytm.digital.education.constant.ExploreConstants.NIRF_LOGO;
+import static com.paytm.digital.education.constant.ExploreConstants.NOTABLE_ALUMNI_PLACEHOLDER;
+import static com.paytm.digital.education.constant.ExploreConstants.OVERALL_RANKING;
+import static com.paytm.digital.education.constant.ExploreConstants.RANKING_CAREER;
+import static com.paytm.digital.education.constant.ExploreConstants.RANKING_LOGO;
+import static com.paytm.digital.education.constant.ExploreConstants.RANKING_NIRF;
+import static com.paytm.digital.education.enums.EducationEntity.INSTITUTE;
 
 @Service
 @AllArgsConstructor
-@Slf4j
 public class InstituteDetailResponseBuilder {
+
+    private static final Logger log = LoggerFactory.getLogger(InstituteDetailResponseBuilder.class);
 
     private ExamInstanceHelper          examInstanceHelper;
     private DerivedAttributesHelper     derivedAttributesHelper;
@@ -96,6 +97,7 @@ public class InstituteDetailResponseBuilder {
         }
         instituteDetail.setEstablishedYear(institute.getEstablishedYear());
         instituteDetail.setOfficialName(institute.getOfficialName());
+        instituteDetail.setCommonName(institute.getCommonName());
         instituteDetail.setUrlDisplayName(
                 CommonUtil.convertNameToUrlDisplayName(institute.getOfficialName()));
         instituteDetail.setBrochureUrl(institute.getOfficialUrlBrochure());
@@ -183,6 +185,11 @@ public class InstituteDetailResponseBuilder {
                 instituteDetail.setEvents(campusEngagementHelper
                         .getCampusEventsData(campusEngagement.getEvents()));
             }
+        }
+        if (Objects.nonNull(institute.getPaytmKeys())) {
+            InstiPaytmKeys instiPaytmKeys = institute.getPaytmKeys();
+            instituteDetail.setPid(instiPaytmKeys.getPid());
+            instituteDetail.setMid(instiPaytmKeys.getMid());
         }
         return instituteDetail;
     }
@@ -287,7 +294,7 @@ public class InstituteDetailResponseBuilder {
         Map<String, String> streamMap = streamDataHelper.getStreamLabelMap();
         String key = null;
         if (StringUtils.isNotBlank(dbRanking.getStream())) {
-            key = dbRanking.getStream();
+            key = dbRanking.getStream().toLowerCase();
         } else if (StringUtils.isNotBlank(dbRanking.getRankingStream())) {
             key = dbRanking.getRankingStream().toLowerCase();
         }
@@ -338,7 +345,6 @@ public class InstituteDetailResponseBuilder {
     private Map<String, List<Ranking>> getRankingDetails(
             List<com.paytm.digital.education.database.entity.Ranking> rankingList) {
         if (!CollectionUtils.isEmpty(rankingList)) {
-            Map<String, List<Ranking>> rankingresponse = new HashMap<>();
             Map<String, List<Ranking>> ratingMap = rankingList.stream()
                     .filter(r -> (Objects.nonNull(r.getStream()) || Objects
                             .nonNull(r.getRankingStream())) && (Objects.nonNull(r.getRank())

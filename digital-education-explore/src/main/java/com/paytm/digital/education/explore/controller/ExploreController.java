@@ -1,25 +1,27 @@
 package com.paytm.digital.education.explore.controller;
 
-import static com.paytm.digital.education.constant.ExploreConstants.EDUCATION_BASE_URL;
-
-import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
+import com.paytm.digital.education.daoresult.SubscribedEntityCount;
+import com.paytm.digital.education.database.entity.Subscription;
 import com.paytm.digital.education.dto.NotificationFlags;
 import com.paytm.digital.education.enums.Gender;
+import com.paytm.digital.education.enums.SubscribableEntityType;
+import com.paytm.digital.education.enums.SubscriptionStatus;
 import com.paytm.digital.education.explore.response.dto.detail.ExamAndCutOff;
 import com.paytm.digital.education.explore.response.dto.detail.ExamInfo;
 import com.paytm.digital.education.explore.response.dto.search.CutoffSearchResponse;
 import com.paytm.digital.education.explore.service.CutoffService;
+import com.paytm.digital.education.explore.service.SubscriptionService;
 import com.paytm.digital.education.explore.service.impl.ExamListServiceImpl;
-
+import com.paytm.digital.education.explore.sro.request.FetchSubscriptionsRequest;
+import com.paytm.digital.education.explore.sro.request.SubscriptionRequest;
+import com.paytm.digital.education.explore.validators.ExploreValidator;
 import com.paytm.digital.education.explore.validators.SubscriptionRequestValidator;
 import com.paytm.digital.education.explore.validators.UrlParamsValidator;
 import com.paytm.digital.education.service.notification.NotificationServiceImpl;
 import com.paytm.digital.education.utility.JsonUtils;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -32,23 +34,24 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import com.paytm.digital.education.daoresult.SubscribedEntityCount;
-import com.paytm.digital.education.database.entity.Subscription;
-import com.paytm.digital.education.enums.SubscribableEntityType;
-import com.paytm.digital.education.enums.SubscriptionStatus;
-import com.paytm.digital.education.explore.service.SubscriptionService;
-import com.paytm.digital.education.explore.sro.request.FetchSubscriptionsRequest;
-import com.paytm.digital.education.explore.sro.request.SubscriptionRequest;
-import com.paytm.digital.education.explore.validators.ExploreValidator;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.List;
+
+import static com.paytm.digital.education.constant.ExploreConstants.EDUCATION_BASE_URL;
+
 
 @AllArgsConstructor
 @RestController
 @RequestMapping(EDUCATION_BASE_URL)
-@Slf4j
 @Validated
 public class ExploreController {
+
+    private static Logger log = LoggerFactory.getLogger(ExploreController.class);
+
     private static final SubscriptionStatus SUBSCRIBED_STATUS = SubscriptionStatus.SUBSCRIBED;
 
     private UrlParamsValidator           urlParamsValidator;

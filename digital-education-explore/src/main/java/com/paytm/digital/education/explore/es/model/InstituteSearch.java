@@ -3,6 +3,7 @@ package com.paytm.digital.education.explore.es.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.database.entity.InstiPaytmKeys;
 import lombok.Data;
 
 import java.util.List;
@@ -69,9 +70,15 @@ public class InstituteSearch {
     @JsonProperty("max_rank")
     private long maxRank;
 
+    @JsonProperty("brochure_url")
+    private String brochureUrl;
+
     @JsonProperty("is_client")
     private boolean isClient;
 
     @JsonProperty("courses")
     private List<NestedCourseSearch> courses;
+
+    @JsonProperty("paytm_keys")
+    private InstiPaytmKeys paytmKeys;
 }

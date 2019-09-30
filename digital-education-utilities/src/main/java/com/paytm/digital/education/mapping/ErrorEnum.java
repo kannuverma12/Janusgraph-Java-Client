@@ -92,6 +92,7 @@ public enum ErrorEnum {
             HttpStatus.BAD_REQUEST, 0),
     INVALID_CUSTOMER_ID(4038, "Invalid customer ID. Please provide a valid customer ID.",
             HttpStatus.BAD_REQUEST, 0),
+
     INVALID_COURSE_ID_AND_URL_DISPLAY_KEY(4039,
             "Invalid course ID/ url display key. Please provide a valid course ID and url display key.",
             HttpStatus.BAD_REQUEST, 0),
@@ -105,7 +106,39 @@ public enum ErrorEnum {
     INVALID_MERCHANT_ID(4044, "Item with given merchant Id does not exist",
             HttpStatus.BAD_REQUEST, 0),
     INVALID_MERCHANT_DATA(4045, "Invalid merchant info. Please provide valid merchant info.",
-            HttpStatus.BAD_REQUEST, 0);
+            HttpStatus.BAD_REQUEST, 0),
+
+    USER_INFO_MISMATCH(4039, "Provided user details doesn't matches to info stored at our end",
+            HttpStatus.BAD_REQUEST, 0),
+    INVALID_ENTITY_FOR_DATA_IMPORT(4040, "Provided entity is invalid.", HttpStatus.BAD_REQUEST, 0),
+    USER_DATA_DOESNOT_EXISTS(4041, "User data does not exists.", HttpStatus.BAD_REQUEST, 0),
+    INVALID_FILE_VERSION(4042, "File is not present for provided version number",
+            HttpStatus.BAD_REQUEST, 0),
+    SFTP_CONNECTION_FAILED(4043, "Unable to connect to sftp.", HttpStatus.BAD_REQUEST, 0),
+    CORRUPTED_FILE(4044, "The file you are trying to read is corrupted", HttpStatus.BAD_REQUEST, 0),
+    DATA_NOT_PRESENT(4045, "Data is missing!!!", HttpStatus.BAD_REQUEST, 0),
+    FUNCTIONALITY_NOT_SUPPORTED_FOR_ENTITY(4046,
+            "This functionality is not supported for provided entity", HttpStatus.BAD_REQUEST, 0),
+    INVALID_SCHOOL_ID(4047, "Invalid school ID. Please provide a valid school ID.",
+            HttpStatus.BAD_REQUEST, 0),
+    NO_ENTITY_FOUND(4048, "No %s is found for the given %s - %s", HttpStatus.BAD_REQUEST, 3),
+    PID_MISSING(4049, "PID doesnot exists for entity %s", HttpStatus.BAD_REQUEST, 1),
+    PREDICTOR_ID_MISSING(4050, "COLLEGE PREDICTOR ID doesnot exists for entity %s",
+            HttpStatus.BAD_REQUEST, 1),
+    INVALID_SCHOOL_NAME(4051, "Provided name doesnot match with actual school name",
+            HttpStatus.BAD_REQUEST, 0),
+    INVALID_UPLOAD_REQUEST(4052, "Please choose at least one file to upload",
+            HttpStatus.BAD_REQUEST, 0),
+    INVALID_ENTITY_ID(4053, "Invalid %1$s ID. Please provide a valid %1$s ID.",
+            HttpStatus.BAD_REQUEST, 1),
+    ENTITY_MISSING(4054, "entity field is required.", HttpStatus.BAD_REQUEST, 0),
+    LAT_OR_LON_MISSING(4055, "Latitude and longitude are mandatory in location.",
+            HttpStatus.BAD_REQUEST, 0),
+    LAT_INVALID(4056, "Please provide valid latitude in request.",
+            HttpStatus.BAD_REQUEST, 0),
+    LON_INVALID(4057, "Please provide valid longitude in request.",
+            HttpStatus.BAD_REQUEST, 0),
+    INVALID_SORT_FIELD(4058, "Invalid requested sort field(s).", HttpStatus.BAD_REQUEST,0);
 
     private final int        internalCode;
     private final String     externalMessage;
@@ -134,4 +167,5 @@ public enum ErrorEnum {
     public int getNumberOfArgs() {
         return numberOfArgs;
     }
+
 }

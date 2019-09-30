@@ -8,7 +8,7 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.Range
 import com.paytm.digital.education.coaching.consumer.model.response.search.RangeFilterValue;
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.TermFilterData;
-import com.paytm.digital.education.elasticsearch.enums.AggregationType;
+import com.paytm.digital.education.enums.es.enums.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.AggregationResponse;
 import com.paytm.digital.education.elasticsearch.models.BucketAggregationResponse;

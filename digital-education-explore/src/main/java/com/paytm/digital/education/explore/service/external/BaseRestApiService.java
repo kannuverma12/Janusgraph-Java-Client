@@ -3,8 +3,11 @@ package com.paytm.digital.education.explore.service.external;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.config.RestConfig;
 import com.paytm.digital.education.mapping.ErrorEnum;
+import com.paytm.digital.education.utility.JsonUtils;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -17,21 +20,23 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 @Service
-@Slf4j
 @AllArgsConstructor
 public class BaseRestApiService {
+
+    private static final Logger log = LoggerFactory.getLogger(BaseRestApiService.class);
 
     private RestConfig rest;
 
     public <T> T get(String url, Map<String, ?> queryParams, HttpHeaders httpHeaders,
-            Type responseClassType) {
+            Type responseClassType, List<String> pathvariablesInorder) {
         ResponseEntity<T> responseEntity;
         HttpEntity<Object> requestEntity = new HttpEntity<>(httpHeaders);
-        URI uri = getURI(url, queryParams);
+        URI uri = getURI(url, queryParams, pathvariablesInorder);
         try {
             responseEntity =
                     rest.getRestTemplate().exchange(uri, HttpMethod.GET, requestEntity,
@@ -70,6 +75,7 @@ public class BaseRestApiService {
         HttpEntity<Object> httpEntity = new HttpEntity<Object>(requestBody, httpHeaders);
         ResponseEntity<T> responseEntity =
                 rest.getRestTemplate().exchange(url, HttpMethod.POST, httpEntity, clazz);
+        log.info("Http request : {}", httpEntity.toString());
         if (responseEntity.getStatusCodeValue() != 200) {
             throw new BadRequestException(ErrorEnum.HTTP_REQUEST_FAILED,
                     ErrorEnum.HTTP_REQUEST_FAILED.getExternalMessage());
@@ -77,8 +83,13 @@ public class BaseRestApiService {
         return responseEntity.getBody();
     }
 
-    private URI getURI(String url, Map<String, ?> queryParams) {
+    public URI getURI(String url, Map<String, ?> queryParams, List<String> pathVariablesInOrder) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
+        if (!CollectionUtils.isEmpty(pathVariablesInOrder)) {
+            for (String var : pathVariablesInOrder) {
+                builder.path(var);
+            }
+        }
         if (!CollectionUtils.isEmpty(queryParams)) {
             for (Map.Entry<String, ?> entry : queryParams.entrySet()) {
                 builder = builder.queryParam(entry.getKey(), entry.getValue());

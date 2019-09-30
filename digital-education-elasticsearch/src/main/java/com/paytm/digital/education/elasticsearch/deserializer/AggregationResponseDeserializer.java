@@ -1,12 +1,20 @@
 package com.paytm.digital.education.elasticsearch.deserializer;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import com.paytm.digital.education.elasticsearch.constants.ESConstants;
+import com.paytm.digital.education.elasticsearch.models.AggregateField;
+import com.paytm.digital.education.elasticsearch.models.AggregationResponse;
+import com.paytm.digital.education.elasticsearch.models.Bucket;
+import com.paytm.digital.education.elasticsearch.models.BucketAggregationResponse;
+import com.paytm.digital.education.elasticsearch.models.BucketSort;
+import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
+import com.paytm.digital.education.elasticsearch.models.MetricAggregationResponse;
+import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationResponse;
+import com.paytm.digital.education.elasticsearch.utils.BucketSortUtil;
+import com.paytm.digital.education.elasticsearch.utils.JsonUtils;
+import com.paytm.digital.education.enums.es.AggregationType;
+import com.paytm.digital.education.enums.es.BucketAggregationSortParms;
+import com.paytm.digital.education.enums.es.DataSortOrder;
+import javafx.util.Pair;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.util.CollectionUtils;
 import org.elasticsearch.search.SearchHit;
@@ -19,21 +27,13 @@ import org.elasticsearch.search.aggregations.metrics.min.Min;
 import org.elasticsearch.search.aggregations.metrics.tophits.TopHits;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import com.paytm.digital.education.elasticsearch.constants.ESConstants;
-import com.paytm.digital.education.elasticsearch.enums.AggregationType;
-import com.paytm.digital.education.elasticsearch.enums.BucketAggregationSortParms;
-import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
-import com.paytm.digital.education.elasticsearch.models.AggregateField;
-import com.paytm.digital.education.elasticsearch.models.AggregationResponse;
-import com.paytm.digital.education.elasticsearch.models.Bucket;
-import com.paytm.digital.education.elasticsearch.models.BucketAggregationResponse;
-import com.paytm.digital.education.elasticsearch.models.BucketSort;
-import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
-import com.paytm.digital.education.elasticsearch.models.MetricAggregationResponse;
-import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationResponse;
-import com.paytm.digital.education.elasticsearch.utils.BucketSortUtil;
-import com.paytm.digital.education.elasticsearch.utils.JsonUtils;
-import javafx.util.Pair;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 @Component
 public class AggregationResponseDeserializer {
@@ -153,18 +153,7 @@ public class AggregationResponseDeserializer {
 
         TopHitsAggregationResponse<T> aggregationResponse = new TopHitsAggregationResponse<>();
 
-        Map<Pair<String, Float>, List<T>> documentsPerEntity =
-                new TreeMap<Pair<String, Float>, List<T>>(new Comparator<Pair<String, Float>>() {
-                    @Override
-                    public int compare(Pair<String, Float> p1, Pair<String, Float> p2) {
-                        if (p2.getValue() > p1.getValue()) {
-                            return 1;
-                        } else if (p2.getValue() < p1.getValue()) {
-                            return -1;
-                        }
-                        return 1;
-                    }
-                });
+        Map<Pair<String, Float>, List<T>> documentsPerEntity = getEmptyPairListMap();
 
         Terms termsAggregation;
 
@@ -220,8 +209,14 @@ public class AggregationResponseDeserializer {
                     aggResponse = getBucketsFromMetricAggregationResponse(filterAggregation,
                             aggregationName, path);
                 } else if (field.getType() == AggregationType.TOP_HITS) {
-                    aggResponse = getDocumentsPerEntityFromTopHitsAggregationResponse(
-                            filterAggregation, aggregationName, path, type);
+                    if (field.getChildTermsFieldName() != null) {
+                        aggResponse = getDocumentsPerTopEntityFromTopHitsAggregationResponse(
+                                filterAggregation, aggregationName, field.getChildTermsFieldName(),
+                                path, type);
+                    } else {
+                        aggResponse = getDocumentsPerEntityFromTopHitsAggregationResponse(
+                                filterAggregation, aggregationName, path, type);
+                    }
                 }
 
                 if (aggResponse != null) {
@@ -231,5 +226,52 @@ public class AggregationResponseDeserializer {
         }
 
         return responseMap;
+    }
+
+    private <T> AggregationResponse getDocumentsPerTopEntityFromTopHitsAggregationResponse(
+            Filter filterAggregation, String aggregationName, String childAggregationName,
+            String path,
+            Class<T> type) {
+        TopHitsAggregationResponse<T> aggregationResponse = new TopHitsAggregationResponse<>();
+
+        Map<Pair<String, Float>, List<T>> documentsPerEntity = getEmptyPairListMap();
+
+        Terms termsAggregation;
+
+        if (path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
+            termsAggregation = filterAggregation.getAggregations().get(aggregationName);
+        } else {
+            Nested nestedAggregation = filterAggregation.getAggregations().get(aggregationName);
+            termsAggregation = nestedAggregation.getAggregations().get(aggregationName);
+        }
+        for (Terms.Bucket bucket : termsAggregation.getBuckets()) {
+            Terms termsChildAggregtaion = bucket.getAggregations().get(childAggregationName);
+            List<T> documentsScoreMap = new ArrayList<>();
+            for (Terms.Bucket childBucket : termsChildAggregtaion.getBuckets()) {
+                TopHits topHitsAggregation =
+                        childBucket.getAggregations().get(aggregationName);
+                documentsScoreMap.addAll(getDocumentsFromBuckets(topHitsAggregation, type));
+                String entityName = bucket.getKeyAsString()
+                        + ESConstants.KEY_SEPERATOR
+                        + childBucket.getKeyAsString();
+                Float maxScore = topHitsAggregation.getHits().getMaxScore();
+                Pair<String, Float> key = new Pair<>(entityName, maxScore);
+                documentsPerEntity.put(key, documentsScoreMap);
+                aggregationResponse.setDocumentsPerEntity(documentsPerEntity);
+            }
+        }
+
+        return aggregationResponse;
+    }
+
+    private <T> Map<Pair<String, Float>, List<T>> getEmptyPairListMap() {
+        return new TreeMap<>((p1, p2) -> {
+            if (p2.getValue() > p1.getValue()) {
+                return 1;
+            } else if (p2.getValue() < p1.getValue()) {
+                return -1;
+            }
+            return 1;
+        });
     }
 }

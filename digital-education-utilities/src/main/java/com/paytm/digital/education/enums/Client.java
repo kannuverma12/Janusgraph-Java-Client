@@ -4,7 +4,7 @@ public enum Client {
     WEB("web"), APP("app");
     private final String name;
 
-    private Client(String name) {
+    Client(String name) {
         this.name = name;
     }
 

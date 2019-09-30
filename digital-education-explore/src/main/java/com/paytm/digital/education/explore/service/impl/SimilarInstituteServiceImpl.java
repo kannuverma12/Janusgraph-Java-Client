@@ -1,29 +1,5 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import static com.mongodb.QueryOperators.AND;
-import static com.mongodb.QueryOperators.EXISTS;
-import static com.mongodb.QueryOperators.NE;
-import static com.paytm.digital.education.enums.Number.ONE;
-import static com.paytm.digital.education.explore.constants.CompareConstants.CAREERS360;
-import static com.paytm.digital.education.explore.constants.CompareConstants.NIRF;
-import static com.paytm.digital.education.explore.constants.CompareConstants.UNIVERSITIES;
-import static com.paytm.digital.education.constant.ExploreConstants.COLLEGES_PER_STREAM;
-import static com.paytm.digital.education.constant.ExploreConstants.EMPTY_SQUARE_BRACKETS;
-import static com.paytm.digital.education.constant.ExploreConstants.GALLERY_LOGO;
-import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_ADDRESS;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTION_STATE;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTION_CITY;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.constant.ExploreConstants.IN_OPERATOR;
-import static com.paytm.digital.education.constant.ExploreConstants.MAX_STREAMS;
-import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_NAME;
-import static com.paytm.digital.education.constant.ExploreConstants.OVERALL_RANKING;
-import static com.paytm.digital.education.constant.ExploreConstants.SIMILAR_COLLEGES;
-import static com.paytm.digital.education.constant.ExploreConstants.SIMILAR_COLLEGE_NAMESPACE;
-import static com.paytm.digital.education.constant.ExploreConstants.STREAMS;
-import static com.paytm.digital.education.constant.ExploreConstants.TOTAL_SIMILAR_COLLEGE;
-import static com.paytm.digital.education.enums.EducationEntity.INSTITUTE;
-
 import com.paytm.digital.education.database.entity.Course;
 import com.paytm.digital.education.database.entity.Institute;
 import com.paytm.digital.education.database.entity.Ranking;
@@ -34,8 +10,9 @@ import com.paytm.digital.education.explore.response.dto.common.Widget;
 import com.paytm.digital.education.explore.response.dto.common.WidgetData;
 import com.paytm.digital.education.explore.service.helper.WidgetsDataHelper;
 import com.paytm.digital.education.utility.CommonUtil;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -53,10 +30,36 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Slf4j
+import static com.mongodb.QueryOperators.AND;
+import static com.mongodb.QueryOperators.EXISTS;
+import static com.mongodb.QueryOperators.NE;
+import static com.paytm.digital.education.constant.ExploreConstants.COLLEGES_PER_STREAM;
+import static com.paytm.digital.education.constant.ExploreConstants.EMPTY_SQUARE_BRACKETS;
+import static com.paytm.digital.education.constant.ExploreConstants.GALLERY_LOGO;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTION_CITY;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTION_STATE;
+import static com.paytm.digital.education.constant.ExploreConstants.IN_OPERATOR;
+import static com.paytm.digital.education.constant.ExploreConstants.MAX_STREAMS;
+import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_ADDRESS;
+import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.OVERALL_RANKING;
+import static com.paytm.digital.education.constant.ExploreConstants.SIMILAR_COLLEGES;
+import static com.paytm.digital.education.constant.ExploreConstants.SIMILAR_COLLEGE_NAMESPACE;
+import static com.paytm.digital.education.constant.ExploreConstants.STREAMS;
+import static com.paytm.digital.education.constant.ExploreConstants.TOTAL_SIMILAR_COLLEGE;
+import static com.paytm.digital.education.enums.EducationEntity.INSTITUTE;
+import static com.paytm.digital.education.enums.Number.ONE;
+import static com.paytm.digital.education.explore.constants.CompareConstants.CAREERS360;
+import static com.paytm.digital.education.explore.constants.CompareConstants.NIRF;
+import static com.paytm.digital.education.explore.constants.CompareConstants.UNIVERSITIES;
+
+
 @Service
 @AllArgsConstructor
 public class SimilarInstituteServiceImpl {
+
+    private static final Logger log = LoggerFactory.getLogger(SimilarInstituteServiceImpl.class);
 
     private CommonMongoRepository commonMongoRepository;
     private InstituteRepository   instituteRepository;

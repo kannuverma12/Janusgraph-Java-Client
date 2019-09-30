@@ -7,9 +7,9 @@ import com.paytm.digital.education.coaching.es.model.CoachingCenterSearch;
 import com.paytm.digital.education.coaching.es.model.CoachingCourseSearch;
 import com.paytm.digital.education.coaching.es.model.CoachingInstituteSearch;
 import com.paytm.digital.education.coaching.es.model.ExamSearch;
-import com.paytm.digital.education.elasticsearch.enums.AggregationType;
-import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
-import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
+import com.paytm.digital.education.enums.es.enums.enums.AggregationType;
+import com.paytm.digital.education.enums.es.enums.enums.DataSortOrder;
+import com.paytm.digital.education.enums.es.enums.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.RANGE;
+import static com.paytm.digital.education.enums.es.enums.enums.FilterQueryType.RANGE;
 
 @Service
 @Slf4j

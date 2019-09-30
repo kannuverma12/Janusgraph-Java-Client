@@ -12,6 +12,9 @@ public enum EducationEntity {
     @JsonProperty("institute")
     INSTITUTE,
 
+    @JsonProperty("school")
+    SCHOOL,
+
     @JsonProperty("course")
     COURSE,
 
@@ -59,6 +62,8 @@ public enum EducationEntity {
                 return SubscribableEntityType.EXAM;
             case COURSE:
                 return SubscribableEntityType.COURSE;
+            case SCHOOL:
+                return SubscribableEntityType.SCHOOL;
             default:
                 return null;
         }

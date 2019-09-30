@@ -1,23 +1,16 @@
 package com.paytm.digital.education.elasticsearch.query;
 
-import static com.paytm.digital.education.elasticsearch.constants.ESConstants.AGGREGATION_QUERY_SIZE;
-import static com.paytm.digital.education.elasticsearch.constants.ESConstants.DEFAULT_TERMS_AGGREGATION_BUCKETS_SIZE;
-import static com.paytm.digital.education.elasticsearch.constants.ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS;
-import static com.paytm.digital.education.elasticsearch.constants.ESConstants.INCLUDE_AGGREGATION_SUFFIX;
-import static com.paytm.digital.education.elasticsearch.constants.ESConstants.MAX_AGGREGATION_SUFFIX;
-import static com.paytm.digital.education.elasticsearch.constants.ESConstants.MIN_AGGREGATION_SUFFIX;
-
-import com.paytm.digital.education.elasticsearch.enums.AggregationType;
-import com.paytm.digital.education.elasticsearch.enums.BucketAggregationSortParms;
-import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
+import com.paytm.digital.education.elasticsearch.models.BucketSort;
+import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.FilterField;
 import com.paytm.digital.education.elasticsearch.models.Operator;
-import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
-import com.paytm.digital.education.elasticsearch.models.BucketSort;
 import com.paytm.digital.education.elasticsearch.models.SortField;
 import com.paytm.digital.education.elasticsearch.query.helper.PathWiseMultiMatchQueryMapBuilder;
 import com.paytm.digital.education.elasticsearch.utils.DataSortUtil;
+import com.paytm.digital.education.enums.es.AggregationType;
+import com.paytm.digital.education.enums.es.BucketAggregationSortParms;
+import com.paytm.digital.education.enums.es.FilterQueryType;
 import javafx.util.Pair;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.join.ScoreMode;
@@ -38,12 +31,19 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Objects;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import static com.paytm.digital.education.elasticsearch.constants.ESConstants.AGGREGATION_QUERY_SIZE;
+import static com.paytm.digital.education.elasticsearch.constants.ESConstants.DEFAULT_TERMS_AGGREGATION_BUCKETS_SIZE;
+import static com.paytm.digital.education.elasticsearch.constants.ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS;
+import static com.paytm.digital.education.elasticsearch.constants.ESConstants.INCLUDE_AGGREGATION_SUFFIX;
+import static com.paytm.digital.education.elasticsearch.constants.ESConstants.MAX_AGGREGATION_SUFFIX;
+import static com.paytm.digital.education.elasticsearch.constants.ESConstants.MIN_AGGREGATION_SUFFIX;
 
 
 @Service
@@ -304,10 +304,22 @@ public class AggregationQueryBuilderService {
                             topHitsAggregation.sort(DataSortUtil.buildSort(sortField, null));
                         }
                     }
-                    TermsAggregationBuilder termsAggregation = AggregationBuilders.terms(fieldName);
+                    TermsAggregationBuilder termsAggregation = AggregationBuilders.terms(
+                            fieldName);
                     termsAggregation.field(fieldName);
                     termsAggregation.size(DEFAULT_TERMS_AGGREGATION_BUCKETS_SIZE);
-                    termsAggregation.subAggregation(topHitsAggregation);
+
+                    if (StringUtils.isNotEmpty(field.getChildTermsFieldName())) {
+                        TermsAggregationBuilder nestedAggregation = AggregationBuilders.terms(
+                                field.getChildTermsFieldName());
+                        nestedAggregation.field(field.getChildTermsFieldName());
+                        nestedAggregation.size(DEFAULT_TERMS_AGGREGATION_BUCKETS_SIZE);
+                        nestedAggregation.subAggregation(topHitsAggregation);
+                        termsAggregation.subAggregation(nestedAggregation);
+
+                    } else {
+                        termsAggregation.subAggregation(topHitsAggregation);
+                    }
                     if (DUMMY_PATH_FOR_OUTERMOST_FIELDS.equals(path)) {
                         filterAggregation.subAggregation(termsAggregation);
                     } else {
@@ -318,7 +330,6 @@ public class AggregationQueryBuilderService {
                     }
                     source.aggregation(filterAggregation);
                 }
-
             }
         }
     }

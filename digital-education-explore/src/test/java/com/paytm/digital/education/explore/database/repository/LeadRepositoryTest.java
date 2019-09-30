@@ -1,9 +1,8 @@
 package com.paytm.digital.education.explore.database.repository;
 
 import com.mongodb.MongoClient;
-import com.paytm.digital.education.explore.database.entity.Lead;
+import com.paytm.digital.education.database.entity.Lead;
 import com.paytm.digital.education.enums.EducationEntity;
-import com.paytm.digital.education.explore.enums.LeadAction;
 import de.flapdoodle.embed.mongo.Command;
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodStarter;
@@ -15,6 +14,7 @@ import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
 import de.flapdoodle.embed.process.runtime.Network;
+import org.apache.logging.log4j.core.lookup.MainMapLookup;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -44,7 +44,7 @@ public class LeadRepositoryTest {
 
     @BeforeClass
     public static void setUp() throws Exception {
-
+        MainMapLookup.setMainArguments("digital-education-service");
         setUpMongo(mongoHost, mongoPort);
 
         leadRepository = new LeadRepository(mongoTemplate);

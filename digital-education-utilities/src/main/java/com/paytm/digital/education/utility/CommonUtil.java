@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_BANNER;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_CENTER;
@@ -29,29 +30,45 @@ import static com.paytm.digital.education.constant.ExploreConstants.APPROVED_BY;
 import static com.paytm.digital.education.constant.ExploreConstants.APP_FOOTER;
 import static com.paytm.digital.education.constant.ExploreConstants.AUTONOMOUS;
 import static com.paytm.digital.education.constant.ExploreConstants.BANNER_MID;
+import static com.paytm.digital.education.constant.ExploreConstants.BROWSE_BY_EXAM_LEVEL;
+import static com.paytm.digital.education.constant.ExploreConstants.CAROUSEL;
 import static com.paytm.digital.education.constant.ExploreConstants.CONSTITUENT;
 import static com.paytm.digital.education.constant.ExploreConstants.CONSTITUENT_OF;
+import static com.paytm.digital.education.constant.ExploreConstants.CTA;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FOCUS_APP;
 import static com.paytm.digital.education.constant.ExploreConstants.FACILITIES;
+import static com.paytm.digital.education.constant.ExploreConstants.FIELD_POST_FIX;
 import static com.paytm.digital.education.constant.ExploreConstants.IGNORE_VALUES;
 import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_TYPE;
 import static com.paytm.digital.education.constant.ExploreConstants.LOCATIONS;
+import static com.paytm.digital.education.constant.ExploreConstants.POPULAR_EXAMS_APP;
 import static com.paytm.digital.education.constant.ExploreConstants.RANKING_LOGO;
+import static com.paytm.digital.education.constant.ExploreConstants.SCHOOLS_IN_FOCUS;
 import static com.paytm.digital.education.constant.ExploreConstants.STANDALONE_INSTITUTE;
 import static com.paytm.digital.education.constant.ExploreConstants.STREAMS;
 import static com.paytm.digital.education.constant.ExploreConstants.TOP_EXAMS_APP;
+import static com.paytm.digital.education.constant.ExploreConstants.TOP_SCHOOLS;
 import static com.paytm.digital.education.constant.ExploreConstants.UGC;
 
 @UtilityClass
 public class CommonUtil {
 
     public String getLogoLink(String logo, EducationEntity educationEntity) {
-        String absoluteUrl = ConfigProperties.getBaseUrl();
-        if (EducationEntity.EXAM.equals(educationEntity)) {
-            absoluteUrl = absoluteUrl + ConfigProperties.getExamLogoPrefix() + logo;
-        } else {
-            absoluteUrl = absoluteUrl + ConfigProperties.getLogoImagePrefix() + logo;
+        if (educationEntity != null) {
+            switch (educationEntity) {
+                case EXAM:
+                    return ConfigProperties.getBaseUrl() + ConfigProperties.getExamLogoPrefix()
+                            + logo;
+                case SCHOOL:
+                    return ConfigProperties.getBaseUrl() + ConfigProperties.getSchoolLogoPrefix()
+                            + logo;
+                default:
+                    return ConfigProperties.getBaseUrl() + ConfigProperties.getLogoImagePrefix()
+                            + logo;
+            }
         }
-        return absoluteUrl;
+        return ConfigProperties.getBaseUrl() + ConfigProperties.getLogoImagePrefix()
+                + logo;
     }
 
     public String getAbsoluteUrl(String relativeUrl, String type) {
@@ -71,11 +88,17 @@ public class CommonUtil {
                 urlBuilder.append(ConfigProperties.getLocationIconPrefix());
                 break;
             case BANNER_MID:
+            case CAROUSEL:
                 urlBuilder.append(ConfigProperties.getBannerPrefix());
                 break;
             case TOP_EXAMS_APP:
             case COACHING_TOP_EXAMS:
                 urlBuilder.append(ConfigProperties.getLogoExamPrefix());
+                break;
+            case POPULAR_EXAMS_APP:
+            case EXAM_FOCUS_APP:
+            case BROWSE_BY_EXAM_LEVEL:
+                urlBuilder.append(ConfigProperties.getExamLogoPrefix());
                 break;
             case RANKING_LOGO:
                 urlBuilder.append(ConfigProperties.getRankingLogo());
@@ -128,8 +151,16 @@ public class CommonUtil {
                         .append(ConfigProperties.getEnvProfile())
                         .append(ConfigProperties.getCoachingInstituteHighlightLogoPrefix());
                 break;
+            case TOP_SCHOOLS:
+            case SCHOOLS_IN_FOCUS:
+                urlBuilder.append(ConfigProperties.getSchoolLogoPrefix());
+                break;
+            case CTA:
+                urlBuilder.append(ConfigProperties.getCtaLogoPrefix());
+                break;
             default:
                 urlBuilder.append(ConfigProperties.getLogoImagePrefix());
+                break;
         }
         urlBuilder.append(relativeUrl);
         return urlBuilder.toString();
@@ -229,8 +260,8 @@ public class CommonUtil {
         String displayName;
         if (!CollectionUtils.isEmpty(propertyMap)
                 && propertyMap.containsKey(fieldName) && propertyMap
-
-                .get(fieldName).containsKey(keyName)) {
+                .get(fieldName).containsKey(keyName)
+                && Objects.nonNull(propertyMap.get(fieldName).get(keyName))) {
             displayName = propertyMap.get(fieldName).get(keyName)
                     .toString();
         } else {
@@ -349,5 +380,9 @@ public class CommonUtil {
             return null;
         }
         return name.replaceAll("[^a-zA-Z0-9]+", "-").toLowerCase();
+    }
+
+    public String getIdFieldNameFromEducationEntity(EducationEntity educationEntity) {
+        return educationEntity.name().toLowerCase() + FIELD_POST_FIX;
     }
 }

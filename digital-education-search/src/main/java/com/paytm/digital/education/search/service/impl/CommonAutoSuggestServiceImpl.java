@@ -1,8 +1,5 @@
 package com.paytm.digital.education.search.service.impl;
 
-import com.paytm.digital.education.elasticsearch.enums.AggregationType;
-import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
-import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
@@ -11,6 +8,9 @@ import com.paytm.digital.education.elasticsearch.models.SearchField;
 import com.paytm.digital.education.elasticsearch.models.SortField;
 import com.paytm.digital.education.elasticsearch.service.ElasticSearchService;
 import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.enums.es.AggregationType;
+import com.paytm.digital.education.enums.es.DataSortOrder;
+import com.paytm.digital.education.enums.es.FilterQueryType;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.search.model.AutoSuggestEsData;

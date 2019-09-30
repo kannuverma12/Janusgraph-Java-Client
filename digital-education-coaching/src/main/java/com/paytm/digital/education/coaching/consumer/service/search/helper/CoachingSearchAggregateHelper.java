@@ -1,8 +1,8 @@
 package com.paytm.digital.education.coaching.consumer.service.search.helper;
 
-import com.paytm.digital.education.elasticsearch.enums.AggregationType;
-import com.paytm.digital.education.elasticsearch.enums.BucketAggregationSortParms;
-import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
+import com.paytm.digital.education.enums.es.enums.enums.AggregationType;
+import com.paytm.digital.education.enums.es.enums.enums.BucketAggregationSortParms;
+import com.paytm.digital.education.enums.es.enums.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.BucketSort;
 import org.springframework.stereotype.Service;
@@ -24,8 +24,8 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.C
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_TYPE;
 import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_MEDIUM;
 import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_EXAM_LEVEL;
-import static com.paytm.digital.education.elasticsearch.enums.AggregationType.TERMS;
-import static com.paytm.digital.education.elasticsearch.enums.AggregationType.TOP_HITS;
+import static com.paytm.digital.education.enums.es.enums.enums.AggregationType.TERMS;
+import static com.paytm.digital.education.enums.es.enums.enums.AggregationType.TOP_HITS;
 
 @Service
 public class CoachingSearchAggregateHelper {

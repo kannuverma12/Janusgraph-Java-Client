@@ -1,15 +1,19 @@
 package com.paytm.digital.education.database.entity;
 
-import java.util.Date;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.data.mongodb.core.mapping.Field;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.ToString;
+import org.springframework.data.mongodb.core.mapping.Field;
+
+import java.util.Date;
+import java.util.List;
+
+import static com.paytm.digital.education.constant.ExploreConstants.NON_TENTATIVE;
+import static com.paytm.digital.education.constant.ExploreConstants.YYYY_MM;
+import static com.paytm.digital.education.utility.DateUtil.stringToDate;
 
 @Data
 @ToString
@@ -51,4 +55,15 @@ public class Event {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date dateRangeEnd;
 
+    public Date calculateCorrespondingDate() {
+        Date eventDate;
+        if (NON_TENTATIVE.equalsIgnoreCase(this.getCertainty())) {
+            eventDate = this.getDate() != null
+                    ? this.getDate()
+                    : this.getDateRangeStart();
+        } else {
+            eventDate = stringToDate(this.getMonthDate(), YYYY_MM);
+        }
+        return eventDate;
+    }
 }

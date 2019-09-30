@@ -4,7 +4,7 @@ import com.paytm.digital.education.database.entity.FailedData;
 import com.paytm.digital.education.database.repository.FailedDataRepository;
 import com.paytm.digital.education.database.entity.Article;
 import com.paytm.digital.education.database.entity.CampusAmbassador;
-import com.paytm.digital.education.explore.database.entity.CampusEngagement;
+import com.paytm.digital.education.database.entity.CampusEngagement;
 import com.paytm.digital.education.database.entity.CampusEvent;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.response.dto.detail.Ambassador;
@@ -14,7 +14,7 @@ import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.DateUtil;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
@@ -45,7 +45,7 @@ import static com.paytm.digital.education.explore.constants.CampusEngagementCons
 import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
 
-@Slf4j
+
 @Service
 @AllArgsConstructor
 public class CampusEngagementHelper {

@@ -10,7 +10,7 @@ public interface RecentsSerivce {
 
     void recordSearches(String searchTerm, Long userId, EducationEntity educationEntity);
 
-    SearchResponse getRecentSearchTerms(String query, Long userId, int size);
+    SearchResponse getRecentSearchTerms(String query, Long userId, int size, List<EducationEntity> entities);
 
     void ingestAudits(List<SearchHistoryEsDoc> searchHistoryEsDoc);
 }

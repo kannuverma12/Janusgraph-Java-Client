@@ -20,8 +20,8 @@ public class ConfigProperties {
     private static String appFooterPrefix;
     private static String rankingLogoPrefix;
     private static String examLogoPrefix;
-    private static String coachingCourseLogoPrefix;
-    private static String coachingInstituteLogoPrefix;
+    private static String ctaLogoPrefix;
+    private static String schoolLogoPrefix;
 
     private static String envProfile;
     private static String coachingS3BucketName;
@@ -33,6 +33,8 @@ public class ConfigProperties {
     private static String coachingTopRankerImagePrefix;
     private static String coachingCenterImagePrefix;
     private static String coachingInstituteHighlightLogoPrefix;
+    private static String coachingCourseLogoPrefix;
+    private static String coachingInstituteLogoPrefix;
 
     public static String getEnvProfile() {
         return envProfile;
@@ -143,6 +145,11 @@ public class ConfigProperties {
         examLogoPrefix = logoPrefix;
     }
 
+    @Value("${education.school.logo.prefix}")
+    public void setSchoolLogoPrefix(String logoPrefix) {
+        schoolLogoPrefix = logoPrefix;
+    }
+
     @Value("${coaching.course.logo.prefix}")
     public void setCoachingCourseLogoPrefix(String logoPrefix) {
         coachingCourseLogoPrefix = logoPrefix;
@@ -156,6 +163,11 @@ public class ConfigProperties {
     @Value("${coaching.center.image.prefix}")
     public void setCoachingCenterImagePrefix(String imagePrefix) {
         coachingCenterImagePrefix = imagePrefix;
+    }
+
+    @Value("${cta.logo.prefix}")
+    public void setCtaLogoPrefix(String prefix) {
+        ctaLogoPrefix = prefix;
     }
 
     public static String getBaseUrl() {
@@ -206,6 +218,10 @@ public class ConfigProperties {
         return bannerPrefix;
     }
 
+    public static String getSchoolLogoPrefix() {
+        return schoolLogoPrefix;
+    }
+
     public static String getCoachingCourseLogoPrefix() {
         return coachingCourseLogoPrefix;
     }
@@ -248,5 +264,9 @@ public class ConfigProperties {
 
     public static String getCoachingInstituteHighlightLogoPrefix() {
         return coachingInstituteHighlightLogoPrefix;
+    }
+
+    public static String getCtaLogoPrefix() {
+        return ctaLogoPrefix;
     }
 }

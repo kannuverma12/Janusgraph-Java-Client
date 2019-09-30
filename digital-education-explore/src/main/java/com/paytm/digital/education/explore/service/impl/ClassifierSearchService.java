@@ -1,8 +1,9 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
+import com.paytm.digital.education.enums.Client;
+import com.paytm.digital.education.enums.es.DataSortOrder;
 import com.paytm.digital.education.explore.enums.ClassifierDocType;
 import com.paytm.digital.education.explore.enums.ClassifierSortType;
 import com.paytm.digital.education.explore.es.model.ClassifierSearchDoc;
@@ -18,18 +19,18 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.LinkedHashMap;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 
+import static com.paytm.digital.education.constant.ExploreConstants.CLASSIFIER_ANALYZER;
 import static com.paytm.digital.education.constant.ExploreConstants.CLASSIFIER_INDEX;
 import static com.paytm.digital.education.constant.ExploreConstants.CLASSIFIER_KEYWORD;
 import static com.paytm.digital.education.constant.ExploreConstants.CLASSIFIER_KEYWORD_BOOST;
-import static com.paytm.digital.education.constant.ExploreConstants.CLASSIFIER_ANALYZER;
 
 /**
  * This class classifies search query and apply appropriate filters and sort orders
@@ -239,7 +240,8 @@ public class ClassifierSearchService extends AbstractSearchServiceImpl {
 
     @Override
     protected void populateSearchResults(SearchResponse searchResponse,
-            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties) {
+            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties,
+            ElasticRequest elasticRequest, Client client) {
 
     }
 }

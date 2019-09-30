@@ -18,8 +18,9 @@ import com.google.api.services.sheets.v4.model.ClearValuesRequest;
 import com.google.api.services.sheets.v4.model.ClearValuesResponse;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -43,11 +44,13 @@ import static com.paytm.digital.education.constant.GoogleUtilConstant.OFFLINE;
 import static com.paytm.digital.education.constant.GoogleUtilConstant.USER;
 
 @UtilityClass
-@Slf4j
+
 public class GoogleDriveUtil {
 
-    private static final String       APPLICATION_NAME = "Education";
-    private static final JsonFactory  JSON_FACTORY     = JacksonFactory.getDefaultInstance();
+    private static final Logger log = LoggerFactory.getLogger(GoogleDriveUtil.class);
+    private static final String       APPLICATION_NAME        = "Education";
+    private static final JsonFactory  JSON_FACTORY            = JacksonFactory.getDefaultInstance();
+
     /*
      ** Global instance of the scopes required by this quickstart. If modifying these
      ** scopes, delete your previously saved credentials/ folder.

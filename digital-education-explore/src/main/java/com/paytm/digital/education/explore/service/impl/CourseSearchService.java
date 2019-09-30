@@ -1,6 +1,6 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.TERMS;
+import static com.paytm.digital.education.enums.es.FilterQueryType.TERMS;
 import static com.paytm.digital.education.constant.ExploreConstants.BRANCH_COURSE;
 import static com.paytm.digital.education.constant.ExploreConstants.COURSE_FILTER_NAMESPACE;
 import static com.paytm.digital.education.constant.ExploreConstants.COURSE_LEVEL;
@@ -33,8 +33,8 @@ import static com.paytm.digital.education.constant.ExploreConstants.STREAM_COURS
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_NAME;
 
-import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
-import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
+import com.paytm.digital.education.enums.es.DataSortOrder;
+import com.paytm.digital.education.enums.es.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationResponse;
@@ -63,6 +63,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.List;
 import java.util.LinkedHashMap;
@@ -70,6 +71,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.PostConstruct;
 
@@ -82,6 +84,7 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
     private static LinkedHashMap<String, DataSortOrder> defaultSortKeysInOrder;
     private static LinkedHashMap<String, DataSortOrder> alphabeticalSortKeysAsc;
     private static LinkedHashMap<String, DataSortOrder> alphabeticalSortKeysDesc;
+    private static Set<String>                          allowedSortFields;
     private        SearchAggregateHelper                searchAggregateHelper;
     private        CommonMongoRepository                commonMongoRepository;
     private        PropertyReader                       propertyReader;
@@ -108,6 +111,11 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
         alphabeticalSortKeysAsc.put(NAME_COURSE, DataSortOrder.ASC);
         alphabeticalSortKeysDesc = new LinkedHashMap<>();
         alphabeticalSortKeysDesc.put(NAME_COURSE, DataSortOrder.DESC);
+
+        allowedSortFields = new HashSet<>(defaultSortKeysInOrder.keySet());
+        allowedSortFields.addAll(alphabeticalSortKeysAsc.keySet());
+        allowedSortFields.addAll(alphabeticalSortKeysDesc.keySet());
+        allowedSortFields.add(COURSE_ALPHABETICAL_SORT_KEY);
     }
 
     @Override
@@ -213,6 +221,8 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
         populateAggregateFields(searchRequest, elasticRequest,
                 searchAggregateHelper.getCourseAggregateData(searchRequest.getClient()),
                 CourseSearch.class);
+
+        validateSortFields(searchRequest, allowedSortFields);
         LinkedHashMap<String, DataSortOrder> sortOrder = new LinkedHashMap<>();
         if (!CollectionUtils.isEmpty(searchRequest.getSortOrder())) {
             if (searchRequest.getSortOrder().containsKey(COURSE_ALPHABETICAL_SORT_KEY)) {
@@ -301,6 +311,7 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
 
     @Override
     protected void populateSearchResults(SearchResponse searchResponse,
-            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties) {
+            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties,
+            ElasticRequest elasticRequest, Client client) {
     }
 }

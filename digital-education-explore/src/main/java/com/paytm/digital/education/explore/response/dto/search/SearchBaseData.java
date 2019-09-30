@@ -3,7 +3,10 @@ package com.paytm.digital.education.explore.response.dto.search;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.explore.response.dto.common.CTA;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -21,5 +24,8 @@ public class SearchBaseData {
 
     @JsonProperty("logo_url")
     private String logoUrl;
+
+    @JsonProperty("cta_list")
+    private List<CTA> ctaList;
 
 }

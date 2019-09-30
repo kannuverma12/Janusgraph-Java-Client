@@ -4,7 +4,7 @@ import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.database.repository.StreamRepository;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Institute;
-import com.paytm.digital.education.explore.database.entity.State;
+import com.paytm.digital.education.database.entity.State;
 import com.paytm.digital.education.database.entity.Subscription;
 import com.paytm.digital.education.database.repository.ExamRepository;
 import com.paytm.digital.education.explore.database.repository.InstituteRepository;

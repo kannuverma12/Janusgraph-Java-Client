@@ -141,6 +141,9 @@ public class Institute {
     @Field("is_client")
     private int isClient;
 
+    @Field("paytm_keys")
+    private InstiPaytmKeys paytmKeys;
+
     public Institute(String commonName, Long instituteId) {
         this.commonName = commonName;
         this.instituteId = instituteId;

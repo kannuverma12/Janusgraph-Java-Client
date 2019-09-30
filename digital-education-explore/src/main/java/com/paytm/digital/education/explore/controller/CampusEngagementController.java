@@ -1,12 +1,9 @@
 package com.paytm.digital.education.explore.controller;
 
-import static com.paytm.digital.education.constant.ExploreConstants.EDUCATION_BASE_URL;
-
 import com.paytm.digital.education.explore.service.impl.ImportAmbassadorServiceImpl;
 import com.paytm.digital.education.explore.service.impl.ImportArticleServiceImpl;
 import com.paytm.digital.education.explore.service.impl.ImportEventServiceImpl;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,7 +14,9 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.text.ParseException;
 
-@Slf4j
+import static com.paytm.digital.education.constant.ExploreConstants.EDUCATION_BASE_URL;
+
+
 @AllArgsConstructor
 @RestController
 @Validated

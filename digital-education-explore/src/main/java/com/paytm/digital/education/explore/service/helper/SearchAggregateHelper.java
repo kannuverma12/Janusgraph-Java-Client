@@ -1,38 +1,50 @@
 package com.paytm.digital.education.explore.service.helper;
 
-import static com.paytm.digital.education.elasticsearch.enums.AggregationType.MINMAX;
-import static com.paytm.digital.education.elasticsearch.enums.AggregationType.TERMS;
-import static com.paytm.digital.education.elasticsearch.enums.AggregationType.TOP_HITS;
+import com.paytm.digital.education.enums.es.AggregationType;
+import com.paytm.digital.education.enums.es.BucketAggregationSortParms;
+import com.paytm.digital.education.enums.es.DataSortOrder;
+import com.paytm.digital.education.elasticsearch.models.AggregateField;
+import com.paytm.digital.education.elasticsearch.models.BucketSort;
+import com.paytm.digital.education.enums.Client;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static com.paytm.digital.education.constant.ExploreConstants.BRANCH_COURSE;
 import static com.paytm.digital.education.constant.ExploreConstants.CITY_INSTITUTE;
 import static com.paytm.digital.education.constant.ExploreConstants.COURSE_LEVEL_INSTITUTE;
+import static com.paytm.digital.education.constant.ExploreConstants.DEGREE_COURSE;
 import static com.paytm.digital.education.constant.ExploreConstants.ESTABLISHMENT_YEAR;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAMS_ACCEPTED_INSTITUTE;
 import static com.paytm.digital.education.constant.ExploreConstants.FACILITIES;
 import static com.paytm.digital.education.constant.ExploreConstants.FEES_INSTITUTE;
 import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_GENDER;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_NAME_COURSE;
+import static com.paytm.digital.education.constant.ExploreConstants.LEVEL_COURSE;
 import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_MEDIUM;
 import static com.paytm.digital.education.constant.ExploreConstants.OWNERSHIP;
+import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_EXAM_DOMAIN;
 import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_EXAM_LEVEL;
-import static com.paytm.digital.education.constant.ExploreConstants.STATE_INSTITUTE;
-import static com.paytm.digital.education.constant.ExploreConstants.STREAM_INSTITUTE;
-import static com.paytm.digital.education.constant.ExploreConstants.BRANCH_COURSE;
-import static com.paytm.digital.education.constant.ExploreConstants.DEGREE_COURSE;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_NAME_COURSE;
-import static com.paytm.digital.education.constant.ExploreConstants.STREAM_COURSE;
-import static com.paytm.digital.education.constant.ExploreConstants.LEVEL_COURSE;
 import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_HISTORY_USERID;
-
-import com.paytm.digital.education.elasticsearch.enums.AggregationType;
-import com.paytm.digital.education.elasticsearch.enums.BucketAggregationSortParms;
-import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
-import com.paytm.digital.education.elasticsearch.models.AggregateField;
-import com.paytm.digital.education.elasticsearch.models.BucketSort;
-
-import java.util.Arrays;
-import java.util.List;
-
-import com.paytm.digital.education.enums.Client;
-import org.springframework.stereotype.Service;
+import static com.paytm.digital.education.constant.ExploreConstants.STATE_INSTITUTE;
+import static com.paytm.digital.education.constant.ExploreConstants.STREAM_COURSE;
+import static com.paytm.digital.education.constant.ExploreConstants.STREAM_INSTITUTE;
+import static com.paytm.digital.education.enums.es.AggregationType.MINMAX;
+import static com.paytm.digital.education.enums.es.AggregationType.TERMS;
+import static com.paytm.digital.education.enums.es.AggregationType.TOP_HITS;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_ACCEPTED;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_EDUCATION_LEVEL;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_ESTABLISHMENT_YEAR;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_FEE;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_GENDER_ACCEPTED;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_OWNERSHIP;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_CITY;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_FACILITIES;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_MEDIUM;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_STATE;
 
 @Service
 public class SearchAggregateHelper {
@@ -67,14 +79,14 @@ public class SearchAggregateHelper {
 
     public AggregateField[] getExamAggregateData() {
         List<String> examKeys =
-                Arrays.asList(LINGUISTIC_MEDIUM, SEARCH_EXAM_LEVEL);
+                Arrays.asList(LINGUISTIC_MEDIUM, SEARCH_EXAM_LEVEL, SEARCH_EXAM_DOMAIN);
         List<AggregationType> examAggregateType =
-                Arrays.asList(TERMS, TERMS);
+                Arrays.asList(TERMS, TERMS, TERMS);
         BucketSort countDescSort = BucketSort.builder().key(BucketAggregationSortParms.COUNT).order(
                 DataSortOrder.DESC).build();
 
         List<BucketSort> examSortOrder =
-                Arrays.asList(countDescSort, countDescSort);
+                Arrays.asList(countDescSort, countDescSort, countDescSort);
         AggregateField[] examAggregateData = new AggregateField[examKeys.size()];
 
         for (int i = 0; i < examKeys.size(); i++) {
@@ -127,6 +139,47 @@ public class SearchAggregateHelper {
         aggregateFields[0].setBucketsOrder(
                 BucketSort.builder().key(BucketAggregationSortParms.COUNT).order(DataSortOrder.DESC)
                         .build());
+        return aggregateFields;
+    }
+
+    public AggregateField[] getSchoolAggregateData() {
+        List<String> schoolKeys =
+                Arrays.asList(SCHOOL_CITY, SCHOOL_STATE, SCHOOL_BOARDS_EDUCATION_LEVEL,
+                        SCHOOL_BOARDS_OWNERSHIP, SCHOOL_BOARDS_GENDER_ACCEPTED,
+                        SCHOOL_FACILITIES, SCHOOL_BOARDS_ACCEPTED,
+                        SCHOOL_MEDIUM, SCHOOL_BOARDS_FEE, SCHOOL_BOARDS_ESTABLISHMENT_YEAR);
+        List<AggregationType> schoolAggregateType =
+                Arrays.asList(TERMS, TERMS, TERMS, TERMS, TERMS, TERMS, TERMS,
+                        TERMS, MINMAX, MINMAX);
+        BucketSort countDescSort = BucketSort.builder().key(BucketAggregationSortParms.COUNT).order(
+                DataSortOrder.DESC).build();
+
+        List<BucketSort> schoolSortOrder =
+                Arrays.asList(countDescSort, countDescSort, countDescSort, countDescSort, countDescSort,
+                        countDescSort, countDescSort, countDescSort, null, null);
+
+        AggregateField[] schoolAggregateData = new AggregateField[schoolKeys.size()];
+
+        for (int i = 0; i < schoolKeys.size(); i++) {
+            AggregateField aggregateField = new AggregateField();
+            aggregateField.setName(schoolKeys.get(i));
+            aggregateField.setType(schoolAggregateType.get(i));
+            aggregateField.setBucketsOrder(schoolSortOrder.get(i));
+            schoolAggregateData[i] = aggregateField;
+        }
+        return schoolAggregateData;
+    }
+
+    public AggregateField[] getTopHitsAggregateData(List<String> dataPerFilter) {
+        AggregateField[] aggregateFields = new AggregateField[1];
+        aggregateFields[0] = new AggregateField();
+        if (!CollectionUtils.isEmpty(dataPerFilter)) {
+            aggregateFields[0].setName(dataPerFilter.get(0));
+            if (dataPerFilter.size() == 2 && StringUtils.isNotBlank(dataPerFilter.get(1))) {
+                aggregateFields[0].setChildTermsFieldName(dataPerFilter.get(1));
+            }
+        }
+        aggregateFields[0].setType(TOP_HITS);
         return aggregateFields;
     }
 }

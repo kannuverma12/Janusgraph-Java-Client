@@ -36,7 +36,6 @@ public class DerivedAttributesHelper {
         String highlights = templateProcessor
                 .processTemplate(highlightsTemplate, HIGHLIGHTS_TEMPLATE, highlightInputData);
         if (StringUtils.isNotBlank(highlights)) {
-            //return JsonUtils.fromJson(highlights, Map.class);
             Map<String, List<Attribute>> derivedMap = JsonUtils.fromJson(highlights,
                     new TypeReference<LinkedHashMap<String, ArrayList<Attribute>>>() {
                     });

@@ -1,17 +1,17 @@
 package com.paytm.digital.education.explore.service.helper;
 
-import com.paytm.digital.education.explore.database.entity.Lead;
+import com.paytm.digital.education.database.entity.Lead;
 import com.paytm.digital.education.explore.database.repository.LeadRepository;
 import com.paytm.digital.education.enums.EducationEntity;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
+
 @Service
 @AllArgsConstructor
 public class LeadDetailHelper {

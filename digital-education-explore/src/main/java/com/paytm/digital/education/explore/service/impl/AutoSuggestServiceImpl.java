@@ -40,6 +40,12 @@ public class AutoSuggestServiceImpl {
     private SubscriptionDetailHelper    subscriptionDetailHelper;
     private ExamLogoHelper              examLogoHelper;
 
+    public AutoSuggestResponse getAll(List<EducationEntity> entities, boolean alphabeticalSorting,
+            int limit) {
+        AutoSuggestResponse autoSuggestResponse =
+                getSuggestResults(null, entities, limit, alphabeticalSorting);
+        return autoSuggestResponse;
+    }
 
     public AutoSuggestResponse getSuggestions(String searchTerm, List<EducationEntity> entities,
             List<UserAction> actions, Long userId) {

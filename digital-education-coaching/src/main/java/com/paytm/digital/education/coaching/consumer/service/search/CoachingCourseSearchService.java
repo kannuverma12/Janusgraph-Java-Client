@@ -11,7 +11,7 @@ import com.paytm.digital.education.coaching.es.model.CoachingCourseSearch;
 import com.paytm.digital.education.coaching.es.model.CoachingInstituteSearch;
 import com.paytm.digital.education.coaching.utils.ImageUtils;
 import com.paytm.digital.education.coaching.utils.SearchUtils;
-import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
+import com.paytm.digital.education.enums.es.enums.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
@@ -49,7 +49,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.S
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.SEARCH_INDEX_COACHING_COURSE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_COURSES;
-import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.TERMS;
+import static com.paytm.digital.education.enums.es.enums.enums.FilterQueryType.TERMS;
 
 @Slf4j
 @Service

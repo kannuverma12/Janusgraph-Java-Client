@@ -1,19 +1,20 @@
 package com.paytm.digital.education.explore.scheduler;
 
-import com.paytm.digital.education.elasticsearch.enums.BulkRequestOperation;
+import com.paytm.digital.education.constant.ExploreConstants;
+import com.paytm.digital.education.enums.es.BulkRequestOperation;
 import com.paytm.digital.education.elasticsearch.models.BulkRequestItem;
 import com.paytm.digital.education.elasticsearch.service.ElasticSearchService;
-import com.paytm.digital.education.constant.ExploreConstants;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
+import com.paytm.digital.education.explore.response.dto.search.FilterBucket;
+import com.paytm.digital.education.explore.response.dto.search.FilterData;
 import com.paytm.digital.education.explore.response.dto.search.RecentSearch;
 import com.paytm.digital.education.explore.response.dto.search.SearchBaseData;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
-import com.paytm.digital.education.explore.response.dto.search.FilterBucket;
 import com.paytm.digital.education.explore.response.dto.search.TermFilterData;
-import com.paytm.digital.education.explore.response.dto.search.FilterData;
 import com.paytm.digital.education.explore.service.impl.RecentSearchServiceImpl;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -22,18 +23,19 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
-import java.util.Objects;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 
 @EnableScheduling
 @Configuration
-@Slf4j
 public class RecentsLimitCheckScheduler {
+
+    private static Logger log = LoggerFactory.getLogger(RecentsLimitCheckScheduler.class);
 
     @Autowired
     private RecentSearchServiceImpl recentSearchService;

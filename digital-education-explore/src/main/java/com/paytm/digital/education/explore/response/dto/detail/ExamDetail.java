@@ -3,108 +3,112 @@ package com.paytm.digital.education.explore.response.dto.detail;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.common.BannerData;
+import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.common.Widget;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ExamDetail {
+public class ExamDetail implements CTAInfoHolder {
 
     @JsonProperty("exam_id")
-    private Long           examId;
+    private Long examId;
 
     @JsonProperty("exam_full_name")
-    private String         examFullName;
+    private String examFullName;
 
     @JsonProperty("url_display_key")
-    private String         urlDisplayName;
+    private String urlDisplayName;
 
     @JsonProperty("interested")
-    private boolean        interested;
+    private boolean interested;
 
     @JsonProperty("exam_short_name")
-    private String         examShortName;
+    private String examShortName;
 
     @JsonProperty("about")
-    private String         about;
+    private String about;
 
     @JsonProperty("exam_level")
-    private String         examLevel;
+    private String examLevel;
 
     @JsonProperty("logo_url")
-    private String         logoUrl;
+    private String logoUrl;
 
     @JsonProperty("linguistic_medium")
-    private List<String>   linguisticMedium;
+    private List<String> linguisticMedium;
 
     @JsonProperty("duration_in_hour")
-    private Float          durationInHour;
+    private Float durationInHour;
 
     @JsonProperty("centers_count")
-    private Integer        centersCount;
+    private Integer centersCount;
 
     @JsonProperty("application_start_date")
-    private String         applicationOpening;
+    private String applicationOpening;
 
     @JsonProperty("application_end_date")
-    private String         applicationClosing;
+    private String applicationClosing;
 
     @JsonProperty("exam_start_date")
-    private String         examStartDate;
+    private String examStartDate;
 
     @JsonProperty("exam_end_date")
-    private String         examEndDate;
+    private String examEndDate;
 
     @JsonProperty("application_month")
-    private String         applicationMonth;
+    private String applicationMonth;
 
     @JsonProperty("exam_month")
-    private String         examMonth;
+    private String examMonth;
 
     @JsonProperty("eligibility_criteria")
-    private String         eligibilityCriteria;
+    private String eligibilityCriteria;
 
     @JsonProperty("syllabus")
     private List<Syllabus> syllabus;
 
     @JsonProperty("application_fee")
-    private Integer        applicationFee;                // DNA
+    private Integer applicationFee;                // DNA
 
     @JsonProperty("important_dates")
-    private List<Event>    importantDates;
+    private List<Event> importantDates;
 
     @JsonProperty("application_process")
-    private String         applicationProcess;            // DNA
+    private String applicationProcess;            // DNA
 
     @JsonProperty("exam_pattern")
-    private String         examPattern;
+    private String examPattern;
 
     @JsonProperty("admit_card")
-    private String         admitCard;                     // DNA
+    private String admitCard;
 
     @JsonProperty("answer_key")
-    private String         answerKey;                     // DNA
+    private String answerKey;                     // DNA
 
     @JsonProperty("result")
-    private String         result;                        // DNA
+    private String result;
 
     @JsonProperty("cutoff")
-    private String         cutoff;                        // DNA
+    private String cutoff;
 
     @JsonProperty("counselling")
-    private String         counselling;                   // DNA
+    private String counselling;                   // DNA
 
     @JsonProperty("documents_counselling")
-    private List<String>   documentsRequiredAtCounselling;
+    private List<String> documentsRequiredAtCounselling;
 
     @JsonProperty("documents_exam")
-    private List<String>   documentsRequiredAtExam;
+    private List<String> documentsRequiredAtExam;
 
     @JsonProperty("shortlisted")
-    private boolean        shortlisted;
+    private boolean shortlisted;
 
     @JsonProperty("derived_attributes")
     private Map<String, List<Attribute>> derivedAttributes;
@@ -121,4 +125,69 @@ public class ExamDetail {
     @JsonProperty("banners")
     private List<BannerData> banners;
 
+    @JsonProperty("cta_list")
+    private List<CTA> ctaList;
+
+    @JsonProperty("eligibility")
+    private String eligibility;
+
+    @JsonProperty("application_form")
+    private String applicationForm;
+
+    @JsonIgnore
+    private Long collegePredictorPid;
+
+    @JsonIgnore
+    private String formId;
+
+    public Long getPid() {
+        return null;
+    }
+
+    @JsonIgnore
+    @Accessors(fluent = true)
+    private boolean shouldHaveLeadCTA = true;
+
+    @JsonIgnore
+    @Accessors(fluent = true)
+    private boolean shouldHaveApplyNowCTA = true;
+
+    @JsonIgnore
+    public boolean isClient() {
+        return false;
+    }
+
+    @JsonIgnore
+    @Override
+    public String getBrochureUrl() {
+        return null;
+    }
+
+    @JsonIgnore
+    @Override
+    public EducationEntity getCorrespondingEntity() {
+        return EducationEntity.EXAM;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean hasCompareFeature() {
+        return false;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean hasShortListFeature() {
+        return false;
+    }
+
+    @Override
+    public Long getCollegePredictorPid() {
+        return collegePredictorPid;
+    }
+
+    @Override
+    public String getFormId() {
+        return formId;
+    }
 }

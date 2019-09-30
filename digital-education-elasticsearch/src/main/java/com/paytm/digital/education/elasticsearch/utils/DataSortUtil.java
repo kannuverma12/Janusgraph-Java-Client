@@ -1,8 +1,8 @@
 package com.paytm.digital.education.elasticsearch.utils;
 
-import java.util.List;
-import java.util.Map;
-
+import com.paytm.digital.education.elasticsearch.constants.ESConstants;
+import com.paytm.digital.education.elasticsearch.models.SortField;
+import com.paytm.digital.education.enums.es.DataSortOrder;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -13,9 +13,10 @@ import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.util.CollectionUtils;
-import com.paytm.digital.education.elasticsearch.constants.ESConstants;
-import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
-import com.paytm.digital.education.elasticsearch.models.SortField;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class DataSortUtil {
 
@@ -79,10 +80,11 @@ public class DataSortUtil {
 
     public static GeoDistanceSortBuilder buildGeoLocationSort(SortField sortField,
             List<Double> latLonList) {
-        SortOrder sortOrder =
-                sortField.getOrder() != null && sortField.getOrder().equals(DataSortOrder.DESC)
-                        ? SortOrder.DESC :
-                        SortOrder.ASC;
+        SortOrder sortOrder = Optional.ofNullable(sortField)
+                .map(SortField::getOrder)
+                .map(x -> x.equals(DataSortOrder.DESC) ? SortOrder.DESC : SortOrder.ASC)
+                .orElse(SortOrder.ASC);
+
         GeoDistanceSortBuilder sortBuilder = null;
 
         if (!CollectionUtils.isEmpty(latLonList) && latLonList.size() == 2) {

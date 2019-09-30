@@ -13,8 +13,9 @@ import com.paytm.digital.education.elasticsearch.request.BulkRequestBuilder;
 import com.paytm.digital.education.elasticsearch.service.ElasticSearchService;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.mapping.ErrorEnum;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -24,7 +25,6 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -32,10 +32,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class ElasticSearchServiceImpl implements ElasticSearchService {
+
+    private static Logger log = LoggerFactory.getLogger(ElasticSearchServiceImpl.class);
 
     @Qualifier(ESConstants.EDUCATION_ES_CLIENT)
     private RestHighLevelClient esClient;

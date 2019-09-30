@@ -1,6 +1,8 @@
 package com.paytm.digital.education.application.config.metric;
 
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.config.Order;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +17,9 @@ import javax.servlet.http.HttpServletResponse;
 
 @Component
 @Order(1)
-@Slf4j
 public class DatadogFilter extends OncePerRequestFilter {
+
+    private static Logger log = LoggerFactory.getLogger(DatadogFilter.class);
 
     @Autowired
     private MetricsAgent metricsAgent;

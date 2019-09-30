@@ -11,7 +11,6 @@
         <module>digital-education-application</module>
         <module>digital-education-elasticsearch</module>
         <module>digital-education-search</module>
-        <module>forms-business-logic</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -30,12 +29,17 @@
         <java.version>1.8</java.version>
         <async.logging.version>3.3.6</async.logging.version>
         <lombok.version>1.18.4</lombok.version>
+        <persona.version>0.0.1-SNAPSHOT</persona.version>
     </properties>
 
     <repositories>
         <repository>
             <id>paytm-maven</id>
             <url>https://nexusartifactory.paytm.com/repository/paytm-maven/</url>
+        </repository>
+        <repository>
+            <id>releases</id>
+            <url>https://nexusartifactory.paytm.com/repository/digital-education-maven-releases</url>
         </repository>
     </repositories>
 
@@ -68,18 +72,6 @@
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
         </dependency>
-
-        <!--Logging -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-log4j2</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.lmax</groupId>
-            <artifactId>disruptor</artifactId>
-            <version>${async.logging.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -104,6 +96,31 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.paytm</groupId>
+            <artifactId>education-commons</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+        <!-- Authentication -->
+        <dependency>
+            <groupId>paytm.auth</groupId>
+            <artifactId>persona-acl-client</artifactId>
+            <version>${persona.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.sf.ehcache</groupId>
+                    <artifactId>ehcache-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
 
     <build>

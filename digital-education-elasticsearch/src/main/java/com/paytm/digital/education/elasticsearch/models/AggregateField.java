@@ -1,6 +1,6 @@
 package com.paytm.digital.education.elasticsearch.models;
 
-import com.paytm.digital.education.elasticsearch.enums.AggregationType;
+import com.paytm.digital.education.enums.es.AggregationType;
 import lombok.Data;
 
 @Data
@@ -17,4 +17,7 @@ public class AggregateField {
     private SortField[]     sortFields;
 
     private String[]        values;
+
+    private String childTermsFieldName;
+
 }

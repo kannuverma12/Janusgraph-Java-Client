@@ -12,7 +12,7 @@ import com.paytm.digital.education.coaching.consumer.service.search.helper.Searc
 import com.paytm.digital.education.coaching.consumer.service.search.CoachingCourseSearchService;
 import com.paytm.digital.education.coaching.consumer.service.search.ExamSearchService;
 import com.paytm.digital.education.database.entity.Section;
-import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
+import com.paytm.digital.education.enums.es.enums.enums.DataSortOrder;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
@@ -42,7 +42,7 @@ import static com.paytm.digital.education.constant.CommonConstants.COACHING_STRE
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_COURSES;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_EXAMS;
 import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES;
-import static com.paytm.digital.education.elasticsearch.enums.DataSortOrder.ASC;
+import static com.paytm.digital.education.enums.es.enums.enums.DataSortOrder.ASC;
 import static com.paytm.digital.education.enums.EducationEntity.COACHING_COURSE;
 import static com.paytm.digital.education.enums.EducationEntity.EXAM;
 

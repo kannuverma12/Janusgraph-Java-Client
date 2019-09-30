@@ -19,7 +19,7 @@ import com.paytm.digital.education.explore.response.dto.common.CutOff;
 import com.paytm.digital.education.explore.response.dto.detail.CompareCourseDetail;
 import com.paytm.digital.education.explore.service.CompareCourseService;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +31,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Slf4j
+
 @Service
 @AllArgsConstructor
 public class CompareCourseServiceImpl implements CompareCourseService {

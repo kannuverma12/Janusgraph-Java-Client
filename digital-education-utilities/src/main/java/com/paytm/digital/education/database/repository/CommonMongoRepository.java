@@ -1,9 +1,11 @@
 package com.paytm.digital.education.database.repository;
 
+import com.mongodb.client.result.UpdateResult;
 import com.paytm.digital.education.database.entity.FieldGroup;
 import com.paytm.digital.education.database.entity.FtlTemplate;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
@@ -32,10 +34,11 @@ import static com.paytm.digital.education.constant.DBConstants.GROUP_ENTITY;
 import static com.paytm.digital.education.constant.DBConstants.GROUP_NAME;
 import static com.paytm.digital.education.constant.DBConstants.IN_OPERATOR;
 
-@Slf4j
 @AllArgsConstructor
 @Repository
 public class CommonMongoRepository {
+
+    private static Logger log = LoggerFactory.getLogger(CommonMongoRepository.class);
 
     private MongoOperations     mongoOperation;
     private MongoMappingContext context;
@@ -51,9 +54,11 @@ public class CommonMongoRepository {
     public <T> T getEntityByFields(String key, long entityId, Class<T> instance,
             List<String> fields) {
         Query mongoQuery = new Query(Criteria.where(key).is(entityId));
-        fields.forEach(field -> {
-            mongoQuery.fields().include(field);
-        });
+        if (Objects.nonNull(fields)) {
+            fields.forEach(field -> {
+                mongoQuery.fields().include(field);
+            });
+        }
         return executeQuery(mongoQuery, instance);
     }
 
@@ -62,9 +67,21 @@ public class CommonMongoRepository {
             Class<T> instance,
             List<String> fields) {
         Query mongoQuery = new Query(Criteria.where(key).in(entityIds));
-        fields.forEach(field -> {
-            mongoQuery.fields().include(field);
-        });
+        if (!CollectionUtils.isEmpty(fields)) {
+            fields.forEach(field -> mongoQuery.fields().include(field));
+        }
+        return executeMongoQuery(mongoQuery, instance);
+    }
+
+    @Cacheable(value = "cacheKey", unless = "#result == null", condition = "#cacheKey != "
+            + "\"paytm_keys\"")
+    public <T> List<T> getEntityFieldsByValuesIn(String key, List<Long> entityIds,
+            Class<T> instance,
+            List<String> fields, String cacheKey) {
+        Query mongoQuery = new Query(Criteria.where(key).in(entityIds));
+        if (!CollectionUtils.isEmpty(fields)) {
+            fields.forEach(field -> mongoQuery.fields().include(field));
+        }
         return executeMongoQuery(mongoQuery, instance);
     }
 
@@ -126,6 +143,18 @@ public class CommonMongoRepository {
             return template.getTemplate();
         }
         return null;
+    }
+
+    public <T> long updateFields(Map<String, Object> data, Class<T> type, Long entityId,
+            String entity) {
+        Update update = new Update();
+        for (Map.Entry<String, Object> entry : data.entrySet()) {
+            update.set(entry.getKey(), entry.getValue());
+        }
+        Query query = new Query(Criteria.where(entity).is(entityId));
+        UpdateResult updateResult = mongoOperation.updateFirst(query, update, type);
+        log.info("Mongo update result : {}", updateResult.toString());
+        return updateResult.getMatchedCount();
     }
 
     public void saveOrUpdate(Object obj) {

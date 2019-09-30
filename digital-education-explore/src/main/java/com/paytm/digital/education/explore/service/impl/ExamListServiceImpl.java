@@ -10,7 +10,7 @@ import com.paytm.digital.education.explore.service.ExamListService;
 import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.explore.validators.UrlParamsValidator;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -33,7 +33,7 @@ import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID
 import static com.paytm.digital.education.constant.ExploreConstants.SUBEXAM_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.NO_EXAM_LIST_EXISTS;
 
-@Slf4j
+
 @AllArgsConstructor
 @Service
 public class ExamListServiceImpl implements ExamListService {

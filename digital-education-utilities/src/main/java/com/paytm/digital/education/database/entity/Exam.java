@@ -1,5 +1,6 @@
 package com.paytm.digital.education.database.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.enums.PublishStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -94,6 +95,34 @@ public class Exam extends Base {
 
     @Field("stream_ids")
     private List<Long> streamIds;
+
+    @Field("paytm_keys")
+    private ExamPaytmKeys paytmKeys;
+
+    @Field("cutoff")
+    private String cutoff;
+
+    @Field("exam_pattern")
+    private String examPattern;
+
+    @Field("admit_card")
+    private String admitCard;
+
+    @Field("eligibility")
+    private String eligibility;
+
+    @Field("application_form")
+    private String applicationForm;
+
+    @Field("result")
+    private String result;
+
+    @JsonProperty("url_display_key")
+    private String urlDisplayKey;
+
+    public Exam(long examId) {
+        this.examId = examId;
+    }
 
     public Exam(String examShortName, Long examId) {
         this.examShortName = examShortName;

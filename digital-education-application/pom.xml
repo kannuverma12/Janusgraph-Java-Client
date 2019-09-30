@@ -13,7 +13,6 @@
 
     <properties>
         <datadog.version>2.6.1</datadog.version>
-        <persona.version>0.0.1-SNAPSHOT</persona.version>
         <swagger.version>2.9.2</swagger.version>
     </properties>
 
@@ -27,12 +26,6 @@
             <groupId>com.paytm.digital.education</groupId>
             <artifactId>digital-education-explore</artifactId>
             <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.paytm.digital.education</groupId>
-            <artifactId>forms-business-logic</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
         </dependency>
 
         <dependency>
@@ -56,19 +49,6 @@
             <groupId>com.datadoghq</groupId>
             <artifactId>java-dogstatsd-client</artifactId>
             <version>${datadog.version}</version>
-        </dependency>
-
-        <!-- Authentication -->
-        <dependency>
-            <groupId>paytm.auth</groupId>
-            <artifactId>persona-acl-client</artifactId>
-            <version>${persona.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>net.sf.ehcache</groupId>
-                    <artifactId>ehcache-core</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.paytm.digital.education</groupId>

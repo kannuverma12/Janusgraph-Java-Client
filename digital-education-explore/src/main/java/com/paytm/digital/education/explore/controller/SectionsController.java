@@ -1,6 +1,8 @@
 package com.paytm.digital.education.explore.controller;
 
 import com.paytm.digital.education.database.entity.Section;
+import com.paytm.digital.education.explore.response.dto.search.ExamLevelData;
+import com.paytm.digital.education.explore.service.impl.SectionServiceImpl;
 import com.paytm.digital.education.service.PageService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,9 +20,15 @@ import static com.paytm.digital.education.constant.ExploreConstants.EDUCATION_BA
 public class SectionsController {
 
     private PageService pageService;
+    private SectionServiceImpl sectionService;
 
     @GetMapping("/v1/page/{pageName}/sections")
     public List<Section> getPageSections(@PathVariable("pageName") String pageName) {
         return pageService.getPageSections(pageName);
+    }
+
+    @GetMapping("/v1/topExamsPerLevel")
+    public ExamLevelData getTopExamsPerLevel() {
+        return sectionService.getTopExamsPerLevel();
     }
 }

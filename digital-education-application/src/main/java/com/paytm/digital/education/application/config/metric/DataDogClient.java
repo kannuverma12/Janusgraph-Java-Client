@@ -1,9 +1,11 @@
 package com.paytm.digital.education.application.config.metric;
 
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import com.timgroup.statsd.NonBlockingStatsDClient;
 import com.timgroup.statsd.StatsDClient;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -12,9 +14,11 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-@Slf4j
+
 @Component
 public class DataDogClient {
+
+    private static Logger log = LoggerFactory.getLogger(DataDogClient.class);
 
     private static final String DELIMITER_DOT = ".";
 

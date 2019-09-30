@@ -1,5 +1,38 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import com.paytm.digital.education.daoresult.SubscribedEntityCount;
+import com.paytm.digital.education.daoresult.subscription.SubscriptionWithExam;
+import com.paytm.digital.education.daoresult.subscription.SubscriptionWithInstitute;
+import com.paytm.digital.education.daoresult.subscription.SubscriptionWithSchool;
+import com.paytm.digital.education.database.entity.SchoolGallery;
+import com.paytm.digital.education.database.entity.Subscription;
+import com.paytm.digital.education.database.entity.UserFlags;
+import com.paytm.digital.education.database.repository.UserFlagRepository;
+import com.paytm.digital.education.dto.NotificationFlags;
+import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.enums.SubscribableEntityType;
+import com.paytm.digital.education.enums.SubscriptionStatus;
+import com.paytm.digital.education.exception.BadRequestException;
+import com.paytm.digital.education.explore.aggregation.SubscriptionDao;
+import com.paytm.digital.education.explore.database.repository.SubscriptionRepository;
+import com.paytm.digital.education.explore.service.CommonMongoService;
+import com.paytm.digital.education.explore.service.SubscriptionService;
+import com.paytm.digital.education.explore.sro.request.SubscriptionRequest;
+import com.paytm.digital.education.property.reader.PropertyReader;
+import com.paytm.digital.education.utility.CommonUtil;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
+import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 import static com.paytm.digital.education.constant.DBConstants.UNREAD_SHORTLIST_COUNT;
 import static com.paytm.digital.education.constant.ExploreConstants.APPROVALS;
 import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
@@ -7,39 +40,12 @@ import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_SE
 import static com.paytm.digital.education.constant.ExploreConstants.SUCCESS;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 
-import com.paytm.digital.education.database.entity.UserFlags;
-import com.paytm.digital.education.database.repository.UserFlagRepository;
-import com.paytm.digital.education.dto.NotificationFlags;
-import com.paytm.digital.education.exception.BadRequestException;
-import com.paytm.digital.education.explore.aggregation.SubscriptionDao;
-import com.paytm.digital.education.daoresult.SubscribedEntityCount;
-import com.paytm.digital.education.daoresult.subscription.SubscriptionWithInstitute;
-import com.paytm.digital.education.database.entity.Subscription;
-import com.paytm.digital.education.explore.database.repository.SubscriptionRepository;
-import com.paytm.digital.education.enums.EducationEntity;
-import com.paytm.digital.education.enums.SubscribableEntityType;
-import com.paytm.digital.education.enums.SubscriptionStatus;
-import com.paytm.digital.education.explore.service.CommonMongoService;
-import com.paytm.digital.education.explore.service.SubscriptionService;
-import com.paytm.digital.education.explore.sro.request.SubscriptionRequest;
-import com.paytm.digital.education.utility.CommonUtil;
-import com.paytm.digital.education.property.reader.PropertyReader;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Date;
-
-@Slf4j
 @Service
 @AllArgsConstructor
 public class SubscriptionServiceImpl implements SubscriptionService {
+
+    private static Logger log = LoggerFactory.getLogger(SubscriptionServiceImpl.class);
 
     private SubscriptionRepository subscriptionRepository;
 
@@ -146,6 +152,40 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 if (StringUtils.isNotBlank(logoLink)) {
                     subscriptionWithInstitute.getEntityDetails().getGallery()
                             .setLogo(logoLink);
+                }
+            } else if (subscriptionEntity.getCorrespondingClass() == SubscriptionWithSchool.class) {
+                SubscriptionWithSchool subscriptionWithSchool =
+                        (SubscriptionWithSchool) subscription;
+
+                if (Objects.nonNull(subscriptionWithSchool.getEntityDetails())) {
+                    subscriptionWithSchool.getEntityDetails().setUrlDisplayKey(CommonUtil
+                            .convertNameToUrlDisplayName(
+                                    subscriptionWithSchool.getEntityDetails().getOfficialName()));
+                    SchoolGallery gallery = subscriptionWithSchool.getEntityDetails().getGallery();
+
+                    if (Objects.nonNull(gallery) && StringUtils.isNotBlank(gallery.getLogo())) {
+                        String logoLink = CommonUtil.getLogoLink(gallery.getLogo(),
+                                EducationEntity.SCHOOL);
+                        subscriptionWithSchool.getEntityDetails().getGallery()
+                                .setLogo(logoLink);
+                    }
+                }
+            } else if (subscriptionEntity.getCorrespondingClass() == SubscriptionWithExam.class) {
+                SubscriptionWithExam subscriptionWithExam =
+                        (SubscriptionWithExam) subscription;
+
+                if (Objects.nonNull(subscriptionWithExam.getEntityDetails())) {
+                    subscriptionWithExam.getEntityDetails().setUrlDisplayKey(CommonUtil
+                            .convertNameToUrlDisplayName(
+                                    subscriptionWithExam.getEntityDetails().getExamFullName()));
+
+                    if (StringUtils.isNotBlank(subscriptionWithExam.getEntityDetails().getLogo())) {
+                        String logoLink = CommonUtil
+                                .getLogoLink(subscriptionWithExam.getEntityDetails().getLogo(),
+                                        EducationEntity.EXAM);
+                        subscriptionWithExam.getEntityDetails()
+                                .setLogo(logoLink);
+                    }
                 }
             }
         } catch (Exception ex) {
