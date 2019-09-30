@@ -49,7 +49,7 @@ public class AutoSuggestController {
             @RequestParam("size") @Min(1) Integer size,
             @RequestParam(value = "entity") @NotNull EducationEntity entity) {
         log.info("Received v1/autosuggest/getAll for entity :{}", entity.toString());
-        return autoSuggestServiceImpl.getAll(Arrays.asList(entity), true, size);
+        return autoSuggestServiceImpl.getAll(Arrays.asList(entity), size);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/autosuggest")
