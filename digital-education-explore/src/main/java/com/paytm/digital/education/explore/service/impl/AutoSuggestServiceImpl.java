@@ -1,14 +1,24 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import static com.paytm.digital.education.constant.ExploreConstants.BLANK;
 import static com.paytm.digital.education.constant.ExploreConstants.DEFAULT_AUTOSUGGEST_SIZE;
 import static com.paytm.digital.education.constant.ExploreConstants.DEFAULT_AUTOSUGGEST_COMPARE;
+import static com.paytm.digital.education.constant.ExploreConstants.DUMMY_EXAM_ICON;
 import static com.paytm.digital.education.constant.ExploreConstants.ENTITY_TYPE;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_CLASS;
+import static com.paytm.digital.education.constant.ExploreConstants.MINUS_TEN;
+import static com.paytm.digital.education.constant.ExploreConstants.OTHER;
+import static com.paytm.digital.education.constant.ExploreConstants.RANKING_OVERALL;
+import static com.paytm.digital.education.constant.ExploreConstants.SIXTY;
+import static com.paytm.digital.education.constant.ExploreConstants.ZERO;
 
 import com.paytm.digital.education.elasticsearch.models.AggregationResponse;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationResponse;
 import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.enums.es.DataSortOrder;
 import com.paytm.digital.education.explore.enums.UserAction;
+import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.search.model.AutoSuggestEsData;
 import com.paytm.digital.education.explore.response.dto.suggest.AutoSuggestData;
 import com.paytm.digital.education.explore.response.dto.suggest.AutoSuggestResponse;
@@ -26,6 +36,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -38,14 +49,85 @@ public class AutoSuggestServiceImpl {
 
     private CommonAutoSuggestionService commonAutoSuggestService;
     private SubscriptionDetailHelper    subscriptionDetailHelper;
+    private SearchServiceImpl           searchServiceImpl;
     private ExamLogoHelper              examLogoHelper;
 
-    public AutoSuggestResponse getAll(List<EducationEntity> entities, boolean alphabeticalSorting,
-            int limit) {
+    public AutoSuggestResponse getAll(List<EducationEntity> entities, int limit) {
         AutoSuggestResponse autoSuggestResponse =
-                getSuggestResults(null, entities, limit, alphabeticalSorting);
+                getSuggestResults(null, entities, limit);
         return autoSuggestResponse;
     }
+
+    public AutoSuggestResponse autosuggestInstitute(String query, Integer limit) {
+        AutoSuggestResponse autoSuggestResponse;
+
+        if (Objects.isNull(query) || StringUtils.isBlank(query)) {
+            autoSuggestResponse = getTopInstitutes(limit);
+        } else {
+            List<EducationEntity> entities = new ArrayList<>();
+            entities.add(EducationEntity.INSTITUTE);
+            autoSuggestResponse = getSuggestions(query, entities, null, null);
+            if (Objects.nonNull(autoSuggestResponse) && CollectionUtils
+                    .isEmpty(autoSuggestResponse.getData())) {
+                addEmptyResponse(autoSuggestResponse);
+            }
+        }
+        addDefaultOption(autoSuggestResponse);
+        return autoSuggestResponse;
+    }
+
+    private void addDefaultOption(AutoSuggestResponse autoSuggestResponse) {
+        List<AutoSuggestData> asDataList = autoSuggestResponse.getData();
+        if (Objects.nonNull(asDataList)) {
+            for (AutoSuggestData asData : asDataList) {
+                if (asData.getEntityType().equalsIgnoreCase(INSTITUTE_CLASS)) {
+                    List<SuggestResult> suggestResults = asData.getResults();
+                    SuggestResult suggestResult = new SuggestResult(MINUS_TEN, OTHER);
+                    String logo = CommonUtil
+                            .getLogoLink(DUMMY_EXAM_ICON, EducationEntity.EXAM);
+                    suggestResult.setLogo(logo);
+                    suggestResults.add(suggestResult);
+                }
+            }
+        }
+    }
+
+    public AutoSuggestResponse getTopInstitutes(Integer limit) {
+        SearchRequest searchRequest = new SearchRequest();
+        searchRequest.setEntity(EducationEntity.INSTITUTE);
+        searchRequest.setFetchFilter(false);
+        if (Objects.nonNull(limit) && limit > 1 && limit < SIXTY) {
+            searchRequest.setLimit(limit - 1);
+        } else {
+            searchRequest.setLimit(SIXTY - 1);
+        }
+        searchRequest.setOffset(Integer.parseInt(ZERO));
+        searchRequest.setFilter(new HashMap<>());
+        searchRequest.setTerm(BLANK);
+
+        LinkedHashMap<String, DataSortOrder> map = new LinkedHashMap<>();
+        map.put(RANKING_OVERALL, DataSortOrder.DESC);
+        searchRequest.setSortOrder(map);
+        AutoSuggestResponse autoSuggestResponse = new AutoSuggestResponse();
+        try {
+            autoSuggestResponse = searchServiceImpl.instituteSearch(searchRequest);
+        } catch (Exception e) {
+            log.error("Error in search response : {} ", e.getMessage());
+        }
+        return autoSuggestResponse;
+    }
+
+
+    private void addEmptyResponse(AutoSuggestResponse autoSuggestResponse) {
+        List<AutoSuggestData> asDataList = new ArrayList<>();
+        AutoSuggestData asData = new AutoSuggestData();
+        asData.setEntityType(EducationEntity.INSTITUTE.name().toLowerCase());
+        List<SuggestResult> suggestResults = new ArrayList<>();
+        asData.setResults(suggestResults);
+        asDataList.add(asData);
+        autoSuggestResponse.setData(asDataList);
+    }
+
 
     public AutoSuggestResponse getSuggestions(String searchTerm, List<EducationEntity> entities,
             List<UserAction> actions, Long userId) {
