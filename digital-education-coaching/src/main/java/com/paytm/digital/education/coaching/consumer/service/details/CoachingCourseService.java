@@ -7,7 +7,7 @@ import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.Co
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseFeatures;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseFee;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseImportantDates;
-import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CourseSyllabusAndBrochure;
+import com.paytm.digital.education.coaching.consumer.model.dto.SyllabusAndBrochure;
 import com.paytm.digital.education.coaching.consumer.model.response.details.GetCoachingCourseDetailsResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingCourseData;
 import com.paytm.digital.education.coaching.consumer.service.search.helper.SearchDataHelper;
@@ -345,9 +345,9 @@ public class CoachingCourseService {
                         .header(COURSE_DETAILS.getValue())
                         .courseDetailsInfo(this.getCourseDetailsInfo(course))
                         .courseDetailsMoreInfo(this.getMoreInfoMap(course))
-                        .courseSyllabusAndBrochure(CourseSyllabusAndBrochure.builder()
+                        .syllabusAndBrochure(SyllabusAndBrochure.builder()
                                 .header(DOWNLOAD_SYLLABUS_AND_BROCHURE.getValue())
-                                .syllabus(course.getSyllabus())
+                                .url(course.getSyllabus())
                                 .build())
                         .build())
                 .coachingCourseFee(CoachingCourseFee.builder()

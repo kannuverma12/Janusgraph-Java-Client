@@ -35,7 +35,6 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.S
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_DETAILS_FIELDS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_ID;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.COACHING_FOR;
-import static com.paytm.digital.education.coaching.enums.DisplayHeadings.EXAMS;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_COACHING_COURSES_FOR;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_COACHING_INSTITUTES_FOR;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_STREAM_ID;
@@ -93,8 +92,8 @@ public class CoachingStreamService {
         }
 
         return TopCoachingCourses.builder()
-                .header(TOP_COACHING_COURSES_FOR.getValue()
-                        + WordUtils.capitalizeFully(stream.getName()))
+                .header(String.format(TOP_COACHING_COURSES_FOR.getValue(),
+                        WordUtils.capitalizeFully(stream.getName())))
                 .results(courses)
                 .build();
     }
@@ -108,8 +107,8 @@ public class CoachingStreamService {
         }
 
         return TopCoachingInstitutes.builder()
-                .header(TOP_COACHING_INSTITUTES_FOR.getValue()
-                        + WordUtils.capitalizeFully(stream.getName()))
+                .header(String.format(TOP_COACHING_INSTITUTES_FOR.getValue(),
+                        WordUtils.capitalizeFully(stream.getName())))
                 .results(institutes)
                 .build();
     }
@@ -131,8 +130,8 @@ public class CoachingStreamService {
         }
 
         return TopExams.builder()
-                .header(COACHING_FOR.getValue() + WordUtils.capitalizeFully(stream.getName())
-                        + EXAMS.getValue())
+                .header(String.format(COACHING_FOR.getValue(),
+                        WordUtils.capitalizeFully(stream.getName())))
                 .results(topExams)
                 .build();
     }

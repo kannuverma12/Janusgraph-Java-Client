@@ -1,4 +1,4 @@
-package com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse;
+package com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -14,8 +14,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class CourseSyllabusAndBrochure {
+public class InstituteCenterSection {
 
+    private String logo;
     private String header;
-    private String syllabus;
+    private String description;
 }

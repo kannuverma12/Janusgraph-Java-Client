@@ -1,4 +1,4 @@
-package com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse;
+package com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -9,18 +9,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Map;
-
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class CoachingCourseDetails {
+public class CenterAndBrochureInfo {
 
-    private String              header;
-    private Map<String, String> courseDetailsInfo;
-    private Map<String, String> courseDetailsMoreInfo;
-    private SyllabusAndBrochure syllabusAndBrochure;
+    private InstituteCenterSection centers;
+    private SyllabusAndBrochure    brochure;
 }

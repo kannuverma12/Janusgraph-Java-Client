@@ -85,6 +85,8 @@ public class CoachingConstants {
             "/key_highlight_placeholder.svg";
     public static final String       COACHING_CENTER_PLACEHOLDER                  =
             "/coaching_center_placeholder.svg";
+    public static final String       COACHING_INSTITUTE_FIND_CENTERS_LOGO         =
+            "full_image_link";
     public static final String       EMPTY_STRING                                 = "";
 
     static {
@@ -246,5 +248,14 @@ public class CoachingConstants {
         public static final Integer MERCHANT_COMMIT_TIMEOUT_MS = 10000;
 
         public static final String PAYTM_HOST_FOR_SIGNATURE = "https://paytm.com";
+    }
+
+
+    public static class MockTestBanner {
+        public static final String HEADER      = "Mock Test from %s";
+        public static final String DESCRIPTION = "Take a Free Mock Test by Paytm";
+        public static final String LOGO        = "full_image_link";
+        public static final String BUTTON_TEXT = "Start Test";
+        public static final String TAG_TEXT    = "Free";
     }
 }
