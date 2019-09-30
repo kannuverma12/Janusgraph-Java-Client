@@ -24,4 +24,5 @@ public class TopRanker {
     private String       rank;
     private String       examYear;
     private String       testimonial;
+    private String       centerCity;
 }

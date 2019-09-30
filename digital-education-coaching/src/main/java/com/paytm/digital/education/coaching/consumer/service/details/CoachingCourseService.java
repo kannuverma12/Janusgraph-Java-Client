@@ -79,6 +79,8 @@ public class CoachingCourseService {
 
     private static final String TARGET_EXAM     = "TARGET_EXAM";
     private static final String TOP_RANKER_EXAM = "TOP_RANKER_EXAM";
+    private static final String EXAM_YEAR       = "exam_year";
+    private static final String PRIORITY        = "priority";
 
     private static final List<String> COURSE_FIELDS =
             Arrays.asList("faqs", "course_id", "name", "coaching_institute_id", "course_type",
@@ -285,8 +287,8 @@ public class CoachingCourseService {
     private List<TopRankerEntity> fetchTopRankers(final long courseId, final Long instituteId) {
 
         final Map<Sort.Direction, String> sortMap = new HashMap<>();
-        sortMap.put(Sort.Direction.DESC, "exam_year");
-        sortMap.put(Sort.Direction.ASC, "priority");
+        sortMap.put(Sort.Direction.DESC, EXAM_YEAR);
+        sortMap.put(Sort.Direction.ASC, PRIORITY);
 
         List<TopRankerEntity> topRankerEntityList = this.commonMongoRepository
                 .getEntityFieldsByValuesInAndSortBy(COACHING_COURSE_IDS,
@@ -351,6 +353,7 @@ public class CoachingCourseService {
                                 .url(course.getSyllabus())
                                 .build())
                         .build())
+                .mockTest(CoachingInstituteService.getMockTestInfo(institute.getBrandName()))
                 .coachingCourseFee(CoachingCourseFee.builder()
                         .header(COURSE_FEE.getValue())
                         .currency(Currency.INR.name())

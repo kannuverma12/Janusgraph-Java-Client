@@ -24,7 +24,7 @@ import paytm.auth.personaaclclient.infrastructure.security.CookieAuthenticationP
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @Order(99)
 @RequiredArgsConstructor
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class LocalSecurityConfig extends WebSecurityConfigurerAdapter {
     private final LCPTokenAuthenticationProvider tokenAuthenticationProvider;
     private final CookieAuthenticationProvider   cookieAuthenticationProvider;
 

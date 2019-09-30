@@ -146,16 +146,16 @@ public class CoachingInstituteService {
                 .coachingCourseTypes(this.getCoachingCourseTypes(coachingInstituteEntity))
                 .topCoachingCourses(this.getTopCoachingCoursesForInstitute(coachingInstituteEntity,
                         streamId, examId))
-                .mockTest(this.getMockTestInfo(coachingInstituteEntity))
+                .mockTest(getMockTestInfo(coachingInstituteEntity.getBrandName()))
                 .faqs(this.fillFaqs(coachingInstituteEntity.getFaqs()))
                 .sections(sections)
                 .build();
     }
 
-    private MockTest getMockTestInfo(CoachingInstituteEntity coachingInstituteEntity) {
+    public static MockTest getMockTestInfo(String name) {
         return MockTest.builder()
                 .logo(LOGO)
-                .header(String.format(HEADER, coachingInstituteEntity.getBrandName()))
+                .header(String.format(HEADER, name))
                 .description(DESCRIPTION)
                 .tagText(TAG_TEXT)
                 .buttonText(BUTTON_TEXT)
