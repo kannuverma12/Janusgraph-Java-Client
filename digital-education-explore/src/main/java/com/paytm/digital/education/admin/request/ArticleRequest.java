@@ -8,6 +8,7 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Data
@@ -28,11 +29,13 @@ public class ArticleRequest {
     @JsonProperty("submitted_by")
     private String submittedBy;
 
+    @NotNull
     @Size(min = 10, max = 10, message = "Enter 10 digits mobile number")
     @Min(value = 1000000000, message = "Enter 10 digits mobile number")
     @JsonProperty("student_paytm_mobile_number")
     private String studentPaytmMobileNumber;
 
+    @NotNull
     @Min(1)
     @JsonProperty("institute_id")
     private Long instituteId;
