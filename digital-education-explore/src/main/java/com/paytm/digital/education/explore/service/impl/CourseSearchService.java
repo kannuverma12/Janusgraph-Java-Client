@@ -139,22 +139,23 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
             CourseSearchResponse courseSearchResponse, Client client) {
         SearchResponse searchResponse = new SearchResponse(elasticRequest.getQueryTerm());
         if (elasticRequest.isSearchRequest()) {
-            if (Client.APP.equals(client)) {
-                populateSearchResultPerLevel(searchResponse, elasticResponse,
-                        courseSearchResponse);
-            } else {
-                populateSearchResultsOfCourses(searchResponse, elasticResponse,
-                        courseSearchResponse);
-            }
+
+            populateSearchResultsOfCourses(searchResponse, elasticResponse,
+                    courseSearchResponse);
             long total = elasticResponse.getTotalSearchResultsCount();
             searchResponse.setTotal(total);
         }
         if (elasticRequest.isAggregationRequest()) {
-            Map<String, Map<String, Object>> propertyMap = propertyReader
-                    .getPropertiesAsMap(component, namespace);
-            searchResponseBuilder
-                    .populateSearchFilters(searchResponse, elasticResponse, elasticRequest,
-                            propertyMap);
+            if (Client.APP.equals(client)) {
+                populateSearchResultPerLevel(searchResponse, elasticResponse,
+                        courseSearchResponse);
+            } else {
+                Map<String, Map<String, Object>> propertyMap = propertyReader
+                        .getPropertiesAsMap(component, namespace);
+                searchResponseBuilder
+                        .populateSearchFilters(searchResponse, elasticResponse, elasticRequest,
+                                propertyMap);
+            }
         }
         return searchResponse;
     }
