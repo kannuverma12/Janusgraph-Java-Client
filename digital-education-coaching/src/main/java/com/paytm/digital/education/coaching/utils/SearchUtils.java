@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Objects;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DD_MMM_YYYY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM;
@@ -167,6 +168,9 @@ public class SearchUtils {
     }
 
     public void setExamImportantDates(ExamData examData, ExamInstance instance) {
+        if (Objects.isNull(instance) || Objects.isNull(instance.getEvents())) {
+            return;
+        }
         List<Event> events = instance.getEvents();
         List<ExamImportantDate> importantDates = new ArrayList<>();
 
