@@ -13,6 +13,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.FE_
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_FILTER_NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_GENDER;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKING_OVERALL;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.UNIVERSITY_NAME;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_SEARCH_NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
@@ -130,6 +131,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
         sortFields = new HashSet<>();
         sortFields.add(FE_RANK_SORT);
         sortFields.add(FE_RELEVANCE_SORT);
+        sortFields.add(RANKING_OVERALL);
     }
 
     @Override
