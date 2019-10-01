@@ -62,9 +62,11 @@ public class CourseDetailServiceImpl {
     private ExamInstanceHelper          examInstanceHelper;
 
     public CourseDetail getDetail(Long entityId, String courseUrlKey, Long userId,
-            String fieldGroup, List<String> fields, Client client) {
+            String fieldGroup, List<String> fields, Client client, boolean courseFees,
+            boolean institute, boolean widgets, boolean derivedAttributes, boolean examAccepted) {
         CourseDetail courseDetail =
-                getCourseDetails(entityId, courseUrlKey, fieldGroup, fields, client);
+                getCourseDetails(entityId, courseUrlKey, fieldGroup, fields, client,
+                        courseFees, institute, widgets, derivedAttributes, examAccepted);
         if (userId != null && userId > 0) {
             updateInterested(courseDetail, userId);
         }
@@ -76,7 +78,8 @@ public class CourseDetailServiceImpl {
      */
     @Cacheable(value = "course_detail")
     public CourseDetail getCourseDetails(long entityId, String courseUrlKey, String fieldGroup,
-            List<String> fields, Client client) {
+            List<String> fields, Client client, boolean courseFees,
+            boolean institute, boolean widgets, boolean derivedAttributes, boolean examAccepted) {
         List<String> queryFields = null;
         if (StringUtils.isNotBlank(fieldGroup)) {
             queryFields = commonMongoRepository.getFieldsByGroup(Course.class, fieldGroup);
@@ -109,7 +112,8 @@ public class CourseDetailServiceImpl {
                         Institute.class,
                         instituteQueryFields);
             }
-            return buildResponse(course, instituteDetails, course.getExamsAccepted(), client);
+            return buildResponse(course, instituteDetails, course.getExamsAccepted(), client,
+                    courseFees, institute, widgets, derivedAttributes, examAccepted);
         } else {
             throw new BadRequestException(INVALID_FIELD_GROUP,
                     INVALID_FIELD_GROUP.getExternalMessage());
@@ -162,7 +166,8 @@ public class CourseDetailServiceImpl {
      ** Build the response combining the course and institute details
      */
     private CourseDetail buildResponse(Course course, Institute institute,
-            List<Long> examIds, Client client) {
+            List<Long> examIds, Client client, boolean courseFees,
+            boolean instituteFlag, boolean widgets, boolean derivedAttributes, boolean examAccepted) {
         CourseDetail courseDetail = new CourseDetail();
         courseDetail.setCourseId(course.getCourseId());
         courseDetail.setAboutCourse(course.getAboutCourse());
@@ -170,7 +175,9 @@ public class CourseDetailServiceImpl {
         courseDetail.setCourseDuration(course.getCourseDuration());
         courseDetail.setSeatsAvailable(course.getSeatsAvailable());
         courseDetail.setStudyMode(course.getStudyMode());
-        courseDetail.setCourseFees(getAllCourseFees(course.getCourseFees()));
+        if (courseFees) {
+            courseDetail.setCourseFees(getAllCourseFees(course.getCourseFees()));
+        }
         courseDetail.setFeesUrlOfficial(course.getFeesUrlOfficial());
         courseDetail.setAdmissionProcess(course.getAdmissionProcess());
         courseDetail.setAdmissionProcessUrlOfficial(course.getAdmissionProcessUrlOfficial());
@@ -182,16 +189,22 @@ public class CourseDetailServiceImpl {
         highlights.put(COURSE.name().toLowerCase(), course);
         if (!CollectionUtils.isEmpty(examIds)) {
             if (Client.APP.equals(client)) {
-                courseDetail.setExamsAccepted(getExamsAccepted(examIds));
+                if (examAccepted) {
+                    courseDetail.setExamsAccepted(getExamsAccepted(examIds));
+                }
             } else {
                 highlights.put(EXAM.name().toLowerCase(), getExamNames(examIds));
             }
         }
-        courseDetail.setDerivedAttributes(derivedAttributesHelper
-                .getDerivedAttributes(highlights, COURSE.name().toLowerCase(), client));
-        courseDetail.setWidgets(similarInstituteService.getSimilarInstitutes(institute));
+        if (derivedAttributes) {
+            courseDetail.setDerivedAttributes(derivedAttributesHelper
+                    .getDerivedAttributes(highlights, COURSE.name().toLowerCase(), client));
+        }
+        if (widgets) {
+            courseDetail.setWidgets(similarInstituteService.getSimilarInstitutes(institute));
+        }
         courseDetail.setBanners(bannerDataHelper.getBannerData(COURSE.name().toLowerCase(), null));
-        if (institute != null) {
+        if (institute != null && instituteFlag) {
             CourseInstituteDetail courseInstituteDetail = new CourseInstituteDetail();
             courseInstituteDetail.setOfficialName(institute.getOfficialName());
             courseInstituteDetail.setUrlDisplayName(

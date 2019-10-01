@@ -76,11 +76,33 @@ public class DetailsApiController {
             @RequestParam(name = "field_group", required = false) String fieldGroup,
             @RequestParam(name = "fields", required = false) List<String> fields,
             @RequestHeader(value = "x-user-id", required = false) Long userId,
-            @RequestHeader(value = "fe_client", required = false) Client client)
+            @RequestHeader(value = "fe_client", required = false) Client client,
+            @RequestHeader(value = "derived_attributes", required = false, defaultValue = "true")
+                    Boolean derivedAttributes,
+            @RequestHeader(value = "cut_offs", required = false, defaultValue = "true")
+                    Boolean cutOffs,
+            @RequestHeader(value = "facilities", required = false, defaultValue = "true")
+                    Boolean facilities,
+            @RequestHeader(value = "gallery", required = false, defaultValue = "true")
+                    Boolean gallery,
+            @RequestHeader(value = "placements", required = false, defaultValue = "true")
+                    Boolean placements,
+            @RequestHeader(value = "notable_alumni", required = false, defaultValue = "true")
+                    Boolean notableAlumni,
+            @RequestHeader(value = "sections", required = false, defaultValue = "true")
+                    Boolean sections,
+            @RequestHeader(value = "widgets", required = false, defaultValue = "true")
+                    Boolean widgets,
+            @RequestHeader(value = "courses_per_degree", required = false, defaultValue = "true")
+                    Boolean coursesPerDegree,
+            @RequestHeader(value = "campus_engagement", required = false, defaultValue = "true")
+                    Boolean campusEngagementFlag)
             throws Exception {
         exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
         return instituteDetailService
-                .getDetail(instituteId, instituteName, userId, fieldGroup, fields, client);
+                .getDetail(instituteId, instituteName, userId, fieldGroup, fields, client,
+                        derivedAttributes, cutOffs, facilities, gallery, placements, notableAlumni,
+                        sections, widgets, coursesPerDegree, campusEngagementFlag);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/course/{courseId}/{courseName}")
@@ -89,10 +111,21 @@ public class DetailsApiController {
             @RequestParam(name = "field_group", required = false) String fieldGroup,
             @RequestParam(name = "fields", required = false) List<String> fields,
             @RequestHeader(value = "x-user-id", required = false) Long userId,
-            @RequestHeader(value = "fe_client", required = false) Client client) {
+            @RequestHeader(value = "fe_client", required = false) Client client,
+            @RequestHeader(value = "course_fees", required = false, defaultValue = "true")
+                    Boolean courseFees,
+            @RequestHeader(value = "institute", required = false, defaultValue = "true")
+                    Boolean institute,
+            @RequestHeader(value = "widgets", required = false, defaultValue = "true")
+                    Boolean widgets,
+            @RequestHeader(value = "derived_attributes", required = false, defaultValue = "true")
+                    Boolean derivedAttributes,
+            @RequestHeader(value = "exams_accepted", required = false, defaultValue = "true")
+                    Boolean examAccepted) {
         exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
         return courseDetailService
-                .getDetail(courseId, courseName, userId, fieldGroup, fields, client);
+                .getDetail(courseId, courseName, userId, fieldGroup, fields, client, courseFees,
+                        institute, widgets, derivedAttributes, examAccepted);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/school/{schoolId}/{schoolName}")
