@@ -14,11 +14,15 @@ import com.paytm.digital.education.explore.database.entity.SchoolGallery;
 import com.paytm.digital.education.explore.database.entity.SchoolOfficialAddress;
 import com.paytm.digital.education.explore.database.entity.SchoolPaytmKeys;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.explore.enums.ClassLevel;
+import com.paytm.digital.education.explore.enums.ClassType;
 import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.es.model.GeoLocation;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
+import com.paytm.digital.education.explore.response.dto.detail.ClassLevelRow;
+import com.paytm.digital.education.explore.response.dto.detail.school.detail.ClassLevelTable;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.FacilityResponse;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.FacultyDetail;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.GeneralInformation;
@@ -30,24 +34,29 @@ import com.paytm.digital.education.explore.response.dto.search.SchoolSearchData;
 import com.paytm.digital.education.explore.response.dto.search.SearchBaseData;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.service.SchoolService;
+import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
 import com.paytm.digital.education.explore.service.helper.CTAHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.service.helper.FacilityDataHelper;
 import com.paytm.digital.education.explore.service.helper.SchoolDetailsResponseHelper;
 import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
-
 import com.paytm.digital.education.explore.utility.SchoolUtilService;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -69,8 +78,8 @@ import static com.paytm.digital.education.utility.CommonUtils.isNullOrZero;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.elasticsearch.common.geo.parsers.GeoWKTParser.COMMA;
 
-
 @Service
+@RequiredArgsConstructor
 public class SchoolDetailServiceImpl implements SchoolService {
 
     private final CommonMongoRepository    commonMongoRepository;
@@ -78,31 +87,12 @@ public class SchoolDetailServiceImpl implements SchoolService {
     private final FacilityDataHelper       facilityDataHelper;
     private final CTAHelper                ctaHelper;
     private final SearchServiceImpl        searchService;
-    private final int                      similarSchoolsCount;
     private final SubscriptionDetailHelper subscriptionDetailHelper;
     private final SchoolConfig             schoolConfig;
     private final SchoolUtilService        schoolUtilService;
-
-    public SchoolDetailServiceImpl(
-            CommonMongoRepository commonMongoRepository,
-            DerivedAttributesHelper derivedAttributesHelper,
-            FacilityDataHelper facilityDataHelper,
-            CTAHelper ctaHelper,
-            SearchServiceImpl searchService,
-            @Value("${similar.schools.count}") int similarSchoolsCount,
-            SubscriptionDetailHelper subscriptionDetailHelper,
-            SchoolConfig schoolConfig,
-            SchoolUtilService schoolUtilService) {
-        this.commonMongoRepository = commonMongoRepository;
-        this.derivedAttributesHelper = derivedAttributesHelper;
-        this.facilityDataHelper = facilityDataHelper;
-        this.ctaHelper = ctaHelper;
-        this.searchService = searchService;
-        this.similarSchoolsCount = similarSchoolsCount;
-        this.subscriptionDetailHelper = subscriptionDetailHelper;
-        this.schoolConfig = schoolConfig;
-        this.schoolUtilService = schoolUtilService;
-    }
+    private final BannerDataHelper         bannerDataHelper;
+    @Value("${similar.schools.count}")
+    private       int                      similarSchoolsCount;
 
     public List<School> getSchools(List<Long> entityIds, List<String> groupFields) {
         if (CollectionUtils.isEmpty(groupFields)) {
@@ -125,7 +115,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
             List<String> fields, String fieldGroup, Long userId) {
         List<String> fieldsToBeFetched =
                 getFieldsByGroupAndCollectioName(SchoolConstants.SCHOOL, fields,
-                                fieldGroup);
+                        fieldGroup);
         School school =
                 commonMongoRepository
                         .getEntityByFields(SCHOOL_ID, schoolId, School.class, fieldsToBeFetched);
@@ -143,7 +133,9 @@ public class SchoolDetailServiceImpl implements SchoolService {
         if (Objects.nonNull(boards) && boards.size() > 0) {
             BoardData boardData = boards.get(0).getData();
             schoolDetail.setShiftDetailsList(
-                    boardData.getShifts().stream().map(x -> new ShiftDetailsResponse(x, schoolConfig))
+                    boardData.getShifts()
+                            .stream()
+                            .map(x -> new ShiftDetailsResponse(x, schoolConfig))
                             .collect(Collectors.toList()));
             schoolDetail.setFacultyDetail(fetchFacultyDetailsIfPresent(boardData));
             schoolDetail.setFeesDetails(boardData.getFeesDetails());
@@ -153,13 +145,16 @@ public class SchoolDetailServiceImpl implements SchoolService {
             schoolDetail.setFacilities(facilityResponseList);
             List<ImportantDate> importantDates = Stream.concat(
                     boardData.getSchoolAdmissionList().stream()
+                            .filter(x -> StringUtils.isNotBlank(x.getDateType()))
                             .map(x -> new ImportantDate(x, ACTUAL)),
                     boardData.getSchoolAdmissionTentativeList().stream()
+                            .filter(x -> StringUtils.isNotBlank(x.getDateType()))
                             .map(x -> new ImportantDate(x, TENTATIVE))
             ).collect(Collectors.toList());
             schoolDetail.setImportantDateSections(importantDates);
             schoolDetail.setGallery(
-                    Optional.ofNullable(school.getGallery()).map(x -> new SchoolGalleryResponse(x, schoolUtilService))
+                    Optional.ofNullable(school.getGallery())
+                            .map(x -> new SchoolGalleryResponse(x, schoolUtilService))
                             .orElse(null));
             String entityName = SCHOOL.name().toLowerCase();
             schoolDetail.setDerivedAttributes(
@@ -184,8 +179,37 @@ public class SchoolDetailServiceImpl implements SchoolService {
             if (Objects.nonNull(userId) && userId > 0) {
                 updateShortList(schoolDetail, SCHOOL, userId);
             }
+
+            if (!Client.APP.equals(client)) {
+                schoolDetail.setBanners(bannerDataHelper.getBannerData(entityName, client));
+            }
         }
+        schoolDetail.setClassInfoTable(
+                school.getBoardList()
+                        .stream()
+                        .filter(schoolUtilService::isClassLevelInfoValid)
+                        .map(this::convertBoardToClassLevelTable)
+                        .collect(Collectors.toList()));
         return schoolDetail;
+    }
+
+    private ClassLevelTable convertBoardToClassLevelTable(Board board) {
+        return new ClassLevelTable(
+                board.getName(),
+                schoolUtilService.generateClassInfoTable(board)
+                        .stream()
+                        .map(this::convertClassLevelTripleToClassLevelRow)
+                        .collect(Collectors.toList())
+        );
+    }
+
+    private ClassLevelRow convertClassLevelTripleToClassLevelRow(
+            Triple<ClassType, ClassType, ClassLevel> classLevelTriple) {
+        return ClassLevelRow.builder()
+                .classFrom(classLevelTriple.getLeft())
+                .classTo(classLevelTriple.getMiddle())
+                .educationLevel(classLevelTriple.getRight())
+                .build();
     }
 
     private void updateShortList(SchoolDetail schoolDetail, EducationEntity educationEntity,
@@ -200,37 +224,64 @@ public class SchoolDetailServiceImpl implements SchoolService {
     }
 
     private void addSimilarSchoolsInResponse(SchoolDetail schoolDetail, School school) {
-        SearchRequest searchRequest = buildSearchRequestForSchool(school);
+        SearchRequest searchRequest = buildSearchRequestForSchool(school, true);
         if (Objects.isNull(searchRequest)) {
             return;
         }
         SearchResponse searchResponse = searchService.search(searchRequest, null, null);
         List<SearchBaseData> searchBaseDataList = searchResponse.getResults().getValues();
+
         if (CollectionUtils.isEmpty(searchBaseDataList)) {
-            return;
+            /*** If there are no nearby schools from location or in same city,
+             * search for schools in same state**/
+            searchRequest = buildSearchRequestForSchool(school, false);
+            if (Objects.isNull(searchRequest)) {
+                return;
+            }
+            searchResponse = searchService.search(searchRequest, null, null);
+            searchBaseDataList = searchResponse.getResults().getValues();
+            if (CollectionUtils.isEmpty(searchBaseDataList)) {
+                return;
+            }
         }
         List<SchoolSearchData> schoolSearchDataList =
                 searchBaseDataList
                         .stream()
-                        .map(x -> (SchoolSearchData)  x)
+                        .map(x -> (SchoolSearchData) x)
                         .filter(x -> !school.getSchoolId().equals(x.getSchoolId()))
                         .collect(Collectors.toList());
         schoolDetail.setSimilarSchools(schoolSearchDataList);
     }
 
-    private SearchRequest buildSearchRequestForSchool(School school) {
+
+
+    private SearchRequest buildSearchRequestForSchool(School school, boolean isSameCityRequest) {
+
+        SearchRequest searchRequest = new SearchRequest();
+        searchRequest.setEntity(SCHOOL);
+        searchRequest.setLimit(similarSchoolsCount + 1);
         GeoLocation geoLocation = buildGeoLocationFromSchool(school);
-        if (Objects.isNull(geoLocation)) {
+        Map<String, List<Object>> filters = new HashMap<>();
+
+        if (Objects.isNull(geoLocation) && Objects.isNull(school.getAddress())) {
             return null;
         }
-        SearchRequest searchRequest = new SearchRequest();
-        searchRequest.setGeoLocation(geoLocation);
-        searchRequest.setEntity(SCHOOL);
-        searchRequest.setFilter(Collections.emptyMap());
-        searchRequest.setLimit(similarSchoolsCount + 1);
-        LinkedHashMap<String, DataSortOrder> sortOrder = new LinkedHashMap<>();
-        sortOrder.put(SORT_DISTANCE_FIELD, ASC);
-        searchRequest.setSortOrder(sortOrder);
+
+        if (Objects.nonNull(geoLocation)) {
+            searchRequest.setGeoLocation(geoLocation);
+            LinkedHashMap<String, DataSortOrder> sortOrder = new LinkedHashMap<>();
+            sortOrder.put(SORT_DISTANCE_FIELD, ASC);
+            searchRequest.setSortOrder(sortOrder);
+        } else if (isSameCityRequest) {
+            filters.put(SchoolConstants.SCHOOL_CITY,
+                    Arrays.asList(school.getAddress().getCity()));
+            filters.put(SchoolConstants.SCHOOL_STATE,
+                    Arrays.asList(school.getAddress().getState()));
+        } else {
+            filters.put(SchoolConstants.SCHOOL_STATE,
+                    Arrays.asList(school.getAddress().getState()));
+        }
+        searchRequest.setFilter(filters);
         return searchRequest;
     }
 
@@ -257,7 +308,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
         Integer numberOfUntrainedTeachers = boardData.getNoOfUntrainedTeachers();
         String studentRatio = boardData.getStudentRatio();
         if (isNullOrZero(numberOfTeachers)
-            || StringUtils.isBlank(studentRatio)) {
+                || StringUtils.isBlank(studentRatio)) {
             return null;
         }
         FacultyDetail facultyDetail = new FacultyDetail(numberOfTeachers, studentRatio);
@@ -281,8 +332,10 @@ public class SchoolDetailServiceImpl implements SchoolService {
             generalInformation.setOfficialName(school.getOfficialName());
             generalInformation.setShortName(school.getShortName());
             final String logoUrl =
-                    Optional.ofNullable(school.getGallery()).map(SchoolGallery::getLogo).orElse(null);
-            generalInformation.setLogo(schoolUtilService.buildLogoFullPathFromRelativePath(logoUrl));
+                    Optional.ofNullable(school.getGallery()).map(SchoolGallery::getLogo)
+                            .orElse(null);
+            generalInformation
+                    .setLogo(schoolUtilService.buildLogoFullPathFromRelativePath(logoUrl));
             generalInformation.setCity(school.getAddress().getCity());
             generalInformation.setState(school.getAddress().getState());
             return generalInformation;
@@ -299,10 +352,11 @@ public class SchoolDetailServiceImpl implements SchoolService {
                 .orElse(null);
     }
 
-    private List<String> getFieldsByGroupAndCollectioName(String collectionName, List<String> fields,
-            String fieldGroup) {
+    private List<String> getFieldsByGroupAndCollectioName(String collectionName,
+            List<String> fields, String fieldGroup) {
         if (CollectionUtils.isEmpty(fields)) {
-            List<String> dbFields = commonMongoRepository.getFieldsByGroupAndCollectioName(collectionName, fieldGroup);
+            List<String> dbFields = commonMongoRepository
+                    .getFieldsByGroupAndCollectioName(collectionName, fieldGroup);
             if (CollectionUtils.isEmpty(dbFields)) {
                 throw new BadRequestException(INVALID_FIELD_GROUP,
                         INVALID_FIELD_GROUP.getExternalMessage());

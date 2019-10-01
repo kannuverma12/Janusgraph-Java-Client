@@ -188,6 +188,7 @@ public class CampusAdminServiceImpl implements CampusAdminService {
                 for (CampusAmbassador campusAmbassador : campusEngagement.getCampusAmbassadors().values()) {
                     XcelCampusAmbassador xcelCampusAmbassador = new XcelCampusAmbassador();
                     BeanUtils.copyProperties(campusAmbassador, xcelCampusAmbassador);
+                    xcelCampusAmbassador.setImage(campusAmbassador.getImageUrl());
                     ambassadorList.add(xcelCampusAmbassador);
                 }
             }
