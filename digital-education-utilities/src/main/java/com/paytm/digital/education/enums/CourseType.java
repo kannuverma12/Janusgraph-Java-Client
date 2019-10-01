@@ -5,6 +5,7 @@ public enum CourseType {
     DISTANCE_LEARNING("Distance Learning"),
     TEST_SERIES_ONLINE("Test Series : Online"),
     TEST_SERIES_OFFLINE("Test Series : Offline"),
+
     E_LEARNING("E Learning");
 
     private String text;

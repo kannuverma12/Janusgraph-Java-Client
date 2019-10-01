@@ -244,12 +244,13 @@ public abstract class AbstractImportService {
             return null;
         }
 
-        final Pair<String, String> fileNameAndMemeTypePair = this.uploadUtil.uploadFile(
-                driveImageUrl, String.valueOf(Instant.now().toEpochMilli()), null,
-                this.envProfile + imagePrefix,
-                this.coachingS3BucketName + this.coachingS3Path,
-                GoogleConfig.getCoachingCredentialFileName(),
-                GoogleConfig.getCoachingCredentialFolderPath());
+        final Pair<String, String> fileNameAndMemeTypePair = this.uploadUtil
+                .downloadFileFromGoogleDriveAndUploadToS3(driveImageUrl,
+                        String.valueOf(Instant.now().toEpochMilli()), null,
+                        this.envProfile + imagePrefix,
+                        this.coachingS3BucketName + this.coachingS3Path,
+                        GoogleConfig.getCoachingCredentialFileName(),
+                        GoogleConfig.getCoachingCredentialFolderPath());
         log.debug("fileNameAndMemeTypePair: {}", fileNameAndMemeTypePair.toString());
 
         if (null != fileNameAndMemeTypePair.getKey()) {
