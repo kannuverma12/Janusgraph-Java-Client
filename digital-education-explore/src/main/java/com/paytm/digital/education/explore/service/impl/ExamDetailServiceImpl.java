@@ -81,9 +81,9 @@ public class ExamDetailServiceImpl {
     private static int EXAM_PREFIX_LENGTH = EXAM_PREFIX.length();
 
     public ExamDetail getDetail(Long entityId, String examUrlKey, Long userId,
-            String fieldGroup, List<String> fields, Client client, Boolean syllabus,
-            Boolean importantDates, Boolean derivedAttributes, Boolean examCenters, Boolean sections,
-            Boolean widgets) throws ParseException {
+            String fieldGroup, List<String> fields, Client client, boolean syllabus,
+            boolean importantDates, boolean derivedAttributes, boolean examCenters, boolean sections,
+            boolean widgets) throws ParseException {
         // fields are not being supported currently. Part of discussion
 
         ExamDetail examDetail = getExamDetail(entityId, examUrlKey, fieldGroup, fields, client,
@@ -102,9 +102,9 @@ public class ExamDetailServiceImpl {
     //TODO - modularize methods for caching as. Its fine as of now as userId is not being used As of now.
     @Cacheable(value = "exam_detail")
     public ExamDetail getExamDetail(Long entityId, String examUrlKey, String fieldGroup,
-            List<String> fields, Client client, Boolean syllabus,
-            Boolean importantDates, Boolean derivedAttributes, Boolean examCenters, Boolean sections,
-            Boolean widgets) throws ParseException {
+            List<String> fields, Client client, boolean syllabus,
+            boolean importantDates, boolean derivedAttributes, boolean examCenters, boolean sections,
+            boolean widgets) throws ParseException {
 
         // TODO: fields are not being supported currently. Part of discussion
         List<String> groupFields =
@@ -137,8 +137,8 @@ public class ExamDetailServiceImpl {
     }
 
     private ExamDetail processExamDetail(Exam exam, List<String> examFields, Client client,
-            Boolean syllabus, Boolean importantDates, Boolean derivedAttributes, Boolean examCenters,
-            Boolean sections, Boolean widgets)
+            boolean syllabus, boolean importantDates, boolean derivedAttributes, boolean examCenters,
+            boolean sections, boolean widgets)
             throws ParseException {
         ExamDetail examDetail = buildResponse(exam, client, syllabus, importantDates,
                 derivedAttributes, examCenters, sections, widgets);
@@ -218,7 +218,7 @@ public class ExamDetailServiceImpl {
     }
 
     private void addSubExamData(int parentInstanceId, List<SubExam> subExams,
-            ExamDetail examDetail, List<Event> importantDates, Boolean syllabusFlag) {
+            ExamDetail examDetail, List<Event> importantDates, boolean syllabusFlag) {
         List<Syllabus> syllabusList = new ArrayList<>();
         subExams.forEach(subExam -> {
             subExam.getInstances().forEach(subExamInstance -> {
@@ -252,9 +252,9 @@ public class ExamDetailServiceImpl {
         examDetail.setLinguisticMedium(examLang);
     }
 
-    private ExamDetail buildResponse(Exam exam, Client client, Boolean syllabus,
-            Boolean importantDatesflag, Boolean derivedAttributes, Boolean examCenters,
-            Boolean sectionsFlag, Boolean widgets) throws ParseException {
+    private ExamDetail buildResponse(Exam exam, Client client, boolean syllabus,
+            boolean importantDatesflag, boolean derivedAttributes, boolean examCenters,
+            boolean sectionsFlag, boolean widgets) throws ParseException {
         ExamDetail examDetail = new ExamDetail();
         examDetail.setExamId(exam.getExamId());
         examDetail.setAbout(exam.getAboutExam());
