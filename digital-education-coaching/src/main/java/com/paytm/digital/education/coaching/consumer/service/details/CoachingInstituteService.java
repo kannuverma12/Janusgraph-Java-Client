@@ -157,7 +157,8 @@ public class CoachingInstituteService {
                 .mockTest(getMockTestInfo(coachingInstituteEntity.getBrandName()))
                 .faqs(this.fillFaqs(coachingInstituteEntity.getFaqs()))
                 .instituteMoreInfo(InstituteMoreInfo.builder()
-                        .header(MORE_FROM.getValue() + coachingInstituteEntity.getBrandName())
+                        .header(String.format(MORE_FROM.getValue(),
+                                coachingInstituteEntity.getBrandName()))
                         .build())
                 .sections(sections)
                 .build();

@@ -399,8 +399,9 @@ public class CoachingCourseService {
                                 course.getOriginalPrice(), course.getDiscountedPrice()))
                         .build())
                 .courseGetStarted(CourseGetStarted.builder()
-                        .header(COURSE_HOW_TO_GET_STARTED.getValue() + course.getName())
-                        .infoList(this.buildHowToGetStarted(course))
+                        .header(String.format(COURSE_HOW_TO_GET_STARTED.getValue(),
+                                course.getName()))
+                        .results(this.buildHowToGetStarted(course))
                         .build())
                 .sections(sections)
                 .build();

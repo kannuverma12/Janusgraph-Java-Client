@@ -19,6 +19,6 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class CourseGetStarted {
 
-    private String header;
-    private List<String> infoList;
+    private String       header;
+    private List<String> results;
 }
