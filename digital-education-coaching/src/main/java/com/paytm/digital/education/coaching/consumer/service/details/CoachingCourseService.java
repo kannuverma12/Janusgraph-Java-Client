@@ -8,6 +8,7 @@ import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.Co
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseFeatures;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseFee;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseImportantDates;
+import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CourseGetStarted;
 import com.paytm.digital.education.coaching.consumer.model.response.details.GetCoachingCourseDetailsResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingCourseData;
 import com.paytm.digital.education.coaching.consumer.service.search.helper.SearchDataHelper;
@@ -30,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -62,6 +64,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.S
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.COURSE_DETAILS;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.COURSE_FEATURES_AVAILABLE;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.COURSE_FEE;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.COURSE_HOW_TO_GET_STARTED;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.COURSE_TYPE;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.DOUBT_SOLVING_SESSIONS;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.DOWNLOAD_SYLLABUS_AND_BROCHURE;
@@ -395,8 +398,30 @@ public class CoachingCourseService {
                         .discountPercentage(this.calculateDiscountPercentage(
                                 course.getOriginalPrice(), course.getDiscountedPrice()))
                         .build())
+                .courseGetStarted(CourseGetStarted.builder()
+                        .header(COURSE_HOW_TO_GET_STARTED.getValue() + course.getName())
+                        .infoList(this.buildHowToGetStarted(course))
+                        .build())
                 .sections(sections)
                 .build();
+    }
+
+    private List<String> buildHowToGetStarted(final CoachingCourseEntity course) {
+        List<String> infoList = new ArrayList<>();
+
+        if (!StringUtils.isEmpty(course.getHowToUse1())) {
+            infoList.add(course.getHowToUse1());
+        }
+        if (!StringUtils.isEmpty(course.getHowToUse2())) {
+            infoList.add(course.getHowToUse2());
+        }
+        if (!StringUtils.isEmpty(course.getHowToUse3())) {
+            infoList.add(course.getHowToUse3());
+        }
+        if (!StringUtils.isEmpty(course.getHowToUse4())) {
+            infoList.add(course.getHowToUse4());
+        }
+        return infoList;
     }
 
     private Map<String, String> getCourseDetailsInfo(final CoachingCourseEntity course) {

@@ -1,4 +1,4 @@
-package com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse;
+package com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -14,11 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class CoachingCourseFee {
+public class InstituteMoreInfo {
 
     private String header;
-    private String currency;
-    private Double originalPrice;
-    private Double discountedPrice;
-    private String discountPercentage;
 }

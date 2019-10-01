@@ -10,6 +10,7 @@ import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.Co
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseFeatures;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseFee;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseImportantDates;
+import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CourseGetStarted;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -39,6 +40,7 @@ public class GetCoachingCourseDetailsResponse {
     private CoachingCourseFeatures       courseFeatures;
     private MockTest                     mockTest;
     private CoachingCourseFee            coachingCourseFee;
+    private CourseGetStarted             courseGetStarted;
 
     private List<String> sections;
 }

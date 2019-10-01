@@ -2,7 +2,6 @@ package com.paytm.digital.education.database.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.paytm.digital.education.database.embedded.CoachingCourseImportantDate;
-import com.paytm.digital.education.database.embedded.Faq;
 import com.paytm.digital.education.enums.CourseCover;
 import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.CourseType;
@@ -29,9 +28,6 @@ public class CoachingCourseEntity extends Base {
     @Field("_id")
     @JsonIgnore
     private ObjectId id;
-
-    @Field("faqs")
-    private List<Faq> faqs;
 
     @Field("course_id")
     @Indexed(unique = true)

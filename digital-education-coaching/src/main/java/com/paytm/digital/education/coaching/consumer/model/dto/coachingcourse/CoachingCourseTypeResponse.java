@@ -11,6 +11,7 @@ import lombok.Getter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class CoachingCourseTypeResponse {
+
     private String description;
     private String imageUrl;
     private String name;

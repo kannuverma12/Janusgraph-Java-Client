@@ -14,6 +14,7 @@ import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.Co
 import com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute.CenterAndBrochureInfo;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute.CoachingCourseTypeInfo;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute.InstituteCenterSection;
+import com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute.InstituteMoreInfo;
 import com.paytm.digital.education.coaching.consumer.model.response.details.GetCoachingInstituteDetailsResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingCourseData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingInstituteData;
@@ -77,6 +78,7 @@ import static com.paytm.digital.education.coaching.enums.DisplayHeadings.BROWSE_
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.DOWNLOAD_BROCHURE;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.FIND_CENTERS;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.FIND_CENTERS_DESCRIPTION;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.MORE_FROM;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.STREAMS_PREPARED_FOR_BY;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_COACHING_COURSES_BY;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_EXAMS_PREPARED_FOR_BY;
@@ -154,6 +156,9 @@ public class CoachingInstituteService {
                         streamId, examId))
                 .mockTest(getMockTestInfo(coachingInstituteEntity.getBrandName()))
                 .faqs(this.fillFaqs(coachingInstituteEntity.getFaqs()))
+                .instituteMoreInfo(InstituteMoreInfo.builder()
+                        .header(MORE_FROM.getValue() + coachingInstituteEntity.getBrandName())
+                        .build())
                 .sections(sections)
                 .build();
     }

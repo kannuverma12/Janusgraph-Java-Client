@@ -13,6 +13,7 @@ public enum DisplayHeadings {
     COURSE_DETAILS("Course Details"),
     DOWNLOAD_SYLLABUS_AND_BROCHURE("Download Syllabus & Brochure"),
     COURSE_FEE("Course Fee"),
+    COURSE_HOW_TO_GET_STARTED("How to get started with "),
     COURSE_TYPE("Course Type"),
     LANGUAGE("Language"),
     PROVIDES_CERTIFICATE("Provides Certification"),
@@ -38,6 +39,7 @@ public enum DisplayHeadings {
     TOP_COACHING_COURSES_BY("Top Coaching Courses by %s"),
     TOP_EXAMS_PREPARED_FOR_BY("Top Exams prepared for by %s"),
     STREAMS_PREPARED_FOR_BY("Streams prepared for by %s"),
+    MORE_FROM("More from "),
 
     TOP_COACHING_COURSES_FOR("Top Coaching Courses for %s"),
     TOP_COACHING_INSTITUTES_FOR("Top Coaching Institutes for %s"),

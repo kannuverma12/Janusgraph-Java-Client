@@ -12,6 +12,7 @@ import com.paytm.digital.education.coaching.consumer.model.dto.TopStreams;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute.CenterAndBrochureInfo;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute.CoachingCourseTypeInfo;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute.InstituteHighlight;
+import com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute.InstituteMoreInfo;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -37,5 +38,6 @@ public class GetCoachingInstituteDetailsResponse {
     private CoachingCourseTypeInfo   coachingCourseTypes;
     private TopCoachingCourses       topCoachingCourses;
     private MockTest                 mockTest;
+    private InstituteMoreInfo        instituteMoreInfo;
     private List<String>             sections;
 }
