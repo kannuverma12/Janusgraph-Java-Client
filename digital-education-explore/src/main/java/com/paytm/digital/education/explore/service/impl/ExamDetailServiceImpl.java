@@ -218,7 +218,7 @@ public class ExamDetailServiceImpl {
     }
 
     private void addSubExamData(int parentInstanceId, List<SubExam> subExams,
-            ExamDetail examDetail, List<Event> importantDates) {
+            ExamDetail examDetail, List<Event> importantDates, Boolean syllabusFlag) {
         List<Syllabus> syllabusList = new ArrayList<>();
         subExams.forEach(subExam -> {
             subExam.getInstances().forEach(subExamInstance -> {
@@ -235,7 +235,7 @@ public class ExamDetailServiceImpl {
                 }
             });
         });
-        if (syllabusList.size() != 0) {
+        if (syllabusList.size() != 0 && syllabusFlag) {
             examDetail.setSyllabus(syllabusList);
         }
     }
@@ -278,13 +278,12 @@ public class ExamDetailServiceImpl {
         examDetail.setResult(exam.getResult());
         examDetail.setCutoff(exam.getCutoff());
         examDetail.setLogoUrl(examLogoHelper.getExamLogoUrl(exam.getExamId(), exam.getLogo()));
-        if ((Objects.nonNull(examCenters) && examCenters) || Objects.isNull(examCenters)) {
+        if (examCenters) {
             examDetail.setExamCenters(getExamCenters(exam.getInstances()));
         }
         List<Event> importantDates = new ArrayList<>();
         Optional<Instance> nearestInstance = empty();
-        if ((Objects.nonNull(importantDatesflag) && importantDatesflag) || Objects
-                .isNull(importantDatesflag)) {
+        if (importantDatesflag) {
             if (!CollectionUtils.isEmpty(exam.getInstances())) {
                 nearestInstance =
                         examInstanceHelper.getNearestInstance(exam.getInstances());
@@ -303,13 +302,12 @@ public class ExamDetailServiceImpl {
         if (!CollectionUtils.isEmpty(exam.getSubExams()) && nearestInstance.isPresent()) {
             int parentInstanceId = nearestInstance.get().getInstanceId();
             examDetail.setDurationInHour(exam.getSubExams().get(0).getDurationHours());
-            addSubExamData(parentInstanceId, exam.getSubExams(), examDetail, importantDates);
+            addSubExamData(parentInstanceId, exam.getSubExams(), examDetail, importantDates, syllabus);
         }
-        if ((Objects.nonNull(importantDatesflag) && importantDatesflag) || Objects
-                .isNull(importantDatesflag)) {
+        if (importantDatesflag) {
             examDetail.setImportantDates(importantDates);
         }
-        if ((Objects.nonNull(syllabus) && syllabus) || Objects.isNull(syllabus)) {
+        if (syllabus) {
             if (CollectionUtils.isEmpty(examDetail.getSyllabus())) {
                 List<Syllabus> syllabusList = new ArrayList<>();
                 List<com.paytm.digital.education.explore.database.entity.Syllabus>
@@ -333,14 +331,13 @@ public class ExamDetailServiceImpl {
         Map<String, Object> highlights = new HashMap<>();
         highlights.put(entityName, exam);
         highlights.put(LINGUISTIC_MEDIUM, examDetail.getLinguisticMedium());
-        if ((Objects.nonNull(derivedAttributes) && derivedAttributes) || Objects
-                .isNull(derivedAttributes)) {
+        if (derivedAttributes) {
             examDetail.setDerivedAttributes(
                     derivedAttributesHelper.getDerivedAttributes(highlights,
                             entityName, client));
         }
         addDatesToResponse(examDetail, importantDates);
-        if ((Objects.nonNull(sectionsFlag) && sectionsFlag) || Objects.isNull(sectionsFlag)) {
+        if (sectionsFlag) {
             examDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName, null));
         }
 
@@ -351,7 +348,7 @@ public class ExamDetailServiceImpl {
             examDetail.setCollegePredictorPid(examPaytmKeys.getCollegePredictorId());
             examDetail.setFormId(examPaytmKeys.getFormId());
         }
-        if ((Objects.nonNull(widgets) && widgets) || Objects.isNull(widgets)) {
+        if (widgets) {
             examDetail.setWidgets(widgetsDataHelper.getWidgets(entityName, exam.getExamId(),
                     getDomainName(exam.getDomains())
             ));

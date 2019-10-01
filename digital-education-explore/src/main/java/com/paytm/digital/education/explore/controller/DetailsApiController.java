@@ -49,12 +49,18 @@ public class DetailsApiController {
             @RequestParam(name = "fields", required = false) List<String> fields,
             @RequestHeader(value = "x-user-id", required = false) Long userId,
             @RequestHeader(value = "fe_client", required = false) Client client,
-            @RequestHeader(value = "syllabus", required = false) Boolean syllabus,
-            @RequestHeader(value = "important_dates", required = false) Boolean importantDates,
-            @RequestHeader(value = "derived_attributes", required = false) Boolean derivedAttributes,
-            @RequestHeader(value = "exam-centers", required = false) Boolean examCenters,
-            @RequestHeader(value = "sections", required = false) Boolean sections,
-            @RequestHeader(value = "widgets", required = false) Boolean widgets) throws Exception {
+            @RequestHeader(value = "syllabus", required = false, defaultValue = "true")
+                    Boolean syllabus,
+            @RequestHeader(value = "important_dates", required = false, defaultValue = "true")
+                    Boolean importantDates,
+            @RequestHeader(value = "derived_attributes", required = false, defaultValue = "true")
+                    Boolean derivedAttributes,
+            @RequestHeader(value = "exam-centers", required = false, defaultValue = "true")
+                    Boolean examCenters,
+            @RequestHeader(value = "sections", required = false, defaultValue = "true")
+                    Boolean sections,
+            @RequestHeader(value = "widgets", required = false, defaultValue = "true")
+                    Boolean widgets) throws Exception {
         exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
 
         return examDetailService
