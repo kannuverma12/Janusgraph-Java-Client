@@ -34,6 +34,9 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -491,14 +494,26 @@ public class CoachingCourseService {
                 Collections.EMPTY_LIST);
     }
 
-    private String calculateDiscountPercentage(final double originalPrice,
-            final double discountedPrice) {
-        if (originalPrice == discountedPrice) {
+    private String calculateDiscountPercentage(final double original, final double discounted) {
+
+        final BigDecimal originalPriceBigDecimal =
+                new BigDecimal(original, new MathContext(0, RoundingMode.HALF_DOWN));
+
+        final BigDecimal discountedPriceBigDecimal =
+                new BigDecimal(discounted, new MathContext(0, RoundingMode.HALF_DOWN));
+
+        if (originalPriceBigDecimal.compareTo(discountedPriceBigDecimal) == 0) {
             return EMPTY_STRING;
         }
-        double percentage = (((originalPrice - discountedPrice) / originalPrice) * 100);
-        percentage = Math.round(percentage * 100.0) / 100.0;
-        return percentage + "%";
+
+        final BigDecimal discountPercentage =
+                (originalPriceBigDecimal.subtract(discountedPriceBigDecimal,
+                        new MathContext(0, RoundingMode.HALF_DOWN)))
+                        .divide(originalPriceBigDecimal, new MathContext(0, RoundingMode.HALF_DOWN))
+                        .multiply(new BigDecimal(100d, new MathContext(0, RoundingMode.HALF_DOWN)));
+
+        final int discount = discountPercentage.intValue();
+        return discount + "%";
     }
 
     private Exam fillTargetExam(final Map<String, List<Exam>> examTypeAndExamListMap) {
