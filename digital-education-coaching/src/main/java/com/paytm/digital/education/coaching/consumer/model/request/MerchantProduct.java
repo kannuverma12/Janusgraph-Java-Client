@@ -18,7 +18,7 @@ import javax.validation.constraints.NotNull;
 public class MerchantProduct {
 
     @NotNull
-    private Long productId;
+    private String productId;
 
     @NotNull
     private String productName;

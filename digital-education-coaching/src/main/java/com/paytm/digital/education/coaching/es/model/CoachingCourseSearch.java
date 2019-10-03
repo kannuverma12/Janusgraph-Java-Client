@@ -39,4 +39,6 @@ public class CoachingCourseSearch {
     private String                         merchantProductId;
     private Long                           paytmProductId;
     private Boolean                        isEnabled;
+    private Boolean                        isDynamic;
+    private String                         redirectUrl;
 }

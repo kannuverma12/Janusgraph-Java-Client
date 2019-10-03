@@ -228,6 +228,9 @@ public class ConverterUtil {
 
         coachingCourseEntity.setIsEnabled(request.getIsEnabled());
         coachingCourseEntity.setPriority(request.getPriority());
+
+        coachingCourseEntity.setIsDynamic(request.getIsDynamic());
+        coachingCourseEntity.setRedirectUrl(request.getRedirectUrl());
     }
 
     public static void setExamUpdateData(TargetExamUpdateRequest request,

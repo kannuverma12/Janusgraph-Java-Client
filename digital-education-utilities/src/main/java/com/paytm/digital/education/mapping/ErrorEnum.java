@@ -105,6 +105,9 @@ public enum ErrorEnum {
     INVALID_MERCHANT_ID(4044, "Item with given merchant Id does not exist",
             HttpStatus.BAD_REQUEST, 0),
     INVALID_MERCHANT_DATA(4045, "Invalid merchant info. Please provide valid merchant info.",
+            HttpStatus.BAD_REQUEST, 0),
+    INVALID_MERCHANT_PRODUCTS(4046,
+            "Empty product list received. Please try with at least one product",
             HttpStatus.BAD_REQUEST, 0);
 
     private final int        internalCode;

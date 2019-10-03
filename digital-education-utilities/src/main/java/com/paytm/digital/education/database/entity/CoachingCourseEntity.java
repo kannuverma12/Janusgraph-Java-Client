@@ -177,4 +177,10 @@ public class CoachingCourseEntity extends Base {
 
     @Field("paytm_product_id")
     private Long paytmProductId;
+
+    @Field("is_dynamic")
+    private Boolean isDynamic;
+
+    @Field("redirect_url")
+    private String redirectUrl;
 }

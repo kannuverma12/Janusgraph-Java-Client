@@ -43,6 +43,7 @@ public class CartItem {
     @NotEmpty
     private String referenceId;
 
+    @NotNull
     @Valid
     private MetaData metaData;
 }

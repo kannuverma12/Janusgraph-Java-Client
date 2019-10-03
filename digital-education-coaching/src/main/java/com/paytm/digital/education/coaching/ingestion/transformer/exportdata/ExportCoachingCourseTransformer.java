@@ -85,6 +85,9 @@ public class ExportCoachingCourseTransformer {
                             .statusActive(ExportCommonTransformer.convertBooleanToString(
                                     entity.getIsEnabled()))
                             .paytmProductId(entity.getPaytmProductId())
+                            .isDynamic(ExportCommonTransformer
+                                    .convertBooleanToString(entity.getIsDynamic()))
+                            .redirectUrl(entity.getRedirectUrl())
                             .build();
                     fillImportantDates(form, entity.getImportantDates());
                     return form;
