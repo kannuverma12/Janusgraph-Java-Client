@@ -37,6 +37,8 @@ public class CoachingConstants {
     public static final String IS_DYNAMIC                      = "is_dynamic";
     public static final String MERCHANT_ID                     = "merchant_id";
     public static final String MERCHANT_PRODUCT_ID             = "merchant_product_id";
+    public static final String EXAM_YEAR                       = "exam_year";
+    public static final String PRIORITY                        = "priority";
 
     public static final String COACHING_COMPONENT         = "coaching";
     public static final String GOOGLE_SHEETS_INFO         = "google_sheets_info";
@@ -116,6 +118,8 @@ public class CoachingConstants {
                         "Find answers to your most common questions",
                         "image_link"));
     }
+
+    public static final int TOP_RANKER_LIMIT = 5;
 
 
     public static class URL {

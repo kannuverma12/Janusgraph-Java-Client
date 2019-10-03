@@ -204,12 +204,13 @@ public class CommonMongoRepository {
     }
 
     public <T> List<T> findAllAndSortBy(Map<String, Object> searchRequest, Class<T> instance,
-            List<String> fields, String queryOperatorType, Map<Sort.Direction, String> sortMap) {
+            List<String> fields, String queryOperatorType, Map<Sort.Direction, String> sortMap,
+            int limit) {
         if (queryOperatorType.equals((AND))) {
-            return executeMongoQuery(createMongoSortQuery(searchRequest, fields, sortMap),
+            return executeMongoQuery(createMongoSortQuery(searchRequest, fields, sortMap, limit),
                     instance);
         } else if (queryOperatorType.equals(OR)) {
-            return executeMongoQuery(createOrMongoSortQuery(searchRequest, fields, sortMap),
+            return executeMongoQuery(createOrMongoSortQuery(searchRequest, fields, sortMap, limit),
                     instance);
         }
         return null;
@@ -301,14 +302,20 @@ public class CommonMongoRepository {
     }
 
     private Query createMongoSortQuery(Map<String, Object> searchRequest, List<String> fields,
-            Map<Sort.Direction, String> sortMap) {
+            Map<Sort.Direction, String> sortMap, int limit) {
         Query mongoQuery = this.createMongoQuery(searchRequest, fields);
+        if (limit > 0) {
+            mongoQuery.limit(limit);
+        }
         return this.addSortParamsToQuery(mongoQuery, sortMap);
     }
 
     private Query createOrMongoSortQuery(Map<String, Object> searchRequest, List<String> fields,
-            Map<Sort.Direction, String> sortMap) {
+            Map<Sort.Direction, String> sortMap, int limit) {
         Query mongoQuery = this.createOrMongoQuery(searchRequest, fields);
+        if (limit > 0) {
+            mongoQuery.limit(limit);
+        }
         return this.addSortParamsToQuery(mongoQuery, sortMap);
     }
 

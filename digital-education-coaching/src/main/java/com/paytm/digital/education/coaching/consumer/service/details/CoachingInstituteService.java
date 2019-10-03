@@ -59,20 +59,24 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.D
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_KEY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_NAMESPACE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ID;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_YEAR;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_COVER_IMAGE_PLACEHOLDER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_PLACEHOLDER;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.IS_ENABLED;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.MockTestBanner.BUTTON_TEXT;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.MockTestBanner.DESCRIPTION;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.MockTestBanner.HEADER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.MockTestBanner.LOGO;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.MockTestBanner.TAG_TEXT;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.PRIORITY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_INSTITUTE_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_IDS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.IGNORE_GLOBAL_PRIORITY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.TOP_RANKER_LIMIT;
 import static com.paytm.digital.education.coaching.consumer.service.details.CoachingCourseService.CENTER_FIELDS;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.BROWSE_BY_COURSE_TYPE;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.DOWNLOAD_BROCHURE;
@@ -101,7 +105,8 @@ public class CoachingInstituteService {
                     "is_enabled");
 
     private static final List<String> EXAM_FIELDS =
-            Arrays.asList("exam_id", "exam_full_name", "exam_short_name", "logo");
+            Arrays.asList("exam_id", "exam_full_name", "exam_short_name", "logo", "is_enabled",
+                    "stream_ids");
 
     private static final List<String> STREAM_FIELDS =
             Arrays.asList("stream_id", "name", "logo");
@@ -313,11 +318,12 @@ public class CoachingInstituteService {
         Set<Long> courseIds = new HashSet<>();
 
         final Map<Sort.Direction, String> sortMap = new HashMap<>();
-        sortMap.put(Sort.Direction.DESC, "exam_year");
-        sortMap.put(Sort.Direction.ASC, "priority");
+        sortMap.put(Sort.Direction.DESC, EXAM_YEAR);
+        sortMap.put(Sort.Direction.ASC, PRIORITY);
 
         final Map<String, Object> searchRequest = new HashMap<>();
         searchRequest.put(INSTITUTE_ID, instituteId);
+        searchRequest.put(IS_ENABLED, true);
 
         if (Objects.nonNull(examId)) {
             searchRequest.put(EXAM_ID, examId);
@@ -327,7 +333,24 @@ public class CoachingInstituteService {
 
         List<TopRankerEntity> topRankerEntityList = commonMongoRepository.findAllAndSortBy(
                 searchRequest, TopRankerEntity.class, CoachingCourseService.TOP_RANKER_FIELDS, AND,
-                sortMap);
+                sortMap, TOP_RANKER_LIMIT);
+
+        if (CollectionUtils.isEmpty(topRankerEntityList) && searchRequest.containsKey(EXAM_ID)) {
+            com.paytm.digital.education.database.entity.Exam examEntity = commonMongoRepository
+                    .getEntityByFields(EXAM_ID, examId,
+                            com.paytm.digital.education.database.entity.Exam.class, EXAM_FIELDS);
+
+            if (Objects.nonNull(examEntity) && !CollectionUtils
+                    .isEmpty(examEntity.getStreamIds()) && examEntity.getIsEnabled()) {
+                searchRequest.remove(EXAM_ID);
+                searchRequest.put(STREAM_IDS, examEntity.getStreamIds().get(0));
+
+                topRankerEntityList = commonMongoRepository.findAllAndSortBy(
+                        searchRequest, TopRankerEntity.class,
+                        CoachingCourseService.TOP_RANKER_FIELDS, AND,
+                        sortMap, TOP_RANKER_LIMIT);
+            }
+        }
 
         final List<TopRanker> topRankerList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(topRankerEntityList)) {

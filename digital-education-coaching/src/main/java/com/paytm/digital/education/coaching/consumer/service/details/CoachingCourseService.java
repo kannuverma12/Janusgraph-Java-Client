@@ -60,8 +60,10 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.D
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_NAMESPACE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EMPTY_STRING;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ID;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_YEAR;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.NAME;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.PRIORITY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_IDS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.COURSE_DETAILS;
@@ -88,8 +90,6 @@ public class CoachingCourseService {
 
     private static final String TARGET_EXAM     = "TARGET_EXAM";
     private static final String TOP_RANKER_EXAM = "TOP_RANKER_EXAM";
-    private static final String EXAM_YEAR       = "exam_year";
-    private static final String PRIORITY        = "priority";
 
     private static final List<String> COURSE_FIELDS =
             Arrays.asList("faqs", "course_id", "name", "coaching_institute_id", "course_type",
