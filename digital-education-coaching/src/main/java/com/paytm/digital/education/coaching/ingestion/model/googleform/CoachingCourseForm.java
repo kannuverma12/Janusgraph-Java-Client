@@ -236,4 +236,12 @@ public class CoachingCourseForm {
     @JsonProperty("paytm_product_id")
     @GoogleSheetColumnName("Paytm Product Id")
     private Long paytmProductId;
+
+    @JsonProperty("is_dynamic")
+    @GoogleSheetColumnName("Is Dynamic")
+    private String isDynamic;
+
+    @JsonProperty("redirect_url")
+    @GoogleSheetColumnName("Redirect Url")
+    private String redirectUrl;
 }

@@ -252,4 +252,8 @@ public class CoachingCourseDataRequest {
 
     @ApiModelProperty(value = "flag is enable/disable course, default is true")
     private Boolean isEnabled = Boolean.TRUE;
+
+    private Boolean isDynamic = Boolean.FALSE;
+
+    private String redirectUrl;
 }

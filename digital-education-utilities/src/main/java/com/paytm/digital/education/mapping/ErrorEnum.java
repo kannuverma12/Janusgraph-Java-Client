@@ -92,22 +92,6 @@ public enum ErrorEnum {
             HttpStatus.BAD_REQUEST, 0),
     INVALID_CUSTOMER_ID(4038, "Invalid customer ID. Please provide a valid customer ID.",
             HttpStatus.BAD_REQUEST, 0),
-
-    INVALID_COURSE_ID_AND_URL_DISPLAY_KEY(4039,
-            "Invalid course ID/ url display key. Please provide a valid course ID and url display key.",
-            HttpStatus.BAD_REQUEST, 0),
-    INVALID_STREAM_ID(4040, "Invalid stream ID. Please provide a valid stream ID.",
-            HttpStatus.BAD_REQUEST, 0),
-    INVALID_STREAM_NAME(4041, "Invalid stream name. Please provide a valid stream name.",
-            HttpStatus.BAD_REQUEST, 0),
-    INVALID_CART_ITEMS(4042, "Invalid Cart Items. Please provide valid Cart Items",
-            HttpStatus.BAD_REQUEST, 0),
-    ENTITY_LIST_EMPTY(4043, "Atleast one entity is required.", HttpStatus.BAD_REQUEST, 0),
-    INVALID_MERCHANT_ID(4044, "Item with given merchant Id does not exist",
-            HttpStatus.BAD_REQUEST, 0),
-    INVALID_MERCHANT_DATA(4045, "Invalid merchant info. Please provide valid merchant info.",
-            HttpStatus.BAD_REQUEST, 0),
-
     USER_INFO_MISMATCH(4039, "Provided user details doesn't matches to info stored at our end",
             HttpStatus.BAD_REQUEST, 0),
     INVALID_ENTITY_FOR_DATA_IMPORT(4040, "Provided entity is invalid.", HttpStatus.BAD_REQUEST, 0),
@@ -138,7 +122,24 @@ public enum ErrorEnum {
             HttpStatus.BAD_REQUEST, 0),
     LON_INVALID(4057, "Please provide valid longitude in request.",
             HttpStatus.BAD_REQUEST, 0),
-    INVALID_SORT_FIELD(4058, "Invalid requested sort field(s).", HttpStatus.BAD_REQUEST,0);
+    INVALID_SORT_FIELD(4058, "Invalid requested sort field(s).", HttpStatus.BAD_REQUEST, 0),
+    INVALID_COURSE_ID_AND_URL_DISPLAY_KEY(4059,
+            "Invalid course ID/ url display key. Please provide a valid course ID and url display key.",
+            HttpStatus.BAD_REQUEST, 0),
+    INVALID_STREAM_ID(4060, "Invalid stream ID. Please provide a valid stream ID.",
+            HttpStatus.BAD_REQUEST, 0),
+    INVALID_STREAM_NAME(4061, "Invalid stream name. Please provide a valid stream name.",
+            HttpStatus.BAD_REQUEST, 0),
+    INVALID_CART_ITEMS(4062, "Invalid Cart Items. Please provide valid Cart Items",
+            HttpStatus.BAD_REQUEST, 0),
+    ENTITY_LIST_EMPTY(4063, "Atleast one entity is required.", HttpStatus.BAD_REQUEST, 0),
+    INVALID_MERCHANT_ID(4064, "Item with given merchant Id does not exist",
+            HttpStatus.BAD_REQUEST, 0),
+    INVALID_MERCHANT_DATA(4065, "Invalid merchant info. Please provide valid merchant info.",
+            HttpStatus.BAD_REQUEST, 0),
+    INVALID_MERCHANT_PRODUCTS(4066,
+            "Empty product list received. Please try with at least one product",
+            HttpStatus.BAD_REQUEST, 0);
 
     private final int        internalCode;
     private final String     externalMessage;

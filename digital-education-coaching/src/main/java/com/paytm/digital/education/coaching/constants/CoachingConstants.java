@@ -34,6 +34,9 @@ public class CoachingConstants {
     public static final String DISTANCE_KILOMETERS             = " km";
     public static final String IS_ENABLED                      = "is_enabled";
     public static final String CENTER_ID                       = "center_id";
+    public static final String IS_DYNAMIC                      = "is_dynamic";
+    public static final String MERCHANT_ID                     = "merchant_id";
+    public static final String MERCHANT_PRODUCT_ID             = "merchant_product_id";
 
     public static final String COACHING_COMPONENT         = "coaching";
     public static final String GOOGLE_SHEETS_INFO         = "google_sheets_info";
@@ -267,5 +270,14 @@ public class CoachingConstants {
         public static final String LOGO        = "full_image_link";
         public static final String BUTTON_TEXT = "Start Test";
         public static final String TAG_TEXT    = "Free";
+    }
+
+
+    public static class CachingConstants {
+        public static final String EDUCATION_VERTICAL_ID = "0";
+        public static final String EDUCATION_CATEGORY_ID = "165018";
+        public static final String CACHE_KEY_DELIMITER   = "_";
+        public static final int    DEFAULT_QUANTITY      = 1;
+        public static final int    CACHE_TTL             = 1800;
     }
 }

@@ -1,16 +1,16 @@
 package com.paytm.digital.education.coaching.consumer.service.transactionalflow;
 
 import com.paytm.digital.education.cache.redis.RedisCacheService;
-import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.CartItem;
+import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.CheckoutCartItem;
+import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.CheckoutMetaData;
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.ConvTaxInfo;
-import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.MetaData;
-import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.TCS;
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.TaxInfo;
 import com.paytm.digital.education.coaching.consumer.model.request.FetchCartItemsRequestBody;
 import com.paytm.digital.education.coaching.consumer.model.request.MerchantProduct;
 import com.paytm.digital.education.coaching.consumer.model.response.transactionalflow.CartDataResponse;
-import com.paytm.digital.education.database.entity.ItemEntity;
-import com.paytm.digital.education.database.repository.ItemRepository;
+import com.paytm.digital.education.database.entity.CoachingCourseEntity;
+import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -20,85 +20,123 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
+import static com.mongodb.QueryOperators.AND;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.CachingConstants.CACHE_KEY_DELIMITER;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.CachingConstants.CACHE_TTL;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.CachingConstants.DEFAULT_QUANTITY;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.CachingConstants.EDUCATION_CATEGORY_ID;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.CachingConstants.EDUCATION_VERTICAL_ID;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.IS_DYNAMIC;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.IS_ENABLED;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.MERCHANT_ID;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.MERCHANT_PRODUCT_ID;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_CART_ITEMS;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_MERCHANT_ID;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_MERCHANT_PRODUCTS;
 
 @Slf4j
 @Service
 public class MerchantProductsTransformerService {
 
-    // To Do , correct ID to be inserted once we get it from product
-    private static final String EDUCATION_VERTICAL_ID = "0";
-    private static final String EDUCATION_CATEGORY_ID = "0";
-    private static final String CACHE_KEY_DELIMITER   = "_";
-    private static final int    DEFAULT_QUANTITY      = 1;
-    private static final int    CACHE_TTL             = 1800;
+    private static final List<String> INSTITUTE_FIELDS       =
+            Arrays.asList("institute_id", "is_enabled");
+    private static final List<String> COACHING_COURSE_FIELDS = Arrays.asList("paytm_product_id",
+            "merchant_product_id", "is_enabled", "course_id");
 
 
     @Autowired
     private RedisCacheService redisCacheService;
 
     @Autowired
-    private ItemRepository itemRepository;
+    private CommonMongoRepository commonMongoRepository;
 
     public CartDataResponse fetchCartDataFromVertical(FetchCartItemsRequestBody request) {
-
         log.info("Got merchant product data request {}", request);
-        List<ItemEntity> itemEntityList = itemRepository.findByMerchantId(request.getMerchantId());
-        if (CollectionUtils.isEmpty(itemEntityList)) {
-            log.error("Item with Merchant id: {} does not exist", request.getMerchantId());
+        if (CollectionUtils.isEmpty(request.getMerchantProductList())) {
+            log.error("Empty merchant product list received : {}", request);
+            throw new BadRequestException(INVALID_MERCHANT_PRODUCTS);
+        }
+
+        CoachingInstituteEntity coachingInstituteEntity = commonMongoRepository
+                .getEntityByFields(MERCHANT_ID, request.getMerchantId(),
+                        CoachingInstituteEntity.class, INSTITUTE_FIELDS);
+        if (Objects.isNull(coachingInstituteEntity) || !coachingInstituteEntity.getIsEnabled()) {
+            log.error("No coaching institute found with merchant id: {}", request.getMerchantId());
             throw new BadRequestException(INVALID_MERCHANT_ID);
         }
-        ItemEntity itemEntity = itemEntityList.get(0);
-        List<CartItem> cartItemList = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(request.getMerchantProductList())) {
-            for (MerchantProduct merchantProduct : request.getMerchantProductList()) {
-                CartItem cartItem = CartItem.builder()
-                        .sellingPrice(merchantProduct.getPrice())
-                        .productId(itemEntity.getPaytmProductId())
-                        .categoryId(EDUCATION_CATEGORY_ID)
-                        .educationVertical(EDUCATION_VERTICAL_ID)
-                        .quantity(DEFAULT_QUANTITY)
-                        .metaData(getMetaData(merchantProduct, request))
-                        .referenceId("")
-                        .basePrice(merchantProduct.getPrice())
-                        .convFee(0F)
-                        .build();
-                cartItemList.add(cartItem);
-                String cacheKey = getCacheKey(request, itemEntity, merchantProduct);
-                String cacheValue = JsonUtils.toJson(cartItem);
-                redisCacheService.addKeyToCache(cacheKey, cacheValue, CACHE_TTL);
+
+        Map<String, Long> merchantProductIdToCourseIdMap = new HashMap<>();
+        List<String> merchantProductIds = new ArrayList<>();
+        for (MerchantProduct merchantProduct : request.getMerchantProductList()) {
+            merchantProductIds.add(merchantProduct.getProductId());
+        }
+
+        final Map<String, Object> searchRequest = new HashMap<>();
+        searchRequest.put(INSTITUTE_ID, coachingInstituteEntity.getInstituteId());
+        searchRequest.put(IS_DYNAMIC, true);
+        searchRequest.put(IS_ENABLED, true);
+        searchRequest.put(MERCHANT_PRODUCT_ID, merchantProductIds);
+
+        List<CoachingCourseEntity> dynamicCoachingCourses = commonMongoRepository.findAll(
+                searchRequest, CoachingCourseEntity.class, COACHING_COURSE_FIELDS, AND);
+        if (CollectionUtils.isEmpty(dynamicCoachingCourses)) {
+            log.error("Dynamic courses for merchant_id: {} does not exist",
+                    request.getMerchantId());
+            throw new BadRequestException(INVALID_MERCHANT_ID);
+        }
+
+        for (CoachingCourseEntity dynamicCoachingCourse : dynamicCoachingCourses) {
+            merchantProductIdToCourseIdMap.put(dynamicCoachingCourse.getMerchantProductId(),
+                    dynamicCoachingCourse.getCourseId());
+        }
+
+        CoachingCourseEntity dynamicCoachingCourse = dynamicCoachingCourses.get(0);
+
+        List<CheckoutCartItem> cartItemList = new ArrayList<>();
+        for (MerchantProduct merchantProduct : request.getMerchantProductList()) {
+            Long courseId = merchantProductIdToCourseIdMap.get(merchantProduct.getProductId());
+
+            if (Objects.isNull(courseId)) {
+                log.error("Dynamic coaching course_id is not present for merchantProduct: {}",
+                        merchantProduct);
+                throw new BadRequestException(INVALID_CART_ITEMS);
             }
+            String referenceId = UUID.randomUUID().toString();
+            CheckoutCartItem cartItem = CheckoutCartItem.builder()
+                    .sellingPrice(merchantProduct.getPrice())
+                    .productId(dynamicCoachingCourse.getPaytmProductId())
+                    .categoryId(EDUCATION_CATEGORY_ID)
+                    .educationVertical(EDUCATION_VERTICAL_ID)
+                    .quantity(DEFAULT_QUANTITY)
+                    .metaData(getMetaData(merchantProduct, request, courseId))
+                    .referenceId(referenceId)
+                    .basePrice(merchantProduct.getPrice())
+                    .convFee(0F)
+                    .build();
+            cartItemList.add(cartItem);
+            String cacheKey = getCacheKey(referenceId, dynamicCoachingCourse, merchantProduct);
+            String cacheValue = JsonUtils.toJson(cartItem);
+            redisCacheService.addKeyToCache(cacheKey, cacheValue, CACHE_TTL);
         }
         return CartDataResponse.builder().cartItems(cartItemList).build();
     }
 
-    private String getCacheKey(FetchCartItemsRequestBody request, ItemEntity itemEntity,
+    private String getCacheKey(String referenceId, CoachingCourseEntity dynamicCoachingCourse,
             MerchantProduct merchantProduct) {
-        return String.valueOf(request.getUserId())
-                + CACHE_KEY_DELIMITER + String.valueOf(merchantProduct.getProductId())
-                + CACHE_KEY_DELIMITER + String.valueOf(itemEntity.getPaytmProductId());
+        return referenceId + CACHE_KEY_DELIMITER + merchantProduct.getProductId()
+                + CACHE_KEY_DELIMITER + String.valueOf(dynamicCoachingCourse.getPaytmProductId());
     }
 
-    private MetaData getMetaData(MerchantProduct merchantProduct,
-            FetchCartItemsRequestBody request) {
-        TCS tcs = TCS
-                .builder()
-                .basePrice(0F)
-                .igst(0F)
-                .cgst(0F)
-                .sgst(0F)
-                .utgst(0F)
-                .spin(0L)
-                .dpin(0L)
-                .sac(0L)
-                .agstin(null)
-                .hsn(null)
-                .cpin(null)
-                .cgstin(null)
-                .build();
+    private CheckoutMetaData getMetaData(MerchantProduct merchantProduct,
+            FetchCartItemsRequestBody request, Long courseId) {
 
         TaxInfo taxInfo = null;
         if (Objects.nonNull(merchantProduct.getMerchantProductTaxData())) {
@@ -137,13 +175,13 @@ public class MerchantProductsTransformerService {
                 .totalUTGST(0F)
                 .build();
 
-        return MetaData
+        return CheckoutMetaData
                 .builder()
                 .convTaxInfo(convTaxInfo)
                 .taxInfo(taxInfo)
-                .tcs(tcs)
                 .userId(request.getUserId())
                 .merchantProductId(merchantProduct.getProductId())
+                .courseId(courseId)
                 .build();
     }
 

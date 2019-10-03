@@ -44,6 +44,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.C
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_SEARCH_NAMESPACE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_TYPE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ID;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.IS_DYNAMIC;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.IS_ENABLED;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_COURSE_NAME;
@@ -80,6 +81,7 @@ public class CoachingCourseSearchService extends AbstractSearchService {
         filterQueryTypeMap.put(COACHING_COURSE_LEVEL, TERMS);
         filterQueryTypeMap.put(COACHING_COURSE_DURATION, TERMS);
         filterQueryTypeMap.put(IS_ENABLED, TERMS);
+        filterQueryTypeMap.put(IS_DYNAMIC, TERMS);
         searchFieldKeys = new HashMap<>();
         searchFieldKeys.put(COACHING_COURSE_NAME, COACHING_COURSE_NAME_BOOST);
     }
@@ -118,6 +120,7 @@ public class CoachingCourseSearchService extends AbstractSearchService {
             filters = new HashMap<>();
         }
         filters.put(IS_ENABLED, Collections.singletonList(true));
+        filters.put(IS_DYNAMIC, Collections.singletonList(false));
         searchRequest.setFilter(filters);
 
         populateFilterFields(searchRequest, elasticRequest, CoachingCourseSearch.class,

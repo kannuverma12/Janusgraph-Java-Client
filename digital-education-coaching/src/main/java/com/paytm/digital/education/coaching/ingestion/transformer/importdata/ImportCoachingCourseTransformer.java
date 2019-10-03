@@ -77,6 +77,8 @@ public class ImportCoachingCourseTransformer {
                 .priority(form.getGlobalPriority())
                 .isEnabled(ImportCommonTransformer.convertStringToBoolean(form.getStatusActive()))
                 .paytmProductId(form.getPaytmProductId())
+                .isDynamic(ImportCommonTransformer.convertStringToBoolean(form.getIsDynamic()))
+                .redirectUrl(form.getRedirectUrl())
                 .build();
     }
 
