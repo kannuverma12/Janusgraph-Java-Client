@@ -28,7 +28,7 @@ public class SchoolDetail implements CTAInfoHolder {
     private Long schoolId;
 
     @JsonProperty("shifts")
-    private List<ShiftDetails> shiftDetailsList;
+    private List<ShiftTable> shiftTables;
 
     @JsonProperty("faculty")
     private FacultyDetail facultyDetail;

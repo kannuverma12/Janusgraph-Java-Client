@@ -17,9 +17,12 @@ public interface SchoolConstants {
     String NAMES                            = "names";
     Float  NAMES_SEARCH_BOOST               = 1F;
 
-    String OFFICIAL_WEBSITE_LINK         = "Official Website Link";
+    String OFFICIAL_WEBSITE_LINK = "Official Website Link";
 
-    String SCHOOL    = "school";
-    String ACTUAL    = "actual";
+    String SCHOOL               = "school";
+    String ACTUAL               = "actual";
+    String SCHOOL_OFFICIAL_NAME = "name";
+    String BOARD                = "board";
+    String BOARD_DATA           = "board_data";
 
 }

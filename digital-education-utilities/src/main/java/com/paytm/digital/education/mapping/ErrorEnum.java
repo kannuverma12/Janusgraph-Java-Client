@@ -122,7 +122,9 @@ public enum ErrorEnum {
             HttpStatus.BAD_REQUEST, 0),
     LON_INVALID(4057, "Please provide valid longitude in request.",
             HttpStatus.BAD_REQUEST, 0),
-    INVALID_SORT_FIELD(4058, "Invalid requested sort field(s).", HttpStatus.BAD_REQUEST,0);
+    INVALID_SORT_FIELD(4058, "Invalid requested sort field(s).", HttpStatus.BAD_REQUEST, 0),
+    ENTITY_FIELD_MISSING_IN_DATABASE(4059, "Field - %s of entity - %s missing in database.",
+            HttpStatus.SERVICE_UNAVAILABLE, 2);
 
     private final int        internalCode;
     private final String     externalMessage;
