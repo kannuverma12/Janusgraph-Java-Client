@@ -48,7 +48,12 @@ public enum DisplayHeadings {
 
     SIMILAR_COACHING_COURSES("Similar Coaching Courses"),
     SIMILAR_COACHING_INSTITUTES("Similar Coaching Institutes"),
-    ALL_YOU_NEED_TO_KNOW_ABOUT("All you need to know about %s");
+    ALL_YOU_NEED_TO_KNOW_ABOUT("All you need to know about %s"),
+
+    TARGET_EXAM_COURSE("Target Exam"),
+    ELIGIBILITY_COURSE("Eligibility"),
+    DURATION_COURSE("Duration"),
+    VALIDITY_COURSE("Validity");
 
     private String value;
 }

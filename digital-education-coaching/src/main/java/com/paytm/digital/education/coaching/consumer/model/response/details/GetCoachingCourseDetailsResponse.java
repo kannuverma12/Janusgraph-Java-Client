@@ -3,7 +3,6 @@ package com.paytm.digital.education.coaching.consumer.model.response.details;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.paytm.digital.education.coaching.consumer.model.dto.Exam;
 import com.paytm.digital.education.coaching.consumer.model.dto.MockTest;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopRankers;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseDetails;
@@ -15,6 +14,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Builder
@@ -30,9 +30,7 @@ public class GetCoachingCourseDetailsResponse {
     private long   coachingInstituteId;
     private String coachingInstituteName;
 
-    private Exam   targetExam;
-    private String eligibility;
-    private String duration;
+    private Map<String, String> courseHighlights;
 
     private TopRankers                   topRankers;
     private CoachingCourseDetails        coachingCourseDetails;

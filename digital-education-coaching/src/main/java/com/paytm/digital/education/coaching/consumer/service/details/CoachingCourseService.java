@@ -14,6 +14,7 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.Coach
 import com.paytm.digital.education.coaching.consumer.service.search.helper.SearchDataHelper;
 import com.paytm.digital.education.coaching.consumer.transformer.CoachingCourseTransformer;
 import com.paytm.digital.education.coaching.enums.CourseSessionDetails;
+import com.paytm.digital.education.coaching.utils.ComparisonUtils;
 import com.paytm.digital.education.database.embedded.Currency;
 import com.paytm.digital.education.database.entity.CoachingCenterEntity;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
@@ -34,9 +35,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -73,11 +71,15 @@ import static com.paytm.digital.education.coaching.enums.DisplayHeadings.COURSE_
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.COURSE_TYPE;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.DOUBT_SOLVING_SESSIONS;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.DOWNLOAD_SYLLABUS_AND_BROCHURE;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.DURATION_COURSE;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.ELIGIBILITY_COURSE;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.IMPORTANT_DATES;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.LANGUAGE;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.PROGRESS_ANALYSIS;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.PROVIDES_CERTIFICATE;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.RANK_ANALYSIS;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TARGET_EXAM_COURSE;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TEACHER_STUDENT_RATIO;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_RANKERS;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_COURSES;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_COURSE_ID_AND_URL_DISPLAY_KEY;
@@ -358,6 +360,16 @@ public class CoachingCourseService {
             final List<CoachingCourseFeature> coachingCourseFeatures,
             final List<String> sections) {
 
+        Map<String, String> courseHighlights = new LinkedHashMap<>();
+        String targetExam = this.fillTargetExam(examTypeAndExamListMap);
+        if (!StringUtils.isEmpty(targetExam)) {
+            courseHighlights.put(TARGET_EXAM_COURSE.getValue(), targetExam);
+        }
+        courseHighlights.put(ELIGIBILITY_COURSE.getValue(), course.getEligibility());
+        courseHighlights.put(DURATION_COURSE.getValue(),
+                course.getDuration() + " " + (null == course.getDurationType()
+                        ? EMPTY_STRING : course.getDurationType().getText()));
+
         return GetCoachingCourseDetailsResponse.builder()
                 .courseId(course.getCourseId())
                 .courseName(course.getName())
@@ -365,10 +377,6 @@ public class CoachingCourseService {
                 .courseDescription(course.getDescription())
                 .coachingInstituteId(course.getCoachingInstituteId())
                 .coachingInstituteName(institute.getBrandName())
-                .targetExam(this.fillTargetExam(examTypeAndExamListMap))
-                .eligibility(course.getEligibility())
-                .duration(course.getDuration() + " " + (null == course.getDurationType()
-                        ? EMPTY_STRING : course.getDurationType().getText()))
                 .topRankers(TopRankers.builder()
                         .header(TOP_RANKERS.getValue())
                         .results(this.coachingCourseTransformer.convertTopRankers(topRankers,
@@ -406,6 +414,7 @@ public class CoachingCourseService {
                                 course.getName()))
                         .results(this.buildHowToGetStarted(course))
                         .build())
+                .courseHighlights(courseHighlights)
                 .sections(sections)
                 .build();
     }
@@ -452,19 +461,25 @@ public class CoachingCourseService {
     private Map<String, String> getMoreInfoMap(final CoachingCourseEntity course) {
         final Map<String, String> courseMoreInfoMap = new HashMap<>();
 
-        if (Objects.nonNull(course.getCourseType())) {
-            for (final CourseSessionDetails.Session session : CourseSessionDetails
-                    .getCourseTypeAndSessionsMap().get(course.getCourseType())) {
-
-                Field field = null;
-                try {
-                    field = CoachingCourseEntity.class.getField(session.getDbFieldName());
-                    final String value = ((Integer) field.get(course)).toString();
-                    courseMoreInfoMap.put(session.getDisplayName(), value);
-                } catch (final Exception ex) {
-                    log.error("Got exception, course: {}, field: {}, exception: ",
-                            course, field, ex);
+        for (CourseSessionDetails.Session session : CourseSessionDetails.getSessionsList()) {
+            Field field = null;
+            try {
+                field = CoachingCourseEntity.class.getField(session.getDbFieldName());
+                Object value = field.get(course);
+                if (Objects.nonNull(value)) {
+                    String valueStr;
+                    if (session.getDisplayName().equals(TEACHER_STUDENT_RATIO.getValue())) {
+                        valueStr = String.valueOf(value);
+                    } else {
+                        valueStr = ((Integer) value).toString();
+                    }
+                    if (!StringUtils.isEmpty(valueStr)) {
+                        courseMoreInfoMap.put(session.getDisplayName(), valueStr);
+                    }
                 }
+            } catch (final Exception ex) {
+                log.error("Got exception, course: {}, field: {}, exception: ",
+                        course, field, ex);
             }
         }
         return courseMoreInfoMap;
@@ -495,33 +510,20 @@ public class CoachingCourseService {
     }
 
     private String calculateDiscountPercentage(final double original, final double discounted) {
-
-        final BigDecimal originalPriceBigDecimal =
-                new BigDecimal(original, new MathContext(0, RoundingMode.HALF_DOWN));
-
-        final BigDecimal discountedPriceBigDecimal =
-                new BigDecimal(discounted, new MathContext(0, RoundingMode.HALF_DOWN));
-
-        if (originalPriceBigDecimal.compareTo(discountedPriceBigDecimal) == 0) {
+        if (ComparisonUtils.thresholdBasedDoublesComparison(original, discounted)) {
             return EMPTY_STRING;
         }
 
-        final BigDecimal discountPercentage =
-                (originalPriceBigDecimal.subtract(discountedPriceBigDecimal,
-                        new MathContext(0, RoundingMode.HALF_DOWN)))
-                        .divide(originalPriceBigDecimal, new MathContext(0, RoundingMode.HALF_DOWN))
-                        .multiply(new BigDecimal(100d, new MathContext(0, RoundingMode.HALF_DOWN)));
-
-        final int discount = discountPercentage.intValue();
+        int discount = (int) Math.round(((original - discounted) * 100) / original);
         return discount + "%";
     }
 
-    private Exam fillTargetExam(final Map<String, List<Exam>> examTypeAndExamListMap) {
+    private String fillTargetExam(final Map<String, List<Exam>> examTypeAndExamListMap) {
         if (CollectionUtils.isEmpty(examTypeAndExamListMap)
                 || null == examTypeAndExamListMap.get(TARGET_EXAM)
                 || CollectionUtils.isEmpty(examTypeAndExamListMap.get(TARGET_EXAM))) {
             return null;
         }
-        return examTypeAndExamListMap.get(TARGET_EXAM).get(0);
+        return examTypeAndExamListMap.get(TARGET_EXAM).get(0).getExamShortName();
     }
 }

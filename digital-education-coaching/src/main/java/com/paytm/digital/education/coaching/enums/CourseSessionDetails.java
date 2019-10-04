@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.ASSIGNMENTS_COUNT;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.BOOKS_COUNT;
@@ -29,6 +30,8 @@ public class CourseSessionDetails {
 
     private static final Map<CourseType, List<Session>> COURSE_TYPE_AND_SESSIONS_MAP =
             new HashMap<>();
+
+    private static List<Session> SESSIONS_LIST;
 
     static {
         COURSE_TYPE_AND_SESSIONS_MAP.put(CourseType.CLASSROOM_COURSE, new ArrayList<Session>() {
@@ -76,6 +79,14 @@ public class CourseSessionDetails {
                         "distanceLearningSolvedPaperCount"));
             }
         });
+
+        SESSIONS_LIST = COURSE_TYPE_AND_SESSIONS_MAP.values().stream()
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+    }
+
+    public static List<Session> getSessionsList() {
+        return SESSIONS_LIST;
     }
 
     public static Map<CourseType, List<Session>> getCourseTypeAndSessionsMap() {
