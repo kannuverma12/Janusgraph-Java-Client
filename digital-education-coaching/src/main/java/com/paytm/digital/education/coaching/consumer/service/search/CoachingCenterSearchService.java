@@ -14,6 +14,7 @@ import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.elasticsearch.models.SortField;
 import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.enums.es.DataSortOrder;
 import com.paytm.digital.education.enums.es.FilterQueryType;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +45,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.I
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.IS_ENABLED;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_CENTER_NAME;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_CENTER_NAME_BRAND_BOOST;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.GLOBAL_PRIORITY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.SEARCH_ANALYZER_COACHING_CENTER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.SEARCH_INDEX_COACHING_CENTER;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_CENTER;
@@ -114,7 +117,9 @@ public class CoachingCenterSearchService extends AbstractSearchService {
                 && searchRequest.getSortOrder().containsKey(COACHING_CENTER_LOCATION)) {
             populateNearbyFilterFields(searchRequest, elasticRequest);
         } else {
-            searchRequest.setSortOrder(null);
+            LinkedHashMap<String, DataSortOrder> sortKeysInOrder = new LinkedHashMap<>();
+            sortKeysInOrder.put(GLOBAL_PRIORITY, DataSortOrder.ASC);
+            searchRequest.setSortOrder(sortKeysInOrder);
         }
 
         populateSortFields(searchRequest, elasticRequest, CoachingCenterSearch.class);

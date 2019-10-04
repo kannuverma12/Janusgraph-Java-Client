@@ -7,6 +7,7 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.Searc
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResult;
 import com.paytm.digital.education.coaching.consumer.service.search.helper.CoachingSearchAggregateHelper;
+import com.paytm.digital.education.coaching.enums.CoachingCourseType;
 import com.paytm.digital.education.coaching.es.model.CoachingCourseSearch;
 import com.paytm.digital.education.coaching.es.model.CoachingInstituteSearch;
 import com.paytm.digital.education.coaching.utils.ImageUtils;
@@ -125,16 +126,11 @@ public class CoachingCourseSearchService extends AbstractSearchService {
 
         populateFilterFields(searchRequest, elasticRequest, CoachingCourseSearch.class,
                 filterQueryTypeMap);
-        if (StringUtils.isBlank(searchRequest.getTerm())) {
-            SearchUtils.setSortKeysInOrder(searchRequest);
-        } else {
-            searchRequest.setSortOrder(null);
-        }
+
         AggregateField[] aggregateFields = searchRequest.isFetchSearchResultsPerFilter()
                 ? coachingSearchAggregateHelper
                 .getTopHitsAggregateData(searchRequest.getDataPerFilter())
                 : coachingSearchAggregateHelper.getCoachingCourseAggregateData();
-
         if (searchRequest.getFetchFilter()) {
             populateAggregateFields(searchRequest, elasticRequest,
                     aggregateFields, CoachingInstituteSearch.class);
@@ -166,18 +162,22 @@ public class CoachingCourseSearchService extends AbstractSearchService {
                         .courseName(coachingCourseSearch.getCourseName())
                         .coachingInstituteId(coachingCourseSearch.getCoachingInstituteId())
                         .coachingInstituteName(coachingCourseSearch.getCoachingInstituteName())
-                        .price(coachingCourseSearch.getPrice())
-                        .currency(coachingCourseSearch.getCurrency())
+                        .discountedPrice(coachingCourseSearch.getDiscountedPrice())
+                        .originalPrice(coachingCourseSearch.getOriginalPrice())
                         .eligibility(coachingCourseSearch.getEligibility())
                         .courseDurationDays(coachingCourseSearch.getCourseDurationDays())
                         .urlDisplayKey(CommonUtil
                                 .convertNameToUrlDisplayName(coachingCourseSearch.getCourseName()))
-                        .logo(ImageUtils.getImageWithAbsolutePath(coachingCourseSearch.getLogo(),
-                                COACHING_COURSE_PLACEHOLDER, COACHING_COURSES))
+                        .logo(ImageUtils.getImageWithAbsolutePath(CoachingCourseType
+                                        .getStaticDataByCourseType(coachingCourseSearch.getCourseType())
+                                        .getImageUrl(),
+                                        COACHING_COURSE_PLACEHOLDER, COACHING_COURSES))
+                        .targetExam(!CollectionUtils.isEmpty(coachingCourseSearch.getExamNames())
+                                ? coachingCourseSearch.getExamNames().get(0) : null)
                         .build();
 
-                if (Objects.nonNull(coachingCourseSearch.getCourseLevel())) {
-                    toAdd.setCourseLevel(coachingCourseSearch.getCourseLevel().getDisplayName());
+                if (Objects.nonNull(coachingCourseSearch.getLevel())) {
+                    toAdd.setCourseLevel(coachingCourseSearch.getLevel().getDisplayName());
                 }
 
                 if (Objects.nonNull(coachingCourseSearch.getCourseType())) {
@@ -224,16 +224,20 @@ public class CoachingCourseSearchService extends AbstractSearchService {
                 .courseName(coachingCourseSearch.getCourseName())
                 .coachingInstituteId(coachingCourseSearch.getCoachingInstituteId())
                 .coachingInstituteName(coachingCourseSearch.getCoachingInstituteName())
-                .price(coachingCourseSearch.getPrice())
-                .currency(coachingCourseSearch.getCurrency())
+                .discountedPrice(coachingCourseSearch.getDiscountedPrice())
+                .originalPrice(coachingCourseSearch.getOriginalPrice())
                 .urlDisplayKey(CommonUtil
                         .convertNameToUrlDisplayName(coachingCourseSearch.getCourseName()))
-                .logo(ImageUtils.getImageWithAbsolutePath(coachingCourseSearch.getLogo(),
+                .logo(ImageUtils.getImageWithAbsolutePath(CoachingCourseType
+                                .getStaticDataByCourseType(coachingCourseSearch.getCourseType())
+                                .getImageUrl(),
                         COACHING_COURSE_PLACEHOLDER, COACHING_COURSES))
+                .targetExam(!CollectionUtils.isEmpty(coachingCourseSearch.getExamNames())
+                        ? coachingCourseSearch.getExamNames().get(0) : null)
                 .build();
 
-        if (Objects.nonNull(coachingCourseSearch.getCourseLevel())) {
-            toAdd.setCourseLevel(coachingCourseSearch.getCourseLevel().getDisplayName());
+        if (Objects.nonNull(coachingCourseSearch.getLevel())) {
+            toAdd.setCourseLevel(coachingCourseSearch.getLevel().getDisplayName());
         }
 
         if (Objects.nonNull(coachingCourseSearch.getCourseType())) {

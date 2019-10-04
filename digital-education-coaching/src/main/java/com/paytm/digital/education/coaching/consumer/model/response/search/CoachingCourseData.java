@@ -20,10 +20,11 @@ public class CoachingCourseData extends SearchBaseData {
     private String   logo;
     private String   courseType;
     private Double   courseDurationDays;
-    private Double   price;
-    private Currency currency;
+    private Double   originalPrice;
+    private Double   discountedPrice;
     private String   courseLevel;
     private String   eligibility;
     private String   urlDisplayKey;
+    private String   targetExam;
 
 }

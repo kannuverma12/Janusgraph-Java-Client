@@ -25,4 +25,5 @@ public class GetStreamDetailsResponse {
     private TopCoachingCourses          topCoachingCourses;
     private List<String>                sections;
     private ImportantDatesBannerDetails importantDatesBannerDetails;
+    private List<String>                filters;
 }

@@ -34,12 +34,12 @@ public class GetCoachingInstituteDetailsResponse {
     private TopStreams               streams;
     private TopExamsInstitute        exams;
     private TopRankers               topRankers;
-    private List<Faq>                faqs;
     private CoachingCourseTypeInfo   coachingCourseTypes;
     private TopCoachingCourses       topCoachingCourses;
     private MockTest                 mockTest;
     private InstituteMoreInfo        instituteMoreInfo;
     private List<String>             sections;
+    private List<String>             filters;
     private String                   examName;
     private String                   streamName;
 }

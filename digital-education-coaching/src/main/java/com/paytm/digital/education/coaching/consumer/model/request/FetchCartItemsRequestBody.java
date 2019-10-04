@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -20,14 +21,16 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class FetchCartItemsRequestBody {
 
-    @NotNull
-    private Long merchantId;
+    @NotEmpty
+    private String transactionId;
+
+    @NotEmpty
+    private String merchantData;
 
     @NotNull
     private Long userId;
 
-    @Valid
     @NotNull
-    List<MerchantProduct> merchantProductList;
+    private Long merchantId;
 
 }

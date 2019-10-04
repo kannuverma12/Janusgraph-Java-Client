@@ -281,7 +281,6 @@ public class CoachingConstants {
         public static final String EDUCATION_VERTICAL_ID = "0";
         public static final String EDUCATION_CATEGORY_ID = "165018";
         public static final String CACHE_KEY_DELIMITER   = "_";
-        public static final int    DEFAULT_QUANTITY      = 1;
         public static final int    CACHE_TTL             = 1800;
     }
 }

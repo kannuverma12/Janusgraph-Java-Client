@@ -30,4 +30,5 @@ public class GetExamDetailsResponse {
     private ExamAdditionalInfo          additionalInfo;
     private List<String>                sections;
     private ImportantDatesBannerDetails importantDatesBannerDetails;
+    private List<String>                filters;
 }

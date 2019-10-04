@@ -15,6 +15,7 @@ import com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute
 import com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute.CoachingCourseTypeInfo;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute.InstituteCenterSection;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute.InstituteMoreInfo;
+import com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute.InstituteMoreInfoData;
 import com.paytm.digital.education.coaching.consumer.model.response.details.GetCoachingInstituteDetailsResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingCourseData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingInstituteData;
@@ -53,8 +54,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.mongodb.QueryOperators.AND;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_INSTITUTE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_INSTITUTE_FIND_CENTERS_LOGO;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_ID;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_TYPE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_COMPONENT;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_KEY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_NAMESPACE;
@@ -80,6 +83,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.T
 import static com.paytm.digital.education.coaching.consumer.service.details.CoachingCourseService.CENTER_FIELDS;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.BROWSE_BY_COURSE_TYPE;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.DOWNLOAD_BROCHURE;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.FAQ;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.FIND_CENTERS;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.FIND_CENTERS_DESCRIPTION;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.MORE_FROM;
@@ -110,6 +114,9 @@ public class CoachingInstituteService {
 
     private static final List<String> STREAM_FIELDS =
             Arrays.asList("stream_id", "name", "logo", "is_enabled");
+
+    private static final List<String> FILTERS_APPLICABLE =
+            Arrays.asList(COACHING_COURSE_INSTITUTE, COURSE_TYPE);
 
     private final CommonMongoRepository commonMongoRepository;
     private final SearchDataHelper      searchDataHelper;
@@ -160,14 +167,23 @@ public class CoachingInstituteService {
                 .topCoachingCourses(this.getTopCoachingCoursesForInstitute(coachingInstituteEntity,
                         streamId, examId))
                 .mockTest(getMockTestInfo(coachingInstituteEntity.getBrandName()))
-                .faqs(this.fillFaqs(coachingInstituteEntity.getFaqs()))
-                .instituteMoreInfo(InstituteMoreInfo.builder()
-                        .header(String.format(MORE_FROM.getValue(),
-                                coachingInstituteEntity.getBrandName()))
-                        .build())
+                .instituteMoreInfo(this.getInstituteMoreInfo(coachingInstituteEntity))
                 .sections(sections)
+                .filters(FILTERS_APPLICABLE)
                 .examName(this.getExamName(examId))
                 .streamName(this.getStreamName(streamId))
+                .build();
+    }
+
+    private InstituteMoreInfo getInstituteMoreInfo(CoachingInstituteEntity coachingInstituteEntity) {
+        List<InstituteMoreInfoData> instituteMoreInfoDataList = new ArrayList<>();
+        InstituteMoreInfoData instituteMoreInfoData = InstituteMoreInfoData.builder().header(FAQ.getValue()).results(
+                new ArrayList<>(fillFaqs(coachingInstituteEntity.getFaqs()))).build();
+        instituteMoreInfoDataList.add(instituteMoreInfoData);
+        return InstituteMoreInfo.builder()
+                .header(String.format(MORE_FROM.getValue(),
+                        coachingInstituteEntity.getBrandName()))
+                .results(instituteMoreInfoDataList)
                 .build();
     }
 

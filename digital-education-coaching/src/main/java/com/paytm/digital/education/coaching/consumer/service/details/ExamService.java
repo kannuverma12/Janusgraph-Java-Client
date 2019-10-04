@@ -22,12 +22,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_EXAMS;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_INSTITUTE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_LEVEL;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_TYPE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_COMPONENT;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_KEY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_NAMESPACE;
@@ -58,6 +63,9 @@ public class ExamService {
     private final CoachingInstituteService coachingInstituteService;
     private final SearchDataHelper         searchDataHelper;
     private final PropertyReader           propertyReader;
+
+    private static final List<String> FILTERS_APPLICABLE =
+            Collections.singletonList(COACHING_COURSE_EXAMS);
 
     public GetExamDetailsResponse getExamDetails(final Long examId, final String urlDisplayKey) {
         Exam exam = this.commonMongoRepository.getEntityByFields(EXAM_ID, examId, Exam.class,
@@ -90,6 +98,7 @@ public class ExamService {
                 .importantDates(CommonServiceUtils.buildExamImportantDates(exam))
                 .sections(sections)
                 .importantDatesBannerDetails(this.getImportantDatesBannerDetails())
+                .filters(FILTERS_APPLICABLE)
                 .build();
     }
 

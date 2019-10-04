@@ -28,6 +28,9 @@ public class MerchantProduct {
     @NotNull
     private Float price;
 
+    @NotNull
+    private Integer quantity;
+
     @Valid
     private MerchantProductTaxData merchantProductTaxData;
 

@@ -20,10 +20,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_EXAMS;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_STREAMS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_COMPONENT;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_KEY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_NAMESPACE;
@@ -50,6 +53,9 @@ public class CoachingStreamService {
     private final CoachingInstituteService coachingInstituteService;
     private final ExamService              examService;
     private final PropertyReader           propertyReader;
+
+    private static final List<String> FILTERS_APPLICABLE =
+            Collections.singletonList(COACHING_COURSE_STREAMS);
 
     public GetStreamDetailsResponse getStreamDetails(final long streamId,
             final String urlDisplayKey) {
@@ -80,6 +86,7 @@ public class CoachingStreamService {
                 .topCoachingCourses(this.getTopCoachingCoursesForStream(streamEntity))
                 .sections(sections)
                 .importantDatesBannerDetails(this.getImportantDatesBannerDetails())
+                .filters(FILTERS_APPLICABLE)
                 .build();
     }
 

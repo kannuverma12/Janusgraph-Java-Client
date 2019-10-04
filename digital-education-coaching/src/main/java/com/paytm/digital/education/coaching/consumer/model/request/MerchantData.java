@@ -1,23 +1,22 @@
-package com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute;
+package com.paytm.digital.education.coaching.consumer.model.request;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.Valid;
 import java.util.List;
 
-@Getter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class InstituteMoreInfo {
+public class MerchantData {
 
-    private String                      header;
-    private List<InstituteMoreInfoData> results;
+    @Valid
+    List<MerchantProduct> productList;
 }

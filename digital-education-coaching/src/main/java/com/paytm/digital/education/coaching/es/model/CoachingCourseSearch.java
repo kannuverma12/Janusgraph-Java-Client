@@ -22,12 +22,12 @@ public class CoachingCourseSearch {
     private String                         courseName;
     private Long                           coachingInstituteId;
     private String                         coachingInstituteName;
-    private String                         logo;
     private Integer                        globalPriority;
     private CourseType                     courseType;
-    private Double                         price;
+    private Double                         originalPrice;
+    private Double                         discountedPrice;
     private Currency                       currency;
-    private CourseLevel                    courseLevel;
+    private CourseLevel                    level;
     private Map<String, Map<String, Long>> streams;
     private List<Long>                     streamIds;
     private List<String>                   streamNames;
