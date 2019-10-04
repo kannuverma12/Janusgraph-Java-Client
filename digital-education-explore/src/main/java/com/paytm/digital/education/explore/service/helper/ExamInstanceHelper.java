@@ -276,17 +276,17 @@ public class ExamInstanceHelper {
         Date presentDate = new Date();
 
         Optional<Instance> nearestFutureInstance = getInstanceAccordingToFilterAndComparator(
-                Optional.ofNullable(instances).orElse(emptyList()),
-                holder -> CommonUtils.isDateEqualsOrAfter(holder.getDate(), presentDate),
-                Comparator.comparing(EventInstanceDateHolder::getDate));
+            Optional.ofNullable(instances).orElse(emptyList()),
+            holder -> CommonUtils.isDateEqualsOrAfter(holder.getDate(), presentDate),
+            Comparator.comparing(EventInstanceDateHolder::getDate));
 
         if (nearestFutureInstance.isPresent()) {
             return nearestFutureInstance;
         } else {
             Optional<Instance> nearestPastInstance = getInstanceAccordingToFilterAndComparator(
-                    instances,
-                    x -> true,
-                    Comparator.comparing(EventInstanceDateHolder::getDate).reversed());
+                instances,
+                x -> true,
+                Comparator.comparing(EventInstanceDateHolder::getDate).reversed());
             return nearestPastInstance;
         }
     }
