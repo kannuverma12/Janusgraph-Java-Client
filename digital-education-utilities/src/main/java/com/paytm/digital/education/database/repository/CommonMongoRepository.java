@@ -96,6 +96,15 @@ public class CommonMongoRepository {
     }
 
     @Cacheable(value = "fields", unless = "#result == null")
+    public <T> List<T> findAllAndSortBy(Class<T> instance, List<String> fields,
+            Map<Sort.Direction, String> sortMap) {
+        Query mongoQuery = new Query();
+        Query mongoQueryWithSortParams = this.addSortParamsToQuery(mongoQuery, sortMap);
+        fields.forEach(field -> mongoQueryWithSortParams.fields().include(field));
+        return executeMongoQuery(mongoQueryWithSortParams, instance);
+    }
+
+    @Cacheable(value = "fields", unless = "#result == null")
     public <T> List<T> getEntityFieldsForCollection(Class<T> instance, List<String> fields) {
         Query mongoQuery = new Query();
         fields.forEach(field -> mongoQuery.fields().include(field));

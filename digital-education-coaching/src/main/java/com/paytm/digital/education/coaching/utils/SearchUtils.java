@@ -39,9 +39,6 @@ import static com.paytm.digital.education.enums.es.DataSortOrder.ASC;
 public class SearchUtils {
 
     public void setSortKeysInOrder(SearchRequest searchRequest) {
-        if (!CollectionUtils.isEmpty(searchRequest.getSortOrder())) {
-            return;
-        }
         LinkedHashMap<String, DataSortOrder> sortKeysInOrder = new LinkedHashMap<>();
         if (CollectionUtils.isEmpty(searchRequest.getSortOrder()) || !searchRequest.getSortOrder()
                 .containsKey(IGNORE_ENTITY_POSITION)) {

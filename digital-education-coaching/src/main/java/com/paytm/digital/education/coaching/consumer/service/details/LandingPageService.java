@@ -1,6 +1,7 @@
 package com.paytm.digital.education.coaching.consumer.service.details;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.paytm.digital.education.coaching.consumer.model.dto.LandingPageStreamDto;
 import com.paytm.digital.education.coaching.consumer.model.request.SearchRequest;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingCourseData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingCoursesTopHitsData;
@@ -11,18 +12,24 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.Searc
 import com.paytm.digital.education.coaching.consumer.service.search.CoachingCourseSearchService;
 import com.paytm.digital.education.coaching.consumer.service.search.ExamSearchService;
 import com.paytm.digital.education.coaching.consumer.service.search.helper.SearchDataHelper;
+import com.paytm.digital.education.coaching.consumer.transformer.LandingPageStreamTransformer;
+import com.paytm.digital.education.coaching.producer.model.dto.StreamDTO;
 import com.paytm.digital.education.database.entity.Section;
+import com.paytm.digital.education.database.entity.StreamEntity;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.enums.es.DataSortOrder;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -30,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.LandingPage.FULL_NAME;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.LandingPage.ID;
@@ -51,25 +59,51 @@ import static com.paytm.digital.education.enums.es.DataSortOrder.ASC;
 @Slf4j
 public class LandingPageService {
 
-    private SearchDataHelper            searchDataHelper;
-    private ExamSearchService           examSearchService;
-    private CoachingCourseSearchService courseSearchService;
+    private SearchDataHelper             searchDataHelper;
+    private ExamSearchService            examSearchService;
+    private CoachingCourseSearchService  courseSearchService;
+    private CommonMongoRepository        commonMongoRepository;
+    private LandingPageStreamTransformer landingPageStreamTransformer;
 
     public void addDynamicData(List<Section> sections) {
+        Map<Sort.Direction, String> sortMap = new HashMap<>();
+        sortMap.put(Sort.Direction.ASC,"priority");
+        List<StreamEntity> streamEntities =
+                commonMongoRepository.findAllAndSortBy(StreamEntity.class,
+                        Collections.EMPTY_LIST, sortMap);
+        List<String> streamIds =
+                streamEntities.stream().map(e -> String.valueOf(e.getStreamId()))
+                        .collect(Collectors.toList());
         for (Section section : sections) {
             switch (section.getType()) {
+                case COACHING_STREAMS:
+                    addStreams(section,streamEntities);
+                    break;
                 case TOP_COACHING_INSTITUTES:
                     addTopCoachingInstitutes(section);
                     break;
                 case COACHING_TOP_EXAMS:
-                    addTopExams(section, sections);
+                    addTopExams(section, streamIds);
                     break;
                 case COACHING_TOP_COURSES:
-                    addTopCourses(section, sections);
+                    addTopCourses(section, streamIds);
                     break;
                 default:
             }
         }
+    }
+
+    private void addStreams(Section section,
+            List<StreamEntity> streamEntities) {
+        List<Map<String, Object>> itemList = new ArrayList<>();
+        List<LandingPageStreamDto> landingPageStreamDtoList = landingPageStreamTransformer
+                .getLandingPageStreamDtoFromStreamEntity(streamEntities);
+        if (!CollectionUtils.isEmpty(landingPageStreamDtoList)) {
+            for (LandingPageStreamDto landingPageStreamDto:landingPageStreamDtoList) {
+                itemList.add(getItemFromStreamDto(landingPageStreamDto));
+            }
+        }
+        section.setItems(itemList);
     }
 
     private void addTopCoachingInstitutes(Section section) {
@@ -88,8 +122,8 @@ public class LandingPageService {
         section.setItems(itemList);
     }
 
-    private void addTopExams(Section section, List<Section> sections) {
-        List<ExamData> exams = getTopExamsPerStream(sections);
+    private void addTopExams(Section section, List<String> streamsInOrder) {
+        List<ExamData> exams = getTopExamsPerStream(streamsInOrder);
         List<Map<String, Object>> itemList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(exams)) {
             for (ExamData exam : exams) {
@@ -101,7 +135,7 @@ public class LandingPageService {
         }
     }
 
-    private List<ExamData> getTopExamsPerStream(List<Section> sections) {
+    private List<ExamData> getTopExamsPerStream(List<String> streamsInOrder) {
         LinkedHashMap<String, DataSortOrder> sortOrderMap = new LinkedHashMap<>();
         sortOrderMap.put(IGNORE_ENTITY_POSITION, ASC);
         SearchRequest searchRequest = SearchRequest.builder()
@@ -115,7 +149,7 @@ public class LandingPageService {
                 .build();
         try {
             SearchResponse searchResponse = examSearchService.search(searchRequest);
-            return fetchTopExamsPerStreamFromSearchResponse(searchResponse, sections);
+            return fetchTopExamsPerStreamFromSearchResponse(searchResponse, streamsInOrder);
         } catch (IOException e) {
             log.error("IO Exception for fetching top exams per stream "
                     + "", e);
@@ -126,8 +160,8 @@ public class LandingPageService {
         return null;
     }
 
-    private void addTopCourses(Section section, List<Section> sections) {
-        List<CoachingCourseData> courses = getTopCoursesPerStream(sections);
+    private void addTopCourses(Section section, List<String> streamsInOrder) {
+        List<CoachingCourseData> courses = getTopCoursesPerStream(streamsInOrder);
         List<Map<String, Object>> itemList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(courses)) {
             for (CoachingCourseData course : courses) {
@@ -141,7 +175,7 @@ public class LandingPageService {
         }
     }
 
-    private List<CoachingCourseData> getTopCoursesPerStream(List<Section> sections) {
+    private List<CoachingCourseData> getTopCoursesPerStream(List<String> streamsInOrder) {
         LinkedHashMap<String, DataSortOrder> sortOrderMap = new LinkedHashMap<>();
         sortOrderMap.put(IGNORE_ENTITY_POSITION, ASC);
         SearchRequest searchRequest = SearchRequest.builder()
@@ -155,7 +189,7 @@ public class LandingPageService {
                 .build();
         try {
             SearchResponse searchResponse = courseSearchService.search(searchRequest);
-            return fetchTopCoursesPerStreamFromSearchResponse(searchResponse, sections);
+            return fetchTopCoursesPerStreamFromSearchResponse(searchResponse, streamsInOrder);
         } catch (Exception e) {
             log.error("Exception for fetching top exams per stream ", e);
         }
@@ -163,25 +197,11 @@ public class LandingPageService {
         return null;
     }
 
-    private List<String> getStreamsInOrder(List<Section> sections) {
-        List<String> streams = new ArrayList<>();
-        for (Section section : sections) {
-            if (COACHING_STREAMS.equals(section.getType())) {
-                for (Map<String, Object> item : section.getItems()) {
-                    streams.add(item.get(ID).toString());
-                }
-                break;
-            }
-        }
-        return streams;
-    }
-
     private List<ExamData> fetchTopExamsPerStreamFromSearchResponse(SearchResponse searchResponse,
-            List<Section> sections) {
+            List<String> streamsInOrder) {
         Map<String, List<ExamData>> examsPerStream =
                 ((ExamsTopHitsData) searchResponse.getResults().getValues().get(0))
                         .getExamsPerStream();
-        List<String> streamsInOrder = getStreamsInOrder(sections);
         List<ExamData> exams = new ArrayList<>();
         Set<Integer> examIds = new HashSet<>();
         for (String stream : streamsInOrder) {
@@ -200,11 +220,10 @@ public class LandingPageService {
 
     private List<CoachingCourseData> fetchTopCoursesPerStreamFromSearchResponse(
             SearchResponse searchResponse,
-            List<Section> sections) {
+            List<String> streamsInOrder) {
         Map<String, List<CoachingCourseData>> coursesPerStream =
                 ((CoachingCoursesTopHitsData) searchResponse.getResults().getValues().get(0))
                         .getCoursesPerStream();
-        List<String> streamsInOrder = getStreamsInOrder(sections);
         List<CoachingCourseData> courses = new ArrayList<>();
         Set<Long> courseIds = new HashSet<>();
         for (String stream : streamsInOrder) {
@@ -235,4 +254,15 @@ public class LandingPageService {
         return item;
     }
 
+    private Map<String, Object> getItemFromStreamDto(LandingPageStreamDto landingPageStreamDto) {
+        Map<String, Object> item = new HashMap<>();
+        item.put(NAME, landingPageStreamDto.getKey());
+        item.put(ID, landingPageStreamDto.getEntityId());
+        item.put(URL_DISPLAY_KEY, landingPageStreamDto.getUrlDisplayKey());
+        item.put(LOGO, landingPageStreamDto.getLogo());
+        if (StringUtils.isNotBlank(landingPageStreamDto.getFullName())) {
+            item.put(FULL_NAME, landingPageStreamDto.getFullName());
+        }
+        return item;
+    }
 }
