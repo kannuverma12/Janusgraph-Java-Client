@@ -40,4 +40,6 @@ public class GetCoachingInstituteDetailsResponse {
     private MockTest                 mockTest;
     private InstituteMoreInfo        instituteMoreInfo;
     private List<String>             sections;
+    private String                   examName;
+    private String                   streamName;
 }

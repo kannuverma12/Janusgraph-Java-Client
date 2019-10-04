@@ -109,7 +109,7 @@ public class CoachingInstituteService {
                     "stream_ids");
 
     private static final List<String> STREAM_FIELDS =
-            Arrays.asList("stream_id", "name", "logo");
+            Arrays.asList("stream_id", "name", "logo", "is_enabled");
 
     private final CommonMongoRepository commonMongoRepository;
     private final SearchDataHelper      searchDataHelper;
@@ -166,7 +166,41 @@ public class CoachingInstituteService {
                                 coachingInstituteEntity.getBrandName()))
                         .build())
                 .sections(sections)
+                .examName(this.getExamName(examId))
+                .streamName(this.getStreamName(streamId))
                 .build();
+    }
+
+    private String getStreamName(Long streamId) {
+        if (Objects.isNull(streamId)) {
+            return null;
+        }
+
+        com.paytm.digital.education.database.entity.StreamEntity stream =
+                commonMongoRepository.getEntityByFields(STREAM_ID, streamId,
+                        com.paytm.digital.education.database.entity.StreamEntity.class,
+                        STREAM_FIELDS);
+        if (Objects.isNull(stream) || !stream.getIsEnabled()) {
+            return null;
+        }
+        return stream.getName();
+    }
+
+    private String getExamName(Long examId) {
+        if (Objects.isNull(examId)) {
+            return null;
+        }
+
+        com.paytm.digital.education.database.entity.Exam exam = this.getExamEntity(examId);
+        if (Objects.isNull(exam) || !exam.getIsEnabled()) {
+            return null;
+        }
+        return exam.getExamShortName();
+    }
+
+    private com.paytm.digital.education.database.entity.Exam getExamEntity(Long examId) {
+        return commonMongoRepository.getEntityByFields(EXAM_ID, examId,
+                com.paytm.digital.education.database.entity.Exam.class, EXAM_FIELDS);
     }
 
     private Map<Long, CoachingCenterEntity> fetchCoachingCentersByInstituteId(
@@ -336,9 +370,8 @@ public class CoachingInstituteService {
                 sortMap, TOP_RANKER_LIMIT);
 
         if (CollectionUtils.isEmpty(topRankerEntityList) && searchRequest.containsKey(EXAM_ID)) {
-            com.paytm.digital.education.database.entity.Exam examEntity = commonMongoRepository
-                    .getEntityByFields(EXAM_ID, examId,
-                            com.paytm.digital.education.database.entity.Exam.class, EXAM_FIELDS);
+            com.paytm.digital.education.database.entity.Exam examEntity =
+                    this.getExamEntity(examId);
 
             if (Objects.nonNull(examEntity) && !CollectionUtils
                     .isEmpty(examEntity.getStreamIds()) && examEntity.getIsEnabled()) {
