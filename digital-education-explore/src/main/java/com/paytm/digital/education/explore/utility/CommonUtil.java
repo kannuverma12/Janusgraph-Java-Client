@@ -22,7 +22,6 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.AUT
 import static com.paytm.digital.education.explore.constants.ExploreConstants.BANNER_MID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.BROWSE_BY_EXAM_LEVEL;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CAROUSEL;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.CAROUSEL;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CONSTITUENT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CONSTITUENT_OF;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CTA;
@@ -35,6 +34,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.LOC
 import static com.paytm.digital.education.explore.constants.ExploreConstants.POPULAR_EXAMS_APP;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKING_LOGO;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SCHOOLS_IN_FOCUS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SECTION;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STANDALONE_INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAMS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP_EXAMS_APP;
@@ -96,8 +96,11 @@ public class CommonUtil {
             case SCHOOLS_IN_FOCUS:
                 urlBuilder.append(ConfigProperties.getSchoolLogoPrefix());
                 break;
-            case CTA :
+            case CTA:
                 urlBuilder.append(ConfigProperties.getCtaLogoPrefix());
+                break;
+            case SECTION:
+                urlBuilder.append(ConfigProperties.getExamSectionIconPrefix());
                 break;
             default:
                 urlBuilder.append(ConfigProperties.getLogoImagePrefix());

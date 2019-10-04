@@ -134,6 +134,9 @@ public class ExamDetail implements CTAInfoHolder {
     @JsonProperty("application_form")
     private String applicationForm;
 
+    @JsonProperty("sections_list")
+    private List<SectionDataHolder> sectionDataHolders;
+
     @JsonIgnore
     private Long collegePredictorPid;
 
