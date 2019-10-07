@@ -2,7 +2,7 @@ package com.paytm.digital.education.explore.service;
 
 import com.paytm.digital.education.enums.Gender;
 
-import com.paytm.digital.education.explore.response.dto.detail.ExamAndCutOff;
+import com.paytm.digital.education.dto.detail.ExamAndCutOff;
 import com.paytm.digital.education.explore.response.dto.search.CutoffSearchResponse;
 
 import java.util.List;

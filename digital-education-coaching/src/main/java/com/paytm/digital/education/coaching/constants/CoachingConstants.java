@@ -13,6 +13,7 @@ public class CoachingConstants {
     public static final String INSTITUTE                       = "institute";
     public static final String STREAM                          = "stream";
     public static final String EXAM                            = "exam";
+    public static final String EXAM_ADDITIONAL_INFO            = "exam_additional_info";
     public static final String COACHING                        = "coaching";
     public static final String COURSE                          = "course";
     public static final String EXAM_ID                         = "exam_id";
@@ -53,6 +54,7 @@ public class CoachingConstants {
     public static final String ACCESS_KEY                 = "AccessKey";
     public static final String EXAM_FILTER_NAMESPACE      = "exam_filter";
     public static final String EXAM_SEARCH_NAMESPACE      = "exam_search";
+    public static final String EXAM_DETAIL_NAMESPACE      = "exam_detail";
     public static final String INSTITUTE_FILTER_NAMESPACE = "institute_filter";
     public static final String INSTITUTE_SEARCH_NAMESPACE = "institute_search";
     public static final String CENTER_FILTER_NAMESPACE    = "center_filter";
@@ -78,7 +80,9 @@ public class CoachingConstants {
     public static final String       DETAILS_PROPERTY_NAMESPACE                   = "section_order";
     public static final List<String> EXAM_DETAILS_FIELDS                          = new ArrayList<>(
             Arrays.asList("exam_id", "exam_full_name", "exam_short_name", "about_exam",
-                    "instances", "logo", "stream_ids"));
+                    "instances", "logo", "stream_ids", "subexams", "cutoff",
+                    "documents_counselling", "eligibility", "result", "admit_card", "exam_pattern",
+                    "application_form"));
     public static final List<String> STREAM_DETAILS_FIELDS                        = new ArrayList<>(
             Arrays.asList("stream_id", "name", "is_enabled"));
     public static final String       NON_TENTATIVE                                = "non_tentative";
@@ -103,6 +107,9 @@ public class CoachingConstants {
     public static final String       COACHING_INSTITUTE_FIND_CENTERS_LOGO         =
             "full_image_link";
     public static final String       EMPTY_STRING                                 = "";
+    public static final String       SECTION                                      = "section";
+    public static final String       SECTION_PLACEHOLDER                          =
+            "/section_placeholder.svg";
 
     static {
         EXAM_ADDITIONAL_INFO_PARAMS.add(

@@ -3,6 +3,7 @@ package com.paytm.digital.education.explore.service.helper;
 import com.paytm.digital.education.database.entity.Event;
 import com.paytm.digital.education.database.entity.Instance;
 import com.paytm.digital.education.property.reader.PropertyReader;
+import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
 import org.joda.time.LocalDateTime;
 import org.junit.Assert;
 import org.junit.Test;

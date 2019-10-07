@@ -8,12 +8,15 @@ import com.paytm.digital.education.coaching.consumer.model.dto.ExamImportantDate
 import com.paytm.digital.education.coaching.consumer.model.dto.ImportantDatesBannerDetails;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingCourses;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingInstitutes;
+import com.paytm.digital.education.dto.detail.Event;
+import com.paytm.digital.education.dto.detail.Syllabus;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 
 import java.util.List;
 
-@Getter
+@Data
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
@@ -25,10 +28,20 @@ public class GetExamDetailsResponse {
     private String                      urlDisplayKey;
     private String                      examDescription;
     private TopCoachingInstitutes       topCoachingInstitutes;
-    private List<ExamImportantDate>     importantDates;
     private TopCoachingCourses          topCoachingCourses;
     private ExamAdditionalInfo          additionalInfo;
     private List<String>                sections;
     private ImportantDatesBannerDetails importantDatesBannerDetails;
+    private List<SectionDataHolder>     sectionDataHolders;
+    private List<Syllabus>              syllabus;
+    private List<Event>                 importantDates;
+    private String                      eligibility;
+    private String                      examPattern;
+    private String                      result;
+    private String                      cutoff;
+    private List<String>                documentsRequiredAtCounselling;
+    private String                      admitCard;
+    private String                      applicationForm;
     private List<String>                filters;
+
 }

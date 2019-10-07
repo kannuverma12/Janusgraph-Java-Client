@@ -5,16 +5,20 @@ import com.paytm.digital.education.coaching.consumer.model.dto.ImportantDatesBan
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingCourses;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingInstitutes;
 import com.paytm.digital.education.coaching.consumer.model.response.details.GetExamDetailsResponse;
+import com.paytm.digital.education.coaching.consumer.model.response.details.SectionDataHolder;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingCourseData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingInstituteData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.ExamData;
+import com.paytm.digital.education.coaching.consumer.service.details.helper.ExamSectionHelper;
 import com.paytm.digital.education.coaching.consumer.service.search.helper.SearchDataHelper;
 import com.paytm.digital.education.coaching.consumer.service.utils.CommonServiceUtils;
 import com.paytm.digital.education.database.entity.Exam;
+import com.paytm.digital.education.database.entity.Instance;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.property.reader.PropertyReader;
+import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
 import com.paytm.digital.education.utility.CommonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,13 +41,16 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.D
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_KEY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_NAMESPACE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ADDITIONAL_INFO;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ADDITIONAL_INFO_PARAMS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_DETAILS_FIELDS;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_DETAIL_NAMESPACE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.ImportantDates.BUTTON_TEXT;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.ImportantDates.DESCRIPTION;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.ImportantDates.HEADER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.ImportantDates.LOGO;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.SECTION;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.ALL_YOU_NEED_TO_KNOW_ABOUT;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.SIMILAR_COACHING_COURSES;
@@ -63,6 +70,8 @@ public class ExamService {
     private final CoachingInstituteService coachingInstituteService;
     private final SearchDataHelper         searchDataHelper;
     private final PropertyReader           propertyReader;
+    private final ExamSectionHelper        examSectionHelper;
+    private final ExamInstanceHelper       examInstanceHelper;
 
     private static final List<String> FILTERS_APPLICABLE =
             Collections.singletonList(COACHING_COURSE_EXAMS);
@@ -86,7 +95,12 @@ public class ExamService {
 
         List<String> sections = (List<String>) propertyMap.getOrDefault(EXAM, new ArrayList<>());
 
-        return GetExamDetailsResponse.builder()
+        Instance nearestInstance = examInstanceHelper.getNearestInstance(exam.getInstances()).get();
+
+        Map<String, Instance> subExamInstances =
+                examInstanceHelper.getSubExamInstances(exam, nearestInstance.getInstanceId());
+
+        GetExamDetailsResponse examDetailsResponse = GetExamDetailsResponse.builder()
                 .examId(exam.getExamId())
                 .examFullName(exam.getExamFullName())
                 .examShortName(exam.getExamShortName())
@@ -95,11 +109,26 @@ public class ExamService {
                 .additionalInfo(this.getExamAdditionalInfo(exam))
                 .topCoachingInstitutes(this.getTopCoachingInstitutes(exam))
                 .topCoachingCourses(this.getTopCoachingCourses(exam))
-                .importantDates(CommonServiceUtils.buildExamImportantDates(exam))
+                .importantDates(examInstanceHelper
+                        .getImportantDates(exam, nearestInstance, subExamInstances))
                 .sections(sections)
                 .importantDatesBannerDetails(this.getImportantDatesBannerDetails())
                 .filters(FILTERS_APPLICABLE)
                 .build();
+
+        Map<String, Object> sectionConfigurationMap =
+                propertyReader
+                        .getPropertiesAsMapByKey(DETAILS_PROPERTY_COMPONENT, EXAM_DETAIL_NAMESPACE,
+                                SECTION);
+
+        List<String> additionalInfoSections =
+                (List<String>) propertyMap.getOrDefault(EXAM_ADDITIONAL_INFO, new ArrayList<>());
+
+        examSectionHelper.addDataPerSection(exam, examDetailsResponse, additionalInfoSections,
+                nearestInstance,
+                subExamInstances, sectionConfigurationMap, true);
+
+        return examDetailsResponse;
     }
 
     private TopCoachingCourses getTopCoachingCourses(Exam exam) {

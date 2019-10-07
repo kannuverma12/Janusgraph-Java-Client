@@ -6,7 +6,7 @@ import com.paytm.digital.education.dto.NotificationFlags;
 import com.paytm.digital.education.enums.Gender;
 import com.paytm.digital.education.enums.SubscribableEntityType;
 import com.paytm.digital.education.enums.SubscriptionStatus;
-import com.paytm.digital.education.explore.response.dto.detail.ExamAndCutOff;
+import com.paytm.digital.education.dto.detail.ExamAndCutOff;
 import com.paytm.digital.education.explore.response.dto.detail.ExamInfo;
 import com.paytm.digital.education.explore.response.dto.search.CutoffSearchResponse;
 import com.paytm.digital.education.explore.service.CutoffService;

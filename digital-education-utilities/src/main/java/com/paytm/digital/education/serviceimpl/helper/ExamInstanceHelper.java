@@ -1,15 +1,34 @@
-package com.paytm.digital.education.explore.service.helper;
+package com.paytm.digital.education.serviceimpl.helper;
 
-import com.paytm.digital.education.database.entity.Event;
+import static com.paytm.digital.education.constant.CommonConstants.APPLICATION;
+import static com.paytm.digital.education.constant.CommonConstants.DATES;
+import static com.paytm.digital.education.constant.CommonConstants.EVENT_TYPE_EXAM;
+import static com.paytm.digital.education.constant.CommonConstants.EXAM_CUTOFF_CASTEGROUP;
+import static com.paytm.digital.education.constant.CommonConstants.EXAM_CUTOFF_GENDER;
+import static com.paytm.digital.education.constant.CommonConstants.EXAM_DEGREES;
+import static com.paytm.digital.education.constant.CommonConstants.EXAM_SEARCH_NAMESPACE;
+import static com.paytm.digital.education.constant.CommonConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.constant.CommonConstants.MMM_YYYY;
+import static com.paytm.digital.education.constant.CommonConstants.OTHER_CATEGORIES;
+import static com.paytm.digital.education.constant.CommonConstants.YYYY_MM;
+import static com.paytm.digital.education.constant.CommonConstants.ZERO;
+import static com.paytm.digital.education.enums.Gender.OTHERS;
+import static java.util.Collections.emptyList;
+
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Instance;
 import com.paytm.digital.education.database.entity.SubExam;
+import com.paytm.digital.education.dto.detail.ExamAndCutOff;
+import com.paytm.digital.education.dto.detail.Section;
+import com.paytm.digital.education.dto.detail.Syllabus;
+import com.paytm.digital.education.dto.detail.Topic;
+import com.paytm.digital.education.dto.detail.Unit;
 import com.paytm.digital.education.enums.Gender;
-import com.paytm.digital.education.explore.response.dto.detail.ExamAndCutOff;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.utility.CommonUtils;
 import com.paytm.digital.education.utility.DateUtil;
+import com.paytm.digital.education.database.entity.Event;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -17,26 +36,13 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
-
-import static com.paytm.digital.education.constant.ExploreConstants.APPLICATION;
-import static com.paytm.digital.education.constant.ExploreConstants.DATES;
-import static com.paytm.digital.education.constant.ExploreConstants.EVENT_TYPE_EXAM;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_CUTOFF_CASTEGROUP;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_CUTOFF_GENDER;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_DEGREES;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SEARCH_NAMESPACE;
-import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.constant.ExploreConstants.MMM_YYYY;
-import static com.paytm.digital.education.constant.ExploreConstants.OTHER_CATEGORIES;
-import static com.paytm.digital.education.constant.ExploreConstants.YYYY_MM;
-import static com.paytm.digital.education.enums.Gender.OTHERS;
-import static java.util.Collections.emptyList;
 
 @AllArgsConstructor
 @Service
@@ -45,6 +51,42 @@ public class ExamInstanceHelper {
     private PropertyReader propertyReader;
 
     private static Date MAX_DATE = new Date(Long.MAX_VALUE);
+
+    public List<Syllabus> getSyllabus(Instance nearestInstance,
+            Map<String, Instance> subExamInstances, Exam exam) {
+
+        List<Syllabus> syllabus = new ArrayList<>();
+
+        if (!CollectionUtils.isEmpty(subExamInstances)) {
+            for (Map.Entry<String, Instance> entry : subExamInstances.entrySet()) {
+                if (!CollectionUtils.isEmpty(entry.getValue().getSyllabusList())) {
+                    List<Section> sections =
+                            getSectionsFromEntitySyllabus(entry.getValue().getSyllabusList());
+                    syllabus.add(
+                            Syllabus.builder().subExamName(entry.getKey()).sections(sections)
+                                    .build());
+                }
+            }
+        }
+
+        if (CollectionUtils.isEmpty(syllabus) && !CollectionUtils
+                .isEmpty(nearestInstance.getSyllabusList())) {
+            List<Section> sections =
+                    getSectionsFromEntitySyllabus(nearestInstance.getSyllabusList());
+            syllabus.add(Syllabus.builder().sections(sections).subExamName(exam.getExamFullName())
+                    .build());
+        }
+
+        if (CollectionUtils.isEmpty(syllabus) && !CollectionUtils.isEmpty(exam.getSyllabus())) {
+            List<Section> sections = getSectionsFromEntitySyllabus(exam.getSyllabus());
+            syllabus.add(Syllabus.builder().subExamName(exam.getExamFullName()).sections(sections)
+                    .build());
+        }
+        if (!CollectionUtils.isEmpty(syllabus)) {
+            return syllabus;
+        }
+        return null;
+    }
 
     public List<ExamAndCutOff> getExamCutOffs(List<Exam> examList,
             Map<String, Object> examRelatedData, Set<Long> examIds) {
@@ -103,73 +145,6 @@ public class ExamInstanceHelper {
         return null;
     }
 
-    private void setCasteGroupAndGender(Long examId, Map<Long, Map<Gender, String>> examGender,
-            Map<Long, Map<String, String>> examCategoryGroup, ExamAndCutOff examAndCutOff) {
-        Map<String, String> casteGroups = examCategoryGroup.get(examId);
-        Map<Gender, String> genders = examGender.get(examId);
-        if (!casteGroups.isEmpty() && !(casteGroups.size() == 1 && casteGroups.entrySet().iterator()
-                .next().getKey()
-                .equals(OTHER_CATEGORIES))) {
-            examAndCutOff.setCasteGroups(casteGroups);
-        }
-        if (!genders.isEmpty() && !(genders.size() == 1 && genders.entrySet().iterator().next()
-                .getKey()
-                .equals(OTHERS))) {
-            examAndCutOff.setGenders(genders);
-        }
-    }
-
-    private Event getExamDateEvent(Exam exam) {
-        if (exam != null) {
-            if (!CollectionUtils.isEmpty(exam.getInstances())) {
-                int latestIndex = getRelevantInstanceIndex(exam.getInstances(), EVENT_TYPE_EXAM);
-
-                if (!CollectionUtils.isEmpty(exam.getSubExams())) {
-                    int parentInstanceId = exam.getInstances().get(latestIndex).getInstanceId();
-                    for (SubExam subExam : exam.getSubExams()) {
-                        if (!CollectionUtils.isEmpty(subExam.getInstances())) {
-                            for (Instance subExamInstance : subExam.getInstances()) {
-                                if (subExamInstance.getInstanceId() != null
-                                        && subExamInstance.getInstanceId() == parentInstanceId) {
-                                    return getExamEvent(subExamInstance.getEvents());
-                                }
-                            }
-                        }
-                    }
-                }
-                return getExamEvent(exam.getInstances().get(latestIndex).getEvents());
-            }
-        }
-        return null;
-    }
-
-    private Event getExamEvent(List<Event> events) {
-        if (!CollectionUtils.isEmpty(events)) {
-            for (Event event : events) {
-                if (EVENT_TYPE_EXAM.equalsIgnoreCase(event.getType())) {
-                    return event;
-                }
-            }
-        }
-        return null;
-    }
-
-    private Optional<Instance> getInstanceAccordingToFilterAndComparator(
-            List<Instance> instances,
-            Predicate<EventInstanceDateHolder> predicate,
-            Comparator<EventInstanceDateHolder> comparator) {
-        return instances.stream()
-            .flatMap(instance ->
-                Optional.ofNullable(instance.getEvents())
-                    .orElse(emptyList())
-                    .stream()
-                    .map(event ->
-                        new EventInstanceDateHolder(event, instance, event.calculateCorrespondingDate())))
-            .filter(predicate)
-            .min(comparator)
-            .map(EventInstanceDateHolder::getInstance);
-    }
-
     public Optional<Instance> getNearestInstance(List<Instance> instances) {
         Date presentDate = new Date();
 
@@ -223,10 +198,10 @@ public class ExamInstanceHelper {
         return instanceIndex;
     }
 
-    public List<com.paytm.digital.education.explore.response.dto.detail.Event> convertEntityEventToResponse(
+    public List<com.paytm.digital.education.dto.detail.Event> convertEntityEventToResponse(
             String examName,
             List<Event> entityEvents) {
-        List<com.paytm.digital.education.explore.response.dto.detail.Event> responseEvents =
+        List<com.paytm.digital.education.dto.detail.Event> responseEvents =
                 new ArrayList<>();
 
         if (!CollectionUtils.isEmpty(entityEvents)) {
@@ -234,9 +209,9 @@ public class ExamInstanceHelper {
                     propertyReader.getPropertiesAsMapByKey(EXPLORE_COMPONENT, EXAM_SEARCH_NAMESPACE,
                             DATES);
             entityEvents.forEach(event -> {
-                com.paytm.digital.education.explore.response.dto.detail.Event
+                com.paytm.digital.education.dto.detail.Event
                         respEvent =
-                        new com.paytm.digital.education.explore.response.dto.detail.Event();
+                        new com.paytm.digital.education.dto.detail.Event();
                 respEvent.setName(examName);
                 if (event.getDateRangeStart() != null) {
                     respEvent.setDateEndRange(event.getDateRangeEnd());
@@ -265,8 +240,115 @@ public class ExamInstanceHelper {
         return responseEvents;
     }
 
+    public Map<String, Instance> getSubExamInstances(Exam exam, int parentInstanceId) {
+        Map<String, Instance> subExamInstances = new HashMap<>();
+        if (!CollectionUtils.isEmpty(exam.getSubExams())) {
+            for (SubExam subExam : exam.getSubExams()) {
+                if (!CollectionUtils.isEmpty(subExam.getInstances())) {
+                    for (Instance instance : subExam
+                            .getInstances()) {
+                        if (instance.getParentInstanceId() == parentInstanceId) {
+                            subExamInstances.put(subExam.getSubExamName(), instance);
+                        }
+                    }
+                }
+            }
+        }
+        return subExamInstances;
+    }
+
+    public List<com.paytm.digital.education.dto.detail.Event> getImportantDates(
+            Exam exam, Instance nearestInstance, Map<String, Instance> subExamInstances) {
+        List<com.paytm.digital.education.dto.detail.Event> importantDates =
+                new ArrayList<>();
+        List<Event> events = nearestInstance.getEvents();
+        importantDates.addAll(convertEntityEventToResponse(exam.getExamFullName(), events));
+        for (Map.Entry<String, Instance> entry : subExamInstances.entrySet()) {
+            importantDates.addAll(convertEntityEventToResponse(entry.getKey(),
+                    entry.getValue().getEvents()));
+        }
+        if (!CollectionUtils.isEmpty(importantDates)) {
+            return importantDates;
+        }
+        return null;
+    }
+
+    private List<Topic> getTopics(
+            com.paytm.digital.education.database.entity.Unit entityUnit) {
+        List<Topic> topics = new ArrayList<>();
+        if (!entityUnit.getName().equals(ZERO) && !CollectionUtils
+                .isEmpty(entityUnit.getTopics())) {
+            entityUnit.getTopics().forEach(entityTopic -> {
+                if (!entityTopic.getName().equals(ZERO)) {
+                    topics.add(new Topic(entityTopic.getName()));
+                }
+            });
+        }
+        return topics;
+    }
+
+    private List<Unit> getUnits(
+            com.paytm.digital.education.database.entity.Syllabus entitySyllabus) {
+        List<Unit> units = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(entitySyllabus.getUnits())) {
+            entitySyllabus.getUnits().forEach(entityUnit -> {
+                List<Topic> topics = getTopics(entityUnit);
+                if (!CollectionUtils.isEmpty(topics)) {
+                    units.add(new Unit(entityUnit.getName(), topics));
+                }
+            });
+        }
+        return units;
+    }
+
+    private List<Section> getSectionsFromEntitySyllabus(
+            List<com.paytm.digital.education.database.entity.Syllabus> entitySyllabusList) {
+        List<Section> sectionList = new ArrayList<>();
+        entitySyllabusList.forEach(entitySection -> {
+            List<Unit> units = getUnits(entitySection);
+            if (!CollectionUtils.isEmpty(units)) {
+                Section section = new Section(entitySection.getSubjectName(), units);
+                sectionList.add(section);
+            }
+        });
+        return sectionList;
+    }
+
+    private void setCasteGroupAndGender(Long examId, Map<Long, Map<Gender, String>> examGender,
+            Map<Long, Map<String, String>> examCategoryGroup, ExamAndCutOff examAndCutOff) {
+        Map<String, String> casteGroups = examCategoryGroup.get(examId);
+        Map<Gender, String> genders = examGender.get(examId);
+        if (!casteGroups.isEmpty() && !(casteGroups.size() == 1 && casteGroups.entrySet().iterator()
+                .next().getKey()
+                .equals(OTHER_CATEGORIES))) {
+            examAndCutOff.setCasteGroups(casteGroups);
+        }
+        if (!genders.isEmpty() && !(genders.size() == 1 && genders.entrySet().iterator().next()
+                .getKey()
+                .equals(OTHERS))) {
+            examAndCutOff.setGenders(genders);
+        }
+    }
+    
+    private Optional<Instance> getInstanceAccordingToFilterAndComparator(
+            List<Instance> instances,
+            Predicate<EventInstanceDateHolder> predicate,
+            Comparator<EventInstanceDateHolder> comparator) {
+        return instances.stream()
+                .flatMap(instance ->
+                        Optional.ofNullable(instance.getEvents())
+                                .orElse(emptyList())
+                                .stream()
+                                .map(event ->
+                                        new EventInstanceDateHolder(event, instance,
+                                                event.calculateCorrespondingDate())))
+                .filter(predicate)
+                .min(comparator)
+                .map(EventInstanceDateHolder::getInstance);
+    }
+
     private void getdatesFromSubExams(int parentInstanceId, List<SubExam> subExams,
-            List<com.paytm.digital.education.explore.response.dto.detail.Event> importantDates) {
+            List<com.paytm.digital.education.dto.detail.Event> importantDates) {
         subExams.forEach(subExam -> {
             subExam.getInstances().forEach(subExamInstance -> {
                 if (subExamInstance.getParentInstanceId() == parentInstanceId) {
@@ -277,9 +359,9 @@ public class ExamInstanceHelper {
         });
     }
 
-    public List<com.paytm.digital.education.explore.response.dto.detail.Event> getImportantDates(
+    public List<com.paytm.digital.education.dto.detail.Event> getImportantDates(
             Exam exam) {
-        List<com.paytm.digital.education.explore.response.dto.detail.Event> importantDates =
+        List<com.paytm.digital.education.dto.detail.Event> importantDates =
                 new ArrayList<>();
         int instanceIndex = -1;
         if (!CollectionUtils.isEmpty(exam.getInstances())) {

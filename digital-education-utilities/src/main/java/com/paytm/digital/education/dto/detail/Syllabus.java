@@ -1,12 +1,13 @@
-package com.paytm.digital.education.explore.response.dto.detail;
+package com.paytm.digital.education.dto.detail;
 
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
-@Data
+@Builder
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Syllabus {

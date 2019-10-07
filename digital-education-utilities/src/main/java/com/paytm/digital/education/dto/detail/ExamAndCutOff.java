@@ -1,4 +1,4 @@
-package com.paytm.digital.education.explore.response.dto.detail;
+package com.paytm.digital.education.dto.detail;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

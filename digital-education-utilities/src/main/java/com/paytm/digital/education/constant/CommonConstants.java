@@ -1,5 +1,7 @@
 package com.paytm.digital.education.constant;
 
+import java.text.SimpleDateFormat;
+
 public interface CommonConstants {
 
     String COACHING_STREAMS                  = "coaching_streams";
@@ -26,5 +28,22 @@ public interface CommonConstants {
     String ENTITY_TYPE          = "entity_type";
     int    DEFAULT_OFFSET       = 0;
     String OFFICIAL_NAME        = "official_name";
+
+    String APPLICATION            = "APPLICATION";
+    String EXPLORE_COMPONENT      = "explore";
+    String EXAM_SEARCH_NAMESPACE  = "exam";
+    String DATES                  = "dates";
+    String EVENT_TYPE_EXAM        = "EXAM";
+    String OTHER_CATEGORIES       = "OTHERS";
+    String EXAM_DEGREES           = "exam_degrees";
+    String EXAM_CUTOFF_GENDER     = "exam_cutoff_gender";
+    String EXAM_CUTOFF_CASTEGROUP = "exam_cutoff_castegroup";
+    String ZERO                   = "0";
+
+
+    SimpleDateFormat MMM_YYYY    = new SimpleDateFormat("MMM,yyyy");
+    SimpleDateFormat DD_MMM_YYYY = new SimpleDateFormat("dd MMM,yyyy");
+    SimpleDateFormat YYYY_MM     = new SimpleDateFormat("yyyy-MM");
+
 
 }

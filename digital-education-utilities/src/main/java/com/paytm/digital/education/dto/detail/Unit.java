@@ -1,4 +1,4 @@
-package com.paytm.digital.education.explore.response.dto.detail;
+package com.paytm.digital.education.dto.detail;
 
 import java.util.List;
 import lombok.AllArgsConstructor;

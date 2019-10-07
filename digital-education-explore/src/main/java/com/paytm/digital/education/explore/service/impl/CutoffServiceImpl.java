@@ -7,7 +7,7 @@ import com.paytm.digital.education.database.entity.Cutoff;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.enums.Gender;
 import com.paytm.digital.education.explore.response.dto.common.CutOff;
-import com.paytm.digital.education.explore.response.dto.detail.ExamAndCutOff;
+import com.paytm.digital.education.dto.detail.ExamAndCutOff;
 import com.paytm.digital.education.explore.response.dto.search.CutoffSearchResponse;
 import com.paytm.digital.education.explore.service.CutoffService;
 import com.paytm.digital.education.explore.service.helper.GenderAndCasteGroupHelper;
