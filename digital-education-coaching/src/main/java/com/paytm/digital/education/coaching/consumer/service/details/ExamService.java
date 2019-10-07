@@ -109,9 +109,9 @@ public class ExamService {
                 .additionalInfo(this.getExamAdditionalInfo(exam))
                 .topCoachingInstitutes(this.getTopCoachingInstitutes(exam))
                 .topCoachingCourses(this.getTopCoachingCourses(exam))
+                .sections(sections)
                 .importantDates(examInstanceHelper
                         .getImportantDates(exam, nearestInstance, subExamInstances))
-                .sections(sections)
                 .importantDatesBannerDetails(this.getImportantDatesBannerDetails())
                 .filters(FILTERS_APPLICABLE)
                 .build();

@@ -16,6 +16,6 @@ public class SectionDataHolder {
     private String          icon;
     private String          displayName;
     private String          snippetText;
-    private ExamSectionType examSectionType;
+    private String          key;
 
 }

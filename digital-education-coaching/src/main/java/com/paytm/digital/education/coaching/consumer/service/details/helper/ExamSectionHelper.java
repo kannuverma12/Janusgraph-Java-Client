@@ -6,6 +6,7 @@ import com.paytm.digital.education.coaching.consumer.model.response.details.Sect
 import com.paytm.digital.education.coaching.enums.ExamSectionType;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Instance;
+import com.paytm.digital.education.dto.detail.Event;
 import com.paytm.digital.education.dto.detail.Syllabus;
 import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
 import com.paytm.digital.education.utility.CommonUtil;
@@ -65,7 +66,7 @@ public class ExamSectionHelper {
                 examDetail.setCutoff(exam.getCutoff());
                 return StringUtils.isNotBlank(exam.getCutoff());
             case COUNSELLING:
-                examDetail.setDocumentsRequiredAtCounselling(exam.getDocumentsCounselling());
+                examDetail.setDocumentsCounselling(exam.getDocumentsCounselling());
                 return !CollectionUtils.isEmpty(exam.getDocumentsCounselling());
             case ELIGIBILITY:
                 examDetail.setEligibility(exam.getEligibility());
@@ -106,8 +107,9 @@ public class ExamSectionHelper {
         return SectionDataHolder.builder()
                 .icon(getAbsoluteUrl(sectionConfiguration.getIcon()))
                 .snippetText(sectionConfiguration.getShortText())
-                .examSectionType(sectionConfiguration.getType())
-                .displayName(sectionConfiguration.getDisplayName()).build();
+                .displayName(sectionConfiguration.getDisplayName())
+                .key(sectionConfiguration.getType().getKey())
+                .build();
     }
 
 }

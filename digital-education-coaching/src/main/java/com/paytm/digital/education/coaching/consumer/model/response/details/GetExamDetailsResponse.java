@@ -39,7 +39,7 @@ public class GetExamDetailsResponse {
     private String                      examPattern;
     private String                      result;
     private String                      cutoff;
-    private List<String>                documentsRequiredAtCounselling;
+    private List<String>                documentsCounselling;
     private String                      admitCard;
     private String                      applicationForm;
     private List<String>                filters;
