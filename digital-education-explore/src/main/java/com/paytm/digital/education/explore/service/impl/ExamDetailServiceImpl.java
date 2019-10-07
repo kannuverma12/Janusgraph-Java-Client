@@ -307,8 +307,10 @@ public class ExamDetailServiceImpl {
         examResponse.setLogoUrl(examLogoHelper.getExamLogoUrl(exam.getExamId(), exam.getLogo()));
         if (examCentersFlg) {
             List<Location> examCenters = getExamCenters(nearestInstance);
-            examResponse.setExamCenters(examCenters);
-            examResponse.setCentersCount(examCenters.size());
+            if (!CollectionUtils.isEmpty(examCenters)) {
+                examResponse.setExamCenters(examCenters);
+                examResponse.setCentersCount(examCenters.size());
+            }
         }
         if (importantDatesFlg) {
             List<Event> importantDates =
