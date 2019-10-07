@@ -18,7 +18,7 @@ public class SectionDataHolder {
     @JsonProperty("snippet_text")
     private String snippetText;
 
-    @JsonProperty("type")
-    private ExamSectionType examSectionType;
+    @JsonProperty("key")
+    private String key;
 
 }

@@ -162,8 +162,6 @@ public class ExamDetailServiceImpl {
                         sectionConfigurationMap, syllabusFlg);
     }
 
-
-
     private Map<String, Instance> getSubExamInstances(Exam exam, int parentInstanceId) {
         Map<String, Instance> subExamInstances = new HashMap<>();
         if (!CollectionUtils.isEmpty(exam.getSubExams())) {
@@ -240,8 +238,8 @@ public class ExamDetailServiceImpl {
         examDetail.setLinguisticMedium(examLang);
     }
 
-    private void addWebSpecificData(ExamDetail examDetail, Exam exam, Instance nearestInstance,
-            Map<String, Instance> subExamInstances, boolean derivedAttributes, boolean sectionsFlag,
+    private void addWebSpecificData(ExamDetail examDetail, Exam exam, boolean derivedAttributes,
+            boolean sectionsFlag,
             Client client, boolean widgets) {
         examDetail.setDocumentsRequiredAtExam(exam.getDocumentsExam());
         examDetail.setDocumentsRequiredAtCounselling(exam.getDocumentsCounselling());
@@ -251,11 +249,6 @@ public class ExamDetailServiceImpl {
         examDetail.setExamPattern(exam.getExamPattern());
         examDetail.setResult(exam.getResult());
         examDetail.setCutoff(exam.getCutoff());
-        List<com.paytm.digital.education.explore.response.dto.detail.Syllabus> syllabus =
-                examInstanceHelper.getSyllabus(nearestInstance, subExamInstances, exam);
-        if (!CollectionUtils.isEmpty(syllabus)) {
-            examDetail.setSyllabus(syllabus);
-        }
         examDetail.setDurationInHour(exam.getSubExams().get(0).getDurationHours());
         if (examDetail.getDurationInHour() == null) {
             examDetail.setDurationInHour(exam.getExamDuration());
@@ -293,8 +286,7 @@ public class ExamDetailServiceImpl {
             addAppSpecificData(examDetail, exam, sectionsList, syllabus, nearestInstance,
                     subExamInstances);
         } else {
-            addWebSpecificData(examDetail, exam, nearestInstance, subExamInstances,
-                    derivedAttributes, sectionsFlag, client, widgets);
+            addWebSpecificData(examDetail, exam, derivedAttributes, sectionsFlag, client, widgets);
         }
         return examDetail;
     }
@@ -328,6 +320,11 @@ public class ExamDetailServiceImpl {
         }
         if (Objects.nonNull(exam.getPaytmKeys())) {
             addPaytmKeys(examResponse, exam.getPaytmKeys());
+        }
+        List<com.paytm.digital.education.explore.response.dto.detail.Syllabus> syllabus =
+                examInstanceHelper.getSyllabus(nearestInstance, subExamInstances, exam);
+        if (!CollectionUtils.isEmpty(syllabus)) {
+            examResponse.setSyllabus(syllabus);
         }
     }
 

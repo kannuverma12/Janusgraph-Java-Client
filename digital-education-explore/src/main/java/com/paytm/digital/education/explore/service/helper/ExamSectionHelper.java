@@ -28,6 +28,7 @@ import java.util.Objects;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SECTION;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SECTION_PLACEHOLDER;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ZERO;
+import static com.paytm.digital.education.explore.enums.ExamSectionType.ELIGIBILITY;
 
 @Service
 @Slf4j
@@ -109,8 +110,9 @@ public class ExamSectionHelper {
         return SectionDataHolder.builder()
                 .icon(getAbsoluteUrl(sectionConfiguration.getIcon()))
                 .snippetText(sectionConfiguration.getShortText())
-                .examSectionType(sectionConfiguration.getType())
-                .displayName(sectionConfiguration.getDisplayName()).build();
+                .displayName(sectionConfiguration.getDisplayName())
+                .key(sectionConfiguration.getType().getKey())
+                .build();
     }
 
 }
