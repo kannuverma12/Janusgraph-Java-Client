@@ -127,7 +127,9 @@ public class CoachingInstituteService {
         CoachingInstituteEntity coachingInstituteEntity = commonMongoRepository.getEntityByFields(
                 INSTITUTE_ID, instituteId, CoachingInstituteEntity.class,
                 COACHING_INSTITUTE_FIELDS);
-        if (Objects.isNull(coachingInstituteEntity) || !coachingInstituteEntity.getIsEnabled()) {
+        if (Objects.isNull(coachingInstituteEntity) ||
+                Objects.isNull(coachingInstituteEntity.getIsEnabled()) ||
+                !coachingInstituteEntity.getIsEnabled()) {
             log.error("Institute with id: {} does not exist", instituteId);
             throw new BadRequestException(INVALID_INSTITUTE_ID);
         }
@@ -196,7 +198,8 @@ public class CoachingInstituteService {
                 commonMongoRepository.getEntityByFields(STREAM_ID, streamId,
                         com.paytm.digital.education.database.entity.StreamEntity.class,
                         STREAM_FIELDS);
-        if (Objects.isNull(stream) || !stream.getIsEnabled()) {
+        if (Objects.isNull(stream) ||
+                Objects.isNull(stream.getIsEnabled()) || !stream.getIsEnabled()) {
             return null;
         }
         return stream.getName();
@@ -208,7 +211,8 @@ public class CoachingInstituteService {
         }
 
         com.paytm.digital.education.database.entity.Exam exam = this.getExamEntity(examId);
-        if (Objects.isNull(exam) || !exam.getIsEnabled()) {
+        if (Objects.isNull(exam) ||
+                Objects.isNull(exam.getIsEnabled()) || !exam.getIsEnabled()) {
             return null;
         }
         return exam.getExamShortName();
@@ -389,8 +393,9 @@ public class CoachingInstituteService {
             com.paytm.digital.education.database.entity.Exam examEntity =
                     this.getExamEntity(examId);
 
-            if (Objects.nonNull(examEntity) && !CollectionUtils
-                    .isEmpty(examEntity.getStreamIds()) && examEntity.getIsEnabled()) {
+            if (Objects.nonNull(examEntity) && !CollectionUtils.isEmpty(examEntity.getStreamIds())
+                    && Objects.nonNull(examEntity.getIsEnabled())
+                    && examEntity.getIsEnabled()) {
                 searchRequest.remove(EXAM_ID);
                 searchRequest.put(STREAM_IDS, examEntity.getStreamIds().get(0));
 
