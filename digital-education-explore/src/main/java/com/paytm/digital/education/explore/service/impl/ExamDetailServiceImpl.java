@@ -249,7 +249,9 @@ public class ExamDetailServiceImpl {
         examDetail.setExamPattern(exam.getExamPattern());
         examDetail.setResult(exam.getResult());
         examDetail.setCutoff(exam.getCutoff());
-        examDetail.setDurationInHour(exam.getSubExams().get(0).getDurationHours());
+        if (!CollectionUtils.isEmpty(exam.getSubExams())) {
+            examDetail.setDurationInHour(exam.getSubExams().get(0).getDurationHours());
+        }
         if (examDetail.getDurationInHour() == null) {
             examDetail.setDurationInHour(exam.getExamDuration());
         }
