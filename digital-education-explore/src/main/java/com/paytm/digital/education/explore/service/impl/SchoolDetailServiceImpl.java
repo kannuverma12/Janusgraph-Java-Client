@@ -94,7 +94,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
     private final SchoolConfig             schoolConfig;
     private final SchoolUtilService        schoolUtilService;
     private final BannerDataHelper         bannerDataHelper;
-    private final int                      similarSchoolsCount;
+    private final int                      nearbySchoolsCount;
 
     public SchoolDetailServiceImpl(
             CommonMongoRepository commonMongoRepository,
@@ -106,8 +106,8 @@ public class SchoolDetailServiceImpl implements SchoolService {
             SchoolConfig schoolConfig,
             SchoolUtilService schoolUtilService,
             BannerDataHelper bannerDataHelper,
-            @Value("${similar.schools.count}")
-            int similarSchoolsCount) {
+            @Value("${nearby.schools.count}")
+            int nearbySchoolsCount) {
         this.commonMongoRepository = commonMongoRepository;
         this.derivedAttributesHelper = derivedAttributesHelper;
         this.facilityDataHelper = facilityDataHelper;
@@ -117,7 +117,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
         this.schoolConfig = schoolConfig;
         this.schoolUtilService = schoolUtilService;
         this.bannerDataHelper = bannerDataHelper;
-        this.similarSchoolsCount = similarSchoolsCount;
+        this.nearbySchoolsCount = nearbySchoolsCount;
     }
 
     public List<School> getSchools(List<Long> entityIds, List<String> groupFields) {
@@ -218,7 +218,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
             schoolDetail.setBrochureUrl(boardData.getSchoolBrochureLink());
             List<CTA> ctaList = ctaHelper.buildCTA(schoolDetail, client);
             schoolDetail.setCtaList(ctaList);
-            addSimilarSchoolsInResponse(schoolDetail, school);
+            addNearbySchoolsInResponse(schoolDetail, school);
 
             if (Objects.nonNull(userId) && userId > 0) {
                 updateShortList(schoolDetail, SCHOOL, userId);
@@ -293,12 +293,15 @@ public class SchoolDetailServiceImpl implements SchoolService {
         schoolDetail.setShortlisted(!CollectionUtils.isEmpty(subscribedEntities));
     }
 
-    private void addSimilarSchoolsInResponse(SchoolDetail schoolDetail, School school) {
+    private void addNearbySchoolsInResponse(SchoolDetail schoolDetail, School school) {
         SearchRequest searchRequest = buildSearchRequestForSchool(school, true);
         if (Objects.isNull(searchRequest)) {
             return;
         }
         SearchResponse searchResponse = searchService.search(searchRequest, null, null);
+        if (Objects.isNull(searchResponse)) {
+            return;
+        }
         List<SearchBaseData> searchBaseDataList = searchResponse.getResults().getValues();
 
         if (CollectionUtils.isEmpty(searchBaseDataList)) {
@@ -320,7 +323,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
                         .map(x -> (SchoolSearchData) x)
                         .filter(x -> !school.getSchoolId().equals(x.getSchoolId()))
                         .collect(Collectors.toList());
-        schoolDetail.setSimilarSchools(schoolSearchDataList);
+        schoolDetail.setNearbySchools(schoolSearchDataList);
     }
 
 
@@ -329,7 +332,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
 
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.setEntity(SCHOOL);
-        searchRequest.setLimit(similarSchoolsCount + 1);
+        searchRequest.setLimit(nearbySchoolsCount + 1);
         GeoLocation geoLocation = buildGeoLocationFromSchool(school);
         Map<String, List<Object>> filters = new HashMap<>();
 

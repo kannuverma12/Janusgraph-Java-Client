@@ -194,9 +194,4 @@ public class ExamDetail implements CTAInfoHolder {
     public Long getCollegePredictorPid() {
         return collegePredictorPid;
     }
-
-    @Override
-    public String getFormId() {
-        return formId;
-    }
 }
