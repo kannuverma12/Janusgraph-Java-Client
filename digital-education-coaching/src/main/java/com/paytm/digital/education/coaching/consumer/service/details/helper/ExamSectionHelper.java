@@ -1,5 +1,6 @@
 package com.paytm.digital.education.coaching.consumer.service.details.helper;
 
+import com.paytm.digital.education.coaching.consumer.model.dto.ExamAdditionalInfo;
 import com.paytm.digital.education.coaching.consumer.model.dto.SectionConfiguration;
 import com.paytm.digital.education.coaching.consumer.model.response.details.GetExamDetailsResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.details.SectionDataHolder;
@@ -23,6 +24,7 @@ import java.util.Objects;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.SECTION;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.SECTION_PLACEHOLDER;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.ALL_YOU_NEED_TO_KNOW_ABOUT;
 
 @Service
 @AllArgsConstructor
@@ -54,7 +56,17 @@ public class ExamSectionHelper {
                 responseSections.add(getResponseSection(sectionConfiguration));
             }
         }
-        examDetail.setSectionsList(responseSections);
+        ExamAdditionalInfo examAdditionalInfo = getExamAdditionalInfo(exam, responseSections);
+        examDetail.setAdditionalInfo(examAdditionalInfo);
+    }
+
+    private ExamAdditionalInfo getExamAdditionalInfo(Exam exam,
+            List<SectionDataHolder> responseSections) {
+        return ExamAdditionalInfo.builder()
+                .header(String.format(ALL_YOU_NEED_TO_KNOW_ABOUT.getValue(),
+                        exam.getExamShortName()))
+                .sectionsList(responseSections)
+                .build();
     }
 
     private boolean setSectionData(Exam exam, GetExamDetailsResponse examDetail,

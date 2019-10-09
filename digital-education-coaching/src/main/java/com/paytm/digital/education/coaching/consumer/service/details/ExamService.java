@@ -106,7 +106,6 @@ public class ExamService {
                 .examShortName(exam.getExamShortName())
                 .urlDisplayKey(urlDisplayKey)
                 .examDescription(exam.getAboutExam())
-                .additionalInfo(this.getExamAdditionalInfo(exam))
                 .topCoachingInstitutes(this.getTopCoachingInstitutes(exam))
                 .topCoachingCourses(this.getTopCoachingCourses(exam))
                 .sections(sections)
@@ -127,7 +126,6 @@ public class ExamService {
         examSectionHelper.addDataPerSection(exam, examDetailsResponse, additionalInfoSections,
                 nearestInstance,
                 subExamInstances, sectionConfigurationMap, true);
-
         return examDetailsResponse;
     }
 
@@ -186,14 +184,6 @@ public class ExamService {
         return TopCoachingInstitutes.builder()
                 .header(SIMILAR_COACHING_INSTITUTES.getValue())
                 .results(institutes)
-                .build();
-    }
-
-    private ExamAdditionalInfo getExamAdditionalInfo(Exam exam) {
-        return ExamAdditionalInfo.builder()
-                .header(String.format(ALL_YOU_NEED_TO_KNOW_ABOUT.getValue(),
-                        exam.getExamShortName()))
-                .results(EXAM_ADDITIONAL_INFO_PARAMS)
                 .build();
     }
 
