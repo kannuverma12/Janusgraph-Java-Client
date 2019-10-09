@@ -32,7 +32,7 @@ public class GetExamDetailsResponse {
     private ExamAdditionalInfo          additionalInfo;
     private List<String>                sections;
     private ImportantDatesBannerDetails importantDatesBannerDetails;
-    private List<SectionDataHolder>     sectionDataHolders;
+    private List<SectionDataHolder>     sectionsList;
     private List<Syllabus>              syllabus;
     private List<Event>                 importantDates;
     private String                      eligibility;

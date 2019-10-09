@@ -6,7 +6,6 @@ import com.paytm.digital.education.coaching.consumer.model.response.details.Sect
 import com.paytm.digital.education.coaching.enums.ExamSectionType;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Instance;
-import com.paytm.digital.education.dto.detail.Event;
 import com.paytm.digital.education.dto.detail.Syllabus;
 import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
 import com.paytm.digital.education.utility.CommonUtil;
@@ -55,7 +54,7 @@ public class ExamSectionHelper {
                 responseSections.add(getResponseSection(sectionConfiguration));
             }
         }
-        examDetail.setSectionDataHolders(responseSections);
+        examDetail.setSectionsList(responseSections);
     }
 
     private boolean setSectionData(Exam exam, GetExamDetailsResponse examDetail,
