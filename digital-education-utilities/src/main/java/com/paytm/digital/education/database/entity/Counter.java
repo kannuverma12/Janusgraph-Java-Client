@@ -1,4 +1,4 @@
-package com.paytm.digital.education.coaching.database.entity;
+package com.paytm.digital.education.database.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;

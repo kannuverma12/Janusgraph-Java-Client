@@ -16,7 +16,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import javax.validation.constraints.NotNull;
 
 @Data
 @ToString

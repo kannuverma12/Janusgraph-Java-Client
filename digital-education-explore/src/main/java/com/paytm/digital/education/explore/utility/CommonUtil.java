@@ -40,6 +40,8 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.STR
 import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP_EXAMS_APP;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP_SCHOOLS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.UGC;
+import static com.paytm.digital.education.ingestion.constant.IngestionConstants.NO;
+import static com.paytm.digital.education.ingestion.constant.IngestionConstants.YES;
 
 @UtilityClass
 public class CommonUtil {
