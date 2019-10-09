@@ -36,6 +36,12 @@ public class SchoolSearchData extends SearchBaseData implements CTAInfoHolderWit
     @JsonIgnore
     private String brochureUrl;
 
+    @JsonProperty("contact_logo")
+    private String contactLogoUrl;
+
+    @JsonProperty("location_logo")
+    private String locationLogoUrl;
+
     public Long getPid() {
         return null;
     }

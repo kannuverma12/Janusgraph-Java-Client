@@ -398,7 +398,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
             BoardData boardData = boards.get(0).getData();
             GeneralInformation generalInformation = new GeneralInformation();
             generalInformation.setEmail(boardData.getEmail());
-            generalInformation.setPhone(school.getPhone());
+            generalInformation.setPhone(boardData.getContactNumberPrimary());
             generalInformation.setStreetAddress(school.getAddress().getStreetAddress());
             generalInformation.setLatLon(school.getAddress().getLatLon());
             generalInformation.setOfficialWebsiteLink(getOfficialWebsiteLinkFromData(boardData));

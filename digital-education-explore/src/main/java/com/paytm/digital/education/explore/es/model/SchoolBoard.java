@@ -42,4 +42,7 @@ public class SchoolBoard {
     @JsonProperty("brochure_url")
     private String schoolBrochureUrl;
 
+    @JsonProperty("contact_number")
+    private String contactNumber;
+
 }
