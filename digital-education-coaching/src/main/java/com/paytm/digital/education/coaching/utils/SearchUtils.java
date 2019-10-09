@@ -40,6 +40,13 @@ public class SearchUtils {
 
     public void setSortKeysInOrder(SearchRequest searchRequest) {
         LinkedHashMap<String, DataSortOrder> sortKeysInOrder = new LinkedHashMap<>();
+        if (!CollectionUtils.isEmpty(searchRequest.getSortOrder())
+                && !searchRequest.getSortOrder()
+                .containsKey(IGNORE_ENTITY_POSITION)
+                && !searchRequest.getSortOrder()
+                .containsKey(CoachingConstants.Search.IGNORE_GLOBAL_PRIORITY)) {
+            return;
+        }
         if (CollectionUtils.isEmpty(searchRequest.getSortOrder()) || !searchRequest.getSortOrder()
                 .containsKey(IGNORE_ENTITY_POSITION)) {
             String keyword = "";

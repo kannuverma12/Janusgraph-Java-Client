@@ -160,7 +160,8 @@ public class CoachingInstituteService {
                         INSTITUTE_PLACEHOLDER, TOP_COACHING_INSTITUTES_LOGO))
                 .instituteHighlights(CoachingInstituteTransformer.convertInstituteHighlights(
                         coachingInstituteEntity.getKeyHighlights()))
-                .centerAndBrochureInfo(this.getCenterAndBrochureInfo(coachingInstituteEntity))
+                .centerAndBrochureInfo(this.getCenterAndBrochureInfo(coachingInstituteEntity,
+                        coachingCenterIdAndCenterMap))
                 .streams(this.getStreamsForInstitute(coachingInstituteEntity))
                 .exams(this.getExamsForInstitute(coachingInstituteEntity))
                 .topRankers(this.getTopRankersForInstitute(instituteId, streamId, examId,
@@ -249,14 +250,16 @@ public class CoachingInstituteService {
     }
 
     private CenterAndBrochureInfo getCenterAndBrochureInfo(
-            CoachingInstituteEntity coachingInstituteEntity) {
+            CoachingInstituteEntity coachingInstituteEntity,
+            Map<Long, CoachingCenterEntity> coachingCenterIdAndCenterMap) {
         return CenterAndBrochureInfo.builder()
-                .centers(InstituteCenterSection.builder()
+                .centers(!CollectionUtils.isEmpty(coachingCenterIdAndCenterMap)
+                        ? InstituteCenterSection.builder()
                         .header(FIND_CENTERS.getValue())
                         .description(String.format(FIND_CENTERS_DESCRIPTION.getValue(),
                                 coachingInstituteEntity.getBrandName()))
                         .logo(COACHING_INSTITUTE_FIND_CENTERS_LOGO)
-                        .build())
+                        .build() : null)
                 .brochure(SyllabusAndBrochure.builder()
                         .header(DOWNLOAD_BROCHURE.getValue())
                         .url(coachingInstituteEntity.getBrochure())

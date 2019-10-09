@@ -6,10 +6,12 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.Searc
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResult;
 import com.paytm.digital.education.coaching.consumer.service.search.helper.CoachingSearchAggregateHelper;
+import com.paytm.digital.education.coaching.db.dao.CoachingInstituteDAO;
 import com.paytm.digital.education.coaching.es.model.CoachingCenterSearch;
 import com.paytm.digital.education.coaching.es.model.CoachingInstituteSearch;
 import com.paytm.digital.education.coaching.es.model.GeoLocation;
 import com.paytm.digital.education.coaching.utils.ImageUtils;
+import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.elasticsearch.models.SortField;
@@ -32,6 +34,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.CENTER_FILTER_NAMESPACE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.CENTER_SEARCH_NAMESPACE;
@@ -41,14 +44,26 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.C
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_CENTER_STATE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COMPONENT;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DISTANCE_KILOMETERS;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_COVER_IMAGE_PLACEHOLDER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.IS_ENABLED;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_CENTER_ADDRESS_1;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_CENTER_ADDRESS_1_BOOST;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_CENTER_ADDRESS_2;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_CENTER_ADDRESS_2_BOOST;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_CENTER_ADDRESS_3;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_CENTER_ADDRESS_3_BOOST;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_CENTER_CITY_ANALYZED;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_CENTER_CITY_BOOST;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_CENTER_NAME;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_CENTER_NAME_BRAND_BOOST;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_CENTER_STATE_ANALYZED;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_CENTER_STATE_BOOST;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.GLOBAL_PRIORITY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.SEARCH_ANALYZER_COACHING_CENTER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.SEARCH_INDEX_COACHING_CENTER;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_CENTER;
+import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES_IMAGE;
 import static com.paytm.digital.education.enums.es.FilterQueryType.TERMS;
 
 @Slf4j
@@ -60,6 +75,7 @@ public class CoachingCenterSearchService extends AbstractSearchService {
     private static Map<String, Float>            searchFieldKeys;
     private static Map<String, FilterQueryType>  filterQueryTypeMap;
     private        CoachingSearchAggregateHelper coachingSearchAggregateHelper;
+    private        CoachingInstituteDAO          coachingInstituteDAO;
 
     @PostConstruct
     public void init() {
@@ -70,6 +86,11 @@ public class CoachingCenterSearchService extends AbstractSearchService {
         filterQueryTypeMap.put(IS_ENABLED, TERMS);
         searchFieldKeys = new HashMap<>();
         searchFieldKeys.put(COACHING_CENTER_NAME, COACHING_CENTER_NAME_BRAND_BOOST);
+        searchFieldKeys.put(COACHING_CENTER_ADDRESS_1,COACHING_CENTER_ADDRESS_1_BOOST);
+        searchFieldKeys.put(COACHING_CENTER_ADDRESS_2,COACHING_CENTER_ADDRESS_2_BOOST);
+        searchFieldKeys.put(COACHING_CENTER_ADDRESS_3,COACHING_CENTER_ADDRESS_3_BOOST);
+        searchFieldKeys.put(COACHING_CENTER_CITY_ANALYZED,COACHING_CENTER_CITY_BOOST);
+        searchFieldKeys.put(COACHING_CENTER_STATE_ANALYZED,COACHING_CENTER_STATE_BOOST);
     }
 
     @Override
@@ -138,13 +159,22 @@ public class CoachingCenterSearchService extends AbstractSearchService {
             indexOfGeoDistanceSortInElasticRequest = getIndexOfGeoDistanceSortInElasticRequest(
                     elasticRequest.getSortFields());
         }
+
         if (!CollectionUtils.isEmpty(coachingCenterSearches)) {
+            String instituteImage = null;
+            CoachingInstituteEntity coachingInstituteEntity =
+                    coachingInstituteDAO.findByInstituteId(
+                            Objects.requireNonNull(coachingCenterSearches.get(0).getInstituteId()));
+            if (Objects.nonNull(coachingInstituteEntity)) {
+                instituteImage = coachingInstituteEntity.getCoverImage();
+            }
             searchResults.setEntity(EducationEntity.COACHING_CENTER);
             List<SearchBaseData> coachingCenterDataList = new ArrayList<>();
             for (CoachingCenterSearch coachingCenterSearch : coachingCenterSearches) {
                 buildCoachingCenterData(isGeoDistanceSortRequest,
                         indexOfGeoDistanceSortInElasticRequest,
-                        coachingCenterDataList, coachingCenterSearch);
+                        coachingCenterDataList, coachingCenterSearch,
+                        instituteImage);
             }
             searchResults.setValues(coachingCenterDataList);
         }
@@ -154,15 +184,13 @@ public class CoachingCenterSearchService extends AbstractSearchService {
     private void buildCoachingCenterData(boolean isGeoDistanceSortRequest,
             Integer indexOfGeoDistanceSortInElasticRequest,
             List<SearchBaseData> coachingCenterDataList,
-            CoachingCenterSearch coachingCenterSearch) {
+            CoachingCenterSearch coachingCenterSearch, String instituteImage) {
         CoachingCenterData toAdd = CoachingCenterData
                 .builder()
                 .centerId(coachingCenterSearch.getCenterId())
                 .instituteId(coachingCenterSearch.getInstituteId())
                 .officialName(coachingCenterSearch.getOfficialName())
-                .centerImage(ImageUtils
-                        .getImageWithAbsolutePath(coachingCenterSearch.getCenterImage(),
-                                COACHING_CENTER_PLACEHOLDER, COACHING_CENTER))
+                .centerImage(getImageWithAbsolutePath(coachingCenterSearch,instituteImage))
                 .openingTime(coachingCenterSearch.getOpeningTime())
                 .closingTime(coachingCenterSearch.getClosingTime())
                 .addressLine1(coachingCenterSearch.getAddressLine1())
@@ -179,6 +207,19 @@ public class CoachingCenterSearchService extends AbstractSearchService {
                 .location(coachingCenterSearch.getLocation())
                 .build();
         coachingCenterDataList.add(toAdd);
+    }
+
+    private String getImageWithAbsolutePath(CoachingCenterSearch coachingCenterSearch,
+            String instituteImage) {
+        if (Objects.nonNull(coachingCenterSearch.getCenterImage())) {
+            return ImageUtils
+                    .getImageWithAbsolutePath(coachingCenterSearch.getCenterImage(),
+                            COACHING_CENTER_PLACEHOLDER, COACHING_CENTER);
+        } else {
+            return ImageUtils.getImageWithAbsolutePath(
+                    instituteImage, INSTITUTE_COVER_IMAGE_PLACEHOLDER,
+                    TOP_COACHING_INSTITUTES_IMAGE);
+        }
     }
 
     private String getCoachingCenterGeoDistanceString(boolean isGeoDistanceSortRequest,

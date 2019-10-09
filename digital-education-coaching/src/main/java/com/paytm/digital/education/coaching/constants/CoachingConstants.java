@@ -192,7 +192,19 @@ public class CoachingConstants {
         public static final String COACHING_COURSE_NAME             = "course_name";
         public static final Float  COACHING_COURSE_NAME_BOOST       = 1F;
         public static final String COACHING_CENTER_NAME             = "official_name";
-        public static final Float  COACHING_CENTER_NAME_BRAND_BOOST = 1F;
+        public static final Float  COACHING_CENTER_NAME_BRAND_BOOST = 3F;
+
+        public static final String COACHING_CENTER_ADDRESS_1       = "address_line1";
+        public static final Float  COACHING_CENTER_ADDRESS_1_BOOST = 2F;
+        public static final String COACHING_CENTER_ADDRESS_2       = "address_line2";
+        public static final Float  COACHING_CENTER_ADDRESS_2_BOOST = 2F;
+        public static final String COACHING_CENTER_ADDRESS_3       = "address_line3";
+        public static final Float  COACHING_CENTER_ADDRESS_3_BOOST = 2F;
+        public static final String COACHING_CENTER_CITY_ANALYZED   = "city.analyzed";
+        public static final Float  COACHING_CENTER_CITY_BOOST      = 1F;
+        public static final String COACHING_CENTER_STATE_ANALYZED  = "state.analyzed";
+        public static final Float  COACHING_CENTER_STATE_BOOST     = 1F;
+
 
         public static final String SEARCH_STREAM_PREFIX = "streams.";
         public static final String SEARCH_STREAM_SUFFIX = ".position";

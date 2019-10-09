@@ -31,4 +31,5 @@ public class CoachingCenterSearch {
     private GeoLocation  location;
     private List<Double> sort;
     private Boolean      isEnabled;
+    private Integer      globalPriority;
 }
