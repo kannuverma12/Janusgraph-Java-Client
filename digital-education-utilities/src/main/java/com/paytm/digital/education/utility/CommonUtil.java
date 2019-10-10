@@ -81,8 +81,13 @@ public class CommonUtil {
                 urlBuilder.append(ConfigProperties.getFacilitiesIconPrefix());
                 break;
             case STREAMS:
-            case COACHING_STREAMS:
                 urlBuilder.append(ConfigProperties.getStreamIconPrefix());
+                break;
+            case COACHING_STREAMS:
+                urlBuilder.append(ConfigProperties.getCoachingS3Path())
+                        .append(("/"))
+                        .append(ConfigProperties.getEnvProfile())
+                        .append(ConfigProperties.getCoachingStreamLogoPrefix());
                 break;
             case LOCATIONS:
                 urlBuilder.append(ConfigProperties.getLocationIconPrefix());
