@@ -8,13 +8,13 @@ import com.paytm.digital.education.coaching.consumer.model.dto.TopRankers;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseDetails;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseFeatures;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseFee;
+import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseHighlight;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseImportantDates;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CourseGetStarted;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
-import java.util.Map;
 
 @Getter
 @Builder
@@ -30,7 +30,7 @@ public class GetCoachingCourseDetailsResponse {
     private long   coachingInstituteId;
     private String coachingInstituteName;
 
-    private Map<String, String> courseHighlights;
+    private List<CoachingCourseHighlight> courseHighlights;
 
     private TopRankers                   topRankers;
     private CoachingCourseDetails        coachingCourseDetails;

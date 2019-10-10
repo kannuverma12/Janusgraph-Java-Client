@@ -10,7 +10,6 @@ import com.paytm.digital.education.coaching.consumer.service.search.helper.Coach
 import com.paytm.digital.education.coaching.enums.CoachingCourseType;
 import com.paytm.digital.education.coaching.es.model.CoachingCourseSearch;
 import com.paytm.digital.education.coaching.es.model.CoachingInstituteSearch;
-import com.paytm.digital.education.coaching.utils.ImageUtils;
 import com.paytm.digital.education.coaching.utils.SearchUtils;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
@@ -39,7 +38,6 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.C
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_EXAMS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_INSTITUTE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_LEVEL;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_PLACEHOLDER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_STREAMS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_FILTER_NAMESPACE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_SEARCH_NAMESPACE;
@@ -55,7 +53,6 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.S
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.SEARCH_ANALYZER_COACHING_COURSE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.SEARCH_INDEX_COACHING_COURSE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
-import static com.paytm.digital.education.constant.CommonConstants.COACHING_COURSES;
 import static com.paytm.digital.education.enums.es.FilterQueryType.TERMS;
 
 @Slf4j
@@ -104,8 +101,8 @@ public class CoachingCourseSearchService extends AbstractSearchService {
             populateSearchResultPerLevel(searchResponse, elasticResponse);
         }
 
-        buildSearchResponse(searchResponse, elasticResponse, elasticRequest,COACHING_COMPONENT,
-                COURSE_FILTER_NAMESPACE,COURSE_SEARCH_NAMESPACE);
+        buildSearchResponse(searchResponse, elasticResponse, elasticRequest, COACHING_COMPONENT,
+                COURSE_FILTER_NAMESPACE, COURSE_SEARCH_NAMESPACE);
         return searchResponse;
     }
 
@@ -156,35 +153,7 @@ public class CoachingCourseSearchService extends AbstractSearchService {
             List<SearchBaseData> courseDataList = new ArrayList<>();
 
             for (CoachingCourseSearch coachingCourseSearch : coachingCourseSearches) {
-                CoachingCourseData toAdd = CoachingCourseData
-                        .builder()
-                        .courseId(coachingCourseSearch.getCourseId())
-                        .courseName(coachingCourseSearch.getCourseName())
-                        .coachingInstituteId(coachingCourseSearch.getCoachingInstituteId())
-                        .coachingInstituteName(coachingCourseSearch.getCoachingInstituteName())
-                        .discountedPrice(coachingCourseSearch.getDiscountedPrice())
-                        .originalPrice(coachingCourseSearch.getOriginalPrice())
-                        .eligibility(coachingCourseSearch.getEligibility())
-                        .courseDurationDays(coachingCourseSearch.getCourseDurationDays())
-                        .urlDisplayKey(CommonUtil
-                                .convertNameToUrlDisplayName(coachingCourseSearch.getCourseName()))
-                        .logo(ImageUtils.getImageWithAbsolutePath(CoachingCourseType
-                                        .getStaticDataByCourseType(coachingCourseSearch.getCourseType())
-                                        .getImageUrl(),
-                                        COACHING_COURSE_PLACEHOLDER, COACHING_COURSES))
-                        .targetExam(!CollectionUtils.isEmpty(coachingCourseSearch.getExamNames())
-                                ? coachingCourseSearch.getExamNames().get(0) : null)
-                        .build();
-
-                if (Objects.nonNull(coachingCourseSearch.getLevel())) {
-                    toAdd.setCourseLevel(coachingCourseSearch.getLevel().getDisplayName());
-                }
-
-                if (Objects.nonNull(coachingCourseSearch.getCourseType())) {
-                    toAdd.setCourseType(coachingCourseSearch.getCourseType().getText());
-                }
-
-                courseDataList.add(toAdd);
+                courseDataList.add(this.toCoachingCourseData(coachingCourseSearch));
             }
             searchResults.setValues(courseDataList);
         }
@@ -226,12 +195,13 @@ public class CoachingCourseSearchService extends AbstractSearchService {
                 .coachingInstituteName(coachingCourseSearch.getCoachingInstituteName())
                 .discountedPrice(coachingCourseSearch.getDiscountedPrice())
                 .originalPrice(coachingCourseSearch.getOriginalPrice())
+                .eligibility(coachingCourseSearch.getEligibility())
+                .courseDurationDays(coachingCourseSearch.getCourseDurationDays())
+                .duration(coachingCourseSearch.getDuration())
                 .urlDisplayKey(CommonUtil
                         .convertNameToUrlDisplayName(coachingCourseSearch.getCourseName()))
-                .logo(ImageUtils.getImageWithAbsolutePath(CoachingCourseType
-                                .getStaticDataByCourseType(coachingCourseSearch.getCourseType())
-                                .getImageUrl(),
-                        COACHING_COURSE_PLACEHOLDER, COACHING_COURSES))
+                .logo(CoachingCourseType.getStaticDataByCourseType(
+                        coachingCourseSearch.getCourseType()).getImageUrl())
                 .targetExam(!CollectionUtils.isEmpty(coachingCourseSearch.getExamNames())
                         ? coachingCourseSearch.getExamNames().get(0) : null)
                 .build();
@@ -242,6 +212,10 @@ public class CoachingCourseSearchService extends AbstractSearchService {
 
         if (Objects.nonNull(coachingCourseSearch.getCourseType())) {
             toAdd.setCourseType(coachingCourseSearch.getCourseType().getText());
+        }
+
+        if (Objects.nonNull(coachingCourseSearch.getDurationType())) {
+            toAdd.setDurationType(coachingCourseSearch.getDurationType().getText());
         }
 
         return toAdd;

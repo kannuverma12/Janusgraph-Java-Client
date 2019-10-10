@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.paytm.digital.education.database.embedded.Currency;
 import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.CourseType;
+import com.paytm.digital.education.enums.DurationType;
 import lombok.Data;
 
 import java.util.List;
@@ -36,6 +37,8 @@ public class CoachingCourseSearch {
     private List<String>                   examNames;
     private String                         eligibility;
     private Double                         courseDurationDays;
+    private Integer                        duration;
+    private DurationType                   durationType;
     private String                         merchantProductId;
     private Long                           paytmProductId;
     private Boolean                        isEnabled;

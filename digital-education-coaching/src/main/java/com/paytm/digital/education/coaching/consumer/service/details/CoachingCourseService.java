@@ -7,6 +7,7 @@ import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.Co
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseFeature;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseFeatures;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseFee;
+import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseHighlight;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseImportantDates;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CourseGetStarted;
 import com.paytm.digital.education.coaching.consumer.model.response.details.GetCoachingCourseDetailsResponse;
@@ -360,15 +361,19 @@ public class CoachingCourseService {
             final List<CoachingCourseFeature> coachingCourseFeatures,
             final List<String> sections) {
 
-        Map<String, String> courseHighlights = new LinkedHashMap<>();
+        List<CoachingCourseHighlight> courseHighlights = new ArrayList<>();
         String targetExam = this.fillTargetExam(examTypeAndExamListMap);
         if (!StringUtils.isEmpty(targetExam)) {
-            courseHighlights.put(TARGET_EXAM_COURSE.getValue(), targetExam);
+            courseHighlights.add(new CoachingCourseHighlight(TARGET_EXAM_COURSE.getValue(),
+                    targetExam));
         }
-        courseHighlights.put(ELIGIBILITY_COURSE.getValue(), course.getEligibility());
-        courseHighlights.put(DURATION_COURSE.getValue(),
-                course.getDuration() + " " + (null == course.getDurationType()
-                        ? EMPTY_STRING : course.getDurationType().getText()));
+        courseHighlights.add(new CoachingCourseHighlight(ELIGIBILITY_COURSE.getValue(),
+                course.getEligibility()));
+        courseHighlights.add(CoachingCourseHighlight.builder()
+                .key(DURATION_COURSE.getValue())
+                .value(course.getDuration() + " " + (null == course.getDurationType()
+                        ? EMPTY_STRING : course.getDurationType().getText()))
+                .build());
 
         return GetCoachingCourseDetailsResponse.builder()
                 .courseId(course.getCourseId())
