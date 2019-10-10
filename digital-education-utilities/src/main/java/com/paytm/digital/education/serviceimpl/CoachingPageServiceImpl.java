@@ -5,7 +5,9 @@ import com.paytm.digital.education.database.entity.Page;
 import com.paytm.digital.education.database.entity.Section;
 import com.paytm.digital.education.database.repository.PageRepository;
 import com.paytm.digital.education.database.repository.SectionRepository;
+import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.exception.ResourceNotFoundException;
+import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.service.PageService;
 import com.paytm.digital.education.utility.CommonUtil;
 import lombok.AllArgsConstructor;
@@ -37,9 +39,8 @@ public class CoachingPageServiceImpl implements PageService {
         Page page = pageRepository.getPageByName(pageName);
 
         if (page == null) {
-            throw ResourceNotFoundException.builder()
-                    .errorCode(ErrorCode.DP_RESOURCE_NOT_FOUND)
-                    .resourceName(pageName).build();
+            throw new BadRequestException(ErrorEnum.INVALID_PAGE_NAME,
+                    ErrorEnum.INVALID_PAGE_NAME.getExternalMessage());
         }
 
         final Collection<String> pageSectionNames = page.getSections();

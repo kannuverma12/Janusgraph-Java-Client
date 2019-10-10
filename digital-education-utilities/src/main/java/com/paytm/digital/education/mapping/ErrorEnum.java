@@ -139,7 +139,8 @@ public enum ErrorEnum {
             HttpStatus.BAD_REQUEST, 0),
     INVALID_MERCHANT_PRODUCTS(4066,
             "Empty product list received. Please try with at least one product",
-            HttpStatus.BAD_REQUEST, 0);
+            HttpStatus.BAD_REQUEST, 0),
+    INVALID_PAGE_NAME(4067, "Provided page name is invalid.", HttpStatus.BAD_REQUEST, 0);
 
     private final int        internalCode;
     private final String     externalMessage;
