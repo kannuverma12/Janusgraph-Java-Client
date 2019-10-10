@@ -172,16 +172,17 @@ public class CoachingInstituteService {
                 .mockTest(getMockTestInfo(coachingInstituteEntity.getBrandName()))
                 .instituteMoreInfo(this.getInstituteMoreInfo(coachingInstituteEntity))
                 .sections(sections)
-                .filters(FILTERS_APPLICABLE)
                 .examName(this.getExamName(examId))
                 .streamName(this.getStreamName(streamId))
                 .build();
     }
 
-    private InstituteMoreInfo getInstituteMoreInfo(CoachingInstituteEntity coachingInstituteEntity) {
+    private InstituteMoreInfo getInstituteMoreInfo(
+            CoachingInstituteEntity coachingInstituteEntity) {
         List<InstituteMoreInfoData> instituteMoreInfoDataList = new ArrayList<>();
-        InstituteMoreInfoData instituteMoreInfoData = InstituteMoreInfoData.builder().header(FAQ.getValue()).results(
-                new ArrayList<>(fillFaqs(coachingInstituteEntity.getFaqs()))).build();
+        InstituteMoreInfoData instituteMoreInfoData =
+                InstituteMoreInfoData.builder().header(FAQ.getValue()).results(
+                        new ArrayList<>(fillFaqs(coachingInstituteEntity.getFaqs()))).build();
         instituteMoreInfoDataList.add(instituteMoreInfoData);
         return InstituteMoreInfo.builder()
                 .header(String.format(MORE_FROM.getValue(),
@@ -279,6 +280,7 @@ public class CoachingInstituteService {
         return CoachingCourseTypeInfo.builder()
                 .header(BROWSE_BY_COURSE_TYPE.getValue())
                 .results(listOfCourseType)
+                .filters(FILTERS_APPLICABLE)
                 .build();
     }
 

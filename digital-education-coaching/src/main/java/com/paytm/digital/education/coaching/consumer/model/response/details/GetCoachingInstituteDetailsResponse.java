@@ -3,7 +3,6 @@ package com.paytm.digital.education.coaching.consumer.model.response.details;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.paytm.digital.education.coaching.consumer.model.dto.Faq;
 import com.paytm.digital.education.coaching.consumer.model.dto.MockTest;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingCourses;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopExamsInstitute;
@@ -39,7 +38,6 @@ public class GetCoachingInstituteDetailsResponse {
     private MockTest                 mockTest;
     private InstituteMoreInfo        instituteMoreInfo;
     private List<String>             sections;
-    private List<String>             filters;
     private String                   examName;
     private String                   streamName;
 }

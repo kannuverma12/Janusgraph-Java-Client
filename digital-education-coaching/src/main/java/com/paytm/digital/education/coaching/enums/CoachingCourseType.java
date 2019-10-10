@@ -21,6 +21,7 @@ public enum CoachingCourseType {
                     .imageUrl(CommonUtil.getAbsoluteUrl(COACHING_COURSE_TYPE_PLACEHOLDER,
                             COACHING_COURSE_TYPES))
                     .name(CourseType.CLASSROOM_COURSE.getText())
+                    .enumName(CourseType.CLASSROOM_COURSE)
                     .build()),
     DISTANCE_LEARNING(CourseType.DISTANCE_LEARNING,
             CoachingCourseTypeResponse.builder()
@@ -28,6 +29,7 @@ public enum CoachingCourseType {
                     .imageUrl(CommonUtil.getAbsoluteUrl(COACHING_COURSE_TYPE_PLACEHOLDER,
                             COACHING_COURSE_TYPES))
                     .name(CourseType.DISTANCE_LEARNING.getText())
+                    .enumName(CourseType.DISTANCE_LEARNING)
                     .build()),
     TEST_SERIES_ONLINE(CourseType.TEST_SERIES_ONLINE,
             CoachingCourseTypeResponse.builder()
@@ -35,6 +37,7 @@ public enum CoachingCourseType {
                     .imageUrl(CommonUtil.getAbsoluteUrl(COACHING_COURSE_TYPE_PLACEHOLDER,
                             COACHING_COURSE_TYPES))
                     .name(CourseType.TEST_SERIES_ONLINE.getText())
+                    .enumName(CourseType.TEST_SERIES_ONLINE)
                     .build()),
     TEST_SERIES_OFFLINE(CourseType.TEST_SERIES_OFFLINE,
             CoachingCourseTypeResponse.builder()
@@ -42,6 +45,7 @@ public enum CoachingCourseType {
                     .imageUrl(CommonUtil.getAbsoluteUrl(COACHING_COURSE_TYPE_PLACEHOLDER,
                             COACHING_COURSE_TYPES))
                     .name(CourseType.TEST_SERIES_OFFLINE.getText())
+                    .enumName(CourseType.TEST_SERIES_OFFLINE)
                     .build()),
     E_LEARNING(CourseType.E_LEARNING,
             CoachingCourseTypeResponse.builder()
@@ -49,6 +53,7 @@ public enum CoachingCourseType {
                     .imageUrl(CommonUtil.getAbsoluteUrl(COACHING_COURSE_TYPE_PLACEHOLDER,
                             COACHING_COURSE_TYPES))
                     .name(CourseType.E_LEARNING.getText())
+                    .enumName(CourseType.E_LEARNING)
                     .build());
 
     private static Map<CourseType, CoachingCourseTypeResponse> COURSE_TYPE_STATIC_DATA_MAP;

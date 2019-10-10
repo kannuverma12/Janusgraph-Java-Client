@@ -21,4 +21,5 @@ public class CoachingCourseTypeInfo {
 
     private String                           header;
     private List<CoachingCourseTypeResponse> results;
+    private List<String>                     filters;
 }

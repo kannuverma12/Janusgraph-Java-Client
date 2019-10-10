@@ -3,6 +3,7 @@ package com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.paytm.digital.education.enums.CourseType;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -12,8 +13,9 @@ import lombok.Getter;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class CoachingCourseTypeResponse {
 
-    private String description;
-    private String imageUrl;
-    private String name;
+    private String     description;
+    private String     imageUrl;
+    private String     name;
+    private CourseType enumName;
 }
 
