@@ -280,8 +280,8 @@ public class ExamDetailServiceImpl {
             boolean sectionsFlag, boolean widgets, Instance nearestInstance,
             Map<String, Instance> subExamInstances) {
         ExamDetail examDetail = new ExamDetail();
-        addCommonData(examDetail, exam, nearestInstance, subExamInstances, importantDatesflag,
-                examCenters);
+        addCommonData(examDetail, exam, nearestInstance, subExamInstances, syllabus,
+                importantDatesflag, examCenters);
         if (APP.equals(client)) {
             List<String> sectionsList =
                     detailPageSectionHelper.getSectionOrder(EXAM.name().toLowerCase(), client);
@@ -294,7 +294,7 @@ public class ExamDetailServiceImpl {
     }
 
     private void addCommonData(ExamDetail examResponse, Exam exam, Instance nearestInstance,
-            Map<String, Instance> subExamInstances, boolean importantDatesFlg,
+            Map<String, Instance> subExamInstances, boolean syllabusflg, boolean importantDatesFlg,
             boolean examCentersFlg) {
         examResponse.setExamId(exam.getExamId());
         examResponse.setAbout(exam.getAboutExam());
@@ -325,10 +325,12 @@ public class ExamDetailServiceImpl {
         if (Objects.nonNull(exam.getPaytmKeys())) {
             addPaytmKeys(examResponse, exam.getPaytmKeys());
         }
-        List<com.paytm.digital.education.explore.response.dto.detail.Syllabus> syllabus =
-                examInstanceHelper.getSyllabus(nearestInstance, subExamInstances, exam);
-        if (!CollectionUtils.isEmpty(syllabus)) {
-            examResponse.setSyllabus(syllabus);
+        if (syllabusflg) {
+            List<com.paytm.digital.education.explore.response.dto.detail.Syllabus> syllabus =
+                    examInstanceHelper.getSyllabus(nearestInstance, subExamInstances, exam);
+            if (!CollectionUtils.isEmpty(syllabus)) {
+                examResponse.setSyllabus(syllabus);
+            }
         }
     }
 
