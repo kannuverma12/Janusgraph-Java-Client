@@ -15,7 +15,6 @@ import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.CommonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.text.WordUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -79,7 +78,7 @@ public class CoachingStreamService {
 
         return GetStreamDetailsResponse.builder()
                 .streamId(streamEntity.getStreamId())
-                .streamName(WordUtils.capitalizeFully(streamEntity.getName()))
+                .streamName(streamEntity.getName())
                 .topExams(this.getTopExamsForStream(streamEntity))
                 .topCoachingInstitutes(this.getTopCoachingInstitutesForStream(streamEntity))
                 .topCoachingCourses(this.getTopCoachingCoursesForStream(streamEntity))
@@ -100,8 +99,7 @@ public class CoachingStreamService {
         filter.put(COACHING_COURSE_STREAMS, Collections.singletonList(stream.getName()));
 
         return TopCoachingCourses.builder()
-                .header(String.format(TOP_COACHING_COURSES_FOR.getValue(),
-                        WordUtils.capitalizeFully(stream.getName())))
+                .header(String.format(TOP_COACHING_COURSES_FOR.getValue(), stream.getName()))
                 .results(courses)
                 .filter(filter)
                 .build();
@@ -119,8 +117,7 @@ public class CoachingStreamService {
         filter.put(COACHING_INSTITUTE_STREAMS, Collections.singletonList(stream.getName()));
 
         return TopCoachingInstitutes.builder()
-                .header(String.format(TOP_COACHING_INSTITUTES_FOR.getValue(),
-                        WordUtils.capitalizeFully(stream.getName())))
+                .header(String.format(TOP_COACHING_INSTITUTES_FOR.getValue(), stream.getName()))
                 .results(institutes)
                 .filter(filter)
                 .build();
@@ -146,8 +143,7 @@ public class CoachingStreamService {
         filter.put(COACHING_EXAM_STREAMS, Collections.singletonList(stream.getName()));
 
         return TopExams.builder()
-                .header(String.format(COACHING_FOR.getValue(),
-                        WordUtils.capitalizeFully(stream.getName())))
+                .header(String.format(COACHING_FOR.getValue(), stream.getName()))
                 .results(topExams)
                 .filter(filter)
                 .build();

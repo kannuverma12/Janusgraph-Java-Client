@@ -5,7 +5,6 @@ import com.paytm.digital.education.coaching.utils.ImageUtils;
 import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.utility.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.text.WordUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -27,10 +26,10 @@ public class LandingPageStreamTransformer {
                 LandingPageStreamDto landingPageStreamDto = LandingPageStreamDto.builder()
                         .entityId(streamEntity.getStreamId())
                         .key(streamEntity.getName())
-                        .fullName(WordUtils.capitalizeFully(streamEntity.getName()))
+                        .fullName(streamEntity.getName())
                         .urlDisplayKey(CommonUtil.convertNameToUrlDisplayName(
                                 streamEntity.getName()))
-                        .displayName(WordUtils.capitalizeFully(streamEntity.getName()))
+                        .displayName(streamEntity.getName())
                         .logo(ImageUtils.getImageWithAbsolutePath(streamEntity.getLogo(),
                                 STREAM_PLACEHOLDER, COACHING_STREAMS))
                         .build();

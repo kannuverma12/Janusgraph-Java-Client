@@ -1,16 +1,15 @@
 package com.paytm.digital.education.coaching.consumer.transformer;
 
 import com.paytm.digital.education.coaching.consumer.model.dto.Exam;
-import com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute.InstituteHighlight;
 import com.paytm.digital.education.coaching.consumer.model.dto.Stream;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopRanker;
+import com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitute.InstituteHighlight;
 import com.paytm.digital.education.coaching.utils.ImageUtils;
 import com.paytm.digital.education.database.embedded.KeyHighlight;
 import com.paytm.digital.education.database.entity.CoachingCenterEntity;
 import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
 import lombok.experimental.UtilityClass;
-import org.apache.commons.text.WordUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_INSTITUTE_KEY_HIGHLIGHT_PLACEHOLDER;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.EMPTY_STRING;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_PLACEHOLDER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_PLACEHOLDER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.TOP_RANKER_PLACEHOLDER;
@@ -78,7 +76,7 @@ public class CoachingInstituteTransformer {
                 Stream stream = Stream
                         .builder()
                         .id(streamEntity.getStreamId())
-                        .name(WordUtils.capitalizeFully(streamEntity.getName()))
+                        .name(streamEntity.getName())
                         .logo(ImageUtils.getImageWithAbsolutePath(streamEntity.getLogo(),
                                 STREAM_PLACEHOLDER, COACHING_STREAMS))
                         .build();
