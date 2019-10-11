@@ -24,9 +24,12 @@ public class StreamIngestorService {
     public StreamEntity createStream(StreamDataRequest request) {
         StreamEntity streamEntity = new StreamEntity();
         streamEntity.setCreatedAt(LocalDateTime.now());
-        Optional.ofNullable(streamDAO.findByStreamName(request.getName()))
-                .orElseThrow(() -> new InvalidRequestException(
-                        "stream already exists : " + request.getName()));
+        Optional<StreamEntity> streamEntityOptional =
+                Optional.ofNullable(streamDAO.findByStreamName(request.getName()));
+        if (streamEntityOptional.isPresent()) {
+            throw new InvalidRequestException(
+                    "stream already exists : " + request.getName());
+        }
         return saveStream(request, streamEntity);
     }
 

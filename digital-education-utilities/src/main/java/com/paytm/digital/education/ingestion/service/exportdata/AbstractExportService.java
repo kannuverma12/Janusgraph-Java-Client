@@ -73,8 +73,9 @@ public abstract class AbstractExportService {
 
         try {
             UpdateValuesResponse updateValuesResponse = GoogleDriveUtil.writeDataToSheet(
-                    sheetId, range, values, GoogleConfig.getCoachingCredentialFileName(),
-                    GoogleConfig.getCoachingCredentialFolderPath());
+                    sheetId, range, values, GoogleConfig.getExploreCredentialFileName(),
+                    GoogleConfig.getExploreCredentialFolderPath());
+            log.debug("Export response : {}", JsonUtils.toJson(updateValuesResponse));
             return updateValuesResponse.getUpdatedRows();
         } catch (final IOException | GeneralSecurityException e) {
             log.error("Got exception in processRecords, list: {}, clazz:{}, sheetId: {}, "

@@ -23,8 +23,10 @@ public class StreamEntity extends Base {
     @Indexed(unique = true)
     private Long streamId;
 
+    @Field("name")
     private String name;
 
+    @Field("logo")
     private String logo;
 
 }

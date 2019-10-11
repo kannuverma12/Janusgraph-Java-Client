@@ -8,7 +8,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum IngestionFormEntity {
 
-    STREAM_FORM("stream");
+    STREAM_FORM("stream"),
+    MERCHANT_STREAM("merchant_stream");
 
     private String value;
 

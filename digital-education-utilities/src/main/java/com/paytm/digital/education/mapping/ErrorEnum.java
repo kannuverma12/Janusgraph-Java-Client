@@ -133,8 +133,14 @@ public enum ErrorEnum {
     BLANK_SHEET_ID(4061, "Sheet id not provided. Please provide a valid sheet id",
             BAD_REQUEST, 0),
     SHEET_INFO_NOT_DEFINED(4062, "Sheet info for %s form is not defined", BAD_REQUEST, 1),
-    BLANK_PAYTM_STREAM_NAME(4063, "Stream name is mandatory.", BAD_REQUEST, 0);
-
+    BLANK_PAYTM_STREAM_NAME(4063, "Stream name is mandatory.", BAD_REQUEST, 0),
+    INVALID_MERCHANT_STREAM_DATA(4064,
+            "Mandatory params missing. Mandatory params are : merchantId, Merchant Stream and paytm_stream_id",
+            BAD_REQUEST, 0),
+    INVALID_PAYTM_STREAM(4065,
+            "Requested paytm stream id : %s doesn't exist in our system. Please provide a valid paytm stream id.",
+            BAD_REQUEST, 1),
+    PAYTM_STREAM_DISABLED(4066, "Requested paytm stream id : %s is disabled.", BAD_REQUEST, 1);
 
     private final int        internalCode;
     private final String     externalMessage;
