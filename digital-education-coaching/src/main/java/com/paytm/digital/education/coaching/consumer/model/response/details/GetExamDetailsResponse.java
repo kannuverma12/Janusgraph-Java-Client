@@ -42,6 +42,5 @@ public class GetExamDetailsResponse {
     private List<String>                documentsCounselling;
     private String                      admitCard;
     private String                      applicationForm;
-    private List<String>                filters;
 
 }

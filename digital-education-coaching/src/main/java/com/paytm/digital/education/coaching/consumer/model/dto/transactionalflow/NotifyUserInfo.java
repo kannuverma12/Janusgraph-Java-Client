@@ -21,6 +21,5 @@ public class NotifyUserInfo {
     @NotEmpty
     private String firstName;
 
-    @NotEmpty
     private String lastName;
 }

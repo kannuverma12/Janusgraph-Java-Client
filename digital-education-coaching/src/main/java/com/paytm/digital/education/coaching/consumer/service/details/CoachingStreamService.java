@@ -21,12 +21,14 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_EXAMS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_STREAMS;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_EXAM_STREAMS;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_INSTITUTE_STREAMS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_COMPONENT;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_KEY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_NAMESPACE;
@@ -53,9 +55,6 @@ public class CoachingStreamService {
     private final CoachingInstituteService coachingInstituteService;
     private final ExamService              examService;
     private final PropertyReader           propertyReader;
-
-    private static final List<String> FILTERS_APPLICABLE =
-            Collections.singletonList(COACHING_COURSE_STREAMS);
 
     public GetStreamDetailsResponse getStreamDetails(final long streamId,
             final String urlDisplayKey) {
@@ -86,7 +85,6 @@ public class CoachingStreamService {
                 .topCoachingCourses(this.getTopCoachingCoursesForStream(streamEntity))
                 .sections(sections)
                 .importantDatesBannerDetails(this.getImportantDatesBannerDetails())
-                .filters(FILTERS_APPLICABLE)
                 .build();
     }
 
@@ -98,10 +96,14 @@ public class CoachingStreamService {
             courses = new ArrayList<>();
         }
 
+        Map<String, List<Object>> filter = new HashMap<>();
+        filter.put(COACHING_COURSE_STREAMS, Collections.singletonList(stream.getName()));
+
         return TopCoachingCourses.builder()
                 .header(String.format(TOP_COACHING_COURSES_FOR.getValue(),
                         WordUtils.capitalizeFully(stream.getName())))
                 .results(courses)
+                .filter(filter)
                 .build();
     }
 
@@ -113,10 +115,14 @@ public class CoachingStreamService {
             institutes = new ArrayList<>();
         }
 
+        Map<String, List<Object>> filter = new HashMap<>();
+        filter.put(COACHING_INSTITUTE_STREAMS, Collections.singletonList(stream.getName()));
+
         return TopCoachingInstitutes.builder()
                 .header(String.format(TOP_COACHING_INSTITUTES_FOR.getValue(),
                         WordUtils.capitalizeFully(stream.getName())))
                 .results(institutes)
+                .filter(filter)
                 .build();
     }
 
@@ -136,10 +142,14 @@ public class CoachingStreamService {
             topExams = new ArrayList<>();
         }
 
+        Map<String, List<Object>> filter = new HashMap<>();
+        filter.put(COACHING_EXAM_STREAMS, Collections.singletonList(stream.getName()));
+
         return TopExams.builder()
                 .header(String.format(COACHING_FOR.getValue(),
                         WordUtils.capitalizeFully(stream.getName())))
                 .results(topExams)
+                .filter(filter)
                 .build();
     }
 }

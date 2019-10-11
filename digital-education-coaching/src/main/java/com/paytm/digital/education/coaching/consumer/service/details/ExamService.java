@@ -1,19 +1,17 @@
 package com.paytm.digital.education.coaching.consumer.service.details;
 
-import com.paytm.digital.education.coaching.consumer.model.dto.ExamAdditionalInfo;
 import com.paytm.digital.education.coaching.consumer.model.dto.ImportantDatesBannerDetails;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingCourses;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingInstitutes;
 import com.paytm.digital.education.coaching.consumer.model.response.details.GetExamDetailsResponse;
-import com.paytm.digital.education.coaching.consumer.model.response.details.SectionDataHolder;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingCourseData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingInstituteData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.ExamData;
 import com.paytm.digital.education.coaching.consumer.service.details.helper.ExamSectionHelper;
 import com.paytm.digital.education.coaching.consumer.service.search.helper.SearchDataHelper;
-import com.paytm.digital.education.coaching.consumer.service.utils.CommonServiceUtils;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Instance;
+import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.BadRequestException;
@@ -26,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -34,15 +31,14 @@ import java.util.Map;
 import java.util.Objects;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_EXAMS;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_INSTITUTE;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_LEVEL;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_TYPE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_STREAMS;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_INSTITUTE_EXAMS;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_INSTITUTE_STREAMS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_COMPONENT;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_KEY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_NAMESPACE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ADDITIONAL_INFO;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ADDITIONAL_INFO_PARAMS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_DETAILS_FIELDS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_DETAIL_NAMESPACE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ID;
@@ -51,8 +47,9 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.I
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.ImportantDates.HEADER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.ImportantDates.LOGO;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.SECTION;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_DETAILS_FIELDS;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
-import static com.paytm.digital.education.coaching.enums.DisplayHeadings.ALL_YOU_NEED_TO_KNOW_ABOUT;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.SIMILAR_COACHING_COURSES;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.SIMILAR_COACHING_INSTITUTES;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_COACHING_COURSES_FOR;
@@ -72,9 +69,6 @@ public class ExamService {
     private final PropertyReader           propertyReader;
     private final ExamSectionHelper        examSectionHelper;
     private final ExamInstanceHelper       examInstanceHelper;
-
-    private static final List<String> FILTERS_APPLICABLE =
-            Collections.singletonList(COACHING_COURSE_EXAMS);
 
     public GetExamDetailsResponse getExamDetails(final Long examId, final String urlDisplayKey) {
         Exam exam = this.commonMongoRepository.getEntityByFields(EXAM_ID, examId, Exam.class,
@@ -112,7 +106,6 @@ public class ExamService {
                 .importantDates(examInstanceHelper
                         .getImportantDates(exam, nearestInstance, subExamInstances))
                 .importantDatesBannerDetails(this.getImportantDatesBannerDetails())
-                .filters(FILTERS_APPLICABLE)
                 .build();
 
         Map<String, Object> sectionConfigurationMap =
@@ -133,19 +126,30 @@ public class ExamService {
         List<CoachingCourseData> courses = coachingCourseService.getTopCoachingCoursesForExamId(
                 exam.getExamId());
 
+        Map<String, List<Object>> filter = new HashMap<>();
+        filter.put(COACHING_COURSE_EXAMS, Collections.singletonList(exam.getExamShortName()));
+
         if (!CollectionUtils.isEmpty(courses)) {
             return TopCoachingCourses.builder()
                     .header(String.format(TOP_COACHING_COURSES_FOR.getValue(),
                             exam.getExamShortName()))
                     .results(courses)
+                    .filter(filter)
                     .build();
         }
 
+        long streamId;
         if (CollectionUtils.isEmpty(exam.getStreamIds())) {
             courses = new ArrayList<>();
         } else {
-            courses = coachingCourseService.getTopCoachingCoursesForStreamId(
-                    exam.getStreamIds().get(0));
+            streamId = exam.getStreamIds().get(0);
+            courses = coachingCourseService.getTopCoachingCoursesForStreamId(streamId);
+            StreamEntity streamEntity = this.getStreamEntity(streamId);
+            if (Objects.nonNull(streamEntity)) {
+                filter.remove(COACHING_COURSE_EXAMS);
+                filter.put(COACHING_COURSE_STREAMS,
+                        Collections.singletonList(streamEntity.getName()));
+            }
         }
 
         if (CollectionUtils.isEmpty(courses)) {
@@ -155,26 +159,44 @@ public class ExamService {
         return TopCoachingCourses.builder()
                 .header(SIMILAR_COACHING_COURSES.getValue())
                 .results(courses)
+                .filter(filter)
                 .build();
+    }
+
+    private StreamEntity getStreamEntity(final long streamId) {
+        return commonMongoRepository.getEntityByFields(STREAM_ID,
+                streamId, StreamEntity.class, STREAM_DETAILS_FIELDS);
     }
 
     private TopCoachingInstitutes getTopCoachingInstitutes(Exam exam) {
         List<CoachingInstituteData> institutes = coachingInstituteService
                 .getTopCoachingInstitutesByExamId(exam.getExamId());
 
+        Map<String, List<Object>> filter = new HashMap<>();
+        filter.put(COACHING_INSTITUTE_EXAMS,
+                Collections.singletonList(exam.getExamShortName()));
+
         if (!CollectionUtils.isEmpty(institutes)) {
             return TopCoachingInstitutes.builder()
                     .header(String.format(TOP_COACHING_INSTITUTES_FOR.getValue(),
                             exam.getExamShortName()))
                     .results(institutes)
+                    .filter(filter)
                     .build();
         }
 
+        long streamId;
         if (CollectionUtils.isEmpty(exam.getStreamIds())) {
             institutes = new ArrayList<>();
         } else {
-            institutes = coachingInstituteService.getTopCoachingInstitutesByStreamId(
-                    exam.getStreamIds().get(0));
+            streamId = exam.getStreamIds().get(0);
+            institutes = coachingInstituteService.getTopCoachingInstitutesByStreamId(streamId);
+            StreamEntity streamEntity = this.getStreamEntity(streamId);
+            if (Objects.nonNull(streamEntity)) {
+                filter.remove(COACHING_INSTITUTE_EXAMS);
+                filter.put(COACHING_INSTITUTE_STREAMS,
+                        Collections.singletonList(streamEntity.getName()));
+            }
         }
 
         if (CollectionUtils.isEmpty(institutes)) {
@@ -184,6 +206,7 @@ public class ExamService {
         return TopCoachingInstitutes.builder()
                 .header(SIMILAR_COACHING_INSTITUTES.getValue())
                 .results(institutes)
+                .filter(filter)
                 .build();
     }
 

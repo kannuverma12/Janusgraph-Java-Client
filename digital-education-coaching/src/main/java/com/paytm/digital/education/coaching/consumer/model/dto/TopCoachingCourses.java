@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Builder
@@ -15,6 +16,7 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class TopCoachingCourses {
 
-    private String                   header;
-    private List<CoachingCourseData> results;
+    private String                    header;
+    private List<CoachingCourseData>  results;
+    private Map<String, List<Object>> filter;
 }

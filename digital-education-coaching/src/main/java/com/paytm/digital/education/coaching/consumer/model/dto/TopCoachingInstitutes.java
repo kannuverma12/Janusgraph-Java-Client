@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Builder
@@ -17,4 +18,5 @@ public class TopCoachingInstitutes {
 
     private String                      header;
     private List<CoachingInstituteData> results;
+    private Map<String, List<Object>>   filter;
 }

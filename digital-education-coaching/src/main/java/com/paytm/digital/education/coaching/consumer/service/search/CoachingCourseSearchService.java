@@ -211,6 +211,7 @@ public class CoachingCourseSearchService extends AbstractSearchService {
         }
 
         if (Objects.nonNull(coachingCourseSearch.getCourseType())) {
+            toAdd.setCourseTypeEnum(coachingCourseSearch.getCourseType());
             toAdd.setCourseType(coachingCourseSearch.getCourseType().getText());
         }
 

@@ -18,6 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,7 +89,9 @@ public class MerchantCallImpl implements MerchantCall {
                 .builder()
                 .userMobile(userInfo.getPhone())
                 .userEmail(userInfo.getEmail())
-                .userName(userInfo.getFirstName() + " " + userInfo.getLastName())
+                .userName(StringUtils.isEmpty(userInfo.getLastName())
+                        ? userInfo.getFirstName() :
+                        userInfo.getFirstName() + " " + userInfo.getLastName())
                 .build();
 
         merchantCommitRequest.setUserInfo(commitUserInfo);

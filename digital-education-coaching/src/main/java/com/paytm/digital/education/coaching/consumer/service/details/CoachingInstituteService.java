@@ -115,9 +115,6 @@ public class CoachingInstituteService {
     private static final List<String> STREAM_FIELDS =
             Arrays.asList("stream_id", "name", "logo", "is_enabled");
 
-    private static final List<String> FILTERS_APPLICABLE =
-            Arrays.asList(COACHING_COURSE_INSTITUTE, COURSE_TYPE);
-
     private final CommonMongoRepository commonMongoRepository;
     private final SearchDataHelper      searchDataHelper;
     private final PropertyReader        propertyReader;
@@ -273,14 +270,20 @@ public class CoachingInstituteService {
         List<CoachingCourseTypeResponse> listOfCourseType = new ArrayList<>();
         if (Objects.nonNull(coachingInstituteEntity.getCourseTypes())) {
             for (CourseType courseType : coachingInstituteEntity.getCourseTypes()) {
-                listOfCourseType.add(CoachingCourseType
-                        .getStaticDataByCourseType(courseType));
+                CoachingCourseTypeResponse toAdd = CoachingCourseType.getStaticDataByCourseType(
+                        courseType);
+
+                Map<String, List<Object>> filter = new HashMap<>();
+                filter.put(COACHING_COURSE_INSTITUTE,
+                        Collections.singletonList(coachingInstituteEntity.getBrandName()));
+                filter.put(COURSE_TYPE, Collections.singletonList(courseType));
+                toAdd.setFilter(filter);
+                listOfCourseType.add(toAdd);
             }
         }
         return CoachingCourseTypeInfo.builder()
                 .header(BROWSE_BY_COURSE_TYPE.getValue())
                 .results(listOfCourseType)
-                .filters(FILTERS_APPLICABLE)
                 .build();
     }
 
@@ -304,10 +307,15 @@ public class CoachingInstituteService {
             topCoachingCourses = new ArrayList<>();
         }
 
+        Map<String, List<Object>> searchFilter = new HashMap<>();
+        searchFilter.put(COACHING_COURSE_INSTITUTE,
+                Collections.singletonList(coachingInstituteEntity.getBrandName()));
+
         return TopCoachingCourses.builder()
                 .header(String.format(TOP_COACHING_COURSES_BY.getValue(),
                         coachingInstituteEntity.getBrandName()))
                 .results(topCoachingCourses)
+                .filter(searchFilter)
                 .build();
     }
 

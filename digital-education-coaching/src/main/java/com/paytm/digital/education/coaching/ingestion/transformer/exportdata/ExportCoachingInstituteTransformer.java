@@ -5,6 +5,7 @@ import com.paytm.digital.education.database.embedded.Faq;
 import com.paytm.digital.education.database.embedded.KeyHighlight;
 import com.paytm.digital.education.database.embedded.OfficialAddress;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
+import com.paytm.digital.education.enums.CourseType;
 import com.paytm.digital.education.utility.CommonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
@@ -38,8 +39,7 @@ public class ExportCoachingInstituteTransformer {
                                     ? EMPTY_STRING : StringUtils.join(entity.getStreams(), ","))
                             .examIds(entity.getExams() == null
                                     ? EMPTY_STRING : StringUtils.join(entity.getExams(), ","))
-                            .courseTypes(entity.getCourseTypes() == null
-                                    ? EMPTY_STRING : StringUtils.join(entity.getCourseTypes(), ","))
+                            .courseTypes(getCourseTypesString(entity.getCourseTypes()))
                             .yearOfEstablishment(entity.getEstablishmentYear())
                             .brochure(entity.getBrochure())
                             .levelOfEducation(ExportCommonTransformer.convertCourseLevels(
@@ -59,6 +59,17 @@ public class ExportCoachingInstituteTransformer {
                     return form;
                 })
                 .collect(Collectors.toList());
+    }
+
+    private static String getCourseTypesString(final List<CourseType> courseTypes) {
+        if (CollectionUtils.isEmpty(courseTypes)) {
+            return EMPTY_STRING;
+        }
+        List<String> courseTypesString = new ArrayList<>();
+        for (CourseType courseType : courseTypes) {
+            courseTypesString.add(courseType.getText());
+        }
+        return StringUtils.join(courseTypesString, ",");
     }
 
     private static void fillAddress(final CoachingInstituteForm form,
