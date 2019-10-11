@@ -4,6 +4,7 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_DATA_INGESTI
 
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.ingestion.model.IngestionFormEntity;
+import com.paytm.digital.education.ingestion.service.importdata.ExamStreamImportService;
 import com.paytm.digital.education.ingestion.service.importdata.ImportService;
 import com.paytm.digital.education.ingestion.service.importdata.MerchantStreamImportService;
 import com.paytm.digital.education.ingestion.service.importdata.StreamDataImportService;
@@ -19,12 +20,15 @@ public class DataImportFactory {
     private static Logger log = LoggerFactory.getLogger(DataImportFactory.class);
 
     private final StreamDataImportService streamDataImportService;
+    private final ExamStreamImportService examStreamImportService;
     private final MerchantStreamImportService merchantStreamImportService;
 
     public ImportService getIngestorService(final IngestionFormEntity formEntity) {
         switch (formEntity) {
             case STREAM_FORM:
                 return streamDataImportService;
+            case EXAM_STREAM_MAPPING:
+                return examStreamImportService;
             case MERCHANT_STREAM:
                 return merchantStreamImportService;
             default:

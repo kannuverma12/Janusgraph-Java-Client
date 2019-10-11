@@ -22,13 +22,13 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID
 
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.database.entity.Course;
-import com.paytm.digital.education.explore.database.entity.Exam;
+import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.enums.Gender;
-import com.paytm.digital.education.explore.enums.PublishStatus;
+import com.paytm.digital.education.enums.PublishStatus;
 import com.paytm.digital.education.explore.response.builders.InstituteDetailResponseBuilder;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.common.Widget;

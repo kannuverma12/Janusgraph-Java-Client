@@ -15,10 +15,10 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.ZER
 import static com.paytm.digital.education.explore.enums.Gender.OTHERS;
 import static java.util.Collections.emptyList;
 
-import com.paytm.digital.education.explore.database.entity.Event;
-import com.paytm.digital.education.explore.database.entity.Exam;
-import com.paytm.digital.education.explore.database.entity.Instance;
-import com.paytm.digital.education.explore.database.entity.SubExam;
+import com.paytm.digital.education.database.entity.Event;
+import com.paytm.digital.education.database.entity.Exam;
+import com.paytm.digital.education.database.entity.Instance;
+import com.paytm.digital.education.database.entity.SubExam;
 import com.paytm.digital.education.explore.enums.Gender;
 import com.paytm.digital.education.explore.response.dto.detail.ExamAndCutOff;
 import com.paytm.digital.education.explore.response.dto.detail.Section;
@@ -30,7 +30,6 @@ import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.CommonUtils;
 import com.paytm.digital.education.utility.DateUtil;
 import lombok.AllArgsConstructor;
-import org.joda.time.LocalDate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -43,7 +42,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -96,7 +94,7 @@ public class ExamInstanceHelper {
             Map<String, Instance> subExamInstances) {
         List<com.paytm.digital.education.explore.response.dto.detail.Event> importantDates =
                 new ArrayList<>();
-        List<com.paytm.digital.education.explore.database.entity.Event> events =
+        List<Event> events =
                 nearestInstance.getEvents();
         importantDates.addAll(convertEntityEventToResponse(exam.getExamFullName(), events));
         for (Map.Entry<String, Instance> entry : subExamInstances.entrySet()) {
@@ -107,7 +105,7 @@ public class ExamInstanceHelper {
     }
 
     private List<Topic> getTopics(
-            com.paytm.digital.education.explore.database.entity.Unit entityUnit) {
+            com.paytm.digital.education.database.entity.Unit entityUnit) {
         List<Topic> topics = new ArrayList<>();
         if (!entityUnit.getName().equals(ZERO) && !CollectionUtils
                 .isEmpty(entityUnit.getTopics())) {
@@ -121,7 +119,7 @@ public class ExamInstanceHelper {
     }
 
     private List<Unit> getUnits(
-            com.paytm.digital.education.explore.database.entity.Syllabus entitySyllabus) {
+            com.paytm.digital.education.database.entity.Syllabus entitySyllabus) {
         List<Unit> units = new ArrayList<>();
         if (!CollectionUtils.isEmpty(entitySyllabus.getUnits())) {
             entitySyllabus.getUnits().forEach(entityUnit -> {
@@ -135,7 +133,7 @@ public class ExamInstanceHelper {
     }
 
     private List<Section> getSectionsFromEntitySyllabus(
-            List<com.paytm.digital.education.explore.database.entity.Syllabus> entitySyllabusList) {
+            List<com.paytm.digital.education.database.entity.Syllabus> entitySyllabusList) {
         List<Section> sectionList = new ArrayList<>();
         entitySyllabusList.forEach(entitySection -> {
             List<Unit> units = getUnits(entitySection);

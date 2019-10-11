@@ -73,6 +73,7 @@ public class MerchantStreamImportService extends AbstractImportService implement
             log.error("Got Exception in upsertNewRecords for input: {}, exception: ", form, e);
             failureMessage = e.getMessage();
         }
+
         if (Objects.isNull(entityResponse) || StringUtils.isNotBlank(failureMessage)) {
             log.error("Response: {}", entityResponse);
             this.addToFailedList(newStreamForm,

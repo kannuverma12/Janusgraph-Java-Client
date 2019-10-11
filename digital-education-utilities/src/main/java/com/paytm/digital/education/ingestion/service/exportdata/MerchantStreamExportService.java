@@ -55,7 +55,7 @@ public class MerchantStreamExportService extends AbstractExportService implement
                 .map(entity -> MerchantStreamForm.builder()
                         .merchantId(entity.getMerchantId())
                         .paytmStreamId(entity.getPaytmStreamId())
-                        .merchantStream(entity.getMerchantStream())
+                        .merchantStream(entity.getStream())
                         .active(booleanToString(entity.getActive()))
                         .build())
                 .collect(Collectors.toList());

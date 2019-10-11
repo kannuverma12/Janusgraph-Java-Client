@@ -1,17 +1,12 @@
 package com.paytm.digital.education.explore.service.helper;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.paytm.digital.education.explore.database.entity.Exam;
-import com.paytm.digital.education.explore.database.entity.Instance;
+import com.paytm.digital.education.database.entity.Exam;
+import com.paytm.digital.education.database.entity.Instance;
 import com.paytm.digital.education.explore.database.entity.SectionConfiguration;
 import com.paytm.digital.education.explore.enums.ExamSectionType;
 import com.paytm.digital.education.explore.response.dto.detail.ExamDetail;
-import com.paytm.digital.education.explore.response.dto.detail.Section;
 import com.paytm.digital.education.explore.response.dto.detail.SectionDataHolder;
 import com.paytm.digital.education.explore.response.dto.detail.Syllabus;
-import com.paytm.digital.education.explore.response.dto.detail.Topic;
-import com.paytm.digital.education.explore.response.dto.detail.Unit;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
@@ -27,8 +22,6 @@ import java.util.Objects;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SECTION;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SECTION_PLACEHOLDER;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.ZERO;
-import static com.paytm.digital.education.explore.enums.ExamSectionType.ELIGIBILITY;
 
 @Service
 @Slf4j

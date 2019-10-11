@@ -36,7 +36,7 @@ public class MerchantStreamManagerService {
     public MerchantStreamEntity createOrUpdateMerchantStream(MerchantStreamForm request) {
         checkIfValidPaytmStream(request);
         MerchantStreamEntity merchantStreamEntity = Optional.ofNullable(merchantStreamRepository
-                .findByMerchantIdAndMerchantStream(request.getMerchantId().toUpperCase(),
+                .findByMerchantIdAndStream(request.getMerchantId().toUpperCase(),
                         request.getMerchantStream())).orElse(new MerchantStreamEntity());
         streamDataConverter.formRequestToEntity(request, merchantStreamEntity);
         try {

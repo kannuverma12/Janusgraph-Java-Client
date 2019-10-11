@@ -4,6 +4,7 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_DATA_INGESTI
 
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.ingestion.model.IngestionFormEntity;
+import com.paytm.digital.education.ingestion.service.exportdata.ExamStreamExportService;
 import com.paytm.digital.education.ingestion.service.exportdata.ExportService;
 import com.paytm.digital.education.ingestion.service.exportdata.MerchantStreamExportService;
 import com.paytm.digital.education.ingestion.service.exportdata.StreamDataExportService;
@@ -20,6 +21,7 @@ public class DataExportFactory {
 
     private final StreamDataExportService streamDataExportService;
     private final MerchantStreamExportService merchantStreamExportService;
+    private final ExamStreamExportService examStreamExportService;
 
     public ExportService getExportService(final IngestionFormEntity formEntity) {
         switch (formEntity) {
@@ -27,6 +29,8 @@ public class DataExportFactory {
                 return streamDataExportService;
             case MERCHANT_STREAM:
                 return merchantStreamExportService;
+            case EXAM_STREAM_MAPPING:
+                return examStreamExportService;
             default:
                 log.error("Requested entity : {} not supported.", formEntity);
                 throw new BadRequestException(INVALID_DATA_INGESTION_ENTITY,

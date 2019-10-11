@@ -14,9 +14,11 @@ public interface IngestionConstants {
     String GOOGLE_SHEET_INFO   = "google_sheets_info";
     String EXPLORE_DATA_INGEST = "explore_data_ingest";
 
+    String EXAM_STREAM_COMPONENT     = "exam_stream";
+    String EXAM_STREAM_SHEET_ID      = "exam_stream_sheet_id";
     String MERCHANT_STREAM_COMPONENT = "merchant_stream";
     String MERCHANT_STREAM_SHEET_ID  = "merchant_stream_sheet_id";
-    String MERCHANT_C360             = "C360";
+    String MERCHANT_CAREER_360       = "C360";
 
     int    PADDING              = 2;
     String SHEET_HEADER_RANGE   = "A1:";

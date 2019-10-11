@@ -9,7 +9,8 @@ import lombok.Getter;
 public enum IngestionFormEntity {
 
     STREAM_FORM("stream"),
-    MERCHANT_STREAM("merchant_stream");
+    MERCHANT_STREAM("merchant_stream"),
+    EXAM_STREAM_MAPPING("exam_stream_mapping");
 
     private String value;
 

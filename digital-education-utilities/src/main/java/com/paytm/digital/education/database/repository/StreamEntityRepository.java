@@ -17,6 +17,7 @@ public interface StreamEntityRepository extends MongoRepository<StreamEntity, Ob
     List<StreamEntity> findAllByStreamId(List<Long> ids);
 
     @Override
+    @Query("{is_enabled:true}")
     List<StreamEntity> findAll();
 
     @Query(value = "{'name': {$regex : '^?0$', $options: 'i'}}", fields = "{'stream_id':1, _id : 0}")

@@ -1,4 +1,4 @@
-package com.paytm.digital.education.explore.database.entity;
+package com.paytm.digital.education.database.entity;
 
 import java.util.Date;
 import java.util.List;
@@ -11,8 +11,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.ToString;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.NON_TENTATIVE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.YYYY_MM;
+import static com.paytm.digital.education.constant.DBConstants.NON_TENTATIVE;
+import static com.paytm.digital.education.constant.DBConstants.YYYY_MM;
 import static com.paytm.digital.education.utility.DateUtil.stringToDate;
 
 @Data

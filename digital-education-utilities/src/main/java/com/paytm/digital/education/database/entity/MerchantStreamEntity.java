@@ -18,8 +18,8 @@ public class MerchantStreamEntity {
     @JsonIgnore
     private ObjectId id;
 
-    @Field("merchant_stream")
-    private String merchantStream;
+    @Field("stream")
+    private String stream;
 
     @Field("paytm_stream_id")
     private Long paytmStreamId;
@@ -39,4 +39,5 @@ public class MerchantStreamEntity {
     public MerchantStreamEntity() {
         this.createdAt = new Date();
     }
+
 }

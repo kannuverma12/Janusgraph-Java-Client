@@ -1,4 +1,4 @@
-package com.paytm.digital.education.explore.database.entity;
+package com.paytm.digital.education.database.entity;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -6,10 +6,10 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.enums.PublishStatus;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Field;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.paytm.digital.education.explore.enums.PublishStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;

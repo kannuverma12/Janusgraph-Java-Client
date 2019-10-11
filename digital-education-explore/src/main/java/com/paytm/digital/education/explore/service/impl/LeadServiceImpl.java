@@ -5,7 +5,7 @@ import com.paytm.digital.education.explore.database.entity.Lead;
 import com.paytm.digital.education.explore.database.entity.UserDetails;
 import com.paytm.digital.education.explore.database.entity.BaseLeadResponse;
 import com.paytm.digital.education.explore.database.entity.Course;
-import com.paytm.digital.education.explore.database.entity.Exam;
+import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.database.repository.LeadRepository;
 import com.paytm.digital.education.explore.database.repository.UserDetailsRepository;

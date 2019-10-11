@@ -16,10 +16,11 @@ public class MerchantStreamDataConverter {
 
     private static Logger log = LoggerFactory.getLogger(MerchantStreamDataConverter.class);
 
-    public MerchantStreamEntity formRequestToEntity(MerchantStreamForm formRequest, MerchantStreamEntity streamEntity) {
+    public MerchantStreamEntity formRequestToEntity(MerchantStreamForm formRequest,
+            MerchantStreamEntity streamEntity) {
         streamEntity.setMerchantId(formRequest.getMerchantId());
         streamEntity.setPaytmStreamId(formRequest.getPaytmStreamId());
-        streamEntity.setMerchantStream(formRequest.getMerchantStream());
+        streamEntity.setStream(formRequest.getMerchantStream());
         streamEntity.setActive(stringToBoolean(formRequest.getActive()));
         streamEntity.setUpdatedAt(new Date());
         return streamEntity;

@@ -15,7 +15,7 @@ import com.paytm.digital.education.admin.response.DocumentUploadResponse;
 import com.paytm.digital.education.admin.service.AdminService;
 import com.paytm.digital.education.config.AwsConfig;
 import com.paytm.digital.education.explore.database.entity.Institute;
-import com.paytm.digital.education.explore.database.entity.Exam;
+import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.School;
 
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;

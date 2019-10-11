@@ -1,4 +1,4 @@
-package com.paytm.digital.education.explore.database.entity;
+package com.paytm.digital.education.database.entity;
 
 import java.util.List;
 
