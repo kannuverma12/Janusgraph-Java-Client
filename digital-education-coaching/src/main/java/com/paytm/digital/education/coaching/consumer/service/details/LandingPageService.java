@@ -13,7 +13,6 @@ import com.paytm.digital.education.coaching.consumer.service.search.CoachingCour
 import com.paytm.digital.education.coaching.consumer.service.search.ExamSearchService;
 import com.paytm.digital.education.coaching.consumer.service.search.helper.SearchDataHelper;
 import com.paytm.digital.education.coaching.consumer.transformer.LandingPageStreamTransformer;
-import com.paytm.digital.education.coaching.producer.model.dto.StreamDTO;
 import com.paytm.digital.education.database.entity.Section;
 import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
@@ -67,7 +66,7 @@ public class LandingPageService {
 
     public void addDynamicData(List<Section> sections) {
         Map<Sort.Direction, String> sortMap = new HashMap<>();
-        sortMap.put(Sort.Direction.ASC,"priority");
+        sortMap.put(Sort.Direction.ASC, "priority");
         List<StreamEntity> streamEntities =
                 commonMongoRepository.findAllAndSortBy(StreamEntity.class,
                         Collections.EMPTY_LIST, sortMap);
@@ -77,7 +76,7 @@ public class LandingPageService {
         for (Section section : sections) {
             switch (section.getType()) {
                 case COACHING_STREAMS:
-                    addStreams(section,streamEntities);
+                    addStreams(section, streamEntities);
                     break;
                 case TOP_COACHING_INSTITUTES:
                     addTopCoachingInstitutes(section);
@@ -99,7 +98,7 @@ public class LandingPageService {
         List<LandingPageStreamDto> landingPageStreamDtoList = landingPageStreamTransformer
                 .getLandingPageStreamDtoFromStreamEntity(streamEntities);
         if (!CollectionUtils.isEmpty(landingPageStreamDtoList)) {
-            for (LandingPageStreamDto landingPageStreamDto:landingPageStreamDtoList) {
+            for (LandingPageStreamDto landingPageStreamDto : landingPageStreamDtoList) {
                 itemList.add(getItemFromStreamDto(landingPageStreamDto));
             }
         }
@@ -256,7 +255,7 @@ public class LandingPageService {
 
     private Map<String, Object> getItemFromStreamDto(LandingPageStreamDto landingPageStreamDto) {
         Map<String, Object> item = new HashMap<>();
-        item.put(NAME, landingPageStreamDto.getKey());
+        item.put(NAME, landingPageStreamDto.getDisplayName());
         item.put(ID, landingPageStreamDto.getEntityId());
         item.put(URL_DISPLAY_KEY, landingPageStreamDto.getUrlDisplayKey());
         item.put(LOGO, landingPageStreamDto.getLogo());
