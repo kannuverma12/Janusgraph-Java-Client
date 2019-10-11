@@ -6,7 +6,6 @@ import com.paytm.digital.education.database.embedded.KeyHighlight;
 import com.paytm.digital.education.database.embedded.OfficialAddress;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.enums.CourseType;
-import com.paytm.digital.education.utility.CommonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -15,8 +14,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EMPTY_STRING;
-import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES_IMAGE;
-import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES_LOGO;
 
 public class ExportCoachingInstituteTransformer {
 
@@ -31,10 +28,8 @@ public class ExportCoachingInstituteTransformer {
                             .instituteId(entity.getInstituteId())
                             .brandName(entity.getBrandName())
                             .aboutInstitute(entity.getAboutInstitute())
-                            .coverImage(CommonUtil.getAbsoluteUrl(entity.getCoverImage(),
-                                    TOP_COACHING_INSTITUTES_LOGO))
-                            .logo(CommonUtil.getAbsoluteUrl(entity.getLogo(),
-                                    TOP_COACHING_INSTITUTES_IMAGE))
+                            .coverImage(entity.getCoverImage())
+                            .logo(entity.getLogo())
                             .streamIds(entity.getStreams() == null
                                     ? EMPTY_STRING : StringUtils.join(entity.getStreams(), ","))
                             .examIds(entity.getExams() == null
