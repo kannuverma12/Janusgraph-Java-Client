@@ -99,7 +99,7 @@ public class CoachingStreamService {
         filter.put(COACHING_COURSE_STREAMS, Collections.singletonList(stream.getName()));
 
         return TopCoachingCourses.builder()
-                .header(String.format(TOP_COACHING_COURSES_FOR.getValue(), stream.getName()))
+                .header(TOP_COACHING_COURSES_FOR.getValue())
                 .results(courses)
                 .filter(filter)
                 .build();
@@ -117,7 +117,7 @@ public class CoachingStreamService {
         filter.put(COACHING_INSTITUTE_STREAMS, Collections.singletonList(stream.getName()));
 
         return TopCoachingInstitutes.builder()
-                .header(String.format(TOP_COACHING_INSTITUTES_FOR.getValue(), stream.getName()))
+                .header(TOP_COACHING_INSTITUTES_FOR.getValue())
                 .results(institutes)
                 .filter(filter)
                 .build();

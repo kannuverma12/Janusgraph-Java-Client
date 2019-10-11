@@ -50,8 +50,6 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.S
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_DETAILS_FIELDS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
-import static com.paytm.digital.education.coaching.enums.DisplayHeadings.SIMILAR_COACHING_COURSES;
-import static com.paytm.digital.education.coaching.enums.DisplayHeadings.SIMILAR_COACHING_INSTITUTES;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_COACHING_COURSES_FOR;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_COACHING_INSTITUTES_FOR;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
@@ -157,7 +155,7 @@ public class ExamService {
         }
 
         return TopCoachingCourses.builder()
-                .header(SIMILAR_COACHING_COURSES.getValue())
+                .header(TOP_COACHING_COURSES_FOR.getValue())
                 .results(courses)
                 .filter(filter)
                 .build();
@@ -204,7 +202,7 @@ public class ExamService {
         }
 
         return TopCoachingInstitutes.builder()
-                .header(SIMILAR_COACHING_INSTITUTES.getValue())
+                .header(TOP_COACHING_INSTITUTES_FOR.getValue())
                 .results(institutes)
                 .filter(filter)
                 .build();
