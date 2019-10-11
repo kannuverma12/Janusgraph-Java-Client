@@ -31,4 +31,6 @@ public final class ESConstants {
     public static final String GEOLOCATION_FIELD = "location";
     public static final String SORT_FIELD        = "sort";
     public static final String KEY_SEPERATOR     = ":";
+    public static final Double GEO_DISTANCE_FILTER_MAX_LIMIT_KMS = 50.0;
+
 }

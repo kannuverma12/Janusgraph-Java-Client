@@ -1,27 +1,23 @@
 package com.paytm.digital.education.elasticsearch.query;
 
-import static com.paytm.digital.education.elasticsearch.constants.ESConstants.AGGREGATION_QUERY_SIZE;
-import static com.paytm.digital.education.elasticsearch.constants.ESConstants.DEFAULT_TERMS_AGGREGATION_BUCKETS_SIZE;
-import static com.paytm.digital.education.elasticsearch.constants.ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS;
-import static com.paytm.digital.education.elasticsearch.constants.ESConstants.INCLUDE_AGGREGATION_SUFFIX;
-import static com.paytm.digital.education.elasticsearch.constants.ESConstants.MAX_AGGREGATION_SUFFIX;
-import static com.paytm.digital.education.elasticsearch.constants.ESConstants.MIN_AGGREGATION_SUFFIX;
-
 import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.BucketAggregationSortParms;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
+import com.paytm.digital.education.elasticsearch.models.BucketSort;
+import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.FilterField;
 import com.paytm.digital.education.elasticsearch.models.Operator;
-import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
-import com.paytm.digital.education.elasticsearch.models.BucketSort;
 import com.paytm.digital.education.elasticsearch.models.SortField;
 import com.paytm.digital.education.elasticsearch.query.helper.PathWiseMultiMatchQueryMapBuilder;
 import com.paytm.digital.education.elasticsearch.utils.DataSortUtil;
 import javafx.util.Pair;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.common.geo.GeoPoint;
+import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -38,12 +34,20 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Objects;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import static com.paytm.digital.education.elasticsearch.constants.ESConstants.AGGREGATION_QUERY_SIZE;
+import static com.paytm.digital.education.elasticsearch.constants.ESConstants.DEFAULT_TERMS_AGGREGATION_BUCKETS_SIZE;
+import static com.paytm.digital.education.elasticsearch.constants.ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS;
+import static com.paytm.digital.education.elasticsearch.constants.ESConstants.GEO_DISTANCE_FILTER_MAX_LIMIT_KMS;
+import static com.paytm.digital.education.elasticsearch.constants.ESConstants.INCLUDE_AGGREGATION_SUFFIX;
+import static com.paytm.digital.education.elasticsearch.constants.ESConstants.MAX_AGGREGATION_SUFFIX;
+import static com.paytm.digital.education.elasticsearch.constants.ESConstants.MIN_AGGREGATION_SUFFIX;
 
 
 @Service
@@ -320,17 +324,39 @@ public class AggregationQueryBuilderService {
                     } else {
                         termsAggregation.subAggregation(topHitsAggregation);
                     }
-                    if (DUMMY_PATH_FOR_OUTERMOST_FIELDS.equals(path)) {
-                        filterAggregation.subAggregation(termsAggregation);
-                    } else {
-                        NestedAggregationBuilder nestedAggs =
-                                AggregationBuilders.nested(fieldName, path);
-                        nestedAggs.subAggregation(termsAggregation);
-                        filterAggregation.subAggregation(nestedAggs);
-                    }
+                    updateSubAggregationInAggregation(path, fieldName, filterAggregation,
+                            termsAggregation);
                     source.aggregation(filterAggregation);
+                } else if (field.getType().equals(AggregationType.GEO_DISTANCE)) {
+
+                    if (ArrayUtils.isNotEmpty(field.getValues()) && field.getValues().length >= 2) {
+                        AggregationBuilder geoDistanceAggregation =
+                                AggregationBuilders
+                                        .geoDistance(fieldName,
+                                                new GeoPoint(
+                                                        Double.parseDouble(field.getValues()[0]),
+                                                        Double.parseDouble(field.getValues()[1])))
+                                        .field(fieldName)
+                                        .unit(DistanceUnit.KILOMETERS)
+                                        .addRange(0, GEO_DISTANCE_FILTER_MAX_LIMIT_KMS);
+                        updateSubAggregationInAggregation(path, fieldName, filterAggregation,
+                                geoDistanceAggregation);
+                        source.aggregation(filterAggregation);
+                    }
                 }
             }
+        }
+    }
+
+    private void updateSubAggregationInAggregation(String path, String fieldName,
+            AggregationBuilder filterAggregation, AggregationBuilder geoDistanceAggregation) {
+        if (DUMMY_PATH_FOR_OUTERMOST_FIELDS.equals(path)) {
+            filterAggregation.subAggregation(geoDistanceAggregation);
+        } else {
+            NestedAggregationBuilder nestedAggs =
+                    AggregationBuilders.nested(fieldName, path);
+            nestedAggs.subAggregation(geoDistanceAggregation);
+            filterAggregation.subAggregation(nestedAggs);
         }
     }
 

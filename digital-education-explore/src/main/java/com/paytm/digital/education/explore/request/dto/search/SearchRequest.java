@@ -85,4 +85,7 @@ public class SearchRequest {
 
     @JsonIgnore
     private boolean fetchSearchResultsPerFilter;
+
+    @JsonProperty("radius")
+    private Integer radius;
 }

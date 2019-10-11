@@ -1,5 +1,5 @@
 package com.paytm.digital.education.elasticsearch.enums;
 
 public enum FilterQueryType {
-    TERMS, RANGE
+    TERMS, RANGE, GEO_DISTANCE
 }

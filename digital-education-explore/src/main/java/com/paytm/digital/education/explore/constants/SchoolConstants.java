@@ -8,14 +8,16 @@ public interface SchoolConstants {
     String SCHOOL_BOARDS_OWNERSHIP          = "ownership";
     String SCHOOL_BOARDS_GENDER_ACCEPTED    = "gender_accepted";
     String SCHOOL_BOARDS_ESTABLISHMENT_YEAR = "year_of_estd";
-    String SCHOOL_FACILITIES                = "facilities";
-    String SCHOOL_BOARDS_ACCEPTED           = "board_name";
-    String SCHOOL_MEDIUM                    = "lang_medium";
-    String SCHOOL_ID                        = "school_id";
-    String OFFICIAL_NAME_SEARCH             = "official_name.search";
-    String OFFICIAL_NAME                    = "official_name";
-    String NAMES                            = "names";
-    Float  NAMES_SEARCH_BOOST               = 1F;
+    String SCHOOL_FACILITIES             = "facilities";
+    String SCHOOL_BOARDS_ACCEPTED        = "board_name";
+    String SCHOOL_MEDIUM                 = "lang_medium";
+    String SCHOOL_ID                     = "school_id";
+    String OFFICIAL_NAME_SEARCH          = "official_name.search";
+    String OFFICIAL_NAME                 = "official_name";
+    String NAMES                         = "names";
+    String SCHOOL_LOCATION               = "location";
+    String GEODISTANCE_DEFAULT_RANGE_KMS = "20";
+    Float  NAMES_SEARCH_BOOST            = 1F;
 
     String OFFICIAL_WEBSITE_LINK = "Official Website Link";
 
