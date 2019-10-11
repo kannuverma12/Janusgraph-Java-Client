@@ -22,8 +22,13 @@ public class ConfigProperties {
     private static String examLogoPrefix;
     private static String ctaLogoPrefix;
     private static String schoolLogoPrefix;
-
+    private static String examSectionIconPrefix;
     private static String examPlaceholderLogoURL;
+
+    @Value("${exam.detail.icon.prefix}")
+    public void setExamSectionIconPrefix(String prefix) {
+        examSectionIconPrefix = prefix;
+    }
 
     @Value("${cta.logo.prefix}")
     public void setCtaLogoPrefix(String prefix) {
@@ -158,5 +163,9 @@ public class ConfigProperties {
 
     public static String getExamPlaceholderLogoURL() {
         return examPlaceholderLogoURL;
+    }
+
+    public static String getExamSectionIconPrefix() {
+        return examSectionIconPrefix;
     }
 }

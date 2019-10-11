@@ -7,6 +7,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.INS
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SUCCESS;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 
+import com.paytm.digital.education.config.SchoolConfig;
 import com.paytm.digital.education.database.entity.UserFlags;
 import com.paytm.digital.education.database.repository.UserFlagRepository;
 import com.paytm.digital.education.dto.NotificationFlags;
@@ -56,6 +57,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private PropertyReader     propertyReader;
     private UserFlagRepository userFlagRepository;
+    private SchoolConfig schoolConfig;
 
     private static NotificationFlags DEFAULT_SUCCESS_MESSAGE = new NotificationFlags(SUCCESS);
 
@@ -169,6 +171,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                                 EducationEntity.SCHOOL);
                         subscriptionWithSchool.getEntityDetails().getGallery()
                                 .setLogo(logoLink);
+                    } else {
+                        SchoolGallery schoolGallery = new SchoolGallery(null, null,
+                                schoolConfig.getSchoolPlaceholderLogoURL());
+                        subscriptionWithSchool.getEntityDetails().setGallery(schoolGallery);
                     }
                 }
             } else if (subscriptionEntity.getCorrespondingClass() == SubscriptionWithExam.class) {

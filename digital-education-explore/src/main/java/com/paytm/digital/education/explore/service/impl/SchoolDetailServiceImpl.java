@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.paytm.digital.education.config.SchoolConfig;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.exception.BadRequestException;
+import com.paytm.digital.education.exception.EntityRequiredFieldMissingInDBException;
 import com.paytm.digital.education.explore.constants.SchoolConstants;
 import com.paytm.digital.education.explore.database.entity.Board;
 import com.paytm.digital.education.explore.database.entity.BoardData;
@@ -30,6 +31,7 @@ import com.paytm.digital.education.explore.response.dto.detail.school.detail.Imp
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.SchoolDetail;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.SchoolGalleryResponse;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.ShiftDetailsResponse;
+import com.paytm.digital.education.explore.response.dto.detail.school.detail.ShiftTable;
 import com.paytm.digital.education.explore.response.dto.search.SchoolSearchData;
 import com.paytm.digital.education.explore.response.dto.search.SearchBaseData;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
@@ -38,12 +40,9 @@ import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
 import com.paytm.digital.education.explore.service.helper.CTAHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.service.helper.FacilityDataHelper;
-import com.paytm.digital.education.explore.service.helper.SchoolDetailsResponseHelper;
 import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.explore.utility.SchoolUtilService;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Value;
@@ -68,18 +67,22 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.CLI
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SORT_DISTANCE_FIELD;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.TENTATIVE;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.ACTUAL;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.BOARD;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.BOARD_DATA;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.OFFICIAL_WEBSITE_LINK;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_ID;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_OFFICIAL_NAME;
 import static com.paytm.digital.education.explore.enums.EducationEntity.SCHOOL;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_SCHOOL_NAME;
 import static com.paytm.digital.education.mapping.ErrorEnum.NO_ENTITY_FOUND;
 import static com.paytm.digital.education.utility.CommonUtils.isNullOrZero;
+import static com.paytm.digital.education.utility.FunctionUtils.fetchIfPresentFromNullable;
+import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.elasticsearch.common.geo.parsers.GeoWKTParser.COMMA;
 
 @Service
-@RequiredArgsConstructor
 public class SchoolDetailServiceImpl implements SchoolService {
 
     private final CommonMongoRepository    commonMongoRepository;
@@ -91,8 +94,31 @@ public class SchoolDetailServiceImpl implements SchoolService {
     private final SchoolConfig             schoolConfig;
     private final SchoolUtilService        schoolUtilService;
     private final BannerDataHelper         bannerDataHelper;
-    @Value("${similar.schools.count}")
-    private       int                      similarSchoolsCount;
+    private final int                      nearbySchoolsCount;
+
+    public SchoolDetailServiceImpl(
+            CommonMongoRepository commonMongoRepository,
+            DerivedAttributesHelper derivedAttributesHelper,
+            FacilityDataHelper facilityDataHelper,
+            CTAHelper ctaHelper,
+            SearchServiceImpl searchService,
+            SubscriptionDetailHelper subscriptionDetailHelper,
+            SchoolConfig schoolConfig,
+            SchoolUtilService schoolUtilService,
+            BannerDataHelper bannerDataHelper,
+            @Value("${nearby.schools.count}")
+            int nearbySchoolsCount) {
+        this.commonMongoRepository = commonMongoRepository;
+        this.derivedAttributesHelper = derivedAttributesHelper;
+        this.facilityDataHelper = facilityDataHelper;
+        this.ctaHelper = ctaHelper;
+        this.searchService = searchService;
+        this.subscriptionDetailHelper = subscriptionDetailHelper;
+        this.schoolConfig = schoolConfig;
+        this.schoolUtilService = schoolUtilService;
+        this.bannerDataHelper = bannerDataHelper;
+        this.nearbySchoolsCount = nearbySchoolsCount;
+    }
 
     public List<School> getSchools(List<Long> entityIds, List<String> groupFields) {
         if (CollectionUtils.isEmpty(groupFields)) {
@@ -123,6 +149,9 @@ public class SchoolDetailServiceImpl implements SchoolService {
             throw new BadRequestException(NO_ENTITY_FOUND,
                     new Object[] {SchoolConstants.SCHOOL, SCHOOL_ID, schoolId});
         }
+        if (StringUtils.isBlank(school.getOfficialName())) {
+            throw new EntityRequiredFieldMissingInDBException(SchoolConstants.SCHOOL, SCHOOL_OFFICIAL_NAME);
+        }
         if (!schoolName.equals(CommonUtil.convertNameToUrlDisplayName(school.getOfficialName()))) {
             throw new BadRequestException(INVALID_SCHOOL_NAME,
                     INVALID_SCHOOL_NAME.getExternalMessage());
@@ -132,22 +161,36 @@ public class SchoolDetailServiceImpl implements SchoolService {
         List<Board> boards = school.getBoardList();
         if (Objects.nonNull(boards) && boards.size() > 0) {
             BoardData boardData = boards.get(0).getData();
-            schoolDetail.setShiftDetailsList(
-                    boardData.getShifts()
-                            .stream()
-                            .map(x -> new ShiftDetailsResponse(x, schoolConfig))
-                            .collect(Collectors.toList()));
+            if (Objects.isNull(boardData)) {
+                throw new EntityRequiredFieldMissingInDBException(BOARD, BOARD_DATA);
+            }
             schoolDetail.setFacultyDetail(fetchFacultyDetailsIfPresent(boardData));
-            schoolDetail.setFeesDetails(boardData.getFeesDetails());
+            schoolDetail.setFeesDetails(
+                    Optional.of(boardData)
+                            .map(BoardData::getFeesDetails)
+                            .orElse(emptyList())
+                            .stream()
+                            .distinct()
+                            .collect(Collectors.toList())
+            );
             List<FacilityResponse> facilityResponseList =
                     facilityDataHelper
-                            .mapSchoolFacilitiesToDataObject(boardData.getSchoolFacilities());
+                            .mapSchoolFacilitiesToDataObject(
+                                    Optional.of(boardData)
+                                            .map(BoardData::getSchoolFacilities)
+                                            .orElse(emptyList()));
             schoolDetail.setFacilities(facilityResponseList);
             List<ImportantDate> importantDates = Stream.concat(
-                    boardData.getSchoolAdmissionList().stream()
+                    Optional.of(boardData)
+                            .map(BoardData::getSchoolAdmissionList)
+                            .orElse(emptyList())
+                            .stream()
                             .filter(x -> StringUtils.isNotBlank(x.getDateType()))
                             .map(x -> new ImportantDate(x, ACTUAL)),
-                    boardData.getSchoolAdmissionTentativeList().stream()
+                    Optional.of(boardData)
+                            .map(BoardData::getSchoolAdmissionTentativeList)
+                            .orElse(emptyList())
+                            .stream()
                             .filter(x -> StringUtils.isNotBlank(x.getDateType()))
                             .map(x -> new ImportantDate(x, TENTATIVE))
             ).collect(Collectors.toList());
@@ -167,14 +210,15 @@ public class SchoolDetailServiceImpl implements SchoolService {
                             client));
             schoolDetail.setGeneralInformation(collectGeneralInformationFromSchool(school));
             schoolDetail.setStreams(boardData.getStreams());
-            SchoolDetailsResponseHelper.pruneDuplicateDataInSchoolDetail(schoolDetail);
-            Optional<SchoolPaytmKeys> schoolPaytmKeys = Optional.ofNullable(school.getPaytmKeys());
-            schoolDetail.setPid(schoolPaytmKeys.map(SchoolPaytmKeys::getPid).orElse(null));
-            schoolDetail.setFormId(schoolPaytmKeys.map(SchoolPaytmKeys::getFormId).orElse(null));
+            SchoolPaytmKeys schoolPaytmKeys = school.getPaytmKeys();
+            schoolDetail
+                    .setPid(fetchIfPresentFromNullable(schoolPaytmKeys, SchoolPaytmKeys::getPid));
+            schoolDetail.setFormId(
+                    fetchIfPresentFromNullable(schoolPaytmKeys, SchoolPaytmKeys::getFormId));
             schoolDetail.setBrochureUrl(boardData.getSchoolBrochureLink());
             List<CTA> ctaList = ctaHelper.buildCTA(schoolDetail, client);
             schoolDetail.setCtaList(ctaList);
-            addSimilarSchoolsInResponse(schoolDetail, school);
+            addNearbySchoolsInResponse(schoolDetail, school);
 
             if (Objects.nonNull(userId) && userId > 0) {
                 updateShortList(schoolDetail, SCHOOL, userId);
@@ -183,14 +227,40 @@ public class SchoolDetailServiceImpl implements SchoolService {
             if (!Client.APP.equals(client)) {
                 schoolDetail.setBanners(bannerDataHelper.getBannerData(entityName, client));
             }
+
+            schoolDetail.setClassInfoTable(
+                    school.getBoardList()
+                            .stream()
+                            .filter(schoolUtilService::isClassLevelInfoValid)
+                            .map(this::convertBoardToClassLevelTable)
+                            .collect(Collectors.toList()));
+
+            schoolDetail.setShiftTables(
+                    school.getBoardList()
+                            .stream()
+                            .map(this::convertBoardToShiftTable)
+                            .filter(schoolUtilService::isShiftTableDataCorrect)
+                            .collect(Collectors.toList()));
         }
-        schoolDetail.setClassInfoTable(
-                school.getBoardList()
-                        .stream()
-                        .filter(schoolUtilService::isClassLevelInfoValid)
-                        .map(this::convertBoardToClassLevelTable)
-                        .collect(Collectors.toList()));
+
         return schoolDetail;
+    }
+
+    private ShiftTable convertBoardToShiftTable(Board board) {
+        List<ShiftDetailsResponse> shiftDetailsResponseList = Optional.ofNullable(board)
+                .map(Board::getData)
+                .map(BoardData::getShifts)
+                .orElse(emptyList())
+                .stream()
+                .filter(schoolUtilService::isShiftDetailsValid)
+                .distinct()
+                .map(x -> new ShiftDetailsResponse(x, schoolConfig))
+                .collect(Collectors.toList());
+
+        return ShiftTable.builder()
+                .boardType(board.getName())
+                .shiftDetailsRows(shiftDetailsResponseList)
+                .build();
     }
 
     private ClassLevelTable convertBoardToClassLevelTable(Board board) {
@@ -223,12 +293,15 @@ public class SchoolDetailServiceImpl implements SchoolService {
         schoolDetail.setShortlisted(!CollectionUtils.isEmpty(subscribedEntities));
     }
 
-    private void addSimilarSchoolsInResponse(SchoolDetail schoolDetail, School school) {
+    private void addNearbySchoolsInResponse(SchoolDetail schoolDetail, School school) {
         SearchRequest searchRequest = buildSearchRequestForSchool(school, true);
         if (Objects.isNull(searchRequest)) {
             return;
         }
         SearchResponse searchResponse = searchService.search(searchRequest, null, null);
+        if (Objects.isNull(searchResponse)) {
+            return;
+        }
         List<SearchBaseData> searchBaseDataList = searchResponse.getResults().getValues();
 
         if (CollectionUtils.isEmpty(searchBaseDataList)) {
@@ -250,7 +323,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
                         .map(x -> (SchoolSearchData) x)
                         .filter(x -> !school.getSchoolId().equals(x.getSchoolId()))
                         .collect(Collectors.toList());
-        schoolDetail.setSimilarSchools(schoolSearchDataList);
+        schoolDetail.setNearbySchools(schoolSearchDataList);
     }
 
 
@@ -259,7 +332,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
 
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.setEntity(SCHOOL);
-        searchRequest.setLimit(similarSchoolsCount + 1);
+        searchRequest.setLimit(nearbySchoolsCount + 1);
         GeoLocation geoLocation = buildGeoLocationFromSchool(school);
         Map<String, List<Object>> filters = new HashMap<>();
 
@@ -325,7 +398,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
             BoardData boardData = boards.get(0).getData();
             GeneralInformation generalInformation = new GeneralInformation();
             generalInformation.setEmail(boardData.getEmail());
-            generalInformation.setPhone(school.getPhone());
+            generalInformation.setPhone(boardData.getContactNumberPrimary());
             generalInformation.setStreetAddress(school.getAddress().getStreetAddress());
             generalInformation.setLatLon(school.getAddress().getLatLon());
             generalInformation.setOfficialWebsiteLink(getOfficialWebsiteLinkFromData(boardData));

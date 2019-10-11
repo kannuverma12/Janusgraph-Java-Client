@@ -201,7 +201,8 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
         }
         courseSearchResponse
                 .setOfficialAddress(CommonUtil.getOfficialAddress(institute.getInstitutionState(),
-                        institute.getInstitutionCity(), null, null, null));
+                        institute.getInstitutionCity(), null, null,
+                        null));
         courseSearchResponse.setInstituteName(institute.getOfficialName());
         courseSearchResponse.setUrlDisplayName(
                 CommonUtil.convertNameToUrlDisplayName(institute.getOfficialName()));

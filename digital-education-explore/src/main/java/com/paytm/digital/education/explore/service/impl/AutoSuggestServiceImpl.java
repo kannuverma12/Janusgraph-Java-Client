@@ -340,8 +340,7 @@ public class AutoSuggestServiceImpl {
                             .getOfficialAddress(
                                     esDocument.getOfficialAddress().getState(),
                                     esDocument.getOfficialAddress().getCity(), null,
-                                    null,
-                                    null));
+                                    null, null));
         }
         return responseDoc;
     }

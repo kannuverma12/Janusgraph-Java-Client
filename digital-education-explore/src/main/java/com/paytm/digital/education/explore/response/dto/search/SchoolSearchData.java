@@ -5,15 +5,13 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.SCH
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
-import com.paytm.digital.education.explore.response.dto.detail.CTAInfoHolder;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SchoolSearchData extends SearchBaseData implements CTAInfoHolder {
+public class SchoolSearchData extends SearchBaseData implements CTAInfoHolderWithDefaultSchoolSettings {
 
     @JsonProperty("school_id")
     private long schoolId;
@@ -38,39 +36,18 @@ public class SchoolSearchData extends SearchBaseData implements CTAInfoHolder {
     @JsonIgnore
     private String brochureUrl;
 
+    @JsonProperty("contact_logo")
+    private String contactLogoUrl;
+
+    @JsonProperty("location_logo")
+    private String locationLogoUrl;
+
     public Long getPid() {
         return null;
     }
 
-    @JsonIgnore
-    @Accessors(fluent = true)
-    private boolean shouldHaveLeadCTA = false;
-
-    @JsonIgnore
-    @Accessors(fluent = true)
-    private boolean shouldHaveApplyNowCTA = true;
-
-    @JsonIgnore
     @Override
-    public boolean isClient() {
-        return false;
-    }
-
-    @JsonIgnore
-    @Override
-    public String getBrochureUrl() {
-        return brochureUrl;
-    }
-
-    @JsonIgnore
-    @Override
-    public EducationEntity getCorrespondingEntity() {
-        return EducationEntity.SCHOOL;
-    }
-
-    @JsonIgnore
-    @Override
-    public boolean hasCompareFeature() {
+    public boolean hasShareFeature() {
         return false;
     }
 

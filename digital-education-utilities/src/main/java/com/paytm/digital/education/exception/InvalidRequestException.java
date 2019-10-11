@@ -24,5 +24,13 @@ public class InvalidRequestException extends GlobalException {
         super(HttpStatus.BAD_REQUEST, cause, errorCode, message == null ? reason : message);
         this.reason = reason;
     }
+
+    public InvalidRequestException(final String message, final Throwable cause) {
+        super(HttpStatus.BAD_REQUEST, message, cause);
+    }
+
+    public InvalidRequestException(final String message) {
+        super(HttpStatus.BAD_REQUEST, message);
+    }
 }
 

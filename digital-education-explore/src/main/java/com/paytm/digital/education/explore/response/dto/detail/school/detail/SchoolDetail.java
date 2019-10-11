@@ -4,31 +4,27 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.explore.database.entity.SchoolFeeDetails;
-import com.paytm.digital.education.explore.database.entity.ShiftDetails;
-import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.common.BannerData;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.detail.Attribute;
-import com.paytm.digital.education.explore.response.dto.detail.CTAInfoHolder;
+import com.paytm.digital.education.explore.response.dto.search.CTAInfoHolderWithDefaultSchoolSettings;
 import com.paytm.digital.education.explore.response.dto.search.SchoolSearchData;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
 
 import java.util.List;
 import java.util.Map;
 
-import static com.paytm.digital.education.explore.enums.EducationEntity.SCHOOL;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor
-public class SchoolDetail implements CTAInfoHolder {
+public class SchoolDetail implements CTAInfoHolderWithDefaultSchoolSettings {
     @JsonProperty("school_id")
     private Long schoolId;
 
     @JsonProperty("shifts")
-    private List<ShiftDetails> shiftDetailsList;
+    private List<ShiftTable> shiftTables;
 
     @JsonProperty("faculty")
     private FacultyDetail facultyDetail;
@@ -60,8 +56,8 @@ public class SchoolDetail implements CTAInfoHolder {
     @JsonProperty("cta_list")
     private List<CTA> ctaList;
 
-    @JsonProperty("similar_schools")
-    private List<SchoolSearchData> similarSchools;
+    @JsonProperty("nearby_schools")
+    private List<SchoolSearchData> nearbySchools;
 
     @JsonIgnore
     private Long pid;
@@ -72,45 +68,9 @@ public class SchoolDetail implements CTAInfoHolder {
     @JsonIgnore
     private String brochureUrl;
 
-    @JsonIgnore
-    @Accessors(fluent = true)
-    private boolean shouldHaveLeadCTA = false;
-
-    @JsonIgnore
-    @Accessors(fluent = true)
-    private boolean shouldHaveApplyNowCTA = true;
-
     @JsonProperty("shortlisted")
     private boolean shortlisted;
 
     @JsonProperty("banners")
     private List<BannerData> banners;
-
-    @Override
-    @JsonIgnore
-    public boolean isClient() {
-        return false;
-    }
-
-    @Override
-    @JsonIgnore
-    public EducationEntity getCorrespondingEntity() {
-        return SCHOOL;
-    }
-
-    @Override
-    @JsonIgnore
-    public boolean hasCompareFeature() {
-        return false;
-    }
-
-    @JsonIgnore
-    @Override
-    public boolean hasShareFeature() {
-        return true;
-    }
-
-    @Override public Long getCollegePredictorPid() {
-        return null;
-    }
 }

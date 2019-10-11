@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import net.javacrumbs.shedlock.core.SchedulerLock;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
@@ -21,6 +22,7 @@ import static com.paytm.digital.education.explore.constants.CampusEngagementCons
 @AllArgsConstructor
 @Configuration
 @EnableScheduling
+@Profile({"dev", "staging", "production"})
 public class DataIngestionScheduler {
 
     private static Logger log = LoggerFactory.getLogger(DataIngestionScheduler.class);

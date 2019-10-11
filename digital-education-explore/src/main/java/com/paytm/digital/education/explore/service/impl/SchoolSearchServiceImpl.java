@@ -45,7 +45,6 @@ import java.util.concurrent.TimeoutException;
 
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.RANGE;
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.TERMS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.LOCATIONS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SORT_DISTANCE_FIELD;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EMPTY_STRING;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
@@ -216,14 +215,26 @@ public class SchoolSearchServiceImpl extends AbstractSearchServiceImpl {
                                 CommonUtil.getLogoLink(schoolSearch.getImageLink(),
                                         EducationEntity.SCHOOL)
                 );
+
+                String phone = null;
+                if (!CollectionUtils.isEmpty(schoolSearch.getBoards())) {
+                    phone = schoolSearch.getBoards().get(0).getContactNumber();
+
+                    if (StringUtils.isNotEmpty(phone)) {
+                        phone = phone.trim();
+                    }
+                }
+
                 OfficialAddress officialAddress =
                         CommonUtil.getOfficialAddress(schoolSearch.getState(),
-                                schoolSearch.getCity(), null, null, null);
+                                schoolSearch.getCity(), phone, null,null);
+                officialAddress.setStreetAddress(schoolSearch.getStreetAddress());
                 schoolSearchData.setOfficialAddress(officialAddress);
 
-                setSchoolGeoDistanceString(isGeoDistanceSortRequest, finalIndexOfGeoDistance,
-                        schoolSearch,
-                        schoolSearchData);
+                if (isGeoDistanceSortRequest) {
+                    setSchoolGeoDistanceDetails(finalIndexOfGeoDistance, schoolSearch,
+                            schoolSearchData);
+                }
 
                 //"isClient" info will be used in future in get updates feature
                 schoolSearchData.setClient(false);
@@ -243,11 +254,10 @@ public class SchoolSearchServiceImpl extends AbstractSearchServiceImpl {
         searchResponse.setResults(searchResults);
     }
 
-    private void setSchoolGeoDistanceString(boolean isGeoDistanceSortRequest,
-            Integer finalIndexOfGeoDistance, SchoolSearch schoolSearch,
-            SchoolSearchData schoolSearchData) {
+    private void setSchoolGeoDistanceDetails(Integer finalIndexOfGeoDistance,
+            SchoolSearch schoolSearch, SchoolSearchData schoolSearchData) {
         if (!CollectionUtils.isEmpty(schoolSearch.getSort())
-                && isGeoDistanceSortRequest && finalIndexOfGeoDistance != null) {
+                 && finalIndexOfGeoDistance != null) {
             Double distanceInKilometers =
                     schoolSearch.getSort().get(finalIndexOfGeoDistance);
             if (Double.isFinite(distanceInKilometers)) {
@@ -255,6 +265,8 @@ public class SchoolSearchServiceImpl extends AbstractSearchServiceImpl {
                         + ExploreConstants.DISTANCE_KILOMETERS);
             }
         }
+        schoolSearchData.setContactLogoUrl(schoolConfig.getSchoolContactImageUrl());
+        schoolSearchData.setLocationLogoUrl(schoolConfig.getSchoolLocationLogoUrl());
     }
 
     private boolean isGeoDistanceSortRequest(ElasticRequest elasticRequest) {

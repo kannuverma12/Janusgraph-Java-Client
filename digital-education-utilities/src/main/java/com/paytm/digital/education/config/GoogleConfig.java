@@ -11,6 +11,7 @@ public class GoogleConfig {
     private static String coachingCredentialFolderPath;
     private static String campusCredentialFileName;
     private static String coachingCredentialFileName;
+    private static String exploreCredentialFileName;
 
     @Value("${google.api.explore.credential.folderpath}")
     public void setExploreCredentialFolderPath(String path) {
@@ -32,6 +33,11 @@ public class GoogleConfig {
         coachingCredentialFileName = fileName;
     }
 
+    @Value("${google.api.explore.credential.filename}")
+    public void setExploreCredentialFile(String fileName) {
+        exploreCredentialFileName = fileName;
+    }
+
     public static String getExploreCredentialFolderPath() {
         return exploreCredentialFolderPath;
     }
@@ -46,5 +52,9 @@ public class GoogleConfig {
 
     public static String getCoachingCredentialFileName() {
         return coachingCredentialFileName;
+    }
+
+    public static String getExploreCredentialFileName() {
+        return exploreCredentialFileName;
     }
 }

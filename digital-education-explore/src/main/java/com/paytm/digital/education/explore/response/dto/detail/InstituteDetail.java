@@ -144,6 +144,7 @@ public class InstituteDetail implements CTAInfoHolder {
     }
 
     @Override
+    @JsonIgnore
     public EducationEntity getCorrespondingEntity() {
         return INSTITUTE;
     }

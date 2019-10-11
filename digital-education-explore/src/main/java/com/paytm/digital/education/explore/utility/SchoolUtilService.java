@@ -2,8 +2,11 @@ package com.paytm.digital.education.explore.utility;
 
 import com.paytm.digital.education.config.SchoolConfig;
 import com.paytm.digital.education.explore.database.entity.Board;
+import com.paytm.digital.education.explore.database.entity.ShiftDetails;
 import com.paytm.digital.education.explore.enums.ClassLevel;
 import com.paytm.digital.education.explore.enums.ClassType;
+import com.paytm.digital.education.explore.response.dto.detail.school.detail.ShiftDetailsResponse;
+import com.paytm.digital.education.explore.response.dto.detail.school.detail.ShiftTable;
 import com.paytm.digital.education.utility.CommonUtils;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
@@ -15,8 +18,10 @@ import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.explore.enums.ClassLevel.KINDERGARTEN;
 import static com.paytm.digital.education.explore.enums.ClassLevel.MIDDLE_SCHOOL;
@@ -48,13 +53,14 @@ public class SchoolUtilService {
     private static final String INCORRECT_DATA_FORMAT_ERROR_TEMPLATE
             = "classFrom classTo have mixed nursery and kindergarten values - %s %s";
 
-    private static final List<Triple<ClassType, ClassType, ClassLevel>> CLASS_LEVEL_TABLE = Arrays.asList(
-            Triple.of(LKG, UKG, KINDERGARTEN),
-            Triple.of(ONE, FIVE, PRIMARY_SCHOOL),
-            Triple.of(SIX, EIGHT, MIDDLE_SCHOOL),
-            Triple.of(NINE, TEN, SECONDARY_SCHOOL),
-            Triple.of(ELEVEN, TWELVE, SENIOR_SECONDARY_SCHOOL)
-    );
+    private static final List<Triple<ClassType, ClassType, ClassLevel>> CLASS_LEVEL_TABLE =
+            Arrays.asList(
+                    Triple.of(LKG, UKG, KINDERGARTEN),
+                    Triple.of(ONE, FIVE, PRIMARY_SCHOOL),
+                    Triple.of(SIX, EIGHT, MIDDLE_SCHOOL),
+                    Triple.of(NINE, TEN, SECONDARY_SCHOOL),
+                    Triple.of(ELEVEN, TWELVE, SENIOR_SECONDARY_SCHOOL)
+            );
 
     public String buildLogoFullPathFromRelativePath(String relativeLogoPath) {
         return StringUtils.isBlank(relativeLogoPath)
@@ -145,4 +151,46 @@ public class SchoolUtilService {
         }
         return true;
     }
+
+    public boolean isShiftDetailsValid(ShiftDetails shiftDetails) {
+        return areShiftFieldsNonEmpty(shiftDetails)
+                && isShiftClassRangeWellFormed(shiftDetails)
+                && doesNotHaveBothNurseryAndKindergarten(
+                shiftDetails.getClassFrom(),
+                shiftDetails.getClassTo());
+    }
+
+    public boolean isShiftTableDataCorrect(ShiftTable shiftTable) {
+        List<ShiftDetailsResponse> shiftDetailsList = shiftTable.getShiftDetailsRows();
+        if (shiftDetailsList.size() == 0) {
+            return false;
+        }
+        if (shiftDetailsList.size() == 1) {
+            return true;
+        }
+        List<ShiftDetailsResponse> shiftDetailsResponseList =
+                shiftDetailsList
+                        .stream()
+                        .sorted(Comparator.comparing(ShiftDetailsResponse::getClassFrom))
+                        .collect(Collectors.toList());
+        for (int i = 1; i < shiftDetailsResponseList.size(); i++) {
+            ClassType currentClassFrom = shiftDetailsResponseList.get(i).getClassFrom();
+            ClassType previousClassTo = shiftDetailsResponseList.get(i - 1).getClassTo();
+            if (currentClassFrom.compareTo(previousClassTo) <= 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean areShiftFieldsNonEmpty(ShiftDetails shiftDetails) {
+        return isClassTypeNotEmpty(shiftDetails.getClassFrom())
+                && isClassTypeNotEmpty(shiftDetails.getClassTo())
+                && Objects.nonNull(shiftDetails.getShiftType());
+    }
+
+    private boolean isShiftClassRangeWellFormed(ShiftDetails shiftDetails) {
+        return shiftDetails.getClassFrom().compareTo(shiftDetails.getClassTo()) <= 0;
+    }
+
 }

@@ -13,6 +13,7 @@ import static com.paytm.digital.education.utility.DateUtil.getCurrentDate;
 import com.mongodb.client.result.UpdateResult;
 import com.paytm.digital.education.coaching.database.entity.CoachingCenter;
 import com.paytm.digital.education.coaching.database.entity.CoachingInstitute;
+import com.paytm.digital.education.database.repository.SequenceGenerator;
 import com.paytm.digital.education.exception.BadRequestException;
 import lombok.AllArgsConstructor;
 
