@@ -17,6 +17,7 @@ import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
+import com.paytm.digital.education.serviceimpl.helper.ExamLogoHelper;
 import com.paytm.digital.education.utility.CommonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -67,6 +68,7 @@ public class ExamService {
     private final PropertyReader           propertyReader;
     private final ExamSectionHelper        examSectionHelper;
     private final ExamInstanceHelper       examInstanceHelper;
+    private final ExamLogoHelper           examLogoHelper;
 
     public GetExamDetailsResponse getExamDetails(final Long examId, final String urlDisplayKey) {
         Exam exam = this.commonMongoRepository.getEntityByFields(EXAM_ID, examId, Exam.class,
@@ -96,6 +98,7 @@ public class ExamService {
                 .examId(exam.getExamId())
                 .examFullName(exam.getExamFullName())
                 .examShortName(exam.getExamShortName())
+                .logo(examLogoHelper.getExamLogoUrl(exam.getExamId(), exam.getLogo()))
                 .urlDisplayKey(urlDisplayKey)
                 .examDescription(exam.getAboutExam())
                 .topCoachingInstitutes(this.getTopCoachingInstitutes(exam))

@@ -1,4 +1,4 @@
-package com.paytm.digital.education.explore.service.helper;
+package com.paytm.digital.education.serviceimpl.helper;
 
 import com.paytm.digital.education.constant.ExploreConstants;
 import com.paytm.digital.education.database.entity.ExamLogo;

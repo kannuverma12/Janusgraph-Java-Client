@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.paytm.digital.education.coaching.consumer.model.dto.ExamAdditionalInfo;
-import com.paytm.digital.education.coaching.consumer.model.dto.ExamImportantDate;
 import com.paytm.digital.education.coaching.consumer.model.dto.ImportantDatesBannerDetails;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingCourses;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingInstitutes;
@@ -12,7 +11,6 @@ import com.paytm.digital.education.dto.detail.Event;
 import com.paytm.digital.education.dto.detail.Syllabus;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 
 import java.util.List;
 
@@ -26,6 +24,7 @@ public class GetExamDetailsResponse {
     private String                      examFullName;
     private String                      examShortName;
     private String                      urlDisplayKey;
+    private String                      logo;
     private String                      examDescription;
     private TopCoachingInstitutes       topCoachingInstitutes;
     private TopCoachingCourses          topCoachingCourses;

@@ -17,6 +17,7 @@ import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationResponse;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.enums.es.FilterQueryType;
+import com.paytm.digital.education.serviceimpl.helper.ExamLogoHelper;
 import com.paytm.digital.education.utility.CommonUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,6 +63,7 @@ public class ExamSearchService extends AbstractSearchService {
     private static Map<String, Float>            searchFieldKeys;
     private static Map<String, FilterQueryType>  filterQueryTypeMap;
     private        CoachingSearchAggregateHelper coachingSearchAggregateHelper;
+    private final  ExamLogoHelper                examLogoHelper;
 
     @PostConstruct
     private void init() {
@@ -94,8 +96,8 @@ public class ExamSearchService extends AbstractSearchService {
         if (searchRequest.isFetchSearchResultsPerFilter()) {
             populateSearchResultPerLevel(searchResponse, elasticResponse);
         }
-        buildSearchResponse(searchResponse, elasticResponse, elasticRequest,COACHING_COMPONENT,
-                EXAM_FILTER_NAMESPACE,EXAM_SEARCH_NAMESPACE);
+        buildSearchResponse(searchResponse, elasticResponse, elasticRequest, COACHING_COMPONENT,
+                EXAM_FILTER_NAMESPACE, EXAM_SEARCH_NAMESPACE);
         return searchResponse;
     }
 
@@ -136,6 +138,8 @@ public class ExamSearchService extends AbstractSearchService {
                 examData.setExamShortName(examSearch.getExamShortName());
                 examData.setUrlDisplayKey(
                         CommonUtil.convertNameToUrlDisplayName(examSearch.getOfficialName()));
+                examData.setLogoUrl(examLogoHelper.getExamLogoUrl(
+                        new Long(examSearch.getExamId()), examSearch.getImageLink()));
                 List<String> dataAvailable = new ArrayList<>();
                 if (!CollectionUtils.isEmpty(examSearch.getDataAvailable())) {
                     dataAvailable.addAll(examSearch.getDataAvailable());
@@ -155,14 +159,6 @@ public class ExamSearchService extends AbstractSearchService {
                     dataAvailable.add(CoachingConstants.Search.DATE_TAB);
                 }
                 examData.setDataAvailable(dataAvailable);
-
-                if (!StringUtils.isBlank(examSearch.getImageLink())) {
-                    examData.setLogoUrl(CommonUtil.getAbsoluteUrl(examSearch.getImageLink(),
-                            COACHING_TOP_EXAMS));
-                } else {
-                    examData.setLogoUrl(CommonUtil.getAbsoluteUrl(EXAM_PLACEHOLDER,
-                            COACHING_TOP_EXAMS));
-                }
 
                 examDataList.add(examData);
             });

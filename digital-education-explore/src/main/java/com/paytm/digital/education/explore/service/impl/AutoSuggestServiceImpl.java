@@ -23,7 +23,7 @@ import com.paytm.digital.education.search.model.AutoSuggestEsData;
 import com.paytm.digital.education.explore.response.dto.suggest.AutoSuggestData;
 import com.paytm.digital.education.explore.response.dto.suggest.AutoSuggestResponse;
 import com.paytm.digital.education.explore.response.dto.suggest.SuggestResult;
-import com.paytm.digital.education.explore.service.helper.ExamLogoHelper;
+import com.paytm.digital.education.serviceimpl.helper.ExamLogoHelper;
 import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import com.paytm.digital.education.search.service.CommonAutoSuggestionService;
 import com.paytm.digital.education.utility.CommonUtil;
