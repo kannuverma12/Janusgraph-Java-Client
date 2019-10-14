@@ -25,7 +25,7 @@ public class ExamController {
 
     @GetMapping(value = GET_EXAM_DETAILS)
     public GetExamDetailsResponse getExamDetails(
-            @RequestParam(value = "exam_id") @NotNull final Long examId,
+            @RequestParam(value = "exam_id") @NotNull final long examId,
             @RequestParam(value = "url_display_key") @NotEmpty final String urlDisplayKey) {
 
         return examService.getExamDetails(examId, urlDisplayKey);

@@ -70,7 +70,7 @@ public class ExamService {
     private final ExamInstanceHelper       examInstanceHelper;
     private final ExamLogoHelper           examLogoHelper;
 
-    public GetExamDetailsResponse getExamDetails(final Long examId, final String urlDisplayKey) {
+    public GetExamDetailsResponse getExamDetails(final long examId, final String urlDisplayKey) {
         Exam exam = this.commonMongoRepository.getEntityByFields(EXAM_ID, examId, Exam.class,
                 EXAM_DETAILS_FIELDS);
         if (Objects.isNull(exam)) {
