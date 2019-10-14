@@ -49,6 +49,14 @@ public class CoachingCourseForm {
     @GoogleSheetColumnName("Course Duration Type")
     private String courseDurationType;
 
+    @JsonProperty("course_validity_value")
+    @GoogleSheetColumnName("Course Validity Value")
+    private Integer courseValidityValue;
+
+    @JsonProperty("course_validity_type")
+    @GoogleSheetColumnName("Course Validity Type")
+    private String courseValidityType;
+
     @JsonProperty("eligibility_criteria")
     @GoogleSheetColumnName("Eligibility Criteria")
     private String eligibilityCriteria;

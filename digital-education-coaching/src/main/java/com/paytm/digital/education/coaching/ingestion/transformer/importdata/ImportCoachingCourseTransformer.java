@@ -30,6 +30,8 @@ public class ImportCoachingCourseTransformer {
                         form.getExamPreparedIds()))
                 .duration(form.getCourseDurationValue())
                 .durationType(DurationType.fromString(form.getCourseDurationType()))
+                .validity(form.getCourseValidityValue())
+                .validityType(DurationType.fromString(form.getCourseValidityType()))
                 .eligibility(form.getEligibilityCriteria())
                 .info(form.getCourseIntroduction())
                 .description(form.getCourseDescription())

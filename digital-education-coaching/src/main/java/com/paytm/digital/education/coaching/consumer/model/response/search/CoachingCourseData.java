@@ -23,6 +23,8 @@ public class CoachingCourseData extends SearchBaseData {
     private Double     courseDurationDays;
     private Integer    duration;
     private String     durationType;
+    private Integer    validity;
+    private String     validityType;
     private Double     originalPrice;
     private Double     discountedPrice;
     private String     courseLevel;

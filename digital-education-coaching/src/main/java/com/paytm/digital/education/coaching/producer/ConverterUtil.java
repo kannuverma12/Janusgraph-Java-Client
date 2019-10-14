@@ -153,6 +153,8 @@ public class ConverterUtil {
         coachingCourseEntity.setPrimaryExamIds(request.getPrimaryExamIds());
         coachingCourseEntity.setDuration(request.getDuration());
         coachingCourseEntity.setDurationType(request.getDurationType());
+        coachingCourseEntity.setValidity(request.getValidity());
+        coachingCourseEntity.setValidityType(request.getValidityType());
         coachingCourseEntity.setEligibility(request.getEligibility());
         coachingCourseEntity.setInfo(request.getInfo());
         coachingCourseEntity.setDescription(request.getDescription());

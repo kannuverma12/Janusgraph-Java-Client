@@ -77,6 +77,13 @@ public class CoachingCourseDataRequest {
     @ApiModelProperty(value = "course duration")
     private Integer duration;
 
+    @ApiModelProperty(value = "validity type from predefined duration types")
+    private DurationType validityType;
+
+    @Positive
+    @ApiModelProperty(value = "course_validity")
+    private Integer validity;
+
     @NotEmpty
     @Size(max = 30)
     @ApiModelProperty(value = "eligibility for coaching course")

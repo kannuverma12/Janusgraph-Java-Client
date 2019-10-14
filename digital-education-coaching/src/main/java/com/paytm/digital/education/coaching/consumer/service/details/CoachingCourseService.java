@@ -82,6 +82,7 @@ import static com.paytm.digital.education.coaching.enums.DisplayHeadings.RANK_AN
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TARGET_EXAM_COURSE;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TEACHER_STUDENT_RATIO;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_RANKERS;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.VALIDITY_COURSE;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_COURSES;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_COURSE_ID_AND_URL_DISPLAY_KEY;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
@@ -109,7 +110,7 @@ public class CoachingCourseService {
                     "elearning_lecture_duration", "elearning_online_test_count",
                     "elearning_practice_paper_count", "classroom_lecture_count",
                     "classroom_lecture_duration", "classroom_test_count", "sgst", "cgst", "igst",
-                    "tcs", "merchant_product_id", "is_enabled");
+                    "tcs", "merchant_product_id", "is_enabled", "validity", "validity_type");
 
     private static final List<String> EXAM_FIELDS =
             Arrays.asList("exam_id", "exam_full_name", "exam_short_name", "conducting_body",
@@ -374,6 +375,12 @@ public class CoachingCourseService {
                 .value(course.getDuration() + " " + (null == course.getDurationType()
                         ? EMPTY_STRING : course.getDurationType().getText()))
                 .build());
+        if (Objects.nonNull(course.getValidity()) && Objects.nonNull(course.getValidityType())) {
+            courseHighlights.add(CoachingCourseHighlight.builder()
+                    .key(VALIDITY_COURSE.getValue())
+                    .value(course.getValidity() + " " + course.getValidityType().getText())
+                    .build());
+        }
 
         return GetCoachingCourseDetailsResponse.builder()
                 .courseId(course.getCourseId())

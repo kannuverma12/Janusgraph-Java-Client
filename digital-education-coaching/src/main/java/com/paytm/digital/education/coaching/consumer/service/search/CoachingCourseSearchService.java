@@ -219,6 +219,12 @@ public class CoachingCourseSearchService extends AbstractSearchService {
             toAdd.setDurationType(coachingCourseSearch.getDurationType().getText());
         }
 
+        if (Objects.nonNull(coachingCourseSearch.getValidityType()) && Objects
+                .nonNull(coachingCourseSearch.getValidity())) {
+            toAdd.setValidity(coachingCourseSearch.getValidity());
+            toAdd.setValidityType(coachingCourseSearch.getValidityType().getText());
+        }
+
         return toAdd;
     }
 }

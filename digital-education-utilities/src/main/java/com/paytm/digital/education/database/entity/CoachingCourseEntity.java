@@ -54,6 +54,12 @@ public class CoachingCourseEntity extends Base {
     @Field("duration")
     private Integer duration;
 
+    @Field("validity_type")
+    private DurationType validityType;
+
+    @Field("validity")
+    private Integer validity;
+
     @Field("eligibility")
     private String eligibility;
 

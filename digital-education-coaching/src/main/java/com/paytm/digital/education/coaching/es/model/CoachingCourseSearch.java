@@ -39,6 +39,8 @@ public class CoachingCourseSearch {
     private Double                         courseDurationDays;
     private Integer                        duration;
     private DurationType                   durationType;
+    private Integer                        validity;
+    private DurationType                   validityType;
     private String                         merchantProductId;
     private Long                           paytmProductId;
     private Boolean                        isEnabled;

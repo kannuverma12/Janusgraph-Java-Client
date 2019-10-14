@@ -8,6 +8,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EMPTY_STRING;
@@ -33,6 +34,7 @@ public class ExportCoachingCourseTransformer {
                                     StringUtils.join(entity.getPrimaryExamIds(), ","))
                             .courseDurationValue(entity.getDuration())
                             .courseDurationType(entity.getDurationType().getText())
+                            .courseValidityValue(entity.getValidity())
                             .eligibilityCriteria(entity.getEligibility())
                             .courseIntroduction(entity.getInfo())
                             .courseDescription(entity.getDescription())
@@ -89,6 +91,10 @@ public class ExportCoachingCourseTransformer {
                                     .convertBooleanToString(entity.getIsDynamic()))
                             .redirectUrl(entity.getRedirectUrl())
                             .build();
+
+                    if (Objects.nonNull(entity.getValidityType())) {
+                        form.setCourseValidityType(entity.getValidityType().getText());
+                    }
                     fillImportantDates(form, entity.getImportantDates());
                     return form;
                 })
