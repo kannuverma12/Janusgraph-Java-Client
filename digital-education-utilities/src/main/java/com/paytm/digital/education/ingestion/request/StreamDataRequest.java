@@ -36,6 +36,13 @@ public class StreamDataRequest {
     @ApiModelProperty(value = "name of the stream")
     private String name;
 
+
+    @NotEmpty
+    @Size(max = 50)
+    @Pattern(regexp = "^[a-zA-Z]+[a-zA-Z& ]*$")
+    @ApiModelProperty(value = "short name of the stream")
+    private String shortName;
+
     @NotNull
     @Min(value = 1)
     @ApiModelProperty(value = "stream ranking across all the existing streams")

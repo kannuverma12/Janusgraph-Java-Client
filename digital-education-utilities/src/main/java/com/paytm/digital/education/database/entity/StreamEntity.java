@@ -26,6 +26,9 @@ public class StreamEntity extends Base {
     @Field("name")
     private String name;
 
+    @Field("short_name")
+    private String shortName;
+
     @Field("logo")
     private String logo;
 

@@ -54,6 +54,7 @@ public class StreamIngestorService {
     private void setStreamData(StreamDataRequest request, StreamEntity streamEntity) {
         streamEntity.setLogo(request.getLogo());
         streamEntity.setName(request.getName());
+        streamEntity.setShortName(request.getShortName());
         streamEntity.setPriority(request.getPriority());
         streamEntity.setIsEnabled(request.getIsEnabled());
         streamEntity.setUpdatedAt(LocalDateTime.now());

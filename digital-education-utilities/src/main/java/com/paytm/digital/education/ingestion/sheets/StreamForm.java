@@ -23,6 +23,10 @@ public class StreamForm {
     @GoogleSheetColumnName("Stream Name")
     private String streamName;
 
+    @JsonProperty("stream_short_name")
+    @GoogleSheetColumnName("Stream Short Name")
+    private String shortName;
+
     @JsonProperty("logo")
     @GoogleSheetColumnName("Logo")
     private String logo;

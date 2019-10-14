@@ -21,6 +21,7 @@ public class StreamDataConverter {
             return StreamDataRequest.builder()
                     .streamId(form.getStreamId())
                     .name(form.getStreamName())
+                    .shortName(form.getShortName())
                     .logo(form.getLogo())
                     .priority(form.getGlobalPriority())
                     .isEnabled(stringToBoolean(
@@ -36,6 +37,7 @@ public class StreamDataConverter {
                     .map(entity -> StreamForm.builder()
                             .streamId(entity.getStreamId())
                             .streamName(entity.getName())
+                            .shortName(entity.getShortName())
                             .logo(entity.getLogo())
                             .globalPriority(entity.getPriority())
                             .statusActive(booleanToString(
