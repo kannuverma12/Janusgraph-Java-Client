@@ -61,8 +61,10 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.C
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_COMPONENT;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_KEY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_NAMESPACE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.DONWLOAD_ICON;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_YEAR;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.FAQ_LOGO;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_COVER_IMAGE_PLACEHOLDER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_ID;
@@ -115,9 +117,10 @@ public class CoachingInstituteService {
     private static final List<String> STREAM_FIELDS =
             Arrays.asList("stream_id", "name", "logo", "is_enabled");
 
-    private final CommonMongoRepository commonMongoRepository;
-    private final SearchDataHelper      searchDataHelper;
-    private final PropertyReader        propertyReader;
+    private final CommonMongoRepository        commonMongoRepository;
+    private final SearchDataHelper             searchDataHelper;
+    private final PropertyReader               propertyReader;
+    private final CoachingInstituteTransformer coachingInstituteTransformer;
 
     public GetCoachingInstituteDetailsResponse getCoachingInstituteDetails(long instituteId,
             String urlDisplayKey, Long streamId, Long examId) {
@@ -155,7 +158,7 @@ public class CoachingInstituteService {
                         TOP_COACHING_INSTITUTES_IMAGE))
                 .logo(ImageUtils.getImageWithAbsolutePath(coachingInstituteEntity.getLogo(),
                         INSTITUTE_PLACEHOLDER, TOP_COACHING_INSTITUTES_LOGO))
-                .instituteHighlights(CoachingInstituteTransformer.convertInstituteHighlights(
+                .instituteHighlights(coachingInstituteTransformer.convertInstituteHighlights(
                         coachingInstituteEntity.getKeyHighlights()))
                 .centerAndBrochureInfo(this.getCenterAndBrochureInfo(coachingInstituteEntity,
                         coachingCenterIdAndCenterMap))
@@ -179,7 +182,8 @@ public class CoachingInstituteService {
         List<InstituteMoreInfoData> instituteMoreInfoDataList = new ArrayList<>();
         InstituteMoreInfoData instituteMoreInfoData =
                 InstituteMoreInfoData.builder().header(FAQ.getValue()).results(
-                        new ArrayList<>(fillFaqs(coachingInstituteEntity.getFaqs()))).build();
+                        new ArrayList<>(fillFaqs(coachingInstituteEntity.getFaqs()))).logo(FAQ_LOGO)
+                        .build();
         instituteMoreInfoDataList.add(instituteMoreInfoData);
         return InstituteMoreInfo.builder()
                 .header(String.format(MORE_FROM.getValue(),
@@ -261,6 +265,7 @@ public class CoachingInstituteService {
                 .brochure(SyllabusAndBrochure.builder()
                         .header(DOWNLOAD_BROCHURE.getValue())
                         .url(coachingInstituteEntity.getBrochure())
+                        .logo(DONWLOAD_ICON)
                         .build())
                 .build();
     }
@@ -351,7 +356,7 @@ public class CoachingInstituteService {
         return TopExamsInstitute.builder()
                 .header(String.format(TOP_EXAMS_PREPARED_FOR_BY.getValue(),
                         coachingInstituteEntity.getBrandName()))
-                .results(CoachingInstituteTransformer.convertExamEntityToDto(examList,
+                .results(coachingInstituteTransformer.convertExamEntityToDto(examList,
                         examEntityList))
                 .build();
     }
@@ -374,7 +379,7 @@ public class CoachingInstituteService {
         return TopStreams.builder()
                 .header(String.format(STREAMS_PREPARED_FOR_BY.getValue(),
                         coachingInstituteEntity.getBrandName()))
-                .results(CoachingInstituteTransformer
+                .results(coachingInstituteTransformer
                         .convertStreamEntityToStreamDto(streamList, streamEntityList))
                 .build();
     }
@@ -437,7 +442,7 @@ public class CoachingInstituteService {
 
         return TopRankers.builder()
                 .header(TOP_RANKERS.getValue())
-                .results(CoachingInstituteTransformer.convertTopRankerEntityToTopRankerDto(
+                .results(coachingInstituteTransformer.convertTopRankerEntityToTopRankerDto(
                         examIdsAndNameMap, coachingCourseIdsAndNameMap, topRankerEntityList,
                         topRankerList, coachingCenterIdAndCenterMap))
                 .build();

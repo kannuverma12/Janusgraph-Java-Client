@@ -9,7 +9,6 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.Searc
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResult;
 import com.paytm.digital.education.coaching.consumer.service.search.helper.CoachingSearchAggregateHelper;
 import com.paytm.digital.education.coaching.es.model.ExamSearch;
-import com.paytm.digital.education.coaching.utils.ImageUtils;
 import com.paytm.digital.education.coaching.utils.SearchUtils;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
@@ -37,7 +36,6 @@ import java.util.concurrent.TimeoutException;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COMPONENT;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_EXAM_STREAMS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_FILTER_NAMESPACE;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_PLACEHOLDER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_SEARCH_NAMESPACE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_FULL_NAME;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_FULL_NAME_BOOST;
@@ -50,7 +48,6 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.S
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_SHORT_NAME;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_SHORT_NAME_BOOST;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
-import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_EXAMS;
 import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_MEDIUM;
 import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_EXAM_LEVEL;
 import static com.paytm.digital.education.enums.es.FilterQueryType.TERMS;
@@ -184,9 +181,8 @@ public class ExamSearchService extends AbstractSearchService {
                     examData.setExamShortName(examSearch.getExamShortName());
                     examData.setUrlDisplayKey(
                             CommonUtil.convertNameToUrlDisplayName(examSearch.getOfficialName()));
-                    examData.setLogoUrl(ImageUtils
-                            .getImageWithAbsolutePath(examSearch.getImageLink(), EXAM_PLACEHOLDER,
-                                    COACHING_TOP_EXAMS));
+                    examData.setLogoUrl(examLogoHelper.getExamLogoUrl(
+                            new Long(examSearch.getExamId()), examSearch.getImageLink()));
                     List<String> dataAvailable = new ArrayList<>();
                     if (!CollectionUtils.isEmpty(examSearch.getDataAvailable())) {
                         dataAvailable.addAll(examSearch.getDataAvailable());

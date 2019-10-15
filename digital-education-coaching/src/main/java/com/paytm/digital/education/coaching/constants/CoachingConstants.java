@@ -1,7 +1,5 @@
 package com.paytm.digital.education.coaching.constants;
 
-import com.paytm.digital.education.coaching.consumer.model.dto.ExamAdditionalInfoData;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,9 +69,6 @@ public class CoachingConstants {
     public static final SimpleDateFormat DD_MMM_YYYY = new SimpleDateFormat("dd MMM,yyyy");
     public static final SimpleDateFormat YYYY_MM     = new SimpleDateFormat("yyyy-MM");
 
-    public static final List<ExamAdditionalInfoData>
-                                     EXAM_ADDITIONAL_INFO_PARAMS                  =
-            new ArrayList<ExamAdditionalInfoData>();
     public static final String       DETAILS_PROPERTY_KEY                         =
             "detail_page_section_order";
     public static final String       DETAILS_PROPERTY_COMPONENT                   = "coaching";
@@ -94,10 +89,6 @@ public class CoachingConstants {
             "/institute_placeholder.svg";
     public static final String       INSTITUTE_COVER_IMAGE_PLACEHOLDER            =
             "/institute_cover_image_placeholder.svg";
-    public static final String       COACHING_COURSE_PLACEHOLDER                  =
-            "/coaching_course_placeholder.svg";
-    public static final String       COACHING_COURSE_TYPE_PLACEHOLDER             =
-            "/coaching_course_type_placeholder.svg";
     public static final String       TOP_RANKER_PLACEHOLDER                       =
             "/top_ranker_placeholder.svg";
     public static final String       COACHING_INSTITUTE_KEY_HIGHLIGHT_PLACEHOLDER =
@@ -105,26 +96,15 @@ public class CoachingConstants {
     public static final String       COACHING_CENTER_PLACEHOLDER                  =
             "/coaching_center_placeholder.svg";
     public static final String       COACHING_INSTITUTE_FIND_CENTERS_LOGO         =
-            "full_image_link";
+            "https://assetscdn1.paytm.com/educationwebassets/backend/Find_Institute.svg";
+    public static final String       DONWLOAD_ICON                                =
+            "https://assetscdn1.paytm.com/educationwebassets/backend/Download.svg";
     public static final String       EMPTY_STRING                                 = "";
     public static final String       SECTION                                      = "section";
     public static final String       SECTION_PLACEHOLDER                          =
             "/section_placeholder.svg";
-
-    static {
-        EXAM_ADDITIONAL_INFO_PARAMS.add(
-                new ExamAdditionalInfoData("Eligibility", "Find out eligibility", "image_link"));
-        EXAM_ADDITIONAL_INFO_PARAMS.add(
-                new ExamAdditionalInfoData("Syllabus", "Find out Syllabus", "image_link"));
-        EXAM_ADDITIONAL_INFO_PARAMS.add(
-                new ExamAdditionalInfoData("Fill Application Form", "Fill out application form",
-                        "image_link"));
-        EXAM_ADDITIONAL_INFO_PARAMS.add(
-                new ExamAdditionalInfoData(
-                        "Frequently Asked Questions",
-                        "Find answers to your most common questions",
-                        "image_link"));
-    }
+    public static final String       FAQ_LOGO                                     =
+            "https://assetscdn1.paytm.com/educationwebassets/backend/FAQ.svg";
 
     public static final int TOP_RANKER_LIMIT = 5;
 
@@ -241,7 +221,8 @@ public class CoachingConstants {
         public static final String HEADER      = "Important Dates!";
         public static final String DESCRIPTION =
                 "Keep track of important dates like Last date of form submission, Examination date, etc.";
-        public static final String LOGO        = "image_logo";
+        public static final String LOGO        =
+                "https://assetscdn1.paytm.com/educationwebassets/backend/Important_dates.svg";
         public static final String BUTTON_TEXT = "View Dates";
     }
 

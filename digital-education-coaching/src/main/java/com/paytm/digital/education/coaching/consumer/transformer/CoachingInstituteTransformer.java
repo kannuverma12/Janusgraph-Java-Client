@@ -9,7 +9,9 @@ import com.paytm.digital.education.database.embedded.KeyHighlight;
 import com.paytm.digital.education.database.entity.CoachingCenterEntity;
 import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
-import lombok.experimental.UtilityClass;
+import com.paytm.digital.education.serviceimpl.helper.ExamLogoHelper;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -17,18 +19,19 @@ import java.util.List;
 import java.util.Map;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_INSTITUTE_KEY_HIGHLIGHT_PLACEHOLDER;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_PLACEHOLDER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_PLACEHOLDER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.TOP_RANKER_PLACEHOLDER;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_INSTITUTE_HIGHLIGHT_LOGO;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_STREAMS;
-import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_EXAMS;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_RANKER;
 
-@UtilityClass
+@Service
+@AllArgsConstructor
 public class CoachingInstituteTransformer {
 
-    public static List<InstituteHighlight> convertInstituteHighlights(
+    private final ExamLogoHelper examLogoHelper;
+
+    public List<InstituteHighlight> convertInstituteHighlights(
             List<KeyHighlight> keyHighlights) {
         List<InstituteHighlight> instituteHighlightList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(keyHighlights)) {
@@ -48,7 +51,7 @@ public class CoachingInstituteTransformer {
         return instituteHighlightList;
     }
 
-    public static List<Exam> convertExamEntityToDto(List<Exam> examList,
+    public List<Exam> convertExamEntityToDto(List<Exam> examList,
             List<com.paytm.digital.education.database.entity.Exam> examEntityList) {
         if (!CollectionUtils.isEmpty(examEntityList)) {
             for (com.paytm.digital.education.database.entity.Exam examEntity : examEntityList) {
@@ -58,9 +61,8 @@ public class CoachingInstituteTransformer {
                         .examFullName(examEntity.getExamFullName())
                         .examShortName(examEntity.getExamShortName())
                         .conductedBy(examEntity.getConductingBody())
-                        .logo(ImageUtils
-                                .getImageWithAbsolutePath(examEntity.getLogo(), EXAM_PLACEHOLDER,
-                                        COACHING_TOP_EXAMS))
+                        .logo(examLogoHelper.getExamLogoUrl(examEntity.getExamId(),
+                                examEntity.getLogo()))
                         .build();
 
                 examList.add(exam);
@@ -69,7 +71,7 @@ public class CoachingInstituteTransformer {
         return examList;
     }
 
-    public static List<Stream> convertStreamEntityToStreamDto(List<Stream> streamList,
+    public List<Stream> convertStreamEntityToStreamDto(List<Stream> streamList,
             List<StreamEntity> streamEntityList) {
         if (!CollectionUtils.isEmpty(streamEntityList)) {
             for (StreamEntity streamEntity : streamEntityList) {
@@ -87,7 +89,7 @@ public class CoachingInstituteTransformer {
         return streamList;
     }
 
-    public static List<TopRanker> convertTopRankerEntityToTopRankerDto(
+    public List<TopRanker> convertTopRankerEntityToTopRankerDto(
             Map<Long, String> examIdsAndNameMap, Map<Long, String> coachingCourseIdsAndNameMap,
             List<TopRankerEntity> topRankerEntityList, List<TopRanker> topRankerList,
             Map<Long, CoachingCenterEntity> coachingCenterIdAndCenterMap) {

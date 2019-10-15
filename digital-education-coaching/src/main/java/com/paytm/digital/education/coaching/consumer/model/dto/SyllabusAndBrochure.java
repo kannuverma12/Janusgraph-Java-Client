@@ -18,4 +18,5 @@ public class SyllabusAndBrochure {
 
     private String header;
     private String url;
+    private String logo;
 }

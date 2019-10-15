@@ -9,8 +9,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_TYPE_PLACEHOLDER;
-import static com.paytm.digital.education.constant.CommonConstants.COACHING_COURSE_TYPES;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.SECTION;
 
 @Getter
 public enum CoachingCourseType {
@@ -18,40 +17,40 @@ public enum CoachingCourseType {
     CLASSROOM_COURSE(CourseType.CLASSROOM_COURSE,
             CoachingCourseTypeResponse.builder()
                     .description("")
-                    .imageUrl(CommonUtil.getAbsoluteUrl(COACHING_COURSE_TYPE_PLACEHOLDER,
-                            COACHING_COURSE_TYPES))
+                    .imageUrl(CommonUtil.getAbsoluteUrl("/Classroom.svg",
+                            SECTION))
                     .name(CourseType.CLASSROOM_COURSE.getText())
                     .enumName(CourseType.CLASSROOM_COURSE)
                     .build()),
     DISTANCE_LEARNING(CourseType.DISTANCE_LEARNING,
             CoachingCourseTypeResponse.builder()
                     .description("")
-                    .imageUrl(CommonUtil.getAbsoluteUrl(COACHING_COURSE_TYPE_PLACEHOLDER,
-                            COACHING_COURSE_TYPES))
+                    .imageUrl(CommonUtil.getAbsoluteUrl("/Distance_Learning.svg",
+                            SECTION))
                     .name(CourseType.DISTANCE_LEARNING.getText())
                     .enumName(CourseType.DISTANCE_LEARNING)
                     .build()),
     TEST_SERIES_ONLINE(CourseType.TEST_SERIES_ONLINE,
             CoachingCourseTypeResponse.builder()
                     .description("")
-                    .imageUrl(CommonUtil.getAbsoluteUrl(COACHING_COURSE_TYPE_PLACEHOLDER,
-                            COACHING_COURSE_TYPES))
+                    .imageUrl(CommonUtil.getAbsoluteUrl("/Test_Series.svg",
+                            SECTION))
                     .name(CourseType.TEST_SERIES_ONLINE.getText())
                     .enumName(CourseType.TEST_SERIES_ONLINE)
                     .build()),
     TEST_SERIES_OFFLINE(CourseType.TEST_SERIES_OFFLINE,
             CoachingCourseTypeResponse.builder()
                     .description("")
-                    .imageUrl(CommonUtil.getAbsoluteUrl(COACHING_COURSE_TYPE_PLACEHOLDER,
-                            COACHING_COURSE_TYPES))
+                    .imageUrl(CommonUtil.getAbsoluteUrl("/Test_Series.svg",
+                            SECTION))
                     .name(CourseType.TEST_SERIES_OFFLINE.getText())
                     .enumName(CourseType.TEST_SERIES_OFFLINE)
                     .build()),
     E_LEARNING(CourseType.E_LEARNING,
             CoachingCourseTypeResponse.builder()
                     .description("")
-                    .imageUrl(CommonUtil.getAbsoluteUrl(COACHING_COURSE_TYPE_PLACEHOLDER,
-                            COACHING_COURSE_TYPES))
+                    .imageUrl(CommonUtil.getAbsoluteUrl("/E_Learning.svg",
+                            SECTION))
                     .name(CourseType.E_LEARNING.getText())
                     .enumName(CourseType.E_LEARNING)
                     .build());

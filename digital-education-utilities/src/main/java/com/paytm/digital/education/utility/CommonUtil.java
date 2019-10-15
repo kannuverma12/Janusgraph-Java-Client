@@ -22,6 +22,7 @@ import static com.paytm.digital.education.constant.CommonConstants.COACHING_INST
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_STREAMS;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_EXAMS;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_RANKER;
+import static com.paytm.digital.education.constant.CommonConstants.SECTION;
 import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES_IMAGE;
 import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES_LOGO;
 import static com.paytm.digital.education.constant.ExploreConstants.AFFILIATED;
@@ -162,6 +163,9 @@ public class CommonUtil {
                 break;
             case CTA:
                 urlBuilder.append(ConfigProperties.getCtaLogoPrefix());
+                break;
+            case SECTION:
+                urlBuilder.append(ConfigProperties.getExamSectionIconPrefix());
                 break;
             default:
                 urlBuilder.append(ConfigProperties.getLogoImagePrefix());

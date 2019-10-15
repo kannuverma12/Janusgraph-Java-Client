@@ -3,7 +3,6 @@ package com.paytm.digital.education.coaching.consumer.model.dto.coachinginstitut
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.paytm.digital.education.coaching.consumer.model.dto.Faq;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,5 +20,6 @@ public class InstituteMoreInfoData {
 
     private String       header;
     private List<Object> results;
+    private String       logo;
 
 }

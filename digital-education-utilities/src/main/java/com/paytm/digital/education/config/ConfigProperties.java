@@ -22,6 +22,7 @@ public class ConfigProperties {
     private static String examLogoPrefix;
     private static String ctaLogoPrefix;
     private static String schoolLogoPrefix;
+    private static String examSectionIconPrefix;
 
     private static String envProfile;
     private static String coachingS3BucketName;
@@ -43,6 +44,10 @@ public class ConfigProperties {
         return envProfile;
     }
 
+    @Value("${exam.detail.icon.prefix}")
+    public void setExamSectionIconPrefix(String prefix) {
+        examSectionIconPrefix = prefix;
+    }
 
     @Value("${exam.placeholder.logo.url}")
     public void setExamPlaceHolderLogo(String logo) {
@@ -281,6 +286,10 @@ public class ConfigProperties {
 
     public static String getExamPlaceholderLogoURL() {
         return examPlaceholderLogoURL;
+    }
+
+    public static String getExamSectionIconPrefix() {
+        return examSectionIconPrefix;
     }
 
 }

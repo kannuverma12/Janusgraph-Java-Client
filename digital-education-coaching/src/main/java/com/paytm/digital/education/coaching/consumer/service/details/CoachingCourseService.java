@@ -57,6 +57,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.C
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_COMPONENT;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_KEY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_NAMESPACE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.DONWLOAD_ICON;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EMPTY_STRING;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_YEAR;
@@ -410,6 +411,7 @@ public class CoachingCourseService {
                         .syllabusAndBrochure(SyllabusAndBrochure.builder()
                                 .header(DOWNLOAD_SYLLABUS_AND_BROCHURE.getValue())
                                 .url(course.getSyllabus())
+                                .logo(DONWLOAD_ICON)
                                 .build())
                         .build())
                 .mockTest(CoachingInstituteService.getMockTestInfo(institute.getBrandName()))
