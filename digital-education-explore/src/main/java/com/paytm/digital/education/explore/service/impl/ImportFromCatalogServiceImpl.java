@@ -149,6 +149,7 @@ public class ImportFromCatalogServiceImpl implements ImportFromCatalogService {
         ExamPaytmKeys examPaytmKeys =
                 ExamPaytmKeys.builder().formId(entityData.getFormId())
                         .collegePredictorId(entityData.getCollegePredictorId())
+                        .webFormUriPrefix(entityData.getWebFormUriPrefix())
                         .build();
         fields.put(PaytmKeys.Constants.PAYTM_KEYS, examPaytmKeys);
         String errorMessage = null;

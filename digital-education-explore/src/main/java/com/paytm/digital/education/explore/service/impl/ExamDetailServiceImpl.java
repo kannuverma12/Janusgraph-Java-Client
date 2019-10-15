@@ -15,48 +15,50 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.MMM
 import static com.paytm.digital.education.explore.constants.ExploreConstants.NON_TENTATIVE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.PRECEDENCE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SECTION;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.WEB_FORM_URI_PREFIX;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.YYYY_MM;
 import static com.paytm.digital.education.explore.enums.Client.APP;
 import static com.paytm.digital.education.explore.enums.EducationEntity.EXAM;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
 
-import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.ExamPaytmKeys;
 import com.paytm.digital.education.database.entity.Instance;
 import com.paytm.digital.education.database.entity.SubExam;
+import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
-import com.paytm.digital.education.explore.response.dto.detail.ExamDetail;
 import com.paytm.digital.education.explore.response.dto.detail.Event;
+import com.paytm.digital.education.explore.response.dto.detail.ExamDetail;
 import com.paytm.digital.education.explore.response.dto.detail.Location;
-import com.paytm.digital.education.explore.service.helper.ExamLogoHelper;
-import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
+import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
+import com.paytm.digital.education.explore.service.helper.CTAHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.service.helper.DetailPageSectionHelper;
-import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
+import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
+import com.paytm.digital.education.explore.service.helper.ExamLogoHelper;
 import com.paytm.digital.education.explore.service.helper.ExamSectionHelper;
+import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
 import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import com.paytm.digital.education.explore.service.helper.WidgetsDataHelper;
-import com.paytm.digital.education.explore.service.helper.CTAHelper;
-import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.DateUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @AllArgsConstructor
@@ -336,6 +338,11 @@ public class ExamDetailServiceImpl {
     private void addPaytmKeys(ExamDetail examDetail, ExamPaytmKeys examPaytmKeys) {
         examDetail.setCollegePredictorPid(examPaytmKeys.getCollegePredictorId());
         examDetail.setFormId(examPaytmKeys.getFormId());
+        if (StringUtils.isNotBlank(examPaytmKeys.getWebFormUriPrefix())) {
+            examDetail.setAdditionalProperties(new HashMap<>());
+            examDetail.getAdditionalProperties()
+                    .put(WEB_FORM_URI_PREFIX, examPaytmKeys.getWebFormUriPrefix());
+        }
     }
 
 

@@ -1,5 +1,7 @@
 package com.paytm.digital.education.explore.service.helper;
 
+import static com.paytm.digital.education.explore.constants.ExploreConstants.DIRECTORY_SEPARATOR_SLASH;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.WEB_FORM_URI_PREFIX;
 import static com.paytm.digital.education.explore.enums.Client.APP;
 import static com.paytm.digital.education.explore.enums.EducationEntity.EXAM;
 import static com.paytm.digital.education.explore.enums.EducationEntity.SCHOOL;
@@ -45,6 +47,9 @@ public class CTAHelper {
 
     @Value("${predictor.app.url.prefix}")
     private String predictorUrlPrefix;
+
+    @Value("${forms.web.url.prefix}")
+    private String formsWebUrlPrefix;
 
     public List<CTA> buildCTA(CTAInfoHolder ctaInfoHolder, Client client) {
         // Logos are not required for web.
@@ -108,8 +113,8 @@ public class CTAHelper {
             return;
         }
 
-        if (APP.equals(client) && StringUtils.isNotBlank(ctaDetail.getFormId())) {
-            ctas.add(getFormsCTA(ctaDetail.getFormId(), logosPerCta));
+        if (StringUtils.isNotBlank(ctaDetail.getFormId())) {
+            ctas.add(getFormsCTA(client, ctaDetail.getFormId(), ctaDetail.getAdditionalProperties(), logosPerCta));
         }
     }
 
@@ -122,12 +127,27 @@ public class CTAHelper {
                 .build();
     }
 
-    private CTA getFormsCTA(String formsUrl, Map<String, Object> logosPerCta) {
+    private CTA getFormsCTA(Client client, String formsId, Map<String, Object> additionKeys,
+            Map<String, Object> logosPerCta) {
+        if (APP.equals(client)) {
+            return CTA.builder()
+                    .logo(getAbsoluteLogoUrl(logosPerCta, CTAType.FORMS.name().toLowerCase()))
+                    .url(formsUrlPrefix + formsId)
+                    .type(CTAType.FORMS)
+                    .label(CTA.Constants.APPLY).build();
+        }
+        StringBuilder urlBuilder = new StringBuilder(formsWebUrlPrefix);
+        if (!CollectionUtils.isEmpty(additionKeys) && additionKeys
+                .containsKey(WEB_FORM_URI_PREFIX)) {
+            urlBuilder.append(additionKeys.get(WEB_FORM_URI_PREFIX).toString())
+                    .append(DIRECTORY_SEPARATOR_SLASH);
+        }
+        urlBuilder.append(formsId);
         return CTA.builder()
                 .logo(getAbsoluteLogoUrl(logosPerCta, CTAType.FORMS.name().toLowerCase()))
-                .url(formsUrlPrefix + formsUrl)
+                .url(urlBuilder.toString())
                 .type(CTAType.FORMS)
-                .label(CTA.Constants.APPLY).build();
+                .label(CTA.Constants.FILL_FORM).build();
     }
 
     private CTA getFeeCTA(Long pid, Client client, Map<String, Object> logosPerCta) {

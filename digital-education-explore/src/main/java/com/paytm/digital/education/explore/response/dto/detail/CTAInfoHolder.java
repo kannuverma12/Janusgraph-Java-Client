@@ -4,6 +4,9 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.CTA
 
 import com.paytm.digital.education.explore.enums.EducationEntity;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public interface CTAInfoHolder {
     Long getPid();
 
@@ -39,5 +42,9 @@ public interface CTAInfoHolder {
 
     default String ctaDbPropertyKey() {
         return CTA;
+    }
+
+    default Map<String, Object> getAdditionalProperties() {
+        return new HashMap<>();
     }
 }

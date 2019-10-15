@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.explore.enums.EducationEntity;
@@ -143,6 +144,9 @@ public class ExamDetail implements CTAInfoHolder {
     @JsonIgnore
     private String formId;
 
+    @JsonIgnore
+    private Map<String, Object> additionalProperties;
+
     public Long getPid() {
         return null;
     }
@@ -193,5 +197,10 @@ public class ExamDetail implements CTAInfoHolder {
     @Override
     public Long getCollegePredictorPid() {
         return collegePredictorPid;
+    }
+
+    @Override
+    public Map<String, Object> getAdditionalProperties() {
+        return this.additionalProperties;
     }
 }
