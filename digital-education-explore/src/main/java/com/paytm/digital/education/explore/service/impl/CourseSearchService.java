@@ -141,7 +141,6 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
         if (elasticRequest.isSearchRequest()) {
             populateSearchResultsOfCourses(searchResponse, elasticResponse,
                     courseSearchResponse);
-
             long total = elasticResponse.getTotalSearchResultsCount();
             searchResponse.setTotal(total);
         }

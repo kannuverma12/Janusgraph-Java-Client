@@ -1,5 +1,13 @@
 package com.paytm.digital.education.elasticsearch.query;
 
+import static com.paytm.digital.education.elasticsearch.constants.ESConstants.AGGREGATION_QUERY_SIZE;
+import static com.paytm.digital.education.elasticsearch.constants.ESConstants.DEFAULT_TERMS_AGGREGATION_BUCKETS_SIZE;
+import static com.paytm.digital.education.elasticsearch.constants.ESConstants.DEFAULT_TOP_HITS_AGGREGATION_BUCKETS_SIZE;
+import static com.paytm.digital.education.elasticsearch.constants.ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS;
+import static com.paytm.digital.education.elasticsearch.constants.ESConstants.INCLUDE_AGGREGATION_SUFFIX;
+import static com.paytm.digital.education.elasticsearch.constants.ESConstants.MAX_AGGREGATION_SUFFIX;
+import static com.paytm.digital.education.elasticsearch.constants.ESConstants.MIN_AGGREGATION_SUFFIX;
+
 import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.BucketAggregationSortParms;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
@@ -382,8 +390,11 @@ public class AggregationQueryBuilderService {
         source.query(addSearchQueryListIntoRequest(searchQueries));
 
         if (Objects.nonNull(request.getAggregateFields())) {
+            int topHitsDocCount = request.getLimit() < DEFAULT_TOP_HITS_AGGREGATION_BUCKETS_SIZE
+                    ? request.getLimit() :
+                    DEFAULT_TOP_HITS_AGGREGATION_BUCKETS_SIZE;
             addAggregationsIntoRequest(request.getAggregateFields(), source, filterQueries,
-                    request.getLimit());
+                    topHitsDocCount);
         }
 
         return new SearchRequest(request.getIndex()).source(source);

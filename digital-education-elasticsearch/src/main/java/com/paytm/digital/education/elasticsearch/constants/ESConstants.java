@@ -16,6 +16,8 @@ public final class ESConstants {
 
     public static final int DEFAULT_TERMS_AGGREGATION_BUCKETS_SIZE = 500;
 
+    public static final int DEFAULT_TOP_HITS_AGGREGATION_BUCKETS_SIZE = 100;
+
     public static final String EDUCATION_ES_CLIENT = "education_es_client";
 
     public static final String MIN_AGGREGATION_SUFFIX = "_min";
