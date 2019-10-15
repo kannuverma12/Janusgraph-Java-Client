@@ -105,6 +105,8 @@ public class CoachingConstants {
             "/section_placeholder.svg";
     public static final String       FAQ_LOGO                                     =
             "https://assetscdn1.paytm.com/educationwebassets/backend/FAQ.svg";
+    public static final String       OTHER_INFO_LOGO                              =
+            "https://assetscdn1.paytm.com/educationwebassets/backend/Other_Information.svg";
 
     public static final int TOP_RANKER_LIMIT = 5;
 

@@ -41,6 +41,7 @@ public enum DisplayHeadings {
     STREAMS_PREPARED_FOR_BY("Streams prepared for by %s"),
     MORE_FROM("More from %s"),
     FAQ("FAQ's"),
+    OTHER_INFORMATION("Other Information"),
 
     TOP_COACHING_COURSES_FOR("Popular Courses"),
     TOP_COACHING_INSTITUTES_FOR("Top Institutes"),

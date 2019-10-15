@@ -40,6 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,6 +76,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.M
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.MockTestBanner.HEADER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.MockTestBanner.LOGO;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.MockTestBanner.TAG_TEXT;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.OTHER_INFO_LOGO;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.PRIORITY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_INSTITUTE_ID;
@@ -89,6 +91,7 @@ import static com.paytm.digital.education.coaching.enums.DisplayHeadings.FAQ;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.FIND_CENTERS;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.FIND_CENTERS_DESCRIPTION;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.MORE_FROM;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.OTHER_INFORMATION;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.STREAMS_PREPARED_FOR_BY;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_COACHING_COURSES_BY;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_EXAMS_PREPARED_FOR_BY;
@@ -185,10 +188,42 @@ public class CoachingInstituteService {
                         new ArrayList<>(fillFaqs(coachingInstituteEntity.getFaqs()))).logo(FAQ_LOGO)
                         .build();
         instituteMoreInfoDataList.add(instituteMoreInfoData);
+
+        InstituteMoreInfoData otherInfo = this.getOtherInfo(coachingInstituteEntity);
+        if (Objects.nonNull(otherInfo)) {
+            instituteMoreInfoDataList.add(otherInfo);
+        }
+
         return InstituteMoreInfo.builder()
                 .header(String.format(MORE_FROM.getValue(),
                         coachingInstituteEntity.getBrandName()))
                 .results(instituteMoreInfoDataList)
+                .build();
+    }
+
+    private InstituteMoreInfoData getOtherInfo(CoachingInstituteEntity coachingInstituteEntity) {
+        List<Object> otherInfo = new ArrayList<>();
+
+        if (!StringUtils.isEmpty(coachingInstituteEntity.getMoreInfo1())) {
+            otherInfo.add(coachingInstituteEntity.getMoreInfo1());
+        }
+        if (!StringUtils.isEmpty(coachingInstituteEntity.getMoreInfo2())) {
+            otherInfo.add(coachingInstituteEntity.getMoreInfo2());
+        }
+        if (!StringUtils.isEmpty(coachingInstituteEntity.getMoreInfo3())) {
+            otherInfo.add(coachingInstituteEntity.getMoreInfo3());
+        }
+        if (!StringUtils.isEmpty(coachingInstituteEntity.getMoreInfo4())) {
+            otherInfo.add(coachingInstituteEntity.getMoreInfo4());
+        }
+
+        if (CollectionUtils.isEmpty(otherInfo)) {
+            return null;
+        }
+        return InstituteMoreInfoData.builder()
+                .header(OTHER_INFORMATION.getValue())
+                .results(otherInfo)
+                .logo(OTHER_INFO_LOGO)
                 .build();
     }
 
@@ -214,8 +249,7 @@ public class CoachingInstituteService {
         }
 
         com.paytm.digital.education.database.entity.Exam exam = this.getExamEntity(examId);
-        if (Objects.isNull(exam)
-                || Objects.isNull(exam.getIsEnabled()) || !exam.getIsEnabled()) {
+        if (Objects.isNull(exam)) {
             return null;
         }
         return exam.getExamShortName();
