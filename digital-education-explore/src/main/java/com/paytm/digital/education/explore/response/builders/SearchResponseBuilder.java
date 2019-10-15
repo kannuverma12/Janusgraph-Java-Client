@@ -30,6 +30,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.DAT
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DISPLAY_NAME;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.FEES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.KEY;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.DISTANCE_KILOMETERS;
 
 
 @Service
@@ -115,6 +116,7 @@ public class SearchResponseBuilder {
                                 CommonUtil.getDisplayName(propertyMap, fieldName, fieldName));
                         rangeFilter.setMaxValue(metricAggResponse.getMaxValue());
                         rangeFilter.setMinValue(metricAggResponse.getMinValue());
+                        rangeFilter.setUnit(DISTANCE_KILOMETERS);
 
                         if (Objects.nonNull(filterFieldMap.get(fieldName)) && Objects
                                 .nonNull(filterFieldMap.get(fieldName).getValues())) {

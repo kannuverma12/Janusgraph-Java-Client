@@ -19,7 +19,8 @@ public interface ExploreConstants {
     int    DEFAULT_AUTOSUGGEST_SIZE    = 3;
     int    DEFAULT_AUTOSUGGEST_COMPARE = 10;
     String SORT_DISTANCE_FIELD         = "location";
-    String DISTANCE_KILOMETERS         = " km";
+    String SPACE_SEPERATOR             = " ";
+    String DISTANCE_KILOMETERS         = "Km";
 
     ///// Exam Detail//////////
     String TENTATIVE     = "tentative";
@@ -191,6 +192,8 @@ public interface ExploreConstants {
     String ENTITY_NAME                      = "entity_name";
     int    COURSE_SIZE_FOR_INSTITUTE_DETAIL = 6;
     String COMPARE                          = "compare";
+    int    SEARCH_REQUEST_MAX_RADIUS        = 50;
+    int    SEARCH_REQUEST_MIN_RADIUS        = 1;
 
     // Detail APIs constants
     String EXAM_SHORT_NAME     = "exam_short_name";

@@ -20,6 +20,7 @@ import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.response.dto.search.SearchResult;
 import com.paytm.digital.education.explore.service.helper.SearchAggregateHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
+import com.paytm.digital.education.explore.validators.SchoolSearchValidator;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
@@ -47,7 +48,6 @@ import java.util.concurrent.TimeoutException;
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.GEO_DISTANCE;
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.RANGE;
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.TERMS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SORT_DISTANCE_FIELD;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EMPTY_STRING;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.NGRAM;
@@ -161,7 +161,7 @@ public class SchoolSearchServiceImpl extends AbstractSearchServiceImpl {
          * 1.Source geolocation is present
          * 2.SortOrder contains "location" field
          */
-        if (isGeoDistanceSortRequest(schoolSearchRequest)) {
+        if (SchoolSearchValidator.isGeoDistanceSortRequest(schoolSearchRequest)) {
             populateNearbyFilterFields(schoolSearchRequest, elasticRequest);
         } else {
             schoolSearchRequest.setSortOrder(null);
@@ -272,15 +272,19 @@ public class SchoolSearchServiceImpl extends AbstractSearchServiceImpl {
 
     private void setSchoolGeoDistanceDetails(Integer finalIndexOfGeoDistance,
             SchoolSearch schoolSearch, SchoolSearchData schoolSearchData) {
+
         if (!CollectionUtils.isEmpty(schoolSearch.getSort())
                  && finalIndexOfGeoDistance != null) {
             Double distanceInKilometers =
                     schoolSearch.getSort().get(finalIndexOfGeoDistance);
             if (Double.isFinite(distanceInKilometers)) {
                 schoolSearchData.setDistance(df.format(distanceInKilometers)
+                        + ExploreConstants.SPACE_SEPERATOR
                         + ExploreConstants.DISTANCE_KILOMETERS);
             }
         }
+
+        schoolSearchData.setGeoLocation(schoolSearch.getGeoLocation());
         schoolSearchData.setContactLogoUrl(schoolConfig.getSchoolContactImageUrl());
         schoolSearchData.setLocationLogoUrl(schoolConfig.getSchoolLocationLogoUrl());
     }
@@ -301,18 +305,7 @@ public class SchoolSearchServiceImpl extends AbstractSearchServiceImpl {
         return false;
     }
 
-    private boolean isGeoDistanceSortRequest(SearchRequest searchRequest) {
-        if (Objects.isNull(searchRequest.getGeoLocation()) || Objects
-                .isNull(searchRequest.getGeoLocation().getLat()) || Objects
-                .isNull(searchRequest.getGeoLocation().getLon())) {
-            return false;
-        }
 
-        return !CollectionUtils.isEmpty(searchRequest.getSortOrder()) && searchRequest
-                .getSortOrder()
-                .containsKey(SORT_DISTANCE_FIELD);
-
-    }
 
     private Integer getIndexOfGeoDistanceSortInElasticRequest(SortField[] sortFields) {
         Integer indexOfGeoDistanceSort = null;
