@@ -21,6 +21,9 @@ public class RangeFilterData extends FilterData {
     @JsonProperty("selected_values")
     private List<List<Integer>> selectedValues;
 
+    @JsonProperty("unit")
+    private String unit;
+
     //    @JsonProperty("min_selected")
     //    private Double minSelected;
     //
