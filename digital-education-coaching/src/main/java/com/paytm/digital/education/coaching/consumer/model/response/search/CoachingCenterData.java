@@ -3,7 +3,7 @@ package com.paytm.digital.education.coaching.consumer.model.response.search;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.paytm.digital.education.coaching.es.model.GeoLocation;
+import com.paytm.digital.education.es.model.GeoLocation;
 import lombok.Builder;
 import lombok.Data;
 

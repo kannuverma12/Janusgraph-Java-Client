@@ -8,7 +8,7 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.Searc
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResult;
 import com.paytm.digital.education.coaching.consumer.service.search.helper.CoachingSearchAggregateHelper;
-import com.paytm.digital.education.coaching.es.model.ExamSearch;
+import com.paytm.digital.education.es.model.ExamSearch;
 import com.paytm.digital.education.coaching.utils.SearchUtils;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;

@@ -3,7 +3,7 @@ package com.paytm.digital.education.coaching.consumer.model.request;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.coaching.constants.CoachingConstants;
-import com.paytm.digital.education.coaching.es.model.GeoLocation;
+import com.paytm.digital.education.es.model.GeoLocation;
 import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.enums.es.DataSortOrder;

@@ -1,4 +1,4 @@
-package com.paytm.digital.education.coaching.es.model;
+package com.paytm.digital.education.es.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;

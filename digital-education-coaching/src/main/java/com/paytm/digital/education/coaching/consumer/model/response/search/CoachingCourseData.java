@@ -20,7 +20,7 @@ public class CoachingCourseData extends SearchBaseData {
     private String     logo;
     private String     courseType;
     private CourseType courseTypeEnum;
-    private Double     courseDurationDays;
+    private Integer     courseDurationDays;
     private Integer    duration;
     private String     durationType;
     private Integer    validity;

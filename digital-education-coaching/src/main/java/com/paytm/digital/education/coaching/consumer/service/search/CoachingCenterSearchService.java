@@ -7,9 +7,9 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.Searc
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResult;
 import com.paytm.digital.education.coaching.consumer.service.search.helper.CoachingSearchAggregateHelper;
 import com.paytm.digital.education.coaching.db.dao.CoachingInstituteDAO;
-import com.paytm.digital.education.coaching.es.model.CoachingCenterSearch;
-import com.paytm.digital.education.coaching.es.model.CoachingInstituteSearch;
-import com.paytm.digital.education.coaching.es.model.GeoLocation;
+import com.paytm.digital.education.es.model.CoachingCenterSearch;
+import com.paytm.digital.education.es.model.CoachingInstituteSearch;
+import com.paytm.digital.education.es.model.GeoLocation;
 import com.paytm.digital.education.coaching.utils.ImageUtils;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
