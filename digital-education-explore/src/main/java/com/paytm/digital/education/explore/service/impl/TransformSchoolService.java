@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_ID;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SCHOOL_FILE_VERSION;
-import static com.paytm.digital.education.explore.database.entity.PaytmKeys.Constants.PAYTM_KEYS;
+import static com.paytm.digital.education.database.entity.PaytmKeys.Constants.PAYTM_KEYS;
 
 @Service
 @AllArgsConstructor

@@ -47,19 +47,19 @@ public class TransformAndSaveExamService {
                 }
             }
 
-            Map<Long, com.paytm.digital.education.explore.database.entity.Exam> map =
+            Map<Long, com.paytm.digital.education.database.entity.Exam> map =
                     new HashMap<>();
             if (!examIds.isEmpty()) {
-                List<com.paytm.digital.education.explore.database.entity.Exam> existingExams =
+                List<com.paytm.digital.education.database.entity.Exam> existingExams =
                         incrementalDataHelper.getExistingData(
-                                com.paytm.digital.education.explore.database.entity.Exam.class,
+                                com.paytm.digital.education.database.entity.Exam.class,
                                 EXAM_ID,
                                 new ArrayList<>(examIdSet));
                 map = existingExams.stream()
                         .collect(Collectors.toMap(c -> c.getExamId(), c -> c));
             }
             for (Exam exam : examSet) {
-                com.paytm.digital.education.explore.database.entity.Exam currentExam =
+                com.paytm.digital.education.database.entity.Exam currentExam =
                         map.get(exam.getExamId());
                 if (Objects.nonNull(currentExam)) {
                     String id = currentExam.getId();

@@ -8,9 +8,13 @@ import com.paytm.digital.education.elasticsearch.models.Operator;
 import com.paytm.digital.education.elasticsearch.models.FilterField;
 import com.paytm.digital.education.elasticsearch.query.helper.PathWiseMultiMatchQueryMapBuilder;
 import com.paytm.digital.education.elasticsearch.utils.DataSortUtil;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.common.geo.GeoDistance;
+import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -27,6 +31,8 @@ import java.util.List;
 
 @Service
 public class SearchQueryBuilderService {
+
+    private static final Logger log = LoggerFactory.getLogger(SearchQueryBuilderService.class);
 
     private QueryBuilder addQueryMapsIntoRequest(Map<String, QueryBuilder> searchQueries,
             Map<String, QueryBuilder> filterQueries) {
@@ -121,8 +127,17 @@ public class SearchQueryBuilderService {
                                 .to(value.get(1));
                         addQueryToMap(path, field.getOperator(), filterQueries, filterQuery);
                     }
+                } else if (field.getType().equals(FilterQueryType.GEO_DISTANCE)) {
+                    List<Object> values = (List<Object>) field.getValues();
+                    if (!CollectionUtils.isEmpty(values) && values.size() >= 3) {
+                        QueryBuilder filterQuery = QueryBuilders.geoDistanceQuery(fieldName)
+                                .geoDistance(GeoDistance.ARC)
+                                .distance((String) values.get(0), DistanceUnit.KILOMETERS)
+                                .point((double) values.get(1), (double) values.get(2));
+                        addQueryToMap(path, field.getOperator(), filterQueries, filterQuery);
+                    }
                 } else {
-                    // Keep a default query or throw exception?
+                    log.info("Filter query type : {} not supported, skipping", field.getType());
                 }
             }
         }

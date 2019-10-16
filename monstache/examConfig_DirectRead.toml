@@ -38,7 +38,7 @@ exit-after-direct-reads = true
 
 [[mapping]]  #index mapping
 namespace = "digital_education.exam"
-index = "education_search_exam_v2"
+index = "education_search_exam_v3"
 type = "education"
 
 

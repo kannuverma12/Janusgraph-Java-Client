@@ -1,8 +1,10 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.RANGE;
+import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.GEO_DISTANCE;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_SORT_FIELD;
 
+import com.paytm.digital.education.elasticsearch.constants.ESConstants;
 import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
@@ -42,6 +44,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -95,15 +98,17 @@ public abstract class AbstractSearchServiceImpl {
                         "Applied filter is not present in filterQueryMap");
             }
         });
-        GeoLocation geoLocation = searchRequest.getGeoLocation();
-
-        if (geoLocation != null) {
-            validateGeoLocationRequest(geoLocation);
-        }
+        validateGeoLocationRequest(searchRequest);
     }
 
-    private void validateGeoLocationRequest(GeoLocation geoLocation) {
-        if (geoLocation.getLat() == null || geoLocation.getLon() == null) {
+    private void validateGeoLocationRequest(SearchRequest searchRequest) {
+        GeoLocation geoLocation = searchRequest.getGeoLocation();
+
+        if (Objects.isNull(geoLocation)) {
+            return;
+        }
+
+        if (Objects.isNull(geoLocation.getLat()) || Objects.isNull(geoLocation.getLon())) {
             throw new EducationException(ErrorEnum.LAT_OR_LON_MISSING,
                     "Latitude and longitude are mandatory in location.");
         }
@@ -116,6 +121,12 @@ public abstract class AbstractSearchServiceImpl {
         if (geoLocation.getLon() < -180 || geoLocation.getLon() > 180) {
             throw new EducationException(ErrorEnum.LON_INVALID,
                     "Please provide valid longitude in request.");
+        }
+
+        if (Objects.nonNull(searchRequest.getRadius())
+                && searchRequest.getRadius() > ESConstants.GEO_DISTANCE_FILTER_MAX_LIMIT_KMS) {
+            throw new EducationException(ErrorEnum.GEO_DISTANCE_INVALID,
+                    new Object[] {ESConstants.GEO_DISTANCE_FILTER_MAX_LIMIT_KMS});
         }
     }
 

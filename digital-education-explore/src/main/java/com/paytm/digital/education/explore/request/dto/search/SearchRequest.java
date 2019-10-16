@@ -1,10 +1,5 @@
 package com.paytm.digital.education.explore.request.dto.search;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_OFFSET;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_SIZE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_REQUEST_MAX_LIMIT;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_REQUEST_MAX_OFFSET;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,20 +7,24 @@ import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.es.model.GeoLocation;
-import com.paytm.digital.education.explore.sro.request.FieldsAndFieldGroupRequest;
-
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_OFFSET;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT_SIZE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_REQUEST_MAX_LIMIT;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_REQUEST_MAX_OFFSET;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_REQUEST_MAX_RADIUS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_REQUEST_MIN_RADIUS;
 
 @Data
 @Builder
@@ -85,4 +84,11 @@ public class SearchRequest {
 
     @JsonIgnore
     private boolean fetchSearchResultsPerFilter;
+
+    @JsonProperty("radius")
+    @Min(value = SEARCH_REQUEST_MIN_RADIUS, message = "Radius should be greater than or equal to "
+            + SEARCH_REQUEST_MIN_RADIUS + " km")
+    @Max(value = SEARCH_REQUEST_MAX_RADIUS, message = "Radius should be less than or equal to "
+            + SEARCH_REQUEST_MAX_RADIUS + " kms")
+    private Integer radius;
 }

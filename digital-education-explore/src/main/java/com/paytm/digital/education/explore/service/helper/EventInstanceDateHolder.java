@@ -1,7 +1,7 @@
 package com.paytm.digital.education.explore.service.helper;
 
-import com.paytm.digital.education.explore.database.entity.Event;
-import com.paytm.digital.education.explore.database.entity.Instance;
+import com.paytm.digital.education.database.entity.Event;
+import com.paytm.digital.education.database.entity.Instance;
 import lombok.Data;
 
 import java.util.Date;

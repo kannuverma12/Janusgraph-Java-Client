@@ -1,6 +1,6 @@
 var database_name = "digital_education";
 var school_collection = "school";
-var target_collection = "education_search_school_v1";
+var target_collection = "education_search_school_v2";
 var target_doc_type = "education";
 var MAX_SAFE_INTEGER = 9007199254740991;
 
@@ -50,6 +50,8 @@ function transformSchool(dbDocument) {
     if (dbDocument.address !== undefined) {
         targetSchool.state = dbDocument.address.state;
         targetSchool.city = dbDocument.address.city;
+        console.log ("Addresss : "+ dbDocument.address.street_address);
+        targetSchool.street_address = dbDocument.address.street_address;
 
         if(dbDocument.address.lat_lon !== undefined) {
             var locationData = {};
@@ -122,6 +124,12 @@ function transformSchool(dbDocument) {
                 });
                 if (min_fee != MAX_SAFE_INTEGER && min_fee != 0)
                     singleBoard.fees = min_fee;
+
+                if (dbSchoolBoard.data.contact_number_1 !== undefined && dbSchoolBoard.data.contact_number_1 !== '') {
+                    singleBoard.contact_number = dbSchoolBoard.data.contact_number_1;
+                } else if (dbSchoolBoard.data.contact_number_2 !== undefined && dbSchoolBoard.data.contact_number_2 !== '') {
+                   singleBoard.contact_number = dbSchoolBoard.data.contact_number_2;
+                }
             }
             targetSchool.boards.push(singleBoard);
         }
