@@ -48,7 +48,7 @@ public class S3Service {
         byte[] bytes1 = IOUtils.toByteArray(inputStream);
         metadata.setContentLength(bytes1.length);
 
-        String[] filenameExtensions = fileName.split(".");
+        String[] filenameExtensions = fileName.split("\\.");
         if (filenameExtensions.length > 1 && filenameExtensions[filenameExtensions.length - 1]
                 .equalsIgnoreCase(SVG)) {
             metadata.setContentType(SVG_EXTENSION);
