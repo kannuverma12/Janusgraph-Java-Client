@@ -10,7 +10,6 @@ import com.paytm.digital.education.utility.AmazonS3Provider;
 import com.paytm.digital.education.utility.JsonUtils;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +23,8 @@ public class S3Service {
 
     private static final Logger log = LoggerFactory.getLogger(S3Service.class);
 
+    private static final String SVG           = "svg";
+    private static final String SVG_EXTENSION = "image/svg+xml";
 
     private final AmazonS3Provider s3Provider;
 
@@ -46,6 +47,13 @@ public class S3Service {
         ObjectMetadata metadata = new ObjectMetadata();
         byte[] bytes1 = IOUtils.toByteArray(inputStream);
         metadata.setContentLength(bytes1.length);
+
+        String[] filenameExtensions = fileName.split(".");
+        if (filenameExtensions.length > 1 && filenameExtensions[filenameExtensions.length - 1]
+                .equalsIgnoreCase(SVG)) {
+            metadata.setContentType(SVG_EXTENSION);
+        }
+
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes1);
         PutObjectRequest objectRequest = new PutObjectRequest(s3BucketName + "/" + relativePath,
                 fileName,

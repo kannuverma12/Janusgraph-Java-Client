@@ -16,6 +16,7 @@ import com.paytm.digital.education.coaching.consumer.service.search.helper.Searc
 import com.paytm.digital.education.coaching.consumer.transformer.CoachingCourseTransformer;
 import com.paytm.digital.education.coaching.enums.CourseSessionDetails;
 import com.paytm.digital.education.coaching.utils.ComparisonUtils;
+import com.paytm.digital.education.coaching.utils.ImageUtils;
 import com.paytm.digital.education.database.embedded.Currency;
 import com.paytm.digital.education.database.entity.CoachingCenterEntity;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
@@ -26,7 +27,6 @@ import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.property.reader.PropertyReader;
-import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.utility.CommonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,6 +62,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.E
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_YEAR;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_PLACEHOLDER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.NAME;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.PRIORITY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_IDS;
@@ -84,7 +85,7 @@ import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TARGET_
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TEACHER_STUDENT_RATIO;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_RANKERS;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.VALIDITY_COURSE;
-import static com.paytm.digital.education.constant.CommonConstants.COACHING_COURSES;
+import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES_LOGO;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_COURSE_ID_AND_URL_DISPLAY_KEY;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
 
@@ -386,7 +387,8 @@ public class CoachingCourseService {
         return GetCoachingCourseDetailsResponse.builder()
                 .courseId(course.getCourseId())
                 .courseName(course.getName())
-                .courseLogo(CommonUtil.getAbsoluteUrl(institute.getLogo(), COACHING_COURSES))
+                .courseLogo(ImageUtils.getImageWithAbsolutePath(institute.getLogo(),
+                        INSTITUTE_PLACEHOLDER, TOP_COACHING_INSTITUTES_LOGO))
                 .courseDescription(course.getDescription())
                 .coachingInstituteId(course.getCoachingInstituteId())
                 .coachingInstituteName(institute.getBrandName())

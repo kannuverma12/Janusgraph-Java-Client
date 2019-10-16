@@ -7,16 +7,19 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.Searc
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResult;
 import com.paytm.digital.education.coaching.consumer.service.search.helper.CoachingSearchAggregateHelper;
-import com.paytm.digital.education.coaching.enums.CoachingCourseType;
 import com.paytm.digital.education.coaching.es.model.CoachingCourseSearch;
 import com.paytm.digital.education.coaching.es.model.CoachingInstituteSearch;
+import com.paytm.digital.education.coaching.utils.ImageUtils;
 import com.paytm.digital.education.coaching.utils.SearchUtils;
+import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationResponse;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.enums.es.FilterQueryType;
+import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.utility.CommonUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +30,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +47,8 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.C
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_SEARCH_NAMESPACE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_TYPE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EXAM_ID;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_PLACEHOLDER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.IS_DYNAMIC;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.IS_ENABLED;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_ID;
@@ -53,7 +59,9 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.S
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.SEARCH_ANALYZER_COACHING_COURSE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.SEARCH_INDEX_COACHING_COURSE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
+import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES_LOGO;
 import static com.paytm.digital.education.enums.es.FilterQueryType.TERMS;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
 
 @Slf4j
 @Service
@@ -62,7 +70,11 @@ public class CoachingCourseSearchService extends AbstractSearchService {
 
     private static Map<String, Float>            searchFieldKeys;
     private static Map<String, FilterQueryType>  filterQueryTypeMap;
-    private        CoachingSearchAggregateHelper coachingSearchAggregateHelper;
+    private final  CoachingSearchAggregateHelper coachingSearchAggregateHelper;
+    private final  CommonMongoRepository         commonMongoRepository;
+
+    private static final List<String> INSTITUTE_FIELDS =
+            Arrays.asList("institute_id", "brand_name", "logo");
 
     @PostConstruct
     public void init() {
@@ -187,6 +199,9 @@ public class CoachingCourseSearchService extends AbstractSearchService {
 
     private CoachingCourseData toCoachingCourseData(CoachingCourseSearch coachingCourseSearch) {
 
+        CoachingInstituteEntity institute = this.fetchInstitute(
+                coachingCourseSearch.getCoachingInstituteId());
+
         CoachingCourseData toAdd = CoachingCourseData
                 .builder()
                 .courseId(coachingCourseSearch.getCourseId())
@@ -200,8 +215,8 @@ public class CoachingCourseSearchService extends AbstractSearchService {
                 .duration(coachingCourseSearch.getDuration())
                 .urlDisplayKey(CommonUtil
                         .convertNameToUrlDisplayName(coachingCourseSearch.getCourseName()))
-                .logo(CoachingCourseType.getStaticDataByCourseType(
-                        coachingCourseSearch.getCourseType()).getImageUrl())
+                .logo(ImageUtils.getImageWithAbsolutePath(institute.getLogo(),
+                        INSTITUTE_PLACEHOLDER, TOP_COACHING_INSTITUTES_LOGO))
                 .targetExam(!CollectionUtils.isEmpty(coachingCourseSearch.getExamNames())
                         ? coachingCourseSearch.getExamNames().get(0) : null)
                 .build();
@@ -226,5 +241,16 @@ public class CoachingCourseSearchService extends AbstractSearchService {
         }
 
         return toAdd;
+    }
+
+    private CoachingInstituteEntity fetchInstitute(final long instituteId) {
+        final CoachingInstituteEntity institute = this.commonMongoRepository.getEntityByFields(
+                INSTITUTE_ID, instituteId, CoachingInstituteEntity.class, INSTITUTE_FIELDS);
+        if (institute == null) {
+            log.error("Got null CoachingInstitute for id: {}", instituteId);
+            throw new BadRequestException(INVALID_INSTITUTE_ID,
+                    INVALID_INSTITUTE_ID.getExternalMessage());
+        }
+        return institute;
     }
 }
