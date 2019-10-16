@@ -1,7 +1,6 @@
 package com.paytm.digital.education.coaching.consumer.service.transactionalflow;
 
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.MerchantCommitOrderInfo;
-import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.MerchantCommitPaymentInfo;
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.MerchantCommitTaxInfo;
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.MerchantCommitUserInfo;
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.MerchantNotifyCartItem;
@@ -35,13 +34,13 @@ public class MerchantCallImpl implements MerchantCall {
 
     @Override
     public MerchantCommitRequest getMerchantCommitRequestBody(
-            List<MerchantNotifyCartItem> cartItems, NotifyUserInfo userInfo) {
-        long currentTimestamp = System.currentTimeMillis();
+            List<MerchantNotifyCartItem> cartItems, NotifyUserInfo userInfo,
+            String orderCreatedAt) {
         MerchantCommitRequest merchantCommitRequest = MerchantCommitRequest
                 .builder()
                 .paytmOrderId(String.valueOf(cartItems.get(0).getOrderId()))
                 .merchantId(String.valueOf(cartItems.get(0).getMerchantId()))
-                .timestamp(currentTimestamp)
+                .orderCreatedAt(orderCreatedAt)
                 .build();
 
         List<MerchantCommitOrderInfo> orderItems = new ArrayList<>();
@@ -79,12 +78,6 @@ public class MerchantCallImpl implements MerchantCall {
                     .build());
         }
 
-        MerchantCommitPaymentInfo paymentInfo = MerchantCommitPaymentInfo
-                .builder()
-                .totalPayoutAmount((double) totalPrice)
-                .paymentTimestamp(currentTimestamp)
-                .build();
-
         MerchantCommitUserInfo commitUserInfo = MerchantCommitUserInfo
                 .builder()
                 .userMobile(userInfo.getPhone())
@@ -95,7 +88,6 @@ public class MerchantCallImpl implements MerchantCall {
                 .build();
 
         merchantCommitRequest.setUserInfo(commitUserInfo);
-        merchantCommitRequest.setPaymentInfo(paymentInfo);
         merchantCommitRequest.setOrderInfo(orderItems);
         return merchantCommitRequest;
     }
@@ -108,14 +100,16 @@ public class MerchantCallImpl implements MerchantCall {
         String method = "POST";
         Map<String, Object> queryParams = new TreeMap<>();
         String queryParamsString = "";
+        String requestString = JsonUtils.toJson(request);
 
+        queryParams.put("timestamp",System.currentTimeMillis());
         if (!CollectionUtils.isEmpty(queryParams)) {
             queryParamsString = JsonUtils.toJson(queryParams);
         }
 
         String signatureMessage =
-                PAYTM_HOST_FOR_SIGNATURE + "|" + endpoint + "|" + method + "|" + JsonUtils
-                        .toJson(request) + "|" + queryParamsString + "|" + request.getTimestamp();
+                PAYTM_HOST_FOR_SIGNATURE + "|" + merchantInfo.getHost() + "|" + endpoint + "|"
+                        + method + "|" + requestString + "|" + queryParamsString ;
 
         String signature = AuthUtils.getSignature(signatureMessage, merchantInfo.getSecretKey());
 
@@ -125,7 +119,7 @@ public class MerchantCallImpl implements MerchantCall {
                             UriComponentsBuilder.fromHttpUrl(completeEndpoint).toUriString(),
                             HeaderTemplate.getMerchantHeader(MDC.get(PAYTM_REQUEST_ID), signature,
                             merchantInfo.getAccessKey()),
-                            request,
+                            requestString,
                             MerchantNotifyResponse.class, queryParams);
         } catch (Exception e) {
             log.error("Exception occurred in merchant commit call for body: {} and exception: ",

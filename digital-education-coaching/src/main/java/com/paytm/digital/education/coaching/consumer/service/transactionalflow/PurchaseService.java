@@ -296,7 +296,7 @@ public class PurchaseService {
         }
 
         MerchantCommitRequest requestBody = merchantCall.getMerchantCommitRequestBody(cartItems,
-                request.getUserData());
+                request.getUserData(), request.getOrderCreatedAt());
 
         MerchantNotifyResponse response = merchantCall.commitMerchantOrder(requestBody,
                 merchantInfo);

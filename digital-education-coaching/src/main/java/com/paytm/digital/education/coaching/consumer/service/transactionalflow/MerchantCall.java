@@ -11,7 +11,7 @@ import java.util.List;
 public interface MerchantCall {
 
     MerchantCommitRequest getMerchantCommitRequestBody(List<MerchantNotifyCartItem> cartItems,
-            NotifyUserInfo userInfo);
+            NotifyUserInfo userInfo, String orderCreatedAt);
 
     MerchantNotifyResponse commitMerchantOrder(MerchantCommitRequest request,
             NotifyMerchantInfo merchantInfo);

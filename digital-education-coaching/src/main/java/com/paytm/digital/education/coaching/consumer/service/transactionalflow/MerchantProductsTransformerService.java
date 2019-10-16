@@ -17,6 +17,7 @@ import com.paytm.digital.education.utility.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -31,8 +32,6 @@ import java.util.UUID;
 import static com.mongodb.QueryOperators.AND;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.CachingConstants.CACHE_KEY_DELIMITER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.CachingConstants.CACHE_TTL;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.CachingConstants.EDUCATION_CATEGORY_ID;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.CachingConstants.EDUCATION_VERTICAL_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.IS_DYNAMIC;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.IS_ENABLED;
@@ -45,6 +44,12 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_MERCHANT_PRO
 @Slf4j
 @Service
 public class MerchantProductsTransformerService {
+
+    @Value("${education.vertical.id}")
+    private String educationVerticalId;
+
+    @Value("${coaching.category.id}")
+    private String coachingCategoryId;
 
     private static final List<String> INSTITUTE_FIELDS       =
             Arrays.asList("institute_id", "is_enabled");
@@ -122,8 +127,8 @@ public class MerchantProductsTransformerService {
                 CheckoutCartItem cartItem = CheckoutCartItem.builder()
                         .sellingPrice(merchantProduct.getPrice())
                         .productId(dynamicCoachingCourse.getPaytmProductId())
-                        .categoryId(EDUCATION_CATEGORY_ID)
-                        .educationVertical(EDUCATION_VERTICAL_ID)
+                        .categoryId(coachingCategoryId)
+                        .educationVertical(educationVerticalId)
                         .quantity(merchantProduct.getQuantity())
                         .metaData(getMetaData(merchantProduct, request, courseId))
                         .referenceId(referenceId)

@@ -26,4 +26,7 @@ public class MerchantNotifyRequest {
 
     @Valid
     private NotifyUserInfo userData;
+
+    @NotNull
+    private String orderCreatedAt;
 }

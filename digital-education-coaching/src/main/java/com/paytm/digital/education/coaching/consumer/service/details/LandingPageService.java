@@ -43,6 +43,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.L
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.LandingPage.LOGO;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.LandingPage.NAME;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.LandingPage.URL_DISPLAY_KEY;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.GLOBAL_PRIORITY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.IGNORE_ENTITY_POSITION;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_STREAMS;
@@ -176,7 +177,7 @@ public class LandingPageService {
 
     private List<CoachingCourseData> getTopCoursesPerStream(List<String> streamsInOrder) {
         LinkedHashMap<String, DataSortOrder> sortOrderMap = new LinkedHashMap<>();
-        sortOrderMap.put(IGNORE_ENTITY_POSITION, ASC);
+        sortOrderMap.put(GLOBAL_PRIORITY, ASC);
         SearchRequest searchRequest = SearchRequest.builder()
                 .fetchSearchResults(false)
                 .entity(COACHING_COURSE)
