@@ -7,7 +7,7 @@ es = Elasticsearch(
     port=9200,
 )
 
-autosuggestIndex = "education_autosuggestion_test"
+autosuggestIndex = "education_autosuggestion_v2"
 autosuggestIndexType = "education"
 # print autosuggestIndex
 
