@@ -1,9 +1,12 @@
 package com.paytm.digital.education.coaching.producer;
 
+import com.paytm.digital.education.coaching.enums.CtaType;
+import com.paytm.digital.education.coaching.producer.model.dto.CoachingCtaDTO;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingBannerDataRequest;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCenterDataRequest;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCourseDataRequest;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCourseFeatureDataRequest;
+import com.paytm.digital.education.coaching.producer.model.request.CoachingCtaDataRequest;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingExamDataRequest;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingInstituteDataRequest;
 import com.paytm.digital.education.coaching.producer.model.request.StreamDataRequest;
@@ -17,6 +20,7 @@ import com.paytm.digital.education.database.entity.CoachingBannerEntity;
 import com.paytm.digital.education.database.entity.CoachingCenterEntity;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.database.entity.CoachingCourseFeatureEntity;
+import com.paytm.digital.education.database.entity.CoachingCtaEntity;
 import com.paytm.digital.education.database.entity.CoachingExamEntity;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.database.entity.Exam;
@@ -260,6 +264,31 @@ public class ConverterUtil {
         coachingCourseFeatureEntity.setName(request.getCoachingCourseFeatureName().getText());
         coachingCourseFeatureEntity.setPriority(request.getPriority());
         coachingCourseFeatureEntity.setIsEnabled(request.getIsEnabled());
+    }
+
+    public static CoachingCtaEntity toCtaEntity(CoachingCtaDataRequest ctaRequest) {
+
+        return new CoachingCtaEntity()
+                .setCtaId(ctaRequest.getCtaId())
+                .setCtaType(ctaRequest.getCtaType().name())
+                .setDescription(ctaRequest.getDescription())
+                .setLogoUrl(ctaRequest.getLogoUrl())
+                .setName(ctaRequest.getName())
+                .setProperties(ctaRequest.getProperties())
+                .setUrl(ctaRequest.getUrl());
+    }
+
+    public static CoachingCtaDTO toCtaDTO(CoachingCtaEntity ctaEntity) {
+
+        return new CoachingCtaDTO()
+                .setCtaId(ctaEntity.getCtaId())
+                .setCtaType(CtaType.valueOf(ctaEntity.getCtaType()))
+                .setDescription(ctaEntity.getDescription())
+                .setLogoUrl(ctaEntity.getLogoUrl())
+                .setName(ctaEntity.getName())
+                .setProperties(ctaEntity.getProperties())
+                .setUrl(ctaEntity.getUrl());
+
     }
 }
 
