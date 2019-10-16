@@ -61,6 +61,9 @@ public class SchoolSearch {
     @JsonProperty("sort")
     private List<Double> sort;
 
+    @JsonProperty("street_address")
+    private String streetAddress;
+
     @JsonIgnore
     public String getBrochureUrl() {
         if (!CollectionUtils.isEmpty(boards)) {

@@ -24,4 +24,10 @@ public class SchoolConfig {
 
     @Value("${school.placeholder.logo.url}")
     private String schoolPlaceholderLogoURL;
+
+    @Value("${school.contact.image.url}")
+    private String schoolContactImageUrl;
+
+    @Value("${school.location.logo.url}")
+    private String schoolLocationLogoUrl;
 }

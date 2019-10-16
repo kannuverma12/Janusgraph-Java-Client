@@ -22,13 +22,13 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID
 
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.database.entity.Course;
-import com.paytm.digital.education.explore.database.entity.Exam;
+import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.enums.Gender;
-import com.paytm.digital.education.explore.enums.PublishStatus;
+import com.paytm.digital.education.enums.PublishStatus;
 import com.paytm.digital.education.explore.response.builders.InstituteDetailResponseBuilder;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.common.Widget;
@@ -82,11 +82,15 @@ public class InstituteDetailServiceImpl {
     }
 
     public InstituteDetail getDetail(Long entityId, String instituteUrlKey, Long userId,
-            String fieldGroup, List<String> fields, Client client)
+            String fieldGroup, List<String> fields, Client client, boolean derivedAttributes,
+            boolean cutOffs, boolean facilities, boolean gallery, boolean placements,
+            boolean notableAlumni, boolean sections, boolean widgets, boolean coursesPerDegree,
+            boolean campusEngagementFlag)
             throws IOException, TimeoutException {
         // fields are not being supported currently. Part of discussion
         InstituteDetail instituteDetail = getinstituteDetail(entityId, instituteUrlKey,
-                fieldGroup, client);
+                fieldGroup, client, derivedAttributes, cutOffs, facilities, gallery, placements,
+                notableAlumni, sections, widgets, coursesPerDegree, campusEngagementFlag);
         if (userId != null && userId > 0) {
             updateShortist(instituteDetail, INSTITUTE, userId, client);
             updateInterested(instituteDetail, INSTITUTE, userId);
@@ -100,7 +104,10 @@ public class InstituteDetailServiceImpl {
 
     @Cacheable(value = "institute_detail")
     public InstituteDetail getinstituteDetail(Long entityId, String instituteUrlKey,
-            String fieldGroup, Client client)
+            String fieldGroup, Client client, boolean derivedAttributes,
+            boolean cutOffs, boolean facilities, boolean gallery, boolean placements,
+            boolean notableAlumni, boolean sections, boolean widgets, boolean coursesPerDegree,
+            boolean campusEngagementFlag)
             throws IOException, TimeoutException {
         List<String> groupFields =
                 commonMongoRepository.getFieldsByGroup(Institute.class, fieldGroup);
@@ -158,7 +165,9 @@ public class InstituteDetailServiceImpl {
                         parentInstitution != null ? parentInstitution.getOfficialName() : null;
             }
             return processInstituteDetail(institute, entityId, courseFields, examFields,
-                    parentInstitutionName, instituteIdList, client);
+                    parentInstitutionName, instituteIdList, client, derivedAttributes, cutOffs,
+                    facilities, gallery, placements, notableAlumni, sections, widgets,
+                    coursesPerDegree, campusEngagementFlag);
         }
         throw new BadRequestException(INVALID_INSTITUTE_ID,
                 INVALID_INSTITUTE_ID.getExternalMessage());
@@ -197,7 +206,10 @@ public class InstituteDetailServiceImpl {
 
     private InstituteDetail processInstituteDetail(Institute institute, Long entityId,
             List<String> courseFields, List<String> examFields, String parentInstitutionName,
-            List<Long> instituteIdList, Client client)
+            List<Long> instituteIdList, Client client, boolean derivedAttributes,
+            boolean cutOffs, boolean facilities, boolean gallery, boolean placements,
+            boolean notableAlumni, boolean sections, boolean widgets, boolean coursesPerDegree,
+            boolean campusEngagementFlag)
             throws IOException, TimeoutException {
         List<Course> courses = null;
         if (!CollectionUtils.isEmpty(courseFields)) {
@@ -220,7 +232,9 @@ public class InstituteDetailServiceImpl {
         }
         return instituteDetailResponseBuilder
                 .buildResponse(institute, courses, examList, examData, examIds,
-                        parentInstitutionName, client);
+                        parentInstitutionName, client, derivedAttributes, cutOffs, facilities,
+                        gallery, placements, notableAlumni, sections, widgets, coursesPerDegree,
+                        campusEngagementFlag);
     }
 
     private Map<String, Object> getExamData(List<Course> courses, Long instituteId) {

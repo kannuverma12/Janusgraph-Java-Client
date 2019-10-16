@@ -1,11 +1,11 @@
 package com.paytm.digital.education.application.bootstrap;
 
-import com.paytm.digital.education.explore.database.entity.Exam;
+import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.entity.State;
 import com.paytm.digital.education.explore.database.entity.Stream;
 import com.paytm.digital.education.explore.database.entity.Subscription;
-import com.paytm.digital.education.explore.database.repository.ExamRepository;
+import com.paytm.digital.education.database.repository.ExamRepository;
 import com.paytm.digital.education.explore.database.repository.InstituteRepository;
 import com.paytm.digital.education.explore.database.repository.StateRepository;
 import com.paytm.digital.education.explore.database.repository.StreamRepository;

@@ -8,28 +8,29 @@ import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.elasticsearch.models.FilterField;
 import com.paytm.digital.education.elasticsearch.models.MetricAggregationResponse;
-import com.paytm.digital.education.explore.response.dto.search.FilterData;
-import com.paytm.digital.education.explore.response.dto.search.RangeFilterData;
-import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.response.dto.search.FilterBucket;
-import com.paytm.digital.education.explore.response.dto.search.TermFilterData;
+import com.paytm.digital.education.explore.response.dto.search.FilterData;
 import com.paytm.digital.education.explore.response.dto.search.MultipleRangeData;
+import com.paytm.digital.education.explore.response.dto.search.RangeFilterData;
 import com.paytm.digital.education.explore.response.dto.search.RangeFilterValue;
+import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
+import com.paytm.digital.education.explore.response.dto.search.TermFilterData;
 import com.paytm.digital.education.explore.utility.CommonUtil;
-
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Collection;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DATA;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.FEES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DISPLAY_NAME;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.FEES;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.KEY;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.DISTANCE_KILOMETERS;
 
 
 @Service
@@ -106,6 +107,30 @@ public class SearchResponseBuilder {
                                 filters.add(rangeFilter);
                             }
                         }
+                    } else if (aggField.getType().equals(AggregationType.GEO_DISTANCE)) {
+                        MetricAggregationResponse metricAggResponse =
+                                (MetricAggregationResponse) aggregationResponse.get(fieldName);
+                        RangeFilterData rangeFilter = new RangeFilterData();
+                        rangeFilter.setName(fieldName);
+                        rangeFilter.setDisplayName(
+                                CommonUtil.getDisplayName(propertyMap, fieldName, fieldName));
+                        rangeFilter.setMaxValue(metricAggResponse.getMaxValue());
+                        rangeFilter.setMinValue(metricAggResponse.getMinValue());
+                        rangeFilter.setUnit(DISTANCE_KILOMETERS);
+                        rangeFilter.setDisableMinSlider(true);
+
+                        if (Objects.nonNull(filterFieldMap.get(fieldName)) && Objects
+                                .nonNull(filterFieldMap.get(fieldName).getValues())) {
+                            List<Object> values =
+                                    (List<Object>) filterFieldMap.get(fieldName).getValues();
+                            if (!CollectionUtils.isEmpty(values)) {
+                                List<List<Integer>> selectionValues = new ArrayList<>();
+                                selectionValues.add(Arrays.asList(0, Integer.parseInt(
+                                        (String) values.get(0))));
+                                rangeFilter.setSelectedValues(selectionValues);
+                            }
+                        }
+                        filters.add(rangeFilter);
                     }
                 }
             }

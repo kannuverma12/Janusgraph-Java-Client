@@ -29,11 +29,10 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.SEA
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SYLLABUS_TAB;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.YYYY_MM;
 
-import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
-import com.paytm.digital.education.explore.database.entity.ExamPaytmKeys;
+import com.paytm.digital.education.database.entity.ExamPaytmKeys;
 import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.es.model.Event;
@@ -56,7 +55,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;

@@ -1,6 +1,7 @@
 package com.paytm.digital.education.coaching.database.repository;
 
 import com.paytm.digital.education.coaching.database.entity.CoachingCenter;
+import com.paytm.digital.education.database.repository.SequenceGenerator;
 import lombok.AllArgsConstructor;
 
 import org.springframework.data.mongodb.core.MongoOperations;

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.explore.enums.EducationEntity;
@@ -134,11 +135,17 @@ public class ExamDetail implements CTAInfoHolder {
     @JsonProperty("application_form")
     private String applicationForm;
 
+    @JsonProperty("sections_list")
+    private List<SectionDataHolder> sectionDataHolders;
+
     @JsonIgnore
     private Long collegePredictorPid;
 
     @JsonIgnore
     private String formId;
+
+    @JsonIgnore
+    private Map<String, Object> additionalProperties;
 
     public Long getPid() {
         return null;
@@ -178,6 +185,12 @@ public class ExamDetail implements CTAInfoHolder {
     @JsonIgnore
     @Override
     public boolean hasShortListFeature() {
+        return true;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean hasShareFeature() {
         return false;
     }
 
@@ -187,7 +200,8 @@ public class ExamDetail implements CTAInfoHolder {
     }
 
     @Override
-    public String getFormId() {
-        return formId;
+    @JsonIgnore
+    public Map<String, Object> getAdditionalProperties() {
+        return this.additionalProperties;
     }
 }

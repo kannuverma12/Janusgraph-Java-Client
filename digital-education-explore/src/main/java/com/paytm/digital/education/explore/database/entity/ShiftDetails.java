@@ -48,11 +48,13 @@ public class ShiftDetails {
             return false;
         }
         ShiftDetails that = (ShiftDetails) o;
-        return shiftType == that.shiftType;
+        return classFrom == that.classFrom
+                && classTo == that.classTo
+                && shiftType == that.shiftType;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(shiftType);
+        return Objects.hash(classFrom, classTo, shiftType);
     }
 }
