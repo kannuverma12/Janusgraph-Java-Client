@@ -200,6 +200,7 @@ public class ExamDetail implements CTAInfoHolder {
     }
 
     @Override
+    @JsonIgnore
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
     }

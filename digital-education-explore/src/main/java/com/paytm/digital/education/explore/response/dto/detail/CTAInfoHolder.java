@@ -2,6 +2,7 @@ package com.paytm.digital.education.explore.response.dto.detail;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.CTA;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 
 import java.util.HashMap;
@@ -44,6 +45,7 @@ public interface CTAInfoHolder {
         return CTA;
     }
 
+    @JsonIgnore
     default Map<String, Object> getAdditionalProperties() {
         return new HashMap<>();
     }
