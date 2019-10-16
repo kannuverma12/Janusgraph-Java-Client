@@ -36,6 +36,6 @@ public interface CTAInfoHolderWithDefaultSchoolSettings extends CTAInfoHolder {
 
     @Override
     default boolean hasShareFeature() {
-        return true;
+        return false;
     }
 }
