@@ -26,7 +26,7 @@ public class NotifyMerchantInfo {
     private String secretKey;
 
     @NotEmpty
-    private String endPoint;
+    private String notifyEndpoint;
 
     @NotEmpty
     private String host;

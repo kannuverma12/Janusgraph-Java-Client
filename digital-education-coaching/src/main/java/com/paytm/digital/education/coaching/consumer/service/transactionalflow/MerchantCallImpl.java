@@ -95,7 +95,7 @@ public class MerchantCallImpl implements MerchantCall {
     @Override
     public MerchantNotifyResponse commitMerchantOrder(MerchantCommitRequest request,
             NotifyMerchantInfo merchantInfo) {
-        String endpoint = merchantInfo.getEndPoint();
+        String endpoint = merchantInfo.getNotifyEndpoint();
         String completeEndpoint = merchantInfo.getHost() + endpoint;
         String method = "POST";
         Map<String, Object> queryParams = new TreeMap<>();
