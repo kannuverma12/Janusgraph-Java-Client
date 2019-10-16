@@ -117,6 +117,7 @@ public class SearchResponseBuilder {
                         rangeFilter.setMaxValue(metricAggResponse.getMaxValue());
                         rangeFilter.setMinValue(metricAggResponse.getMinValue());
                         rangeFilter.setUnit(DISTANCE_KILOMETERS);
+                        rangeFilter.setDisableMinSlider(true);
 
                         if (Objects.nonNull(filterFieldMap.get(fieldName)) && Objects
                                 .nonNull(filterFieldMap.get(fieldName).getValues())) {

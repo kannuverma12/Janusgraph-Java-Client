@@ -24,10 +24,7 @@ public class RangeFilterData extends FilterData {
     @JsonProperty("unit")
     private String unit;
 
-    //    @JsonProperty("min_selected")
-    //    private Double minSelected;
-    //
-    //    @JsonProperty("max_selected")
-    //    private Double maxSelected;
+    @JsonProperty("disable_min_slider")
+    private boolean disableMinSlider;
 
 }
