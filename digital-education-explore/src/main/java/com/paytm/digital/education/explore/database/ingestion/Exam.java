@@ -149,4 +149,8 @@ public class Exam {
     @Field("paytm_keys")
     @JsonProperty("paytm_keys")
     private PaytmKeys paytmKeys;
+
+    @Field("stream_ids")
+    @JsonProperty("stream_ids")
+    private List<Long> streamIds;
 }

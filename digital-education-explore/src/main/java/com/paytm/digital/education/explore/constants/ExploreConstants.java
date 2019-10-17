@@ -349,6 +349,7 @@ public interface ExploreConstants {
     String SECTION                          = "section";
     String SECTION_PLACEHOLDER              = "/section_placeholder.svg";
     String STREAM_IDS                       = "stream_ids";
+    String DOMAINS                          = "domains";
     String APP_DISPLAY_NAME                 = "app_display_name";
     String WEB_FORM_URI_PREFIX              = "webFormUriPrefix";
 }
