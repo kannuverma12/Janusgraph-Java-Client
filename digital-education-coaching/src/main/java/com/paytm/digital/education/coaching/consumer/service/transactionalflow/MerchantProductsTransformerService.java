@@ -30,6 +30,9 @@ import java.util.Objects;
 import java.util.UUID;
 
 import static com.mongodb.QueryOperators.AND;
+import static com.mongodb.QueryOperators.EXISTS;
+import static com.mongodb.QueryOperators.IN;
+import static com.mongodb.QueryOperators.NE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.CachingConstants.CACHE_KEY_DELIMITER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.CachingConstants.CACHE_TTL;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_ID;
@@ -37,6 +40,8 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.I
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.IS_ENABLED;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.MERCHANT_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.MERCHANT_PRODUCT_ID;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.PAYTM_MERCHANT_ID;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_INSTITUTE_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_CART_ITEMS;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_MERCHANT_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_MERCHANT_PRODUCTS;
@@ -76,7 +81,7 @@ public class MerchantProductsTransformerService {
             throw new BadRequestException(INVALID_MERCHANT_PRODUCTS);
         }
         CoachingInstituteEntity coachingInstituteEntity = commonMongoRepository
-                .getEntityByFields(MERCHANT_ID, request.getMerchantId(),
+                .getEntityByFields(PAYTM_MERCHANT_ID, request.getMerchantId().toString(),
                         CoachingInstituteEntity.class, INSTITUTE_FIELDS);
         if (Objects.isNull(coachingInstituteEntity) || !coachingInstituteEntity.getIsEnabled()) {
             log.error("No coaching institute found with merchant id: {}", request.getMerchantId());
@@ -92,10 +97,12 @@ public class MerchantProductsTransformerService {
         }
 
         final Map<String, Object> searchRequest = new HashMap<>();
-        searchRequest.put(INSTITUTE_ID, coachingInstituteEntity.getInstituteId());
+        searchRequest.put(COACHING_INSTITUTE_ID, coachingInstituteEntity.getInstituteId());
         searchRequest.put(IS_DYNAMIC, true);
         searchRequest.put(IS_ENABLED, true);
-        searchRequest.put(MERCHANT_PRODUCT_ID, merchantProductIds);
+        Map<String, Object> merchantProductIdQueryMap = new HashMap<>();
+        merchantProductIdQueryMap.put(IN, merchantProductIds);
+        searchRequest.put(MERCHANT_PRODUCT_ID, merchantProductIdQueryMap);
 
         List<CoachingCourseEntity> dynamicCoachingCourses = commonMongoRepository.findAll(
                 searchRequest, CoachingCourseEntity.class, COACHING_COURSE_FIELDS, AND);

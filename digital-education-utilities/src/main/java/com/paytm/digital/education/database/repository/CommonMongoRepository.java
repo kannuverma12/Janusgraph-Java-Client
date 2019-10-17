@@ -63,6 +63,18 @@ public class CommonMongoRepository {
     }
 
     @Cacheable(value = "fields", unless = "#result == null")
+    public <T> T getEntityByFields(String key, String entityId, Class<T> instance,
+            List<String> fields) {
+        Query mongoQuery = new Query(Criteria.where(key).is(entityId));
+        if (Objects.nonNull(fields)) {
+            fields.forEach(field -> {
+                mongoQuery.fields().include(field);
+            });
+        }
+        return executeQuery(mongoQuery, instance);
+    }
+
+    @Cacheable(value = "fields", unless = "#result == null")
     public <T> List<T> getEntityFieldsByValuesIn(String key, List<Long> entityIds,
             Class<T> instance,
             List<String> fields) {

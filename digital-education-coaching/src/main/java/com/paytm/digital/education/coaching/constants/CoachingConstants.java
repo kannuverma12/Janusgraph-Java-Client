@@ -38,6 +38,7 @@ public class CoachingConstants {
     public static final String MERCHANT_PRODUCT_ID             = "merchant_product_id";
     public static final String EXAM_YEAR                       = "exam_year";
     public static final String PRIORITY                        = "priority";
+    public static final String PAYTM_MERCHANT_ID               = "paytm_merchant_id";
 
     public static final String COACHING_COMPONENT         = "coaching";
     public static final String GOOGLE_SHEETS_INFO         = "google_sheets_info";
