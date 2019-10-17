@@ -1,5 +1,7 @@
 package com.paytm.digital.education.coaching.consumer.service.transactionalflow;
 
+import com.paytm.digital.education.coaching.connections.rest.CoachingRestTemplate;
+import com.paytm.digital.education.coaching.connections.rest.HeaderTemplate;
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.MerchantCommitOrderInfo;
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.MerchantCommitTaxInfo;
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.MerchantCommitUserInfo;
@@ -15,9 +17,11 @@ import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +29,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.PAYTM_REQUEST_ID;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.RestTemplateConstants.MERCHANT_COMMIT_TIMEOUT_MS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.RestTemplateConstants.PAYTM_HOST_FOR_SIGNATURE;
 
 @Slf4j
@@ -102,29 +108,31 @@ public class MerchantCallImpl implements MerchantCall {
         String queryParamsString = "";
         String requestString = JsonUtils.toJson(request);
 
-        queryParams.put("timestamp",System.currentTimeMillis());
+        long currentTimeStamp = System.currentTimeMillis();
+        queryParams.put("timestamp", currentTimeStamp);
         if (!CollectionUtils.isEmpty(queryParams)) {
             queryParamsString = JsonUtils.toJson(queryParams);
         }
 
         String signatureMessage =
                 PAYTM_HOST_FOR_SIGNATURE + "|" + merchantInfo.getHost() + "|" + endpoint + "|"
-                        + method + "|" + requestString + "|" + queryParamsString ;
+                        + method + "|" + requestString + "|" + queryParamsString;
 
         String signature = AuthUtils.getSignature(signatureMessage, merchantInfo.getSecretKey());
 
-        /*try {
+        try {
             return CoachingRestTemplate.getRequestTemplate(MERCHANT_COMMIT_TIMEOUT_MS)
                     .postForObject(
-                            UriComponentsBuilder.fromHttpUrl(completeEndpoint).toUriString(),
+                            UriComponentsBuilder.fromHttpUrl(completeEndpoint)
+                                    .queryParam("timestamp", currentTimeStamp).toUriString(),
                             HeaderTemplate.getMerchantHeader(MDC.get(PAYTM_REQUEST_ID), signature,
-                            merchantInfo.getAccessKey()),
+                                    merchantInfo.getAccessKey()),
                             requestString,
-                            MerchantNotifyResponse.class, queryParams);
+                            MerchantNotifyResponse.class);
         } catch (Exception e) {
             log.error("Exception occurred in merchant commit call for body: {} and exception: ",
                     request, e);
-        }*/
+        }
         return null;
     }
 }

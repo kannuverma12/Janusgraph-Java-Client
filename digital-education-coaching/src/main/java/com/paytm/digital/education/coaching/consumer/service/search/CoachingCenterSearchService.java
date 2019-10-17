@@ -117,7 +117,7 @@ public class CoachingCenterSearchService extends AbstractSearchService {
         ElasticRequest elasticRequest = createSearchRequest(searchRequest,
                 SEARCH_ANALYZER_COACHING_CENTER, SEARCH_INDEX_COACHING_CENTER);
         populateSearchFields(searchRequest, elasticRequest, searchFieldKeys,
-                CoachingInstituteSearch.class);
+                CoachingCenterSearch.class);
 
         Map<String, List<Object>> filters = searchRequest.getFilter();
         if (CollectionUtils.isEmpty(filters)) {

@@ -298,31 +298,8 @@ public class PurchaseService {
         MerchantCommitRequest requestBody = merchantCall.getMerchantCommitRequestBody(cartItems,
                 request.getUserData(), request.getOrderCreatedAt());
 
-        MerchantNotifyResponse response = merchantCall.commitMerchantOrder(requestBody,
+        return merchantCall.commitMerchantOrder(requestBody,
                 merchantInfo);
 
-        double temp = Math.random();
-
-        if (temp <= 0.5) {
-            return MerchantNotifyResponse
-                    .builder()
-                    .status(MerchantNotifyStatus.SUCCESS)
-                    .merchantResponse(MerchantOrderData
-                            .builder()
-                            .merchantReferenceId("abc123")
-                            .build())
-                    .build();
-        } else if (temp <= 0.8) {
-            return MerchantNotifyResponse
-                    .builder()
-                    .status(MerchantNotifyStatus.FAILURE)
-                    .failureReason(MerchantNotifyFailureReason.MERCHANT_INFRA_DOWN)
-                    .build();
-        } else {
-            return MerchantNotifyResponse
-                    .builder()
-                    .status(MerchantNotifyStatus.PENDING)
-                    .build();
-        }
     }
 }
