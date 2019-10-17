@@ -89,7 +89,12 @@ public class ExamService {
 
         List<String> sections = (List<String>) propertyMap.getOrDefault(EXAM, new ArrayList<>());
 
-        Instance nearestInstance = examInstanceHelper.getNearestInstance(exam.getInstances()).get();
+        Instance nearestInstance;
+        if (examInstanceHelper.getNearestInstance(exam.getInstances()).isPresent()) {
+            nearestInstance = examInstanceHelper.getNearestInstance(exam.getInstances()).get();
+        } else {
+            nearestInstance = new Instance();
+        }
 
         Map<String, Instance> subExamInstances =
                 examInstanceHelper.getSubExamInstances(exam, nearestInstance.getInstanceId());

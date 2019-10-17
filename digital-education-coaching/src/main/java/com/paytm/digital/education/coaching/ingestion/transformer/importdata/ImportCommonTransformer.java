@@ -18,7 +18,7 @@ public class ImportCommonTransformer {
         if (StringUtils.isEmpty(input)) {
             return false;
         }
-        return YES.equalsIgnoreCase(input);
+        return YES.equalsIgnoreCase(input.trim());
     }
 
     static List<CourseType> convertCourseTypes(final String courseType) {
@@ -29,7 +29,7 @@ public class ImportCommonTransformer {
         final List<CourseType> courseTypeEnumList = new ArrayList<>();
 
         for (final String ct : courseTypes) {
-            final CourseType convertedCourseType = CourseType.fromString(ct);
+            final CourseType convertedCourseType = CourseType.fromString(ct.trim());
             if (null != convertedCourseType) {
                 courseTypeEnumList.add(convertedCourseType);
             }
