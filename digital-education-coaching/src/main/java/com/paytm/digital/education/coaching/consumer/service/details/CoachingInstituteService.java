@@ -56,7 +56,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.mongodb.QueryOperators.AND;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_EXAMS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_INSTITUTE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_STREAMS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_INSTITUTE_FIND_CENTERS_LOGO;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_TYPE;
@@ -153,6 +155,8 @@ public class CoachingInstituteService {
 
         final Map<Long, CoachingCenterEntity> coachingCenterIdAndCenterMap =
                 this.fetchCoachingCentersByInstituteId(instituteId);
+        String examName = this.getExamName(examId);
+        String streamName = this.getStreamName(streamId);
 
         return GetCoachingInstituteDetailsResponse.builder()
                 .instituteId(coachingInstituteEntity.getInstituteId())
@@ -171,14 +175,15 @@ public class CoachingInstituteService {
                 .exams(this.getExamsForInstitute(coachingInstituteEntity))
                 .topRankers(this.getTopRankersForInstitute(instituteId, streamId, examId,
                         coachingCenterIdAndCenterMap))
-                .coachingCourseTypes(this.getCoachingCourseTypes(coachingInstituteEntity))
+                .coachingCourseTypes(
+                        this.getCoachingCourseTypes(coachingInstituteEntity, examName, streamName))
                 .topCoachingCourses(this.getTopCoachingCoursesForInstitute(coachingInstituteEntity,
                         streamId, examId))
                 .mockTest(getMockTestInfo(coachingInstituteEntity.getBrandName()))
                 .instituteMoreInfo(this.getInstituteMoreInfo(coachingInstituteEntity))
                 .sections(sections)
-                .examName(this.getExamName(examId))
-                .streamName(this.getStreamName(streamId))
+                .examName(examName)
+                .streamName(streamName)
                 .build();
     }
 
@@ -308,17 +313,23 @@ public class CoachingInstituteService {
     }
 
     private CoachingCourseTypeInfo getCoachingCourseTypes(
-            CoachingInstituteEntity coachingInstituteEntity) {
+            CoachingInstituteEntity coachingInstituteEntity, String examName, String streamName) {
         List<CoachingCourseTypeResponse> listOfCourseType = new ArrayList<>();
         if (Objects.nonNull(coachingInstituteEntity.getCourseTypes())) {
             for (CourseType courseType : coachingInstituteEntity.getCourseTypes()) {
-                CoachingCourseTypeResponse toAdd = CoachingCourseType.getStaticDataByCourseType(
-                        courseType);
-
                 Map<String, List<Object>> filter = new HashMap<>();
                 filter.put(COACHING_COURSE_INSTITUTE,
                         Collections.singletonList(coachingInstituteEntity.getBrandName()));
                 filter.put(COURSE_TYPE, Collections.singletonList(courseType));
+                if (!StringUtils.isEmpty(examName)) {
+                    filter.put(COACHING_COURSE_EXAMS, Collections.singletonList(examName));
+                }
+                if (!StringUtils.isEmpty(streamName)) {
+                    filter.put(COACHING_COURSE_STREAMS, Collections.singletonList(streamName));
+                }
+
+                CoachingCourseTypeResponse toAdd = CoachingCourseType.getStaticDataByCourseType(
+                        courseType);
                 toAdd.setFilter(filter);
                 listOfCourseType.add(toAdd);
             }
@@ -426,7 +437,7 @@ public class CoachingInstituteService {
         Set<Long> examIds = new HashSet<>();
         Set<Long> courseIds = new HashSet<>();
 
-        final Map<Sort.Direction, String> sortMap = new HashMap<>();
+        final Map<Sort.Direction, String> sortMap = new LinkedHashMap<>();
         sortMap.put(Sort.Direction.DESC, EXAM_YEAR);
         sortMap.put(Sort.Direction.ASC, PRIORITY);
 

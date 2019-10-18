@@ -308,7 +308,7 @@ public class CoachingCourseService {
 
     private List<TopRankerEntity> fetchTopRankers(final long courseId, final Long instituteId) {
 
-        final Map<Sort.Direction, String> sortMap = new HashMap<>();
+        final Map<Sort.Direction, String> sortMap = new LinkedHashMap<>();
         sortMap.put(Sort.Direction.DESC, EXAM_YEAR);
         sortMap.put(Sort.Direction.ASC, PRIORITY);
 
