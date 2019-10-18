@@ -31,6 +31,7 @@ public class ConfigProperties {
     private static String coachingInstituteImagePrefix;
     private static String coachingBannerImagePrefix;
     private static String coachingCourseFeatureLogoPrefix;
+    private static String coachingCourseBrochurePrefix;
     private static String coachingTopRankerImagePrefix;
     private static String coachingCenterImagePrefix;
     private static String coachingInstituteHighlightLogoPrefix;
@@ -103,6 +104,11 @@ public class ConfigProperties {
     @Value("${coaching.institute.brochure.prefix}")
     public void setCoachingInstituteBrochurePrefix(String brochurePrefix) {
         coachingInstituteBrochurePrefix = brochurePrefix;
+    }
+
+    @Value("${coaching.course.brochure.prefix}")
+    public void setCoachingCourseBrochurePrefix(String brochurePrefix) {
+        coachingCourseBrochurePrefix = brochurePrefix;
     }
 
     @Value("${education.asset.baseurl}")
@@ -300,6 +306,10 @@ public class ConfigProperties {
 
     public static String getCoachingInstituteBrochurePrefix() {
         return coachingInstituteBrochurePrefix;
+    }
+
+    public static String getCoachingCourseBrochurePrefix() {
+        return coachingCourseBrochurePrefix;
     }
 
 }

@@ -13,6 +13,7 @@ import com.paytm.digital.education.coaching.producer.model.request.CoachingCours
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,9 @@ public class CoachingCourseImportService extends AbstractImportService
         implements ImportService {
 
     private static final String TYPE = "CoachingCourse";
+
+    @Value("${coaching.course.brochure.prefix}")
+    protected String coachingCourseBrochurePrefix;
 
     @Autowired
     private ProducerCoachingCourseController producerCoachingCourseController;
@@ -88,6 +92,8 @@ public class CoachingCourseImportService extends AbstractImportService
         try {
             final CoachingCourseDataRequest request = ImportCoachingCourseTransformer.convert(
                     courseForm);
+            request.setSyllabusAndBrochure(this.uploadFile(request.getSyllabusAndBrochure(),
+                    this.coachingCourseBrochurePrefix));
             if (null == courseForm.getCourseId()) {
                 this.producerCoachingCourseController.insertCoachingProgram(request);
             } else {

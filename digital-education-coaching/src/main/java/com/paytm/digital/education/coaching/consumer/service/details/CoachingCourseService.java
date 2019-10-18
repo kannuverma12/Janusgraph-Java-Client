@@ -27,6 +27,7 @@ import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.property.reader.PropertyReader;
+import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.utility.CommonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -85,6 +86,7 @@ import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TARGET_
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TEACHER_STUDENT_RATIO;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_RANKERS;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.VALIDITY_COURSE;
+import static com.paytm.digital.education.constant.CommonConstants.COACHING_COURSE_BROCHURE;
 import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES_LOGO;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_COURSE_ID_AND_URL_DISPLAY_KEY;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
@@ -412,7 +414,8 @@ public class CoachingCourseService {
                         .courseDetailsMoreInfo(this.getMoreInfoMap(course))
                         .syllabusAndBrochure(SyllabusAndBrochure.builder()
                                 .header(DOWNLOAD_SYLLABUS_AND_BROCHURE.getValue())
-                                .url(course.getSyllabus())
+                                .url(CommonUtil.getAbsoluteUrl(course.getSyllabus(),
+                                        COACHING_COURSE_BROCHURE))
                                 .logo(DONWLOAD_ICON)
                                 .build())
                         .build())

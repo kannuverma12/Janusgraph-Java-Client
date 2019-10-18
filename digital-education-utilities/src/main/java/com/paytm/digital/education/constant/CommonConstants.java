@@ -11,6 +11,7 @@ public interface CommonConstants {
     String COACHING_INSTITUTE_BROCHURE       = "coaching_institute_brochure";
     String COACHING_TOP_EXAMS                = "coaching_top_exams";
     String COACHING_TOP_COURSES              = "coaching_top_courses";
+    String COACHING_COURSE_BROCHURE          = "coaching_course_brochure";
     String LOGO                              = "logo";
     String COACHING_COURSES                  = "coaching_courses";
     String COACHING_COURSE_TYPES             = "coaching_course_types";

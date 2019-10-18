@@ -15,7 +15,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.URL;
 import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.validation.annotation.Validated;
 
@@ -121,7 +120,6 @@ public class CoachingCourseDataRequest {
     @ApiModelProperty(value = "language of coaching course")
     private Language language;
 
-    @URL
     @NotEmpty
     private String syllabusAndBrochure;
 
