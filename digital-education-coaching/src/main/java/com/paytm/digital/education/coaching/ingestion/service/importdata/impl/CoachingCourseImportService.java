@@ -64,6 +64,8 @@ public class CoachingCourseImportService extends AbstractImportService
         try {
             final CoachingCourseDataRequest request = ImportCoachingCourseTransformer.convert(
                     courseForm);
+            request.setSyllabusAndBrochure(this.uploadFile(request.getSyllabusAndBrochure(),
+                    this.coachingCourseBrochurePrefix));
             if (null == courseForm.getCourseId()) {
                 response = this.producerCoachingCourseController.insertCoachingProgram(request);
             } else {
