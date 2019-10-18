@@ -47,15 +47,15 @@ public class DateUtil {
             try {
                 return outFormatter.format(inFormatter.parse(dateString));
             } catch (ParseException ex) {
-                log.error(
+                log.warn(
                         "ParseException caught while parsing the dateString : {}, inFormatter : {}, "
                                 + "outFormatter: {}, Exception : {}",
-                        dateString, inFormatter, outFormatter, ex);
+                        ex, dateString, inFormatter, outFormatter);
             } catch (Exception ex) {
-                log.error(
+                log.warn(
                         "Error caught while parsing the dateString : {}, inFormatter : {}, "
                                 + "outFormatter: {}, Exception : {}",
-                        dateString, inFormatter, outFormatter, ex);
+                        ex, dateString, inFormatter, outFormatter);
             }
         }
         return null;

@@ -221,7 +221,7 @@ public class ExamDetailServiceImpl {
                 } else {
                     examDetail
                             .setExamMonth(DateUtil.formatDateString(
-                                    importantDates.get(i).getMonthDate(), YYYY_MM, DD_MMM_YYYY));
+                                    importantDates.get(i).getMonthDate(), MMM_YYYY, DD_MMM_YYYY));
                 }
             }
         }
