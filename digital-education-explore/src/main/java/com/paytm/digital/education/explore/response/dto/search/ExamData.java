@@ -11,6 +11,7 @@ import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.detail.CTAInfoHolder;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -63,6 +64,9 @@ public class ExamData extends SearchBaseData implements CTAInfoHolder {
 
     @JsonIgnore
     private String formId;
+
+    @JsonProperty("stream_ids")
+    private List<Long> streamIds;
 
     public Long getPid() {
         return null;
