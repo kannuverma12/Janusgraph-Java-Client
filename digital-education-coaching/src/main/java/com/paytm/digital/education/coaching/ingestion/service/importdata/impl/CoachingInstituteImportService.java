@@ -40,6 +40,8 @@ public class CoachingInstituteImportService extends AbstractImportService
     protected String coachingInstituteImagePrefix;
     @Value("${coaching.institute.highlightlogo.prefix}")
     protected String coachingInstituteHighlightLogoPrefix;
+    @Value("${coaching.institute.brochure.prefix}")
+    protected String coachingInstitueBrochurePrefix;
 
     @Autowired
     private ProducerCoachingInstituteController producerCoachingInstituteController;
@@ -113,6 +115,8 @@ public class CoachingInstituteImportService extends AbstractImportService
         final CoachingInstituteDataRequest request = ImportCoachingInstituteTransformer
                 .convert(form);
         request.setLogo(this.uploadFile(request.getLogo(), this.coachingInstituteLogoPrefix));
+        request.setBrochureUrl(this.uploadFile(request.getBrochureUrl(),
+                this.coachingInstitueBrochurePrefix));
         request.setCoverImage(this.uploadFile(request.getCoverImage(),
                 this.coachingInstituteImagePrefix));
 
