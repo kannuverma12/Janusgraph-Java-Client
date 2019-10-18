@@ -6,7 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public enum MerchantNotifyFailureReason {
 
-    MERCHANT_INFRA_DOWN("merchant infra down");
+    MERCHANT_INFRA_DOWN("merchant infra down"),
+    BAD_REQUEST_IN_MERCHANT_COMMIT("Bad Request in merchant commit"),
+    BAD_RESPONSE_FROM_MERCHANT_COMMIT("Bad Response from merchant commit");
 
     private String text;
 

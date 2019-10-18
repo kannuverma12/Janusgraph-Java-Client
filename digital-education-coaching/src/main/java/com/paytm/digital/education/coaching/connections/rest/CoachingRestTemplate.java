@@ -152,6 +152,15 @@ public class CoachingRestTemplate extends RestTemplate {
         return response;
     }
 
+    public <T> ResponseEntity<T> postRawForObject(String url, Map<String, String> headers,
+            Object request, Class<T> responseType,
+            Object... uriVariables) throws RestClientException {
+        HttpEntity<Object> entity = new HttpEntity<Object>(request, createHttpHeaders(headers));
+        ResponseEntity<T> response =
+                this.exchange(url, HttpMethod.POST, entity, responseType, uriVariables);
+        return response;
+    }
+
     public <T> T postForObject(String url, Map<String, String> headers, Object request,
             Class<T> responseType, Object... uriVariables) throws RestClientException {
         HttpEntity<Object> entity = new HttpEntity<Object>(request, createHttpHeaders(headers));

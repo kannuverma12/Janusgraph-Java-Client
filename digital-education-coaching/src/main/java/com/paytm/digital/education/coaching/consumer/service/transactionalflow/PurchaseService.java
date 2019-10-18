@@ -215,7 +215,8 @@ public class PurchaseService {
 
         //Verify Base Price
         float price =
-                (float) (double) (coachingCourseEntity.getOriginalPrice()) * cartItem.getQuantity();
+                (float) (double) (coachingCourseEntity.getDiscountedPrice()) * cartItem
+                        .getQuantity();
         if (!ComparisonUtils.thresholdBasedFloatsComparison(price, cartItem.getBasePrice())) {
             return false;
         }
