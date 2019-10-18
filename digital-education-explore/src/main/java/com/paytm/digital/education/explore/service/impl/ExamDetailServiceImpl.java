@@ -199,8 +199,7 @@ public class ExamDetailServiceImpl {
                     }
 
                 } else {
-                    examDetail.setApplicationMonth(DateUtil.formatDateString(
-                            importantDates.get(i).getMonthDate(), YYYY_MM, MMM_YYYY));
+                    examDetail.setApplicationMonth(importantDates.get(i).getMonthDate());
                 }
             } else if (importantDates.get(i).getType().equalsIgnoreCase(EXAM.name())) {
                 if (importantDates.get(i).getCertainity() != null
