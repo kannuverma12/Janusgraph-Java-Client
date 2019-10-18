@@ -34,7 +34,6 @@ import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.enums.es.DataSortOrder;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.property.reader.PropertyReader;
-import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.utility.CommonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -97,7 +96,6 @@ import static com.paytm.digital.education.coaching.enums.DisplayHeadings.STREAMS
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_COACHING_COURSES_BY;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_EXAMS_PREPARED_FOR_BY;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_RANKERS;
-import static com.paytm.digital.education.constant.CommonConstants.COACHING_INSTITUTE_BROCHURE;
 import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES_IMAGE;
 import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES_LOGO;
 import static com.paytm.digital.education.enums.es.DataSortOrder.ASC;
@@ -300,8 +298,7 @@ public class CoachingInstituteService {
                         .build() : null)
                 .brochure(SyllabusAndBrochure.builder()
                         .header(DOWNLOAD_BROCHURE.getValue())
-                        .url(CommonUtil.getAbsoluteUrl(coachingInstituteEntity.getBrochure(),
-                                COACHING_INSTITUTE_BROCHURE))
+                        .url(coachingInstituteEntity.getBrochure())
                         .logo(DONWLOAD_ICON)
                         .build())
                 .build();

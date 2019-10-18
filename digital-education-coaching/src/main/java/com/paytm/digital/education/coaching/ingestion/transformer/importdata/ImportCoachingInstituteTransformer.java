@@ -34,6 +34,7 @@ public class ImportCoachingInstituteTransformer {
                         form.getCourseTypes()))
                 .officialAddress(convertAddress(form))
                 .establishmentYear(form.getYearOfEstablishment())
+                .brochureUrl(form.getBrochure())
                 .faqs(buildFaqs(form))
                 .moreInfo1(form.getMoreInfo1())
                 .moreInfo2(form.getMoreInfo2())
