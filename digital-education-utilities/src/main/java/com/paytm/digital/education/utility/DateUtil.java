@@ -49,12 +49,12 @@ public class DateUtil {
             } catch (ParseException ex) {
                 log.warn(
                         "ParseException caught while parsing the dateString : {}, inFormatter : {}, "
-                                + "outFormatter: {}",
+                                + "outFormatter: {}, returning null",
                         ex, dateString, inFormatter, outFormatter);
             } catch (Exception ex) {
                 log.warn(
                         "Error caught while parsing the dateString : {}, inFormatter : {}, "
-                                + "outFormatter: {}",
+                                + "outFormatter: {}, returning null",
                         ex, dateString, inFormatter, outFormatter);
             }
         }
