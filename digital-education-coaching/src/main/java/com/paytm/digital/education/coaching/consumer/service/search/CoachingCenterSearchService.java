@@ -8,7 +8,6 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.Searc
 import com.paytm.digital.education.coaching.consumer.service.search.helper.CoachingSearchAggregateHelper;
 import com.paytm.digital.education.coaching.db.dao.CoachingInstituteDAO;
 import com.paytm.digital.education.es.model.CoachingCenterSearch;
-import com.paytm.digital.education.es.model.CoachingInstituteSearch;
 import com.paytm.digital.education.es.model.GeoLocation;
 import com.paytm.digital.education.coaching.utils.ImageUtils;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
@@ -21,6 +20,7 @@ import com.paytm.digital.education.enums.es.FilterQueryType;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -35,6 +35,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.CENTER_FILTER_NAMESPACE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.CENTER_SEARCH_NAMESPACE;
@@ -191,8 +192,10 @@ public class CoachingCenterSearchService extends AbstractSearchService {
                 .instituteId(coachingCenterSearch.getInstituteId())
                 .officialName(coachingCenterSearch.getOfficialName())
                 .centerImage(getImageWithAbsolutePath(coachingCenterSearch,instituteImage))
-                .openingTime(coachingCenterSearch.getOpeningTime())
-                .closingTime(coachingCenterSearch.getClosingTime())
+                .openingTime(getFormattedTime(coachingCenterSearch.getOpeningTime(),
+                        coachingCenterSearch.getCenterId()))
+                .closingTime(getFormattedTime(coachingCenterSearch.getClosingTime(),
+                        coachingCenterSearch.getCenterId()))
                 .addressLine1(coachingCenterSearch.getAddressLine1())
                 .addressLine2(coachingCenterSearch.getAddressLine2())
                 .addressLine3(coachingCenterSearch.getAddressLine3())
@@ -270,5 +273,38 @@ public class CoachingCenterSearchService extends AbstractSearchService {
         GeoLocation geoLocationData = searchRequest.getGeoLocation();
         elasticRequest.setLocationLatLon(Arrays.asList(geoLocationData.getLat(),
                 geoLocationData.getLon()));
+    }
+
+    private String getFormattedTime(String inputTime, Long centerId) {
+        String formattedTime;
+        if (StringUtils.isEmpty(inputTime)) {
+            log.warn("NULL value for time in coaching center : {}", centerId);
+            return null;
+        }
+        String regexp = "^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$";
+        if (Pattern.matches(regexp, inputTime)) {
+            String [] timeArray = inputTime.split(":");
+            int time = Integer.parseInt(timeArray[0]);
+            if (time == 0) {
+                formattedTime = "12" + ":" + timeArray[1] + " " + "AM";
+                return formattedTime;
+            }
+            if (time == 12) {
+                formattedTime = time + ":" + timeArray[1] + " " + "PM";
+                return formattedTime;
+            }
+            if (time < 12) {
+                formattedTime = time + ":" + timeArray[1] + " " + "AM";
+                return formattedTime;
+            }
+            if (time > 12) {
+                time %= 12;
+                formattedTime = time + ":" + timeArray[1] + " " + "PM";
+                return formattedTime;
+            }
+
+        }
+        log.warn("Wrong value for time : {} in coaching center : {}", inputTime, centerId);
+        return null;
     }
 }
