@@ -30,6 +30,7 @@ import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.CommonUtils;
 import com.paytm.digital.education.utility.DateUtil;
 import lombok.AllArgsConstructor;
+import org.joda.time.LocalDate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -42,6 +43,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 @AllArgsConstructor
 @Service
@@ -253,18 +255,25 @@ public class ExamInstanceHelper {
         return null;
     }
 
+    private Stream<EventInstanceDateHolder> getEventInstanceDateHolders(Instance instance) {
+        if (CollectionUtils.isEmpty(instance.getEvents())) {
+            return Stream.of(
+                    new EventInstanceDateHolder(null, instance,
+                            new LocalDate().withYear(instance.getAdmissionYear()).toDate()));
+        }
+        return instance.getEvents()
+                .stream()
+                .map(event ->
+                        new EventInstanceDateHolder(event, instance,
+                                event.calculateCorrespondingDate()));
+    }
+
     private Optional<Instance> getInstanceAccordingToFilterAndComparator(
             List<Instance> instances,
             Predicate<EventInstanceDateHolder> predicate,
             Comparator<EventInstanceDateHolder> comparator) {
         return instances.stream()
-                .flatMap(instance ->
-                        Optional.ofNullable(instance.getEvents())
-                                .orElse(emptyList())
-                                .stream()
-                                .map(event ->
-                                        new EventInstanceDateHolder(event, instance,
-                                                event.calculateCorrespondingDate())))
+                .flatMap(this::getEventInstanceDateHolders)
                 .filter(predicate)
                 .min(comparator)
                 .map(EventInstanceDateHolder::getInstance);
@@ -282,7 +291,7 @@ public class ExamInstanceHelper {
             return nearestFutureInstance;
         } else {
             Optional<Instance> nearestPastInstance = getInstanceAccordingToFilterAndComparator(
-                instances,
+                Optional.ofNullable(instances).orElse(emptyList()),
                 x -> true,
                 Comparator.comparing(EventInstanceDateHolder::getDate).reversed());
             return nearestPastInstance;
