@@ -4,7 +4,7 @@
 
 #Prod
 mongo-url = "mongodb://app_education:UJQ#%401w%402cD@10.4.33.152:27017/?replicaSet=rs_0"
-elasticsearch-urls = ["http://10.20.33.122:9200","http://10.20.33.133:9200","http://10.20.33.242:9200"]
+elasticsearch-urls = ["http://internal-education-es-alb-143014650.ap-south-1.elb.amazonaws.com:9200"]
 
 gzip = true
 
