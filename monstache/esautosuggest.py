@@ -2,7 +2,7 @@ from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
 
 es = Elasticsearch(
-    ['10.20.33.122'],
+    ['http://internal-education-es-alb-143014650.ap-south-1.elb.amazonaws.com'],
     scheme="http",
     port=9200,
 )
