@@ -88,7 +88,7 @@ public abstract class AbstractImportService {
                     .dataRangeTemplate(dataRangeTemplate)
                     .build();
         } catch (final NullPointerException e) {
-            log.error("Got exception for propertiesRequest: {}, exception: ", request, e);
+            log.error("Got exception for propertiesRequest: {}, exception: ", e, request);
             return null;
         }
     }

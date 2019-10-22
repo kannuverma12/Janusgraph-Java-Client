@@ -3,6 +3,7 @@ package com.paytm.digital.education.database.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -11,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
 @NoArgsConstructor
+@ToString
 @Document("stream")
 public class StreamEntity extends Base {
 
