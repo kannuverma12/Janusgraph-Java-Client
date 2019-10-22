@@ -14,8 +14,10 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.IN_
 import com.mongodb.client.result.UpdateResult;
 import com.paytm.digital.education.explore.database.entity.FieldGroup;
 import com.paytm.digital.education.explore.database.entity.FtlTemplate;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -33,10 +35,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@Slf4j
+
 @AllArgsConstructor
 @Repository
 public class CommonMongoRepository {
+
+    private static Logger log = LoggerFactory.getLogger(CommonMongoRepository.class);
 
     private MongoOperations     mongoOperation;
     private MongoMappingContext context;
@@ -71,6 +75,18 @@ public class CommonMongoRepository {
         return executeMongoQuery(mongoQuery, instance);
     }
 
+    @Cacheable(value = "cacheKey", unless = "#result == null", condition = "#cacheKey != "
+            + "\"paytm_keys\"")
+    public <T> List<T> getEntityFieldsByValuesIn(String key, List<Long> entityIds,
+            Class<T> instance,
+            List<String> fields, String cacheKey) {
+        Query mongoQuery = new Query(Criteria.where(key).in(entityIds));
+        if (!CollectionUtils.isEmpty(fields)) {
+            fields.forEach(field -> mongoQuery.fields().include(field));
+        }
+        return executeMongoQuery(mongoQuery, instance);
+    }
+
     @Cacheable(value = "field_group", unless = "#result == null")
     public <T> List<String> getFieldsByGroup(Class<T> collectionClass, String fieldGroup) {
         String collectionName = context.getPersistentEntity(collectionClass).getCollection();
@@ -88,15 +104,6 @@ public class CommonMongoRepository {
         }
         return null;
 
-    }
-
-    @Cacheable(value = "field_group", unless = "#result == null")
-    public List<String> getFieldsByGroupAndCollectioName(String collectionName, List<String> fields,
-                                                         String fieldGroup) {
-        if (CollectionUtils.isEmpty(fields)) {
-            return getFieldsByGroupAndCollectioName(collectionName, fieldGroup);
-        }
-        return fields;
     }
 
     @Cacheable(value = "entities", unless = "#result == null")

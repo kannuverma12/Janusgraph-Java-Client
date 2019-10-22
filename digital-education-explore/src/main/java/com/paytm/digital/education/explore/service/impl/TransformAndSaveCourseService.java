@@ -6,8 +6,10 @@ import com.paytm.digital.education.explore.database.ingestion.Cutoff;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.service.helper.IncrementalDataHelper;
 import com.paytm.digital.education.mapping.ErrorEnum;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -27,8 +29,11 @@ import static com.paytm.digital.education.explore.constants.IncrementalDataInges
 
 @Service
 @AllArgsConstructor
-@Slf4j
+
 public class TransformAndSaveCourseService {
+
+    private static Logger log = LoggerFactory.getLogger(TransformAndSaveCourseService.class);
+
     private IncrementalDataHelper incrementalDataHelper;
     private CommonMongoRepository commonMongoRepository;
 

@@ -4,11 +4,11 @@ import com.google.common.collect.ImmutableMap;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.exception.EducationException;
 import com.paytm.digital.education.explore.constants.ExploreConstants;
-import com.paytm.digital.education.explore.database.entity.Exam;
-import com.paytm.digital.education.explore.database.entity.ExamPaytmKeys;
+import com.paytm.digital.education.database.entity.Exam;
+import com.paytm.digital.education.database.entity.ExamPaytmKeys;
 import com.paytm.digital.education.explore.database.entity.InstiPaytmKeys;
 import com.paytm.digital.education.explore.database.entity.Institute;
-import com.paytm.digital.education.explore.database.entity.PaytmKeys;
+import com.paytm.digital.education.database.entity.PaytmKeys;
 import com.paytm.digital.education.explore.database.entity.School;
 import com.paytm.digital.education.explore.database.entity.SchoolPaytmKeys;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
@@ -149,6 +149,7 @@ public class ImportFromCatalogServiceImpl implements ImportFromCatalogService {
         ExamPaytmKeys examPaytmKeys =
                 ExamPaytmKeys.builder().formId(entityData.getFormId())
                         .collegePredictorId(entityData.getCollegePredictorId())
+                        .webFormUriPrefix(entityData.getWebFormUriPrefix())
                         .build();
         fields.put(PaytmKeys.Constants.PAYTM_KEYS, examPaytmKeys);
         String errorMessage = null;

@@ -1,17 +1,15 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.TERMS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.ACCEPTING_APPLICATION;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.BRANCH_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_ALPHABETICAL_SORT_KEY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_FILTER_NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_LEVEL;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DEGREE_COURSE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DURATION_COURSE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_ID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_NAME;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.IS_CLIENT;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME_COURSE_SEARCH;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_ALPHABETICAL_SORT_KEY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_TYPE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.FEE_COURSE;
@@ -21,14 +19,16 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.INS
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_NAME_COURSE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTION_CITY;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTION_STATE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.IS_CLIENT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LEVEL_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME_COURSE_BOOST;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME_COURSE_SEARCH;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.PARENT_INSTITUTE_ID_COURSE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_ANALYZER_COURSE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_INDEX_COURSE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEATS_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME_COURSE_BOOST;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.ACCEPTING_APPLICATION;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM_COURSE;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_NAME;
@@ -63,13 +63,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.List;
-import java.util.LinkedHashMap;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.PostConstruct;
 
@@ -82,6 +84,7 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
     private static LinkedHashMap<String, DataSortOrder> defaultSortKeysInOrder;
     private static LinkedHashMap<String, DataSortOrder> alphabeticalSortKeysAsc;
     private static LinkedHashMap<String, DataSortOrder> alphabeticalSortKeysDesc;
+    private static Set<String>                          allowedSortFields;
     private        SearchAggregateHelper                searchAggregateHelper;
     private        CommonMongoRepository                commonMongoRepository;
     private        PropertyReader                       propertyReader;
@@ -108,6 +111,11 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
         alphabeticalSortKeysAsc.put(NAME_COURSE, DataSortOrder.ASC);
         alphabeticalSortKeysDesc = new LinkedHashMap<>();
         alphabeticalSortKeysDesc.put(NAME_COURSE, DataSortOrder.DESC);
+
+        allowedSortFields = new HashSet<>(defaultSortKeysInOrder.keySet());
+        allowedSortFields.addAll(alphabeticalSortKeysAsc.keySet());
+        allowedSortFields.addAll(alphabeticalSortKeysDesc.keySet());
+        allowedSortFields.add(COURSE_ALPHABETICAL_SORT_KEY);
     }
 
     @Override
@@ -131,22 +139,22 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
             CourseSearchResponse courseSearchResponse, Client client) {
         SearchResponse searchResponse = new SearchResponse(elasticRequest.getQueryTerm());
         if (elasticRequest.isSearchRequest()) {
-            if (Client.APP.equals(client)) {
-                populateSearchResultPerLevel(searchResponse, elasticResponse,
-                        courseSearchResponse);
-            } else {
-                populateSearchResultsOfCourses(searchResponse, elasticResponse,
-                        courseSearchResponse);
-            }
+            populateSearchResultsOfCourses(searchResponse, elasticResponse,
+                    courseSearchResponse);
             long total = elasticResponse.getTotalSearchResultsCount();
             searchResponse.setTotal(total);
         }
         if (elasticRequest.isAggregationRequest()) {
-            Map<String, Map<String, Object>> propertyMap = propertyReader
-                    .getPropertiesAsMap(component, namespace);
-            searchResponseBuilder
-                    .populateSearchFilters(searchResponse, elasticResponse, elasticRequest,
-                            propertyMap);
+            if (Client.APP.equals(client)) {
+                populateSearchResultPerLevel(searchResponse, elasticResponse,
+                        courseSearchResponse);
+            } else {
+                Map<String, Map<String, Object>> propertyMap = propertyReader
+                        .getPropertiesAsMap(component, namespace);
+                searchResponseBuilder
+                        .populateSearchFilters(searchResponse, elasticResponse, elasticRequest,
+                                propertyMap);
+            }
         }
         return searchResponse;
     }
@@ -192,7 +200,8 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
         }
         courseSearchResponse
                 .setOfficialAddress(CommonUtil.getOfficialAddress(institute.getInstitutionState(),
-                        institute.getInstitutionCity(), null, null, null));
+                        institute.getInstitutionCity(), null, null,
+                        null));
         courseSearchResponse.setInstituteName(institute.getOfficialName());
         courseSearchResponse.setUrlDisplayName(
                 CommonUtil.convertNameToUrlDisplayName(institute.getOfficialName()));
@@ -213,6 +222,8 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
         populateAggregateFields(searchRequest, elasticRequest,
                 searchAggregateHelper.getCourseAggregateData(searchRequest.getClient()),
                 CourseSearch.class);
+
+        validateSortFields(searchRequest, allowedSortFields);
         LinkedHashMap<String, DataSortOrder> sortOrder = new LinkedHashMap<>();
         if (!CollectionUtils.isEmpty(searchRequest.getSortOrder())) {
             if (searchRequest.getSortOrder().containsKey(COURSE_ALPHABETICAL_SORT_KEY)) {
@@ -301,6 +312,7 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
 
     @Override
     protected void populateSearchResults(SearchResponse searchResponse,
-            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties) {
+            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties,
+            ElasticRequest elasticRequest, Client client) {
     }
 }

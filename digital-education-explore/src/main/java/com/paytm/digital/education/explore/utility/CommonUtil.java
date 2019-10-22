@@ -33,11 +33,15 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.INS
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LOCATIONS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.POPULAR_EXAMS_APP;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKING_LOGO;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SCHOOLS_IN_FOCUS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SECTION;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STANDALONE_INSTITUTE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAMS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP_EXAMS_APP;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP_SCHOOLS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.UGC;
+import static com.paytm.digital.education.ingestion.constant.IngestionConstants.NO;
+import static com.paytm.digital.education.ingestion.constant.IngestionConstants.YES;
 
 @UtilityClass
 public class CommonUtil {
@@ -80,22 +84,29 @@ public class CommonUtil {
                 urlBuilder.append(ConfigProperties.getBannerPrefix());
                 break;
             case TOP_EXAMS_APP:
+                urlBuilder.append(ConfigProperties.getLogoExamPrefix());
+                break;
             case POPULAR_EXAMS_APP:
             case EXAM_FOCUS_APP:
             case BROWSE_BY_EXAM_LEVEL:
-                urlBuilder.append(ConfigProperties.getLogoExamPrefix());
+                urlBuilder.append(ConfigProperties.getExamLogoPrefix());
                 break;
             case RANKING_LOGO:
                 urlBuilder.append(ConfigProperties.getRankingLogo());
                 break;
             case TOP_SCHOOLS:
+            case SCHOOLS_IN_FOCUS:
                 urlBuilder.append(ConfigProperties.getSchoolLogoPrefix());
                 break;
-            case CTA :
+            case CTA:
                 urlBuilder.append(ConfigProperties.getCtaLogoPrefix());
+                break;
+            case SECTION:
+                urlBuilder.append(ConfigProperties.getExamSectionIconPrefix());
                 break;
             default:
                 urlBuilder.append(ConfigProperties.getLogoImagePrefix());
+                break;
         }
         urlBuilder.append(relativeUrl);
         return urlBuilder.toString();
@@ -115,6 +126,7 @@ public class CommonUtil {
         address.setCity(city);
         address.setPhone(phone);
         address.setUrl(url);
+
         if (officialAddress != null) {
             address.setLatLon(officialAddress.getLatLon());
             address.setPinCode(officialAddress.getPinCode());

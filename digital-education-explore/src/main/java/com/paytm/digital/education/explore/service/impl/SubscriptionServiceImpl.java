@@ -7,13 +7,17 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.INS
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SUCCESS;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 
+import com.paytm.digital.education.config.SchoolConfig;
 import com.paytm.digital.education.database.entity.UserFlags;
 import com.paytm.digital.education.database.repository.UserFlagRepository;
 import com.paytm.digital.education.dto.NotificationFlags;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.aggregation.SubscriptionDao;
 import com.paytm.digital.education.explore.daoresult.SubscribedEntityCount;
+import com.paytm.digital.education.explore.daoresult.subscription.SubscriptionWithExam;
 import com.paytm.digital.education.explore.daoresult.subscription.SubscriptionWithInstitute;
+import com.paytm.digital.education.explore.daoresult.subscription.SubscriptionWithSchool;
+import com.paytm.digital.education.explore.database.entity.SchoolGallery;
 import com.paytm.digital.education.explore.database.entity.Subscription;
 import com.paytm.digital.education.explore.database.repository.SubscriptionRepository;
 import com.paytm.digital.education.explore.enums.EducationEntity;
@@ -24,8 +28,10 @@ import com.paytm.digital.education.explore.service.SubscriptionService;
 import com.paytm.digital.education.explore.sro.request.SubscriptionRequest;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -36,10 +42,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Date;
 
-@Slf4j
+
 @Service
 @AllArgsConstructor
 public class SubscriptionServiceImpl implements SubscriptionService {
+
+    private static Logger log = LoggerFactory.getLogger(SubscriptionServiceImpl.class);
 
     private SubscriptionRepository subscriptionRepository;
 
@@ -49,6 +57,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private PropertyReader     propertyReader;
     private UserFlagRepository userFlagRepository;
+    private SchoolConfig schoolConfig;
 
     private static NotificationFlags DEFAULT_SUCCESS_MESSAGE = new NotificationFlags(SUCCESS);
 
@@ -146,6 +155,44 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 if (StringUtils.isNotBlank(logoLink)) {
                     subscriptionWithInstitute.getEntityDetails().getGallery()
                             .setLogo(logoLink);
+                }
+            } else if (subscriptionEntity.getCorrespondingClass() == SubscriptionWithSchool.class) {
+                SubscriptionWithSchool subscriptionWithSchool =
+                        (SubscriptionWithSchool) subscription;
+
+                if (Objects.nonNull(subscriptionWithSchool.getEntityDetails())) {
+                    subscriptionWithSchool.getEntityDetails().setUrlDisplayKey(CommonUtil
+                            .convertNameToUrlDisplayName(
+                                    subscriptionWithSchool.getEntityDetails().getOfficialName()));
+                    SchoolGallery gallery = subscriptionWithSchool.getEntityDetails().getGallery();
+
+                    if (Objects.nonNull(gallery) && StringUtils.isNotBlank(gallery.getLogo())) {
+                        String logoLink = CommonUtil.getLogoLink(gallery.getLogo(),
+                                EducationEntity.SCHOOL);
+                        subscriptionWithSchool.getEntityDetails().getGallery()
+                                .setLogo(logoLink);
+                    } else {
+                        SchoolGallery schoolGallery = new SchoolGallery(null, null,
+                                schoolConfig.getSchoolPlaceholderLogoURL());
+                        subscriptionWithSchool.getEntityDetails().setGallery(schoolGallery);
+                    }
+                }
+            } else if (subscriptionEntity.getCorrespondingClass() == SubscriptionWithExam.class) {
+                SubscriptionWithExam subscriptionWithExam =
+                        (SubscriptionWithExam) subscription;
+
+                if (Objects.nonNull(subscriptionWithExam.getEntityDetails())) {
+                    subscriptionWithExam.getEntityDetails().setUrlDisplayKey(CommonUtil
+                            .convertNameToUrlDisplayName(
+                                    subscriptionWithExam.getEntityDetails().getExamFullName()));
+
+                    if (StringUtils.isNotBlank(subscriptionWithExam.getEntityDetails().getLogo())) {
+                        String logoLink = CommonUtil
+                                .getLogoLink(subscriptionWithExam.getEntityDetails().getLogo(),
+                                        EducationEntity.EXAM);
+                        subscriptionWithExam.getEntityDetails()
+                                .setLogo(logoLink);
+                    }
                 }
             }
         } catch (Exception ex) {

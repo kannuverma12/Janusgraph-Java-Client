@@ -39,4 +39,10 @@ public class SchoolBoard {
     @JsonProperty("fees")
     private long fees;
 
+    @JsonProperty("brochure_url")
+    private String schoolBrochureUrl;
+
+    @JsonProperty("contact_number")
+    private String contactNumber;
+
 }

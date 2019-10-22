@@ -1,9 +1,13 @@
 package com.paytm.digital.education.explore.es.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.explore.database.entity.SchoolPaytmKeys;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -47,5 +51,27 @@ public class SchoolSearch {
 
     @JsonProperty("boards")
     private List<SchoolBoard> boards;
+
+    @JsonProperty("paytm_keys")
+    private SchoolPaytmKeys paytmKeys;
+
+    @JsonProperty("location")
+    private GeoLocation geoLocation;
+
+    @JsonProperty("sort")
+    private List<Double> sort;
+
+    @JsonProperty("street_address")
+    private String streetAddress;
+
+    @JsonIgnore
+    public String getBrochureUrl() {
+        if (!CollectionUtils.isEmpty(boards)) {
+            return boards.stream()
+                    .filter(board -> StringUtils.isNotBlank(board.getSchoolBrochureUrl()))
+                    .findFirst().map(SchoolBoard::getSchoolBrochureUrl).orElse(null);
+        }
+        return null;
+    }
 
 }

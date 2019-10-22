@@ -1,9 +1,17 @@
 package com.paytm.digital.education.utility;
 
+import static com.paytm.digital.education.constant.GoogleUtilConstant.FILENAME;
+import static com.paytm.digital.education.constant.GoogleUtilConstant.GOOGLE_DRIVE_BASE_URL;
+import static com.paytm.digital.education.constant.GoogleUtilConstant.INPUTSTREAM;
+import static com.paytm.digital.education.constant.GoogleUtilConstant.MIMETYPE;
+import static com.paytm.digital.education.mapping.ErrorEnum.ERROR_IN_IMPORT;
+
+import com.paytm.digital.education.exception.EducationException;
 import com.paytm.digital.education.service.S3Service;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import javafx.util.Pair;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -15,18 +23,15 @@ import java.net.URLConnection;
 import java.text.MessageFormat;
 import java.util.Map;
 
-import static com.paytm.digital.education.constant.GoogleUtilConstant.FILENAME;
-import static com.paytm.digital.education.constant.GoogleUtilConstant.GOOGLE_DRIVE_BASE_URL;
-import static com.paytm.digital.education.constant.GoogleUtilConstant.INPUTSTREAM;
-import static com.paytm.digital.education.constant.GoogleUtilConstant.MIMETYPE;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class UploadUtil {
     /*
      ** Upload to S3
      */
+    private static final Logger log = LoggerFactory.getLogger(UploadUtil.class);
+
     private S3Service s3Service;
 
     public Pair<String, String> uploadFile(String fileUrl, String fileName, Long instituteId,
@@ -80,13 +85,50 @@ public class UploadUtil {
                 return s3RelativeUrl;
             }
         } catch (MalformedURLException e) {
-            log.error("Url building malformed for url string :{} and error is {} ", fileUrl,
-                    JsonUtils.toJson(e.getMessage()));
+            log.error("Url building malformed for url string :{} and error is {} ",
+                    fileUrl, JsonUtils.toJson(e.getMessage()));
         } catch (IOException e) {
             log.error("IO Exception while downloading file for url :{} and the error is {}",
                     fileUrl, JsonUtils.toJson(e.getMessage()));
-            e.printStackTrace();
         }
         return null;
+    }
+
+    public Pair<String, String> downloadFileFromGoogleDriveAndUploadToS3(String fileUrl,
+            String fileName, Long entityId, String s3ImagePath, String s3BucketName,
+            String clientSecretFileName, String clientSecretFolder) {
+
+        InputStream inputStream = null;
+        String mimeType = null;
+        fileUrl = fileUrl.trim();
+
+        try {
+            if (fileUrl.startsWith(GOOGLE_DRIVE_BASE_URL)) {
+                Map<String, Object> fileData = GoogleDriveUtil.downloadFile(fileUrl,
+                        clientSecretFileName, clientSecretFolder);
+
+                inputStream = (InputStream) fileData.get(INPUTSTREAM);
+                fileName = (fileName == null ? "" : fileName + "_")
+                        + (String) fileData.get(FILENAME);
+                mimeType = (String) fileData.get(MIMETYPE);
+            }
+
+            fileName = fileName.trim();
+            fileName = fileName.replace(" ", "");
+
+            String relativePath = MessageFormat.format(s3ImagePath, entityId);
+            log.info("RelativePath: {}", relativePath);
+
+            String imageUrl = s3Service.uploadFile(inputStream, fileName, entityId, relativePath,
+                    s3BucketName);
+            log.info("EntityId : {}, Uploaded ImageUrl: {}", entityId, imageUrl);
+            return new Pair<>(imageUrl, mimeType);
+        } catch (Exception e) {
+            log.error("Unable to upload file for file : {}, entityId : {} and the exception : {}",
+                    fileUrl, entityId, e);
+            throw new EducationException(ERROR_IN_IMPORT, ERROR_IN_IMPORT.getExternalMessage(),
+                    new Object[]{String.format("Failed to upload file from google drive to s3, "
+                            + "entityId : %s, fileUrl : %s", entityId, fileUrl)});
+        }
     }
 }

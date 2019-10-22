@@ -1,13 +1,18 @@
 package com.paytm.digital.education.explore.response.dto.search;
 
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SCHOOL_SEARCH_CTA;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.explore.es.model.GeoLocation;
 import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SchoolSearchData extends SearchBaseData {
+public class SchoolSearchData extends SearchBaseData implements CTAInfoHolderWithDefaultSchoolSettings {
 
     @JsonProperty("school_id")
     private long schoolId;
@@ -20,5 +25,41 @@ public class SchoolSearchData extends SearchBaseData {
 
     @JsonProperty("url_display_key")
     private String urlDisplayName;
+
+    private boolean isClient;
+
+    @JsonIgnore
+    private Long pid;
+
+    @JsonIgnore
+    private String formId;
+
+    @JsonIgnore
+    private String brochureUrl;
+
+    @JsonProperty("contact_logo")
+    private String contactLogoUrl;
+
+    @JsonProperty("location_logo")
+    private String locationLogoUrl;
+
+    @JsonProperty("location")
+    private GeoLocation geoLocation;
+
+    public Long getPid() {
+        return null;
+    }
+
+    @Override
+    public boolean hasShareFeature() {
+        return false;
+    }
+
+    @JsonProperty("distance")
+    private String distance;
+
+    @JsonIgnore
+    @Accessors(fluent = true)
+    private String ctaDbPropertyKey = SCHOOL_SEARCH_CTA;
 
 }

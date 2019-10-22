@@ -44,9 +44,10 @@ import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.search.service.AutoSuggestionService;
 import com.paytm.digital.education.utility.HierarchyIdentifierUtils;
-import lombok.AllArgsConstructor;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
@@ -65,11 +66,11 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
-
-@Slf4j
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class AutoSuggestServiceImpl {
+
+    private static final Logger log = LoggerFactory.getLogger(AutoSuggestServiceImpl.class);
 
     private final AutoSuggestionService    autoSuggestionService;
     private Map<String, String>      suggestClassLevelMap;
@@ -177,7 +178,6 @@ public class AutoSuggestServiceImpl {
             searchRequest.setLimit(SIXTY - 1);
         }
         searchRequest.setOffset(Integer.parseInt(ZERO));
-        searchRequest.setFieldGroup(SUMMARY);
         searchRequest.setFilter(new HashMap<>());
         searchRequest.setTerm(BLANK);
 
@@ -340,8 +340,7 @@ public class AutoSuggestServiceImpl {
                             .getOfficialAddress(
                                     esDocument.getOfficialAddress().getState(),
                                     esDocument.getOfficialAddress().getCity(), null,
-                                    null,
-                                    null));
+                                    null, null));
         }
         return responseDoc;
     }

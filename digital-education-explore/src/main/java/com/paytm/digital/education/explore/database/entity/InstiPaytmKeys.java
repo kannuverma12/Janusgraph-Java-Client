@@ -3,6 +3,7 @@ package com.paytm.digital.education.explore.database.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.database.entity.PaytmKeys;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -14,10 +14,14 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.sheets.v4.Sheets;
+import com.google.api.services.sheets.v4.model.ClearValuesRequest;
+import com.google.api.services.sheets.v4.model.ClearValuesResponse;
+import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
-import com.paytm.digital.education.config.GoogleConfig;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
+
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,9 +45,10 @@ import static com.paytm.digital.education.constant.GoogleUtilConstant.OFFLINE;
 import static com.paytm.digital.education.constant.GoogleUtilConstant.USER;
 
 @UtilityClass
-@Slf4j
+
 public class GoogleDriveUtil {
 
+    private static final Logger log = LoggerFactory.getLogger(GoogleDriveUtil.class);
     private static final String       APPLICATION_NAME        = "Education";
     private static final JsonFactory  JSON_FACTORY            = JacksonFactory.getDefaultInstance();
     /*
@@ -165,5 +170,30 @@ public class GoogleDriveUtil {
             return sheetDataList;
         }
         return null;
+    }
+
+    public UpdateValuesResponse writeDataToSheet(final String sheetId, final String range,
+            final List<List<Object>> values, final String clientSecretFileName,
+            final String clientSecretFolder) throws IOException, GeneralSecurityException {
+
+        final Sheets sheetsService = createSheetService(clientSecretFileName, clientSecretFolder);
+
+        clearSheet(sheetsService, sheetId, range);
+
+        final ValueRange body = new ValueRange().setValues(values);
+        final String valueInputOption = "RAW";
+
+        final UpdateValuesResponse updateValuesResponse = sheetsService.spreadsheets().values()
+                .update(sheetId, range, body)
+                .setValueInputOption(valueInputOption)
+                .execute();
+        return updateValuesResponse;
+    }
+
+    public ClearValuesResponse clearSheet(final Sheets service, final String sheetId,
+            final String range) throws IOException {
+        final Sheets.Spreadsheets.Values.Clear request = service.spreadsheets().values()
+                .clear(sheetId, range, new ClearValuesRequest());
+        return request.execute();
     }
 }

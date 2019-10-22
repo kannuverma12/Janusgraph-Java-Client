@@ -1,5 +1,8 @@
 package com.paytm.digital.education.admin.service.impl;
 
+import com.paytm.digital.education.admin.request.AmbassadorRequest;
+import com.paytm.digital.education.admin.request.ArticleRequest;
+import com.paytm.digital.education.admin.request.EventRequest;
 import com.paytm.digital.education.admin.response.CampusAdminResponse;
 import com.paytm.digital.education.admin.service.CampusAdminService;
 import com.paytm.digital.education.config.AwsConfig;
@@ -15,9 +18,11 @@ import com.paytm.digital.education.explore.xcel.model.XcelArticle;
 import com.paytm.digital.education.explore.xcel.model.XcelCampusAmbassador;
 import com.paytm.digital.education.explore.xcel.model.XcelEvent;
 import com.paytm.digital.education.utility.UploadUtil;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import javafx.util.Pair;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -46,19 +51,21 @@ import static com.paytm.digital.education.explore.constants.CampusEngagementCons
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.ARTICLES;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.XCEL_SUBMITTED_DATE_FORMAT;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.DRIVE_URL;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.DIRECTORY_SEPARATOR_SLASH;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class CampusAdminServiceImpl implements CampusAdminService {
+    private static final Logger log = LoggerFactory.getLogger(CampusAdminServiceImpl.class);
+
     private CommonMongoRepository  commonMongoRepository;
     private CampusEngagementHelper campusEngagementHelper;
     private UploadUtil uploadUtil;
     private MongoOperations mongoOperations;
 
     @Override
-    public CampusAdminResponse addAmbassadors(XcelCampusAmbassador ambassador) {
+    public CampusAdminResponse addAmbassadors(AmbassadorRequest ambassador) {
         CampusAdminResponse campusAdminResponse = new CampusAdminResponse();
 
         if (Objects.nonNull(ambassador)) {
@@ -181,6 +188,7 @@ public class CampusAdminServiceImpl implements CampusAdminService {
                 for (CampusAmbassador campusAmbassador : campusEngagement.getCampusAmbassadors().values()) {
                     XcelCampusAmbassador xcelCampusAmbassador = new XcelCampusAmbassador();
                     BeanUtils.copyProperties(campusAmbassador, xcelCampusAmbassador);
+                    xcelCampusAmbassador.setImage(campusAmbassador.getImageUrl());
                     ambassadorList.add(xcelCampusAmbassador);
                 }
             }
@@ -189,7 +197,7 @@ public class CampusAdminServiceImpl implements CampusAdminService {
     }
 
     @Override
-    public CampusAdminResponse addArticles(XcelArticle xcelArticle) {
+    public CampusAdminResponse addArticles(ArticleRequest xcelArticle) {
         CampusAdminResponse campusAdminResponse = new CampusAdminResponse();
 
         if (Objects.nonNull(xcelArticle)) {
@@ -293,7 +301,7 @@ public class CampusAdminServiceImpl implements CampusAdminService {
         return articleList;
     }
 
-    @Override public CampusAdminResponse addEvents(XcelEvent xcelEvent) {
+    @Override public CampusAdminResponse addEvents(EventRequest xcelEvent) {
         CampusAdminResponse campusAdminResponse = new CampusAdminResponse();
 
         if (Objects.nonNull(xcelEvent)) {
@@ -430,7 +438,8 @@ public class CampusAdminServiceImpl implements CampusAdminService {
                 GoogleConfig.getCampusCredentialFileName(),
                 GoogleConfig.getExploreCredentialFolderPath()).getKey();
         if (Objects.nonNull(imageUrl)) {
-            ambassador.setImageUrl(imageUrl);
+            log.info("Setting image URL : " + (DIRECTORY_SEPARATOR_SLASH + imageUrl));
+            ambassador.setImageUrl(DIRECTORY_SEPARATOR_SLASH + imageUrl);
             return true;
         } else {
             return false;

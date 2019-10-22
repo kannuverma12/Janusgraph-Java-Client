@@ -13,7 +13,7 @@ import com.paytm.digital.education.utility.DateUtil;
 import com.paytm.digital.education.utility.UploadUtil;
 import javafx.util.Pair;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +37,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.V
 import static com.paytm.digital.education.constant.DBConstants.KEY;
 import static com.paytm.digital.education.constant.DBConstants.NAMESPACE;
 
-@Slf4j
+
 @Service
 @AllArgsConstructor
 public class IngestDataHelper {

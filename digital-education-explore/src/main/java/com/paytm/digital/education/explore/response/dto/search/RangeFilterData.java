@@ -21,10 +21,10 @@ public class RangeFilterData extends FilterData {
     @JsonProperty("selected_values")
     private List<List<Integer>> selectedValues;
 
-    //    @JsonProperty("min_selected")
-    //    private Double minSelected;
-    //
-    //    @JsonProperty("max_selected")
-    //    private Double maxSelected;
+    @JsonProperty("unit")
+    private String unit;
+
+    @JsonProperty("disable_min_slider")
+    private boolean disableMinSlider;
 
 }

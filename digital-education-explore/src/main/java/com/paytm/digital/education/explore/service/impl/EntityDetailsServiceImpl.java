@@ -3,7 +3,7 @@ package com.paytm.digital.education.explore.service.impl;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.service.EntityDetailsService;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
+
 @AllArgsConstructor
 @Service
 public class EntityDetailsServiceImpl implements EntityDetailsService {

@@ -1,24 +1,5 @@
 package com.paytm.digital.education.elasticsearch.deserializer;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.common.util.CollectionUtils;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.aggregations.bucket.filter.Filter;
-import org.elasticsearch.search.aggregations.bucket.nested.Nested;
-import org.elasticsearch.search.aggregations.bucket.nested.ParsedReverseNested;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
-import org.elasticsearch.search.aggregations.metrics.max.Max;
-import org.elasticsearch.search.aggregations.metrics.min.Min;
-import org.elasticsearch.search.aggregations.metrics.tophits.TopHits;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import com.paytm.digital.education.elasticsearch.constants.ESConstants;
 import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.BucketAggregationSortParms;
@@ -34,6 +15,30 @@ import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationRespon
 import com.paytm.digital.education.elasticsearch.utils.BucketSortUtil;
 import com.paytm.digital.education.elasticsearch.utils.JsonUtils;
 import javafx.util.Pair;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.lucene.util.ArrayUtil;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.common.util.CollectionUtils;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.aggregations.bucket.filter.Filter;
+import org.elasticsearch.search.aggregations.bucket.nested.Nested;
+import org.elasticsearch.search.aggregations.bucket.nested.ParsedReverseNested;
+import org.elasticsearch.search.aggregations.bucket.range.ParsedGeoDistance;
+import org.elasticsearch.search.aggregations.bucket.range.Range;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.aggregations.metrics.max.Max;
+import org.elasticsearch.search.aggregations.metrics.min.Min;
+import org.elasticsearch.search.aggregations.metrics.tophits.TopHits;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
 
 @Component
 public class AggregationResponseDeserializer {
@@ -153,18 +158,7 @@ public class AggregationResponseDeserializer {
 
         TopHitsAggregationResponse<T> aggregationResponse = new TopHitsAggregationResponse<>();
 
-        Map<Pair<String, Float>, List<T>> documentsPerEntity =
-                new TreeMap<Pair<String, Float>, List<T>>(new Comparator<Pair<String, Float>>() {
-                    @Override
-                    public int compare(Pair<String, Float> p1, Pair<String, Float> p2) {
-                        if (p2.getValue() > p1.getValue()) {
-                            return 1;
-                        } else if (p2.getValue() < p1.getValue()) {
-                            return -1;
-                        }
-                        return 1;
-                    }
-                });
+        Map<Pair<String, Float>, List<T>> documentsPerEntity = getEmptyPairListMap();
 
         Terms termsAggregation;
 
@@ -220,8 +214,17 @@ public class AggregationResponseDeserializer {
                     aggResponse = getBucketsFromMetricAggregationResponse(filterAggregation,
                             aggregationName, path);
                 } else if (field.getType() == AggregationType.TOP_HITS) {
-                    aggResponse = getDocumentsPerEntityFromTopHitsAggregationResponse(
-                            filterAggregation, aggregationName, path, type);
+                    if (field.getChildTermsFieldName() != null) {
+                        aggResponse = getDocumentsPerTopEntityFromTopHitsAggregationResponse(
+                                filterAggregation, aggregationName, field.getChildTermsFieldName(),
+                                path, type);
+                    } else {
+                        aggResponse = getDocumentsPerEntityFromTopHitsAggregationResponse(
+                                filterAggregation, aggregationName, path, type);
+                    }
+                } else if (field.getType() == AggregationType.GEO_DISTANCE) {
+                    aggResponse = getBucketsFromGeoDistanceAggregationResponse(filterAggregation,
+                            aggregationName, path);
                 }
 
                 if (aggResponse != null) {
@@ -232,4 +235,86 @@ public class AggregationResponseDeserializer {
 
         return responseMap;
     }
+
+    private <T> AggregationResponse getDocumentsPerTopEntityFromTopHitsAggregationResponse(
+            Filter filterAggregation, String aggregationName, String childAggregationName,
+            String path,
+            Class<T> type) {
+        TopHitsAggregationResponse<T> aggregationResponse = new TopHitsAggregationResponse<>();
+
+        Map<Pair<String, Float>, List<T>> documentsPerEntity = getEmptyPairListMap();
+
+        Terms termsAggregation;
+
+        if (path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
+            termsAggregation = filterAggregation.getAggregations().get(aggregationName);
+        } else {
+            Nested nestedAggregation = filterAggregation.getAggregations().get(aggregationName);
+            termsAggregation = nestedAggregation.getAggregations().get(aggregationName);
+        }
+        for (Terms.Bucket bucket : termsAggregation.getBuckets()) {
+            Terms termsChildAggregtaion = bucket.getAggregations().get(childAggregationName);
+            List<T> documentsScoreMap = new ArrayList<>();
+            for (Terms.Bucket childBucket : termsChildAggregtaion.getBuckets()) {
+                TopHits topHitsAggregation =
+                        childBucket.getAggregations().get(aggregationName);
+                documentsScoreMap.addAll(getDocumentsFromBuckets(topHitsAggregation, type));
+                String entityName = bucket.getKeyAsString()
+                        + ESConstants.KEY_SEPERATOR
+                        + childBucket.getKeyAsString();
+                Float maxScore = topHitsAggregation.getHits().getMaxScore();
+                Pair<String, Float> key = new Pair<>(entityName, maxScore);
+                documentsPerEntity.put(key, documentsScoreMap);
+                aggregationResponse.setDocumentsPerEntity(documentsPerEntity);
+            }
+        }
+
+        return aggregationResponse;
+    }
+
+    private <T> Map<Pair<String, Float>, List<T>> getEmptyPairListMap() {
+        return new TreeMap<>((p1, p2) -> {
+            if (p2.getValue() > p1.getValue()) {
+                return 1;
+            } else if (p2.getValue() < p1.getValue()) {
+                return -1;
+            }
+            return 1;
+        });
+    }
+
+    private AggregationResponse getBucketsFromGeoDistanceAggregationResponse(
+            Filter filterAggregation,
+            String aggregationName, String path) {
+
+        if (Objects.isNull(filterAggregation) || Objects
+                .isNull(filterAggregation.getAggregations())) {
+            return null;
+        }
+
+        ParsedGeoDistance geoDistanceAggregation;
+        if (path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
+            geoDistanceAggregation = filterAggregation.getAggregations()
+                    .get(aggregationName);
+        } else {
+            Nested nestedAgg = filterAggregation.getAggregations().get(aggregationName);
+            geoDistanceAggregation = nestedAgg.getAggregations()
+                    .get(aggregationName);
+        }
+
+        if (Objects.isNull(geoDistanceAggregation)
+                || CollectionUtils.isEmpty(new List[] {geoDistanceAggregation.getBuckets()})) {
+            return null;
+        }
+
+        MetricAggregationResponse aggregationResponse = new MetricAggregationResponse();
+        ParsedGeoDistance.ParsedBucket bucket =
+                (ParsedGeoDistance.ParsedBucket) geoDistanceAggregation.getBuckets().get(0);
+        aggregationResponse.setKey(aggregationName);
+        aggregationResponse.setMinValue((Double) bucket.getFrom());
+        aggregationResponse.setMaxValue((Double) bucket.getTo());
+
+        return aggregationResponse;
+    }
+
 }

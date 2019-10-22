@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 import com.paytm.digital.education.dto.SftpConfig;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -11,11 +13,10 @@ import org.springframework.util.StreamUtils;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import lombok.extern.slf4j.Slf4j;
 
 @Service
-@Slf4j
 public class SftpService {
+    private static final Logger log = LoggerFactory.getLogger(SftpService.class);
     private static final String STRICT_HOST_KEY_CHECKING_KEY   = "StrictHostKeyChecking";
     private static final String STRICT_HOST_KEY_CHECKING_VALUE = "no";
     private static final String KEY                            = "key";

@@ -53,6 +53,8 @@ public enum EducationEntity {
                 return SubscribableEntityType.EXAM;
             case COURSE:
                 return SubscribableEntityType.COURSE;
+            case SCHOOL:
+                return SubscribableEntityType.SCHOOL;
             default:
                 return null;
         }

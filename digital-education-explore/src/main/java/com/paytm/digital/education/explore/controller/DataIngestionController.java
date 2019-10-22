@@ -4,8 +4,10 @@ import com.paytm.digital.education.explore.request.dto.EntityData;
 import com.paytm.digital.education.explore.response.dto.dataimport.CatalogDataIngestionError;
 import com.paytm.digital.education.explore.service.ImportFromCatalogService;
 import com.paytm.digital.education.explore.service.impl.ImportIncrementalDataService;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,11 +23,14 @@ import java.util.List;
 
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EDUCATION_BASE_URL;
 
-@Slf4j
+
 @AllArgsConstructor
 @RestController
 @RequestMapping(EDUCATION_BASE_URL)
 public class DataIngestionController {
+
+    private static Logger log = LoggerFactory.getLogger(DataIngestionController.class);
+
     private ImportIncrementalDataService importIncrementalDataService;
     private ImportFromCatalogService     importFromCatalogService;
 

@@ -29,10 +29,11 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.SEA
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SYLLABUS_TAB;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.YYYY_MM;
 
-import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
+import com.paytm.digital.education.database.entity.ExamPaytmKeys;
+import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.es.model.Event;
 import com.paytm.digital.education.explore.es.model.ExamInstance;
@@ -47,29 +48,31 @@ import com.paytm.digital.education.explore.service.helper.SearchAggregateHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.utility.DateUtil;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.PostConstruct;
 
-@Slf4j
+
 @Service
 @AllArgsConstructor
 public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
 
     private static Map<String, Float>                   searchFieldKeys;
     private static Map<String, FilterQueryType>         filterQueryTypeMap;
-    private static LinkedHashMap<String, DataSortOrder> sortKeysInOrder;
+    private static Set<String> sortFields;
     private        SearchAggregateHelper                searchAggregateHelper;
     private        ExamLogoHelper                       examLogoHelper;
 
@@ -86,6 +89,7 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
         searchFieldKeys.put(EXAM_OFFICIAL_NAME, EXAM_OFFICIAL_NAME_BOOST);
         searchFieldKeys.put(EXAM_OFFICIAL_NAME_NGRAM, EXAM_OFFICIAL_NAME_NGRAM_BOOST);
 
+        sortFields = new HashSet<>();
     }
 
     @Override
@@ -96,7 +100,7 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
         ElasticResponse elasticResponse = initiateSearch(elasticRequest, ExamSearch.class);
         SearchResponse searchResponse = new SearchResponse(searchRequest.getTerm());
         buildSearchResponse(searchResponse,elasticResponse, elasticRequest, EXPLORE_COMPONENT,
-                EXAM_FILTER_NAMESPACE, EXAM_SEARCH_NAMESPACE, null);
+                EXAM_FILTER_NAMESPACE, EXAM_SEARCH_NAMESPACE, null, searchRequest.getClient());
         return searchResponse;
     }
 
@@ -109,6 +113,7 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
         populateFilterFields(searchRequest, elasticRequest, ExamSearch.class, filterQueryTypeMap);
         populateAggregateFields(searchRequest, elasticRequest,
                 searchAggregateHelper.getExamAggregateData(), ExamSearch.class);
+        validateSortFields(searchRequest, sortFields);
         populateSortFields(searchRequest, elasticRequest, ExamSearch.class);
         return elasticRequest;
     }
@@ -172,9 +177,11 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
 
     @Override
     protected void populateSearchResults(SearchResponse searchResponse,
-            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties) {
+            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties,
+            ElasticRequest elasticRequest,  Client client) {
         List<ExamSearch> examSearches = elasticResponse.getDocuments();
         SearchResult searchResults = new SearchResult();
+        Map<Long, SearchBaseData> examDataMap = new HashMap<Long, SearchBaseData>();
         if (!CollectionUtils.isEmpty(examSearches)) {
             searchResults.setEntity(EducationEntity.EXAM);
             List<SearchBaseData> examDataList = new ArrayList<SearchBaseData>();
@@ -201,12 +208,20 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
                     }
                     dataAvailable.add(DATE_TAB);
                 }
+                if (Objects.nonNull(examSearch.getPaytmKeys())) {
+                    ExamPaytmKeys examPaytmKeys = examSearch.getPaytmKeys();
+                    examData.setCollegePredictorPid(examPaytmKeys.getCollegePredictorId());
+                    examData.setFormId(examPaytmKeys.getFormId());
+                }
+                examData.setCtaList(ctaHelper.buildCTA(examData, client));
                 examData.setDataAvailable(dataAvailable);
+                examDataMap.put(Long.valueOf(examSearch.getExamId()), examData);
                 examDataList.add(examData);
             });
             searchResults.setValues(examDataList);
         }
         searchResponse.setResults(searchResults);
+        searchResponse.setEntityDataMap(examDataMap);
     }
 
     private int getRelevantInstanceIndex(List<ExamInstance> instances, String type) {

@@ -11,6 +11,7 @@ import com.paytm.digital.education.explore.utility.CommonUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,6 +31,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EXA
 import static com.paytm.digital.education.explore.constants.ExploreConstants.ICON;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.IMAGE_URL;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.POPULAR_EXAMS_APP;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SCHOOLS_IN_FOCUS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SUB_ITEMS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LOCATIONS;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LOGO;
@@ -70,9 +72,9 @@ public class PageServiceImpl implements PageService {
                 switch (section.getType()) {
                     case TOP_EXAMS_APP:
                     case COLLEGE_FOCUS:
-                    case POPULAR_EXAMS_APP:
                     case EXAM_FOCUS_APP:
                     case BROWSE_BY_EXAM_LEVEL:
+                    case SCHOOLS_IN_FOCUS:
                         logoFieldName = LOGO;
                         break;
                     case STREAMS:
@@ -80,6 +82,7 @@ public class PageServiceImpl implements PageService {
                     case TOP_SCHOOLS:
                     case LOCATIONS:
                     case APP_FOOTER:
+                    case POPULAR_EXAMS_APP:
                         logoFieldName = ICON;
                         break;
                     case BANNER_MID:
@@ -88,7 +91,7 @@ public class PageServiceImpl implements PageService {
                         break;
                     default:
                 }
-                if (Objects.nonNull(logoFieldName)) {
+                if (Objects.nonNull(logoFieldName) && !CollectionUtils.isEmpty(section.getItems())) {
                     for (Map<String, Object> item : section.getItems()) {
                         if (TOP_EXAMS_APP.equals(section.getType()) || BROWSE_BY_EXAM_LEVEL.equals(section.getType())) {
                             for (Map.Entry<String, Object> topExamsPerLevel : item.entrySet()) {

@@ -1,13 +1,15 @@
 package com.paytm.digital.education.elasticsearch.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 
-@Slf4j
 public class JsonUtils {
+
+    private static Logger log  = LoggerFactory.getLogger(JsonUtils.class);
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 

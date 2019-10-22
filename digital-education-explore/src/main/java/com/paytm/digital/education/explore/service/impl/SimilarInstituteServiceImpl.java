@@ -30,13 +30,14 @@ import com.paytm.digital.education.explore.database.entity.Ranking;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.database.repository.InstituteRepository;
 import com.paytm.digital.education.explore.enums.CourseStream;
-import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.common.Widget;
 import com.paytm.digital.education.explore.response.dto.common.WidgetData;
 import com.paytm.digital.education.explore.service.helper.WidgetsDataHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -54,10 +55,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Slf4j
+
 @Service
 @AllArgsConstructor
 public class SimilarInstituteServiceImpl {
+
+    private static final Logger log = LoggerFactory.getLogger(SimilarInstituteServiceImpl.class);
 
     private CommonMongoRepository commonMongoRepository;
     private InstituteRepository   instituteRepository;

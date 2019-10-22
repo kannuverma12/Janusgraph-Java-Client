@@ -24,7 +24,7 @@ import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUT
 
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.database.entity.Course;
-import com.paytm.digital.education.explore.database.entity.Exam;
+import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.explore.database.entity.Placement;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
@@ -42,7 +42,6 @@ import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.explore.utility.CompareUtil;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -59,7 +58,6 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class CompareServiceImpl implements CompareService {

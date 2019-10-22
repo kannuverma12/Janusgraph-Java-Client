@@ -24,4 +24,16 @@ public class GlobalException extends RuntimeException {
         this.message = message + " " + errorCode.getDescription();
     }
 
+    public GlobalException(HttpStatus httpStatus, String message, Throwable cause) {
+        super();
+        this.httpStatus = httpStatus;
+        this.message = message;
+    }
+
+    public GlobalException(HttpStatus httpStatus, String message) {
+        super();
+        this.httpStatus = httpStatus;
+        this.message = message;
+    }
+
 }

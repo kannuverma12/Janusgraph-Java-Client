@@ -1,16 +1,17 @@
 package com.paytm.digital.education.config;
 
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
-@Slf4j
+
 @Configuration
 public class GoogleConfig {
     private static String exploreCredentialFolderPath;
     private static String coachingCredentialFolderPath;
     private static String campusCredentialFileName;
     private static String coachingCredentialFileName;
+    private static String exploreCredentialFileName;
 
     @Value("${google.api.explore.credential.folderpath}")
     public void setExploreCredentialFolderPath(String path) {
@@ -32,6 +33,11 @@ public class GoogleConfig {
         coachingCredentialFileName = fileName;
     }
 
+    @Value("${google.api.explore.credential.filename}")
+    public void setExploreCredentialFile(String fileName) {
+        exploreCredentialFileName = fileName;
+    }
+
     public static String getExploreCredentialFolderPath() {
         return exploreCredentialFolderPath;
     }
@@ -46,5 +52,9 @@ public class GoogleConfig {
 
     public static String getCoachingCredentialFileName() {
         return coachingCredentialFileName;
+    }
+
+    public static String getExploreCredentialFileName() {
+        return exploreCredentialFileName;
     }
 }

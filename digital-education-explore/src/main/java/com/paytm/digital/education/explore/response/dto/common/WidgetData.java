@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -40,4 +42,7 @@ public class WidgetData {
 
     @JsonProperty("official_address")
     private OfficialAddress officialAddress;
+
+    @JsonProperty("important_dates")
+    private Map<String, String> importantDates;
 }

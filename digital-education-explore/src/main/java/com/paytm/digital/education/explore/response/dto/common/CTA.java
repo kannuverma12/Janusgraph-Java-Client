@@ -44,6 +44,10 @@ public class CTA {
 
         public static final String SHORTLISTED_SCHOOL_APP = "Shortlisted School";
 
+        public static final String SHORTLIST_EXAM_APP = "Shortlist Exam";
+
+        public static final String SHORTLISTED_EXAM_APP = "Shortlisted Exam";
+
         public static final String GET_UPDATES = "Get Update";
 
         public static final String STOP_UPDATES = "Stop Update";
@@ -62,11 +66,17 @@ public class CTA {
 
         public static final String COMPARE = "+ Add To Compare";
 
+        public static final String COMPARE_ACTIVE_LABEL_WEB = "Added To Compare";
+
         public static final String APPLY = "Apply";
 
         public static final String COMPARE_APP = "Compare";
 
         public static final String PREDICT_COLLEGE = "Predict College";
+
+        public static final String SHARE = "Share";
+
+        public static final String FILL_FORM = "Fill Form";
 
     }
 

@@ -44,7 +44,7 @@ resume = true
 
 [[mapping]]  #index mapping
 namespace = "digital_education.school"
-index = "education_search_school_v1"
+index = "education_search_school_v2"
 type = "education"
 
 

@@ -8,32 +8,42 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.EVE
 import static com.paytm.digital.education.explore.constants.ExploreConstants.YYYY_MM;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.APPLICATION;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.MMM_YYYY;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.NON_TENTATIVE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_SEARCH_NAMESPACE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.DATES;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.ZERO;
 import static com.paytm.digital.education.explore.enums.Gender.OTHERS;
-import static com.paytm.digital.education.utility.DateUtil.stringToDate;
+import static java.util.Collections.emptyList;
 
-import com.paytm.digital.education.explore.database.entity.Event;
-import com.paytm.digital.education.explore.database.entity.Exam;
-import com.paytm.digital.education.explore.database.entity.Instance;
-import com.paytm.digital.education.explore.database.entity.SubExam;
+import com.paytm.digital.education.database.entity.Event;
+import com.paytm.digital.education.database.entity.Exam;
+import com.paytm.digital.education.database.entity.Instance;
+import com.paytm.digital.education.database.entity.SubExam;
 import com.paytm.digital.education.explore.enums.Gender;
 import com.paytm.digital.education.explore.response.dto.detail.ExamAndCutOff;
+import com.paytm.digital.education.explore.response.dto.detail.Section;
+import com.paytm.digital.education.explore.response.dto.detail.Syllabus;
+import com.paytm.digital.education.explore.response.dto.detail.Topic;
+import com.paytm.digital.education.explore.response.dto.detail.Unit;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
+import com.paytm.digital.education.utility.CommonUtils;
 import com.paytm.digital.education.utility.DateUtil;
 import lombok.AllArgsConstructor;
+import org.joda.time.LocalDate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 @AllArgsConstructor
 @Service
@@ -42,6 +52,100 @@ public class ExamInstanceHelper {
     private PropertyReader propertyReader;
 
     private static Date MAX_DATE = new Date(Long.MAX_VALUE);
+
+    public List<Syllabus> getSyllabus(Instance nearestInstance,
+            Map<String, Instance> subExamInstances, Exam exam) {
+
+        List<Syllabus> syllabus = new ArrayList<>();
+
+        if (!CollectionUtils.isEmpty(subExamInstances)) {
+            for (Map.Entry<String, Instance> entry : subExamInstances.entrySet()) {
+                if (!CollectionUtils.isEmpty(entry.getValue().getSyllabusList())) {
+                    List<Section> sections =
+                            getSectionsFromEntitySyllabus(entry.getValue().getSyllabusList());
+                    if (!CollectionUtils.isEmpty(sections)) {
+                        syllabus.add(
+                                Syllabus.builder().subExamName(entry.getKey()).sections(sections)
+                                        .build());
+                    }
+                }
+            }
+        }
+
+        if (CollectionUtils.isEmpty(syllabus) && !CollectionUtils
+                .isEmpty(nearestInstance.getSyllabusList())) {
+            List<Section> sections =
+                    getSectionsFromEntitySyllabus(nearestInstance.getSyllabusList());
+            syllabus.add(Syllabus.builder().sections(sections).subExamName(exam.getExamFullName())
+                    .build());
+        }
+
+        if (CollectionUtils.isEmpty(syllabus) && !CollectionUtils.isEmpty(exam.getSyllabus())) {
+            List<Section> sections = getSectionsFromEntitySyllabus(exam.getSyllabus());
+            syllabus.add(Syllabus.builder().subExamName(exam.getExamFullName()).sections(sections)
+                    .build());
+        }
+        if (!CollectionUtils.isEmpty(syllabus)) {
+            return syllabus;
+        }
+        return null;
+    }
+
+    public List<com.paytm.digital.education.explore.response.dto.detail.Event> getImportantDates(
+            Exam exam, Instance nearestInstance,
+            Map<String, Instance> subExamInstances) {
+        List<com.paytm.digital.education.explore.response.dto.detail.Event> importantDates =
+                new ArrayList<>();
+        List<Event> events =
+                nearestInstance.getEvents();
+        importantDates.addAll(convertEntityEventToResponse(exam.getExamFullName(), events));
+        for (Map.Entry<String, Instance> entry : subExamInstances.entrySet()) {
+            importantDates.addAll(convertEntityEventToResponse(entry.getKey(),
+                    entry.getValue().getEvents()));
+        }
+        return importantDates;
+    }
+
+    private List<Topic> getTopics(
+            com.paytm.digital.education.database.entity.Unit entityUnit) {
+        List<Topic> topics = new ArrayList<>();
+        if (!entityUnit.getName().equals(ZERO) && !CollectionUtils
+                .isEmpty(entityUnit.getTopics())) {
+            entityUnit.getTopics().forEach(entityTopic -> {
+                if (!entityTopic.getName().equals(ZERO)) {
+                    topics.add(new Topic(entityTopic.getName()));
+                }
+            });
+        }
+        return topics;
+    }
+
+    private List<Unit> getUnits(
+            com.paytm.digital.education.database.entity.Syllabus entitySyllabus) {
+        List<Unit> units = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(entitySyllabus.getUnits())) {
+            entitySyllabus.getUnits().forEach(entityUnit -> {
+                List<Topic> topics = getTopics(entityUnit);
+                if (!CollectionUtils.isEmpty(topics)) {
+                    units.add(new Unit(entityUnit.getName(), topics));
+                }
+            });
+        }
+        return units;
+    }
+
+    private List<Section> getSectionsFromEntitySyllabus(
+            List<com.paytm.digital.education.database.entity.Syllabus> entitySyllabusList) {
+        List<Section> sectionList = new ArrayList<>();
+        entitySyllabusList.forEach(entitySection -> {
+            List<Unit> units = getUnits(entitySection);
+            if (!CollectionUtils.isEmpty(units)) {
+                Section section = new Section(entitySection.getSubjectName(), units);
+                sectionList.add(section);
+            }
+        });
+        return sectionList;
+    }
 
     public List<ExamAndCutOff> getExamCutOffs(List<Exam> examList,
             Map<String, Object> examRelatedData, Set<Long> examIds) {
@@ -151,6 +255,49 @@ public class ExamInstanceHelper {
         return null;
     }
 
+    private Stream<EventInstanceDateHolder> getEventInstanceDateHolders(Instance instance) {
+        if (CollectionUtils.isEmpty(instance.getEvents())) {
+            return Stream.of(
+                    new EventInstanceDateHolder(null, instance,
+                            new LocalDate().withYear(instance.getAdmissionYear()).toDate()));
+        }
+        return instance.getEvents()
+                .stream()
+                .map(event ->
+                        new EventInstanceDateHolder(event, instance,
+                                event.calculateCorrespondingDate()));
+    }
+
+    private Optional<Instance> getInstanceAccordingToFilterAndComparator(
+            List<Instance> instances,
+            Predicate<EventInstanceDateHolder> predicate,
+            Comparator<EventInstanceDateHolder> comparator) {
+        return instances.stream()
+                .flatMap(this::getEventInstanceDateHolders)
+                .filter(predicate)
+                .min(comparator)
+                .map(EventInstanceDateHolder::getInstance);
+    }
+
+    public Optional<Instance> getNearestInstance(List<Instance> instances) {
+        Date presentDate = new Date();
+
+        Optional<Instance> nearestFutureInstance = getInstanceAccordingToFilterAndComparator(
+            Optional.ofNullable(instances).orElse(emptyList()),
+            holder -> CommonUtils.isDateEqualsOrAfter(holder.getDate(), presentDate),
+            Comparator.comparing(EventInstanceDateHolder::getDate));
+
+        if (nearestFutureInstance.isPresent()) {
+            return nearestFutureInstance;
+        } else {
+            Optional<Instance> nearestPastInstance = getInstanceAccordingToFilterAndComparator(
+                Optional.ofNullable(instances).orElse(emptyList()),
+                x -> true,
+                Comparator.comparing(EventInstanceDateHolder::getDate).reversed());
+            return nearestPastInstance;
+        }
+    }
+
     public int getRelevantInstanceIndex(List<Instance> instances, String eventType) {
         int instanceIndex = 0;
         if (!CollectionUtils.isEmpty(instances) || instances.size() > 1) {
@@ -164,14 +311,7 @@ public class ExamInstanceHelper {
                             instances.get(index).getEvents();
 
                     for (Event event : events) {
-                        Date eventDate = null;
-                        if (NON_TENTATIVE.equalsIgnoreCase(event.getCertainty())) {
-                            eventDate = event.getDate() != null
-                                    ? event.getDate()
-                                    : event.getDateRangeStart();
-                        } else {
-                            eventDate = stringToDate(event.getMonthDate(), YYYY_MM);
-                        }
+                        Date eventDate = event.calculateCorrespondingDate();
 
                         if (eventDate != null && minApplicationDate.after(eventDate)) {
                             minApplicationDate = eventDate;

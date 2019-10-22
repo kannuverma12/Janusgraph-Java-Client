@@ -1,10 +1,10 @@
 package com.paytm.digital.education.config;
 
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
-@Slf4j
+
 @Configuration
 public class AwsConfig {
 
@@ -15,6 +15,7 @@ public class AwsConfig {
     private static String relativePathPrefix;
     private static String mediaBaseUrl;
     private static String s3ExploreBucketNameWithoutSuffix;
+    private static String explorePrefix;
 
     @Value("${aws.s3.region}")
     public void setClientRegion(String region) {
@@ -51,6 +52,11 @@ public class AwsConfig {
         s3ExploreBucketNameWithoutSuffix = bucketName;
     }
 
+    @Value("${aws.s3.explore.prefix}")
+    public void setExplorePrefix(String expPrefix) {
+        explorePrefix = expPrefix;
+    }
+
     public static String getMediaBaseUrl() {
         return mediaBaseUrl;
     }
@@ -77,6 +83,10 @@ public class AwsConfig {
 
     public static String getClientRegion() {
         return clientRegion;
+    }
+
+    public static String getExplorePrefix() {
+        return explorePrefix;
     }
 
 }

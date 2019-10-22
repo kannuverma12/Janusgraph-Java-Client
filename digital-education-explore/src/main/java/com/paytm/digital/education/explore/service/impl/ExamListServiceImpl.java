@@ -2,15 +2,15 @@ package com.paytm.digital.education.explore.service.impl;
 
 import com.paytm.digital.education.exception.NotFoundException;
 import com.paytm.digital.education.explore.database.entity.Course;
-import com.paytm.digital.education.explore.database.entity.Exam;
-import com.paytm.digital.education.explore.database.entity.SubExam;
+import com.paytm.digital.education.database.entity.Exam;
+import com.paytm.digital.education.database.entity.SubExam;
 import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.response.dto.detail.ExamInfo;
 import com.paytm.digital.education.explore.service.ExamListService;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.explore.validators.UrlParamsValidator;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -33,7 +33,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.INS
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SUBEXAM_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.NO_EXAM_LIST_EXISTS;
 
-@Slf4j
+
 @AllArgsConstructor
 @Service
 public class ExamListServiceImpl implements ExamListService {

@@ -16,8 +16,10 @@ import com.paytm.digital.education.explore.enums.SchoolEducationLevelType;
 import com.paytm.digital.education.explore.enums.SchoolEntityType;
 import com.paytm.digital.education.explore.service.helper.IncrementalDataHelper;
 import com.paytm.digital.education.utility.UploadUtil;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -32,12 +34,14 @@ import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_ID;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SCHOOL_FILE_VERSION;
-import static com.paytm.digital.education.explore.database.entity.PaytmKeys.Constants.PAYTM_KEYS;
+import static com.paytm.digital.education.database.entity.PaytmKeys.Constants.PAYTM_KEYS;
 
 @Service
 @AllArgsConstructor
-@Slf4j
+
 public class TransformSchoolService {
+
+    private static Logger log = LoggerFactory.getLogger(CommonMongoRepository.class);
 
     private CommonMongoRepository   commonMongoRepository;
     private IncrementalDataHelper   incrementalDataHelper;

@@ -13,8 +13,9 @@ import com.paytm.digital.education.explore.response.dto.search.FilterBucket;
 import com.paytm.digital.education.explore.response.dto.search.TermFilterData;
 import com.paytm.digital.education.explore.response.dto.search.FilterData;
 import com.paytm.digital.education.explore.service.impl.RecentSearchServiceImpl;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -33,8 +34,9 @@ import java.util.concurrent.TimeoutException;
 
 @EnableScheduling
 @Configuration
-@Slf4j
 public class RecentsLimitCheckScheduler {
+
+    private static Logger log = LoggerFactory.getLogger(RecentsLimitCheckScheduler.class);
 
     @Autowired
     private RecentSearchServiceImpl recentSearchService;

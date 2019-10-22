@@ -16,6 +16,8 @@ public final class ESConstants {
 
     public static final int DEFAULT_TERMS_AGGREGATION_BUCKETS_SIZE = 500;
 
+    public static final int DEFAULT_TOP_HITS_AGGREGATION_BUCKETS_SIZE = 100;
+
     public static final String EDUCATION_ES_CLIENT = "education_es_client";
 
     public static final String MIN_AGGREGATION_SUFFIX = "_min";
@@ -27,5 +29,10 @@ public final class ESConstants {
     public static final String RELAVANCE_SCORE = "_score";
 
     public static final int MAX_BULK_SIZE = 200;
+
+    public static final String GEOLOCATION_FIELD = "location";
+    public static final String SORT_FIELD        = "sort";
+    public static final String KEY_SEPERATOR     = ":";
+    public static final Double GEO_DISTANCE_FILTER_MAX_LIMIT_KMS = 50.0;
 
 }

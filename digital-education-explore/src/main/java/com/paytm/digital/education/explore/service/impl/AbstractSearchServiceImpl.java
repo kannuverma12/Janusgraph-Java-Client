@@ -1,7 +1,10 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.RANGE;
+import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.GEO_DISTANCE;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_SORT_FIELD;
 
+import com.paytm.digital.education.elasticsearch.constants.ESConstants;
 import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
@@ -12,39 +15,45 @@ import com.paytm.digital.education.elasticsearch.models.FilterField;
 import com.paytm.digital.education.elasticsearch.models.Operator;
 import com.paytm.digital.education.elasticsearch.models.SearchField;
 import com.paytm.digital.education.elasticsearch.models.SortField;
+import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.exception.EducationException;
+import com.paytm.digital.education.explore.enums.Client;
+import com.paytm.digital.education.explore.es.model.ClassifierSearchDoc;
+import com.paytm.digital.education.explore.es.model.CourseSearch;
+import com.paytm.digital.education.explore.es.model.ExamSearch;
+import com.paytm.digital.education.explore.es.model.GeoLocation;
+import com.paytm.digital.education.explore.es.model.InstituteSearch;
+import com.paytm.digital.education.explore.es.model.NestedCourseSearch;
 import com.paytm.digital.education.explore.es.model.SchoolSearch;
 import com.paytm.digital.education.explore.es.model.SearchHistoryEsDoc;
-import com.paytm.digital.education.explore.es.model.InstituteSearch;
-import com.paytm.digital.education.explore.es.model.CourseSearch;
-import com.paytm.digital.education.explore.es.model.NestedCourseSearch;
-import com.paytm.digital.education.explore.es.model.ExamSearch;
-import com.paytm.digital.education.explore.es.model.ClassifierSearchDoc;
 import com.paytm.digital.education.explore.request.dto.search.Classification;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.builders.SearchResponseBuilder;
 import com.paytm.digital.education.explore.response.dto.search.ClassificationResponse;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
+import com.paytm.digital.education.explore.service.helper.CTAHelper;
 import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.search.service.ISearchService;
 import com.paytm.digital.education.utility.HierarchyIdentifierUtils;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.PostConstruct;
 
-@Slf4j
+
 @Component
 public abstract class AbstractSearchServiceImpl {
 
@@ -55,6 +64,8 @@ public abstract class AbstractSearchServiceImpl {
     private   SearchResponseBuilder           searchResponseBuilder;
     @Autowired
     private   PropertyReader                  propertyReader;
+
+    @Autowired CTAHelper ctaHelper;
 
     @PostConstruct
     private void generateLevelMap() {
@@ -87,6 +98,36 @@ public abstract class AbstractSearchServiceImpl {
                         "Applied filter is not present in filterQueryMap");
             }
         });
+        validateGeoLocationRequest(searchRequest);
+    }
+
+    private void validateGeoLocationRequest(SearchRequest searchRequest) {
+        GeoLocation geoLocation = searchRequest.getGeoLocation();
+
+        if (Objects.isNull(geoLocation)) {
+            return;
+        }
+
+        if (Objects.isNull(geoLocation.getLat()) || Objects.isNull(geoLocation.getLon())) {
+            throw new EducationException(ErrorEnum.LAT_OR_LON_MISSING,
+                    "Latitude and longitude are mandatory in location.");
+        }
+
+        if (geoLocation.getLat() < -90 || geoLocation.getLat() > 90) {
+            throw new EducationException(ErrorEnum.LAT_INVALID,
+                    "Please provide valid latitude in request.");
+        }
+
+        if (geoLocation.getLon() < -180 || geoLocation.getLon() > 180) {
+            throw new EducationException(ErrorEnum.LON_INVALID,
+                    "Please provide valid longitude in request.");
+        }
+
+        if (Objects.nonNull(searchRequest.getRadius())
+                && searchRequest.getRadius() > ESConstants.GEO_DISTANCE_FILTER_MAX_LIMIT_KMS) {
+            throw new EducationException(ErrorEnum.GEO_DISTANCE_INVALID,
+                    new Object[] {ESConstants.GEO_DISTANCE_FILTER_MAX_LIMIT_KMS});
+        }
     }
 
     protected <T> void populateSearchFields(SearchRequest searchRequest,
@@ -184,16 +225,27 @@ public abstract class AbstractSearchServiceImpl {
         }
     }
 
+    protected void validateSortFields(SearchRequest searchRequest, Set<String> allowedSortFields) {
+        if (!CollectionUtils.isEmpty(searchRequest.getSortOrder())) {
+            searchRequest.getSortOrder().forEach((s, dataSortOrder) -> {
+                if (!allowedSortFields.contains(s)) {
+                    throw new BadRequestException(INVALID_SORT_FIELD,
+                            INVALID_SORT_FIELD.getExternalMessage());
+                }
+            });
+        }
+    }
+
     protected void buildSearchResponse(SearchResponse searchResponse,
             ElasticResponse elasticResponse,
             ElasticRequest elasticRequest, String component, String filterNamespace,
-            String searchResultNamespace, Classification classificationData) {
+            String searchResultNamespace, Classification classificationData, Client client) {
         if (elasticRequest.isSearchRequest()) {
             Map<String, Map<String, Object>> propertyMap = null;
             if (StringUtils.isNotBlank(component)) {
                 propertyMap = propertyReader.getPropertiesAsMap(component, searchResultNamespace);
             }
-            populateSearchResults(searchResponse, elasticResponse, propertyMap);
+            populateSearchResults(searchResponse, elasticResponse, propertyMap, elasticRequest, client);
             long total = elasticResponse.getTotalSearchResultsCount();
             searchResponse.setTotal(total);
         }
@@ -243,6 +295,6 @@ public abstract class AbstractSearchServiceImpl {
     }
 
     protected abstract void populateSearchResults(SearchResponse searchResponse,
-            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties);
-
+            ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties,
+            ElasticRequest elasticRequest, Client client);
 }

@@ -8,4 +8,5 @@ public interface GoogleUtilConstant {
     String USER                  = "user";
     String OFFLINE               = "offline";
     String GOOGLE_DRIVE_BASE_URL = "https://drive.google.com";
+
 }
