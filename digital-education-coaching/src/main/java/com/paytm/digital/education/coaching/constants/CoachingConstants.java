@@ -30,7 +30,7 @@ public class CoachingConstants {
     public static final String COACHING_CENTER_CITY            = "city";
     public static final String COACHING_CENTER_STATE           = "state";
     public static final String COACHING_CENTER_LOCATION        = "location";
-    public static final String DISTANCE_KILOMETERS             = " km";
+    public static final String DISTANCE_KILOMETERS             = " Km";
     public static final String IS_ENABLED                      = "is_enabled";
     public static final String CENTER_ID                       = "center_id";
     public static final String IS_DYNAMIC                      = "is_dynamic";
