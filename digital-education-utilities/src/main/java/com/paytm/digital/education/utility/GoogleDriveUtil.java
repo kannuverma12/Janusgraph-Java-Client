@@ -1,5 +1,12 @@
 package com.paytm.digital.education.utility;
 
+import static com.paytm.digital.education.constant.GoogleUtilConstant.FILENAME;
+import static com.paytm.digital.education.constant.GoogleUtilConstant.ID;
+import static com.paytm.digital.education.constant.GoogleUtilConstant.INPUTSTREAM;
+import static com.paytm.digital.education.constant.GoogleUtilConstant.MIMETYPE;
+import static com.paytm.digital.education.constant.GoogleUtilConstant.OFFLINE;
+import static com.paytm.digital.education.constant.GoogleUtilConstant.USER;
+
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
@@ -22,11 +29,10 @@ import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.experimental.UtilityClass;
 
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.security.GeneralSecurityException;
@@ -36,13 +42,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import static com.paytm.digital.education.constant.GoogleUtilConstant.FILENAME;
-import static com.paytm.digital.education.constant.GoogleUtilConstant.ID;
-import static com.paytm.digital.education.constant.GoogleUtilConstant.INPUTSTREAM;
-import static com.paytm.digital.education.constant.GoogleUtilConstant.MIMETYPE;
-import static com.paytm.digital.education.constant.GoogleUtilConstant.OFFLINE;
-import static com.paytm.digital.education.constant.GoogleUtilConstant.USER;
 
 @UtilityClass
 
@@ -68,6 +67,8 @@ public class GoogleDriveUtil {
             credentialFolder.mkdirs();
             credentialFolder.setExecutable(true, false);
             credentialFolder.setReadable(true, false);
+            log.error("Client secret file : {} not found on folder path : {}", clientSecretFileName,
+                    clientSecretFilePath);
             throw new FileNotFoundException("Please copy " + clientSecretFileName
                     + " to folder: " + credentialFolder.getAbsolutePath());
         }
@@ -151,6 +152,7 @@ public class GoogleDriveUtil {
         if (Objects.nonNull(data)) {
             List<List<Object>> headerData =
                     readGoogleSheet(sheetId, headerRange, clientSecretFileName, clientSecretFolder);
+            log.info("Read sheet data from sheet Id : {}, with no of records : {}", sheetId, data.size());
             List<String> headers = new ArrayList<>();
             for (List row : headerData) {
                 for (Object column : row) {

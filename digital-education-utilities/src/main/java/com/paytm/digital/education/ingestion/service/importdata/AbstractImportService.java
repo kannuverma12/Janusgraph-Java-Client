@@ -111,7 +111,7 @@ public abstract class AbstractImportService {
             log.debug("Got formData.size: {}", formData == null ? 0 : formData.size());
         } catch (final IOException | GeneralSecurityException e) {
             log.error("Got exception while getting data from google sheet, "
-                            + "dataImportPropertiesResponse: {}, exception: {}",
+                            + "dataImportPropertiesResponse: {}, exception: ",
                     dataImportPropertiesResponse, e);
         }
         return formData;
@@ -229,7 +229,6 @@ public abstract class AbstractImportService {
 
     protected String uploadFile(final String driveImageUrl, final String imagePrefix)
             throws EducationException {
-
         if (StringUtils.isEmpty(driveImageUrl) || StringUtils.isEmpty(imagePrefix)) {
             log.error("Got empty upload file request, driveImageUrl: {}, imagePrefix: {}",
                     driveImageUrl, imagePrefix);
@@ -243,7 +242,7 @@ public abstract class AbstractImportService {
                         this.educationS3BucketName + this.educationS3Path,
                         GoogleConfig.getExploreCredentialFileName(),
                         GoogleConfig.getExploreCredentialFolderPath());
-        log.debug("fileNameAndMimeTypePair received from upload entitiId : {}, pair : {}",
+        log.debug("fileNameAndMimeTypePair received from upload entityId : {}, pair : {}",
                 fileNameAndMimeTypePair.toString());
 
         if (null != fileNameAndMimeTypePair.getKey()) {
