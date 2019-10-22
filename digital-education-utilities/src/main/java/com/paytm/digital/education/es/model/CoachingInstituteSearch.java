@@ -30,10 +30,12 @@ public class CoachingInstituteSearch implements IESDocument {
     private String                              coverImage;
     private String                              logo;
     private Map<String, Map<String, String>>    streams;
+    private List<Long>                          topStreamIds;
     private List<Long>                          streamIds;
     private List<String>                        streamNames;
     private Map<String, Map<String, String>>    exams;
     private List<Long>                          examIds;
+    private List<Long>                          topExamIds;
     private List<String>                        examNames;
     private List<String>                        courseTypes;
     private Integer                             establishmentYear;
