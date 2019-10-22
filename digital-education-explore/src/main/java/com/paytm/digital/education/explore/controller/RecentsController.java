@@ -25,7 +25,7 @@ public class RecentsController {
     @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/recent_searches")
     public @ResponseBody SearchResponse recents(
             @RequestParam(value = "query", required = false) String query,
-            @RequestParam(value = "size") int size,
+            @RequestParam(value = "size", required = false, defaultValue = "5") int size,
             @RequestParam(value = "entity", required = false) List<EducationEntity> entities,
             @RequestHeader(value = "x-user-id") Long userId) {
         return recentsSerivce.getRecentSearchTerms(query, userId, size, entities);

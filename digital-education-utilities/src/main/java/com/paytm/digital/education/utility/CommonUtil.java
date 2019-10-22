@@ -203,6 +203,7 @@ public class CommonUtil {
         address.setCity(city);
         address.setPhone(phone);
         address.setUrl(url);
+
         if (officialAddress != null) {
             address.setLatLon(officialAddress.getLatLon());
             address.setPinCode(officialAddress.getPinCode());

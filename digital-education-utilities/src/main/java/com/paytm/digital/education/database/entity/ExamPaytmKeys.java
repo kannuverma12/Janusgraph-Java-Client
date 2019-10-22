@@ -21,4 +21,7 @@ public class ExamPaytmKeys extends PaytmKeys {
     @JsonProperty("form_id")
     private String formId;
 
+    @Field("webFormUriPrefix")
+    private String webFormUriPrefix;
+
 }

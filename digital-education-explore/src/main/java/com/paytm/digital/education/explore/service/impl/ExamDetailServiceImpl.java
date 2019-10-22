@@ -5,30 +5,32 @@ import com.paytm.digital.education.database.entity.ExamPaytmKeys;
 import com.paytm.digital.education.database.entity.Instance;
 import com.paytm.digital.education.database.entity.SubExam;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.dto.detail.Event;
+import com.paytm.digital.education.dto.detail.Section;
+import com.paytm.digital.education.dto.detail.Topic;
+import com.paytm.digital.education.dto.detail.Unit;
 import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
-import com.paytm.digital.education.dto.detail.Event;
 import com.paytm.digital.education.explore.response.dto.detail.ExamDetail;
 import com.paytm.digital.education.explore.response.dto.detail.Location;
-import com.paytm.digital.education.dto.detail.Section;
-import com.paytm.digital.education.dto.detail.Syllabus;
-import com.paytm.digital.education.dto.detail.Topic;
-import com.paytm.digital.education.dto.detail.Unit;
 import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
 import com.paytm.digital.education.explore.service.helper.CTAHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.service.helper.DetailPageSectionHelper;
-import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
-import com.paytm.digital.education.serviceimpl.helper.ExamLogoHelper;
+import com.paytm.digital.education.explore.service.helper.ExamSectionHelper;
 import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
 import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import com.paytm.digital.education.explore.service.helper.WidgetsDataHelper;
 import com.paytm.digital.education.property.reader.PropertyReader;
+import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
+import com.paytm.digital.education.serviceimpl.helper.ExamLogoHelper;
 import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.utility.DateUtil;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -39,12 +41,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import static com.paytm.digital.education.constant.ExploreConstants.APPLICATION;
 import static com.paytm.digital.education.constant.ExploreConstants.DATA;
 import static com.paytm.digital.education.constant.ExploreConstants.DD_MMM_YYYY;
 import static com.paytm.digital.education.constant.ExploreConstants.DEFAULT;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_DETAIL;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FILTER_NAMESPACE;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_PREFIX;
@@ -54,16 +56,17 @@ import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_M
 import static com.paytm.digital.education.constant.ExploreConstants.MMM_YYYY;
 import static com.paytm.digital.education.constant.ExploreConstants.NON_TENTATIVE;
 import static com.paytm.digital.education.constant.ExploreConstants.PRECEDENCE;
-import static com.paytm.digital.education.constant.ExploreConstants.YYYY_MM;
+import static com.paytm.digital.education.constant.ExploreConstants.SECTION;
+import static com.paytm.digital.education.constant.ExploreConstants.WEB_FORM_URI_PREFIX;
 import static com.paytm.digital.education.constant.ExploreConstants.ZERO;
+import static com.paytm.digital.education.enums.Client.APP;
 import static com.paytm.digital.education.enums.EducationEntity.EXAM;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
-import static java.util.Collections.emptyList;
-import static java.util.Optional.empty;
 
 @AllArgsConstructor
 @Service
+@Slf4j
 public class ExamDetailServiceImpl {
 
     private CommonMongoRepository    commonMongoRepository;
@@ -77,14 +80,19 @@ public class ExamDetailServiceImpl {
     private LeadDetailHelper         leadDetailHelper;
     private CTAHelper                ctaHelper;
     private SubscriptionDetailHelper subscriptionDetailHelper;
+    private ExamSectionHelper        examSectionHelper;
 
     private static int EXAM_PREFIX_LENGTH = EXAM_PREFIX.length();
 
     public ExamDetail getDetail(Long entityId, String examUrlKey, Long userId,
-            String fieldGroup, List<String> fields, Client client) throws ParseException {
+            String fieldGroup, List<String> fields, Client client, boolean syllabus,
+            boolean importantDates, boolean derivedAttributes, boolean examCenters,
+            boolean sections,
+            boolean widgets) throws ParseException {
         // fields are not being supported currently. Part of discussion
 
-        ExamDetail examDetail = getExamDetail(entityId, examUrlKey, fieldGroup, fields, client);
+        ExamDetail examDetail = getExamDetail(entityId, examUrlKey, fieldGroup, fields, client,
+                syllabus, importantDates, derivedAttributes, examCenters, sections, widgets);
         if (userId != null && userId > 0) {
             updateInterested(examDetail, userId);
             updateShortlist(examDetail, userId);
@@ -99,7 +107,10 @@ public class ExamDetailServiceImpl {
     //TODO - modularize methods for caching as. Its fine as of now as userId is not being used As of now.
     @Cacheable(value = "exam_detail")
     public ExamDetail getExamDetail(Long entityId, String examUrlKey, String fieldGroup,
-            List<String> fields, Client client) throws ParseException {
+            List<String> fields, Client client, boolean syllabus,
+            boolean importantDates, boolean derivedAttributes, boolean examCenters,
+            boolean sections,
+            boolean widgets) throws ParseException {
 
         // TODO: fields are not being supported currently. Part of discussion
         List<String> groupFields =
@@ -118,22 +129,41 @@ public class ExamDetailServiceImpl {
                 commonMongoRepository.getEntityByFields(EXAM_ID, entityId, Exam.class,
                         examFields);
 
-        if (exam != null) {
-            if (!examUrlKey
-                    .equals(CommonUtil.convertNameToUrlDisplayName(exam.getExamFullName()))) {
-                throw new BadRequestException(INVALID_EXAM_NAME,
-                        INVALID_EXAM_NAME.getExternalMessage());
-            }
-            return processExamDetail(exam, examFields, client);
+        if (Objects.isNull(exam)) {
+            throw new BadRequestException(INVALID_EXAM_ID, INVALID_EXAM_ID.getExternalMessage());
         }
-        throw new BadRequestException(INVALID_EXAM_ID,
-                INVALID_EXAM_ID.getExternalMessage());
+
+        if (!examUrlKey
+                .equals(CommonUtil.convertNameToUrlDisplayName(exam.getExamFullName()))) {
+            throw new BadRequestException(INVALID_EXAM_NAME,
+                    INVALID_EXAM_NAME.getExternalMessage());
+        }
+        return processExamDetail(exam, examFields, client, syllabus, importantDates,
+                derivedAttributes, examCenters, sections, widgets);
     }
 
-    private ExamDetail processExamDetail(Exam exam, List<String> examFields, Client client)
-            throws ParseException {
-        ExamDetail examDetail = buildResponse(exam, client);
-        return examDetail;
+    private ExamDetail processExamDetail(Exam exam, List<String> examFields, Client client,
+            boolean syllabus, boolean importantDates, boolean derivedAttributes,
+            boolean examCenters, boolean sections, boolean widgets) {
+
+        Instance nearestInstance =
+                examInstanceHelper.getNearestInstance(exam.getInstances()).get();
+        Map<String, Instance> subExamInstances =
+                getSubExamInstances(exam, nearestInstance.getInstanceId());
+
+        return buildResponse(exam, client, syllabus, importantDates,
+                derivedAttributes, examCenters, sections, widgets, nearestInstance,
+                subExamInstances);
+    }
+
+    private void addAppSpecificData(ExamDetail examDetail, Exam exam, List<String> sections,
+            boolean syllabusFlg, Instance nearestInstance,
+            Map<String, Instance> subExamInstances) {
+        Map<String, Object> sectionConfigurationMap =
+                propertyReader.getPropertiesAsMapByKey(EXPLORE_COMPONENT, EXAM_DETAIL, SECTION);
+        examSectionHelper
+                .addDataPerSection(exam, examDetail, sections, nearestInstance, subExamInstances,
+                        sectionConfigurationMap, syllabusFlg);
     }
 
     private List<Section> getSectionsFromEntitySyllabus(
@@ -162,7 +192,25 @@ public class ExamDetailServiceImpl {
         return sectionList;
     }
 
-    private void addDatesToResponse(ExamDetail examDetail, List<Event> importantDates) {
+    private Map<String, Instance> getSubExamInstances(Exam exam, int parentInstanceId) {
+        Map<String, Instance> subExamInstances = new HashMap<>();
+        if (!CollectionUtils.isEmpty(exam.getSubExams())) {
+            for (SubExam subExam : exam.getSubExams()) {
+                if (!CollectionUtils.isEmpty(subExam.getInstances())) {
+                    for (Instance instance : subExam
+                            .getInstances()) {
+                        if (instance.getParentInstanceId() == parentInstanceId) {
+                            subExamInstances.put(subExam.getSubExamName(), instance);
+                        }
+                    }
+                }
+            }
+        }
+        return subExamInstances;
+    }
+
+    private void addApplicationAndExamDatesToResponse(ExamDetail examDetail,
+            List<Event> importantDates) {
         for (int i = 0; i < importantDates.size(); i++) {
             if (importantDates.get(i).getType().equalsIgnoreCase(APPLICATION)) {
                 if (importantDates.get(i).getCertainity() != null
@@ -180,8 +228,7 @@ public class ExamDetailServiceImpl {
                     }
 
                 } else {
-                    examDetail.setApplicationMonth(DateUtil.formatDateString(
-                            importantDates.get(i).getMonthDate(), YYYY_MM, MMM_YYYY));
+                    examDetail.setApplicationMonth(importantDates.get(i).getMonthDate());
                 }
             } else if (importantDates.get(i).getType().equalsIgnoreCase(EXAM.name())) {
                 if (importantDates.get(i).getCertainity() != null
@@ -202,32 +249,9 @@ public class ExamDetailServiceImpl {
                 } else {
                     examDetail
                             .setExamMonth(DateUtil.formatDateString(
-                                    importantDates.get(i).getMonthDate(), YYYY_MM, DD_MMM_YYYY));
+                                    importantDates.get(i).getMonthDate(), MMM_YYYY, DD_MMM_YYYY));
                 }
             }
-        }
-    }
-
-    private void addSubExamData(int parentInstanceId, List<SubExam> subExams,
-            ExamDetail examDetail, List<Event> importantDates) {
-        List<Syllabus> syllabusList = new ArrayList<>();
-        subExams.forEach(subExam -> {
-            subExam.getInstances().forEach(subExamInstance -> {
-                if (subExamInstance.getParentInstanceId() == parentInstanceId) {
-                    if (!CollectionUtils.isEmpty(subExamInstance.getSyllabusList())) {
-                        Syllabus syllabus = new Syllabus(subExam.getSubExamName(),
-                                getSectionsFromEntitySyllabus(subExamInstance.getSyllabusList()));
-                        syllabusList.add(syllabus);
-                    }
-                    importantDates
-                            .addAll(examInstanceHelper
-                                    .convertEntityEventToResponse(subExam.getSubExamName(),
-                                            subExamInstance.getEvents()));
-                }
-            });
-        });
-        if (syllabusList.size() != 0) {
-            examDetail.setSyllabus(syllabusList);
         }
     }
 
@@ -243,65 +267,19 @@ public class ExamDetailServiceImpl {
         examDetail.setLinguisticMedium(examLang);
     }
 
-    private ExamDetail buildResponse(Exam exam, Client client) throws ParseException {
-        ExamDetail examDetail = new ExamDetail();
-        examDetail.setExamId(exam.getExamId());
-        examDetail.setAbout(exam.getAboutExam());
-        examDetail.setExamId(exam.getExamId());
-        examDetail
-                .setUrlDisplayName(CommonUtil.convertNameToUrlDisplayName(exam.getExamFullName()));
-        examDetail.setExamFullName(exam.getExamFullName());
-        examDetail.setExamShortName(exam.getExamShortName());
-        if (!CollectionUtils.isEmpty(exam.getLinguisticMediumExam())) {
-            setLanguageFromLanguageCodes(examDetail, exam.getLinguisticMediumExam());
-        }
-        examDetail.setExamLevel(exam.getLevelOfExam());
+    private void addWebSpecificData(ExamDetail examDetail, Exam exam, boolean derivedAttributes,
+            boolean sectionsFlag,
+            Client client, boolean widgets) {
         examDetail.setDocumentsRequiredAtExam(exam.getDocumentsExam());
         examDetail.setDocumentsRequiredAtCounselling(exam.getDocumentsCounselling());
         examDetail.setAdmitCard(exam.getAdmitCard());
-        examDetail.setAnswerKey("");
-        examDetail.setCounselling("");
         examDetail.setEligibility(exam.getEligibility());
         examDetail.setApplicationForm(exam.getApplicationForm());
         examDetail.setExamPattern(exam.getExamPattern());
         examDetail.setResult(exam.getResult());
         examDetail.setCutoff(exam.getCutoff());
-        examDetail.setLogoUrl(examLogoHelper.getExamLogoUrl(exam.getExamId(), exam.getLogo()));
-        examDetail.setExamCenters(getExamCenters(exam.getInstances()));
-        List<Event> importantDates = new ArrayList<>();
-        Optional<Instance> nearestInstance = empty();
-        if (!CollectionUtils.isEmpty(exam.getInstances())) {
-            nearestInstance =
-                    examInstanceHelper.getNearestInstance(exam.getInstances());
-            if (nearestInstance.isPresent()) {
-                List<com.paytm.digital.education.database.entity.Event> events =
-                        nearestInstance.map(Instance::getEvents).orElse(emptyList());
-                int centersCount = nearestInstance.map(Instance::getExamCenters).map(List::size).orElse(0);
-                examDetail.setCentersCount(centersCount);
-                importantDates
-                        .addAll(examInstanceHelper
-                                .convertEntityEventToResponse(exam.getExamFullName(), events));
-            }
-        }
-        if (!CollectionUtils.isEmpty(exam.getSubExams()) && nearestInstance.isPresent()) {
-            int parentInstanceId = nearestInstance.get().getInstanceId();
+        if (!CollectionUtils.isEmpty(exam.getSubExams())) {
             examDetail.setDurationInHour(exam.getSubExams().get(0).getDurationHours());
-            addSubExamData(parentInstanceId, exam.getSubExams(), examDetail, importantDates);
-        }
-        examDetail.setImportantDates(importantDates);
-        if (CollectionUtils.isEmpty(examDetail.getSyllabus())) {
-            List<Syllabus> syllabusList = new ArrayList<>();
-            List<com.paytm.digital.education.database.entity.Syllabus> syllabusListFromInstance
-                    = nearestInstance.map(Instance::getSyllabusList).orElse(emptyList());
-            if (!CollectionUtils.isEmpty(syllabusListFromInstance)) {
-                List<Section> sections =
-                        getSectionsFromEntitySyllabus(syllabusListFromInstance);
-                syllabusList.add(new Syllabus(exam.getExamFullName(), sections));
-            } else if (!CollectionUtils.isEmpty(exam.getSyllabus())) {
-                List<Section> sections = getSectionsFromEntitySyllabus(exam.getSyllabus());
-                syllabusList.add(new Syllabus(exam.getExamFullName(), sections));
-            }
-            examDetail.setSyllabus(syllabusList);
         }
         if (examDetail.getDurationInHour() == null) {
             examDetail.setDurationInHour(exam.getExamDuration());
@@ -310,23 +288,91 @@ public class ExamDetailServiceImpl {
         Map<String, Object> highlights = new HashMap<>();
         highlights.put(entityName, exam);
         highlights.put(LINGUISTIC_MEDIUM, examDetail.getLinguisticMedium());
-        examDetail.setDerivedAttributes(
-                derivedAttributesHelper.getDerivedAttributes(highlights,
-                        entityName, client));
-        addDatesToResponse(examDetail, importantDates);
-        examDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName, null));
-        examDetail.setBanners(bannerDataHelper.getBannerData(entityName, null));
-        if (Objects.nonNull(exam.getPaytmKeys())) {
-            ExamPaytmKeys examPaytmKeys = exam.getPaytmKeys();
-            examDetail.setCollegePredictorPid(examPaytmKeys.getCollegePredictorId());
-            examDetail.setFormId(examPaytmKeys.getFormId());
+        if (derivedAttributes) {
+            examDetail.setDerivedAttributes(
+                    derivedAttributesHelper.getDerivedAttributes(highlights,
+                            entityName, client));
         }
-        examDetail.setWidgets(widgetsDataHelper.getWidgets(entityName, exam.getExamId(),
-                getDomainName(exam.getDomains())
-        ));
+        if (sectionsFlag) {
+            examDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName, null));
+        }
+        examDetail.setBanners(bannerDataHelper.getBannerData(entityName, null));
+        if (widgets) {
+            examDetail.setWidgets(widgetsDataHelper.getWidgets(entityName, exam.getExamId(),
+                    getDomainName(exam.getDomains())
+            ));
+        }
+    }
 
+    private ExamDetail buildResponse(Exam exam, Client client, boolean syllabus,
+            boolean importantDatesflag, boolean derivedAttributes, boolean examCenters,
+            boolean sectionsFlag, boolean widgets, Instance nearestInstance,
+            Map<String, Instance> subExamInstances) {
+        ExamDetail examDetail = new ExamDetail();
+        addCommonData(examDetail, exam, nearestInstance, subExamInstances, syllabus,
+                importantDatesflag, examCenters);
+        if (APP.equals(client)) {
+            List<String> sectionsList =
+                    detailPageSectionHelper.getSectionOrder(EXAM.name().toLowerCase(), client);
+            addAppSpecificData(examDetail, exam, sectionsList, syllabus, nearestInstance,
+                    subExamInstances);
+        } else {
+            addWebSpecificData(examDetail, exam, derivedAttributes, sectionsFlag, client, widgets);
+        }
         return examDetail;
     }
+
+    private void addCommonData(ExamDetail examResponse, Exam exam, Instance nearestInstance,
+            Map<String, Instance> subExamInstances, boolean syllabusflg, boolean importantDatesFlg,
+            boolean examCentersFlg) {
+        examResponse.setExamId(exam.getExamId());
+        examResponse.setAbout(exam.getAboutExam());
+        examResponse
+                .setUrlDisplayName(CommonUtil.convertNameToUrlDisplayName(exam.getExamFullName()));
+        examResponse.setExamFullName(exam.getExamFullName());
+        examResponse.setExamShortName(exam.getExamShortName());
+        if (!CollectionUtils.isEmpty(exam.getLinguisticMediumExam())) {
+            setLanguageFromLanguageCodes(examResponse, exam.getLinguisticMediumExam());
+        }
+        examResponse.setExamLevel(exam.getLevelOfExam());
+        examResponse.setLogoUrl(examLogoHelper.getExamLogoUrl(exam.getExamId(), exam.getLogo()));
+        if (examCentersFlg) {
+            List<Location> examCenters = getExamCenters(nearestInstance);
+            if (!CollectionUtils.isEmpty(examCenters)) {
+                examResponse.setExamCenters(examCenters);
+                examResponse.setCentersCount(examCenters.size());
+            }
+        }
+        if (importantDatesFlg) {
+            List<Event> importantDates =
+                    examInstanceHelper.getImportantDates(exam, nearestInstance, subExamInstances);
+            if (!CollectionUtils.isEmpty(importantDates)) {
+                examResponse.setImportantDates(importantDates);
+                addApplicationAndExamDatesToResponse(examResponse, importantDates);
+            }
+        }
+        if (Objects.nonNull(exam.getPaytmKeys())) {
+            addPaytmKeys(examResponse, exam.getPaytmKeys());
+        }
+        if (syllabusflg) {
+            List<com.paytm.digital.education.dto.detail.Syllabus> syllabus =
+                    examInstanceHelper.getSyllabus(nearestInstance, subExamInstances, exam);
+            if (!CollectionUtils.isEmpty(syllabus)) {
+                examResponse.setSyllabus(syllabus);
+            }
+        }
+    }
+
+    private void addPaytmKeys(ExamDetail examDetail, ExamPaytmKeys examPaytmKeys) {
+        examDetail.setCollegePredictorPid(examPaytmKeys.getCollegePredictorId());
+        examDetail.setFormId(examPaytmKeys.getFormId());
+        if (StringUtils.isNotBlank(examPaytmKeys.getWebFormUriPrefix())) {
+            examDetail.setAdditionalProperties(new HashMap<>());
+            examDetail.getAdditionalProperties()
+                    .put(WEB_FORM_URI_PREFIX, examPaytmKeys.getWebFormUriPrefix());
+        }
+    }
+
 
     private void updateShortlist(ExamDetail examDetail,
             Long userId) {
@@ -397,31 +443,20 @@ public class ExamDetailServiceImpl {
         }
     }
 
-    private List<Location> getExamCenters(List<Instance> instances) {
-        if (!CollectionUtils.isEmpty(instances)) {
-            int admissonYear = 0;
-            List<String> examCenters = null;
-            for (Instance instance : instances) {
-                if (instance.getAdmissionYear() != null
-                        && instance.getAdmissionYear() > admissonYear
-                        && !CollectionUtils.isEmpty(instance.getExamCenters())) {
-                    admissonYear = instance.getAdmissionYear();
-                    examCenters = instance.getExamCenters();
+    private List<Location> getExamCenters(Instance nearestInstance) {
+        if (!CollectionUtils.isEmpty(nearestInstance.getExamCenters())) {
+            List<Location> locationList = new ArrayList<>();
+            nearestInstance.getExamCenters().forEach(examCenter -> {
+                String[] locationArr = examCenter.split(",");
+                if (locationArr.length == 2) {
+                    locationList
+                            .add(Location.builder().city(locationArr[0]).state(locationArr[1])
+                                    .build());
                 }
-            }
-            if (!CollectionUtils.isEmpty(examCenters)) {
-                List<Location> locationList = new ArrayList<>();
-                examCenters.forEach(examCenter -> {
-                    String[] locationArr = examCenter.split(",");
-                    if (locationArr.length == 2) {
-                        locationList
-                                .add(Location.builder().city(locationArr[0]).state(locationArr[1])
-                                        .build());
-                    }
-                });
-                return locationList;
-            }
+            });
+            return locationList;
         }
         return null;
     }
+
 }

@@ -3,15 +3,15 @@ package com.paytm.digital.education.explore.service.impl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paytm.digital.education.database.entity.InstiPaytmKeys;
+import com.paytm.digital.education.database.entity.SearchSortParam;
 import com.paytm.digital.education.dto.OfficialAddress;
-import com.paytm.digital.education.enums.es.DataSortOrder;
-import com.paytm.digital.education.enums.es.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.CrossField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.enums.EducationEntity;
-import com.paytm.digital.education.database.entity.SearchSortParam;
+import com.paytm.digital.education.enums.es.DataSortOrder;
+import com.paytm.digital.education.enums.es.FilterQueryType;
 import com.paytm.digital.education.explore.es.model.InstituteSearch;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.search.InstituteData;
@@ -67,6 +67,7 @@ import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_NAM
 import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_NAME_SEARCH_BOOST;
 import static com.paytm.digital.education.constant.ExploreConstants.OTHER_NAMES_NGRAM_BOOST;
 import static com.paytm.digital.education.constant.ExploreConstants.OWNERSHIP;
+import static com.paytm.digital.education.constant.ExploreConstants.RANKING_OVERALL;
 import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_ANALYZER_INSTITUTE;
 import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_INDEX_INSTITUTE;
 import static com.paytm.digital.education.constant.ExploreConstants.SORT_PARAM_KEY;
@@ -129,6 +130,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
         sortFields = new HashSet<>();
         sortFields.add(FE_RANK_SORT);
         sortFields.add(FE_RELEVANCE_SORT);
+        sortFields.add(RANKING_OVERALL);
     }
 
     @Override
@@ -278,7 +280,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
                 }
                 OfficialAddress officialAddress =
                         CommonUtil.getOfficialAddress(instituteSearch.getState(),
-                                instituteSearch.getCity(), null, null, null);
+                                instituteSearch.getCity(), null, null,null);
                 instituteData.setOfficialAddress(officialAddress);
                 instituteData.setClient(instituteSearch.isClient());
                 instituteData.setBrochureUrl(instituteSearch.getBrochureUrl());

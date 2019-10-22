@@ -11,8 +11,8 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.util.Date;
 import java.util.List;
 
-import static com.paytm.digital.education.constant.ExploreConstants.NON_TENTATIVE;
-import static com.paytm.digital.education.constant.ExploreConstants.YYYY_MM;
+import static com.paytm.digital.education.constant.DBConstants.NON_TENTATIVE;
+import static com.paytm.digital.education.constant.DBConstants.YYYY_MM;
 import static com.paytm.digital.education.utility.DateUtil.stringToDate;
 
 @Data

@@ -1,6 +1,48 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import com.paytm.digital.education.database.entity.Course;
+import com.paytm.digital.education.database.entity.Exam;
+import com.paytm.digital.education.database.entity.Institute;
+import com.paytm.digital.education.database.entity.Placement;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.dto.OfficialAddress;
+import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.exception.BadRequestException;
+import com.paytm.digital.education.explore.response.dto.detail.CompareDetail;
+import com.paytm.digital.education.explore.response.dto.detail.CompareInstDetail;
+import com.paytm.digital.education.explore.response.dto.detail.CompareRanking;
+import com.paytm.digital.education.explore.response.dto.detail.Ranking;
+import com.paytm.digital.education.explore.service.CompareService;
+import com.paytm.digital.education.explore.service.helper.FacilityDataHelper;
+import com.paytm.digital.education.explore.service.helper.StreamDataHelper;
+import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
+import com.paytm.digital.education.explore.utility.CompareUtil;
+import com.paytm.digital.education.mapping.ErrorEnum;
+import com.paytm.digital.education.utility.CommonUtil;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
+
 import static com.mongodb.QueryOperators.OR;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SHORT_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.SUBEXAM_ID;
+import static com.paytm.digital.education.enums.EducationEntity.INSTITUTE;
 import static com.paytm.digital.education.explore.constants.CompareConstants.ACRES;
 import static com.paytm.digital.education.explore.constants.CompareConstants.AS_PER;
 import static com.paytm.digital.education.explore.constants.CompareConstants.AVERAGE;
@@ -15,48 +57,6 @@ import static com.paytm.digital.education.explore.constants.CompareConstants.NIR
 import static com.paytm.digital.education.explore.constants.CompareConstants.RANKED;
 import static com.paytm.digital.education.explore.constants.CompareConstants.RANKINGS;
 import static com.paytm.digital.education.explore.constants.CompareConstants.YES;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SHORT_NAME;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_NAME;
-import static com.paytm.digital.education.constant.ExploreConstants.SUBEXAM_ID;
-import static com.paytm.digital.education.enums.EducationEntity.INSTITUTE;
-
-import com.paytm.digital.education.exception.BadRequestException;
-import com.paytm.digital.education.database.entity.Course;
-import com.paytm.digital.education.database.entity.Exam;
-import com.paytm.digital.education.database.entity.Institute;
-import com.paytm.digital.education.database.entity.Placement;
-import com.paytm.digital.education.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.enums.EducationEntity;
-import com.paytm.digital.education.dto.OfficialAddress;
-import com.paytm.digital.education.explore.response.dto.detail.CompareDetail;
-import com.paytm.digital.education.explore.response.dto.detail.CompareInstDetail;
-import com.paytm.digital.education.explore.response.dto.detail.CompareRanking;
-import com.paytm.digital.education.explore.response.dto.detail.Ranking;
-import com.paytm.digital.education.explore.service.CompareService;
-import com.paytm.digital.education.explore.service.helper.FacilityDataHelper;
-import com.paytm.digital.education.explore.service.helper.StreamDataHelper;
-import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
-import com.paytm.digital.education.utility.CommonUtil;
-import com.paytm.digital.education.explore.utility.CompareUtil;
-import com.paytm.digital.education.mapping.ErrorEnum;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
-import java.io.IOException;
-import java.util.Map;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor

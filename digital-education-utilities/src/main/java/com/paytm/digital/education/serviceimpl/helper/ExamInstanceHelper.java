@@ -1,5 +1,36 @@
 package com.paytm.digital.education.serviceimpl.helper;
 
+import com.paytm.digital.education.database.entity.Event;
+import com.paytm.digital.education.database.entity.Exam;
+import com.paytm.digital.education.database.entity.Instance;
+import com.paytm.digital.education.database.entity.SubExam;
+import com.paytm.digital.education.dto.detail.ExamAndCutOff;
+import com.paytm.digital.education.dto.detail.Section;
+import com.paytm.digital.education.dto.detail.Syllabus;
+import com.paytm.digital.education.dto.detail.Topic;
+import com.paytm.digital.education.dto.detail.Unit;
+import com.paytm.digital.education.enums.Gender;
+import com.paytm.digital.education.property.reader.PropertyReader;
+import com.paytm.digital.education.utility.CommonUtil;
+import com.paytm.digital.education.utility.CommonUtils;
+import com.paytm.digital.education.utility.DateUtil;
+import lombok.AllArgsConstructor;
+import org.joda.time.LocalDate;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
 import static com.paytm.digital.education.constant.CommonConstants.APPLICATION;
 import static com.paytm.digital.education.constant.CommonConstants.DATES;
 import static com.paytm.digital.education.constant.CommonConstants.EVENT_TYPE_EXAM;
@@ -14,35 +45,6 @@ import static com.paytm.digital.education.constant.CommonConstants.YYYY_MM;
 import static com.paytm.digital.education.constant.CommonConstants.ZERO;
 import static com.paytm.digital.education.enums.Gender.OTHERS;
 import static java.util.Collections.emptyList;
-
-import com.paytm.digital.education.database.entity.Exam;
-import com.paytm.digital.education.database.entity.Instance;
-import com.paytm.digital.education.database.entity.SubExam;
-import com.paytm.digital.education.dto.detail.ExamAndCutOff;
-import com.paytm.digital.education.dto.detail.Section;
-import com.paytm.digital.education.dto.detail.Syllabus;
-import com.paytm.digital.education.dto.detail.Topic;
-import com.paytm.digital.education.dto.detail.Unit;
-import com.paytm.digital.education.enums.Gender;
-import com.paytm.digital.education.property.reader.PropertyReader;
-import com.paytm.digital.education.utility.CommonUtil;
-import com.paytm.digital.education.utility.CommonUtils;
-import com.paytm.digital.education.utility.DateUtil;
-import com.paytm.digital.education.database.entity.Event;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Predicate;
 
 @AllArgsConstructor
 @Service
@@ -62,9 +64,11 @@ public class ExamInstanceHelper {
                 if (!CollectionUtils.isEmpty(entry.getValue().getSyllabusList())) {
                     List<Section> sections =
                             getSectionsFromEntitySyllabus(entry.getValue().getSyllabusList());
-                    syllabus.add(
-                            Syllabus.builder().subExamName(entry.getKey()).sections(sections)
-                                    .build());
+                    if (!CollectionUtils.isEmpty(sections)) {
+                        syllabus.add(
+                                Syllabus.builder().subExamName(entry.getKey()).sections(sections)
+                                        .build());
+                    }
                 }
             }
         }
@@ -145,6 +149,55 @@ public class ExamInstanceHelper {
         return null;
     }
 
+
+    private Event getExamDateEvent(Exam exam) {
+        if (exam != null) {
+            if (!CollectionUtils.isEmpty(exam.getInstances())) {
+                int latestIndex = getRelevantInstanceIndex(exam.getInstances(), EVENT_TYPE_EXAM);
+
+                if (!CollectionUtils.isEmpty(exam.getSubExams())) {
+                    int parentInstanceId = exam.getInstances().get(latestIndex).getInstanceId();
+                    for (SubExam subExam : exam.getSubExams()) {
+                        if (!CollectionUtils.isEmpty(subExam.getInstances())) {
+                            for (Instance subExamInstance : subExam.getInstances()) {
+                                if (subExamInstance.getInstanceId() != null
+                                        && subExamInstance.getInstanceId() == parentInstanceId) {
+                                    return getExamEvent(subExamInstance.getEvents());
+                                }
+                            }
+                        }
+                    }
+                }
+                return getExamEvent(exam.getInstances().get(latestIndex).getEvents());
+            }
+        }
+        return null;
+    }
+
+    private Event getExamEvent(List<Event> events) {
+        if (!CollectionUtils.isEmpty(events)) {
+            for (Event event : events) {
+                if (EVENT_TYPE_EXAM.equalsIgnoreCase(event.getType())) {
+                    return event;
+                }
+            }
+        }
+        return null;
+    }
+
+    private Stream<EventInstanceDateHolder> getEventInstanceDateHolders(Instance instance) {
+        if (CollectionUtils.isEmpty(instance.getEvents())) {
+            return Stream.of(
+                    new EventInstanceDateHolder(null, instance,
+                            new LocalDate().withYear(instance.getAdmissionYear()).toDate()));
+        }
+        return instance.getEvents()
+                .stream()
+                .map(event ->
+                        new EventInstanceDateHolder(event, instance,
+                                event.calculateCorrespondingDate()));
+    }
+
     public Optional<Instance> getNearestInstance(List<Instance> instances) {
         Date presentDate = new Date();
 
@@ -157,7 +210,7 @@ public class ExamInstanceHelper {
             return nearestFutureInstance;
         } else {
             Optional<Instance> nearestPastInstance = getInstanceAccordingToFilterAndComparator(
-                instances,
+                Optional.ofNullable(instances).orElse(emptyList()),
                 x -> true,
                 Comparator.comparing(EventInstanceDateHolder::getDate).reversed());
             return nearestPastInstance;

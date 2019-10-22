@@ -1,17 +1,21 @@
 package com.paytm.digital.education.explore.service.helper;
 
-import com.paytm.digital.education.enums.es.AggregationType;
-import com.paytm.digital.education.enums.es.BucketAggregationSortParms;
-import com.paytm.digital.education.enums.es.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.BucketSort;
 import com.paytm.digital.education.enums.Client;
+import com.paytm.digital.education.enums.es.AggregationType;
+import com.paytm.digital.education.enums.es.BucketAggregationSortParms;
+import com.paytm.digital.education.enums.es.DataSortOrder;
+import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
+import com.paytm.digital.education.explore.validators.SchoolSearchValidator;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import static com.paytm.digital.education.constant.ExploreConstants.BRANCH_COURSE;
 import static com.paytm.digital.education.constant.ExploreConstants.CITY_INSTITUTE;
@@ -32,6 +36,7 @@ import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_HISTO
 import static com.paytm.digital.education.constant.ExploreConstants.STATE_INSTITUTE;
 import static com.paytm.digital.education.constant.ExploreConstants.STREAM_COURSE;
 import static com.paytm.digital.education.constant.ExploreConstants.STREAM_INSTITUTE;
+import static com.paytm.digital.education.enums.es.AggregationType.GEO_DISTANCE;
 import static com.paytm.digital.education.enums.es.AggregationType.MINMAX;
 import static com.paytm.digital.education.enums.es.AggregationType.TERMS;
 import static com.paytm.digital.education.enums.es.AggregationType.TOP_HITS;
@@ -43,10 +48,12 @@ import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHO
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_OWNERSHIP;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_CITY;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_FACILITIES;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_LOCATION;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_MEDIUM;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_STATE;
 
 @Service
+@AllArgsConstructor
 public class SearchAggregateHelper {
 
     public AggregateField[] getInstituteAggregateData() {
@@ -142,21 +149,43 @@ public class SearchAggregateHelper {
         return aggregateFields;
     }
 
-    public AggregateField[] getSchoolAggregateData() {
-        List<String> schoolKeys =
-                Arrays.asList(SCHOOL_CITY, SCHOOL_STATE, SCHOOL_BOARDS_EDUCATION_LEVEL,
-                        SCHOOL_BOARDS_OWNERSHIP, SCHOOL_BOARDS_GENDER_ACCEPTED,
-                        SCHOOL_FACILITIES, SCHOOL_BOARDS_ACCEPTED,
-                        SCHOOL_MEDIUM, SCHOOL_BOARDS_FEE, SCHOOL_BOARDS_ESTABLISHMENT_YEAR);
-        List<AggregationType> schoolAggregateType =
-                Arrays.asList(TERMS, TERMS, TERMS, TERMS, TERMS, TERMS, TERMS,
-                        TERMS, MINMAX, MINMAX);
-        BucketSort countDescSort = BucketSort.builder().key(BucketAggregationSortParms.COUNT).order(
-                DataSortOrder.DESC).build();
+    public AggregateField[] getSchoolAggregateData(
+            SearchRequest schoolSearchRequest) {
 
-        List<BucketSort> schoolSortOrder =
-                Arrays.asList(countDescSort, countDescSort, countDescSort, countDescSort, countDescSort,
-                        countDescSort, countDescSort, countDescSort, null, null);
+        List<String> schoolKeys ;
+        List<AggregationType> schoolAggregateType;
+        List<BucketSort> schoolSortOrder;
+        BucketSort countDescSort = BucketSort.builder()
+                .key(BucketAggregationSortParms.COUNT)
+                .order(DataSortOrder.DESC)
+                .build();
+
+        if (SchoolSearchValidator.isGeoDistanceSortRequest(schoolSearchRequest)) {
+            schoolKeys =
+                    Arrays.asList(SCHOOL_LOCATION, SCHOOL_BOARDS_EDUCATION_LEVEL,
+                            SCHOOL_BOARDS_OWNERSHIP, SCHOOL_BOARDS_GENDER_ACCEPTED,
+                            SCHOOL_FACILITIES, SCHOOL_BOARDS_ACCEPTED,
+                            SCHOOL_MEDIUM, SCHOOL_BOARDS_FEE, SCHOOL_BOARDS_ESTABLISHMENT_YEAR);
+            schoolAggregateType =
+                    Arrays.asList(GEO_DISTANCE, TERMS, TERMS, TERMS, TERMS, TERMS,
+                            TERMS, MINMAX, MINMAX);
+            schoolSortOrder =
+                    Arrays.asList(null, countDescSort, countDescSort, countDescSort,
+                            countDescSort, countDescSort, countDescSort, null, null);
+        } else {
+            schoolKeys =
+                    Arrays.asList(SCHOOL_CITY, SCHOOL_STATE, SCHOOL_BOARDS_EDUCATION_LEVEL,
+                            SCHOOL_BOARDS_OWNERSHIP, SCHOOL_BOARDS_GENDER_ACCEPTED,
+                            SCHOOL_FACILITIES, SCHOOL_BOARDS_ACCEPTED,
+                            SCHOOL_MEDIUM, SCHOOL_BOARDS_FEE, SCHOOL_BOARDS_ESTABLISHMENT_YEAR);
+            schoolAggregateType =
+                    Arrays.asList(TERMS, TERMS, TERMS, TERMS, TERMS, TERMS, TERMS,
+                            TERMS, MINMAX, MINMAX);
+            schoolSortOrder =
+                    Arrays.asList(countDescSort, countDescSort, countDescSort, countDescSort,
+                            countDescSort,
+                            countDescSort, countDescSort, countDescSort, null, null);
+        }
 
         AggregateField[] schoolAggregateData = new AggregateField[schoolKeys.size()];
 
@@ -165,6 +194,15 @@ public class SearchAggregateHelper {
             aggregateField.setName(schoolKeys.get(i));
             aggregateField.setType(schoolAggregateType.get(i));
             aggregateField.setBucketsOrder(schoolSortOrder.get(i));
+
+            if (schoolAggregateType.get(i).equals(GEO_DISTANCE) && Objects
+                    .nonNull(schoolSearchRequest.getGeoLocation())
+                    && Objects.nonNull(schoolSearchRequest.getGeoLocation().getLat()) && Objects
+                    .nonNull(schoolSearchRequest.getGeoLocation().getLon())) {
+                String[] values = {String.valueOf(schoolSearchRequest.getGeoLocation().getLat()),
+                        String.valueOf(schoolSearchRequest.getGeoLocation().getLon())};
+                aggregateField.setValues(values);
+            }
             schoolAggregateData[i] = aggregateField;
         }
         return schoolAggregateData;

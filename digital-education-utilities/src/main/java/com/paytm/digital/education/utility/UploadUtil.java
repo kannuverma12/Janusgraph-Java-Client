@@ -1,5 +1,6 @@
 package com.paytm.digital.education.utility;
 
+import com.paytm.digital.education.exception.EducationException;
 import com.paytm.digital.education.service.S3Service;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
@@ -16,11 +17,12 @@ import java.net.URLConnection;
 import java.text.MessageFormat;
 import java.util.Map;
 
-import static com.paytm.digital.education.constant.ExploreConstants.EMPTY_STRING;
 import static com.paytm.digital.education.constant.GoogleUtilConstant.FILENAME;
 import static com.paytm.digital.education.constant.GoogleUtilConstant.GOOGLE_DRIVE_BASE_URL;
 import static com.paytm.digital.education.constant.GoogleUtilConstant.INPUTSTREAM;
 import static com.paytm.digital.education.constant.GoogleUtilConstant.MIMETYPE;
+import static com.paytm.digital.education.mapping.ErrorEnum.ERROR_IN_IMPORT;
+
 
 
 @Service
@@ -120,11 +122,14 @@ public class UploadUtil {
 
             String imageUrl = s3Service.uploadFile(inputStream, fileName, entityId, relativePath,
                     s3BucketName);
-            log.info("ImageUrl: {}", imageUrl);
+            log.info("EntityId : {}, Uploaded ImageUrl: {}", entityId, imageUrl);
             return new Pair<>(imageUrl, mimeType);
         } catch (Exception e) {
-            log.error("Unable to upload file for file : {} and the error:", fileUrl, e);
+            log.error("Unable to upload file for file : {}, entityId : {} and the exception : {}",
+                    fileUrl, entityId, e);
+            throw new EducationException(ERROR_IN_IMPORT, ERROR_IN_IMPORT.getExternalMessage(),
+                    new Object[]{String.format("Failed to upload file from google drive to s3, "
+                            + "entityId : %s, fileUrl : %s", entityId, fileUrl)});
         }
-        return new Pair<>(null, null);
     }
 }

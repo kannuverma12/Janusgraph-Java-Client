@@ -17,6 +17,8 @@
         <commons-io.version>2.6</commons-io.version>
         <openhtml.version>0.0.1-RC13</openhtml.version>
         <freemarker.version>2.3.28</freemarker.version>
+        <swagger.version>2.9.2</swagger.version>
+
     </properties>
 
     <dependencies>
@@ -83,7 +85,6 @@
             <artifactId>google-api-services-sheets</artifactId>
             <version>v4-rev516-1.23.0</version>
         </dependency>
-
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk</artifactId>
@@ -116,6 +117,21 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-sheets</artifactId>
+            <version>v4-rev516-1.23.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>${swagger.version}</version>
         </dependency>
     </dependencies>
     <distributionManagement>

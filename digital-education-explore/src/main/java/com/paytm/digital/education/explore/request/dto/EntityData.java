@@ -23,6 +23,9 @@ public class EntityData {
     @JsonProperty("form_id")
     private String formId;
 
+    @JsonProperty("webFormUriPrefix")
+    private String webFormUriPrefix;
+
     @JsonProperty("pid")
     private Long pid;
 

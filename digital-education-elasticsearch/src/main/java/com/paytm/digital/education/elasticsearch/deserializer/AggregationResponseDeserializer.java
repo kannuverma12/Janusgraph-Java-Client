@@ -21,6 +21,7 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.bucket.filter.Filter;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
 import org.elasticsearch.search.aggregations.bucket.nested.ParsedReverseNested;
+import org.elasticsearch.search.aggregations.bucket.range.ParsedGeoDistance;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.metrics.max.Max;
 import org.elasticsearch.search.aggregations.metrics.min.Min;
@@ -33,6 +34,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 @Component
@@ -217,6 +219,9 @@ public class AggregationResponseDeserializer {
                         aggResponse = getDocumentsPerEntityFromTopHitsAggregationResponse(
                                 filterAggregation, aggregationName, path, type);
                     }
+                } else if (field.getType() == AggregationType.GEO_DISTANCE) {
+                    aggResponse = getBucketsFromGeoDistanceAggregationResponse(filterAggregation,
+                            aggregationName, path);
                 }
 
                 if (aggResponse != null) {
@@ -274,4 +279,39 @@ public class AggregationResponseDeserializer {
             return 1;
         });
     }
+
+    private AggregationResponse getBucketsFromGeoDistanceAggregationResponse(
+            Filter filterAggregation,
+            String aggregationName, String path) {
+
+        if (Objects.isNull(filterAggregation) || Objects
+                .isNull(filterAggregation.getAggregations())) {
+            return null;
+        }
+
+        ParsedGeoDistance geoDistanceAggregation;
+        if (path.equals(ESConstants.DUMMY_PATH_FOR_OUTERMOST_FIELDS)) {
+            geoDistanceAggregation = filterAggregation.getAggregations()
+                    .get(aggregationName);
+        } else {
+            Nested nestedAgg = filterAggregation.getAggregations().get(aggregationName);
+            geoDistanceAggregation = nestedAgg.getAggregations()
+                    .get(aggregationName);
+        }
+
+        if (Objects.isNull(geoDistanceAggregation)
+                || CollectionUtils.isEmpty(new List[] {geoDistanceAggregation.getBuckets()})) {
+            return null;
+        }
+
+        MetricAggregationResponse aggregationResponse = new MetricAggregationResponse();
+        ParsedGeoDistance.ParsedBucket bucket =
+                (ParsedGeoDistance.ParsedBucket) geoDistanceAggregation.getBuckets().get(0);
+        aggregationResponse.setKey(aggregationName);
+        aggregationResponse.setMinValue((Double) bucket.getFrom());
+        aggregationResponse.setMaxValue((Double) bucket.getTo());
+
+        return aggregationResponse;
+    }
+
 }

@@ -1,6 +1,10 @@
 package com.paytm.digital.education.explore.response.dto.detail;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.paytm.digital.education.enums.EducationEntity;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.paytm.digital.education.constant.ExploreConstants.CTA;
 
@@ -29,11 +33,20 @@ public interface CTAInfoHolder {
         return true;
     }
 
+    default boolean hasShareFeature() {
+        return false;
+    }
+
     default Long getCollegePredictorPid() {
         return null;
     }
 
     default String ctaDbPropertyKey() {
         return CTA;
+    }
+
+    @JsonIgnore
+    default Map<String, Object> getAdditionalProperties() {
+        return new HashMap<>();
     }
 }

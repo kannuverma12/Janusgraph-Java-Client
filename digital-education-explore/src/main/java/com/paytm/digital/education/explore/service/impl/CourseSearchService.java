@@ -1,50 +1,17 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import static com.paytm.digital.education.enums.es.FilterQueryType.TERMS;
-import static com.paytm.digital.education.constant.ExploreConstants.BRANCH_COURSE;
-import static com.paytm.digital.education.constant.ExploreConstants.COURSE_FILTER_NAMESPACE;
-import static com.paytm.digital.education.constant.ExploreConstants.COURSE_LEVEL;
-import static com.paytm.digital.education.constant.ExploreConstants.DEGREE_COURSE;
-import static com.paytm.digital.education.constant.ExploreConstants.DURATION_COURSE;
-import static com.paytm.digital.education.constant.ExploreConstants.ENTITY_ID;
-import static com.paytm.digital.education.constant.ExploreConstants.ENTITY_NAME;
-import static com.paytm.digital.education.constant.ExploreConstants.IS_CLIENT;
-import static com.paytm.digital.education.constant.ExploreConstants.NAME_COURSE;
-import static com.paytm.digital.education.constant.ExploreConstants.NAME_COURSE_SEARCH;
-import static com.paytm.digital.education.constant.ExploreConstants.COURSE_ALPHABETICAL_SORT_KEY;
-import static com.paytm.digital.education.constant.ExploreConstants.ENTITY_TYPE;
-import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.constant.ExploreConstants.FEE_COURSE;
-import static com.paytm.digital.education.constant.ExploreConstants.GALLERY_LOGO;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID_COURSE;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_NAME_COURSE;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTION_CITY;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTION_STATE;
-import static com.paytm.digital.education.constant.ExploreConstants.LEVEL_COURSE;
-import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_NAME;
-import static com.paytm.digital.education.constant.ExploreConstants.PARENT_INSTITUTE_ID_COURSE;
-import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_ANALYZER_COURSE;
-import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_INDEX_COURSE;
-import static com.paytm.digital.education.constant.ExploreConstants.SEATS_COURSE;
-import static com.paytm.digital.education.constant.ExploreConstants.NAME_COURSE_BOOST;
-import static com.paytm.digital.education.constant.ExploreConstants.ACCEPTING_APPLICATION;
-import static com.paytm.digital.education.constant.ExploreConstants.STREAM_COURSE;
-import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
-import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_NAME;
-
-import com.paytm.digital.education.enums.es.DataSortOrder;
-import com.paytm.digital.education.enums.es.FilterQueryType;
-import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
-import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
-import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationResponse;
-import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.constant.ExploreConstants;
 import com.paytm.digital.education.database.entity.Institute;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
+import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
+import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationResponse;
 import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.enums.CollegeEntityType;
 import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.enums.es.DataSortOrder;
+import com.paytm.digital.education.enums.es.FilterQueryType;
+import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.es.model.CourseSearch;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.builders.SearchResponseBuilder;
@@ -54,26 +21,60 @@ import com.paytm.digital.education.explore.response.dto.search.SearchBaseData;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.response.dto.search.SearchResult;
 import com.paytm.digital.education.explore.service.helper.SearchAggregateHelper;
-import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
+import com.paytm.digital.education.utility.CommonUtil;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.List;
-import java.util.LinkedHashMap;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
-import javax.annotation.PostConstruct;
+
+import static com.paytm.digital.education.constant.ExploreConstants.ACCEPTING_APPLICATION;
+import static com.paytm.digital.education.constant.ExploreConstants.BRANCH_COURSE;
+import static com.paytm.digital.education.constant.ExploreConstants.COURSE_ALPHABETICAL_SORT_KEY;
+import static com.paytm.digital.education.constant.ExploreConstants.COURSE_FILTER_NAMESPACE;
+import static com.paytm.digital.education.constant.ExploreConstants.COURSE_LEVEL;
+import static com.paytm.digital.education.constant.ExploreConstants.DEGREE_COURSE;
+import static com.paytm.digital.education.constant.ExploreConstants.DURATION_COURSE;
+import static com.paytm.digital.education.constant.ExploreConstants.ENTITY_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.ENTITY_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.ENTITY_TYPE;
+import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.constant.ExploreConstants.FEE_COURSE;
+import static com.paytm.digital.education.constant.ExploreConstants.GALLERY_LOGO;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID_COURSE;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_NAME_COURSE;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTION_CITY;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTION_STATE;
+import static com.paytm.digital.education.constant.ExploreConstants.IS_CLIENT;
+import static com.paytm.digital.education.constant.ExploreConstants.LEVEL_COURSE;
+import static com.paytm.digital.education.constant.ExploreConstants.NAME_COURSE;
+import static com.paytm.digital.education.constant.ExploreConstants.NAME_COURSE_BOOST;
+import static com.paytm.digital.education.constant.ExploreConstants.NAME_COURSE_SEARCH;
+import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.PARENT_INSTITUTE_ID_COURSE;
+import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_ANALYZER_COURSE;
+import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_INDEX_COURSE;
+import static com.paytm.digital.education.constant.ExploreConstants.SEATS_COURSE;
+import static com.paytm.digital.education.constant.ExploreConstants.STREAM_COURSE;
+import static com.paytm.digital.education.enums.es.FilterQueryType.TERMS;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_NAME;
+
 
 @Service
 @AllArgsConstructor
@@ -139,22 +140,22 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
             CourseSearchResponse courseSearchResponse, Client client) {
         SearchResponse searchResponse = new SearchResponse(elasticRequest.getQueryTerm());
         if (elasticRequest.isSearchRequest()) {
-            if (Client.APP.equals(client)) {
-                populateSearchResultPerLevel(searchResponse, elasticResponse,
-                        courseSearchResponse);
-            } else {
-                populateSearchResultsOfCourses(searchResponse, elasticResponse,
-                        courseSearchResponse);
-            }
+            populateSearchResultsOfCourses(searchResponse, elasticResponse,
+                    courseSearchResponse);
             long total = elasticResponse.getTotalSearchResultsCount();
             searchResponse.setTotal(total);
         }
         if (elasticRequest.isAggregationRequest()) {
-            Map<String, Map<String, Object>> propertyMap = propertyReader
-                    .getPropertiesAsMap(component, namespace);
-            searchResponseBuilder
-                    .populateSearchFilters(searchResponse, elasticResponse, elasticRequest,
-                            propertyMap);
+            if (Client.APP.equals(client)) {
+                populateSearchResultPerLevel(searchResponse, elasticResponse,
+                        courseSearchResponse);
+            } else {
+                Map<String, Map<String, Object>> propertyMap = propertyReader
+                        .getPropertiesAsMap(component, namespace);
+                searchResponseBuilder
+                        .populateSearchFilters(searchResponse, elasticResponse, elasticRequest,
+                                propertyMap);
+            }
         }
         return searchResponse;
     }
@@ -200,7 +201,8 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
         }
         courseSearchResponse
                 .setOfficialAddress(CommonUtil.getOfficialAddress(institute.getInstitutionState(),
-                        institute.getInstitutionCity(), null, null, null));
+                        institute.getInstitutionCity(), null, null,
+                        null));
         courseSearchResponse.setInstituteName(institute.getOfficialName());
         courseSearchResponse.setUrlDisplayName(
                 CommonUtil.convertNameToUrlDisplayName(institute.getOfficialName()));

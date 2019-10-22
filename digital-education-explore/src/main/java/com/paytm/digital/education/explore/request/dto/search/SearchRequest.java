@@ -3,9 +3,9 @@ package com.paytm.digital.education.explore.request.dto.search;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.enums.es.DataSortOrder;
 import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.enums.es.DataSortOrder;
 import com.paytm.digital.education.explore.es.model.GeoLocation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +23,8 @@ import static com.paytm.digital.education.constant.ExploreConstants.DEFAULT_OFFS
 import static com.paytm.digital.education.constant.ExploreConstants.DEFAULT_SIZE;
 import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_REQUEST_MAX_LIMIT;
 import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_REQUEST_MAX_OFFSET;
+import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_REQUEST_MAX_RADIUS;
+import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_REQUEST_MIN_RADIUS;
 
 @Data
 @Builder
@@ -82,4 +84,11 @@ public class SearchRequest {
 
     @JsonIgnore
     private boolean fetchSearchResultsPerFilter;
+
+    @JsonProperty("radius")
+    @Min(value = SEARCH_REQUEST_MIN_RADIUS, message = "Radius should be greater than or equal to "
+            + SEARCH_REQUEST_MIN_RADIUS + " km")
+    @Max(value = SEARCH_REQUEST_MAX_RADIUS, message = "Radius should be less than or equal to "
+            + SEARCH_REQUEST_MAX_RADIUS + " kms")
+    private Integer radius;
 }

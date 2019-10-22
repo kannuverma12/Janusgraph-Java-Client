@@ -1,5 +1,5 @@
 package com.paytm.digital.education.enums.es;
 
 public enum AggregationType {
-    TERMS, MINMAX, TOP_HITS
+    TERMS, MINMAX, TOP_HITS, GEO_DISTANCE
 }

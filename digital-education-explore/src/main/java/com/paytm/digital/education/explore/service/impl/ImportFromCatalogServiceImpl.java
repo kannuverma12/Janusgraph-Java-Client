@@ -13,6 +13,16 @@ import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.exception.EducationException;
+import com.paytm.digital.education.constant.ExploreConstants;
+import com.paytm.digital.education.database.entity.Exam;
+import com.paytm.digital.education.database.entity.ExamPaytmKeys;
+import com.paytm.digital.education.database.entity.InstiPaytmKeys;
+import com.paytm.digital.education.database.entity.Institute;
+import com.paytm.digital.education.database.entity.PaytmKeys;
+import com.paytm.digital.education.database.entity.School;
+import com.paytm.digital.education.database.entity.SchoolPaytmKeys;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.request.dto.EntityData;
 import com.paytm.digital.education.explore.response.dto.dataimport.CatalogDataIngestionError;
 import com.paytm.digital.education.explore.service.ImportFromCatalogService;
@@ -149,6 +159,7 @@ public class ImportFromCatalogServiceImpl implements ImportFromCatalogService {
         ExamPaytmKeys examPaytmKeys =
                 ExamPaytmKeys.builder().formId(entityData.getFormId())
                         .collegePredictorId(entityData.getCollegePredictorId())
+                        .webFormUriPrefix(entityData.getWebFormUriPrefix())
                         .build();
         fields.put(PaytmKeys.Constants.PAYTM_KEYS, examPaytmKeys);
         String errorMessage = null;

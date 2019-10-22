@@ -9,6 +9,7 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Data
@@ -21,11 +22,13 @@ public class AmbassadorRequest {
     @JsonProperty("name")
     private String name;
 
+    @NotNull
     @Size(min = 10, max = 10, message = "Enter 10 digits mobile number")
     @Min(value = 1000000000, message = "Enter 10 digits mobile number")
     @JsonProperty("paytm_mobile_number")
     private String paytmMobileNumber;
 
+    @NotNull
     @Min(1)
     @JsonProperty("institute_id")
     private Long instituteId;

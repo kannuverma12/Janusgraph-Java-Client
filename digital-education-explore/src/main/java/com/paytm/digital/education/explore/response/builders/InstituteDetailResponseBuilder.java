@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paytm.digital.education.database.entity.Alumni;
 import com.paytm.digital.education.database.entity.CampusAmbassador;
+import com.paytm.digital.education.database.entity.CampusEngagement;
 import com.paytm.digital.education.database.entity.Course;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.InstiPaytmKeys;
@@ -12,7 +13,6 @@ import com.paytm.digital.education.dto.OfficialAddress;
 import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.PublishStatus;
-import com.paytm.digital.education.database.entity.CampusEngagement;
 import com.paytm.digital.education.explore.response.dto.common.BannerData;
 import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
 import com.paytm.digital.education.explore.response.dto.detail.Ranking;
@@ -21,12 +21,12 @@ import com.paytm.digital.education.explore.service.helper.CampusEngagementHelper
 import com.paytm.digital.education.explore.service.helper.CourseDetailHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.service.helper.DetailPageSectionHelper;
-import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
 import com.paytm.digital.education.explore.service.helper.FacilityDataHelper;
 import com.paytm.digital.education.explore.service.helper.GalleryDataHelper;
 import com.paytm.digital.education.explore.service.helper.PlacementDataHelper;
 import com.paytm.digital.education.explore.service.helper.StreamDataHelper;
 import com.paytm.digital.education.explore.service.impl.SimilarInstituteServiceImpl;
+import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
 import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
@@ -82,7 +82,10 @@ public class InstituteDetailResponseBuilder {
 
     public InstituteDetail buildResponse(Institute institute, List<Course> courses,
             List<Exam> examList, Map<String, Object> examRelatedData, Set<Long> examIds,
-            String parentInstitutionName, Client client)
+            String parentInstitutionName, Client client, boolean derivedAttributes,
+            boolean cutOffs, boolean facilities, boolean gallery, boolean placements,
+            boolean notableAlumni, boolean sections, boolean widgets, boolean coursesPerDegree,
+            boolean campusEngagementFlag)
             throws IOException, TimeoutException {
         InstituteDetail instituteDetail = new InstituteDetail();
         instituteDetail.setInstituteId(institute.getInstituteId());
@@ -101,30 +104,40 @@ public class InstituteDetailResponseBuilder {
         instituteDetail.setUrlDisplayName(
                 CommonUtil.convertNameToUrlDisplayName(institute.getOfficialName()));
         instituteDetail.setBrochureUrl(institute.getOfficialUrlBrochure());
-        instituteDetail
-                .setFacilities(
-                        facilityDataHelper.getFacilitiesData(institute.getInstituteId(),
-                                institute.getFacilities()));
-        instituteDetail.setGallery(galleryDataHelper
-                .getGalleryData(institute.getInstituteId(), institute.getGallery()));
-        if (Client.APP.equals(client)) {
-            Pair<Long, Map<String, List<com.paytm.digital.education.explore.response.dto.detail.Course>>>
-                    courseDetailPerLevel = courseDetailHelper
-                    .getCourseDataPerLevel(Arrays.asList((Object) institute.getInstituteId()),
-                            institute.getEntityType(), client);
-            instituteDetail.setTotalCourses(courseDetailPerLevel.getKey());
-            instituteDetail.setCoursesPerLevel(courseDetailPerLevel.getValue());
-        } else {
-            Pair<Long, List<com.paytm.digital.education.explore.response.dto.detail.Course>>
-                    courseDetail =
-                    courseDetailHelper
-                            .getCourseDataList(Arrays.asList((Object) institute.getInstituteId()),
-                                    institute.getEntityType());
-            instituteDetail.setTotalCourses(courseDetail.getKey());
-            instituteDetail.setCourses(courseDetail.getValue());
+        if (facilities) {
+            instituteDetail
+                    .setFacilities(
+                            facilityDataHelper.getFacilitiesData(institute.getInstituteId(),
+                                    institute.getFacilities()));
         }
-        instituteDetail
-                .setCutOffs(examInstanceHelper.getExamCutOffs(examList, examRelatedData, examIds));
+        if (gallery) {
+            instituteDetail.setGallery(galleryDataHelper
+                    .getGalleryData(institute.getInstituteId(), institute.getGallery()));
+        }
+        if (coursesPerDegree) {
+            if (Client.APP.equals(client)) {
+                Pair<Long, Map<String, List<com.paytm.digital.education.explore.response.dto.detail.Course>>>
+                        courseDetailPerLevel = courseDetailHelper
+                        .getCourseDataPerLevel(Arrays.asList((Object) institute.getInstituteId()),
+                                institute.getEntityType(), client);
+                instituteDetail.setTotalCourses(courseDetailPerLevel.getKey());
+                instituteDetail.setCoursesPerLevel(courseDetailPerLevel.getValue());
+            } else {
+                Pair<Long, List<com.paytm.digital.education.explore.response.dto.detail.Course>>
+                        courseDetail =
+                        courseDetailHelper
+                                .getCourseDataList(
+                                        Arrays.asList((Object) institute.getInstituteId()),
+                                        institute.getEntityType());
+                instituteDetail.setTotalCourses(courseDetail.getKey());
+                instituteDetail.setCourses(courseDetail.getValue());
+            }
+        }
+
+        if (cutOffs) {
+            instituteDetail
+                    .setCutOffs(examInstanceHelper.getExamCutOffs(examList, examRelatedData, examIds));
+        }
         String entityName = INSTITUTE.name().toLowerCase();
         Map<String, Object> highlights = new HashMap<>();
         highlights.put(entityName, institute);
@@ -133,15 +146,21 @@ public class InstituteDetailResponseBuilder {
         if (!CollectionUtils.isEmpty(approvalsMap)) {
             highlights.put(APPROVALS, approvalsMap);
         }
-        instituteDetail.setDerivedAttributes(
-                derivedAttributesHelper.getDerivedAttributes(highlights, entityName, client));
+        if (derivedAttributes) {
+            instituteDetail.setDerivedAttributes(
+                    derivedAttributesHelper.getDerivedAttributes(highlights, entityName, client));
+        }
         OfficialAddress officialAddress =
                 CommonUtil.getOfficialAddress(institute.getInstitutionState(),
                         institute.getInstitutionCity(), institute.getPhone(), institute.getUrl(),
                         institute.getOfficialAddress());
         instituteDetail.setOfficialAddress(officialAddress);
-        instituteDetail.setPlacements(placementDataHelper.getSalariesPlacements(institute));
-        instituteDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName, client));
+        if (placements) {
+            instituteDetail.setPlacements(placementDataHelper.getSalariesPlacements(institute));
+        }
+        if (sections) {
+            instituteDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName, client));
+        }
         List<BannerData> banners =
                 bannerDataHelper.getBannerData(entityName, client);
         if (Client.APP.equals(client)) {
@@ -160,32 +179,37 @@ public class InstituteDetailResponseBuilder {
         if (institute.getIsClient() == 1) {
             instituteDetail.setClient(true);
         }
-        instituteDetail.setWidgets(similarInstituteService.getSimilarInstitutes(institute));
-        if ((!CollectionUtils.isEmpty(institute.getNotableAlumni()))) {
+        if (widgets) {
+            instituteDetail.setWidgets(similarInstituteService.getSimilarInstitutes(institute));
+        }
+        if ((!CollectionUtils.isEmpty(institute.getNotableAlumni())) && notableAlumni) {
             instituteDetail.setNotableAlumni(getNotableAlumni(institute.getNotableAlumni()));
         }
         if ((!CollectionUtils.isEmpty(institute.getRankings()))) {
             instituteDetail.setRankings(getRankingDetails(institute.getRankings()));
         }
         instituteDetail.setDegreeOffered(getDegreeMap(courses));
-        CampusEngagement campusEngagement =
-                campusEngagementHelper.findCampusEngagementData(institute.getInstituteId());
-        if (Objects.nonNull(campusEngagement)) {
-            Map<String, CampusAmbassador> campusAmbassadorMap =
-                    campusEngagement.getCampusAmbassadors();
-            if (Objects.nonNull(campusAmbassadorMap)) {
-                instituteDetail.setCampusAmbassadors(campusEngagementHelper
-                        .getCampusAmbassadorData(campusAmbassadorMap));
-            }
-            if (Objects.nonNull(campusEngagement.getArticles())) {
-                instituteDetail.setArticles(campusEngagementHelper
-                        .getCampusArticleData(campusEngagement.getArticles(), campusAmbassadorMap));
-            }
-            if (Objects.nonNull(campusEngagement.getEvents())) {
-                instituteDetail.setEvents(campusEngagementHelper
-                        .getCampusEventsData(campusEngagement.getEvents()));
+        if (campusEngagementFlag) {
+            CampusEngagement campusEngagement =
+                    campusEngagementHelper.findCampusEngagementData(institute.getInstituteId());
+            if (Objects.nonNull(campusEngagement)) {
+                Map<String, CampusAmbassador> campusAmbassadorMap =
+                        campusEngagement.getCampusAmbassadors();
+                if (Objects.nonNull(campusAmbassadorMap)) {
+                    instituteDetail.setCampusAmbassadors(campusEngagementHelper
+                            .getCampusAmbassadorData(campusAmbassadorMap));
+                }
+                if (Objects.nonNull(campusEngagement.getArticles())) {
+                    instituteDetail.setArticles(campusEngagementHelper
+                            .getCampusArticleData(campusEngagement.getArticles(), campusAmbassadorMap));
+                }
+                if (Objects.nonNull(campusEngagement.getEvents())) {
+                    instituteDetail.setEvents(campusEngagementHelper
+                            .getCampusEventsData(campusEngagement.getEvents()));
+                }
             }
         }
+
         if (Objects.nonNull(institute.getPaytmKeys())) {
             InstiPaytmKeys instiPaytmKeys = institute.getPaytmKeys();
             instituteDetail.setPid(instiPaytmKeys.getPid());

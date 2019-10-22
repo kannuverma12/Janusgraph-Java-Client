@@ -19,7 +19,8 @@ public interface ExploreConstants {
     int    DEFAULT_AUTOSUGGEST_SIZE    = 3;
     int    DEFAULT_AUTOSUGGEST_COMPARE = 10;
     String SORT_DISTANCE_FIELD         = "location";
-    String DISTANCE_KILOMETERS         =  " km";
+    String SPACE_SEPERATOR             = " ";
+    String DISTANCE_KILOMETERS         = "Km";
 
     ///// Exam Detail//////////
     String TENTATIVE     = "tentative";
@@ -191,6 +192,8 @@ public interface ExploreConstants {
     String ENTITY_NAME                      = "entity_name";
     int    COURSE_SIZE_FOR_INSTITUTE_DETAIL = 6;
     String COMPARE                          = "compare";
+    int    SEARCH_REQUEST_MAX_RADIUS        = 50;
+    int    SEARCH_REQUEST_MIN_RADIUS        = 1;
 
     // Detail APIs constants
     String EXAM_SHORT_NAME     = "exam_short_name";
@@ -262,38 +265,38 @@ public interface ExploreConstants {
     int    MAX_STREAMS               = 2;
     int    COLLEGES_PER_STREAM       = 2;
 
-    String COLLEGE_FOCUS   = "colleges_focus";
-    String TOP_COLLEGES    = "top_colleges";
-    String TOP_SCHOOLS    = "top_schools";
-    String SCHOOLS_IN_FOCUS    = "schools_focus";
-    String TOP_EXAMS       = "top_exams";
-    String TOP_EXAMS_APP   = "top_exams_app";
-    String ICON            = "icon";
-    String LOCATIONS       = "locations";
-    String APP_FOOTER      = "app_footer";
-    String BANNER_MID      = "banner_mid";
-    String CAROUSEL        = "CAROUSEL";
-    String IMAGE_URL       = "image_url";
-    String DUMMY_EXAM_ICON = "/exam_placeholder.svg";
-    String ID              = "id";
-    String RANKING_LOGO    = "ranking";
-    String RANKING_NIRF    = "NIRF";
-    String RANKING_CAREER  = "CAREERS360";
-    String NIRF_LOGO       = "/nirf.jpg";
-    String CAREER_LOGO     = "/career360.jpg";
-    String EMPTY_STRING    = " ";
+    String COLLEGE_FOCUS    = "colleges_focus";
+    String TOP_COLLEGES     = "top_colleges";
+    String TOP_SCHOOLS      = "top_schools";
+    String SCHOOLS_IN_FOCUS = "schools_focus";
+    String TOP_EXAMS        = "top_exams";
+    String TOP_EXAMS_APP    = "top_exams_app";
+    String ICON             = "icon";
+    String LOCATIONS        = "locations";
+    String APP_FOOTER       = "app_footer";
+    String BANNER_MID       = "banner_mid";
+    String CAROUSEL         = "CAROUSEL";
+    String IMAGE_URL        = "image_url";
+    String DUMMY_EXAM_ICON  = "/exam_placeholder.svg";
+    String ID               = "id";
+    String RANKING_LOGO     = "ranking";
+    String RANKING_NIRF     = "NIRF";
+    String RANKING_CAREER   = "CAREERS360";
+    String NIRF_LOGO        = "/nirf.jpg";
+    String CAREER_LOGO      = "/career360.jpg";
+    String EMPTY_STRING     = " ";
 
-    String EXAM_FOCUS_APP              = "exam_focus_app";
-    String POPULAR_EXAMS_APP           = "popular_exams_app";
-    String BROWSE_BY_EXAM_LEVEL        = "browse_by_exam_level";
-    String RECENT_SEARCHES_kAFKA_TOPIC = "recent_searches_explore";
-    String RECENT_SEARCHES_ES_INDEX    = "recent_searches";
-    String RECENT_SEARCHES_ES_TYPE     = "education";
-    String SEARCH_HISTORY_USERID       = "user_id";
-    String SEARCH_HISTORY_TERMS        = "terms";
-    String SEARCH_HISTORY_UPDATEDAT    = "updated_at";
-    int    DELETE_RECENTS_BATCH_SIZE   = 100;
-    String RECENT_SEARCHES_ENTITY      = "entity";
+    String EXAM_FOCUS_APP               = "exam_focus_app";
+    String POPULAR_EXAMS_APP            = "popular_exams_app";
+    String BROWSE_BY_EXAM_LEVEL         = "browse_by_exam_level";
+    String RECENT_SEARCHES_kAFKA_TOPIC  = "recent_searches_explore";
+    String RECENT_SEARCHES_ES_INDEX     = "recent_searches";
+    String RECENT_SEARCHES_ES_TYPE      = "education";
+    String SEARCH_HISTORY_USERID        = "user_id";
+    String SEARCH_HISTORY_TERMS         = "terms";
+    String SEARCH_HISTORY_UPDATEDAT     = "updated_at";
+    int    DELETE_RECENTS_BATCH_SIZE    = 100;
+    String RECENT_SEARCHES_ENTITY       = "entity";
     String RECENT_SEARCHES_ID_SEPERATOR = "-";
 
     String CTA                  = "cta";
@@ -308,7 +311,7 @@ public interface ExploreConstants {
     String SCHOOL_FILTER_NAMESPACE = "school_filter";
     String SEARCH_ANALYZER_SCHOOL  = "word_delimiter_analyzer";
     String SEARCH_INDEX_SCHOOL     = "education_search_school_v2";
-    String SCHOOL_FACILITY_KEY = "school_facility_map";
+    String SCHOOL_FACILITY_KEY     = "school_facility_map";
 
     String OTHER           = "Other";
     String SUMMARY         = "Summary";
@@ -342,4 +345,8 @@ public interface ExploreConstants {
     String FILTERS                          = "filters";
     String LEVEL                            = "level";
     int    EXAMS_BROWSE_BY_LEVEL_QUERY_SIZE = 2;
+    String EXAM_DETAIL                      = "exam_detail";
+    String SECTION                          = "section";
+    String SECTION_PLACEHOLDER              = "/section_placeholder.svg";
+    String WEB_FORM_URI_PREFIX              = "webFormUriPrefix";
 }

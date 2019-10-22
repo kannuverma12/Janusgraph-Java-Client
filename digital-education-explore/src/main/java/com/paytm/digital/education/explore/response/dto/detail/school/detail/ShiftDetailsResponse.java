@@ -3,9 +3,11 @@ package com.paytm.digital.education.explore.response.dto.detail.school.detail;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.config.SchoolConfig;
 import com.paytm.digital.education.database.entity.ShiftDetails;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class ShiftDetailsResponse extends ShiftDetails {
     @JsonProperty("shift_image_link_url")
     private String shiftImageLinkUrl;

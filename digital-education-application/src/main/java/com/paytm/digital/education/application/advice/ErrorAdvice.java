@@ -1,6 +1,5 @@
 package com.paytm.digital.education.application.advice;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -51,7 +50,7 @@ public class ErrorAdvice extends ResponseEntityExceptionHandler {
         String headerName = ex.getHeaderName();
         if ("x-user-id".equals(headerName)) {
             return new ResponseEntity<>(
-                new ErrorDetails(1, USER_UNAUTHORIZED_MESSAGE, USER_UNAUTHORIZED_MESSAGE),
+                new ErrorDetails(1, USER_UNAUTHORIZED_MESSAGE),
                 HttpStatus.UNAUTHORIZED);
         }
         return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
@@ -85,8 +84,7 @@ public class ErrorAdvice extends ResponseEntityExceptionHandler {
                 errorEnum.getInternalCode(),
                 String.format(
                     errorEnum.getExternalMessage(),
-                    padArray(errorEnum.getNumberOfArgs(), ex.getArgs())),
-                ex.getInternalMessage());
+                    padArray(errorEnum.getNumberOfArgs(), ex.getArgs())));
         logException(errorDetails.toString(), ex);
         return new ResponseEntity<>(errorDetails, errorEnum.getHttpStatus());
     }
@@ -111,7 +109,7 @@ public class ErrorAdvice extends ResponseEntityExceptionHandler {
             MethodArgumentTypeMismatchException ex, WebRequest request) {
         logException(ex.getLocalizedMessage(), ex);
         String errorMessage = String.format("Incorrect value %s for field %s", ex.getValue(), ex.getName());
-        return new ResponseEntity<>(new ErrorDetails(1, errorMessage, errorMessage),
+        return new ResponseEntity<>(new ErrorDetails(1, errorMessage),
             HttpStatus.BAD_REQUEST);
     }
 
@@ -127,20 +125,20 @@ public class ErrorAdvice extends ResponseEntityExceptionHandler {
                     StringUtils::isNotBlank).findFirst();
             String errorMessage = String.format(ERROR_IN_FIELD_VALUE_TEMPLATE,
                     cause.getValue(), fieldName.orElse(EMPTY));
-            return new ResponseEntity<>(new ErrorDetails(1, errorMessage, errorMessage),
+            return new ResponseEntity<>(new ErrorDetails(1, errorMessage),
                 HttpStatus.BAD_REQUEST);
         } else if (throwableCause instanceof JsonMappingException) {
             JsonMappingException cause = (JsonMappingException) throwableCause;
             String errorMessage = StringUtils.isNotBlank(cause.getOriginalMessage())
                     ? cause.getOriginalMessage() :
                     EMPTY;
-            return new ResponseEntity<>(new ErrorDetails(1, errorMessage, errorMessage),
+            return new ResponseEntity<>(new ErrorDetails(1, errorMessage),
                     HttpStatus.BAD_REQUEST);
         } else if (throwableCause instanceof JsonParseException) {
             JsonParseException cause = (JsonParseException) throwableCause;
             String errorMessage = StringUtils.isNotBlank(cause.getMessage()) ? cause.getMessage() :
                     EMPTY;
-            return new ResponseEntity<>(new ErrorDetails(1, errorMessage, errorMessage),
+            return new ResponseEntity<>(new ErrorDetails(1, errorMessage),
                     HttpStatus.BAD_REQUEST);
         }
         return super.handleHttpMessageNotReadable(ex, headers, status, request);
@@ -151,13 +149,15 @@ public class ErrorAdvice extends ResponseEntityExceptionHandler {
             MissingServletRequestParameterException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         String name = ex.getParameterName();
         String errorMessage = name + " is missing";
-        return new ResponseEntity<>(new ErrorDetails(400, errorMessage, errorMessage),
+        return new ResponseEntity<>(new ErrorDetails(400, errorMessage),
                 HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(InvalidRequestException.class)
-    public final ResponseEntity<ErrorDetails> handleInvalidException(Throwable ex, WebRequest request) {
-        return new ResponseEntity<>(new ErrorDetails(400, ex.getMessage(), ex.getMessage()),
+    public final ResponseEntity<ErrorDetails> handleInvalidException(Throwable ex,
+            WebRequest request) {
+        return new ResponseEntity<ErrorDetails>(
+                new ErrorDetails(HttpStatus.BAD_REQUEST.value(), ex.getMessage()),
                 HttpStatus.BAD_REQUEST);
     }
 
@@ -182,8 +182,5 @@ public class ErrorAdvice extends ResponseEntityExceptionHandler {
 
         @JsonProperty("message")
         private String externalMessage = "Unhandled Exception Happened";
-
-        @JsonIgnore
-        private String internalMessage;
     }
 }

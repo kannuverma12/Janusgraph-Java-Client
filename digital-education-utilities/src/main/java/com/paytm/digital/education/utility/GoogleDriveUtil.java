@@ -197,11 +197,9 @@ public class GoogleDriveUtil {
 
     public ClearValuesResponse clearSheet(final Sheets service, final String sheetId,
             final String range) throws IOException {
-
         final Sheets.Spreadsheets.Values.Clear request = service.spreadsheets().values()
                 .clear(sheetId, range, new ClearValuesRequest());
-        final ClearValuesResponse response = request.execute();
-        return response;
+        return request.execute();
     }
 }
 
