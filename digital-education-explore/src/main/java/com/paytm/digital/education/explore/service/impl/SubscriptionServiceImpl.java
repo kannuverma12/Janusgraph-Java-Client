@@ -1,19 +1,12 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import com.paytm.digital.education.config.SchoolConfig;
 import com.paytm.digital.education.daoresult.SubscribedEntityCount;
 import com.paytm.digital.education.daoresult.subscription.SubscriptionWithExam;
 import com.paytm.digital.education.daoresult.subscription.SubscriptionWithInstitute;
 import com.paytm.digital.education.daoresult.subscription.SubscriptionWithSchool;
 import com.paytm.digital.education.database.entity.SchoolGallery;
 import com.paytm.digital.education.database.entity.Subscription;
-import static com.paytm.digital.education.constant.DBConstants.UNREAD_SHORTLIST_COUNT;
-import static com.paytm.digital.education.constant.ExploreConstants.APPROVALS;
-import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_SEARCH_NAMESPACE;
-import static com.paytm.digital.education.constant.ExploreConstants.SUCCESS;
-import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
-
-import com.paytm.digital.education.config.SchoolConfig;
 import com.paytm.digital.education.database.entity.UserFlags;
 import com.paytm.digital.education.database.repository.UserFlagRepository;
 import com.paytm.digital.education.dto.NotificationFlags;
@@ -63,7 +56,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private PropertyReader     propertyReader;
     private UserFlagRepository userFlagRepository;
-    private SchoolConfig schoolConfig;
+    private SchoolConfig       schoolConfig;
 
     private static NotificationFlags DEFAULT_SUCCESS_MESSAGE = new NotificationFlags(SUCCESS);
 
