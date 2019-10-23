@@ -170,6 +170,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
                             .map(BoardData::getFeesDetails)
                             .orElse(emptyList())
                             .stream()
+                            .filter(schoolUtilService::isFeeDataValid)
                             .distinct()
                             .collect(Collectors.toList())
             );

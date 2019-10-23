@@ -5,6 +5,7 @@ import com.paytm.digital.education.explore.enums.ExamSectionType;
 import lombok.Data;
 
 @Data
+
 public class SectionConfiguration {
 
     @JsonProperty("icon")

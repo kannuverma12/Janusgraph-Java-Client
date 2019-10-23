@@ -2,6 +2,7 @@ package com.paytm.digital.education.explore.utility;
 
 import com.paytm.digital.education.config.SchoolConfig;
 import com.paytm.digital.education.explore.database.entity.Board;
+import com.paytm.digital.education.explore.database.entity.SchoolFeeDetails;
 import com.paytm.digital.education.explore.database.entity.ShiftDetails;
 import com.paytm.digital.education.explore.enums.ClassLevel;
 import com.paytm.digital.education.explore.enums.ClassType;
@@ -83,6 +84,12 @@ public class SchoolUtilService {
         return isClassTypeNotEmpty(classFrom)
                 && isClassTypeNotEmpty(classTo) && isOrderProper(classFrom, classTo)
                 && doesNotHaveBothNurseryAndKindergarten(classFrom, classTo);
+    }
+
+    public boolean isFeeDataValid(SchoolFeeDetails feeDetails) {
+        Long feeAmount = feeDetails.getFeeAmount();
+        String feeTenure = feeDetails.getFeeTenure();
+        return Objects.nonNull(feeAmount) && StringUtils.isNotBlank(feeTenure);
     }
 
     private boolean handleSpecialNurseryFormatRange(
