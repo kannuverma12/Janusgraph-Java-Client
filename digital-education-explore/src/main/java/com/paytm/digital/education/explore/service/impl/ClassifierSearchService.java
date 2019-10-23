@@ -213,7 +213,8 @@ public class ClassifierSearchService extends AbstractSearchServiceImpl {
     private List<ClassifierSearchDoc> getClassification(SearchRequest searchRequest)
             throws IOException, TimeoutException {
         ElasticRequest elasticRequest = buildSearchRequest(searchRequest);
-        ElasticResponse<ClassifierSearchDoc> elasticResponse = initiateSearch(elasticRequest, ClassifierSearchDoc.class);
+        ElasticResponse<ClassifierSearchDoc> elasticResponse =
+                initiateSearch(elasticRequest, ClassifierSearchDoc.class);
         if (elasticResponse.getTotalSearchResultsCount() != 0) {
             return elasticResponse.getDocuments();
         }
