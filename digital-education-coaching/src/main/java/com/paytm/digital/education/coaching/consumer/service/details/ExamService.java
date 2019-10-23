@@ -7,7 +7,7 @@ import com.paytm.digital.education.coaching.consumer.model.response.details.GetE
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingCourseData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingInstituteData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.ExamData;
-import com.paytm.digital.education.coaching.consumer.service.details.helper.ExamSectionHelper;
+import com.paytm.digital.education.coaching.consumer.service.details.helper.CoachingExamSectionHelper;
 import com.paytm.digital.education.coaching.consumer.service.search.helper.SearchDataHelper;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Instance;
@@ -61,14 +61,14 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
 @AllArgsConstructor
 public class ExamService {
 
-    private final CommonMongoRepository    commonMongoRepository;
-    private final CoachingCourseService    coachingCourseService;
-    private final CoachingInstituteService coachingInstituteService;
-    private final SearchDataHelper         searchDataHelper;
-    private final PropertyReader           propertyReader;
-    private final ExamSectionHelper        examSectionHelper;
-    private final ExamInstanceHelper       examInstanceHelper;
-    private final ExamLogoHelper           examLogoHelper;
+    private final CommonMongoRepository     commonMongoRepository;
+    private final CoachingCourseService     coachingCourseService;
+    private final CoachingInstituteService  coachingInstituteService;
+    private final SearchDataHelper          searchDataHelper;
+    private final PropertyReader            propertyReader;
+    private final CoachingExamSectionHelper coachingExamSectionHelper;
+    private final ExamInstanceHelper        examInstanceHelper;
+    private final ExamLogoHelper            examLogoHelper;
 
     public GetExamDetailsResponse getExamDetails(final long examId, final String urlDisplayKey) {
         Exam exam = this.commonMongoRepository.getEntityByFields(EXAM_ID, examId, Exam.class,
@@ -122,7 +122,8 @@ public class ExamService {
         List<String> additionalInfoSections =
                 (List<String>) propertyMap.getOrDefault(EXAM_ADDITIONAL_INFO, new ArrayList<>());
 
-        examSectionHelper.addDataPerSection(exam, examDetailsResponse, additionalInfoSections,
+        coachingExamSectionHelper
+                .addDataPerSection(exam, examDetailsResponse, additionalInfoSections,
                 nearestInstance,
                 subExamInstances, sectionConfigurationMap, true);
         return examDetailsResponse;

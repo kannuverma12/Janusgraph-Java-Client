@@ -29,7 +29,7 @@ import static com.paytm.digital.education.coaching.enums.DisplayHeadings.ALL_YOU
 @Service
 @AllArgsConstructor
 @Slf4j
-public class ExamSectionHelper {
+public class CoachingExamSectionHelper {
 
     private ExamInstanceHelper examInstanceHelper;
 

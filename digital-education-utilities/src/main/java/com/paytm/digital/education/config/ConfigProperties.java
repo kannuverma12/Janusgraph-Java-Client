@@ -24,6 +24,7 @@ public class ConfigProperties {
     private static String schoolLogoPrefix;
     private static String examSectionIconPrefix;
 
+
     private static String envProfile;
     private static String coachingS3BucketName;
     private static String coachingS3Path;
