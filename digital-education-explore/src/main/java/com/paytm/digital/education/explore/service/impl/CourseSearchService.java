@@ -258,7 +258,7 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
                     courseData.setDurationInMonths(courseSearch.getDurationInMonths());
                     courseData.setFee(courseSearch.getFees());
                     courseData.setSeatsAvailable(courseSearch.getSeats());
-                    courseData.setStream(courseSearch.getDomainName());
+                    courseData.setStreamIds(courseSearch.getStreamIds());
                     courseData.setOfficialName(courseSearch.getName());
                     courseData.setUrlDisplayKey(
                             CommonUtil.convertNameToUrlDisplayName(courseSearch.getName()));
@@ -292,7 +292,7 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
                 courseData.setDurationInMonths(courseSearch.getDurationInMonths());
                 courseData.setFee(courseSearch.getFees());
                 courseData.setSeatsAvailable(courseSearch.getSeats());
-                courseData.setStream(courseSearch.getDomainName());
+                courseData.setStreamIds(courseSearch.getStreamIds());
                 courseData.setOfficialName(courseSearch.getName());
                 courseData.setUrlDisplayKey(
                         CommonUtil.convertNameToUrlDisplayName(courseSearch.getName()));
