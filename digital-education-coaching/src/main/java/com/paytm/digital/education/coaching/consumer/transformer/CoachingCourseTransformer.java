@@ -4,6 +4,7 @@ import com.paytm.digital.education.coaching.consumer.model.dto.Exam;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopRanker;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseFeature;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseImportantDate;
+import com.paytm.digital.education.coaching.utils.ImageUtils;
 import com.paytm.digital.education.database.entity.CoachingCenterEntity;
 import com.paytm.digital.education.database.entity.CoachingCourseFeatureEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EMPTY_STRING;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.TOP_RANKER_PLACEHOLDER;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_COURSE_FEATURE;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_RANKER;
 
@@ -44,7 +46,8 @@ public class CoachingCourseTransformer {
                                 courseIdAndNameMap))
                         .examName(examIdAndNameMap.getOrDefault(tr.getExamId(), EMPTY_STRING))
                         .studentName(tr.getStudentName())
-                        .image(CommonUtil.getAbsoluteUrl(tr.getStudentPhoto(), COACHING_TOP_RANKER))
+                        .image(ImageUtils.getImageWithAbsolutePath(tr.getStudentPhoto(),
+                                TOP_RANKER_PLACEHOLDER, COACHING_TOP_RANKER))
                         .rank(tr.getRankObtained())
                         .examYear(tr.getExamYear())
                         .testimonial(tr.getTestimonial())
