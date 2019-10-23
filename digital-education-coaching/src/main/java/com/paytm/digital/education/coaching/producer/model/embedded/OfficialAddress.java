@@ -66,7 +66,7 @@ public class OfficialAddress {
     private String email;
 
     @NotEmpty
-    @Size(min = 10, max = 10)
+    @Size(min = 10, max = 12)
     @Pattern(regexp = "^[0-9]*$")
     private String phone;
 }

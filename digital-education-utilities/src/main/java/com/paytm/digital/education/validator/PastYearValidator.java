@@ -13,6 +13,6 @@ public class PastYearValidator implements ConstraintValidator<PastYear, String> 
         } catch (NumberFormatException ex) {
             year = Integer.MAX_VALUE;
         }
-        return year > 0 && LocalDateTime.now().getYear() > year;
+        return year > 0 && LocalDateTime.now().getYear() >= year;
     }
 }
