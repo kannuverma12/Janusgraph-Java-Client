@@ -110,7 +110,7 @@ public interface ExploreConstants {
 
     //Classifier
     String CLASSIFIER_ANALYZER      = "word_delimiter_analyzer";
-    String CLASSIFIER_INDEX         = "education_search_dictionary_v1";
+    String CLASSIFIER_INDEX         = "education_search_dictionary_v2";
     String CLASSIFIER_KEYWORD       = "keyword";
     String CLASSIFIER_ENTITY        = "entity";
     String CLASSIFIER_ENTITY_PATH   = "";
