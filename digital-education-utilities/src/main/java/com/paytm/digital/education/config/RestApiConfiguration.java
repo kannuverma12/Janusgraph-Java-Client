@@ -60,7 +60,7 @@ public class RestApiConfiguration {
                 new PoolingHttpClientConnectionManager();
         connectionManager.setMaxTotal(poolMaxTotal);
         connectionManager.setDefaultMaxPerRoute(defaultMaxPerRoute);
-        connectionManager.setValidateAfterInactivity(2000);
+        connectionManager.setValidateAfterInactivity(httpConnectionValidateTime);
         return connectionManager;
     }
 
