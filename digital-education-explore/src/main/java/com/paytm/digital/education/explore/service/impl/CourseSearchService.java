@@ -29,7 +29,7 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.PAR
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_ANALYZER_COURSE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_INDEX_COURSE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEATS_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM_COURSE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM_IDS;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_NAME;
 
@@ -97,7 +97,7 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
         filterQueryTypeMap = new HashMap<String, FilterQueryType>();
         filterQueryTypeMap.put(BRANCH_COURSE, TERMS);
         filterQueryTypeMap.put(DEGREE_COURSE, TERMS);
-        filterQueryTypeMap.put(STREAM_COURSE, TERMS);
+        filterQueryTypeMap.put(STREAM_IDS, TERMS);
         filterQueryTypeMap.put(INSTITUTE_NAME_COURSE, TERMS);
         filterQueryTypeMap.put(LEVEL_COURSE, TERMS);
         filterQueryTypeMap.put(ACCEPTING_APPLICATION, TERMS);
@@ -258,7 +258,7 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
                     courseData.setDurationInMonths(courseSearch.getDurationInMonths());
                     courseData.setFee(courseSearch.getFees());
                     courseData.setSeatsAvailable(courseSearch.getSeats());
-                    courseData.setStream(courseSearch.getDomainName());
+                    courseData.setStreamIds(courseSearch.getStreamIds());
                     courseData.setOfficialName(courseSearch.getName());
                     courseData.setUrlDisplayKey(
                             CommonUtil.convertNameToUrlDisplayName(courseSearch.getName()));
@@ -292,7 +292,7 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
                 courseData.setDurationInMonths(courseSearch.getDurationInMonths());
                 courseData.setFee(courseSearch.getFees());
                 courseData.setSeatsAvailable(courseSearch.getSeats());
-                courseData.setStream(courseSearch.getDomainName());
+                courseData.setStreamIds(courseSearch.getStreamIds());
                 courseData.setOfficialName(courseSearch.getName());
                 courseData.setUrlDisplayKey(
                         CommonUtil.convertNameToUrlDisplayName(courseSearch.getName()));

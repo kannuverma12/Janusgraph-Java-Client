@@ -17,20 +17,23 @@ import com.paytm.digital.education.explore.database.entity.FtlTemplate;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.data.repository.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -271,5 +274,18 @@ public class CommonMongoRepository {
             mongoQuery.fields().include(field);
         });
         return mongoQuery;
+    }
+
+    public <T> Page<T> getPagedEntityData(Class<T> entityType, int page, int size, List<String> fields) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("_id"));
+        Query entityDynamicQuery = new Query().with(pageable);
+        if (!CollectionUtils.isEmpty(fields)) {
+            fields.forEach(field -> {
+                entityDynamicQuery.fields().include(field);
+            });
+        }
+        List<T> entityData = mongoOperation.find(entityDynamicQuery, entityType);
+        return PageableExecutionUtils.getPage(entityData, pageable,
+            () -> mongoOperation.count(entityDynamicQuery, entityType));
     }
 }

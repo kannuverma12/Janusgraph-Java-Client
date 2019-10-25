@@ -1,6 +1,30 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import static com.paytm.digital.education.explore.constants.ExploreConstants.APP_DISPLAY_NAME;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.APP_FOOTER;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.BANNER_MID;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.BROWSE_BY_EXAM_LEVEL;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.CAROUSEL;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.COLLEGE_FOCUS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_FOCUS_APP;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.ICON;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.IMAGE_URL;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.LOCATIONS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.LOGO;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.POPULAR_EXAMS_APP;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SCHOOLS_IN_FOCUS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAMS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM_IDS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.SUB_ITEMS;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP_COLLEGES;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP_EXAMS_APP;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP_SCHOOLS;
+import static com.paytm.digital.education.mapping.ErrorEnum.PAYTM_STREAM_DISABLED;
+
 import com.paytm.digital.education.constant.ErrorCode;
+import com.paytm.digital.education.database.entity.StreamEntity;
+import com.paytm.digital.education.exception.EducationException;
 import com.paytm.digital.education.exception.ResourceNotFoundException;
 import com.paytm.digital.education.explore.database.entity.Page;
 import com.paytm.digital.education.explore.database.entity.Section;
@@ -8,6 +32,7 @@ import com.paytm.digital.education.explore.database.repository.PageRepository;
 import com.paytm.digital.education.explore.database.repository.SectionRepository;
 import com.paytm.digital.education.explore.service.PageService;
 import com.paytm.digital.education.explore.utility.CommonUtil;
+import com.paytm.digital.education.ingestion.dao.StreamDAO;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -22,30 +47,13 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotBlank;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.APP_FOOTER;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.BANNER_MID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.BROWSE_BY_EXAM_LEVEL;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.CAROUSEL;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.COLLEGE_FOCUS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_FOCUS_APP;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.ICON;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.IMAGE_URL;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.POPULAR_EXAMS_APP;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SCHOOLS_IN_FOCUS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SUB_ITEMS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.LOCATIONS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.LOGO;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAMS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP_COLLEGES;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP_EXAMS_APP;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.TOP_SCHOOLS;
-
 @Service
 @AllArgsConstructor
 public class PageServiceImpl implements PageService {
 
     private PageRepository    pageRepository;
     private SectionRepository sectionRepository;
+    private StreamDAO streamDAO;
 
     @Override
     @Cacheable(value = "page", key = "#pageName", unless = "#result == null ")
@@ -115,9 +123,31 @@ public class PageServiceImpl implements PageService {
                         }
                     }
                 }
+                if (STREAMS.equals(section.getType())) {
+                    updatePaytmStreamData(section);
+                }
                 response.add(section);
             }
         }
         return response;
+    }
+
+    private void updatePaytmStreamData(Section section) {
+        if (Objects.nonNull(section) && !CollectionUtils.isEmpty(section.getItems())) {
+            Map<Long, StreamEntity> streamEntityMap = streamDAO.getStreamEntityMapById();
+            for (Map<String, Object> item : section.getItems()) {
+                Long streamId = ((Integer) item.get(STREAM_IDS)).longValue();
+                StreamEntity streamEntity = streamEntityMap.get(streamId);
+                if (Objects.nonNull(streamEntity) && streamEntity.getIsEnabled()) {
+                    item.put(STREAM_IDS, streamId);
+                    item.put(NAME, streamEntity.getName());
+                    item.put(APP_DISPLAY_NAME, streamEntity.getShortName());
+                    item.put(ICON, streamEntity.getLogo());
+                } else {
+                    throw new EducationException(PAYTM_STREAM_DISABLED,
+                            PAYTM_STREAM_DISABLED.getExternalMessage(), new Object[] {streamId});
+                }
+            }
+        }
     }
 }

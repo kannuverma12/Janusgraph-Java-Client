@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 
@@ -19,7 +18,8 @@ public class ExploreSearchService implements ISearchService {
 
     private ElasticSearchService elasticSearchService;
 
-    @Override public ElasticResponse search(ElasticRequest elasticRequest, Class type)
+    @Override
+    public <T> ElasticResponse<T> search(ElasticRequest elasticRequest, Class<T> type)
             throws IOException, TimeoutException {
         return elasticSearchService.executeSearch(elasticRequest, type);
     }

@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -42,8 +43,7 @@ public class MerchantStreamImportService extends AbstractImportService implement
 
         final List<Object> streamFormData = this.getFormData(dataImportPropertiesResponse);
 
-        final List<MerchantStreamForm> failedStreamFormList = this.getFailedData(
-                TYPE, MerchantStreamForm.class, MERCHANT_STREAM_COMPONENT);
+        final List<MerchantStreamForm> failedStreamFormList = new ArrayList<>();
 
         return this.processRecords(streamFormData,
                 failedStreamFormList, MerchantStreamForm.class, TYPE);
@@ -56,7 +56,7 @@ public class MerchantStreamImportService extends AbstractImportService implement
             validateMerchantStreamRequest(newStreamForm);
             this.merchantStreamManagerService.createOrUpdateMerchantStream(newStreamForm);
         } catch (final Exception e) {
-            log.error("Got Exception in upsertFailedRecords for input: {}, exception: ", form, e);
+            log.error("Got Exception in upsertFailedRecords for input: {}, exception: ", e, form);
         }
     }
 
@@ -70,7 +70,7 @@ public class MerchantStreamImportService extends AbstractImportService implement
             validateMerchantStreamRequest(newStreamForm);
             entityResponse = this.merchantStreamManagerService.createOrUpdateMerchantStream(newStreamForm);
         } catch (final Exception e) {
-            log.error("Got Exception in upsertNewRecords for input: {}, exception: ", form, e);
+            log.error("Got Exception in upsertNewRecords for input: {}, exception: ", e, form);
             failureMessage = e.getMessage();
         }
 

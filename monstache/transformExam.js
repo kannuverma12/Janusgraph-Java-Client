@@ -193,8 +193,8 @@ module.exports = function(doc) {
 		targetExam.global_priority = doc.priority;
 	}
 
-	if (Array.isArray(doc.stream_id)) {
-		targetExam.stream_ids = doc.stream_id;
+	if (Array.isArray(doc.stream_ids)) {
+		targetExam.stream_ids = doc.stream_ids;
 		targetExam.streams = {};
 		for (var i = 0; i < doc.stream_id.length; i++) {
 			targetExam.streams[doc.stream_id[i]] = {"position": (i+1)};

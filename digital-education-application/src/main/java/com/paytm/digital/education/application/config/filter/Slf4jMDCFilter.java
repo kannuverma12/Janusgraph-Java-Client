@@ -8,11 +8,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
+import java.util.UUID;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.UUID;
 
 
 @Data
@@ -21,8 +21,9 @@ import java.util.UUID;
 public class Slf4jMDCFilter extends OncePerRequestFilter {
 
     public static final String PaytmRequestId      = "PaytmRequestId";
-    public static final String PaytmClientIdHeader = "CustomerId";
+    public static final String PaytmUserIdHeader   = "x-user-id";
     public static final String PaytmOrderIdHeader  = "OrderId";
+    public static final String PaytmClientIdHeader = "CustomerId";
 
     @Override
     protected void doFilterInternal(final HttpServletRequest request,
@@ -39,7 +40,7 @@ public class Slf4jMDCFilter extends OncePerRequestFilter {
                         UUID.randomUUID().toString().toUpperCase().replace("-", "");
             }
 
-            String clientId = requestCacheWrapperObject.getHeader(PaytmClientIdHeader);
+            String clientId = requestCacheWrapperObject.getHeader(PaytmUserIdHeader);
             String orderId = requestCacheWrapperObject.getHeader(PaytmOrderIdHeader);
 
             MDC.put(PaytmClientIdHeader, clientId);

@@ -74,6 +74,7 @@ function transformCourse(doc) {
     console.log(doc.course_id + " " + doc.lead_enabled);
     transformedCourse.is_accepting_application = doc.lead_enabled;
     transformedCourse.domain_name = [];
+    transformedCourse.stream_ids = doc.stream_ids;
     for (var k = 0; k < doc.streams.length; k++) {
           if(doc.streams[k].toLowerCase() === 'education' ||
               doc.streams[k].toLowerCase() === 'sciences' ||

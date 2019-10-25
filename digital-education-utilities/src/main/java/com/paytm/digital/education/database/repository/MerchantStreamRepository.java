@@ -13,4 +13,6 @@ public interface MerchantStreamRepository extends MongoRepository<MerchantStream
     List<MerchantStreamEntity> findAllByMerchantId(String merchantId);
 
     MerchantStreamEntity findByMerchantIdAndStream(String merchantId, String stream);
+
+    List<MerchantStreamEntity> findAllByMerchantIdAndStreamIn(String merchantId, List<String> streams);
 }

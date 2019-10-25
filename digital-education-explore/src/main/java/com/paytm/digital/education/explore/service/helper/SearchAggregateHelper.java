@@ -34,12 +34,10 @@ import static com.paytm.digital.education.explore.constants.ExploreConstants.INS
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LEVEL_COURSE;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.LINGUISTIC_MEDIUM;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.OWNERSHIP;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_EXAM_DOMAIN;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_EXAM_LEVEL;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_HISTORY_USERID;
 import static com.paytm.digital.education.explore.constants.ExploreConstants.STATE_INSTITUTE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM_COURSE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM_INSTITUTE;
+import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM_IDS;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_ACCEPTED;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_EDUCATION_LEVEL;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_ESTABLISHMENT_YEAR;
@@ -58,7 +56,7 @@ public class SearchAggregateHelper {
 
     public AggregateField[] getInstituteAggregateData() {
         List<String> instituteKeys =
-                Arrays.asList(EXAMS_ACCEPTED_INSTITUTE, STREAM_INSTITUTE, COURSE_LEVEL_INSTITUTE,
+                Arrays.asList(EXAMS_ACCEPTED_INSTITUTE, STREAM_IDS, COURSE_LEVEL_INSTITUTE,
                         STATE_INSTITUTE, CITY_INSTITUTE, FEES_INSTITUTE, OWNERSHIP, FACILITIES,
                         INSTITUTE_GENDER, ESTABLISHMENT_YEAR);
         List<AggregationType> instituteAggregateType =
@@ -86,7 +84,7 @@ public class SearchAggregateHelper {
 
     public AggregateField[] getExamAggregateData() {
         List<String> examKeys =
-                Arrays.asList(LINGUISTIC_MEDIUM, SEARCH_EXAM_LEVEL, SEARCH_EXAM_DOMAIN);
+                Arrays.asList(LINGUISTIC_MEDIUM, SEARCH_EXAM_LEVEL, STREAM_IDS);
         List<AggregationType> examAggregateType =
                 Arrays.asList(TERMS, TERMS, TERMS);
         BucketSort countDescSort = BucketSort.builder().key(BucketAggregationSortParms.COUNT).order(
@@ -116,7 +114,7 @@ public class SearchAggregateHelper {
             return courseAggregateData;
         }
         List<String> courseKeys =
-                Arrays.asList(DEGREE_COURSE, BRANCH_COURSE, INSTITUTE_NAME_COURSE, STREAM_COURSE,
+                Arrays.asList(DEGREE_COURSE, BRANCH_COURSE, INSTITUTE_NAME_COURSE, STREAM_IDS,
                         LEVEL_COURSE);
         List<AggregationType> courseAggregateType =
                 Arrays.asList(TERMS, TERMS, TERMS, TERMS, TERMS);

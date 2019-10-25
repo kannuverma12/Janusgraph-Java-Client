@@ -48,6 +48,9 @@ public class CourseSearch {
     @JsonProperty("domain_name")
     private List<String> domainName;
 
+    @JsonProperty("stream_ids")
+    private List<Long> streamIds;
+
     @JsonProperty("exams")
     private List<String> exams;
 

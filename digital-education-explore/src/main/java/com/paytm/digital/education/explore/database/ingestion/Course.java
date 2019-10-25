@@ -137,4 +137,7 @@ public class Course {
     @Field("status")
     private String status;
 
+    @Field("stream_ids")
+    @JsonProperty("stream_ids")
+    private List<Long> streamIds;
 }
