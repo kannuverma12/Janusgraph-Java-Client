@@ -224,7 +224,7 @@ module.exports = function(doc) {
 		targetExam.stream_ids = doc.stream_ids;
 		targetExam.streams = {};
 		for (var i = 0; i < doc.stream_ids.length; i++) {
-			targetExam.streams[doc.stream_ids[i]] = {"position": (i+1)};
+			targetExam.streams[doc.stream_ids[i]] = {"position": i};
 		}
 		var stream_names=getStreamNamesFromStreamIds(doc.stream_ids);
 		if (stream_names !== null) {

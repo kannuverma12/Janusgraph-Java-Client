@@ -21,7 +21,7 @@
 
     <groupId>com.paytm.digital.education</groupId>
     <artifactId>digital-education-service</artifactId>
-    <version>0.0.3-SNAPSHOT</version>
+    <version>0.0.9-SNAPSHOT</version>
     <name>digital-education</name>
     <description>Digital education project</description>
 
