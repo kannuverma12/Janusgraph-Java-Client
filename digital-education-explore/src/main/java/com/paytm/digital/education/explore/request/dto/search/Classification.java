@@ -1,7 +1,7 @@
 package com.paytm.digital.education.explore.request.dto.search;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
+import com.paytm.digital.education.enums.es.DataSortOrder;
 import lombok.Data;
 
 import java.util.LinkedHashMap;

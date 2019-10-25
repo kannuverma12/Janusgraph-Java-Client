@@ -1,6 +1,6 @@
 package com.paytm.digital.education.explore.template;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.FTL_CURRENT_VERSION;
+import static com.paytm.digital.education.constant.ExploreConstants.FTL_CURRENT_VERSION;
 
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;

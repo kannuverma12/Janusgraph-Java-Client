@@ -2,9 +2,9 @@ package com.paytm.digital.education.explore.service.helper;
 
 import static com.paytm.digital.education.utility.CustomStringUtils.splitAndConvertToCamelCase;
 
-import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.detail.Gallery;
-import com.paytm.digital.education.explore.utility.CommonUtil;
+import com.paytm.digital.education.utility.CommonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class GalleryDataHelper {
 
     @Cacheable(value = "gallery", key = "#instituteId")
     public Gallery getGalleryData(long instituteId,
-            com.paytm.digital.education.explore.database.entity.Gallery galleryData) {
+            com.paytm.digital.education.database.entity.Gallery galleryData) {
         Gallery response = new Gallery();
         if (galleryData != null) {
             if (!CollectionUtils.isEmpty(galleryData.getImages())) {

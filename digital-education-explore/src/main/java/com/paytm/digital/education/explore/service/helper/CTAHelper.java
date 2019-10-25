@@ -1,26 +1,14 @@
 package com.paytm.digital.education.explore.service.helper;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DIRECTORY_SEPARATOR_SLASH;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.WEB_FORM_URI_PREFIX;
-import static com.paytm.digital.education.explore.enums.Client.APP;
-import static com.paytm.digital.education.explore.enums.EducationEntity.EXAM;
-import static com.paytm.digital.education.explore.enums.EducationEntity.SCHOOL;
-import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.COMPARE_ACTIVE_LABEL_WEB;
-import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST;
-import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLISTED_EXAM_APP;
-import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLISTED_SCHOOL_APP;
-import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST_APP;
-import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST_EXAM_APP;
-import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST_SCHOOL_APP;
-
-import com.paytm.digital.education.explore.constants.ExploreConstants;
+import com.paytm.digital.education.constant.ExploreConstants;
+import com.paytm.digital.education.enums.Client;
+import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.enums.CTAType;
-import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.detail.CTAInfoHolder;
 import com.paytm.digital.education.explore.service.external.FeeUrlGenerator;
-import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
+import com.paytm.digital.education.utility.CommonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +20,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import static com.paytm.digital.education.constant.ExploreConstants.CTA_LOGO_PLACEHOLDER;
+import static com.paytm.digital.education.constant.ExploreConstants.DIRECTORY_SEPARATOR_SLASH;
+import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.constant.ExploreConstants.WEB_FORM_URI_PREFIX;
+import static com.paytm.digital.education.enums.Client.APP;
+import static com.paytm.digital.education.enums.EducationEntity.EXAM;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.COMPARE_ACTIVE_LABEL_WEB;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLISTED_EXAM_APP;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLISTED_SCHOOL_APP;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST_APP;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST_EXAM_APP;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST_SCHOOL_APP;
 
 @Service
 public class CTAHelper {
@@ -56,7 +59,7 @@ public class CTAHelper {
         Map<String, Object> logosPerCta = null;
         if (APP.equals(client)) {
             logosPerCta = propertyReader.getPropertiesAsMapByKey(
-                    ExploreConstants.EXPLORE_COMPONENT,
+                    EXPLORE_COMPONENT,
                     ctaInfoHolder.getCorrespondingEntity().name().toLowerCase(),
                     ctaInfoHolder.ctaDbPropertyKey());
         }
@@ -163,7 +166,7 @@ public class CTAHelper {
     }
 
     private String getAbsoluteLogoUrl(Map<String, Object> logoMap, String relativeUrlKey) {
-        String relativeUrl = ExploreConstants.CTA_LOGO_PLACEHOLDER;
+        String relativeUrl = CTA_LOGO_PLACEHOLDER;
         if (!CollectionUtils.isEmpty(logoMap) && logoMap.containsKey(relativeUrlKey)) {
             relativeUrl = (String) logoMap.get(relativeUrlKey);
         }
@@ -190,7 +193,7 @@ public class CTAHelper {
     }
 
     private String getAppShortListedLabel(CTAInfoHolder ctaInfoHolder) {
-        if (SCHOOL.equals(ctaInfoHolder.getCorrespondingEntity())) {
+        if (EducationEntity.SCHOOL.equals(ctaInfoHolder.getCorrespondingEntity())) {
             return SHORTLISTED_SCHOOL_APP;
         } else if (EXAM.equals(ctaInfoHolder.getCorrespondingEntity())) {
             return SHORTLISTED_EXAM_APP;

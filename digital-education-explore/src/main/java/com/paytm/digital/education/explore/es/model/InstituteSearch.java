@@ -3,7 +3,7 @@ package com.paytm.digital.education.explore.es.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.explore.database.entity.InstiPaytmKeys;
+import com.paytm.digital.education.database.entity.InstiPaytmKeys;
 import lombok.Data;
 
 import java.util.List;

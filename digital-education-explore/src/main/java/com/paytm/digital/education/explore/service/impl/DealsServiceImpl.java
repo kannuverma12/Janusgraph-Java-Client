@@ -1,5 +1,6 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import com.paytm.digital.education.constant.ExploreConstants;
 import com.paytm.digital.education.explore.service.helper.StreamDataHelper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -12,11 +13,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAMS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.OVERALL_RANKING;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SIX;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.YEARS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.BLANK;
+import static com.paytm.digital.education.constant.ExploreConstants.OVERALL_RANKING;
+import static com.paytm.digital.education.constant.ExploreConstants.SIX;
+import static com.paytm.digital.education.constant.ExploreConstants.STREAMS;
+import static com.paytm.digital.education.constant.ExploreConstants.YEARS;
 
 @Service
 @AllArgsConstructor
@@ -35,7 +35,8 @@ public class DealsServiceImpl {
             } else if (type.equalsIgnoreCase(YEARS)) {
                 LocalDate localDate = LocalDate.now();
                 Integer year = localDate.getYear();
-                List<String> yearList = IntStream.range(year, (year + SIX)).mapToObj(i -> BLANK + i)
+                List<String> yearList = IntStream.range(year, (year + SIX))
+                        .mapToObj(i -> ExploreConstants.BLANK + i)
                         .collect(Collectors.toList());
                 itemsList.addAll(yearList);
             }

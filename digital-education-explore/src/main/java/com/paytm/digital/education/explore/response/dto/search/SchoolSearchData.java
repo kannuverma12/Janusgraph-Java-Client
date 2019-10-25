@@ -1,14 +1,14 @@
 package com.paytm.digital.education.explore.response.dto.search;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SCHOOL_SEARCH_CTA;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.dto.OfficialAddress;
 import com.paytm.digital.education.explore.es.model.GeoLocation;
-import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import lombok.Data;
 import lombok.experimental.Accessors;
+
+import static com.paytm.digital.education.constant.ExploreConstants.SCHOOL_SEARCH_CTA;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)

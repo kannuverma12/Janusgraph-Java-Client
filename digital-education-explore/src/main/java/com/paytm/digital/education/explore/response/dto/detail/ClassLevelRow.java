@@ -1,8 +1,8 @@
 package com.paytm.digital.education.explore.response.dto.detail;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.enums.ClassType;
 import com.paytm.digital.education.explore.enums.ClassLevel;
-import com.paytm.digital.education.explore.enums.ClassType;
 import lombok.Builder;
 import lombok.Data;
 

@@ -1,10 +1,10 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import com.google.common.collect.Sets;
-import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
-import com.paytm.digital.education.explore.database.entity.Section;
-import com.paytm.digital.education.explore.database.repository.SectionRepository;
-import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.paytm.digital.education.database.entity.Section;
+import com.paytm.digital.education.database.repository.SectionRepository;
+import com.paytm.digital.education.enums.es.DataSortOrder;
+import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.search.ExamLevelData;
 import com.paytm.digital.education.explore.response.dto.search.ExamSectionData;
@@ -28,14 +28,14 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.paytm.digital.education.elasticsearch.enums.DataSortOrder.ASC;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.BROWSE_BY_EXAM_LEVEL_APP;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAMS_BROWSE_BY_LEVEL_QUERY_SIZE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_GLOBAL_PRIORITY;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_LEVEL;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_STREAM_IDS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.FILTERS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.LEVEL;
+import static com.paytm.digital.education.constant.ExploreConstants.BROWSE_BY_EXAM_LEVEL_APP;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAMS_BROWSE_BY_LEVEL_QUERY_SIZE;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_GLOBAL_PRIORITY;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_LEVEL;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_STREAM_IDS;
+import static com.paytm.digital.education.constant.ExploreConstants.FILTERS;
+import static com.paytm.digital.education.constant.ExploreConstants.LEVEL;
+import static com.paytm.digital.education.enums.es.DataSortOrder.ASC;
 
 @Slf4j
 @Service

@@ -3,7 +3,6 @@ package com.paytm.digital.education.explore.database.ingestion;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.explore.enums.Gender;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Field;
 

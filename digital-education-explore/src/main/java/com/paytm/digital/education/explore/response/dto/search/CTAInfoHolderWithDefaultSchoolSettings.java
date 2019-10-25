@@ -1,10 +1,10 @@
 package com.paytm.digital.education.explore.response.dto.search;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.detail.CTAInfoHolder;
 
-import static com.paytm.digital.education.explore.enums.EducationEntity.SCHOOL;
+import static com.paytm.digital.education.enums.EducationEntity.SCHOOL;
 
 public interface CTAInfoHolderWithDefaultSchoolSettings extends CTAInfoHolder {
     @Override

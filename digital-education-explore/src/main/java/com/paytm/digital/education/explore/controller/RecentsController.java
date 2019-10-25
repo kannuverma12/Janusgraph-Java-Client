@@ -1,6 +1,6 @@
 package com.paytm.digital.education.explore.controller;
 
-import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.service.RecentsSerivce;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EDUCATION_BASE_URL;
+import static com.paytm.digital.education.constant.ExploreConstants.EDUCATION_BASE_URL;
 
 @Controller
 @AllArgsConstructor
@@ -30,6 +30,4 @@ public class RecentsController {
             @RequestHeader(value = "x-user-id") Long userId) {
         return recentsSerivce.getRecentSearchTerms(query, userId, size, entities);
     }
-
-
 }

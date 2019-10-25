@@ -2,7 +2,7 @@ package com.paytm.digital.education.explore.request.dto.search;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.explore.enums.Gender;
+import com.paytm.digital.education.enums.Gender;
 import com.paytm.digital.education.explore.sro.request.FieldsAndFieldGroupRequest;
 import lombok.Data;
 

@@ -1,7 +1,7 @@
 package com.paytm.digital.education.explore.validators;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTOSUGGEST_MAX_CHARS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.AUTOSUGGEST_MIN_CHARS;
+import static com.paytm.digital.education.constant.ExploreConstants.AUTOSUGGEST_MAX_CHARS;
+import static com.paytm.digital.education.constant.ExploreConstants.AUTOSUGGEST_MIN_CHARS;
 
 import com.paytm.digital.education.exception.BadAutoSuggestException;
 import com.paytm.digital.education.mapping.ErrorEnum;

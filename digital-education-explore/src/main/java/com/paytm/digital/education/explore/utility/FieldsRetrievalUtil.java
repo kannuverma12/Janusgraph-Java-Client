@@ -1,20 +1,20 @@
 package com.paytm.digital.education.explore.utility;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_CLASS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_CLASS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_CLASS;
-import static com.paytm.digital.education.explore.enums.EducationEntity.EXAM;
-import static com.paytm.digital.education.explore.enums.EducationEntity.COURSE;
-import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
+import static com.paytm.digital.education.constant.ExploreConstants.COURSE_CLASS;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_CLASS;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_CLASS;
+import static com.paytm.digital.education.enums.EducationEntity.EXAM;
+import static com.paytm.digital.education.enums.EducationEntity.COURSE;
+import static com.paytm.digital.education.enums.EducationEntity.INSTITUTE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_PREFIX;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_PREFIX;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_PREFIX;
+import static com.paytm.digital.education.constant.ExploreConstants.COURSE_PREFIX;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_PREFIX;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_PREFIX;
 
 import lombok.experimental.UtilityClass;
 

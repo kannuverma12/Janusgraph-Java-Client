@@ -1,10 +1,10 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import com.paytm.digital.education.explore.database.entity.Board;
-import com.paytm.digital.education.explore.database.entity.BoardData;
-import com.paytm.digital.education.explore.database.entity.School;
-import com.paytm.digital.education.explore.database.entity.SchoolPaytmKeys;
-import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.database.entity.Board;
+import com.paytm.digital.education.database.entity.BoardData;
+import com.paytm.digital.education.database.entity.School;
+import com.paytm.digital.education.database.entity.SchoolPaytmKeys;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.dto.SchoolDto;
 import com.paytm.digital.education.explore.service.helper.IncrementalDataHelper;
 import com.paytm.digital.education.utility.UploadUtil;
@@ -19,12 +19,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.paytm.digital.education.explore.enums.SchoolBoardType.CBSE;
-import static com.paytm.digital.education.explore.enums.SchoolBoardType.KARNATKA_BOARD;
-import static com.paytm.digital.education.explore.enums.SchoolEducationLevelType.PRIMARY;
+import static com.paytm.digital.education.enums.SchoolBoardType.CBSE;
+import static com.paytm.digital.education.enums.SchoolBoardType.KARNATKA_BOARD;
+import static com.paytm.digital.education.enums.SchoolEducationLevelType.PRIMARY;
+import static org.hamcrest.beans.SamePropertyValuesAs.samePropertyValuesAs;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.hamcrest.beans.SamePropertyValuesAs.samePropertyValuesAs;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TransformSchoolServiceTest {

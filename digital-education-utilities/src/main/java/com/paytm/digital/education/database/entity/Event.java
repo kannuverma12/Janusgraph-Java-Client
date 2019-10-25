@@ -1,15 +1,15 @@
 package com.paytm.digital.education.database.entity;
 
-import java.util.Date;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.data.mongodb.core.mapping.Field;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.ToString;
+import org.springframework.data.mongodb.core.mapping.Field;
+
+import java.util.Date;
+import java.util.List;
 
 import static com.paytm.digital.education.constant.DBConstants.NON_TENTATIVE;
 import static com.paytm.digital.education.constant.DBConstants.YYYY_MM;

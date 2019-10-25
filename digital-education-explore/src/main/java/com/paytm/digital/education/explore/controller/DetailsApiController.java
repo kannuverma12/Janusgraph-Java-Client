@@ -1,14 +1,16 @@
 package com.paytm.digital.education.explore.controller;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EDUCATION_BASE_URL;
-
-import java.util.List;
-
-import com.paytm.digital.education.explore.enums.Client;
+import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.explore.response.dto.detail.CourseDetail;
+import com.paytm.digital.education.explore.response.dto.detail.ExamDetail;
+import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.SchoolDetail;
 import com.paytm.digital.education.explore.service.SchoolService;
 import com.paytm.digital.education.explore.service.impl.CourseDetailServiceImpl;
+import com.paytm.digital.education.explore.service.impl.ExamDetailServiceImpl;
+import com.paytm.digital.education.explore.service.impl.InstituteDetailServiceImpl;
+import com.paytm.digital.education.explore.validators.ExploreValidator;
+import lombok.AllArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -17,16 +19,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import com.paytm.digital.education.explore.response.dto.detail.ExamDetail;
-import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
-import com.paytm.digital.education.explore.service.impl.ExamDetailServiceImpl;
-import com.paytm.digital.education.explore.service.impl.InstituteDetailServiceImpl;
-import com.paytm.digital.education.explore.validators.ExploreValidator;
-import lombok.AllArgsConstructor;
-
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import java.util.List;
+
+import static com.paytm.digital.education.constant.ExploreConstants.EDUCATION_BASE_URL;
 
 
 @AllArgsConstructor

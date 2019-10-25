@@ -1,46 +1,45 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import static com.paytm.digital.education.constant.DBConstants.UNREAD_SHORTLIST_COUNT;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.APPROVALS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_SEARCH_NAMESPACE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SUCCESS;
-import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
-
 import com.paytm.digital.education.config.SchoolConfig;
+import com.paytm.digital.education.daoresult.SubscribedEntityCount;
+import com.paytm.digital.education.daoresult.subscription.SubscriptionWithExam;
+import com.paytm.digital.education.daoresult.subscription.SubscriptionWithInstitute;
+import com.paytm.digital.education.daoresult.subscription.SubscriptionWithSchool;
+import com.paytm.digital.education.database.entity.SchoolGallery;
+import com.paytm.digital.education.database.entity.Subscription;
 import com.paytm.digital.education.database.entity.UserFlags;
 import com.paytm.digital.education.database.repository.UserFlagRepository;
 import com.paytm.digital.education.dto.NotificationFlags;
+import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.enums.SubscribableEntityType;
+import com.paytm.digital.education.enums.SubscriptionStatus;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.aggregation.SubscriptionDao;
-import com.paytm.digital.education.explore.daoresult.SubscribedEntityCount;
-import com.paytm.digital.education.explore.daoresult.subscription.SubscriptionWithExam;
-import com.paytm.digital.education.explore.daoresult.subscription.SubscriptionWithInstitute;
-import com.paytm.digital.education.explore.daoresult.subscription.SubscriptionWithSchool;
-import com.paytm.digital.education.explore.database.entity.SchoolGallery;
-import com.paytm.digital.education.explore.database.entity.Subscription;
 import com.paytm.digital.education.explore.database.repository.SubscriptionRepository;
-import com.paytm.digital.education.explore.enums.EducationEntity;
-import com.paytm.digital.education.explore.enums.SubscribableEntityType;
-import com.paytm.digital.education.explore.enums.SubscriptionStatus;
 import com.paytm.digital.education.explore.service.CommonMongoService;
 import com.paytm.digital.education.explore.service.SubscriptionService;
 import com.paytm.digital.education.explore.sro.request.SubscriptionRequest;
-import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
+import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Date;
+
+import static com.paytm.digital.education.constant.DBConstants.UNREAD_SHORTLIST_COUNT;
+import static com.paytm.digital.education.constant.ExploreConstants.APPROVALS;
+import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_SEARCH_NAMESPACE;
+import static com.paytm.digital.education.constant.ExploreConstants.SUCCESS;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 
 
 @Service
@@ -57,7 +56,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private PropertyReader     propertyReader;
     private UserFlagRepository userFlagRepository;
-    private SchoolConfig schoolConfig;
+    private SchoolConfig       schoolConfig;
 
     private static NotificationFlags DEFAULT_SUCCESS_MESSAGE = new NotificationFlags(SUCCESS);
 

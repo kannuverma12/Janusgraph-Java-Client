@@ -1,13 +1,13 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import com.paytm.digital.education.config.AwsConfig;
+import com.paytm.digital.education.database.entity.Alumni;
+import com.paytm.digital.education.database.entity.Gallery;
+import com.paytm.digital.education.database.entity.Institute;
+import com.paytm.digital.education.database.entity.Ranking;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.constants.AWSConstants;
-import com.paytm.digital.education.explore.database.entity.Alumni;
-import com.paytm.digital.education.explore.database.entity.Gallery;
-import com.paytm.digital.education.explore.database.entity.Institute;
-import com.paytm.digital.education.explore.database.entity.Ranking;
-import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.dto.InstituteDto;
 import com.paytm.digital.education.explore.dto.RankingDto;
 import com.paytm.digital.education.explore.service.helper.IncrementalDataHelper;
@@ -21,15 +21,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.Map;
 import java.util.Objects;
-import java.util.ArrayList;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.INSTITUTE_FILE_VERSION;
 
 @Service

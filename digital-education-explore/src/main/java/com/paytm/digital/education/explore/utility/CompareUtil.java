@@ -3,11 +3,11 @@ package com.paytm.digital.education.explore.utility;
 import static com.paytm.digital.education.explore.constants.CompareConstants.GENERAL;
 import static com.paytm.digital.education.explore.constants.CompareConstants.INST_LATEST_YEAR;
 import static com.paytm.digital.education.explore.constants.CompareConstants.UNIVERSITIES;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.OVERALL_RANKING;
+import static com.paytm.digital.education.constant.ExploreConstants.OVERALL_RANKING;
 
-import com.paytm.digital.education.explore.database.entity.Course;
-import com.paytm.digital.education.explore.database.entity.CourseFee;
-import com.paytm.digital.education.explore.database.entity.Institute;
+import com.paytm.digital.education.database.entity.Course;
+import com.paytm.digital.education.database.entity.CourseFee;
+import com.paytm.digital.education.database.entity.Institute;
 import com.paytm.digital.education.explore.response.dto.detail.Ranking;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class CompareUtil {
 
     public Map<String, Ranking> getResponseRankingMap(
-            List<com.paytm.digital.education.explore.database.entity.Ranking> dbRankingList) {
+            List<com.paytm.digital.education.database.entity.Ranking> dbRankingList) {
         Map<String, List<Ranking>> rankingMap = new HashMap<>();
         Map<String, Ranking> retMap = new HashMap<>();
 
@@ -87,7 +87,7 @@ public class CompareUtil {
     }
 
     private Ranking getRankingDTO(
-            com.paytm.digital.education.explore.database.entity.Ranking dbRanking) {
+            com.paytm.digital.education.database.entity.Ranking dbRanking) {
         Ranking r = new Ranking();
         r.setRank(dbRanking.getRank());
         r.setScore(dbRanking.getScore());

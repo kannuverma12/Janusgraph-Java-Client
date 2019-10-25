@@ -1,21 +1,12 @@
 package com.paytm.digital.education.explore.controller;
 
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EDUCATION_BASE_URL;
-
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.response.dto.detail.CompareCourseDetail;
 import com.paytm.digital.education.explore.response.dto.detail.CompareDetail;
 import com.paytm.digital.education.explore.service.CompareCourseService;
 import com.paytm.digital.education.explore.service.CompareService;
 import com.paytm.digital.education.explore.validators.ExploreValidator;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-import java.util.Objects;
-import java.util.Arrays;
-
 import com.paytm.digital.education.mapping.ErrorEnum;
 import lombok.AllArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -29,6 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import static com.paytm.digital.education.constant.ExploreConstants.EDUCATION_BASE_URL;
 
 @AllArgsConstructor
 @RestController

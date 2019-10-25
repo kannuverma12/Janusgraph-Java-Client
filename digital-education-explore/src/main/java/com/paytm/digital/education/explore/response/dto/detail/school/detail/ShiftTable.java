@@ -1,7 +1,7 @@
 package com.paytm.digital.education.explore.response.dto.detail.school.detail;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.explore.enums.SchoolBoardType;
+import com.paytm.digital.education.enums.SchoolBoardType;
 import lombok.Builder;
 import lombok.Data;
 

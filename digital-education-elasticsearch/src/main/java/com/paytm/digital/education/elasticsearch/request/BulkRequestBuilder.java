@@ -1,15 +1,14 @@
 package com.paytm.digital.education.elasticsearch.request;
 
-import com.paytm.digital.education.elasticsearch.enums.BulkRequestOperation;
 import com.paytm.digital.education.elasticsearch.models.BulkRequestItem;
 import com.paytm.digital.education.elasticsearch.utils.JsonUtils;
+import com.paytm.digital.education.enums.es.BulkRequestOperation;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Map;
 
 @Service

@@ -1,16 +1,11 @@
 package com.paytm.digital.education.admin.controller;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EDUCATION_BASE_URL;
-import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_UPLOAD_REQUEST;
-import static com.paytm.digital.education.mapping.ErrorEnum.UNAUTHORIZED_REQUEST;
-
 import com.paytm.digital.education.admin.response.DocumentUploadResponse;
 import com.paytm.digital.education.admin.service.AdminService;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -21,6 +16,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Objects;
+
+import static com.paytm.digital.education.constant.ExploreConstants.EDUCATION_BASE_URL;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_UPLOAD_REQUEST;
+import static com.paytm.digital.education.mapping.ErrorEnum.UNAUTHORIZED_REQUEST;
 
 @RestController
 @RequestMapping(EDUCATION_BASE_URL)

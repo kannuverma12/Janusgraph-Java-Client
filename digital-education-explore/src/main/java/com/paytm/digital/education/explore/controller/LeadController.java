@@ -1,27 +1,25 @@
 package com.paytm.digital.education.explore.controller;
 
-import com.paytm.digital.education.explore.database.entity.Lead;
-import com.paytm.digital.education.explore.database.entity.UserDetails;
+import com.paytm.digital.education.database.entity.Lead;
+import com.paytm.digital.education.database.entity.UserDetails;
 import com.paytm.digital.education.explore.service.LeadService;
+import com.paytm.digital.education.utility.JsonUtils;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
+import lombok.AllArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-import com.paytm.digital.education.utility.JsonUtils;
-import com.paytm.education.logger.Logger;
-import com.paytm.education.logger.LoggerFactory;
-import lombok.AllArgsConstructor;
-
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMethod;
-
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EDUCATION_BASE_URL;
+import static com.paytm.digital.education.constant.ExploreConstants.EDUCATION_BASE_URL;
 
 
 @RestController

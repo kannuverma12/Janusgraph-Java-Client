@@ -1,11 +1,11 @@
 package com.paytm.digital.education.explore.utility;
 
 import com.paytm.digital.education.config.SchoolConfig;
-import com.paytm.digital.education.explore.database.entity.Board;
-import com.paytm.digital.education.explore.database.entity.SchoolFeeDetails;
-import com.paytm.digital.education.explore.database.entity.ShiftDetails;
+import com.paytm.digital.education.database.entity.Board;
+import com.paytm.digital.education.database.entity.SchoolFeeDetails;
+import com.paytm.digital.education.database.entity.ShiftDetails;
+import com.paytm.digital.education.enums.ClassType;
 import com.paytm.digital.education.explore.enums.ClassLevel;
-import com.paytm.digital.education.explore.enums.ClassType;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.ShiftDetailsResponse;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.ShiftTable;
 import com.paytm.digital.education.utility.CommonUtils;
@@ -24,24 +24,24 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.paytm.digital.education.enums.ClassType.EIGHT;
+import static com.paytm.digital.education.enums.ClassType.ELEVEN;
+import static com.paytm.digital.education.enums.ClassType.FIVE;
+import static com.paytm.digital.education.enums.ClassType.LKG;
+import static com.paytm.digital.education.enums.ClassType.NINE;
+import static com.paytm.digital.education.enums.ClassType.NOT_PROVIDED;
+import static com.paytm.digital.education.enums.ClassType.NURSERY;
+import static com.paytm.digital.education.enums.ClassType.ONE;
+import static com.paytm.digital.education.enums.ClassType.PRE_NURSERY;
+import static com.paytm.digital.education.enums.ClassType.SIX;
+import static com.paytm.digital.education.enums.ClassType.TEN;
+import static com.paytm.digital.education.enums.ClassType.TWELVE;
+import static com.paytm.digital.education.enums.ClassType.UKG;
 import static com.paytm.digital.education.explore.enums.ClassLevel.KINDERGARTEN;
 import static com.paytm.digital.education.explore.enums.ClassLevel.MIDDLE_SCHOOL;
 import static com.paytm.digital.education.explore.enums.ClassLevel.PRIMARY_SCHOOL;
 import static com.paytm.digital.education.explore.enums.ClassLevel.SECONDARY_SCHOOL;
 import static com.paytm.digital.education.explore.enums.ClassLevel.SENIOR_SECONDARY_SCHOOL;
-import static com.paytm.digital.education.explore.enums.ClassType.NOT_PROVIDED;
-import static com.paytm.digital.education.explore.enums.ClassType.PRE_NURSERY;
-import static com.paytm.digital.education.explore.enums.ClassType.NURSERY;
-import static com.paytm.digital.education.explore.enums.ClassType.LKG;
-import static com.paytm.digital.education.explore.enums.ClassType.UKG;
-import static com.paytm.digital.education.explore.enums.ClassType.ONE;
-import static com.paytm.digital.education.explore.enums.ClassType.FIVE;
-import static com.paytm.digital.education.explore.enums.ClassType.SIX;
-import static com.paytm.digital.education.explore.enums.ClassType.EIGHT;
-import static com.paytm.digital.education.explore.enums.ClassType.NINE;
-import static com.paytm.digital.education.explore.enums.ClassType.TEN;
-import static com.paytm.digital.education.explore.enums.ClassType.ELEVEN;
-import static com.paytm.digital.education.explore.enums.ClassType.TWELVE;
 
 @Service
 @Data

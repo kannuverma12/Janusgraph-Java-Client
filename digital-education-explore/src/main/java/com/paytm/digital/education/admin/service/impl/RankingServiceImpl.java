@@ -5,12 +5,12 @@ import com.paytm.digital.education.admin.request.RankingsRequest;
 import com.paytm.digital.education.admin.response.EntityRankingResponse;
 import com.paytm.digital.education.admin.response.RankingResponse;
 import com.paytm.digital.education.admin.service.RankingService;
-import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.database.entity.Exam;
+import com.paytm.digital.education.database.entity.Institute;
 import com.paytm.digital.education.database.entity.PaytmKeys;
-import com.paytm.digital.education.explore.database.entity.School;
-import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.paytm.digital.education.database.entity.School;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.enums.EducationEntity;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.query.Update;
@@ -18,27 +18,26 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.List;
-import java.util.Set;
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.mongodb.QueryOperators.AND;
 import static com.mongodb.QueryOperators.EXISTS;
 import static com.mongodb.QueryOperators.NE;
-import static com.mongodb.QueryOperators.AND;
 import static com.paytm.digital.education.admin.utility.AdminConstants.PAYTM_DESCRIPTION;
 import static com.paytm.digital.education.admin.utility.AdminConstants.PAYTM_KEYS;
-import static com.paytm.digital.education.admin.utility.AdminConstants.PAYTM_RANK;
 import static com.paytm.digital.education.admin.utility.AdminConstants.PAYTM_PARTNER_RANK;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.admin.utility.AdminConstants.PAYTM_RANK;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_NAME;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.OFFICIAL_NAME;
 
 @Slf4j
 @Service

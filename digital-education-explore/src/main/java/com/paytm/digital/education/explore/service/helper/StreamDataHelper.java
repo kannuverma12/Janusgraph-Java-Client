@@ -9,10 +9,10 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_FILTER_NAMESPACE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.STREAM_INSTITUTE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKING_STREAM_NAMESPACE;
+import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_FILTER_NAMESPACE;
+import static com.paytm.digital.education.constant.ExploreConstants.STREAM_INSTITUTE;
+import static com.paytm.digital.education.constant.ExploreConstants.RANKING_STREAM_NAMESPACE;
 
 @Service
 @AllArgsConstructor
