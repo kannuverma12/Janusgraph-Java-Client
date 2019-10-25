@@ -30,6 +30,7 @@ import static com.paytm.digital.education.enums.EducationEntity.EXAM;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL;
 import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.COMPARE_ACTIVE_LABEL_WEB;
 import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLISTED_APP;
 import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLISTED_EXAM_APP;
 import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLISTED_SCHOOL_APP;
 import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.SHORTLIST_APP;
@@ -198,7 +199,7 @@ public class CTAHelper {
         } else if (EXAM.equals(ctaInfoHolder.getCorrespondingEntity())) {
             return SHORTLISTED_EXAM_APP;
         } else {
-            return SHORTLIST_APP;
+            return SHORTLISTED_APP;
         }
     }
 
