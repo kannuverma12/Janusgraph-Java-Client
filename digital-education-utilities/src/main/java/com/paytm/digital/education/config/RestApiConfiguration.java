@@ -46,7 +46,7 @@ public class RestApiConfiguration {
     private RestTemplate createRestTemplate() {
         HttpComponentsClientHttpRequestFactory requestFactory =
                 new HttpComponentsClientHttpRequestFactory();
-        requestFactory.setHttpClient(httpClient());
+        requestFactory.setHttpClient(getHttpClient());
         requestFactory.setReadTimeout(readTimeOut);
         RestTemplate template = new RestTemplate(requestFactory);
         List<HttpMessageConverter<?>> messageConverters = template.getMessageConverters();
@@ -55,7 +55,7 @@ public class RestApiConfiguration {
         return template;
     }
 
-    private PoolingHttpClientConnectionManager poolingHttpClientConnectionManager() {
+    private PoolingHttpClientConnectionManager getPoolingHttpClientConnectionManager() {
         PoolingHttpClientConnectionManager connectionManager =
                 new PoolingHttpClientConnectionManager();
         connectionManager.setMaxTotal(poolMaxTotal);
@@ -64,7 +64,7 @@ public class RestApiConfiguration {
         return connectionManager;
     }
 
-    private RequestConfig requestConfig() {
+    private RequestConfig getRequestConfig() {
         return RequestConfig.custom()
                 .setConnectionRequestTimeout(connectionRequestTimeOut)
                 .setConnectTimeout(connectionTimeOut)
@@ -72,12 +72,12 @@ public class RestApiConfiguration {
                 .build();
     }
 
-    private CloseableHttpClient httpClient() {
+    private CloseableHttpClient getHttpClient() {
 
         return HttpClientBuilder.create()
                 .setConnectionManager(
-                        poolingHttpClientConnectionManager())
-                .setDefaultRequestConfig(requestConfig())
+                        getPoolingHttpClientConnectionManager())
+                .setDefaultRequestConfig(getRequestConfig())
                 .build();
     }
 }
