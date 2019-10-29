@@ -20,7 +20,7 @@ public class MerchantStreamDataConverter {
             MerchantStreamEntity streamEntity) {
         streamEntity.setMerchantId(formRequest.getMerchantId());
         streamEntity.setPaytmStreamId(formRequest.getPaytmStreamId());
-        streamEntity.setStream(formRequest.getMerchantStream());
+        streamEntity.setStream(formRequest.getMerchantStream().trim());
         streamEntity.setActive(stringToBoolean(formRequest.getActive()));
         streamEntity.setUpdatedAt(new Date());
         return streamEntity;
