@@ -3,10 +3,11 @@ package com.paytm.digital.education.explore.response.dto.detail;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.paytm.digital.education.dto.OfficialAddress;
+import com.paytm.digital.education.dto.detail.ExamAndCutOff;
+import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.common.BannerData;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
-import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import com.paytm.digital.education.explore.response.dto.common.Widget;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
+import static com.paytm.digital.education.enums.EducationEntity.INSTITUTE;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)

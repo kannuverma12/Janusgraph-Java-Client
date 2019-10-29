@@ -1,6 +1,6 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.COURSE_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.COURSE_ID;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSES;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSE_FILE_VERSION;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSE_IDS;
@@ -9,7 +9,7 @@ import static com.paytm.digital.education.ingestion.constant.IngestionConstants.
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.database.ingestion.Course;
 import com.paytm.digital.education.explore.database.ingestion.Cutoff;
-import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.service.helper.IncrementalDataHelper;
 import com.paytm.digital.education.explore.service.helper.StreamDataTranslator;
 import com.paytm.digital.education.mapping.ErrorEnum;
@@ -63,7 +63,7 @@ public class TransformAndSaveCourseService {
                     course.setStreamIds(streamDataTranslator
                             .getPaytmStreams(course.getStreams(), MERCHANT_CAREER_360,
                                     course.getCourseId(),
-                                    com.paytm.digital.education.explore.database.entity.Course.class));
+                                    com.paytm.digital.education.database.entity.Course.class));
                 }
                 commonMongoRepository.saveOrUpdate(course);
             }

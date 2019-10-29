@@ -4,6 +4,33 @@
  * @author: shashank.chhikara
  */
 
+var database_name = "digital_education";
+var stream_collection = "stream";
+
+
+function getStreamNamesFromStreamIds(stream_ids){
+if (stream_ids === null) {
+    return null;
+ }
+
+var streamQueryOptions = {
+    database: database_name,
+    collection: stream_collection
+  };
+
+var listOfStreams = find({ stream_id : { $in: stream_ids } }, streamQueryOptions);
+
+if ( listOfStreams != undefined && Array.isArray(listOfStreams)) {
+    var stream_names = [];
+    listOfStreams.forEach(function(stream){
+        stream_names.push(stream.name);
+    });
+   }
+
+   return stream_names;
+}
+
+
 module.exports = function(doc) {
 	if (doc.published_status !== "PUBLISHED") {
 		return false;
@@ -193,14 +220,17 @@ module.exports = function(doc) {
 		targetExam.global_priority = doc.priority;
 	}
 
-	if (Array.isArray(doc.stream_ids)) {
+	if (doc.stream_ids != undefined && Array.isArray(doc.stream_ids)) {
 		targetExam.stream_ids = doc.stream_ids;
 		targetExam.streams = {};
-		for (var i = 0; i < doc.stream_id.length; i++) {
-			targetExam.streams[doc.stream_id[i]] = {"position": (i+1)};
+		for (var i = 0; i < doc.stream_ids.length; i++) {
+			targetExam.streams[doc.stream_ids[i]] = {"position": i};
+		}
+		var stream_names=getStreamNamesFromStreamIds(doc.stream_ids);
+		if (stream_names !== null) {
+		  targetExam.stream_names=stream_names;
 		}
 	}
-
 	console.log ("exam: " + targetExam.exam_id);
 	return targetExam;
 }

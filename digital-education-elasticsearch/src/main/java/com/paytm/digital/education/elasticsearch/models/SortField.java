@@ -1,6 +1,6 @@
 package com.paytm.digital.education.elasticsearch.models;
 
-import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
+import com.paytm.digital.education.enums.es.DataSortOrder;
 import lombok.Data;
 
 @Data

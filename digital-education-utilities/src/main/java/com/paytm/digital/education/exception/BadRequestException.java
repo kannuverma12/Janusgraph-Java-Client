@@ -23,4 +23,5 @@ public class BadRequestException extends EducationException {
     public BadRequestException(ErrorEnum errorEnum) {
         this(errorEnum, errorEnum.getExternalMessage(), Collections.emptyList().toArray());
     }
+
 }

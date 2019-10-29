@@ -21,7 +21,7 @@
 
     <groupId>com.paytm.digital.education</groupId>
     <artifactId>digital-education-service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.9-SNAPSHOT</version>
     <name>digital-education</name>
     <description>Digital education project</description>
 
@@ -40,6 +40,10 @@
         <repository>
             <id>releases</id>
             <url>https://nexusartifactory.paytm.com/repository/digital-education-maven-releases</url>
+        </repository>
+        <repository>
+            <id>snapshots</id>
+            <url>https://nexusartifactory.paytm.com/repository/digital-education-maven-snapshots</url>
         </repository>
     </repositories>
 
@@ -149,5 +153,14 @@
         </plugins>
     </build>
 
-
+    <distributionManagement>
+        <repository>
+            <id>releases</id>
+            <url>https://nexusartifactory.paytm.com/repository/digital-education-maven-releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <url>https://nexusartifactory.paytm.com/repository/digital-education-maven-snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>

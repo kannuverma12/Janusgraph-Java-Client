@@ -1,42 +1,52 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import com.google.common.collect.ImmutableMap;
-import com.paytm.digital.education.exception.BadRequestException;
-import com.paytm.digital.education.exception.EducationException;
-import com.paytm.digital.education.explore.constants.ExploreConstants;
+import com.paytm.digital.education.constant.ExploreConstants;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.ExamPaytmKeys;
-import com.paytm.digital.education.explore.database.entity.InstiPaytmKeys;
-import com.paytm.digital.education.explore.database.entity.Institute;
+import com.paytm.digital.education.database.entity.InstiPaytmKeys;
+import com.paytm.digital.education.database.entity.Institute;
 import com.paytm.digital.education.database.entity.PaytmKeys;
-import com.paytm.digital.education.explore.database.entity.School;
-import com.paytm.digital.education.explore.database.entity.SchoolPaytmKeys;
-import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.paytm.digital.education.database.entity.School;
+import com.paytm.digital.education.database.entity.SchoolPaytmKeys;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.exception.BadRequestException;
+import com.paytm.digital.education.exception.EducationException;
+import com.paytm.digital.education.constant.ExploreConstants;
+import com.paytm.digital.education.database.entity.Exam;
+import com.paytm.digital.education.database.entity.ExamPaytmKeys;
+import com.paytm.digital.education.database.entity.InstiPaytmKeys;
+import com.paytm.digital.education.database.entity.Institute;
+import com.paytm.digital.education.database.entity.PaytmKeys;
+import com.paytm.digital.education.database.entity.School;
+import com.paytm.digital.education.database.entity.SchoolPaytmKeys;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.request.dto.EntityData;
 import com.paytm.digital.education.explore.response.dto.dataimport.CatalogDataIngestionError;
 import com.paytm.digital.education.explore.service.ImportFromCatalogService;
-import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.explore.validators.ExploreValidator;
 import com.paytm.digital.education.mapping.ErrorEnum;
+import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
 public class ImportFromCatalogServiceImpl implements ImportFromCatalogService {
 
     private CommonMongoRepository commonMongoRepository;
-    private ExploreValidator exploreValidator;
+    private ExploreValidator      exploreValidator;
 
     @Override
     public List<CatalogDataIngestionError> ingestDataEntityWise(List<EntityData> entityDataList) {

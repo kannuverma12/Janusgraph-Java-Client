@@ -12,10 +12,10 @@ import static com.paytm.digital.education.explore.constants.CompareConstants.IS_
 import static com.paytm.digital.education.explore.constants.CompareConstants.NIRF;
 import static com.paytm.digital.education.explore.utility.CompareUtil.getInstituteName;
 
-import com.paytm.digital.education.explore.database.entity.Institute;
+import com.paytm.digital.education.database.entity.Institute;
 import com.paytm.digital.education.explore.enums.RankingSource;
 import com.paytm.digital.education.explore.response.dto.detail.Ranking;
-import com.paytm.digital.education.explore.utility.CommonUtil;
+import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.explore.utility.CompareUtil;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;

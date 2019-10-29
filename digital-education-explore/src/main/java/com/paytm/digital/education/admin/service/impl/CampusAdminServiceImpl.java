@@ -7,12 +7,12 @@ import com.paytm.digital.education.admin.response.CampusAdminResponse;
 import com.paytm.digital.education.admin.service.CampusAdminService;
 import com.paytm.digital.education.config.AwsConfig;
 import com.paytm.digital.education.config.GoogleConfig;
-import com.paytm.digital.education.explore.database.entity.CampusAmbassador;
-import com.paytm.digital.education.explore.database.entity.CampusEvent;
-import com.paytm.digital.education.explore.database.entity.CampusEngagement;
-import com.paytm.digital.education.explore.database.entity.Article;
-import com.paytm.digital.education.explore.database.entity.Institute;
-import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.database.entity.Article;
+import com.paytm.digital.education.database.entity.CampusAmbassador;
+import com.paytm.digital.education.database.entity.CampusEngagement;
+import com.paytm.digital.education.database.entity.CampusEvent;
+import com.paytm.digital.education.database.entity.Institute;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.service.helper.CampusEngagementHelper;
 import com.paytm.digital.education.explore.xcel.model.XcelArticle;
 import com.paytm.digital.education.explore.xcel.model.XcelCampusAmbassador;
@@ -22,7 +22,6 @@ import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import javafx.util.Pair;
 import lombok.AllArgsConstructor;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -30,29 +29,29 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Objects;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Arrays;
-import java.util.ArrayList;
+import java.util.Map;
+import java.util.Objects;
 
 import static com.mongodb.QueryOperators.EXISTS;
 import static com.mongodb.QueryOperators.NE;
+import static com.paytm.digital.education.constant.ExploreConstants.DIRECTORY_SEPARATOR_SLASH;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.explore.constants.AWSConstants.S3_RELATIVE_PATH_FOR_AMBASSADOR;
 import static com.paytm.digital.education.explore.constants.AWSConstants.S3_RELATIVE_PATH_FOR_ARTICLE;
 import static com.paytm.digital.education.explore.constants.AWSConstants.S3_RELATIVE_PATH_FOR_EVENT;
-import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.XCEL_DATE_FORMAT;
+import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.ARTICLES;
+import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.CAMPUS_AMBASSADORS;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.DB_DATE_FORMAT;
+import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.DRIVE_URL;
+import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.EVENTS;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.IMAGE;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.VIDEO;
-import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.CAMPUS_AMBASSADORS;
-import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.EVENTS;
-import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.ARTICLES;
+import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.XCEL_DATE_FORMAT;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.XCEL_SUBMITTED_DATE_FORMAT;
-import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.DRIVE_URL;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DIRECTORY_SEPARATOR_SLASH;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
 
 @Service
 @AllArgsConstructor
@@ -61,8 +60,8 @@ public class CampusAdminServiceImpl implements CampusAdminService {
 
     private CommonMongoRepository  commonMongoRepository;
     private CampusEngagementHelper campusEngagementHelper;
-    private UploadUtil uploadUtil;
-    private MongoOperations mongoOperations;
+    private UploadUtil             uploadUtil;
+    private MongoOperations        mongoOperations;
 
     @Override
     public CampusAdminResponse addAmbassadors(AmbassadorRequest ambassador) {

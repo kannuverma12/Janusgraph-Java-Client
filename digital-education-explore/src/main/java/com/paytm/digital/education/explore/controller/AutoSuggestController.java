@@ -1,6 +1,6 @@
 package com.paytm.digital.education.explore.controller;
 
-import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.enums.UserAction;
 import com.paytm.digital.education.explore.response.dto.suggest.AutoSuggestResponse;
 import com.paytm.digital.education.explore.service.impl.AutoSuggestServiceImpl;
@@ -8,7 +8,6 @@ import com.paytm.digital.education.explore.validators.AutoSuggestValidator;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -22,7 +21,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EDUCATION_BASE_URL;
+import static com.paytm.digital.education.constant.ExploreConstants.EDUCATION_BASE_URL;
 
 @Controller
 @AllArgsConstructor
@@ -50,7 +49,7 @@ public class AutoSuggestController {
             @RequestParam("size") @Min(1) Integer size,
             @RequestParam(value = "entity") @NotNull EducationEntity entity) {
         log.info("Received v1/autosuggest/getAll for entity :{}", entity.toString());
-        return autoSuggestServiceImpl.getAll(Arrays.asList(entity), true, size);
+        return autoSuggestServiceImpl.getAll(Arrays.asList(entity), size);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/autosuggest")

@@ -1,21 +1,20 @@
 package com.paytm.digital.education.explore.response.dto.search;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_SEARCH_CTA;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SCHOOL_SEARCH_CTA;
-import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.paytm.digital.education.dto.OfficialAddress;
+import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
-import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import com.paytm.digital.education.explore.response.dto.detail.CTAInfoHolder;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.util.List;
 import java.util.Map;
+
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_SEARCH_CTA;
+import static com.paytm.digital.education.enums.EducationEntity.INSTITUTE;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)

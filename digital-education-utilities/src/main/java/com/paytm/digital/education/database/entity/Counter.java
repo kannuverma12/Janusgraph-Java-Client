@@ -19,5 +19,4 @@ public class Counter {
 
     @Field("sequence")
     private long sequence;
-
 }

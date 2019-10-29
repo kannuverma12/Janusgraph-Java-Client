@@ -3,7 +3,7 @@ package com.paytm.digital.education.explore.es.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
+import com.paytm.digital.education.enums.es.DataSortOrder;
 import com.paytm.digital.education.explore.enums.ClassifierSortType;
 import lombok.Data;
 

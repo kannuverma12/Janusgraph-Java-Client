@@ -1,8 +1,8 @@
 package com.paytm.digital.education.explore.database.repository;
 
-import com.paytm.digital.education.explore.database.entity.Subscription;
-import com.paytm.digital.education.explore.enums.SubscribableEntityType;
-import com.paytm.digital.education.explore.enums.SubscriptionStatus;
+import com.paytm.digital.education.database.entity.Subscription;
+import com.paytm.digital.education.enums.SubscribableEntityType;
+import com.paytm.digital.education.enums.SubscriptionStatus;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;

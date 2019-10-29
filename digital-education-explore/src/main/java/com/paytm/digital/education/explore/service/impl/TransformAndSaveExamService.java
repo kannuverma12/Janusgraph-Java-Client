@@ -1,12 +1,12 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.EXAM_FILE_VERSION;
 import static com.paytm.digital.education.ingestion.constant.IngestionConstants.MERCHANT_CAREER_360;
 
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.database.ingestion.Exam;
-import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.service.helper.IncrementalDataHelper;
 import com.paytm.digital.education.explore.service.helper.StreamDataTranslator;
 import com.paytm.digital.education.mapping.ErrorEnum;
@@ -67,6 +67,8 @@ public class TransformAndSaveExamService {
                     String id = currentExam.getId();
                     if (StringUtils.isNotBlank(id)) {
                         exam.setId(id);
+                        exam.setStreamIds(exam.getStreamIds());
+                        exam.setPriority(exam.getPriority());
                     }
                     //set paytm stream
                     if (!CollectionUtils.isEmpty(exam.getDomains())) {

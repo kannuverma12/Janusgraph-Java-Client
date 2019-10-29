@@ -1,6 +1,6 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.service.EntityDetailsService;
 import lombok.AllArgsConstructor;
 
@@ -9,9 +9,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @AllArgsConstructor

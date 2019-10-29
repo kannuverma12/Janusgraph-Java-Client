@@ -1,7 +1,5 @@
 package com.paytm.digital.education.admin.controller;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EDUCATION_BASE_URL;
-
 import com.paytm.digital.education.admin.factory.DataExportFactory;
 import com.paytm.digital.education.admin.factory.DataImportFactory;
 import com.paytm.digital.education.admin.validator.ImportDataValidator;
@@ -21,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.NotEmpty;
+
+import static com.paytm.digital.education.constant.ExploreConstants.EDUCATION_BASE_URL;
 
 @RestController
 @Api(value = "import/export sheet data", description = "Import/export allowed google sheet data to mongo db.")

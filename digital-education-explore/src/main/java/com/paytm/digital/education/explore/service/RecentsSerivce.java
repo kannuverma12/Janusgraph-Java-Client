@@ -1,6 +1,6 @@
 package com.paytm.digital.education.explore.service;
 
-import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.es.model.SearchHistoryEsDoc;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 

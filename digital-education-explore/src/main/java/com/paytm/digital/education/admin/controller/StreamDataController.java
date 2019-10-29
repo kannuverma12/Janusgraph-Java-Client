@@ -1,10 +1,10 @@
 package com.paytm.digital.education.admin.controller;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EDUCATION_BASE_URL;
+import static com.paytm.digital.education.constant.ExploreConstants.EDUCATION_BASE_URL;
 
 import com.paytm.digital.education.admin.service.impl.StreamDataServiceImpl;
 import com.paytm.digital.education.admin.validator.ImportDataValidator;
-import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.paytm.digital.education.enums.EducationEntity;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;

@@ -1,11 +1,11 @@
 package com.paytm.digital.education.explore.service.helper;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.BANNER;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.BANNER_APP;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DATA_STRING;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.constant.ExploreConstants.BANNER;
+import static com.paytm.digital.education.constant.ExploreConstants.BANNER_APP;
+import static com.paytm.digital.education.constant.ExploreConstants.DATA_STRING;
+import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
 
-import com.paytm.digital.education.explore.enums.Client;
+import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.explore.response.dto.common.BannerData;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import lombok.AllArgsConstructor;

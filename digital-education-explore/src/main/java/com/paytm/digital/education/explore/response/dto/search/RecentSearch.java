@@ -1,7 +1,6 @@
 package com.paytm.digital.education.explore.response.dto.search;
 
-import com.paytm.digital.education.explore.enums.EducationEntity;
-import com.paytm.digital.education.explore.response.dto.search.SearchBaseData;
+import com.paytm.digital.education.enums.EducationEntity;
 import lombok.Data;
 
 @Data

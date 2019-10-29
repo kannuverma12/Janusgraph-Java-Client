@@ -1,7 +1,7 @@
 package com.paytm.digital.education.explore.thirdparty.lead;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.explore.enums.Career360EntityType;
+import com.paytm.digital.education.enums.Career360EntityType;
 import lombok.Data;
 
 @Data

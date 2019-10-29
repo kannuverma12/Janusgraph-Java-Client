@@ -1,7 +1,7 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import com.paytm.digital.education.explore.enums.Client;
-import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.paytm.digital.education.enums.Client;
+import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.search.InstituteData;
 import com.paytm.digital.education.explore.response.dto.search.SearchBaseData;
@@ -17,7 +17,6 @@ import com.paytm.digital.education.utility.JsonUtils;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -29,9 +28,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 
-import static com.paytm.digital.education.explore.enums.EducationEntity.COURSE;
-import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
-
+import static com.paytm.digital.education.enums.EducationEntity.COURSE;
+import static com.paytm.digital.education.enums.EducationEntity.INSTITUTE;
 
 @Service
 @AllArgsConstructor

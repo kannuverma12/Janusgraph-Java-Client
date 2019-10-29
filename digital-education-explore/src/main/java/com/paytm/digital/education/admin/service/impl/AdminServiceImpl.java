@@ -1,29 +1,16 @@
 package com.paytm.digital.education.admin.service.impl;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DIRECTORY_SEPARATOR_SLASH;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.HIGHLIGHT;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SCHOOL;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.COLLEGE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.GALLERY_LOGO;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.LOGO;
-
 import com.paytm.digital.education.admin.response.DocumentUploadResponse;
 import com.paytm.digital.education.admin.service.AdminService;
 import com.paytm.digital.education.config.AwsConfig;
-import com.paytm.digital.education.explore.database.entity.Institute;
 import com.paytm.digital.education.database.entity.Exam;
-import com.paytm.digital.education.explore.database.entity.School;
-
-import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.database.entity.Institute;
+import com.paytm.digital.education.database.entity.School;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.service.S3Service;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
@@ -31,12 +18,23 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
-import java.util.Arrays;
 import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Map;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import static com.paytm.digital.education.constant.CommonConstants.LOGO;
+import static com.paytm.digital.education.constant.ExploreConstants.COLLEGE;
+import static com.paytm.digital.education.constant.ExploreConstants.DIRECTORY_SEPARATOR_SLASH;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.GALLERY_LOGO;
+import static com.paytm.digital.education.constant.ExploreConstants.HIGHLIGHT;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_ID;
 
 @Service
 @AllArgsConstructor
@@ -44,7 +42,7 @@ public class AdminServiceImpl implements AdminService {
 
     private static final Logger log = LoggerFactory.getLogger(AdminServiceImpl.class);
 
-    private S3Service s3Service;
+    private S3Service             s3Service;
     private CommonMongoRepository commonMongoRepository;
 
     @Override

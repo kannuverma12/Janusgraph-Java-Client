@@ -1,24 +1,15 @@
 package com.paytm.digital.education.explore.service.helper;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DIRECTORY_SEPARATOR_SLASH;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.WEB_FORM_URI_PREFIX;
-import static com.paytm.digital.education.explore.enums.Client.APP;
-import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.ACTIVE_DISPLAY_NAME;
-import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.ACTIVE_ICON;
-import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.CLIENT;
-import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.DISPLAY_NAME;
-import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.ICON;
-import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.WEB;
-
-import com.paytm.digital.education.explore.constants.ExploreConstants;
+import com.paytm.digital.education.constant.ExploreConstants;
+import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.explore.enums.CTAType;
-import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.detail.CTAInfoHolder;
 import com.paytm.digital.education.explore.service.external.FeeUrlGenerator;
-import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.digital.education.utility.CommonUtil;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,8 +21,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.paytm.digital.education.constant.ExploreConstants.DIRECTORY_SEPARATOR_SLASH;
+import static com.paytm.digital.education.constant.ExploreConstants.DISPLAY_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.ICON;
+import static com.paytm.digital.education.constant.ExploreConstants.WEB_FORM_URI_PREFIX;
+import static com.paytm.digital.education.enums.Client.APP;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.ACTIVE_DISPLAY_NAME;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.ACTIVE_ICON;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.CLIENT;
+import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.WEB;
+
 @Service
-@Slf4j
 public class CTAHelper {
 
     @Autowired
@@ -48,6 +48,8 @@ public class CTAHelper {
 
     @Value("${forms.web.url.prefix}")
     private String formsWebUrlPrefix;
+
+    private static Logger log = LoggerFactory.getLogger(CTAHelper.class);
 
     public List<CTA> buildCTA(CTAInfoHolder ctaInfoHolder, Client client) {
         String key = ctaInfoHolder.ctaDbPropertyKey();
@@ -179,7 +181,6 @@ public class CTAHelper {
                 .build();
     }
 
-
     private CTA getFeeCTA(Long pid, Client client, Map<String, String> ctaConfiguration, String key,
             String namespace) {
         String name = ctaConfiguration.get(CTA.Constants.DISPLAY_NAME);
@@ -189,6 +190,7 @@ public class CTAHelper {
         if (!checkIfNameExists(name, CTAType.FEE, key, namespace)) {
             return null;
         }
+
         if (StringUtils.isBlank(feeUrl)) {
             log.error("Unable to build fee url for pid {}", pid);
             return null;

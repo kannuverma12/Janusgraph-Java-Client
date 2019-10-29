@@ -1,11 +1,11 @@
 package com.paytm.digital.education.explore.validators;
 
-import com.paytm.digital.education.exception.BadRequestException;
-import com.paytm.digital.education.explore.constants.ExploreConstants;
+import com.paytm.digital.education.constant.ExploreConstants;
 import com.paytm.digital.education.database.entity.Exam;
-import com.paytm.digital.education.explore.database.entity.Institute;
-import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.explore.utility.CommonUtil;
+import com.paytm.digital.education.database.entity.Institute;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.exception.BadRequestException;
+import com.paytm.digital.education.utility.CommonUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,12 +13,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_NAME;
-import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
-import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_NAME;
 
 @Service
 @AllArgsConstructor

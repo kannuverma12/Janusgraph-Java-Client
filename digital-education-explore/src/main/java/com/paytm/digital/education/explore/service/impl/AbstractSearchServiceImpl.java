@@ -1,13 +1,6 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.RANGE;
-import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.GEO_DISTANCE;
-import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_SORT_FIELD;
-
 import com.paytm.digital.education.elasticsearch.constants.ESConstants;
-import com.paytm.digital.education.elasticsearch.enums.AggregationType;
-import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
-import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
@@ -15,9 +8,12 @@ import com.paytm.digital.education.elasticsearch.models.FilterField;
 import com.paytm.digital.education.elasticsearch.models.Operator;
 import com.paytm.digital.education.elasticsearch.models.SearchField;
 import com.paytm.digital.education.elasticsearch.models.SortField;
+import com.paytm.digital.education.enums.Client;
+import com.paytm.digital.education.enums.es.AggregationType;
+import com.paytm.digital.education.enums.es.DataSortOrder;
+import com.paytm.digital.education.enums.es.FilterQueryType;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.exception.EducationException;
-import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.es.model.ClassifierSearchDoc;
 import com.paytm.digital.education.explore.es.model.CourseSearch;
 import com.paytm.digital.education.explore.es.model.ExamSearch;
@@ -32,27 +28,27 @@ import com.paytm.digital.education.explore.response.builders.SearchResponseBuild
 import com.paytm.digital.education.explore.response.dto.search.ClassificationResponse;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.service.helper.CTAHelper;
-import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.search.service.ISearchService;
+import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.utility.HierarchyIdentifierUtils;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
-import javax.annotation.PostConstruct;
 
+import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.RANGE;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_SORT_FIELD;
 
 @Component
 public abstract class AbstractSearchServiceImpl {

@@ -17,6 +17,8 @@ public class WebConfig implements WebMvcConfigurer {
     private final String[] fblAllowedHosts;
     private final String[] fblAllowedHeaders;
     private final String[] allowedMethods;
+    private final String[] coachingAllowedHosts;
+    private final String[] coachingAllowedHeaders;
 
 
     public WebConfig(
@@ -25,6 +27,9 @@ public class WebConfig implements WebMvcConfigurer {
 
             @Value("#{'${fbl.cors.allowed.hosts}'.split(',')}") final String[] fblAllowedHosts,
             @Value("#{'${fbl.cors.allowed.headers}'.split(',')}") final String[] fblAllowedHeaders,
+
+            @Value("#{'${coaching.cors.allowed.hosts}'.split(',')}") final String[] coachingAllowedHosts,
+            @Value("#{'${coaching.cors.allowed.headers}'.split(',')}") final String[] coachingAllowedHeaders,
 
             @Value("#{'${cors.allowed.methods}'.split(',')}") final String[] allowedMethods) {
         this.exploreAllowedHosts = Arrays.stream(exploreAllowedHosts)
@@ -40,6 +45,13 @@ public class WebConfig implements WebMvcConfigurer {
                 .flatMap(s -> Stream.of("http://" + s, "https://" + s))
                 .toArray(String[]::new);
         this.fblAllowedHeaders = fblAllowedHeaders;
+
+        this.coachingAllowedHosts = Arrays.stream(coachingAllowedHosts)
+                .map(StringUtils::trim)
+                .filter(StringUtils::isNotBlank)
+                .flatMap(s -> Stream.of("http://" + s, "https://" + s))
+                .toArray(String[]::new);
+        this.coachingAllowedHeaders = coachingAllowedHeaders;
 
         this.allowedMethods = allowedMethods;
     }
@@ -58,5 +70,11 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedHeaders(fblAllowedHeaders)
                 .allowedMethods(allowedMethods)
                 .allowCredentials(true);
+
+        registry
+                .addMapping("/coaching/**")
+                .allowedOrigins(coachingAllowedHosts)
+                .allowedHeaders(coachingAllowedHeaders)
+                .allowedMethods(allowedMethods);
     }
 }

@@ -1,10 +1,8 @@
 package com.paytm.digital.education.explore.database.repository;
 
-import com.paytm.digital.education.explore.database.entity.Lead;
-import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.paytm.digital.education.database.entity.Lead;
+import com.paytm.digital.education.enums.EducationEntity;
 import lombok.AllArgsConstructor;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;

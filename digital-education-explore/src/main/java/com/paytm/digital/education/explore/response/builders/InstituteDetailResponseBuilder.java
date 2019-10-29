@@ -2,18 +2,18 @@ package com.paytm.digital.education.explore.response.builders;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.paytm.digital.education.explore.database.entity.Alumni;
-import com.paytm.digital.education.explore.database.entity.CampusAmbassador;
-import com.paytm.digital.education.explore.database.entity.CampusEngagement;
-import com.paytm.digital.education.explore.database.entity.Course;
+import com.paytm.digital.education.database.entity.Alumni;
+import com.paytm.digital.education.database.entity.CampusAmbassador;
+import com.paytm.digital.education.database.entity.CampusEngagement;
+import com.paytm.digital.education.database.entity.Course;
 import com.paytm.digital.education.database.entity.Exam;
-import com.paytm.digital.education.explore.database.entity.InstiPaytmKeys;
-import com.paytm.digital.education.explore.database.entity.Institute;
-import com.paytm.digital.education.explore.enums.Client;
-import com.paytm.digital.education.explore.enums.CourseLevel;
+import com.paytm.digital.education.database.entity.InstiPaytmKeys;
+import com.paytm.digital.education.database.entity.Institute;
+import com.paytm.digital.education.dto.OfficialAddress;
+import com.paytm.digital.education.enums.Client;
+import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.PublishStatus;
 import com.paytm.digital.education.explore.response.dto.common.BannerData;
-import com.paytm.digital.education.explore.response.dto.common.OfficialAddress;
 import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
 import com.paytm.digital.education.explore.response.dto.detail.Ranking;
 import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
@@ -21,13 +21,13 @@ import com.paytm.digital.education.explore.service.helper.CampusEngagementHelper
 import com.paytm.digital.education.explore.service.helper.CourseDetailHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.service.helper.DetailPageSectionHelper;
-import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
 import com.paytm.digital.education.explore.service.helper.FacilityDataHelper;
 import com.paytm.digital.education.explore.service.helper.GalleryDataHelper;
 import com.paytm.digital.education.explore.service.helper.PlacementDataHelper;
 import com.paytm.digital.education.explore.service.helper.StreamDataHelper;
 import com.paytm.digital.education.explore.service.impl.SimilarInstituteServiceImpl;
-import com.paytm.digital.education.explore.utility.CommonUtil;
+import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
+import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import javafx.util.Pair;
@@ -51,16 +51,16 @@ import java.util.TreeMap;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.APPROVALS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.CAREER_LOGO;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_PREFIX;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.NIRF_LOGO;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.NOTABLE_ALUMNI_PLACEHOLDER;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.OVERALL_RANKING;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKING_CAREER;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKING_LOGO;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.RANKING_NIRF;
-import static com.paytm.digital.education.explore.enums.EducationEntity.INSTITUTE;
+import static com.paytm.digital.education.constant.ExploreConstants.APPROVALS;
+import static com.paytm.digital.education.constant.ExploreConstants.CAREER_LOGO;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_PREFIX;
+import static com.paytm.digital.education.constant.ExploreConstants.NIRF_LOGO;
+import static com.paytm.digital.education.constant.ExploreConstants.NOTABLE_ALUMNI_PLACEHOLDER;
+import static com.paytm.digital.education.constant.ExploreConstants.OVERALL_RANKING;
+import static com.paytm.digital.education.constant.ExploreConstants.RANKING_CAREER;
+import static com.paytm.digital.education.constant.ExploreConstants.RANKING_LOGO;
+import static com.paytm.digital.education.constant.ExploreConstants.RANKING_NIRF;
+import static com.paytm.digital.education.enums.EducationEntity.INSTITUTE;
 
 @Service
 @AllArgsConstructor
@@ -248,10 +248,10 @@ public class InstituteDetailResponseBuilder {
 
     //can delete this in later sprint
     private List<Ranking> getRankingList(
-            List<com.paytm.digital.education.explore.database.entity.Ranking> rankingList) {
+            List<com.paytm.digital.education.database.entity.Ranking> rankingList) {
         Map<Integer, List<Ranking>> rMap = new TreeMap<>();
         if (!CollectionUtils.isEmpty(rankingList)) {
-            for (com.paytm.digital.education.explore.database.entity.Ranking r : rankingList) {
+            for (com.paytm.digital.education.database.entity.Ranking r : rankingList) {
                 String rStream = r.getStream();
                 String rType = r.getRankingType();
                 Ranking rDto = getResponseRanking(r);
@@ -299,7 +299,7 @@ public class InstituteDetailResponseBuilder {
     }
 
     private Ranking getResponseRanking(
-            com.paytm.digital.education.explore.database.entity.Ranking dbRanking) {
+            com.paytm.digital.education.database.entity.Ranking dbRanking) {
         Ranking r = new Ranking();
         r.setRank(dbRanking.getRank());
         r.setSource(dbRanking.getSource());
@@ -367,7 +367,7 @@ public class InstituteDetailResponseBuilder {
     }
 
     private Map<String, List<Ranking>> getRankingDetails(
-            List<com.paytm.digital.education.explore.database.entity.Ranking> rankingList) {
+            List<com.paytm.digital.education.database.entity.Ranking> rankingList) {
         if (!CollectionUtils.isEmpty(rankingList)) {
             Map<String, List<Ranking>> ratingMap = rankingList.stream()
                     .filter(r -> (Objects.nonNull(r.getStream()) || Objects

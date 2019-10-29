@@ -1,9 +1,9 @@
 package com.paytm.digital.education.explore.service.external;
 
-import com.paytm.digital.education.explore.database.entity.BaseLeadResponse;
-import com.paytm.digital.education.explore.database.entity.Lead;
-import com.paytm.digital.education.explore.enums.EducationEntity;
-import com.paytm.digital.education.explore.enums.LeadAction;
+import com.paytm.digital.education.database.entity.BaseLeadResponse;
+import com.paytm.digital.education.database.entity.Lead;
+import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.enums.LeadAction;
 import com.paytm.digital.education.explore.thirdparty.lead.Career360LeadRequest;
 import com.paytm.digital.education.explore.thirdparty.lead.Career360LeadResponse;
 import com.paytm.digital.education.explore.thirdparty.lead.Career360UnfollowRequest;

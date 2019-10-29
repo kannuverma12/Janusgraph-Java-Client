@@ -1,13 +1,13 @@
 package com.paytm.digital.education.explore.service.helper;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DATA_STRING;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.WIDGETS;
+import static com.paytm.digital.education.constant.ExploreConstants.DATA_STRING;
+import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.constant.ExploreConstants.WIDGETS;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.paytm.digital.education.explore.response.dto.common.Widget;
 import com.paytm.digital.education.explore.response.dto.common.WidgetData;
-import com.paytm.digital.education.explore.utility.CommonUtil;
+import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;

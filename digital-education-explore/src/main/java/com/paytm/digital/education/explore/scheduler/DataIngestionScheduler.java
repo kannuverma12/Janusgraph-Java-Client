@@ -1,6 +1,6 @@
 package com.paytm.digital.education.explore.scheduler;
 
-import com.paytm.digital.education.explore.database.entity.CronProperties;
+import com.paytm.digital.education.database.entity.CronProperties;
 import com.paytm.digital.education.explore.database.repository.CronPropertiesRepository;
 import com.paytm.digital.education.explore.service.impl.ImportIncrementalDataService;
 import com.paytm.education.logger.Logger;

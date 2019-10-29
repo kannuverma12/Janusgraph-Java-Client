@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import com.paytm.digital.education.explore.database.entity.CronProperties;
+import com.paytm.digital.education.database.entity.CronProperties;
 import com.paytm.digital.education.explore.database.repository.CronPropertiesRepository;
 
 

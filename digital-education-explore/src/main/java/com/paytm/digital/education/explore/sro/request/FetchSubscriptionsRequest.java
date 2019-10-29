@@ -1,6 +1,6 @@
 package com.paytm.digital.education.explore.sro.request;
 
-import com.paytm.digital.education.explore.enums.SubscribableEntityType;
+import com.paytm.digital.education.enums.SubscribableEntityType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

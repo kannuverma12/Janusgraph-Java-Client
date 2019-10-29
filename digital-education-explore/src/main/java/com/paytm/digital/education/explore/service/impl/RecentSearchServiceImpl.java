@@ -1,11 +1,11 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
-import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
+import com.paytm.digital.education.constant.ExploreConstants;
+import com.paytm.digital.education.enums.es.DataSortOrder;
+import com.paytm.digital.education.enums.es.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
-import com.paytm.digital.education.explore.constants.ExploreConstants;
-import com.paytm.digital.education.explore.enums.Client;
+import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.explore.es.model.SearchHistoryEsDoc;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.search.RecentSearch;
@@ -13,7 +13,6 @@ import com.paytm.digital.education.explore.response.dto.search.SearchBaseData;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.response.dto.search.SearchResult;
 import com.paytm.digital.education.explore.service.helper.SearchAggregateHelper;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

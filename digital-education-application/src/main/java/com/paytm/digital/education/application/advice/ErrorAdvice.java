@@ -1,23 +1,14 @@
 package com.paytm.digital.education.application.advice;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.ERROR_IN_FIELD_VALUE_TEMPLATE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.USER_UNAUTHORIZED_MESSAGE;
-import static com.paytm.digital.education.utility.ArrayUtils.padArray;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.paytm.digital.education.exception.EducationException;
+import com.paytm.digital.education.exception.InvalidRequestException;
 import com.paytm.digital.education.exception.ValidationException;
 import com.paytm.digital.education.mapping.ErrorEnum;
-
-import java.util.Optional;
-import java.util.Set;
-import javax.validation.ConstraintViolationException;
-
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
@@ -37,6 +28,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import javax.validation.ConstraintViolationException;
+import java.util.Optional;
+import java.util.Set;
+
+import static com.paytm.digital.education.constant.ExploreConstants.ERROR_IN_FIELD_VALUE_TEMPLATE;
+import static com.paytm.digital.education.constant.ExploreConstants.USER_UNAUTHORIZED_MESSAGE;
+import static com.paytm.digital.education.utility.ArrayUtils.padArray;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 @RestController
 @RestControllerAdvice
@@ -150,6 +150,14 @@ public class ErrorAdvice extends ResponseEntityExceptionHandler {
         String name = ex.getParameterName();
         String errorMessage = name + " is missing";
         return new ResponseEntity<>(new ErrorDetails(400, errorMessage),
+                HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidRequestException.class)
+    public final ResponseEntity<ErrorDetails> handleInvalidException(Throwable ex,
+            WebRequest request) {
+        return new ResponseEntity<ErrorDetails>(
+                new ErrorDetails(HttpStatus.BAD_REQUEST.value(), ex.getMessage()),
                 HttpStatus.BAD_REQUEST);
     }
 

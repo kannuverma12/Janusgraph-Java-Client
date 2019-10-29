@@ -3,7 +3,7 @@ package com.paytm.digital.education.explore.response.dto.detail.school.detail;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.explore.database.entity.SchoolFeeDetails;
+import com.paytm.digital.education.database.entity.SchoolFeeDetails;
 import com.paytm.digital.education.explore.response.dto.common.BannerData;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.detail.Attribute;
@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Map;
-
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)

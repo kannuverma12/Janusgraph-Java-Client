@@ -2,15 +2,15 @@ package com.paytm.digital.education.explore.service.helper;
 
 import com.paytm.digital.education.database.entity.FailedData;
 import com.paytm.digital.education.database.repository.FailedDataRepository;
-import com.paytm.digital.education.explore.database.entity.Article;
-import com.paytm.digital.education.explore.database.entity.CampusAmbassador;
-import com.paytm.digital.education.explore.database.entity.CampusEngagement;
-import com.paytm.digital.education.explore.database.entity.CampusEvent;
-import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.database.entity.Article;
+import com.paytm.digital.education.database.entity.CampusAmbassador;
+import com.paytm.digital.education.database.entity.CampusEngagement;
+import com.paytm.digital.education.database.entity.CampusEvent;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.response.dto.detail.Ambassador;
 import com.paytm.digital.education.explore.response.dto.detail.CampusArticle;
 import com.paytm.digital.education.explore.response.dto.detail.CampusEventDetail;
-import com.paytm.digital.education.explore.utility.CommonUtil;
+import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.DateUtil;
 import lombok.AllArgsConstructor;
@@ -42,8 +42,8 @@ import static com.paytm.digital.education.explore.constants.CampusEngagementCons
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.MEDIA;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.NAMESPACE;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.TYPE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
 
 
 @Service

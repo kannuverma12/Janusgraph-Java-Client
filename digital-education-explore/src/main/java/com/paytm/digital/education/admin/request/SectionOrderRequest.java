@@ -3,7 +3,7 @@ package com.paytm.digital.education.admin.request;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.explore.enums.Client;
+import com.paytm.digital.education.enums.Client;
 import lombok.Data;
 import org.springframework.validation.annotation.Validated;
 

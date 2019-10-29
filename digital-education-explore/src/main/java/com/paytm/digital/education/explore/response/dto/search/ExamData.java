@@ -1,17 +1,17 @@
 package com.paytm.digital.education.explore.response.dto.search;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_SEARCH_CTA;
-
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.detail.CTAInfoHolder;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.springframework.data.mongodb.core.mapping.Field;
+
+import java.util.List;
+
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SEARCH_CTA;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
