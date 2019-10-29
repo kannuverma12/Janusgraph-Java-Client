@@ -13,6 +13,10 @@ import java.util.List;
 
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SEARCH_CTA;
 
+import java.util.List;
+
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SEARCH_CTA;
+
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ExamData extends SearchBaseData implements CTAInfoHolder {

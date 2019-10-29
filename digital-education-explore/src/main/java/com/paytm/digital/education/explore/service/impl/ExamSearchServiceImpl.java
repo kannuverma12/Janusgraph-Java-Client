@@ -59,10 +59,10 @@ import static com.paytm.digital.education.constant.ExploreConstants.RESULT;
 import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_ANALYZER_EXAM;
 import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_EXAM_LEVEL;
 import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_INDEX_EXAM;
-import static com.paytm.digital.education.constant.ExploreConstants.STREAM_IDS;
 import static com.paytm.digital.education.constant.ExploreConstants.SYLLABUS_TAB;
 import static com.paytm.digital.education.constant.ExploreConstants.YYYY_MM;
 import static com.paytm.digital.education.enums.es.FilterQueryType.TERMS;
+import static com.paytm.digital.education.constant.ExploreConstants.STREAM_IDS;
 
 @Service
 @AllArgsConstructor
