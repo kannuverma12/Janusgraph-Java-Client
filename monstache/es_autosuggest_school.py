@@ -55,7 +55,7 @@ def getStateData(stateNames):
 print "initialize scroll.. "
 # Init scroll by search
 esSchoolData = es.search(
-    index='education_search_school_v1',
+    index='education_search_school_v2',
     scroll='2m',
     size=100,
     body={}
