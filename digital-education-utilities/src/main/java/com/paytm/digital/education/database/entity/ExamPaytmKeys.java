@@ -26,4 +26,16 @@ public class ExamPaytmKeys extends PaytmKeys {
     @Field("webFormUriPrefix")
     private String webFormUriPrefix;
 
+    @Field("terms_and_conditions")
+    @JsonProperty("terms_and_conditions")
+    private String termsAndConditions;
+
+    @Field("privacy_policies")
+    @JsonProperty("privacy_policies")
+    private String privacyPolicies;
+
+    @Field("disclaimer")
+    @JsonProperty("disclaimer")
+    private String disclaimer;
+
 }
