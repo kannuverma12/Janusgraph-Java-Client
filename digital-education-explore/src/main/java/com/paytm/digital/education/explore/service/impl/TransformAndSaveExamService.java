@@ -1,21 +1,15 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
-import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.EXAM_FILE_VERSION;
-import static com.paytm.digital.education.ingestion.constant.IngestionConstants.MERCHANT_CAREER_360;
-
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.database.ingestion.Exam;
 import com.paytm.digital.education.explore.service.helper.IncrementalDataHelper;
-import com.paytm.digital.education.explore.service.helper.StreamDataTranslator;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,15 +20,18 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.EXAM_FILE_VERSION;
+
 @AllArgsConstructor
 @Service
+
 public class TransformAndSaveExamService {
 
     private static Logger log = LoggerFactory.getLogger(TransformAndSaveExamService.class);
 
     private IncrementalDataHelper incrementalDataHelper;
     private CommonMongoRepository commonMongoRepository;
-    private StreamDataTranslator streamDataTranslator;
 
     public void transformAndSave(List<Exam> exams, Boolean versionUpdate) {
         try {
@@ -69,12 +66,6 @@ public class TransformAndSaveExamService {
                         exam.setId(id);
                         exam.setStreamIds(exam.getStreamIds());
                         exam.setPriority(exam.getPriority());
-                    }
-                    //set paytm stream
-                    if (!CollectionUtils.isEmpty(exam.getDomains())) {
-                        exam.setStreamIds(streamDataTranslator
-                                .getPaytmStreams(exam.getDomains(), MERCHANT_CAREER_360,
-                                        exam.getExamId(), Exam.class));
                     }
                     exam.setPaytmKeys(currentExam.getPaytmKeys());
                 }
