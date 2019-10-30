@@ -20,9 +20,9 @@ public class StreamDataConverter {
         if (Objects.nonNull(form)) {
             return StreamDataRequest.builder()
                     .streamId(form.getStreamId())
-                    .name(form.getStreamName())
-                    .shortName(form.getShortName())
-                    .logo(form.getLogo())
+                    .name(form.getStreamName().trim())
+                    .shortName(form.getShortName().trim())
+                    .logo(form.getLogo().trim())
                     .priority(form.getGlobalPriority())
                     .isEnabled(stringToBoolean(
                             form.getStatusActive()))

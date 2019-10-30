@@ -3,15 +3,13 @@ package com.paytm.digital.education.ingestion.sheets;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.ingestion.annotation.GoogleSheetColumnName;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Data;
+import lombok.ToString;
 
-@Getter
+@Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ExamStreamForm {
 
@@ -31,12 +29,12 @@ public class ExamStreamForm {
     @GoogleSheetColumnName("Global Priority")
     private Integer globalPriority;
 
-    @JsonProperty("stream1")
-    @GoogleSheetColumnName("Stream 1")
+    @JsonProperty("merchant_stream")
+    @GoogleSheetColumnName("Merchant Stream")
     private String merchantStream;
 
-    @JsonProperty("stream2")
-    @GoogleSheetColumnName("Stream 2")
+    @JsonProperty("paytm_stream")
+    @GoogleSheetColumnName("Paytm Stream")
     private String paytmStream;
 
     @JsonProperty("status_active")

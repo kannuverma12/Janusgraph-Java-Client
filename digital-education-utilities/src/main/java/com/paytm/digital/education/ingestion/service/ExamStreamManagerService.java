@@ -7,6 +7,7 @@ import static com.paytm.digital.education.mapping.ErrorEnum.NO_SUCH_MERCHANT_STR
 import static com.paytm.digital.education.mapping.ErrorEnum.NO_SUCH_PAYTM_STREAM;
 import static com.paytm.digital.education.utility.CommonUtils.stringToBoolean;
 
+import com.google.api.client.json.Json;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.ExamStreamEntity;
 import com.paytm.digital.education.database.entity.MerchantStreamEntity;
@@ -19,6 +20,7 @@ import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.exception.EducationException;
 import com.paytm.digital.education.exception.InvalidRequestException;
 import com.paytm.digital.education.ingestion.sheets.ExamStreamForm;
+import com.paytm.digital.education.utility.JsonUtils;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import org.apache.commons.lang3.StringUtils;
@@ -72,13 +74,13 @@ public class ExamStreamManagerService {
 
         Map<String, StreamEntity> streamEntityMap = getPaytmStreamMap();
         if (!streamEntityMap.containsKey(examStreamForm.getPaytmStream())) {
-            new EducationException(NO_SUCH_PAYTM_STREAM, NO_SUCH_PAYTM_STREAM.getExternalMessage(),
+            throw new EducationException(NO_SUCH_PAYTM_STREAM, NO_SUCH_PAYTM_STREAM.getExternalMessage(),
                     new Object[] {examStreamForm.getPaytmStream()});
         }
 
         Map<String, MerchantStreamEntity> merchantStreamEntityMap = getMerchantStreamMap(MERCHANT_CAREER_360);
         if (!merchantStreamEntityMap.containsKey(examStreamForm.getMerchantStream())) {
-            new EducationException(NO_SUCH_MERCHANT_STREAM,
+            throw new EducationException(NO_SUCH_MERCHANT_STREAM,
                     NO_SUCH_MERCHANT_STREAM.getExternalMessage(),
                     new Object[] {examStreamForm.getMerchantStream(), MERCHANT_CAREER_360});
         }
