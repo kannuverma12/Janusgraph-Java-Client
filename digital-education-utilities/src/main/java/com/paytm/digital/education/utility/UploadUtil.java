@@ -126,7 +126,7 @@ public class UploadUtil {
             return new Pair<>(imageUrl, mimeType);
         } catch (Exception e) {
             log.error("Unable to upload file for file : {}, entityId : {} and the exception : {}",
-                    fileUrl, entityId, e);
+                    e, fileUrl, entityId);
             throw new EducationException(ERROR_IN_IMPORT, ERROR_IN_IMPORT.getExternalMessage(),
                     new Object[]{String.format("Failed to upload file from google drive to s3, "
                             + "entityId : %s, fileUrl : %s", entityId, fileUrl)});

@@ -88,7 +88,7 @@ public abstract class AbstractImportService {
                     .dataRangeTemplate(dataRangeTemplate)
                     .build();
         } catch (final NullPointerException e) {
-            log.error("Got exception for propertiesRequest: {}, exception: ", request, e);
+            log.error("Got exception for propertiesRequest: {}, exception: ", e, request);
             return null;
         }
     }
@@ -229,7 +229,6 @@ public abstract class AbstractImportService {
 
     protected String uploadFile(final String driveImageUrl, final String imagePrefix)
             throws EducationException {
-
         if (StringUtils.isEmpty(driveImageUrl) || StringUtils.isEmpty(imagePrefix)) {
             log.error("Got empty upload file request, driveImageUrl: {}, imagePrefix: {}",
                     driveImageUrl, imagePrefix);
@@ -243,7 +242,7 @@ public abstract class AbstractImportService {
                         this.educationS3BucketName + this.educationS3Path,
                         GoogleConfig.getExploreCredentialFileName(),
                         GoogleConfig.getExploreCredentialFolderPath());
-        log.debug("fileNameAndMimeTypePair received from upload entitiId : {}, pair : {}",
+        log.debug("fileNameAndMimeTypePair received from upload entityId : {}, pair : {}",
                 fileNameAndMimeTypePair.toString());
 
         if (null != fileNameAndMimeTypePair.getKey()) {

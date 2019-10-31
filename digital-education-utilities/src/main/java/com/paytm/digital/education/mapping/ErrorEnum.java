@@ -166,9 +166,11 @@ public enum ErrorEnum {
             "Requested paytm stream id : %s doesn't exist in our system. Please provide a valid paytm stream id.",
             BAD_REQUEST, 1),
     PAYTM_STREAM_DISABLED(4071, "Requested paytm stream id : %s is disabled.", BAD_REQUEST, 1),
-    GEO_DISTANCE_INVALID(4067,
+    GEO_DISTANCE_INVALID(4072,
             "Invalid geodistance. Please provide geodistance less than %s kms in request.",
-            HttpStatus.BAD_REQUEST, 1);
+            BAD_REQUEST, 1),
+    ENTITY_NOT_SUPPORTED(4073, "Requested entity not supported for this operation.", BAD_REQUEST,
+            0);
 
     private final int        internalCode;
     private final String     externalMessage;

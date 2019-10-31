@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -46,8 +47,7 @@ public class StreamDataImportService extends AbstractImportService implements Im
 
         final List<Object> streamFormData = this.getFormData(dataImportPropertiesResponse);
 
-        final List<StreamForm> failedStreamFormList = this.getFailedData(
-                TYPE, StreamForm.class, STREAM_COMPONENT);
+        final List<StreamForm> failedStreamFormList = new ArrayList<>();
 
         return this.processRecords(streamFormData,
                 failedStreamFormList, StreamForm.class, TYPE);
@@ -65,7 +65,7 @@ public class StreamDataImportService extends AbstractImportService implements Im
                 this.streamManagerService.updateStream(request);
             }
         } catch (final Exception e) {
-            log.error("Got Exception in upsertFailedRecords for input: {}, exception: ", form, e);
+            log.error("Got Exception in upsertFailedRecords for input: {}, exception: ", e, form);
         }
     }
 
@@ -84,7 +84,7 @@ public class StreamDataImportService extends AbstractImportService implements Im
                 response = this.streamManagerService.updateStream(request);
             }
         } catch (final Exception e) {
-            log.error("Got Exception in upsertNewRecords for input: {}, exception: ", form, e);
+            log.error("Got Exception in upsertNewRecords for input: {}, exception: ", e, form);
             failureMessage = e.getMessage();
         }
 

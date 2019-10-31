@@ -7,7 +7,7 @@ es = Elasticsearch(
     port=9200,
 )
 
-courseIndex="education_search_course_v2"
+courseIndex="education_search_course_v4"
 courseIndexType="education"
 
 
@@ -27,7 +27,7 @@ print "init scroll.. "
 
 # Init scroll by search
 esInstiData = es.search(
-    index='education_search_institute_v3',
+    index='education_search_institute_v4',
     doc_type='education',
     scroll='2m',
     size=10,

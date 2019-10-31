@@ -8,7 +8,7 @@ var database_name = "digital_education";
 var college_collection = "institute";
 var course_collection = "course";
 var exam_collection = "exam";
-var target_collection = "education_search_institute_v3";
+var target_collection = "education_search_institute_v4";
 var target_doc_type = "education";
 
 /**
@@ -373,6 +373,7 @@ function transformCollege(superDoc) {
     transformedCollege.courses[i].study_mode = course.study_mode;
     transformedCollege.courses[i].duration_in_months = course.course_duration;
     transformedCollege.courses[i].domain_name = [];
+    transformedCollege.courses[i].stream_ids = course.stream_ids;
     for (var k = 0; k < course.streams.length; k++) {
         if(course.streams[k].toLowerCase() === 'education' ||
             course.streams[k].toLowerCase() === 'sciences' ||

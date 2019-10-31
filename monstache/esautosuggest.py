@@ -11,8 +11,8 @@ autosuggestIndex="education_autosuggestion_v2"
 autosuggestIndexType="education"
 
 
-instiESData= es.search(index='education_search_institute_v3', filter_path=['hits.hits._id','hits.hits._source.names', 'hits.hits._source.official_name', 'hits.hits._source.city', 'hits.hits._source.state', 'hits.hits._source.institute_id'],size=10000)
-examESData= es.search(index='education_search_exam_v2', filter_path=['hits.hits._id','hits.hits._source.exam_full_name','hits.hits._source.exam_name_synonyms','hits.hits._source.exam_short_name', 'hits.hits._source.official_name','hits.hits._source.exam_id'],size=10000)
+instiESData= es.search(index='education_search_institute_v4', filter_path=['hits.hits._id','hits.hits._source.names', 'hits.hits._source.official_name', 'hits.hits._source.city', 'hits.hits._source.state', 'hits.hits._source.institute_id'],size=10000)
+examESData= es.search(index='education_search_exam_v4', filter_path=['hits.hits._id','hits.hits._source.exam_full_name','hits.hits._source.exam_name_synonyms','hits.hits._source.exam_short_name', 'hits.hits._source.official_name','hits.hits._source.exam_id'],size=10000)
 
 instiNames= instiESData['hits']['hits']
 examNames= examESData['hits']['hits']

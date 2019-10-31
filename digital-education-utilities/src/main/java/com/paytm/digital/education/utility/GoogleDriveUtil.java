@@ -1,5 +1,12 @@
 package com.paytm.digital.education.utility;
 
+import static com.paytm.digital.education.constant.GoogleUtilConstant.FILENAME;
+import static com.paytm.digital.education.constant.GoogleUtilConstant.ID;
+import static com.paytm.digital.education.constant.GoogleUtilConstant.INPUTSTREAM;
+import static com.paytm.digital.education.constant.GoogleUtilConstant.MIMETYPE;
+import static com.paytm.digital.education.constant.GoogleUtilConstant.OFFLINE;
+import static com.paytm.digital.education.constant.GoogleUtilConstant.USER;
+
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
@@ -36,13 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.paytm.digital.education.constant.GoogleUtilConstant.FILENAME;
-import static com.paytm.digital.education.constant.GoogleUtilConstant.ID;
-import static com.paytm.digital.education.constant.GoogleUtilConstant.INPUTSTREAM;
-import static com.paytm.digital.education.constant.GoogleUtilConstant.MIMETYPE;
-import static com.paytm.digital.education.constant.GoogleUtilConstant.OFFLINE;
-import static com.paytm.digital.education.constant.GoogleUtilConstant.USER;
-
 @UtilityClass
 
 public class GoogleDriveUtil {
@@ -68,6 +68,8 @@ public class GoogleDriveUtil {
             credentialFolder.mkdirs();
             credentialFolder.setExecutable(true, false);
             credentialFolder.setReadable(true, false);
+            log.error("Client secret file : {} not found on folder path : {}", clientSecretFileName,
+                    clientSecretFilePath);
             throw new FileNotFoundException("Please copy " + clientSecretFileName
                     + " to folder: " + credentialFolder.getAbsolutePath());
         }
@@ -156,6 +158,7 @@ public class GoogleDriveUtil {
         if (Objects.nonNull(data)) {
             List<List<Object>> headerData =
                     readGoogleSheet(sheetId, headerRange, clientSecretFileName, clientSecretFolder);
+            log.info("Read sheet data from sheet Id : {}, with no of records : {}", sheetId, data.size());
             List<String> headers = new ArrayList<>();
             for (List row : headerData) {
                 for (Object column : row) {
