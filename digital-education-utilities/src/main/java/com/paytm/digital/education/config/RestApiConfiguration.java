@@ -77,6 +77,7 @@ public class RestApiConfiguration {
         return HttpClientBuilder.create()
                 .setConnectionManager(
                         getPoolingHttpClientConnectionManager())
+                .evictExpiredConnections()
                 .setDefaultRequestConfig(getRequestConfig())
                 .build();
     }
