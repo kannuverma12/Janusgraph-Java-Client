@@ -30,8 +30,9 @@ public class DataIngestionScheduler {
     private ImportIncrementalDataService importIncrementalDataService;
     private CronPropertiesRepository     cronPropertiesRepository;
 
-    @Scheduled(fixedDelayString = "${data-ingestion.import.cron.fixed.delay}")
-    @SchedulerLock(name = "dataIngestionImport")
+    // stopping scheduler as issue with MAT data from c360
+    //@Scheduled(fixedDelayString = "${data-ingestion.import.cron.fixed.delay}")
+    //@SchedulerLock(name = "dataIngestionImport")
     public void importFailedArticleScheduler() {
         CronProperties dataIngestionCronProperty =
                 cronPropertiesRepository.findByCronName(DATA_INGESTION_IMPORT);
