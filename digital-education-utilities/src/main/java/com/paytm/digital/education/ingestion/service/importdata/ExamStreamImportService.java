@@ -49,6 +49,7 @@ public class ExamStreamImportService extends AbstractImportService implements Im
         final ExamStreamForm examStreamForm = (ExamStreamForm) clazz.cast(form);
         validateExamStreamRequest(examStreamForm);
         try {
+            validateExamStreamRequest(examStreamForm);
             examStreamManagerService.createOrUpdateExamStreamMapping(examStreamForm);
         } catch (final Exception e) {
             log.error("Got Exception in upsertFailedRecords for input: {}, exception: ", e, form);
@@ -63,6 +64,7 @@ public class ExamStreamImportService extends AbstractImportService implements Im
         ExamStreamEntity response = null;
         String failureMessage = EMPTY_STRING;
         try {
+            validateExamStreamRequest(newStreamForm);
             response = examStreamManagerService.createOrUpdateExamStreamMapping(newStreamForm);
         } catch (final Exception e) {
             log.error("Got Exception in examStream import upsertNewRecords for input: {}, exception: ", e, form);

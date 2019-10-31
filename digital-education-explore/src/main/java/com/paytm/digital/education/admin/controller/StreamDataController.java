@@ -11,7 +11,7 @@ import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,7 +28,7 @@ public class StreamDataController {
     private final ImportDataValidator importDataValidator;
     private final StreamDataServiceImpl streamDataService;
 
-    @GetMapping("/v1/update/paytm-streams")
+    @PutMapping("/v1/update/paytm-streams")
     @ApiOperation(value = "Updates paytm stream data in db for education entity provided")
     public ResponseEntity<Object> ingestData(
             @ApiParam(value = "auth token required for authorization", required = true)
