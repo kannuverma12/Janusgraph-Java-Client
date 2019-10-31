@@ -3,6 +3,7 @@ package com.paytm.digital.education.explore.controller;
 import com.paytm.digital.education.explore.request.dto.EntityData;
 import com.paytm.digital.education.explore.response.dto.dataimport.StaticDataIngestionResponse;
 import com.paytm.digital.education.explore.service.IngestStaticDataService;
+import com.paytm.digital.education.explore.scheduler.DataIngestionScheduler;
 import com.paytm.digital.education.explore.service.impl.ImportIncrementalDataService;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
@@ -31,6 +32,7 @@ public class DataIngestionController {
 
     private ImportIncrementalDataService importIncrementalDataService;
     private IngestStaticDataService      importStaticDataService;
+    private DataIngestionScheduler       dataIngestionScheduler;
 
     @RequestMapping(method = RequestMethod.GET, path = "/v1/import/data")
     public @ResponseBody boolean importData() throws java.io.FileNotFoundException {
@@ -58,6 +60,12 @@ public class DataIngestionController {
             @RequestBody List<EntityData> entityDataList) {
         log.info("Received request to ingest data. : {}", entityDataList.toString());
         return importStaticDataService.ingestDataEntityWise(entityDataList);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, path = "/v1/import/data/scheduler")
+    public void importDataScheduler() {
+        log.info("Received request to ingest data from scheduler.");
+        dataIngestionScheduler.importDataScheduler();
     }
 
 }
