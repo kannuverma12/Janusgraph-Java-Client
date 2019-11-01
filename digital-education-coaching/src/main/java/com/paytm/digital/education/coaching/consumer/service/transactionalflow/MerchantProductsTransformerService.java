@@ -31,6 +31,7 @@ import java.util.UUID;
 
 import static com.mongodb.QueryOperators.AND;
 import static com.mongodb.QueryOperators.IN;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_VERTICAL_NAME;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.CachingConstants.CACHE_KEY_DELIMITER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.CachingConstants.CACHE_TTL;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.IS_DYNAMIC;
@@ -55,7 +56,7 @@ public class MerchantProductsTransformerService {
     private static final List<String> INSTITUTE_FIELDS       =
             Arrays.asList("institute_id", "is_enabled");
     private static final List<String> COACHING_COURSE_FIELDS = Arrays.asList("paytm_product_id",
-            "merchant_product_id", "is_enabled", "course_id");
+            "merchant_product_id", "is_enabled", "course_id", "course_type");
 
 
     @Autowired
@@ -84,7 +85,7 @@ public class MerchantProductsTransformerService {
             throw new BadRequestException(INVALID_MERCHANT_ID);
         }
 
-        Map<String, Long> merchantProductIdToCourseIdMap = new HashMap<>();
+        Map<String, CoachingCourseEntity> merchantProductIdToCourseMap = new HashMap<>();
         List<String> merchantProductIds = new ArrayList<>();
         if (!CollectionUtils.isEmpty(Objects.requireNonNull(merchantData).getProductList())) {
             for (MerchantProduct merchantProduct : merchantData.getProductList()) {
@@ -108,19 +109,17 @@ public class MerchantProductsTransformerService {
             throw new BadRequestException(INVALID_MERCHANT_ID);
         }
 
-
         for (CoachingCourseEntity dynamicCoachingCourse : dynamicCoachingCourses) {
-            merchantProductIdToCourseIdMap.put(dynamicCoachingCourse.getMerchantProductId(),
-                    dynamicCoachingCourse.getCourseId());
+            merchantProductIdToCourseMap.put(dynamicCoachingCourse.getMerchantProductId(),
+                    dynamicCoachingCourse);
         }
-
-        CoachingCourseEntity dynamicCoachingCourse = dynamicCoachingCourses.get(0);
 
         List<CheckoutCartItem> cartItemList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(Objects.requireNonNull(merchantData).getProductList())) {
             for (MerchantProduct merchantProduct : merchantData.getProductList()) {
-                Long courseId = merchantProductIdToCourseIdMap.get(merchantProduct.getProductId());
-
+                CoachingCourseEntity dynamicCoachingCourse =
+                        merchantProductIdToCourseMap.get(merchantProduct.getProductId());
+                Long courseId = dynamicCoachingCourse.getCourseId();
                 if (Objects.isNull(courseId)) {
                     log.error("Dynamic coaching course_id is not present for merchantProduct: {}",
                             merchantProduct);
@@ -131,9 +130,9 @@ public class MerchantProductsTransformerService {
                         .sellingPrice(merchantProduct.getPrice())
                         .productId(dynamicCoachingCourse.getPaytmProductId())
                         .categoryId(coachingCategoryId)
-                        .educationVertical(educationVerticalId)
+                        .educationVertical(COACHING_VERTICAL_NAME)
                         .quantity(merchantProduct.getQuantity())
-                        .metaData(getMetaData(merchantProduct, request, courseId))
+                        .metaData(getMetaData(merchantProduct, request, dynamicCoachingCourse))
                         .referenceId(referenceId)
                         .basePrice(merchantProduct.getPrice())
                         .convFee(0F)
@@ -154,7 +153,7 @@ public class MerchantProductsTransformerService {
     }
 
     private CheckoutMetaData getMetaData(MerchantProduct merchantProduct,
-            FetchCartItemsRequestBody request, Long courseId) {
+            FetchCartItemsRequestBody request, CoachingCourseEntity coachingCourseEntity) {
 
         TaxInfo taxInfo = null;
         if (Objects.nonNull(merchantProduct.getMerchantProductTaxData())) {
@@ -194,7 +193,8 @@ public class MerchantProductsTransformerService {
                 .taxInfo(taxInfo)
                 .userId(request.getUserId())
                 .merchantProductId(merchantProduct.getProductId())
-                .courseId(courseId)
+                .courseId(coachingCourseEntity.getCourseId())
+                .courseType(coachingCourseEntity.getCourseType().getText())
                 .build();
     }
 
