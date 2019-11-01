@@ -30,15 +30,11 @@ import java.util.Objects;
 import java.util.UUID;
 
 import static com.mongodb.QueryOperators.AND;
-import static com.mongodb.QueryOperators.EXISTS;
 import static com.mongodb.QueryOperators.IN;
-import static com.mongodb.QueryOperators.NE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.CachingConstants.CACHE_KEY_DELIMITER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.CachingConstants.CACHE_TTL;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.IS_DYNAMIC;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.IS_ENABLED;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.MERCHANT_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.MERCHANT_PRODUCT_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.PAYTM_MERCHANT_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.COACHING_INSTITUTE_ID;
@@ -163,9 +159,6 @@ public class MerchantProductsTransformerService {
         TaxInfo taxInfo = null;
         if (Objects.nonNull(merchantProduct.getMerchantProductTaxData())) {
             taxInfo = TaxInfo.builder()
-                    .gstin(Objects.nonNull(merchantProduct.getMerchantProductTaxData().getGstin())
-                            ? merchantProduct.getMerchantProductTaxData().getGstin() :
-                            StringUtils.EMPTY)
                     .totalCGST(Objects.nonNull(
                             merchantProduct.getMerchantProductTaxData().getTotalCGST())
                             ? merchantProduct.getMerchantProductTaxData().getTotalCGST() : 0F)
@@ -181,7 +174,6 @@ public class MerchantProductsTransformerService {
                     .build();
         } else {
             taxInfo = TaxInfo.builder()
-                    .gstin(StringUtils.EMPTY)
                     .totalCGST(0F)
                     .totalIGST(0F)
                     .totalSGST(0F)
@@ -190,7 +182,6 @@ public class MerchantProductsTransformerService {
         }
 
         ConvTaxInfo convTaxInfo = ConvTaxInfo.builder()
-                .gstin(null)
                 .totalCGST(0F)
                 .totalIGST(0F)
                 .totalSGST(0F)

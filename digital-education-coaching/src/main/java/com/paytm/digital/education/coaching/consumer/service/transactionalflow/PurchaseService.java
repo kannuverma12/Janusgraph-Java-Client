@@ -5,7 +5,6 @@ import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.CheckoutCartItem;
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.ConvTaxInfo;
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.MerchantNotifyCartItem;
-import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.MerchantOrderData;
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.NotifyMerchantInfo;
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.TaxInfo;
 import com.paytm.digital.education.coaching.consumer.model.request.MerchantCommitRequest;
@@ -14,8 +13,6 @@ import com.paytm.digital.education.coaching.consumer.model.request.VerifyRequest
 import com.paytm.digital.education.coaching.consumer.model.response.transactionalflow.MerchantNotifyResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.transactionalflow.VerifyResponse;
 import com.paytm.digital.education.coaching.db.dao.CoachingCourseDAO;
-import com.paytm.digital.education.coaching.enums.MerchantNotifyFailureReason;
-import com.paytm.digital.education.coaching.enums.MerchantNotifyStatus;
 import com.paytm.digital.education.coaching.utils.ComparisonUtils;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.exception.BadRequestException;
@@ -187,8 +184,7 @@ public class PurchaseService {
                         redisItemConvFeeTaxInfo.getTotalIGST())
                 && ComparisonUtils
                 .thresholdBasedFloatsComparison(cartItemConvFeeTaxInfo.getTotalUTGST(),
-                        redisItemConvFeeTaxInfo.getTotalUTGST())
-                && cartItemConvFeeTaxInfo.getGstin().equals(redisItemConvFeeTaxInfo.getGstin()));
+                        redisItemConvFeeTaxInfo.getTotalUTGST()));
     }
 
     private boolean verifyTaxInfo(TaxInfo cartItemTaxInfo, TaxInfo redisItemTaxInfo) {
@@ -196,8 +192,7 @@ public class PurchaseService {
             log.error("Tax info not present in redis for cart item: {}", cartItemTaxInfo);
             return false;
         }
-        return (cartItemTaxInfo.getGstin().equals(redisItemTaxInfo.getGstin())
-                && ComparisonUtils.thresholdBasedFloatsComparison(cartItemTaxInfo.getTotalCGST(),
+        return (ComparisonUtils.thresholdBasedFloatsComparison(cartItemTaxInfo.getTotalCGST(),
                 redisItemTaxInfo.getTotalCGST())
                 && ComparisonUtils.thresholdBasedFloatsComparison(cartItemTaxInfo.getTotalIGST(),
                 redisItemTaxInfo.getTotalIGST())

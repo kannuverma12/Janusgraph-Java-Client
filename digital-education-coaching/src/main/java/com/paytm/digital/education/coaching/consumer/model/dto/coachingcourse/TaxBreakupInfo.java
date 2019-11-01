@@ -8,26 +8,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class CoachingCourseFee {
+public class TaxBreakupInfo {
 
     private String header;
-    private String currency;
-    private Float  originalPrice;
-    private Float  discountedPrice;
-    private String discountPercentage;
-
-    private List<TaxBreakupInfo> taxInfo;
-    private Float                totalTax;
-
-    private Float                convFee;
-    private List<TaxBreakupInfo> convFeeTaxInfo;
-    private Float                totalConvFeeTax;
+    private String key;
+    private Float  value;
 }

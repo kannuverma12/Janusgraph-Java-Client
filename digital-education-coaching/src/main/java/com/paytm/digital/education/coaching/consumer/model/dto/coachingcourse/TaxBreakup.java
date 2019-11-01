@@ -16,18 +16,8 @@ import java.util.List;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class CoachingCourseFee {
-
-    private String header;
-    private String currency;
-    private Float  originalPrice;
-    private Float  discountedPrice;
-    private String discountPercentage;
+public class TaxBreakup {
 
     private List<TaxBreakupInfo> taxInfo;
     private Float                totalTax;
-
-    private Float                convFee;
-    private List<TaxBreakupInfo> convFeeTaxInfo;
-    private Float                totalConvFeeTax;
 }
