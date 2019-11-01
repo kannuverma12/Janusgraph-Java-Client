@@ -353,4 +353,6 @@ public interface ExploreConstants {
     String DOMAINS                          = "domains";
     String APP_DISPLAY_NAME                 = "app_display_name";
     String WEB_FORM_URI_PREFIX              = "webFormUriPrefix";
+
+    String NO_TOPIC_FOUND                   = "No Topic Found";
 }

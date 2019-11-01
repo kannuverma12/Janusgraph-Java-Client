@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -43,6 +44,7 @@ import static com.paytm.digital.education.constant.CommonConstants.MMM_YYYY;
 import static com.paytm.digital.education.constant.CommonConstants.OTHER_CATEGORIES;
 import static com.paytm.digital.education.constant.CommonConstants.YYYY_MM;
 import static com.paytm.digital.education.constant.CommonConstants.ZERO;
+import static com.paytm.digital.education.constant.ExploreConstants.NO_TOPIC_FOUND;
 import static com.paytm.digital.education.enums.Gender.OTHERS;
 import static java.util.Collections.emptyList;
 
@@ -348,6 +350,9 @@ public class ExamInstanceHelper {
                 List<Topic> topics = getTopics(entityUnit);
                 if (!CollectionUtils.isEmpty(topics)) {
                     units.add(new Unit(entityUnit.getName(), topics));
+                } else {
+                    units.add(new Unit(entityUnit.getName(),
+                            Collections.singletonList(new Topic(NO_TOPIC_FOUND))));
                 }
             });
         }
@@ -359,10 +364,8 @@ public class ExamInstanceHelper {
         List<Section> sectionList = new ArrayList<>();
         entitySyllabusList.forEach(entitySection -> {
             List<Unit> units = getUnits(entitySection);
-            if (!CollectionUtils.isEmpty(units)) {
-                Section section = new Section(entitySection.getSubjectName(), units);
-                sectionList.add(section);
-            }
+            Section section = new Section(entitySection.getSubjectName(), units);
+            sectionList.add(section);
         });
         return sectionList;
     }
