@@ -105,6 +105,19 @@ public class PurchaseService {
                         .build();
             }
 
+            if (!coachingCourseEntity.getPaytmProductId().equals(cartItem.getProductId())) {
+                log.error("Invalid Product Id for course_id: {}, DB p_id: {}, request p_id: {}",
+                        courseId, coachingCourseEntity.getPaytmProductId(),
+                        cartItem.getProductId());
+                throw PurchaseException
+                        .builder()
+                        .acknowledged(false)
+                        .message("Invalid Cart Items provided")
+                        .cause(new BadRequestException(INVALID_CART_ITEMS))
+                        .httpStatus(HttpStatus.BAD_REQUEST)
+                        .build();
+            }
+
             boolean validData;
             if (coachingCourseEntity.getIsDynamic()) {
                 CheckoutCartItem redisCartItem = this.getCartItemFromRedis(cartItem);
