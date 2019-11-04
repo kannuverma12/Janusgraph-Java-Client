@@ -1,35 +1,6 @@
 package com.paytm.digital.education.serviceimpl;
 
 import static com.paytm.digital.education.constant.ExploreConstants.APP_DISPLAY_NAME;
-import static com.paytm.digital.education.constant.ExploreConstants.STREAM_IDS;
-import static com.paytm.digital.education.constant.ExploreConstants.NAME;
-import static com.paytm.digital.education.mapping.ErrorEnum.PAYTM_STREAM_DISABLED;
-
-import com.paytm.digital.education.constant.ErrorCode;
-import com.paytm.digital.education.database.entity.StreamEntity;
-import com.paytm.digital.education.exception.EducationException;
-import com.paytm.digital.education.exception.ResourceNotFoundException;
-import com.paytm.digital.education.database.entity.Page;
-import com.paytm.digital.education.database.entity.Section;
-import com.paytm.digital.education.database.repository.PageRepository;
-import com.paytm.digital.education.database.repository.SectionRepository;
-import com.paytm.digital.education.ingestion.dao.StreamDAO;
-import com.paytm.digital.education.service.PageService;
-import com.paytm.digital.education.utility.CommonUtil;
-import lombok.AllArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
-import javax.validation.constraints.NotBlank;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import static com.paytm.digital.education.constant.ExploreConstants.APP_FOOTER;
 import static com.paytm.digital.education.constant.ExploreConstants.BANNER_MID;
 import static com.paytm.digital.education.constant.ExploreConstants.BROWSE_BY_EXAM_LEVEL;
@@ -40,13 +11,41 @@ import static com.paytm.digital.education.constant.ExploreConstants.ICON;
 import static com.paytm.digital.education.constant.ExploreConstants.IMAGE_URL;
 import static com.paytm.digital.education.constant.ExploreConstants.LOCATIONS;
 import static com.paytm.digital.education.constant.ExploreConstants.LOGO;
+import static com.paytm.digital.education.constant.ExploreConstants.NAME;
 import static com.paytm.digital.education.constant.ExploreConstants.POPULAR_EXAMS_APP;
 import static com.paytm.digital.education.constant.ExploreConstants.SCHOOLS_IN_FOCUS;
 import static com.paytm.digital.education.constant.ExploreConstants.STREAMS;
+import static com.paytm.digital.education.constant.ExploreConstants.STREAM_IDS;
 import static com.paytm.digital.education.constant.ExploreConstants.SUB_ITEMS;
 import static com.paytm.digital.education.constant.ExploreConstants.TOP_COLLEGES;
 import static com.paytm.digital.education.constant.ExploreConstants.TOP_EXAMS_APP;
 import static com.paytm.digital.education.constant.ExploreConstants.TOP_SCHOOLS;
+import static com.paytm.digital.education.mapping.ErrorEnum.PAYTM_STREAM_DISABLED;
+
+import com.paytm.digital.education.constant.ErrorCode;
+import com.paytm.digital.education.database.entity.Page;
+import com.paytm.digital.education.database.entity.Section;
+import com.paytm.digital.education.database.entity.StreamEntity;
+import com.paytm.digital.education.database.repository.PageRepository;
+import com.paytm.digital.education.database.repository.SectionRepository;
+import com.paytm.digital.education.exception.EducationException;
+import com.paytm.digital.education.exception.ResourceNotFoundException;
+import com.paytm.digital.education.ingestion.dao.StreamDAO;
+import com.paytm.digital.education.service.PageService;
+import com.paytm.digital.education.utility.CommonUtil;
+import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import javax.validation.constraints.NotBlank;
 
 @Service
 @AllArgsConstructor
@@ -84,7 +83,6 @@ public class PageServiceImpl implements PageService {
                     case EXAM_FOCUS_APP:
                     case BROWSE_BY_EXAM_LEVEL:
                     case SCHOOLS_IN_FOCUS:
-                    case STREAMS:
                         logoFieldName = LOGO;
                         break;
                     case TOP_COLLEGES:
@@ -145,7 +143,8 @@ public class PageServiceImpl implements PageService {
                     item.put(STREAM_IDS, streamId);
                     item.put(NAME, streamEntity.getName());
                     item.put(APP_DISPLAY_NAME, streamEntity.getShortName());
-                    item.put(ICON, streamEntity.getLogo());
+                    item.put(ICON,
+                            CommonUtil.getAbsoluteUrl(streamEntity.getLogo(), section.getType()));
                 } else {
                     throw new EducationException(PAYTM_STREAM_DISABLED,
                             PAYTM_STREAM_DISABLED.getExternalMessage(), new Object[] {streamId});
