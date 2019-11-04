@@ -31,53 +31,12 @@ public class CTA {
 
 
     public static class Constants {
-
-        public static final String SHORTLIST = "+ Add To Shortlist";
-
-        public static final String SHORTLIST_APP = "Shortlist College";
-
-        public static final String SHORTLIST_SCHOOL_APP = "Shortlist School";
-
-        public static final String SHORTLISTED = "Shortlisted";
-
-        public static final String SHORTLISTED_APP = "Shortlisted College";
-
-        public static final String SHORTLISTED_SCHOOL_APP = "Shortlisted School";
-
-        public static final String SHORTLIST_EXAM_APP = "Shortlist Exam";
-
-        public static final String SHORTLISTED_EXAM_APP = "Shortlisted Exam";
-
-        public static final String GET_UPDATES = "Get Update";
-
-        public static final String STOP_UPDATES = "Stop Update";
-
-        public static final String GET_IN_TOUCH = "Get In Touch";
-
-        public static final String INQUIRY_SENT = "Inquiry Sent";
-
-        public static final String STP_UPDATES = "Stop Updates";
-
-        public static final String INTERESTED = "Interested";
-
-        public static final String PAY_FEE = "Pay Fee";
-
-        public static final String BROCHURE = "Download Brochure";
-
-        public static final String COMPARE = "+ Add To Compare";
-
-        public static final String COMPARE_ACTIVE_LABEL_WEB = "Added To Compare";
-
-        public static final String APPLY = "Apply";
-
-        public static final String COMPARE_APP = "Compare";
-
-        public static final String PREDICT_COLLEGE = "Predict College";
-
-        public static final String SHARE = "Share";
-
-        public static final String FILL_FORM = "Fill Form";
-
+        public static final String ICON                = "icon";
+        public static final String ACTIVE_ICON         = "active_icon";
+        public static final String ACTIVE_DISPLAY_NAME = "active_display_name";
+        public static final String DISPLAY_NAME        = "display_name";
+        public static final String WEB                 = "_web";
+        public static final String CLIENT              = "_client";
     }
 
 

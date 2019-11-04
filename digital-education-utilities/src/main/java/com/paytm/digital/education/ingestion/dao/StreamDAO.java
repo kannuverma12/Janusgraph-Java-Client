@@ -5,10 +5,15 @@ import com.paytm.digital.education.database.repository.SequenceGenerator;
 import com.paytm.digital.education.database.repository.StreamEntityRepository;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class StreamDAO {
@@ -35,11 +40,19 @@ public class StreamDAO {
         return streamRepository.findAllByStreamId(ids);
     }
 
+    @Cacheable(value = "stream_all")
     public List<StreamEntity> findAll() {
         return this.streamRepository.findAll();
     }
 
     public StreamEntity findByStreamName(@NonNull String name) {
         return streamRepository.findByStreamName(name);
+    }
+
+    @Cacheable(value = "streams_id_map")
+    public Map<Long, StreamEntity> getStreamEntityMapById() {
+        List<StreamEntity> entities = this.streamRepository.findAll();
+        return Optional.ofNullable(entities).map(streamEntities -> streamEntities.stream().collect(
+                Collectors.toMap(s -> s.getStreamId(), s -> s))).orElse(new HashMap<>());
     }
 }

@@ -1,17 +1,17 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
+import com.paytm.digital.education.enums.Client;
+import com.paytm.digital.education.enums.es.DataSortOrder;
 import com.paytm.digital.education.explore.enums.ClassifierDocType;
 import com.paytm.digital.education.explore.enums.ClassifierSortType;
-import com.paytm.digital.education.explore.enums.Client;
 import com.paytm.digital.education.explore.es.model.ClassifierSearchDoc;
 import com.paytm.digital.education.explore.es.model.ClassifierSortField;
 import com.paytm.digital.education.explore.request.dto.search.Classification;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
-import com.paytm.digital.education.explore.utility.CommonUtil;
+import com.paytm.digital.education.utility.CommonUtil;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -19,18 +19,18 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.LinkedHashMap;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.CLASSIFIER_INDEX;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.CLASSIFIER_KEYWORD;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.CLASSIFIER_KEYWORD_BOOST;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.CLASSIFIER_ANALYZER;
+import static com.paytm.digital.education.constant.ExploreConstants.CLASSIFIER_ANALYZER;
+import static com.paytm.digital.education.constant.ExploreConstants.CLASSIFIER_INDEX;
+import static com.paytm.digital.education.constant.ExploreConstants.CLASSIFIER_KEYWORD;
+import static com.paytm.digital.education.constant.ExploreConstants.CLASSIFIER_KEYWORD_BOOST;
 
 /**
  * This class classifies search query and apply appropriate filters and sort orders
@@ -168,7 +168,7 @@ public class ClassifierSearchService extends AbstractSearchServiceImpl {
                             (Map<String, List<Object>>) (Object) document.getFilters(), filters);
                 }
                 /*
-                 * Stream wise sort params are in different map coz we are giving priority to stream sorting
+                 * StreamEntity wise sort params are in different map coz we are giving priority to stream sorting
                  * */
                 if (!CollectionUtils.isEmpty(document.getSortOrder())) {
                     for (ClassifierSortField sortField : document.getSortOrder()) {

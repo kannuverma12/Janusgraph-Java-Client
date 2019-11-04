@@ -1,37 +1,34 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import com.paytm.digital.education.elasticsearch.enums.BulkRequestOperation;
+import com.paytm.digital.education.constant.ExploreConstants;
 import com.paytm.digital.education.elasticsearch.models.BulkRequestItem;
 import com.paytm.digital.education.elasticsearch.service.ElasticSearchService;
-import com.paytm.digital.education.explore.constants.ExploreConstants;
+import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.enums.es.BulkRequestOperation;
 import com.paytm.digital.education.explore.enums.RecentDocumentType;
 import com.paytm.digital.education.explore.es.model.SearchHistoryEsDoc;
-import com.paytm.digital.education.explore.enums.EducationEntity;
 import com.paytm.digital.education.explore.kafka.KafkaProducer;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.service.RecentsSerivce;
-import com.paytm.digital.education.explore.utility.CommonUtil;
+import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.utility.JsonUtils;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 import java.util.Arrays;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Date;
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.RECENT_SEARCHES_ID_SEPERATOR;
+import static com.paytm.digital.education.constant.ExploreConstants.RECENT_SEARCHES_ID_SEPERATOR;
 
 @Service
 @AllArgsConstructor

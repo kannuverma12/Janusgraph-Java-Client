@@ -1,9 +1,6 @@
 package com.paytm.digital.education.elasticsearch.deserializer;
 
 import com.paytm.digital.education.elasticsearch.constants.ESConstants;
-import com.paytm.digital.education.elasticsearch.enums.AggregationType;
-import com.paytm.digital.education.elasticsearch.enums.BucketAggregationSortParms;
-import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.AggregationResponse;
 import com.paytm.digital.education.elasticsearch.models.Bucket;
@@ -14,9 +11,10 @@ import com.paytm.digital.education.elasticsearch.models.MetricAggregationRespons
 import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationResponse;
 import com.paytm.digital.education.elasticsearch.utils.BucketSortUtil;
 import com.paytm.digital.education.elasticsearch.utils.JsonUtils;
+import com.paytm.digital.education.enums.es.AggregationType;
+import com.paytm.digital.education.enums.es.BucketAggregationSortParms;
+import com.paytm.digital.education.enums.es.DataSortOrder;
 import javafx.util.Pair;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.lucene.util.ArrayUtil;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.util.CollectionUtils;
 import org.elasticsearch.search.SearchHit;
@@ -24,7 +22,6 @@ import org.elasticsearch.search.aggregations.bucket.filter.Filter;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
 import org.elasticsearch.search.aggregations.bucket.nested.ParsedReverseNested;
 import org.elasticsearch.search.aggregations.bucket.range.ParsedGeoDistance;
-import org.elasticsearch.search.aggregations.bucket.range.Range;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.metrics.max.Max;
 import org.elasticsearch.search.aggregations.metrics.min.Min;

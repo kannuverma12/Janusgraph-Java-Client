@@ -1,28 +1,14 @@
 package com.paytm.digital.education.explore.service.helper;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DETAIL_PAGE_SECTION_ORDER;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DETAIL_PAGE_SECTION_ORDER_APP;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SECTION_ORDER_NAMESPACE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DETAILS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.LANDING;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SECTIONS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.NAME;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SUCCESS;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.FAILED;
-import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.NAMESPACE;
-import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.KEY;
-import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.COMPONENT;
-import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.ATTRIBUTES;
-
 import com.paytm.digital.education.admin.request.SectionOrderRequest;
 import com.paytm.digital.education.admin.response.SectionOrderResponse;
+import com.paytm.digital.education.constant.ExploreConstants;
+import com.paytm.digital.education.database.entity.Page;
 import com.paytm.digital.education.database.entity.Properties;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.database.repository.PageRepository;
 import com.paytm.digital.education.database.repository.PropertyRepository;
-import com.paytm.digital.education.explore.database.entity.Page;
-import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.explore.database.repository.PageRepository;
-import com.paytm.digital.education.explore.enums.Client;
+import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,12 +17,27 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Objects;
-import java.util.Collections;
-import java.util.Arrays;
+
+import static com.paytm.digital.education.constant.DBConstants.SUCCESS;
+import static com.paytm.digital.education.constant.ExploreConstants.DETAILS;
+import static com.paytm.digital.education.constant.ExploreConstants.DETAIL_PAGE_SECTION_ORDER;
+import static com.paytm.digital.education.constant.ExploreConstants.DETAIL_PAGE_SECTION_ORDER_APP;
+import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.constant.ExploreConstants.FAILED;
+import static com.paytm.digital.education.constant.ExploreConstants.LANDING;
+import static com.paytm.digital.education.constant.ExploreConstants.NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.SECTIONS;
+import static com.paytm.digital.education.constant.ExploreConstants.SECTION_ORDER_NAMESPACE;
+import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.ATTRIBUTES;
+import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.COMPONENT;
+import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.KEY;
+import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.NAMESPACE;
 
 @Slf4j
 @Service
@@ -45,8 +46,8 @@ public class DetailPageSectionHelper {
 
     private PropertyReader        propertyReader;
     private CommonMongoRepository commonMongoRepository;
-    private PropertyRepository propertyRepository;
-    private PageRepository pageRepository;
+    private PropertyRepository    propertyRepository;
+    private PageRepository        pageRepository;
 
     public List<String> getSectionOrder(String entity, Client client) {
         String detailPageSectionOrder = DETAIL_PAGE_SECTION_ORDER;
@@ -80,7 +81,7 @@ public class DetailPageSectionHelper {
                     orderResponse.setMessage("Section order found.");
                     orderResponse.setEntity(entity);
                     orderResponse.setPage(page);
-                    orderResponse.setStatus(SUCCESS);
+                    orderResponse.setStatus(ExploreConstants.SUCCESS);
                     orderResponse.setSectionOrder((List<String>) sectionMap.get(entity));
                 } else {
 

@@ -2,12 +2,13 @@ package com.paytm.digital.education.explore.service.helper;
 
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Instance;
+import com.paytm.digital.education.dto.detail.Syllabus;
 import com.paytm.digital.education.explore.database.entity.SectionConfiguration;
 import com.paytm.digital.education.explore.enums.ExamSectionType;
 import com.paytm.digital.education.explore.response.dto.detail.ExamDetail;
 import com.paytm.digital.education.explore.response.dto.detail.SectionDataHolder;
-import com.paytm.digital.education.explore.response.dto.detail.Syllabus;
-import com.paytm.digital.education.explore.utility.CommonUtil;
+import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
+import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SECTION;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SECTION_PLACEHOLDER;
+import static com.paytm.digital.education.constant.ExploreConstants.SECTION;
+import static com.paytm.digital.education.constant.ExploreConstants.SECTION_PLACEHOLDER;
 
 @Service
 @Slf4j

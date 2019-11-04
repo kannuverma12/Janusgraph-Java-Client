@@ -122,6 +122,14 @@ public class Exam {
     @JsonProperty("status")
     private String status;
 
+    @Field("stream_ids")
+    @JsonProperty("stream_ids")
+    private List<Long> streamIds;
+
+    @Field("priority")
+    @JsonProperty("priority")
+    private List<Long> priority;
+
     @Field("cutoff")
     @JsonProperty("cutoff")
     private String cutoff;

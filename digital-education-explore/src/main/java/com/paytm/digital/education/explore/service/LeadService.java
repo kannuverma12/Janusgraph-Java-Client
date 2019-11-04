@@ -1,7 +1,7 @@
 package com.paytm.digital.education.explore.service;
 
-import com.paytm.digital.education.explore.database.entity.Lead;
-import com.paytm.digital.education.explore.database.entity.UserDetails;
+import com.paytm.digital.education.database.entity.Lead;
+import com.paytm.digital.education.database.entity.UserDetails;
 
 public interface LeadService {
 

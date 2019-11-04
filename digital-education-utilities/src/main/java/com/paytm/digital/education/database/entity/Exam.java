@@ -1,24 +1,21 @@
 package com.paytm.digital.education.database.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.enums.PublishStatus;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.enums.PublishStatus;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Field;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-
 @Data
-@ToString
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor
-public class Exam {
+@Document(collection = "exam")
+public class Exam extends Base {
 
     @Id
     @Field("_id")
@@ -85,18 +82,19 @@ public class Exam {
     private List<String> domains;
 
     @Field("logo")
-    @JsonProperty("logo")
     private String logo;
 
     @Field("application_fees")
     private List<ApplicationFee> applicationFees;
 
     @Field("last_updated")
-    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date lastUpdated;
 
     @Field("status")
     private String status;
+
+    @Field("stream_ids")
+    private List<Long> streamIds;
 
     @Field("paytm_keys")
     private ExamPaytmKeys paytmKeys;

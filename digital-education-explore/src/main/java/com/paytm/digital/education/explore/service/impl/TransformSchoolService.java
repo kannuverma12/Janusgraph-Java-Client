@@ -1,25 +1,21 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.S3_IMAGE_PATH_SUFFIX;
-import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SCHOOL_ENTITY;
-
 import com.paytm.digital.education.config.AwsConfig;
+import com.paytm.digital.education.database.entity.Board;
+import com.paytm.digital.education.database.entity.BoardData;
+import com.paytm.digital.education.database.entity.School;
+import com.paytm.digital.education.database.entity.SchoolGallery;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.enums.ClassType;
+import com.paytm.digital.education.enums.SchoolEducationLevelType;
+import com.paytm.digital.education.enums.SchoolEntityType;
 import com.paytm.digital.education.explore.constants.AWSConstants;
-import com.paytm.digital.education.explore.database.entity.Board;
-import com.paytm.digital.education.explore.database.entity.BoardData;
-import com.paytm.digital.education.explore.database.entity.School;
-import com.paytm.digital.education.explore.database.entity.SchoolGallery;
-import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.dto.SchoolDto;
-import com.paytm.digital.education.explore.enums.ClassType;
-import com.paytm.digital.education.explore.enums.SchoolEducationLevelType;
-import com.paytm.digital.education.explore.enums.SchoolEntityType;
 import com.paytm.digital.education.explore.service.helper.IncrementalDataHelper;
 import com.paytm.digital.education.utility.UploadUtil;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -32,9 +28,11 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_ID;
-import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SCHOOL_FILE_VERSION;
 import static com.paytm.digital.education.database.entity.PaytmKeys.Constants.PAYTM_KEYS;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.S3_IMAGE_PATH_SUFFIX;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SCHOOL_ENTITY;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SCHOOL_FILE_VERSION;
+import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_ID;
 
 @Service
 @AllArgsConstructor
@@ -43,9 +41,9 @@ public class TransformSchoolService {
 
     private static Logger log = LoggerFactory.getLogger(CommonMongoRepository.class);
 
-    private CommonMongoRepository   commonMongoRepository;
-    private IncrementalDataHelper   incrementalDataHelper;
-    private UploadUtil              uploadUtil;
+    private CommonMongoRepository commonMongoRepository;
+    private IncrementalDataHelper incrementalDataHelper;
+    private UploadUtil            uploadUtil;
 
     public Integer transformAndSaveSchoolsData(List<SchoolDto> schoolDtos) {
         List<Long> schoolIds =

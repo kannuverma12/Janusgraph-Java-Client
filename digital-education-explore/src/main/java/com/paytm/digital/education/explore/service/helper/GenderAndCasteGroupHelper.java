@@ -9,10 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.CASTEGROUP;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.CUTOFF;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.GENDER;
+import static com.paytm.digital.education.constant.ExploreConstants.CASTEGROUP;
+import static com.paytm.digital.education.constant.ExploreConstants.CUTOFF;
+import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.constant.ExploreConstants.GENDER;
 
 @Service
 @AllArgsConstructor

@@ -1,14 +1,14 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import com.paytm.digital.education.config.ConfigProperties;
 import com.paytm.digital.education.elasticsearch.constants.ESConstants;
-import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationResponse;
-import com.paytm.digital.education.explore.config.ConfigProperties;
-import com.paytm.digital.education.explore.enums.Client;
-import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.paytm.digital.education.enums.Client;
+import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.enums.es.FilterQueryType;
 import com.paytm.digital.education.explore.es.model.ExamSearch;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.search.ExamSectionData;
@@ -16,7 +16,7 @@ import com.paytm.digital.education.explore.response.dto.search.ExamSubItemData;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.response.dto.search.SearchResult;
 import com.paytm.digital.education.explore.service.helper.SearchAggregateHelper;
-import com.paytm.digital.education.explore.utility.CommonUtil;
+import com.paytm.digital.education.utility.CommonUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
@@ -36,14 +36,14 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.BROWSE_BY_EXAM_LEVEL;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_FILTER_NAMESPACE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_GLOBAL_PRIORITY;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_LEVEL;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_SEARCH_NAMESPACE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_ANALYZER_EXAM;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SEARCH_INDEX_EXAM;
+import static com.paytm.digital.education.constant.ExploreConstants.BROWSE_BY_EXAM_LEVEL;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FILTER_NAMESPACE;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_GLOBAL_PRIORITY;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_LEVEL;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SEARCH_NAMESPACE;
+import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_ANALYZER_EXAM;
+import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_INDEX_EXAM;
 
 @Slf4j
 @Service

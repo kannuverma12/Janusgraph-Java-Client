@@ -4,10 +4,10 @@ import com.paytm.digital.education.config.AwsConfig;
 import com.paytm.digital.education.config.GoogleConfig;
 import com.paytm.digital.education.database.entity.FailedData;
 import com.paytm.digital.education.database.repository.FailedDataRepository;
-import com.paytm.digital.education.explore.database.entity.CampusAmbassador;
-import com.paytm.digital.education.explore.database.entity.CampusEngagement;
-import com.paytm.digital.education.explore.database.entity.Institute;
-import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.database.entity.CampusAmbassador;
+import com.paytm.digital.education.database.entity.CampusEngagement;
+import com.paytm.digital.education.database.entity.Institute;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.service.ImportDataService;
 import com.paytm.digital.education.explore.service.helper.CampusEngagementHelper;
 import com.paytm.digital.education.utility.GoogleDriveUtil;
@@ -48,8 +48,8 @@ import static com.paytm.digital.education.explore.constants.CampusEngagementCons
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.IS_IMPORTABLE;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.TYPE;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.XCEL_DATE_FORMAT;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
 
 
 @Service

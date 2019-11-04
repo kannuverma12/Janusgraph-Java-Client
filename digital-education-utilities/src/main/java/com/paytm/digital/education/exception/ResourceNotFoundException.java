@@ -25,4 +25,9 @@ public class ResourceNotFoundException extends GlobalException {
                 message == null ? "Resource not found: " + resourceName : message);
         this.resourceName = resourceName;
     }
+
+    public ResourceNotFoundException(String message) {
+        super(HttpStatus.NOT_FOUND, message);
+    }
+
 }

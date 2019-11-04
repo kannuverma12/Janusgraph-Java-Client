@@ -1,6 +1,5 @@
 package com.paytm.digital.education.explore.response.builders;
 
-import com.paytm.digital.education.elasticsearch.enums.AggregationType;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.AggregationResponse;
 import com.paytm.digital.education.elasticsearch.models.BucketAggregationResponse;
@@ -8,6 +7,7 @@ import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.elasticsearch.models.FilterField;
 import com.paytm.digital.education.elasticsearch.models.MetricAggregationResponse;
+import com.paytm.digital.education.enums.es.AggregationType;
 import com.paytm.digital.education.explore.response.dto.search.FilterBucket;
 import com.paytm.digital.education.explore.response.dto.search.FilterData;
 import com.paytm.digital.education.explore.response.dto.search.MultipleRangeData;
@@ -15,7 +15,7 @@ import com.paytm.digital.education.explore.response.dto.search.RangeFilterData;
 import com.paytm.digital.education.explore.response.dto.search.RangeFilterValue;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.response.dto.search.TermFilterData;
-import com.paytm.digital.education.explore.utility.CommonUtil;
+import com.paytm.digital.education.utility.CommonUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -26,12 +26,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DATA;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DISPLAY_NAME;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.FEES;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.KEY;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DISTANCE_KILOMETERS;
-
+import static com.paytm.digital.education.constant.ExploreConstants.DATA;
+import static com.paytm.digital.education.constant.ExploreConstants.DISPLAY_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.FEES;
+import static com.paytm.digital.education.constant.ExploreConstants.KEY;
+import static com.paytm.digital.education.constant.ExploreConstants.DISTANCE_KILOMETERS;
 
 @Service
 public class SearchResponseBuilder {

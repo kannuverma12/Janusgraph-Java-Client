@@ -1,51 +1,33 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.APPLICATION;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DATA;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DD_MMM_YYYY;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.DEFAULT;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_DETAIL;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_FILTER_NAMESPACE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXAM_PREFIX;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.LINGUISTIC_MEDIUM;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.LINGUISTIC_MEDIUM_NAMESPACE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.MMM_YYYY;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.NON_TENTATIVE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.PRECEDENCE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SECTION;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.WEB_FORM_URI_PREFIX;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.YYYY_MM;
-import static com.paytm.digital.education.explore.enums.Client.APP;
-import static com.paytm.digital.education.explore.enums.EducationEntity.EXAM;
-import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
-import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
-
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.ExamPaytmKeys;
 import com.paytm.digital.education.database.entity.Instance;
 import com.paytm.digital.education.database.entity.SubExam;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.dto.detail.Event;
+import com.paytm.digital.education.dto.detail.Section;
+import com.paytm.digital.education.dto.detail.Topic;
+import com.paytm.digital.education.dto.detail.Unit;
+import com.paytm.digital.education.enums.Client;
+import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.BadRequestException;
-import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.explore.enums.Client;
-import com.paytm.digital.education.explore.enums.EducationEntity;
+import com.paytm.digital.education.explore.enums.CTAType;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
-import com.paytm.digital.education.explore.response.dto.detail.Event;
 import com.paytm.digital.education.explore.response.dto.detail.ExamDetail;
 import com.paytm.digital.education.explore.response.dto.detail.Location;
 import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
 import com.paytm.digital.education.explore.service.helper.CTAHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.service.helper.DetailPageSectionHelper;
-import com.paytm.digital.education.explore.service.helper.ExamInstanceHelper;
-import com.paytm.digital.education.explore.service.helper.ExamLogoHelper;
 import com.paytm.digital.education.explore.service.helper.ExamSectionHelper;
 import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
 import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import com.paytm.digital.education.explore.service.helper.WidgetsDataHelper;
-import com.paytm.digital.education.explore.utility.CommonUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
+import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
+import com.paytm.digital.education.serviceimpl.helper.ExamLogoHelper;
+import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.utility.DateUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,6 +42,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import static com.paytm.digital.education.constant.ExploreConstants.APPLICATION;
+import static com.paytm.digital.education.constant.ExploreConstants.DATA;
+import static com.paytm.digital.education.constant.ExploreConstants.DD_MMM_YYYY;
+import static com.paytm.digital.education.constant.ExploreConstants.DEFAULT;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_DETAIL;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FILTER_NAMESPACE;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_PREFIX;
+import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_MEDIUM;
+import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_MEDIUM_NAMESPACE;
+import static com.paytm.digital.education.constant.ExploreConstants.MMM_YYYY;
+import static com.paytm.digital.education.constant.ExploreConstants.NON_TENTATIVE;
+import static com.paytm.digital.education.constant.ExploreConstants.PRECEDENCE;
+import static com.paytm.digital.education.constant.ExploreConstants.SECTION;
+import static com.paytm.digital.education.constant.ExploreConstants.WEB_FORM_URI_PREFIX;
+import static com.paytm.digital.education.constant.ExploreConstants.ZERO;
+import static com.paytm.digital.education.enums.Client.APP;
+import static com.paytm.digital.education.enums.EducationEntity.EXAM;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
 
 @AllArgsConstructor
 @Service
@@ -95,7 +99,11 @@ public class ExamDetailServiceImpl {
             updateShortlist(examDetail, userId);
         }
         List<CTA> ctas = ctaHelper.buildCTA(examDetail, client);
+
         if (!CollectionUtils.isEmpty(ctas)) {
+            if (!Client.APP.equals(client)) {
+                ctas.removeIf(cta -> cta.getType().equals(CTAType.SHORTLIST));
+            }
             examDetail.setCtaList(ctas);
         }
         return examDetail;
@@ -163,6 +171,32 @@ public class ExamDetailServiceImpl {
                         sectionConfigurationMap, syllabusFlg);
     }
 
+    private List<Section> getSectionsFromEntitySyllabus(
+            List<com.paytm.digital.education.database.entity.Syllabus> entitySyllabusList) {
+        List<Section> sectionList = new ArrayList<>();
+        entitySyllabusList.forEach(entitySection -> {
+            List<Unit> units = new ArrayList<>();
+            entitySection.getUnits().forEach(entityUnit -> {
+                String unitName = entityUnit.getName();
+                if (!unitName.equals(ZERO)) {
+                    List<Topic> topics = new ArrayList<>();
+                    entityUnit.getTopics().forEach(entityTopic -> {
+                        String topicName = entityTopic.getName();
+                        if (!topicName.equals(ZERO)) {
+                            Topic topic = new Topic(topicName);
+                            topics.add(topic);
+                        }
+                    });
+                    Unit unit = new Unit(unitName, topics);
+                    units.add(unit);
+                }
+            });
+            Section section = new Section(entitySection.getSubjectName(), units);
+            sectionList.add(section);
+        });
+        return sectionList;
+    }
+
     private Map<String, Instance> getSubExamInstances(Exam exam, int parentInstanceId) {
         Map<String, Instance> subExamInstances = new HashMap<>();
         if (!CollectionUtils.isEmpty(exam.getSubExams())) {
@@ -199,8 +233,7 @@ public class ExamDetailServiceImpl {
                     }
 
                 } else {
-                    examDetail.setApplicationMonth(DateUtil.formatDateString(
-                            importantDates.get(i).getMonthDate(), YYYY_MM, MMM_YYYY));
+                    examDetail.setApplicationMonth(importantDates.get(i).getMonthDate());
                 }
             } else if (importantDates.get(i).getType().equalsIgnoreCase(EXAM.name())) {
                 if (importantDates.get(i).getCertainity() != null
@@ -221,7 +254,7 @@ public class ExamDetailServiceImpl {
                 } else {
                     examDetail
                             .setExamMonth(DateUtil.formatDateString(
-                                    importantDates.get(i).getMonthDate(), YYYY_MM, DD_MMM_YYYY));
+                                    importantDates.get(i).getMonthDate(), MMM_YYYY, DD_MMM_YYYY));
                 }
             }
         }
@@ -327,7 +360,7 @@ public class ExamDetailServiceImpl {
             addPaytmKeys(examResponse, exam.getPaytmKeys());
         }
         if (syllabusflg) {
-            List<com.paytm.digital.education.explore.response.dto.detail.Syllabus> syllabus =
+            List<com.paytm.digital.education.dto.detail.Syllabus> syllabus =
                     examInstanceHelper.getSyllabus(nearestInstance, subExamInstances, exam);
             if (!CollectionUtils.isEmpty(syllabus)) {
                 examResponse.setSyllabus(syllabus);

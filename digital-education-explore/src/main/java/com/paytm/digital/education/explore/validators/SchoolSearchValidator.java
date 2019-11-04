@@ -8,7 +8,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.Objects;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.SORT_DISTANCE_FIELD;
+import static com.paytm.digital.education.constant.ExploreConstants.SORT_DISTANCE_FIELD;
 
 @UtilityClass
 public class SchoolSearchValidator {

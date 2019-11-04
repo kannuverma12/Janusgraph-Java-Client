@@ -1,6 +1,6 @@
 package com.paytm.digital.education.elasticsearch.models;
 
-import com.paytm.digital.education.elasticsearch.enums.FilterQueryType;
+import com.paytm.digital.education.enums.es.FilterQueryType;
 import lombok.Data;
 
 @Data

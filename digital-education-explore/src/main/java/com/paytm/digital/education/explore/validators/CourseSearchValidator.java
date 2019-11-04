@@ -1,9 +1,8 @@
 package com.paytm.digital.education.explore.validators;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_ID;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.ENTITY_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.ENTITY_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.ENTITY_NAME;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;

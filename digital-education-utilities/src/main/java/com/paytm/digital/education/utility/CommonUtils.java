@@ -53,6 +53,10 @@ public class CommonUtils {
 
     }
 
+    public String convertNameToUrlDisplayName(String name) {
+        return name.replaceAll("[^a-zA-Z0-9]+", "-").toLowerCase();
+    }
+
     public boolean isNullOrZero(Integer i) {
         return i == null || i == 0;
     }

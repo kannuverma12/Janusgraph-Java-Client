@@ -2,11 +2,11 @@ package com.paytm.digital.education.explore.service.helper;
 
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.Session;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.dto.SftpConfig;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.exception.EducationException;
 import com.paytm.digital.education.explore.config.DataIngestionSftpConfig;
-import com.paytm.digital.education.explore.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.service.SftpService;
@@ -14,7 +14,6 @@ import com.paytm.digital.education.utility.JsonUtils;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
@@ -26,45 +25,44 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.Vector;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
+import java.util.Vector;
 
 import static com.mongodb.QueryOperators.OR;
+import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.constant.SftpConstants.CHANNEL_TYPE;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.ATTRIBUTES;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.COMPONENT;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.KEY;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.NAMESPACE;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSES_DIRECTORY;
-import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSE_ENTITY;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSES_FILE_NAME;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSE_ENTITY;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.DATA_INGESTION;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.EXAM_DIRECTORY;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.EXAM_ENTITY;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.EXAM_FILE_NAME;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.INCREMENTAL;
-import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.INSTITUTION_DIRECTORY;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.INSTITUTE_ENTITY;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.INSTITUTE_FILE_NAME;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.INSTITUTION_DIRECTORY;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.NEXT_COURSE_FILE_VERSION;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.NEXT_EXAM_FILE_VERSION;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.NEXT_INSTITUTE_FILE_VERSION;
-import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SFTP_COURSE_FILE_NAME_FORMAT;
-import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SFTP_EXAM_FILE_NAME_FORMAT;
-import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SFTP_INSTITUTE_FILE_NAME_FORMAT;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.NEXT_SCHOOL_FILE_VERSION;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SCHOOLS_FILE_NAME;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SCHOOL_DIRECTORY;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SCHOOL_ENTITY;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SFTP_COURSE_FILE_NAME_FORMAT;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SFTP_EXAM_FILE_NAME_FORMAT;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SFTP_INSTITUTE_FILE_NAME_FORMAT;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SFTP_SCHOOL_FILE_NAME_FORMAT;
-
 
 @Service
 @AllArgsConstructor

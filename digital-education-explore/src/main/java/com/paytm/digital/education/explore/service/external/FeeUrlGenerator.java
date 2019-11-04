@@ -1,11 +1,10 @@
 package com.paytm.digital.education.explore.service.external;
 
-import com.paytm.digital.education.explore.enums.Client;
+import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.explore.thirdparty.catalog.Attributes;
 import com.paytm.digital.education.explore.thirdparty.catalog.CatalogProduct;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

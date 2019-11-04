@@ -1,6 +1,6 @@
 package com.paytm.digital.education.elasticsearch.models;
 
-import com.paytm.digital.education.elasticsearch.enums.BulkRequestOperation;
+import com.paytm.digital.education.enums.es.BulkRequestOperation;
 import lombok.Data;
 
 @Data

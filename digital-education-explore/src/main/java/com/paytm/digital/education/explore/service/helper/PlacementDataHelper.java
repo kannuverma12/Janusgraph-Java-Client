@@ -1,11 +1,11 @@
 package com.paytm.digital.education.explore.service.helper;
 
-import static com.paytm.digital.education.explore.constants.ExploreConstants.AVERAGE_PACKAGE_LABEL;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.MAXIMUM_PACKAGE_LABEL;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.MEDIAN_PACKAGE_LABEL;
-import static com.paytm.digital.education.explore.constants.ExploreConstants.MINIMUM_PACKAGE_LABEL;
+import static com.paytm.digital.education.constant.ExploreConstants.AVERAGE_PACKAGE_LABEL;
+import static com.paytm.digital.education.constant.ExploreConstants.MAXIMUM_PACKAGE_LABEL;
+import static com.paytm.digital.education.constant.ExploreConstants.MEDIAN_PACKAGE_LABEL;
+import static com.paytm.digital.education.constant.ExploreConstants.MINIMUM_PACKAGE_LABEL;
 
-import com.paytm.digital.education.explore.database.entity.Institute;
+import com.paytm.digital.education.database.entity.Institute;
 import com.paytm.digital.education.explore.response.dto.detail.Placement;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ public class PlacementDataHelper {
     public List<Placement> getSalariesPlacements(Institute institute) {
         if (!CollectionUtils.isEmpty(institute.getSalariesPlacement())) {
             List<Placement> placementList = new ArrayList<>();
-            for (com.paytm.digital.education.explore.database.entity.Placement salaryPlacement :
+            for (com.paytm.digital.education.database.entity.Placement salaryPlacement :
                     institute.getSalariesPlacement()) {
                 Placement placement = new Placement();
                 placement.setDegree(salaryPlacement.getDegree());

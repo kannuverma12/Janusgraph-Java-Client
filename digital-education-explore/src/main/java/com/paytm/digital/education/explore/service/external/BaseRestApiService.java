@@ -1,9 +1,7 @@
 package com.paytm.digital.education.explore.service.external;
 
 import com.paytm.digital.education.exception.BadRequestException;
-import com.paytm.digital.education.explore.config.RestConfig;
 import com.paytm.digital.education.mapping.ErrorEnum;
-import com.paytm.digital.education.utility.JsonUtils;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
@@ -16,6 +14,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.lang.reflect.Type;
@@ -30,7 +29,7 @@ public class BaseRestApiService {
 
     private static final Logger log = LoggerFactory.getLogger(BaseRestApiService.class);
 
-    private RestConfig rest;
+    private RestTemplate restTemplate;
 
     public <T> T get(String url, Map<String, ?> queryParams, HttpHeaders httpHeaders,
             Type responseClassType, List<String> pathvariablesInorder) {
@@ -39,7 +38,7 @@ public class BaseRestApiService {
         URI uri = getURI(url, queryParams, pathvariablesInorder);
         try {
             responseEntity =
-                    rest.getRestTemplate().exchange(uri, HttpMethod.GET, requestEntity,
+                    restTemplate.exchange(uri, HttpMethod.GET, requestEntity,
                             new ParameterizedTypeReference<T>() {
                                 @Override
                                 public Type getType() {
@@ -47,6 +46,7 @@ public class BaseRestApiService {
                                 }
                             });
         } catch (Exception e) {
+            log.error("Error in GET API for URI : {} , Exception :  ", e, uri.toString());
             throw e;
         }
         return getResponseBody(responseEntity);
@@ -74,7 +74,7 @@ public class BaseRestApiService {
         }
         HttpEntity<Object> httpEntity = new HttpEntity<Object>(requestBody, httpHeaders);
         ResponseEntity<T> responseEntity =
-                rest.getRestTemplate().exchange(url, HttpMethod.POST, httpEntity, clazz);
+                restTemplate.exchange(url, HttpMethod.POST, httpEntity, clazz);
         log.info("Http request : {}", httpEntity.toString());
         if (responseEntity.getStatusCodeValue() != 200) {
             throw new BadRequestException(ErrorEnum.HTTP_REQUEST_FAILED,

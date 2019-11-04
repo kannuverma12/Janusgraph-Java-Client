@@ -3,6 +3,7 @@ package com.paytm.digital.education.exception;
 import com.paytm.digital.education.constant.ErrorCode;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Data

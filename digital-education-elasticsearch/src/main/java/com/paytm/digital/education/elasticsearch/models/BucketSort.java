@@ -1,7 +1,7 @@
 package com.paytm.digital.education.elasticsearch.models;
 
-import com.paytm.digital.education.elasticsearch.enums.BucketAggregationSortParms;
-import com.paytm.digital.education.elasticsearch.enums.DataSortOrder;
+import com.paytm.digital.education.enums.es.BucketAggregationSortParms;
+import com.paytm.digital.education.enums.es.DataSortOrder;
 import lombok.Builder;
 import lombok.Data;
 

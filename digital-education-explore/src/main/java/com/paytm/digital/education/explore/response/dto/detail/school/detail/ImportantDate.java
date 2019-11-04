@@ -1,6 +1,6 @@
 package com.paytm.digital.education.explore.response.dto.detail.school.detail;
 
-import com.paytm.digital.education.explore.database.entity.SchoolAdmission;
+import com.paytm.digital.education.database.entity.SchoolAdmission;
 import lombok.Data;
 
 @Data

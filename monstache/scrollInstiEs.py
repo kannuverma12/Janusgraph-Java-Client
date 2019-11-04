@@ -2,7 +2,7 @@ from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
 
 es = Elasticsearch(
-    ['10.20.33.122'],
+    ['http://internal-education-es-alb-143014650.ap-south-1.elb.amazonaws.com:9200'],
     scheme="http",
     port=9200,
 )
@@ -69,7 +69,7 @@ print "init scroll.. "
 
 # Init scroll by search
 esInstiData = es.search(
-    index='education_search_institute_v2',
+    index='education_search_institute_v4',
     doc_type='education',
     scroll='2m',
     size=100,

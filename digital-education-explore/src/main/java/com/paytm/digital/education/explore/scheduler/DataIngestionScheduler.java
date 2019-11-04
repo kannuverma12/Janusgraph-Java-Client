@@ -1,6 +1,6 @@
 package com.paytm.digital.education.explore.scheduler;
 
-import com.paytm.digital.education.explore.database.entity.CronProperties;
+import com.paytm.digital.education.database.entity.CronProperties;
 import com.paytm.digital.education.explore.database.repository.CronPropertiesRepository;
 import com.paytm.digital.education.explore.service.impl.ImportIncrementalDataService;
 import com.paytm.education.logger.Logger;
@@ -30,8 +30,9 @@ public class DataIngestionScheduler {
     private ImportIncrementalDataService importIncrementalDataService;
     private CronPropertiesRepository     cronPropertiesRepository;
 
-    @Scheduled(fixedDelayString = "${data-ingestion.import.cron.fixed.delay}")
-    @SchedulerLock(name = "dataIngestionImport")
+    // stopping scheduler as issue with MAT data from c360
+    //@Scheduled(fixedDelayString = "${data-ingestion.import.cron.fixed.delay}")
+    //@SchedulerLock(name = "dataIngestionImport")
     public void importFailedArticleScheduler() {
         CronProperties dataIngestionCronProperty =
                 cronPropertiesRepository.findByCronName(DATA_INGESTION_IMPORT);

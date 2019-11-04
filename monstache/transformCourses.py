@@ -2,12 +2,12 @@ from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
 
 es = Elasticsearch(
-    ['10.20.33.122'],
+    ['http://10.20.33.122:9200','http://10.20.33.133:9200','http://10.20.33.242:9200'],
     scheme="http",
     port=9200,
 )
 
-courseIndex="education_search_course_v2"
+courseIndex="education_search_course_v4"
 courseIndexType="education"
 
 
@@ -27,7 +27,7 @@ print "init scroll.. "
 
 # Init scroll by search
 esInstiData = es.search(
-    index='education_search_institute_v2',
+    index='education_search_institute_v4',
     doc_type='education',
     scroll='2m',
     size=10,
