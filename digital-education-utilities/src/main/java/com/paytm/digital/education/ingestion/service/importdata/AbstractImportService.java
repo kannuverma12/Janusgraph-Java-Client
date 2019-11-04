@@ -1,15 +1,5 @@
 package com.paytm.digital.education.ingestion.service.importdata;
 
-import static com.paytm.digital.education.ingestion.constant.IngestionConstants.COMPONENT;
-import static com.paytm.digital.education.ingestion.constant.IngestionConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.ingestion.constant.IngestionConstants.HAS_IMPORTED;
-import static com.paytm.digital.education.ingestion.constant.IngestionConstants.IS_IMPORTABLE;
-import static com.paytm.digital.education.ingestion.constant.IngestionConstants.PADDING;
-import static com.paytm.digital.education.ingestion.constant.IngestionConstants.SHEET_HEADER_RANGE;
-import static com.paytm.digital.education.ingestion.constant.IngestionConstants.SHEET_RANGE_TEMPLATE;
-import static com.paytm.digital.education.ingestion.constant.IngestionConstants.TYPE;
-import static com.paytm.digital.education.mapping.ErrorEnum.ERROR_IN_IMPORT;
-
 import com.paytm.digital.education.config.GoogleConfig;
 import com.paytm.digital.education.database.entity.FailedData;
 import com.paytm.digital.education.database.repository.FailedDataRepository;
@@ -25,7 +15,7 @@ import com.paytm.digital.education.utility.JsonUtils;
 import com.paytm.digital.education.utility.UploadUtil;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.query.Update;
@@ -44,6 +34,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static com.paytm.digital.education.ingestion.constant.IngestionConstants.COMPONENT;
+import static com.paytm.digital.education.ingestion.constant.IngestionConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.ingestion.constant.IngestionConstants.HAS_IMPORTED;
+import static com.paytm.digital.education.ingestion.constant.IngestionConstants.IS_IMPORTABLE;
+import static com.paytm.digital.education.ingestion.constant.IngestionConstants.PADDING;
+import static com.paytm.digital.education.ingestion.constant.IngestionConstants.SHEET_HEADER_RANGE;
+import static com.paytm.digital.education.ingestion.constant.IngestionConstants.SHEET_RANGE_TEMPLATE;
+import static com.paytm.digital.education.ingestion.constant.IngestionConstants.TYPE;
+import static com.paytm.digital.education.mapping.ErrorEnum.ERROR_IN_IMPORT;
 
 @Component
 public abstract class AbstractImportService {
@@ -67,7 +67,8 @@ public abstract class AbstractImportService {
     protected DataImportPropertiesResponse getProperties(final Class clazz,
             final DataImportPropertiesRequest request) {
 
-        final Map<String, Object> propertyMap = this.ingestDataHelper.getDataImportProperties(request, clazz);
+        final Map<String, Object> propertyMap =
+                this.ingestDataHelper.getDataImportProperties(request, clazz);
         try {
             final List<Object> headersList = GoogleSheetHelper.getHeaderKeysList(clazz);
             final String range = GoogleSheetHelper.convertNumberToA1Notation(headersList.size(),
@@ -257,8 +258,8 @@ public abstract class AbstractImportService {
             return filePath;
         } else {
             throw new EducationException(ERROR_IN_IMPORT, ERROR_IN_IMPORT.getExternalMessage(),
-                    new Object[]{String.format("Failed to upload file in s3, "
-                    + "driveImageUrl: %s, imagePrefix: %s", driveImageUrl, imagePrefix)});
+                    new Object[] {String.format("Failed to upload file in s3, "
+                            + "driveImageUrl: %s, imagePrefix: %s", driveImageUrl, imagePrefix)});
         }
     }
 }

@@ -4,9 +4,10 @@ import com.paytm.digital.education.exception.EducationException;
 import com.paytm.digital.education.service.S3Service;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
-import javafx.util.Pair;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -55,12 +56,12 @@ public class UploadUtil {
             String imageUrl =
                     s3Service.uploadFile(inputStream, fileName, instituteId,
                             relativePath, s3BucketName);
-            return new Pair<>(imageUrl, mimeType);
+            return new MutablePair<>(imageUrl, mimeType);
         } catch (Exception e) {
             log.error("Unable to upload file for file : {} and the error is {}",
                     fileUrl, JsonUtils.toJson(e.getMessage()));
         }
-        return new Pair<>(null, null);
+        return new MutablePair<>(null, null);
     }
 
     public String uploadImage(String fileUrl, String fileName, Long instituteId,
@@ -123,12 +124,12 @@ public class UploadUtil {
             String imageUrl = s3Service.uploadFile(inputStream, fileName, entityId, relativePath,
                     s3BucketName);
             log.info("EntityId : {}, Uploaded ImageUrl: {}", entityId, imageUrl);
-            return new Pair<>(imageUrl, mimeType);
+            return new MutablePair<>(imageUrl, mimeType);
         } catch (Exception e) {
             log.error("Unable to upload file for file : {}, entityId : {} and the exception : {}",
                     e, fileUrl, entityId);
             throw new EducationException(ERROR_IN_IMPORT, ERROR_IN_IMPORT.getExternalMessage(),
-                    new Object[]{String.format("Failed to upload file from google drive to s3, "
+                    new Object[] {String.format("Failed to upload file from google drive to s3, "
                             + "entityId : %s, fileUrl : %s", entityId, fileUrl)});
         }
     }
