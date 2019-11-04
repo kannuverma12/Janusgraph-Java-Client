@@ -84,9 +84,9 @@ public class PageServiceImpl implements PageService {
                     case EXAM_FOCUS_APP:
                     case BROWSE_BY_EXAM_LEVEL:
                     case SCHOOLS_IN_FOCUS:
+                    case STREAMS:
                         logoFieldName = LOGO;
                         break;
-                    case STREAMS:
                     case TOP_COLLEGES:
                     case TOP_SCHOOLS:
                     case LOCATIONS:
