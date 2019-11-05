@@ -60,6 +60,7 @@ public class RedisService {
         return null;
     }
 
+    /* Not a foolproof solution */
     private Object generateNewDataAndCache(
             String key, Class clazz, String oldData, ProceedingJoinPoint joinPoint) throws CacheUpdateLockedException {
         String lockKey = key + "::zookeeper";
@@ -73,13 +74,12 @@ public class RedisService {
             int millis = 5 * 60 * 1000;
             String newDataString = "**[" + new LocalDateTime().plusMillis(millis).toString() + "]**"
                     + JsonUtils.toJson(o);
-            template.opsForValue().set(key, newDataString);
-            relinquishLock(lockKey, random);
+            writeAndReleaseLock(key, newDataString, lockKey, random);
             return o;
         } catch (CacheUpdateLockedException e) {
             throw e;
         } catch (Throwable e) {
-            relinquishLock(lockKey, random);
+            releaseLock(lockKey, random);
             if (oldData == null) {
                 return null;
             }
@@ -87,7 +87,15 @@ public class RedisService {
         }
     }
 
-    private void relinquishLock(String lockKey, String ownRandomValue) {
+    private void writeAndReleaseLock(String key, String value, String lockKey, String identifier) {
+        String currentIdentifier = (String) template.opsForValue().get(lockKey);
+        if (identifier.equals(currentIdentifier)) {
+            template.opsForValue().set(key, value);
+            template.opsForValue().getOperations().delete(lockKey);
+        }
+    }
+
+    private void releaseLock(String lockKey, String ownRandomValue) {
         String currentRandomValue = (String) template.opsForValue().get(lockKey);
         if (ownRandomValue.equals(currentRandomValue)) {
             template.opsForValue().getOperations().delete(lockKey);
