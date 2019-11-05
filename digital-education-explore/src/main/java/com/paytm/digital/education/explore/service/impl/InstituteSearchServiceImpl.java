@@ -1,5 +1,49 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import static com.paytm.digital.education.constant.ExploreConstants.STREAM_IDS;
+import static com.paytm.digital.education.enums.es.FilterQueryType.RANGE;
+import static com.paytm.digital.education.enums.es.FilterQueryType.TERMS;
+import static com.paytm.digital.education.constant.ExploreConstants.ALTERNATE_NAMES;
+import static com.paytm.digital.education.constant.ExploreConstants.ALTERNATE_NAMES_BOOST;
+import static com.paytm.digital.education.constant.ExploreConstants.C0MMON_NAME_BOOST;
+import static com.paytm.digital.education.constant.ExploreConstants.CITY_INSTITUTE;
+import static com.paytm.digital.education.constant.ExploreConstants.CITY_SEARCH;
+import static com.paytm.digital.education.constant.ExploreConstants.COMMON_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.COURSE_LEVEL_INSTITUTE;
+import static com.paytm.digital.education.constant.ExploreConstants.DB_RANK_OVERALL;
+import static com.paytm.digital.education.constant.ExploreConstants.ESTABLISHMENT_YEAR;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAMS_ACCEPTED_INSTITUTE;
+import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.constant.ExploreConstants.FACILITIES;
+import static com.paytm.digital.education.constant.ExploreConstants.FEES_INSTITUTE;
+import static com.paytm.digital.education.constant.ExploreConstants.FE_RANK_SORT;
+import static com.paytm.digital.education.constant.ExploreConstants.FE_RELEVANCE_SORT;
+import static com.paytm.digital.education.constant.ExploreConstants.FORMER_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.FORMER_NAME_BOOST;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_FILTER_NAMESPACE;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_GENDER;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_NAMESPACE;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_SEARCH_NAMESPACE;
+import static com.paytm.digital.education.constant.ExploreConstants.NGRAM;
+import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_NAME_SEARCH;
+import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_NAME_SEARCH_BOOST;
+import static com.paytm.digital.education.constant.ExploreConstants.OTHER_NAMES_NGRAM_BOOST;
+import static com.paytm.digital.education.constant.ExploreConstants.OWNERSHIP;
+import static com.paytm.digital.education.constant.ExploreConstants.RANKING_OVERALL;
+import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_ANALYZER_INSTITUTE;
+import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_INDEX_INSTITUTE;
+import static com.paytm.digital.education.constant.ExploreConstants.SORT_PARAM_KEY;
+import static com.paytm.digital.education.constant.ExploreConstants.STATE_INSTITUTE;
+import static com.paytm.digital.education.constant.ExploreConstants.STATE_SEARCH;
+import static com.paytm.digital.education.constant.ExploreConstants.STOPWORDS;
+import static com.paytm.digital.education.constant.ExploreConstants.STOPWORDS_KEY;
+import static com.paytm.digital.education.constant.ExploreConstants.TIE_BREAKER;
+import static com.paytm.digital.education.constant.ExploreConstants.UNIVERSITY_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.UNIVERSITY_NAME_SEARCH;
+import static com.paytm.digital.education.constant.ExploreConstants.UNIVERSITY_NAME_SEARCH_BOOST;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paytm.digital.education.database.entity.InstiPaytmKeys;
@@ -39,52 +83,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
-import static com.paytm.digital.education.constant.ExploreConstants.ALTERNATE_NAMES;
-import static com.paytm.digital.education.constant.ExploreConstants.ALTERNATE_NAMES_BOOST;
-import static com.paytm.digital.education.constant.ExploreConstants.C0MMON_NAME_BOOST;
-import static com.paytm.digital.education.constant.ExploreConstants.CITY_INSTITUTE;
-import static com.paytm.digital.education.constant.ExploreConstants.CITY_SEARCH;
-import static com.paytm.digital.education.constant.ExploreConstants.COMMON_NAME;
-import static com.paytm.digital.education.constant.ExploreConstants.COURSE_LEVEL_INSTITUTE;
-import static com.paytm.digital.education.constant.ExploreConstants.DB_RANK_OVERALL;
-import static com.paytm.digital.education.constant.ExploreConstants.ESTABLISHMENT_YEAR;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAMS_ACCEPTED_INSTITUTE;
-import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.constant.ExploreConstants.FACILITIES;
-import static com.paytm.digital.education.constant.ExploreConstants.FEES_INSTITUTE;
-import static com.paytm.digital.education.constant.ExploreConstants.FE_RANK_SORT;
-import static com.paytm.digital.education.constant.ExploreConstants.FE_RELEVANCE_SORT;
-import static com.paytm.digital.education.constant.ExploreConstants.FORMER_NAME;
-import static com.paytm.digital.education.constant.ExploreConstants.FORMER_NAME_BOOST;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_FILTER_NAMESPACE;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_GENDER;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_NAMESPACE;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_SEARCH_NAMESPACE;
-import static com.paytm.digital.education.constant.ExploreConstants.NGRAM;
-import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_NAME;
-import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_NAME_SEARCH;
-import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_NAME_SEARCH_BOOST;
-import static com.paytm.digital.education.constant.ExploreConstants.OTHER_NAMES_NGRAM_BOOST;
-import static com.paytm.digital.education.constant.ExploreConstants.OWNERSHIP;
-import static com.paytm.digital.education.constant.ExploreConstants.RANKING_OVERALL;
-import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_ANALYZER_INSTITUTE;
-import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_INDEX_INSTITUTE;
-import static com.paytm.digital.education.constant.ExploreConstants.SORT_PARAM_KEY;
-import static com.paytm.digital.education.constant.ExploreConstants.STATE_INSTITUTE;
-import static com.paytm.digital.education.constant.ExploreConstants.STATE_SEARCH;
-import static com.paytm.digital.education.constant.ExploreConstants.STOPWORDS;
-import static com.paytm.digital.education.constant.ExploreConstants.STOPWORDS_KEY;
-import static com.paytm.digital.education.constant.ExploreConstants.STREAM_INSTITUTE;
-import static com.paytm.digital.education.constant.ExploreConstants.TIE_BREAKER;
-import static com.paytm.digital.education.constant.ExploreConstants.UNIVERSITY_NAME;
-import static com.paytm.digital.education.constant.ExploreConstants.UNIVERSITY_NAME_SEARCH;
-import static com.paytm.digital.education.constant.ExploreConstants.UNIVERSITY_NAME_SEARCH_BOOST;
-import static com.paytm.digital.education.enums.es.FilterQueryType.RANGE;
-import static com.paytm.digital.education.enums.es.FilterQueryType.TERMS;
-
-
-
 @Service
 @AllArgsConstructor
 public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
@@ -102,7 +100,6 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
         filterQueryTypeMap = new HashMap<>();
         filterQueryTypeMap.put(STATE_INSTITUTE, TERMS);
         filterQueryTypeMap.put(CITY_INSTITUTE, TERMS);
-        filterQueryTypeMap.put(STREAM_INSTITUTE, TERMS);
         filterQueryTypeMap.put(COURSE_LEVEL_INSTITUTE, TERMS);
         filterQueryTypeMap.put(EXAMS_ACCEPTED_INSTITUTE, TERMS);
         filterQueryTypeMap.put(FEES_INSTITUTE, RANGE);
@@ -111,6 +108,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
         filterQueryTypeMap.put(FACILITIES, TERMS);
         filterQueryTypeMap.put(INSTITUTE_GENDER, TERMS);
         filterQueryTypeMap.put(UNIVERSITY_NAME, TERMS);
+        filterQueryTypeMap.put(STREAM_IDS, TERMS);
         filterQueryTypeMap.put(ESTABLISHMENT_YEAR, RANGE);
         locationSearchFieldKeys = new HashMap<>();
         locationSearchFieldKeys.put(STATE_SEARCH, 0.001F);
@@ -169,12 +167,15 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
                         SORT_PARAM_KEY);
         if (!CollectionUtils.isEmpty(sortParamsFromDb)) {
             List<SearchSortParam> sortParams = new ArrayList<>();
+            /*
+             * Changed STREAM_INSTITUTE to STREAM_IDS
+             */
             if (!CollectionUtils.isEmpty(searchRequest.getFilter()) && searchRequest.getFilter()
-                    .containsKey(STREAM_INSTITUTE)) {
+                    .containsKey(STREAM_IDS)) {
                 /*
                  * Applying sorting based on only one stream in case multiple stream filters are applied
                  * */
-                String filterKey = (String) searchRequest.getFilter().get(STREAM_INSTITUTE).get(0);
+                String filterKey = (String) searchRequest.getFilter().get(STREAM_IDS).get(0);
                 if (sortParamsFromDb.containsKey(filterKey)) {
                     sortParams.addAll(convertMapToPojo(
                             (List<Object>) sortParamsFromDb.get(filterKey)));

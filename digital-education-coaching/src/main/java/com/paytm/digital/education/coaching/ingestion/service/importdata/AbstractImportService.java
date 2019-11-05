@@ -95,7 +95,7 @@ public abstract class AbstractImportService {
                     .dataRangeTemplate(dataRangeTemplate)
                     .build();
         } catch (final NullPointerException e) {
-            log.error("Got exception for propertiesRequest: {}, exception: ", request, e);
+            log.error("Got exception for propertiesRequest: {}", e, request);
             return null;
         }
     }
@@ -118,8 +118,8 @@ public abstract class AbstractImportService {
             log.debug("Got formData.size: {}", formData == null ? 0 : formData.size());
         } catch (final IOException | GeneralSecurityException e) {
             log.error("Got exception while getting data from google sheet, "
-                            + "dataImportPropertiesResponse: {}, exception: ",
-                    dataImportPropertiesResponse, e);
+                            + "dataImportPropertiesResponse: {}",
+                    e, dataImportPropertiesResponse);
         }
         return formData;
     }

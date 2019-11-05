@@ -44,6 +44,10 @@ public class Lead {
     @Field(Constants.STREAM)
     private List<String> stream;
 
+    @JsonProperty(Constants.STREAM_IDS)
+    @Field(Constants.STREAM_IDS)
+    private List<Long> streamIds;
+
     @JsonProperty(Constants.INSTITUTE_ID)
     @Field(Constants.INSTITUTE_ID)
     private Long instituteId;
@@ -139,6 +143,7 @@ public class Lead {
         public static final String CITY_ID                        = "city_id";
         public static final String ENTITY_ID                      = "entity_id";
         public static final String STREAM                         = "stream";
+        public static final String STREAM_IDS                     = "stream_ids";
         public static final String LOCATION                       = "location";
         public static final String REQUEST_TYPE                   = "request_type";
         public static final String ENTITY_TYPE                    = "entity_type";

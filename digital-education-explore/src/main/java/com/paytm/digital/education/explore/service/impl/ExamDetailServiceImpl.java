@@ -88,12 +88,12 @@ public class ExamDetailServiceImpl {
     public ExamDetail getDetail(Long entityId, String examUrlKey, Long userId,
             String fieldGroup, List<String> fields, Client client, boolean syllabus,
             boolean importantDates, boolean derivedAttributes, boolean examCenters,
-            boolean sections,
-            boolean widgets) throws ParseException {
+            boolean sections, boolean widgets,
+            boolean policies) throws ParseException {
         // fields are not being supported currently. Part of discussion
 
         ExamDetail examDetail = getExamDetail(entityId, examUrlKey, fieldGroup, fields, client,
-                syllabus, importantDates, derivedAttributes, examCenters, sections, widgets);
+                syllabus, importantDates, derivedAttributes, examCenters, sections, widgets, policies);
         if (userId != null && userId > 0) {
             updateInterested(examDetail, userId);
             updateShortlist(examDetail, userId);
@@ -115,7 +115,7 @@ public class ExamDetailServiceImpl {
             List<String> fields, Client client, boolean syllabus,
             boolean importantDates, boolean derivedAttributes, boolean examCenters,
             boolean sections,
-            boolean widgets) throws ParseException {
+            boolean widgets, boolean policies) throws ParseException {
 
         // TODO: fields are not being supported currently. Part of discussion
         List<String> groupFields =
@@ -144,12 +144,12 @@ public class ExamDetailServiceImpl {
                     INVALID_EXAM_NAME.getExternalMessage());
         }
         return processExamDetail(exam, examFields, client, syllabus, importantDates,
-                derivedAttributes, examCenters, sections, widgets);
+                derivedAttributes, examCenters, sections, widgets, policies);
     }
 
     private ExamDetail processExamDetail(Exam exam, List<String> examFields, Client client,
             boolean syllabus, boolean importantDates, boolean derivedAttributes,
-            boolean examCenters, boolean sections, boolean widgets) {
+            boolean examCenters, boolean sections, boolean widgets, boolean policies) {
 
         Instance nearestInstance =
                 examInstanceHelper.getNearestInstance(exam.getInstances()).get();
@@ -157,7 +157,7 @@ public class ExamDetailServiceImpl {
                 getSubExamInstances(exam, nearestInstance.getInstanceId());
 
         return buildResponse(exam, client, syllabus, importantDates,
-                derivedAttributes, examCenters, sections, widgets, nearestInstance,
+                derivedAttributes, examCenters, sections, widgets, policies, nearestInstance,
                 subExamInstances);
     }
 
@@ -311,11 +311,11 @@ public class ExamDetailServiceImpl {
 
     private ExamDetail buildResponse(Exam exam, Client client, boolean syllabus,
             boolean importantDatesflag, boolean derivedAttributes, boolean examCenters,
-            boolean sectionsFlag, boolean widgets, Instance nearestInstance,
+            boolean sectionsFlag, boolean widgets, boolean policies, Instance nearestInstance,
             Map<String, Instance> subExamInstances) {
         ExamDetail examDetail = new ExamDetail();
         addCommonData(examDetail, exam, nearestInstance, subExamInstances, syllabus,
-                importantDatesflag, examCenters);
+                importantDatesflag, examCenters, policies);
         if (APP.equals(client)) {
             List<String> sectionsList =
                     detailPageSectionHelper.getSectionOrder(EXAM.name().toLowerCase(), client);
@@ -329,7 +329,7 @@ public class ExamDetailServiceImpl {
 
     private void addCommonData(ExamDetail examResponse, Exam exam, Instance nearestInstance,
             Map<String, Instance> subExamInstances, boolean syllabusflg, boolean importantDatesFlg,
-            boolean examCentersFlg) {
+            boolean examCentersFlg, boolean policies) {
         examResponse.setExamId(exam.getExamId());
         examResponse.setAbout(exam.getAboutExam());
         examResponse
@@ -358,6 +358,12 @@ public class ExamDetailServiceImpl {
         }
         if (Objects.nonNull(exam.getPaytmKeys())) {
             addPaytmKeys(examResponse, exam.getPaytmKeys());
+
+            if (policies) {
+                examResponse.setTermsAndConditions(exam.getPaytmKeys().getTermsAndConditions());
+                examResponse.setDisclaimer(exam.getPaytmKeys().getDisclaimer());
+                examResponse.setPrivacyPolicies(exam.getPaytmKeys().getPrivacyPolicies());
+            }
         }
         if (syllabusflg) {
             List<com.paytm.digital.education.dto.detail.Syllabus> syllabus =

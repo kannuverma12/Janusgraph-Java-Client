@@ -88,6 +88,15 @@ public class ExamSectionHelper {
             case APPLICATION_FORM:
                 examDetail.setApplicationForm(exam.getApplicationForm());
                 return StringUtils.isNotBlank(exam.getApplicationForm());
+            case TERMS_AND_CONDITIONS:
+                return Objects.nonNull(exam.getPaytmKeys()) && StringUtils
+                        .isNotBlank(exam.getPaytmKeys().getTermsAndConditions());
+            case PRIVACY_POLICIES:
+                return Objects.nonNull(exam.getPaytmKeys()) && StringUtils
+                        .isNotBlank(exam.getPaytmKeys().getPrivacyPolicies());
+            case DISCLAIMER:
+                return Objects.nonNull(exam.getPaytmKeys()) && StringUtils
+                        .isNotBlank(exam.getPaytmKeys().getDisclaimer());
             default:
                 return false;
         }

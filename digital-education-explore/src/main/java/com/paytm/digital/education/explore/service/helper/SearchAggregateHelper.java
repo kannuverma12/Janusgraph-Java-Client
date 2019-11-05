@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import static com.paytm.digital.education.constant.ExploreConstants.STREAM_IDS;
 import static com.paytm.digital.education.constant.ExploreConstants.BRANCH_COURSE;
 import static com.paytm.digital.education.constant.ExploreConstants.CITY_INSTITUTE;
 import static com.paytm.digital.education.constant.ExploreConstants.COURSE_LEVEL_INSTITUTE;
@@ -30,12 +31,9 @@ import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_NA
 import static com.paytm.digital.education.constant.ExploreConstants.LEVEL_COURSE;
 import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_MEDIUM;
 import static com.paytm.digital.education.constant.ExploreConstants.OWNERSHIP;
-import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_EXAM_DOMAIN;
 import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_EXAM_LEVEL;
 import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_HISTORY_USERID;
 import static com.paytm.digital.education.constant.ExploreConstants.STATE_INSTITUTE;
-import static com.paytm.digital.education.constant.ExploreConstants.STREAM_COURSE;
-import static com.paytm.digital.education.constant.ExploreConstants.STREAM_INSTITUTE;
 import static com.paytm.digital.education.enums.es.AggregationType.GEO_DISTANCE;
 import static com.paytm.digital.education.enums.es.AggregationType.MINMAX;
 import static com.paytm.digital.education.enums.es.AggregationType.TERMS;
@@ -58,7 +56,7 @@ public class SearchAggregateHelper {
 
     public AggregateField[] getInstituteAggregateData() {
         List<String> instituteKeys =
-                Arrays.asList(EXAMS_ACCEPTED_INSTITUTE, STREAM_INSTITUTE, COURSE_LEVEL_INSTITUTE,
+                Arrays.asList(EXAMS_ACCEPTED_INSTITUTE, STREAM_IDS, COURSE_LEVEL_INSTITUTE,
                         STATE_INSTITUTE, CITY_INSTITUTE, FEES_INSTITUTE, OWNERSHIP, FACILITIES,
                         INSTITUTE_GENDER, ESTABLISHMENT_YEAR);
         List<AggregationType> instituteAggregateType =
@@ -86,7 +84,7 @@ public class SearchAggregateHelper {
 
     public AggregateField[] getExamAggregateData() {
         List<String> examKeys =
-                Arrays.asList(LINGUISTIC_MEDIUM, SEARCH_EXAM_LEVEL, SEARCH_EXAM_DOMAIN);
+                Arrays.asList(LINGUISTIC_MEDIUM, SEARCH_EXAM_LEVEL, STREAM_IDS);
         List<AggregationType> examAggregateType =
                 Arrays.asList(TERMS, TERMS, TERMS);
         BucketSort countDescSort = BucketSort.builder().key(BucketAggregationSortParms.COUNT).order(
@@ -116,7 +114,7 @@ public class SearchAggregateHelper {
             return courseAggregateData;
         }
         List<String> courseKeys =
-                Arrays.asList(DEGREE_COURSE, BRANCH_COURSE, INSTITUTE_NAME_COURSE, STREAM_COURSE,
+                Arrays.asList(DEGREE_COURSE, BRANCH_COURSE, INSTITUTE_NAME_COURSE, STREAM_IDS,
                         LEVEL_COURSE);
         List<AggregationType> courseAggregateType =
                 Arrays.asList(TERMS, TERMS, TERMS, TERMS, TERMS);

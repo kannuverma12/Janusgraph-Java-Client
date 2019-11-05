@@ -1,13 +1,21 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_PAYTM_STREAM;
+import static com.paytm.digital.education.constant.ExploreConstants.COURSE_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.IS_ACCEPTING_APPLICATION;
+
+import com.paytm.digital.education.database.entity.Exam;
+import com.paytm.digital.education.database.entity.StreamEntity;
+import com.paytm.digital.education.database.repository.StreamEntityRepository;
+import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.database.entity.BaseLeadResponse;
 import com.paytm.digital.education.database.entity.Course;
-import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Lead;
 import com.paytm.digital.education.database.entity.UserDetails;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.enums.EducationEntity;
-import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.database.repository.LeadRepository;
 import com.paytm.digital.education.explore.database.repository.UserDetailsRepository;
 import com.paytm.digital.education.explore.service.LeadService;
@@ -20,18 +28,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-
-import static com.paytm.digital.education.constant.ExploreConstants.COURSE_ID;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.constant.ExploreConstants.IS_ACCEPTING_APPLICATION;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-
 public class LeadServiceImpl implements LeadService {
 
     private static final Logger log = LoggerFactory.getLogger(LeadServiceImpl.class);
@@ -40,6 +44,7 @@ public class LeadServiceImpl implements LeadService {
     private CommonMongoRepository commonMongoRepository;
     private LeadCareer360Service  leadCareer360Service;
     private UserDetailsRepository userDetailsRepository;
+    private StreamEntityRepository streamEntityRepository;
 
     @Override
     public com.paytm.digital.education.explore.response.dto.common.Lead captureLead(Lead lead) {
@@ -162,6 +167,7 @@ public class LeadServiceImpl implements LeadService {
 
     private void validateLeadRequest(Lead lead) {
         if (EducationEntity.COURSE.equals(lead.getEntityType())) {
+            setUniqueStreams(lead);
             validateCourseLead(lead);
         } else if (EducationEntity.EXAM.equals(lead.getEntityType())) {
             validateExamLead(lead);
@@ -171,10 +177,17 @@ public class LeadServiceImpl implements LeadService {
         }
     }
 
+    private void setUniqueStreams(Lead lead) {
+        if (Objects.nonNull(lead) && !CollectionUtils.isEmpty(lead.getStreamIds())) {
+            lead.setStreamIds(
+                    new ArrayList<>(lead.getStreamIds().stream().collect(Collectors.toSet())));
+        }
+    }
+
     private void validateCourseLead(Lead lead) {
         List<String> fieldGroup =
                 Arrays.asList(COURSE_ID, INSTITUTE_ID, IS_ACCEPTING_APPLICATION);
-        if (CollectionUtils.isEmpty(lead.getStream())) {
+        if (CollectionUtils.isEmpty(lead.getStreamIds()) || !validStreamIds(lead.getStreamIds())) {
             throw new BadRequestException(ErrorEnum.STREAM_IS_MANDATORY_FOR_COURSE_LEAD,
                     ErrorEnum.STREAM_IS_MANDATORY_FOR_COURSE_LEAD.getExternalMessage());
         }
@@ -206,5 +219,14 @@ public class LeadServiceImpl implements LeadService {
             throw new BadRequestException(ErrorEnum.INVALID_EXAM_ID,
                     ErrorEnum.INVALID_EXAM_ID.getExternalMessage());
         }
+    }
+
+    private boolean validStreamIds(List<Long> streamIds) {
+        List<StreamEntity> streamEntities = streamEntityRepository.findAllByStreamId(streamIds);
+        if (CollectionUtils.isEmpty(streamEntities) || streamEntities.size() != streamIds.size()) {
+            throw new BadRequestException(INVALID_PAYTM_STREAM,
+                    INVALID_PAYTM_STREAM.getExternalMessage(), new Object[] {streamIds.toString()});
+        }
+        return true;
     }
 }

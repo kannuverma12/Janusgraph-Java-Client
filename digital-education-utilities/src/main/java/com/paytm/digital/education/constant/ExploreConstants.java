@@ -57,7 +57,7 @@ public interface ExploreConstants {
     String ENTITY_TYPE_CITY          = "city";
 
     ///////// Institute search Constatnts ///////////
-    String SEARCH_INDEX_COURSE        = "education_search_course_v2";
+    String SEARCH_INDEX_COURSE        = "education_search_course_v4";
     String SEARCH_ANALYZER_COURSE     = "word_delimiter_analyzer";
     String SEARCH_NAMES_INSTITUTE     = "names";
     String MAX_RANK_INSTITUTE         = "max_rank";
@@ -110,7 +110,7 @@ public interface ExploreConstants {
 
     //Classifier
     String CLASSIFIER_ANALYZER      = "word_delimiter_analyzer";
-    String CLASSIFIER_INDEX         = "education_search_dictionary_v1";
+    String CLASSIFIER_INDEX         = "education_search_dictionary_v2";
     String CLASSIFIER_KEYWORD       = "keyword";
     String CLASSIFIER_ENTITY        = "entity";
     String CLASSIFIER_ENTITY_PATH   = "";
@@ -122,7 +122,7 @@ public interface ExploreConstants {
 
     ///////// Explore search Constatnts ///////////
     // Exam
-    String SEARCH_INDEX_EXAM              = "education_search_exam_v3";
+    String SEARCH_INDEX_EXAM              = "education_search_exam_v4";
     String SEARCH_ANALYZER_EXAM           = "word_delimiter_analyzer_search";
     String SEARCH_NAMES_EXAM              = "names";
     String EXAM_FULL_NAME_SEARCH          = "exam_full_name";
@@ -138,7 +138,7 @@ public interface ExploreConstants {
     Float  EXAM_OFFICIAL_NAME_NGRAM_BOOST = 0.00001F;
     String DATE_TAB                       = "dates";
     String SYLLABUS_TAB                   = "syllabus";
-    String SEARCH_INDEX_INSTITUTE         = "education_search_institute_v3";
+    String SEARCH_INDEX_INSTITUTE         = "education_search_institute_v4";
     String SEARCH_ANALYZER_INSTITUTE      = "word_delimiter_analyzer";
     String SEARCH_NAMES                   = "names";
     String MAX_RANK                       = "max_rank";
@@ -353,4 +353,6 @@ public interface ExploreConstants {
     String DOMAINS                          = "domains";
     String APP_DISPLAY_NAME                 = "app_display_name";
     String WEB_FORM_URI_PREFIX              = "webFormUriPrefix";
+
+    String NO_TOPIC_FOUND                   = "No Topic Found";
 }
