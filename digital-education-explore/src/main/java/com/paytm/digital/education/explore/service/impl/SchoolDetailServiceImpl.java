@@ -138,7 +138,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
     }
 
     @Override
-    @MyCache(cache = "test", keys = {"schoolId", "client.name"})
+    @MyCache(cache = "test", keys = {"schoolId"})
     public SchoolDetail getSchoolDetails(Long schoolId, Client client, String schoolName,
             List<String> fields, String fieldGroup, Long userId) {
         List<String> fieldsToBeFetched =

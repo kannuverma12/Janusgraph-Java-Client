@@ -25,7 +25,7 @@ public class MyCacheAdvice {
     private final RedisService redisService;
 
     @Around("@annotation(MyCache)")
-    public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
+    public Object cache(ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         String[] parameterNames = signature.getParameterNames();
         Object[] args = joinPoint.getArgs();
