@@ -15,7 +15,6 @@ public enum IngestionFormEntity {
     COACHING_EXAM_FORM("exam"),
     COACHING_INSTITUTE_FORM("institute"),
     COMPETITIVE_EXAM_FORM("competitive-exam"),
-    STREAM_FORM("stream"),
     TOP_RANKER_FORM("top-ranker");
 
     private String value;

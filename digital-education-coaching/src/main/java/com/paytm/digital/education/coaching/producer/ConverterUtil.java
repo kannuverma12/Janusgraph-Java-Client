@@ -36,6 +36,7 @@ public class ConverterUtil {
         streamEntity.setName(request.getName());
         streamEntity.setPriority(request.getPriority());
         streamEntity.setIsEnabled(request.getIsEnabled());
+        streamEntity.setShortName(request.getShortName());
     }
 
     public static void setCoachingInstituteData(CoachingInstituteDataRequest request,

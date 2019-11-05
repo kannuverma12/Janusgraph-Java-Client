@@ -21,6 +21,7 @@ public interface CommonConstants {
     String COACHING_CENTER                   = "coaching_center";
     String COACHING_INSTITUTE_HIGHLIGHT_LOGO = "coaching_institute_highlight_logo";
     String SECTION                           = "section";
+    String STREAMS                           = "streams";
 
     //AutoSuggest constants
     String AUTOSUGGEST_INDEX    = "education_autosuggestion_v2";
