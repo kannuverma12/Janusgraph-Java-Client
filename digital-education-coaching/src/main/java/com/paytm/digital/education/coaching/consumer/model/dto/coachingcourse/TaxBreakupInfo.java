@@ -18,5 +18,6 @@ public class TaxBreakupInfo {
 
     private String header;
     private String key;
+    private String omsKey;
     private Float  value;
 }

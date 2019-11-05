@@ -83,6 +83,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.T
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.TransactionConstants.ITEM_UTGST_PERCENTAGE;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.CGST_HEADER;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.CGST_KEY;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.CGST_OMS_KEY;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.COURSE_DETAILS;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.COURSE_FEATURES_AVAILABLE;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.COURSE_FEE;
@@ -94,6 +95,7 @@ import static com.paytm.digital.education.coaching.enums.DisplayHeadings.DURATIO
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.ELIGIBILITY_COURSE;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.IGST_HEADER;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.IGST_KEY;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.IGST_OMS_KEY;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.IMPORTANT_DATES;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.LANGUAGE;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.PROGRESS_ANALYSIS;
@@ -101,11 +103,13 @@ import static com.paytm.digital.education.coaching.enums.DisplayHeadings.PROVIDE
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.RANK_ANALYSIS;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.SGST_HEADER;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.SGST_KEY;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.SGST_OMS_KEY;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TARGET_EXAM_COURSE;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TEACHER_STUDENT_RATIO;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_RANKERS;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.UTGST_HEADER;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.UTGST_KEY;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.UTGST_OMS_KEY;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.VALIDITY_COURSE;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_COURSE_BROCHURE;
 import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES_LOGO;
@@ -489,24 +493,28 @@ public class CoachingCourseService {
         List<TaxBreakupInfo> taxInfo = new ArrayList<>();
         taxInfo.add(TaxBreakupInfo.builder()
                 .key(CGST_KEY.getValue())
+                .omsKey(CGST_OMS_KEY.getValue())
                 .header(CGST_HEADER.getValue())
                 .value(convFeeCGST)
                 .build());
 
         taxInfo.add(TaxBreakupInfo.builder()
                 .key(IGST_KEY.getValue())
+                .omsKey(IGST_OMS_KEY.getValue())
                 .header(IGST_HEADER.getValue())
                 .value(convFeeIGST)
                 .build());
 
         taxInfo.add(TaxBreakupInfo.builder()
                 .key(SGST_KEY.getValue())
+                .omsKey(SGST_OMS_KEY.getValue())
                 .header(SGST_HEADER.getValue())
                 .value(convFeeSGST)
                 .build());
 
         taxInfo.add(TaxBreakupInfo.builder()
                 .key(UTGST_KEY.getValue())
+                .omsKey(UTGST_OMS_KEY.getValue())
                 .header(UTGST_HEADER.getValue())
                 .value(convFeeUTGST)
                 .build());
@@ -526,24 +534,28 @@ public class CoachingCourseService {
         List<TaxBreakupInfo> taxInfo = new ArrayList<>();
         taxInfo.add(TaxBreakupInfo.builder()
                 .key(CGST_KEY.getValue())
+                .omsKey(CGST_OMS_KEY.getValue())
                 .header(CGST_HEADER.getValue())
                 .value(itemCGST)
                 .build());
 
         taxInfo.add(TaxBreakupInfo.builder()
                 .key(IGST_KEY.getValue())
+                .omsKey(IGST_OMS_KEY.getValue())
                 .header(IGST_HEADER.getValue())
                 .value(itemIGST)
                 .build());
 
         taxInfo.add(TaxBreakupInfo.builder()
                 .key(SGST_KEY.getValue())
+                .omsKey(SGST_OMS_KEY.getValue())
                 .header(SGST_HEADER.getValue())
                 .value(itemSGST)
                 .build());
 
         taxInfo.add(TaxBreakupInfo.builder()
                 .key(UTGST_KEY.getValue())
+                .omsKey(UTGST_OMS_KEY.getValue())
                 .header(UTGST_HEADER.getValue())
                 .value(itemUTGST)
                 .build());
