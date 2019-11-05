@@ -26,13 +26,13 @@ public class RedisService {
     }
 
     public Object get(String key, ProceedingJoinPoint joinPoint) {
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 20; i++) {
             String data = (String) template.opsForValue().get(key);
             MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
             if (data == null) {
                 try {
                     return generateNewDataAndCache(key, methodSignature.getReturnType(), null, joinPoint);
-                } catch (KeyLockedException e) {
+                } catch (CacheUpdateLockedException e) {
                     sleep(500L);
                     continue;
                 }
@@ -48,26 +48,28 @@ public class RedisService {
 
             try {
                 return generateNewDataAndCache(key, methodSignature.getReturnType(), null, joinPoint);
-            } catch (KeyLockedException e) {
+            } catch (CacheUpdateLockedException e) {
                 sleep(500L);
             }
         }
         return null;
     }
 
-    private Object generateNewDataAndCache(String key, Class clazz, String oldData, ProceedingJoinPoint joinPoint) throws KeyLockedException {
+    private Object generateNewDataAndCache(
+            String key, Class clazz, String oldData, ProceedingJoinPoint joinPoint) throws CacheUpdateLockedException {
         String lockKey = key + "::zookeeper";
         String random = RandomStringUtils.random(10);
         try {
-            Boolean success = template.opsForValue().setIfAbsent(lockKey, random, Duration.ofMillis(5000));
-            if (BooleanUtils.isNotTrue(success)) throw new KeyLockedException();
+            Boolean success = template.opsForValue().setIfAbsent(lockKey, random, Duration.ofSeconds(20));
+            if (BooleanUtils.isNotTrue(success)) throw new CacheUpdateLockedException();
             Object o = joinPoint.proceed();
             int millis = 5 * 60 * 1000;
-            String newDataString = "**[" + new LocalDateTime().plusMillis(millis).toString() + "]**" + JsonUtils.toJson(o);
+            String newDataString = "**[" + new LocalDateTime().plusMillis(millis).toString() + "]**"
+                    + JsonUtils.toJson(o);
             template.opsForValue().set(key, newDataString);
             relinquishLock(lockKey, random);
             return o;
-        } catch (KeyLockedException e) {
+        } catch (CacheUpdateLockedException e) {
             throw e;
         } catch (Throwable e) {
             relinquishLock(lockKey, random);
@@ -83,6 +85,6 @@ public class RedisService {
         }
     }
 
-    private static class KeyLockedException extends RuntimeException {
+    private static class CacheUpdateLockedException extends RuntimeException {
     }
 }
