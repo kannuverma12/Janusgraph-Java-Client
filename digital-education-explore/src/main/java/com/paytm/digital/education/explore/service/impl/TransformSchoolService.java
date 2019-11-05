@@ -156,20 +156,25 @@ public class TransformSchoolService {
             gallery.setImages(newUrls);
             String logoUrl = gallery.getLogo();
             String logoName = getImageName(logoUrl);
-            String logoS3Url = uploadUtil.uploadImage(logoUrl, logoName,
-                    entityId, s3BucketName,
-                    AWSConstants.S3_RELATIVE_PATH_FOR_EXPLORE);
+            if (Objects.nonNull(logoName)) {
+                String logoS3Url = uploadUtil.uploadImage(logoUrl, logoName,
+                        entityId, s3BucketName,
+                        AWSConstants.S3_RELATIVE_PATH_FOR_EXPLORE);
 
-            if (Objects.nonNull(logoS3Url)) {
-                gallery.setLogo("/" + logoS3Url);
+                if (Objects.nonNull(logoS3Url)) {
+                    gallery.setLogo("/" + logoS3Url);
+                }
             }
         }
         log.info("Images uploaded successfully for school id {}", entityId);
     }
 
     private String getImageName(String url) {
-        String[] arr = url.split("/");
-        return arr[arr.length - 1];
+        if (Objects.nonNull(url)) {
+            String[] arr = url.split("/");
+            return arr[arr.length - 1];
+        }
+        return null;
     }
 
 }

@@ -126,7 +126,7 @@ public class UploadUtil {
             log.info("EntityId : {}, Uploaded ImageUrl: {}", entityId, imageUrl);
             return new MutablePair<>(imageUrl, mimeType);
         } catch (Exception e) {
-            log.error("Unable to upload file for file : {}, entityId : {} and the exception : {}",
+            log.error("Unable to upload file for file : {}, entityId : {}",
                     e, fileUrl, entityId);
             throw new EducationException(ERROR_IN_IMPORT, ERROR_IN_IMPORT.getExternalMessage(),
                     new Object[] {String.format("Failed to upload file from google drive to s3, "

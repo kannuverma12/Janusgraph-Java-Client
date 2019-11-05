@@ -24,7 +24,7 @@ public class JsonUtils {
         try {
             return objectMapper.writeValueAsString(input);
         } catch (Exception ex) {
-            log.error("Exception caught in parsing json, input: {}, exception: ", input, ex);
+            log.error("Exception caught in parsing json, input: {}, exception: ",ex,  input);
         }
         return StringUtils.EMPTY;
     }

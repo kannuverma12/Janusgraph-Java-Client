@@ -113,7 +113,7 @@ public abstract class AbstractImportService {
         } catch (final IOException | GeneralSecurityException e) {
             log.error("Got exception while getting data from google sheet, "
                             + "dataImportPropertiesResponse: {}, exception: ",
-                    dataImportPropertiesResponse, e);
+                    e, dataImportPropertiesResponse);
         }
         return formData;
     }

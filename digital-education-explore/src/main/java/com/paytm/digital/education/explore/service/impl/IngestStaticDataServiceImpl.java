@@ -13,19 +13,9 @@ import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.exception.EducationException;
-import com.paytm.digital.education.constant.ExploreConstants;
-import com.paytm.digital.education.database.entity.Exam;
-import com.paytm.digital.education.database.entity.ExamPaytmKeys;
-import com.paytm.digital.education.database.entity.InstiPaytmKeys;
-import com.paytm.digital.education.database.entity.Institute;
-import com.paytm.digital.education.database.entity.PaytmKeys;
-import com.paytm.digital.education.database.entity.School;
-import com.paytm.digital.education.database.entity.SchoolPaytmKeys;
-import com.paytm.digital.education.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.request.dto.EntityData;
-import com.paytm.digital.education.explore.response.dto.dataimport.CatalogDataIngestionError;
-import com.paytm.digital.education.explore.service.ImportFromCatalogService;
+import com.paytm.digital.education.explore.response.dto.dataimport.StaticDataIngestionResponse;
+import com.paytm.digital.education.explore.service.IngestStaticDataService;
 import com.paytm.digital.education.explore.validators.ExploreValidator;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.utility.CommonUtil;
@@ -41,16 +31,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+
 @Service
 @AllArgsConstructor
-public class ImportFromCatalogServiceImpl implements ImportFromCatalogService {
+public class IngestStaticDataServiceImpl implements IngestStaticDataService {
 
     private CommonMongoRepository commonMongoRepository;
     private ExploreValidator      exploreValidator;
 
     @Override
-    public List<CatalogDataIngestionError> ingestDataEntityWise(List<EntityData> entityDataList) {
-        List<CatalogDataIngestionError> errors = new ArrayList<>();
+    public List<StaticDataIngestionResponse> ingestDataEntityWise(List<EntityData> entityDataList) {
+        List<StaticDataIngestionResponse> errors = new ArrayList<>();
         if (CollectionUtils.isEmpty(entityDataList)) {
             throw new BadRequestException(ErrorEnum.DATA_NOT_PRESENT,
                     ErrorEnum.DATA_NOT_PRESENT.getExternalMessage());
@@ -66,7 +57,7 @@ public class ImportFromCatalogServiceImpl implements ImportFromCatalogService {
                 case SCHOOL:
                     errorMessage = ingestInInstituteOrSchoolCollection(entityData);
                     if (StringUtils.isNotBlank(errorMessage)) {
-                        errors.add(CatalogDataIngestionError.builder()
+                        errors.add(StaticDataIngestionResponse.builder()
                                 .entityId(entityData.getEntityId())
                                 .entity(entityData.getEducationEntity()).errorMessage(errorMessage)
                                 .build());
@@ -75,7 +66,7 @@ public class ImportFromCatalogServiceImpl implements ImportFromCatalogService {
                 case EXAM:
                     errorMessage = ingestInExamCollection(entityData);
                     if (StringUtils.isNotBlank(errorMessage)) {
-                        errors.add(CatalogDataIngestionError.builder()
+                        errors.add(StaticDataIngestionResponse.builder()
                                 .entityId(entityData.getEntityId())
                                 .entity(entityData.getEducationEntity()).errorMessage(errorMessage)
                                 .build());
@@ -84,7 +75,7 @@ public class ImportFromCatalogServiceImpl implements ImportFromCatalogService {
                 default:
                     errorMessage =
                             ErrorEnum.FUNCTIONALITY_NOT_SUPPORTED_FOR_ENTITY.getExternalMessage();
-                    errors.add(CatalogDataIngestionError.builder().errorMessage(errorMessage)
+                    errors.add(StaticDataIngestionResponse.builder().errorMessage(errorMessage)
                             .entityId(entityData.getEntityId())
                             .entity(entityData.getEducationEntity()).build());
                     break;
@@ -93,9 +84,9 @@ public class ImportFromCatalogServiceImpl implements ImportFromCatalogService {
         return errors;
     }
 
-    private CatalogDataIngestionError buildCatalogDataIngestionError(
+    private StaticDataIngestionResponse buildCatalogDataIngestionError(
             Long entityId, ErrorEnum errorEnum) {
-        return CatalogDataIngestionError
+        return StaticDataIngestionResponse
                 .builder()
                 .errorMessage(errorEnum.getExternalMessage())
                 .entityId(entityId)
@@ -154,18 +145,22 @@ public class ImportFromCatalogServiceImpl implements ImportFromCatalogService {
         return errorMessage;
     }
 
-    private String ingestInExamCollection(EntityData entityData) {
+    private String ingestInExamCollection(EntityData examEntityData) {
+
         Map<String, Object> fields = new HashMap<>();
         ExamPaytmKeys examPaytmKeys =
-                ExamPaytmKeys.builder().formId(entityData.getFormId())
-                        .collegePredictorId(entityData.getCollegePredictorId())
-                        .webFormUriPrefix(entityData.getWebFormUriPrefix())
+                ExamPaytmKeys.builder().formId(examEntityData.getFormId())
+                        .collegePredictorId(examEntityData.getCollegePredictorId())
+                        .webFormUriPrefix(examEntityData.getWebFormUriPrefix())
+                        .termsAndConditions(examEntityData.getTermsAndConditions())
+                        .privacyPolicies(examEntityData.getPrivacyPolicies())
+                        .disclaimer(examEntityData.getDisclaimer())
                         .build();
         fields.put(PaytmKeys.Constants.PAYTM_KEYS, examPaytmKeys);
         String errorMessage = null;
         try {
             long updated = commonMongoRepository
-                    .updateFields(fields, Exam.class, entityData.getEntityId(),
+                    .updateFields(fields, Exam.class, examEntityData.getEntityId(),
                             ExploreConstants.EXAM_ID);
             errorMessage =
                     updated != 0 ? null : ErrorEnum.INVALID_EXAM_ID.getExternalMessage();

@@ -8,5 +8,6 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 public interface ISearchService {
-    public ElasticResponse search(ElasticRequest elasticRequest, Class type) throws IOException, TimeoutException;
+    <T> ElasticResponse<T> search(ElasticRequest elasticRequest, Class<T> type)
+            throws IOException, TimeoutException;
 }

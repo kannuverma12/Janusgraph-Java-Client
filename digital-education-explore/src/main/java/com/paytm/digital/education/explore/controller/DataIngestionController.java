@@ -1,8 +1,8 @@
 package com.paytm.digital.education.explore.controller;
 
 import com.paytm.digital.education.explore.request.dto.EntityData;
-import com.paytm.digital.education.explore.response.dto.dataimport.CatalogDataIngestionError;
-import com.paytm.digital.education.explore.service.ImportFromCatalogService;
+import com.paytm.digital.education.explore.response.dto.dataimport.StaticDataIngestionResponse;
+import com.paytm.digital.education.explore.service.IngestStaticDataService;
 import com.paytm.digital.education.explore.service.impl.ImportIncrementalDataService;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
@@ -30,7 +30,7 @@ public class DataIngestionController {
     private static Logger log = LoggerFactory.getLogger(DataIngestionController.class);
 
     private ImportIncrementalDataService importIncrementalDataService;
-    private ImportFromCatalogService     importFromCatalogService;
+    private IngestStaticDataService      importStaticDataService;
 
     @RequestMapping(method = RequestMethod.GET, path = "/v1/import/data")
     public @ResponseBody boolean importData() throws java.io.FileNotFoundException {
@@ -47,9 +47,17 @@ public class DataIngestionController {
     }
 
     @RequestMapping(method = RequestMethod.POST, path = "/v1/import/catalog")
-    public @ResponseBody List<CatalogDataIngestionError> importCatalogData(
+    public @ResponseBody List<StaticDataIngestionResponse> importCatalogData(
             @RequestBody List<EntityData> entityDataList) {
         log.info("Received request to ingest data from catalog. : {}", entityDataList.toString());
-        return importFromCatalogService.ingestDataEntityWise(entityDataList);
+        return importStaticDataService.ingestDataEntityWise(entityDataList);
     }
+
+    @RequestMapping(method = RequestMethod.POST, path = "/v1/import/entity-static-data")
+    public @ResponseBody List<StaticDataIngestionResponse> importStaticData(
+            @RequestBody List<EntityData> entityDataList) {
+        log.info("Received request to ingest data. : {}", entityDataList.toString());
+        return importStaticDataService.ingestDataEntityWise(entityDataList);
+    }
+
 }

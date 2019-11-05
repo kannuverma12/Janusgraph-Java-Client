@@ -8,7 +8,6 @@ import com.paytm.digital.education.coaching.ingestion.service.importdata.impl.Co
 import com.paytm.digital.education.coaching.ingestion.service.importdata.impl.CoachingExamImportService;
 import com.paytm.digital.education.coaching.ingestion.service.importdata.impl.CoachingInstituteImportService;
 import com.paytm.digital.education.coaching.ingestion.service.importdata.impl.CompetitiveExamImportService;
-import com.paytm.digital.education.coaching.ingestion.service.importdata.impl.StreamImportService;
 import com.paytm.digital.education.coaching.ingestion.service.importdata.impl.TopRankerImportService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +25,6 @@ public class ImportServiceFactory {
     private final CoachingExamImportService          coachingExamIngestorService;
     private final CoachingInstituteImportService     coachingInstituteIngestorService;
     private final CompetitiveExamImportService       competitiveExamIngestorService;
-    private final StreamImportService                streamIngestorService;
     private final TopRankerImportService             topRankerIngestorService;
 
     public ImportService getIngestorService(final IngestionFormEntity formEntity) {
@@ -52,9 +50,6 @@ public class ImportServiceFactory {
             }
             case COMPETITIVE_EXAM_FORM: {
                 return this.competitiveExamIngestorService;
-            }
-            case STREAM_FORM: {
-                return this.streamIngestorService;
             }
             case TOP_RANKER_FORM: {
                 return this.topRankerIngestorService;
