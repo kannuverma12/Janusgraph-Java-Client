@@ -39,7 +39,7 @@ public class MyCacheAdvice {
         String[] keys = myAnnotation.keys();
         String finalKey = "";
 
-        for(String key : keys) {
+        for (String key : keys) {
             String[] parts = key.split("\\.");
             Object val = params.get(parts[0]);
             if (parts.length > 1) {

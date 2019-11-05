@@ -1,6 +1,8 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import com.paytm.digital.education.utility.JsonUtils;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -18,10 +20,13 @@ import java.time.Duration;
 public class RedisService {
     private final RedisTemplate<String, Object> template;
 
-    private static void sleep(long time) {
+    private static final Logger logger = LoggerFactory.getLogger(RedisService.class);
+
+    private static void sleep(long time, String key) {
         try {
             Thread.sleep(time);
         } catch (InterruptedException e) {
+            logger.debug("Sleep for key - {} failed", e, key);
         }
     }
 
@@ -33,7 +38,7 @@ public class RedisService {
                 try {
                     return generateNewDataAndCache(key, methodSignature.getReturnType(), null, joinPoint);
                 } catch (CacheUpdateLockedException e) {
-                    sleep(500L);
+                    sleep(500L, key);
                     continue;
                 }
             }
@@ -49,7 +54,7 @@ public class RedisService {
             try {
                 return generateNewDataAndCache(key, methodSignature.getReturnType(), null, joinPoint);
             } catch (CacheUpdateLockedException e) {
-                sleep(500L);
+                sleep(500L, key);
             }
         }
         return null;
@@ -61,7 +66,9 @@ public class RedisService {
         String random = RandomStringUtils.random(10);
         try {
             Boolean success = template.opsForValue().setIfAbsent(lockKey, random, Duration.ofSeconds(20));
-            if (BooleanUtils.isNotTrue(success)) throw new CacheUpdateLockedException();
+            if (BooleanUtils.isNotTrue(success)) {
+                throw new CacheUpdateLockedException();
+            }
             Object o = joinPoint.proceed();
             int millis = 5 * 60 * 1000;
             String newDataString = "**[" + new LocalDateTime().plusMillis(millis).toString() + "]**"
@@ -73,7 +80,9 @@ public class RedisService {
             throw e;
         } catch (Throwable e) {
             relinquishLock(lockKey, random);
-            if (oldData == null) return null;
+            if (oldData == null) {
+                return null;
+            }
             return JsonUtils.fromJson(oldData, clazz);
         }
     }
