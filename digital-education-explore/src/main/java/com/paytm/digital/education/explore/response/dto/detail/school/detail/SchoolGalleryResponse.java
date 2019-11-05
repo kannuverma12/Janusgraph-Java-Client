@@ -3,9 +3,11 @@ package com.paytm.digital.education.explore.response.dto.detail.school.detail;
 import com.paytm.digital.education.database.entity.SchoolGallery;
 import com.paytm.digital.education.explore.utility.SchoolUtilService;
 import com.paytm.digital.education.utility.CommonUtils;
+import lombok.NoArgsConstructor;
 
 import java.util.stream.Collectors;
 
+@NoArgsConstructor
 public class SchoolGalleryResponse extends SchoolGallery {
 
     public SchoolGalleryResponse(SchoolGallery schoolGallery, SchoolUtilService schoolUtilService) {

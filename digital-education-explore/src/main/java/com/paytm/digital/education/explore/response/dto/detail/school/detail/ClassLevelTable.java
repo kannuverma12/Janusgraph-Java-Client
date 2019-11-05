@@ -5,11 +5,13 @@ import com.paytm.digital.education.enums.SchoolBoardType;
 import com.paytm.digital.education.explore.response.dto.detail.ClassLevelRow;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class ClassLevelTable {
     @JsonProperty("board")
     private SchoolBoardType boardType;
