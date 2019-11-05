@@ -11,7 +11,7 @@ import lombok.Data;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CatalogDataIngestionError {
+public class StaticDataIngestionResponse {
 
     @JsonProperty("entity_id")
     private Long entityId;

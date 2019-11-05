@@ -15,7 +15,8 @@ import com.paytm.digital.education.explore.response.dto.search.RangeFilterData;
 import com.paytm.digital.education.explore.response.dto.search.RangeFilterValue;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.response.dto.search.TermFilterData;
-import com.paytm.digital.education.utility.CommonUtil;
+import com.paytm.digital.education.explore.service.impl.DisplayNameService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -33,7 +34,10 @@ import static com.paytm.digital.education.constant.ExploreConstants.KEY;
 import static com.paytm.digital.education.constant.ExploreConstants.DISTANCE_KILOMETERS;
 
 @Service
+@RequiredArgsConstructor
 public class SearchResponseBuilder {
+
+    private final DisplayNameService displayNameService;
 
     public <T> void populateSearchFilters(SearchResponse searchResponse,
             ElasticResponse<T> elasticResponse, ElasticRequest elasticRequest,
@@ -55,7 +59,7 @@ public class SearchResponseBuilder {
                             bucketAggResponse.getBuckets().forEach(bucket -> {
                                 FilterBucket filterBucket = FilterBucket.builder()
                                         .value(bucket.getKey())
-                                        .displayName(CommonUtil.getDisplayName(propertyMap,
+                                        .displayName(displayNameService.getDisplayName(propertyMap,
                                                 fieldName,
                                                 bucket.getKey()))
                                         .docCount(bucket.getDocCount())
@@ -69,7 +73,7 @@ public class SearchResponseBuilder {
                             TermFilterData termFilter = new TermFilterData();
                             termFilter.setName(fieldName);
                             termFilter.setDisplayName(
-                                    CommonUtil.getDisplayName(propertyMap, fieldName,
+                                    displayNameService.getDisplayName(propertyMap, fieldName,
                                             fieldName));
                             termFilter.setBuckets(filterBuckets);
                             filters.add(termFilter);
@@ -92,7 +96,7 @@ public class SearchResponseBuilder {
                             } else {
                                 RangeFilterData rangeFilter = new RangeFilterData();
                                 rangeFilter.setName(fieldName);
-                                rangeFilter.setDisplayName(CommonUtil
+                                rangeFilter.setDisplayName(displayNameService
                                         .getDisplayName(propertyMap, fieldName, fieldName));
                                 rangeFilter.setMinValue(metricAggResponse.getMinValue());
                                 rangeFilter.setMaxValue(metricAggResponse.getMaxValue());
@@ -112,7 +116,7 @@ public class SearchResponseBuilder {
                         RangeFilterData rangeFilter = new RangeFilterData();
                         rangeFilter.setName(fieldName);
                         rangeFilter.setDisplayName(
-                                CommonUtil.getDisplayName(propertyMap, fieldName, fieldName));
+                                displayNameService.getDisplayName(propertyMap, fieldName, fieldName));
                         rangeFilter.setMaxValue(metricAggResponse.getMaxValue());
                         rangeFilter.setMinValue(metricAggResponse.getMinValue());
                         rangeFilter.setUnit(DISTANCE_KILOMETERS);
@@ -141,7 +145,7 @@ public class SearchResponseBuilder {
             Map<String, Map<String, Object>> propertyMap, double maxValue, double minValue) {
         MultipleRangeData feeFilterData = new MultipleRangeData();
         feeFilterData.setName(fieldName);
-        feeFilterData.setDisplayName(CommonUtil.getDisplayName(propertyMap, fieldName, fieldName));
+        feeFilterData.setDisplayName(displayNameService.getDisplayName(propertyMap, fieldName, fieldName));
         List<RangeFilterValue> values = new ArrayList<>();
         if (propertyMap.containsKey(FEES) && propertyMap.get(FEES).containsKey(DATA)) {
             List<Map<String, Object>> rangeData =

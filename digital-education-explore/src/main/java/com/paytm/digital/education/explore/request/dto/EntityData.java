@@ -32,6 +32,15 @@ public class EntityData {
     @JsonProperty("mid")
     private Long mid;
 
+    @JsonProperty("terms_and_conditions")
+    private String termsAndConditions;
+
+    @JsonProperty("privacy_policies")
+    private String privacyPolicies;
+
+    @JsonProperty("disclaimer")
+    private String disclaimer;
+
     public static class Constants {
 
         public static final String MID = "mid";

@@ -226,10 +226,10 @@ public class CTAHelper {
         String activeLabel = null;
         if (APP.equals(client)) {
             shortListLabel = ctaConfiguration.get(DISPLAY_NAME);
-            activeLabel = ctaConfiguration.get(DISPLAY_NAME);
+            activeLabel = ctaConfiguration.get(ACTIVE_DISPLAY_NAME);
         } else {
             shortListLabel = ctaConfiguration.get(DISPLAY_NAME + WEB);
-            activeLabel = ctaConfiguration.get(DISPLAY_NAME + WEB);
+            activeLabel = ctaConfiguration.get(ACTIVE_DISPLAY_NAME + WEB);
         }
 
         if (!checkIfNameExists(shortListLabel, activeLabel, CTAType.SHORTLIST, key, namespace)) {

@@ -7,6 +7,11 @@ import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.detail.CTAInfoHolder;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.springframework.data.mongodb.core.mapping.Field;
+
+import java.util.List;
+
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SEARCH_CTA;
 
 import java.util.List;
 
@@ -63,6 +68,9 @@ public class ExamData extends SearchBaseData implements CTAInfoHolder {
 
     @JsonIgnore
     private String formId;
+
+    @JsonProperty("stream_ids")
+    private List<Long> streamIds;
 
     public Long getPid() {
         return null;

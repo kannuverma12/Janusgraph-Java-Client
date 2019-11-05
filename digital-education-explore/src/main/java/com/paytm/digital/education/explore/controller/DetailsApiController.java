@@ -57,6 +57,8 @@ public class DetailsApiController {
                     Boolean sections,
             @RequestParam(value = "widgets", required = false, defaultValue = "true")
                     Boolean widgets,
+            @RequestParam(value = "policies", required = false, defaultValue = "true")
+                    Boolean policies,
             @RequestHeader(value = "x-user-id", required = false) Long userId,
             @RequestHeader(value = "fe_client", required = false) Client client) throws Exception {
         exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
@@ -64,7 +66,7 @@ public class DetailsApiController {
         return examDetailService
                 .getDetail(examId, examName, userId, fieldGroup, fields, client, syllabus,
                         importantDates, derivedAttributes, examCenters, sections,
-                        widgets);
+                        widgets, policies);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/institute/{instituteId}/{instituteName}")

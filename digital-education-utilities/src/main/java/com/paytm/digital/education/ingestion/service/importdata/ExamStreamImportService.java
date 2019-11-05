@@ -47,6 +47,7 @@ public class ExamStreamImportService extends AbstractImportService implements Im
     @Override
     protected <T> void upsertFailedRecords(T form, Class<T> clazz) {
         final ExamStreamForm examStreamForm = (ExamStreamForm) clazz.cast(form);
+        validateExamStreamRequest(examStreamForm);
         try {
             validateExamStreamRequest(examStreamForm);
             examStreamManagerService.createOrUpdateExamStreamMapping(examStreamForm);
@@ -59,6 +60,7 @@ public class ExamStreamImportService extends AbstractImportService implements Im
     protected <T> void upsertNewRecords(T form, List<Object> failedDataList,
             Class<T> clazz) {
         final ExamStreamForm newStreamForm = (ExamStreamForm) clazz.cast(form);
+        validateExamStreamRequest(newStreamForm);
         ExamStreamEntity response = null;
         String failureMessage = EMPTY_STRING;
         try {

@@ -40,7 +40,7 @@ public class LeadRepository {
                 .set(Lead.Constants.UPDATED_AT, currentDate)
                 .set(Lead.Constants.THIRD_PARTY_RESPONSES, lead.getBaseLeadResponse())
                 .set(Lead.Constants.LAST_ACTION, lead.getAction())
-                .set(Lead.Constants.STREAM, lead.getStream())
+                .set(Lead.Constants.STREAM_IDS, lead.getStreamIds())
                 .set(Lead.Constants.ENTITY_ID, lead.getEntityId())
                 .set(Lead.Constants.ENTITY_TYPE, lead.getEntityType())
                 .set(Lead.Constants.INSTITUTE_ID, lead.getInstituteId())

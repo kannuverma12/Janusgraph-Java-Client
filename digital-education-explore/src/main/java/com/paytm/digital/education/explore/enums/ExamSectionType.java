@@ -16,7 +16,13 @@ public enum ExamSectionType {
 
     EXAM_PATTERN("exam_pattern"),
 
-    APPLICATION_FORM("application_form");
+    APPLICATION_FORM("application_form"),
+
+    TERMS_AND_CONDITIONS("terms_and_conditions"),
+
+    PRIVACY_POLICIES("privacy_policies"),
+
+    DISCLAIMER("disclaimer");
 
     private String key;
 

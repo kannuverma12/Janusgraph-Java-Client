@@ -39,7 +39,6 @@ import static com.paytm.digital.education.constant.ExploreConstants.APPLICATION;
 import static com.paytm.digital.education.constant.ExploreConstants.DATE_TAB;
 import static com.paytm.digital.education.constant.ExploreConstants.DD_MMM_YYYY;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_DOMAIN_NAME;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FILTER_NAMESPACE;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FULL_NAME;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FULL_NAME_BOOST;
@@ -63,7 +62,7 @@ import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_INDEX
 import static com.paytm.digital.education.constant.ExploreConstants.SYLLABUS_TAB;
 import static com.paytm.digital.education.constant.ExploreConstants.YYYY_MM;
 import static com.paytm.digital.education.enums.es.FilterQueryType.TERMS;
-
+import static com.paytm.digital.education.constant.ExploreConstants.STREAM_IDS;
 
 @Service
 @AllArgsConstructor
@@ -80,7 +79,7 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
         filterQueryTypeMap = new HashMap<>();
         filterQueryTypeMap.put(LINGUISTIC_MEDIUM, TERMS);
         filterQueryTypeMap.put(SEARCH_EXAM_LEVEL, TERMS);
-        filterQueryTypeMap.put(EXAM_DOMAIN_NAME, TERMS);
+        filterQueryTypeMap.put(STREAM_IDS, TERMS);
         searchFieldKeys = new HashMap<>();
         searchFieldKeys.put(EXAM_FULL_NAME, EXAM_FULL_NAME_BOOST);
         searchFieldKeys.put(EXAM_SHORT_NAME, EXAM_SHORT_NAME_BOOST);
