@@ -50,8 +50,7 @@ public abstract class AbstractExportService {
             log.debug("Got: sheetId: {}", sheetId);
             return DataExportPropertiesResponse.builder().sheetId(sheetId).build();
         } catch (final NullPointerException e) {
-            log.error("Got exception for exportData, propertiesRequest: {}, exception: ",
-                    e, request);
+            log.error("Got exception for exportData, propertiesRequest: {}", e, request);
             return null;
         }
     }
@@ -79,7 +78,7 @@ public abstract class AbstractExportService {
             return updateValuesResponse.getUpdatedRows();
         } catch (final IOException | GeneralSecurityException e) {
             log.error("Got exception in processRecords, list: {}, clazz:{}, sheetId: {}, "
-                    + "range: {}, exception: ",e, list, clazz, sheetId, range);
+                    + "range: {}",e, list, clazz, sheetId, range);
             return 0;
         }
     }

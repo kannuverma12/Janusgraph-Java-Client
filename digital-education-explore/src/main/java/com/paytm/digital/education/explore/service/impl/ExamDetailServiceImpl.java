@@ -12,6 +12,7 @@ import com.paytm.digital.education.dto.detail.Unit;
 import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.BadRequestException;
+import com.paytm.digital.education.explore.enums.CTAType;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.detail.ExamDetail;
 import com.paytm.digital.education.explore.response.dto.detail.Location;
@@ -98,7 +99,11 @@ public class ExamDetailServiceImpl {
             updateShortlist(examDetail, userId);
         }
         List<CTA> ctas = ctaHelper.buildCTA(examDetail, client);
+
         if (!CollectionUtils.isEmpty(ctas)) {
+            if (!Client.APP.equals(client)) {
+                ctas.removeIf(cta -> cta.getType().equals(CTAType.SHORTLIST));
+            }
             examDetail.setCtaList(ctas);
         }
         return examDetail;

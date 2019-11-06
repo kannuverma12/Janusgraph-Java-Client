@@ -294,10 +294,13 @@ function transformCollege(superDoc) {
   // exams accepted: array
 
   if (Object.keys(superDoc.exam_map).length > 0) {
-    transformedCollege.exams_accepted = Object.keys(superDoc.exam_map).map(function (key) {
+    transformedCollege.exams_accepted = Object.keys(superDoc.exam_map)
+    .filter(key -> superDoc.exam_map[key])
+    .map(function (key) {
       return superDoc.exam_map[key];
     });
-      transformedCollege.exams_accepted_search = Object.keys(superDoc.exam_map).map(function (key) {
+
+    transformedCollege.exams_accepted_search = Object.keys(superDoc.exam_map).map(function (key) {
       return superDoc.exam_map[key];
     });
   }

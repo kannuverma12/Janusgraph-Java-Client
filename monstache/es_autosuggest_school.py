@@ -2,7 +2,7 @@ from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
 
 es = Elasticsearch(
-    ['http://10.20.33.122:9200','http://10.20.33.133:9200','http://10.20.33.242:9200'],
+    ['http://internal-education-es-alb-143014650.ap-south-1.elb.amazonaws.com:9200'],
     scheme="http",
     port=9200,
 )
@@ -55,7 +55,7 @@ def getStateData(stateNames):
 print "initialize scroll.. "
 # Init scroll by search
 esSchoolData = es.search(
-    index='education_search_school_v1',
+    index='education_search_school_v2',
     scroll='2m',
     size=100,
     body={}
