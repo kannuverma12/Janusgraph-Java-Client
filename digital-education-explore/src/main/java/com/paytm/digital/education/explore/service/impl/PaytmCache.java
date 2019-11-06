@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MyCache {
+public @interface PaytmCache {
     String[] keys();
     String cache();
 }

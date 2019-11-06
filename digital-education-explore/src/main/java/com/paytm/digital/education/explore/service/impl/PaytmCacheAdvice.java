@@ -19,12 +19,12 @@ import java.util.stream.IntStream;
 @Aspect
 @Component
 @RequiredArgsConstructor
-public class MyCacheAdvice {
-    private static final Logger log = LoggerFactory.getLogger(MyCacheAdvice.class);
+public class PaytmCacheAdvice {
+    private static final Logger log = LoggerFactory.getLogger(PaytmCache.class);
 
     private final RedisService redisService;
 
-    @Around("@annotation(MyCache)")
+    @Around("@annotation(PaytmCache)")
     public Object cache(ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         String[] parameterNames = signature.getParameterNames();
@@ -35,7 +35,7 @@ public class MyCacheAdvice {
 
         Method method = signature.getMethod();
 
-        MyCache myAnnotation = method.getAnnotation(MyCache.class);
+        PaytmCache myAnnotation = method.getAnnotation(PaytmCache.class);
         String[] keys = myAnnotation.keys();
         String finalKey = "";
 
