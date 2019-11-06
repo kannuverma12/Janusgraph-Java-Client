@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -94,21 +95,8 @@ public class PurchaseService {
             Long courseId = cartItem.getMetaData().getCourseId();
             CoachingCourseEntity coachingCourseEntity = courseIdToEntityMap.get(courseId);
 
-            if (Objects.isNull(coachingCourseEntity)) {
-                log.error("No coaching course found for course_id: {}", courseId);
-                throw PurchaseException
-                        .builder()
-                        .acknowledged(false)
-                        .message("Invalid Cart Items provided")
-                        .cause(new BadRequestException(INVALID_CART_ITEMS))
-                        .httpStatus(HttpStatus.BAD_REQUEST)
-                        .build();
-            }
-
-            if (!coachingCourseEntity.getPaytmProductId().equals(cartItem.getProductId())) {
-                log.error("Invalid Product Id for course_id: {}, DB p_id: {}, request p_id: {}",
-                        courseId, coachingCourseEntity.getPaytmProductId(),
-                        cartItem.getProductId());
+            boolean validCartItem = this.verifyCartItem(courseId, coachingCourseEntity, cartItem);
+            if (!validCartItem) {
                 throw PurchaseException
                         .builder()
                         .acknowledged(false)
@@ -141,6 +129,41 @@ public class PurchaseService {
                 .builder()
                 .acknowledged(true)
                 .build();
+    }
+
+    private boolean verifyCartItem(Long courseId, CoachingCourseEntity coachingCourseEntity,
+            CartItem cartItem) {
+        if (Objects.isNull(coachingCourseEntity)) {
+            log.error("No coaching course found for course_id: {}", courseId);
+            return false;
+        }
+
+        if (!coachingCourseEntity.getPaytmProductId().equals(cartItem.getProductId())) {
+            log.error("Invalid Product Id for course_id: {}, DB p_id: {}, request p_id: {}",
+                    courseId, coachingCourseEntity.getPaytmProductId(),
+                    cartItem.getProductId());
+            return false;
+        }
+
+        if (!StringUtils.isEmpty(cartItem.getMetaData().getMerchantProductId())
+                && !coachingCourseEntity.getMerchantProductId()
+                .equals(cartItem.getMetaData().getMerchantProductId())) {
+            log.error(
+                    "Invalid Merchant Product Id for course_id: {}, DB m_p_id: {}, request m_p_id: {}",
+                    courseId, coachingCourseEntity.getMerchantProductId(),
+                    cartItem.getMetaData().getMerchantProductId());
+            return false;
+        }
+
+        if (!StringUtils.isEmpty(cartItem.getMetaData().getCourseType()) && !coachingCourseEntity
+                .getCourseType().getText().equals(cartItem.getMetaData().getCourseType())) {
+            log.error("Invalid Course type for course_id: {}, DB type: {}, request type: {}",
+                    courseId, coachingCourseEntity.getCourseType().getText(),
+                    cartItem.getMetaData().getCourseType());
+            return false;
+        }
+
+        return true;
     }
 
     private CheckoutCartItem getCartItemFromRedis(CartItem cartItem) {
