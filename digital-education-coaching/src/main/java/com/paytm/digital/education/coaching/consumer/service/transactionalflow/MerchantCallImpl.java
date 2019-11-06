@@ -83,6 +83,7 @@ public class MerchantCallImpl implements MerchantCall {
             orderItems.add(MerchantCommitOrderInfo
                     .builder()
                     .paytmProductId(String.valueOf(cartItem.getProductId()))
+                    .merchantProductId(metaData.getMerchantProductId())
                     .paytmOrderItemId(String.valueOf(cartItem.getItemId()))
                     .price((double) cartItem.getPrice())
                     .discount((double) cartItem.getDiscount())

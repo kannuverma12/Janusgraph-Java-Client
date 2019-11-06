@@ -145,8 +145,7 @@ public class PurchaseService {
             return false;
         }
 
-        if (!StringUtils.isEmpty(cartItem.getMetaData().getMerchantProductId())
-                && !coachingCourseEntity.getMerchantProductId()
+        if (!coachingCourseEntity.getMerchantProductId()
                 .equals(cartItem.getMetaData().getMerchantProductId())) {
             log.error(
                     "Invalid Merchant Product Id for course_id: {}, DB m_p_id: {}, request m_p_id: {}",

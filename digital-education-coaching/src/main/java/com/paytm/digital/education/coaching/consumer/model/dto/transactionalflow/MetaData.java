@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Data
@@ -31,7 +32,9 @@ public class MetaData {
     private String courseType;
 
     @NotNull
-    private Long   courseId;
-    private Long   userId;
+    private Long courseId;
+    private Long userId;
+
+    @NotEmpty
     private String merchantProductId;
 }
