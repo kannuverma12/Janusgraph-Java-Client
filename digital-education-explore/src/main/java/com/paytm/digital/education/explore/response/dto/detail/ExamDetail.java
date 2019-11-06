@@ -140,6 +140,15 @@ public class ExamDetail implements CTAInfoHolder {
     @JsonProperty("sections_list")
     private List<SectionDataHolder> sectionDataHolders;
 
+    @JsonProperty("terms_and_conditions")
+    private String termsAndConditions;
+
+    @JsonProperty("privacy_policies")
+    private String privacyPolicies;
+
+    @JsonProperty("disclaimer")
+    private String disclaimer;
+
     @JsonIgnore
     private Long collegePredictorPid;
 

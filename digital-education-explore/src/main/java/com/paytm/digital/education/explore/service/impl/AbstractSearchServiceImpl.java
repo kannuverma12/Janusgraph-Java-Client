@@ -267,7 +267,7 @@ public abstract class AbstractSearchServiceImpl {
         searchResponse.setClassificationResponseData(classificationResponse);
     }
 
-    protected ElasticResponse initiateSearch(ElasticRequest elasticRequest, Class type)
+    protected <T> ElasticResponse<T> initiateSearch(ElasticRequest elasticRequest, Class<T> type)
             throws IOException, TimeoutException {
         return searchService.search(elasticRequest, type);
     }

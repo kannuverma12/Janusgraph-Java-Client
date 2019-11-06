@@ -46,7 +46,7 @@ public class BaseRestApiService {
                                 }
                             });
         } catch (Exception e) {
-            log.error("Error in GET API for URI : {} , Exception :  ", e, uri.toString());
+            log.error("Error in GET API for URI : {}", e, uri.toString());
             throw e;
         }
         return getResponseBody(responseEntity);
