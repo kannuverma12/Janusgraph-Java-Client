@@ -7,12 +7,8 @@ import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
 
-import net.javacrumbs.shedlock.core.SchedulerLock;
 import org.apache.commons.lang3.BooleanUtils;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
@@ -20,9 +16,7 @@ import static com.paytm.digital.education.explore.constants.CampusEngagementCons
 
 
 @AllArgsConstructor
-@Configuration
-@EnableScheduling
-@Profile({"dev", "staging", "production"})
+@Component
 public class DataIngestionScheduler {
 
     private static Logger log = LoggerFactory.getLogger(DataIngestionScheduler.class);
@@ -30,10 +24,7 @@ public class DataIngestionScheduler {
     private ImportIncrementalDataService importIncrementalDataService;
     private CronPropertiesRepository     cronPropertiesRepository;
 
-    // stopping scheduler as issue with MAT data from c360
-    //@Scheduled(fixedDelayString = "${data-ingestion.import.cron.fixed.delay}")
-    //@SchedulerLock(name = "dataIngestionImport")
-    public void importFailedArticleScheduler() {
+    public void importDataScheduler() {
         CronProperties dataIngestionCronProperty =
                 cronPropertiesRepository.findByCronName(DATA_INGESTION_IMPORT);
 
