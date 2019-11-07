@@ -47,7 +47,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
-import static com.paytm.digital.education.elasticsearch.enums.FilterQueryType.RANGE;
+import static com.paytm.digital.education.enums.es.FilterQueryType.RANGE;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_SORT_FIELD;
 
 @Component
