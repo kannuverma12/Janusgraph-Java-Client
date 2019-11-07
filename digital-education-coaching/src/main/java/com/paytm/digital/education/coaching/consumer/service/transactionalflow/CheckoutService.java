@@ -90,6 +90,7 @@ public class CheckoutService {
                 .courseType(metaData.getCourseType())
                 .courseId(metaData.getCourseId())
                 .userId(metaData.getUserId())
+                .merchantProductId(metaData.getMerchantProductId())
                 .build();
     }
 }
