@@ -9,9 +9,13 @@ import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.enums.ClassType;
 import com.paytm.digital.education.enums.SchoolEducationLevelType;
 import com.paytm.digital.education.enums.SchoolEntityType;
+import com.paytm.digital.education.exception.BadRequestException;
+import com.paytm.digital.education.exception.EducationException;
 import com.paytm.digital.education.explore.constants.AWSConstants;
 import com.paytm.digital.education.explore.dto.SchoolDto;
 import com.paytm.digital.education.explore.service.helper.IncrementalDataHelper;
+import com.paytm.digital.education.mapping.ErrorEnum;
+import com.paytm.digital.education.utility.JsonUtils;
 import com.paytm.digital.education.utility.UploadUtil;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
@@ -45,40 +49,56 @@ public class TransformSchoolService {
     private IncrementalDataHelper incrementalDataHelper;
     private UploadUtil            uploadUtil;
 
-    public Integer transformAndSaveSchoolsData(List<SchoolDto> schoolDtos) {
-        List<Long> schoolIds =
-                schoolDtos.stream().map(SchoolDto::getId).collect(Collectors.toList());
-        List<School> schoolsFromDb =
-                commonMongoRepository.getEntityFieldsByValuesIn(
-                        SCHOOL_ID, schoolIds, School.class, null);
-        Map<Long, School> schoolIdToSchoolMap = schoolsFromDb.stream()
-                .collect(Collectors.toMap(School::getSchoolId, Function.identity()));
+    public Integer transformAndSaveSchoolsData(List<SchoolDto> schoolDtos) throws
+            EducationException {
+        log.info("Transforming Schools.");
+        try {
+            List<Long> schoolIds =
+                    schoolDtos.stream().map(SchoolDto::getId).collect(Collectors.toList());
+            List<School> schoolsFromDb =
+                    commonMongoRepository.getEntityFieldsByValuesIn(
+                            SCHOOL_ID, schoolIds, School.class, null);
+            Map<Long, School> schoolIdToSchoolMap = schoolsFromDb.stream()
+                    .collect(Collectors.toMap(School::getSchoolId, Function.identity()));
 
-        String[] ignorableKeys = {PAYTM_KEYS};
-        List<School> schoolEntities = schoolDtos
-                .stream()
-                .map(schoolDto ->
-                        convertRequestDtoToDbEntity(
-                                schoolDto,
-                                schoolIdToSchoolMap.getOrDefault(schoolDto.getId(), new School()),
-                                ignorableKeys))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList());
+            String[] ignorableKeys = {PAYTM_KEYS};
+            log.info("Transforming Schools.");
+            List<School> schoolEntities = schoolDtos
+                    .stream()
+                    .map(schoolDto ->
+                            convertRequestDtoToDbEntity(
+                                    schoolDto,
+                                    schoolIdToSchoolMap.getOrDefault(schoolDto.getId(), new School()),
+                                    ignorableKeys))
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.toList());
 
-        for (School school : schoolEntities) {
+            log.info("Saving schools to db.");
+            for (School school : schoolEntities) {
 
-            uploadImagestoS3(school.getGallery(), school.getSchoolId());
+                uploadImagestoS3(school.getGallery(), school.getSchoolId());
 
-            commonMongoRepository.saveOrUpdate(school);
+                commonMongoRepository.saveOrUpdate(school);
+            }
+            log.info("Saved schools to db.");
+            log.info("Updating version number for schools");
+            incrementalDataHelper.incrementFileVersion(SCHOOL_FILE_VERSION);
+
+            return schoolsFromDb.size();
+        } catch (Exception e) {
+            log.info("Schools ingestion exception : " + e.getMessage());
+            throw new BadRequestException(ErrorEnum.CORRUPTED_FILE,
+                    ErrorEnum.CORRUPTED_FILE.getExternalMessage());
+
         }
-        incrementalDataHelper.incrementFileVersion(SCHOOL_FILE_VERSION);
 
-        return schoolsFromDb.size();
     }
 
     private Optional<School> convertRequestDtoToDbEntity(
             SchoolDto schoolDto, School schoolEntity, String[] ignorableKeys) {
+        log.info("Found school document from dump for id : {}, {}", schoolDto.getId(),
+                JsonUtils.toJson(schoolDto));
         List<Board> boardsSupportedBySchoolList = schoolDto.getBoardList();
         if (CollectionUtils.isEmpty(boardsSupportedBySchoolList)) {
             log.error("Board information is missing for school with entityId : {} , skipping",

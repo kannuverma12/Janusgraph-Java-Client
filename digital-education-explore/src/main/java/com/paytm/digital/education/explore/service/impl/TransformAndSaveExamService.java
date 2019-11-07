@@ -6,10 +6,12 @@ import static com.paytm.digital.education.ingestion.constant.IngestionConstants.
 
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.exception.BadRequestException;
+import com.paytm.digital.education.exception.EducationException;
 import com.paytm.digital.education.explore.database.ingestion.Exam;
 import com.paytm.digital.education.explore.service.helper.IncrementalDataHelper;
 import com.paytm.digital.education.explore.service.helper.StreamDataTranslator;
 import com.paytm.digital.education.mapping.ErrorEnum;
+import com.paytm.digital.education.utility.JsonUtils;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
@@ -36,14 +38,19 @@ public class TransformAndSaveExamService {
     private CommonMongoRepository commonMongoRepository;
     private StreamDataTranslator streamDataTranslator;
 
-    public void transformAndSave(List<Exam> exams, Boolean versionUpdate) {
+    public Integer transformAndSave(List<Exam> exams, Boolean versionUpdate) throws
+            EducationException {
+        int updatedExams = 0;
         try {
+            log.info("Transforming exams.");
             List<Long> examIds =
                     exams.stream().map(e2 -> e2.getExamId()).collect(Collectors.toList());
             Set<Long> examIdSet = new HashSet<>();
             Set<Exam> examSet = new HashSet<>();
             for (Exam exam : exams) {
                 if (!examSet.contains(exam.getExamId())) {
+                    log.info("Found Exam document from dump for id : {}, {} ", exam.getExamId(),
+                            JsonUtils.toJson(exam));
                     examIdSet.add(exam.getExamId());
                     examSet.add(exam);
                 }
@@ -60,6 +67,7 @@ public class TransformAndSaveExamService {
                 map = existingExams.stream()
                         .collect(Collectors.toMap(c -> c.getExamId(), c -> c));
             }
+            log.info("Saving exams to db.");
             for (Exam exam : examSet) {
                 com.paytm.digital.education.database.entity.Exam currentExam =
                         map.get(exam.getExamId());
@@ -79,8 +87,11 @@ public class TransformAndSaveExamService {
                     exam.setPaytmKeys(currentExam.getPaytmKeys());
                 }
                 commonMongoRepository.saveOrUpdate(exam);
+                updatedExams++;
             }
+            log.info("Saved exams to db.");
             if (Objects.isNull(versionUpdate) || versionUpdate == true) {
+                log.info("Updating version number for exam");
                 incrementalDataHelper.incrementFileVersion(EXAM_FILE_VERSION);
             }
         } catch (Exception e) {
@@ -90,5 +101,6 @@ public class TransformAndSaveExamService {
                         ErrorEnum.CORRUPTED_FILE.getExternalMessage());
             }
         }
+        return updatedExams;
     }
 }
