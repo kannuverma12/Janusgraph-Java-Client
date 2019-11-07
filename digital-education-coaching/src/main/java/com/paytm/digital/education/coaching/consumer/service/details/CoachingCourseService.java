@@ -431,6 +431,7 @@ public class CoachingCourseService {
                         INSTITUTE_PLACEHOLDER, TOP_COACHING_INSTITUTES_LOGO))
                 .courseDescription(course.getDescription())
                 .paytmProductId(course.getPaytmProductId())
+                .merchantProductId(course.getMerchantProductId())
                 .categoryId(categoryId)
                 .educationVertical(COACHING_VERTICAL_NAME)
                 .coachingInstituteId(course.getCoachingInstituteId())

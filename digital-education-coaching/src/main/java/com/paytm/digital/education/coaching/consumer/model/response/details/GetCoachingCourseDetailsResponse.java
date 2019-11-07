@@ -28,6 +28,7 @@ public class GetCoachingCourseDetailsResponse {
     private String courseDescription;
 
     private long   paytmProductId;
+    private String merchantProductId;
     private String categoryId;
     private String educationVertical;
 
