@@ -22,7 +22,9 @@ public enum ExamSectionType {
 
     PRIVACY_POLICIES("privacy_policies"),
 
-    DISCLAIMER("disclaimer");
+    DISCLAIMER("disclaimer"),
+
+    REGISTRATION_GUIDELINES ("registration_guidelines");
 
     private String key;
 

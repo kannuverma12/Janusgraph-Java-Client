@@ -363,6 +363,7 @@ public class ExamDetailServiceImpl {
                 examResponse.setTermsAndConditions(exam.getPaytmKeys().getTermsAndConditions());
                 examResponse.setDisclaimer(exam.getPaytmKeys().getDisclaimer());
                 examResponse.setPrivacyPolicies(exam.getPaytmKeys().getPrivacyPolicies());
+                examResponse.setRegistrationGuidelines(exam.getPaytmKeys().getRegistrationGuidelines());
             }
         }
         if (syllabusflg) {

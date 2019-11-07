@@ -41,6 +41,9 @@ public class EntityData {
     @JsonProperty("disclaimer")
     private String disclaimer;
 
+    @JsonProperty("registration_guidelines")
+    private String registrationGuidelines;
+
     public static class Constants {
 
         public static final String MID = "mid";

@@ -155,6 +155,7 @@ public class IngestStaticDataServiceImpl implements IngestStaticDataService {
                         .termsAndConditions(examEntityData.getTermsAndConditions())
                         .privacyPolicies(examEntityData.getPrivacyPolicies())
                         .disclaimer(examEntityData.getDisclaimer())
+                        .registrationGuidelines(examEntityData.getRegistrationGuidelines())
                         .build();
         fields.put(PaytmKeys.Constants.PAYTM_KEYS, examPaytmKeys);
         String errorMessage = null;
