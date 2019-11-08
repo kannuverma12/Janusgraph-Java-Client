@@ -1,5 +1,7 @@
-package com.paytm.digital.education.explore.service.impl;
+package com.paytm.digital.education.advice;
 
+import com.paytm.digital.education.explore.annotation.Cache;
+import com.paytm.digital.education.explore.service.impl.RedisService;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +22,11 @@ import java.util.stream.IntStream;
 @Component
 @RequiredArgsConstructor
 public class PaytmCacheAdvice {
-    private static final Logger log = LoggerFactory.getLogger(PaytmCache.class);
+    private static final Logger log = LoggerFactory.getLogger(PaytmCacheAdvice.class);
 
     private final RedisService redisService;
 
-    @Around("@annotation(PaytmCache)")
+    @Around("@annotation(Cache)")
     public Object cache(ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         String[] parameterNames = signature.getParameterNames();
@@ -35,7 +37,7 @@ public class PaytmCacheAdvice {
 
         Method method = signature.getMethod();
 
-        PaytmCache myAnnotation = method.getAnnotation(PaytmCache.class);
+        Cache myAnnotation = method.getAnnotation(Cache.class);
         String[] keys = myAnnotation.keys();
         String finalKey = "";
 
