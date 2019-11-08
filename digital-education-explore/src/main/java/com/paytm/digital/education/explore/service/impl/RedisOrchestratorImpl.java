@@ -1,5 +1,6 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import com.paytm.digital.education.explore.service.RedisOrchestrator;
 import com.paytm.digital.education.utility.JsonUtils;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
@@ -17,10 +18,10 @@ import java.time.Duration;
 
 @Service
 @RequiredArgsConstructor
-public class RedisService {
-    private final RedisTemplate<String, Object> template;
+public class RedisOrchestratorImpl implements RedisOrchestrator {
+    private static final Logger logger = LoggerFactory.getLogger(RedisOrchestratorImpl.class);
 
-    private static final Logger logger = LoggerFactory.getLogger(RedisService.class);
+    private final RedisTemplate<String, Object> template;
 
     private static void sleep(long time, String key) {
         try {
@@ -30,6 +31,7 @@ public class RedisService {
         }
     }
 
+    @Override
     public Object get(String key, ProceedingJoinPoint joinPoint) {
         for (int i = 0; i < 20; i++) {
             String data = (String) template.opsForValue().get(key);
@@ -52,7 +54,7 @@ public class RedisService {
             }
 
             try {
-                return generateNewDataAndCache(key, methodSignature.getReturnType(), null, joinPoint);
+                return generateNewDataAndCache(key, methodSignature.getReturnType(), data, joinPoint);
             } catch (CacheUpdateLockedException e) {
                 sleep(500L, key);
             }

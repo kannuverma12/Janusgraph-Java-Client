@@ -138,7 +138,6 @@ public class SchoolDetailServiceImpl implements SchoolService {
     }
 
     @Override
-    @PaytmCache(cache = "test", keys = {"schoolId"})
     public SchoolDetail getSchoolDetails(Long schoolId, Client client, String schoolName,
             List<String> fields, String fieldGroup, Long userId) {
         List<String> fieldsToBeFetched =
