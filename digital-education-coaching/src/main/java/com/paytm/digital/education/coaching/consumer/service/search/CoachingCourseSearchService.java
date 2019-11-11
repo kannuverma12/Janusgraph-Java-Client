@@ -97,7 +97,7 @@ public class CoachingCourseSearchService extends AbstractSearchService {
     }
 
     @Override
-    @Cacheable(value = "coaching_course_search")
+    @Cacheable(value = "coaching_course_search",key = "#searchRequest.key")
     public SearchResponse search(SearchRequest searchRequest) {
         validateRequest(searchRequest, filterQueryTypeMap);
         ElasticRequest elasticRequest = buildSearchRequest(searchRequest);
