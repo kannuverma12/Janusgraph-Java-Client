@@ -6,10 +6,18 @@ import com.paytm.education.logger.LoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.config.Order;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RequestCallback;
+import org.springframework.web.client.ResponseExtractor;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.UrlPathHelper;
 
 import java.io.IOException;
+import java.net.URI;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -24,47 +32,43 @@ public class DatadogFilter extends OncePerRequestFilter {
     @Autowired
     private MetricsAgent metricsAgent;
 
-    private String generateMetricNameFromRequestAndResponse(HttpServletRequest request, HttpServletResponse response) {
-        final String requestType = request.getMethod();
-        return requestType + "_" + getApiNameFromUri(request.getRequestURI());
-    }
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+
+
         long startTime = System.currentTimeMillis();
-        filterChain.doFilter(request, response);
-        long elapsed = System.currentTimeMillis() - startTime;
-        Integer httpCode = response.getStatus();
+        try{
+            filterChain.doFilter(request, response);
+        } finally {
+            long elapsed = System.currentTimeMillis() - startTime;
 
-        String metricName = generateMetricNameFromRequestAndResponse(request, response);
-        log.debug(metricName + " took " + elapsed + " ms" + " with status " + httpCode);
-        metricsAgent.recordExecutionTimeOfApi(metricName, elapsed);
-        metricsAgent.incrementApiCount(metricName);
-        metricsAgent.recordResponseCodeCount(metricName, httpCode.toString());
-        //TODO - Combine all above metric into one in later phase
-    }
-
-    @Override
-    public void destroy() {
-
-    }
-
-    private String getApiNameFromUri(String requestUri) {
-        requestUri = requestUri.toLowerCase();
-        if (StringUtils.isEmpty(requestUri)) {
-            return "";
-        } else if (requestUri.contains("/v1/page")) {
-            return "/v1/page";
-        } else if (requestUri.contains("/v1/course")) {
-            return "/v1/course";
-        } else if (requestUri.contains("/auth/v1/exam")) {
-            return "/auth/v1/exam";
-        } else if (requestUri.contains("/auth/v1/institute")) {
-            return "/auth/v1/institute";
-        } else {
-            return requestUri;
+            String requestType = request.getMethod();
+            Integer httpCode = response.getStatus();
+            String resourcePath = (new UrlPathHelper()).getPathWithinApplication(request);
+            resourcePath = getURIStructure(resourcePath);
+            String finalName = requestType + "_" + resourcePath;
+            log.debug("{} took {} ms with status {}", finalName, elapsed, httpCode.toString());
+            metricsAgent.recordExecutionTimeOfApi(finalName, elapsed);
+            metricsAgent.recordResponseCodeCount(finalName, httpCode.toString());
         }
+    }
+
+    private String getURIStructure(String resourcePath){
+        StringBuilder metricsURI = new StringBuilder();
+        String numRegex   = ".*[0-9].*";
+        String[] pattern = resourcePath.split("/");
+        for (String part : pattern){
+            if (!part.isEmpty()){
+                metricsURI.append("/");
+                if (part.matches(numRegex) && !part.matches("v\\d+")) {
+                    metricsURI.append("XXXXX");
+                }else{
+                    metricsURI.append(part);
+                }
+            }
+        }
+        return metricsURI.toString();
     }
 
 }
