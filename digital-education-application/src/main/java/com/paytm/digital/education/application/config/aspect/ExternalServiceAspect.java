@@ -39,11 +39,7 @@ public class ExternalServiceAspect {
     public Object profile(ProceedingJoinPoint pjp) throws Throwable {
         Object output = null;
         long timeStartInMillisecs = System.currentTimeMillis();
-        MethodSignature signature = (MethodSignature) pjp.getSignature();
-        String aspect =
-                "mongo_repository." + StringUtils
-                        .substringAfterLast(signature.getDeclaringTypeName(), ".") + "." + signature
-                        .getName();
+        String aspect = getMetricName(pjp, "mongo_repository");
         output = recordAspectData(pjp, aspect, timeStartInMillisecs);
         return output;
 
@@ -53,11 +49,7 @@ public class ExternalServiceAspect {
     public Object daoImplMethods(ProceedingJoinPoint pjp) throws Throwable {
         Object output = null;
         long timeStartInMillisecs = System.currentTimeMillis();
-        MethodSignature signature = (MethodSignature) pjp.getSignature();
-        String aspect =
-                "elasticsearch_api." + StringUtils
-                        .substringAfterLast(signature.getDeclaringTypeName(), ".") + "." + signature
-                        .getName();
+        String aspect = getMetricName(pjp, "elasticsearch_api");
         output = recordAspectData(pjp, aspect, timeStartInMillisecs);
         return output;
     }
@@ -66,10 +58,7 @@ public class ExternalServiceAspect {
     public Object redisMethods(ProceedingJoinPoint pjp) throws Throwable {
         Object output = null;
         long timeStartInMillisecs = System.currentTimeMillis();
-        MethodSignature signature = (MethodSignature) pjp.getSignature();
-        String aspect =
-                "redis_api." + StringUtils.substringAfterLast(signature.getDeclaringTypeName(), ".")
-                        + "." + signature.getName();
+        String aspect = getMetricName(pjp, "redis_api");
         output = recordAspectData(pjp, aspect, timeStartInMillisecs);
         return output;
     }
@@ -108,5 +97,12 @@ public class ExternalServiceAspect {
                                 .getMethodName())
                 .orElse("unknown");
         return methodCaller;
+    }
+
+    private String getMetricName(ProceedingJoinPoint pjp, String prefix) {
+        MethodSignature signature = (MethodSignature) pjp.getSignature();
+        return new StringBuilder(prefix).append(".").append(StringUtils
+                .substringAfterLast(signature.getDeclaringTypeName(), "."))
+                .append(signature.getName()).toString();
     }
 }
