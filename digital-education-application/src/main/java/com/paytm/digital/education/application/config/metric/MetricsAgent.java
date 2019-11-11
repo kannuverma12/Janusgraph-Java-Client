@@ -90,7 +90,7 @@ public class MetricsAgent {
      */
     public void incrementfnErrorCount(String fnName, String exceptionName, String callerMethod) {
         metricClient.increment("fn_error_counter",
-                "api_name:" + fnName, "caller_method:" + callerMethod,
+                "fn_name:" + fnName, "caller_method:" + callerMethod,
                 "error_name:" + exceptionName, "environment:" + digiEduEnv);
     }
 }
