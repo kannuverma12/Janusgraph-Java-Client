@@ -3,6 +3,7 @@ package com.paytm.digital.education.application.config.aspect;
 import com.paytm.digital.education.application.config.metric.MetricsAgent;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -10,6 +11,8 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Aspect
 @Component
@@ -38,7 +41,9 @@ public class ExternalServiceAspect {
         long timeStartInMillisecs = System.currentTimeMillis();
         MethodSignature signature = (MethodSignature) pjp.getSignature();
         String aspect =
-                "mongo_repository." + signature.getDeclaringTypeName() + "." + signature.getName();
+                "mongo_repository." + StringUtils
+                        .substringAfterLast(signature.getDeclaringTypeName(), ".") + "." + signature
+                        .getName();
         output = recordAspectData(pjp, aspect, timeStartInMillisecs);
         return output;
 
@@ -50,7 +55,9 @@ public class ExternalServiceAspect {
         long timeStartInMillisecs = System.currentTimeMillis();
         MethodSignature signature = (MethodSignature) pjp.getSignature();
         String aspect =
-                "elasticsearch_api." + signature.getDeclaringTypeName() + "." + signature.getName();
+                "elasticsearch_api." + StringUtils
+                        .substringAfterLast(signature.getDeclaringTypeName(), ".") + "." + signature
+                        .getName();
         output = recordAspectData(pjp, aspect, timeStartInMillisecs);
         return output;
     }
@@ -60,7 +67,9 @@ public class ExternalServiceAspect {
         Object output = null;
         long timeStartInMillisecs = System.currentTimeMillis();
         MethodSignature signature = (MethodSignature) pjp.getSignature();
-        String aspect = "redis_api." + signature.getDeclaringTypeName() + "." + signature.getName();
+        String aspect =
+                "redis_api." + StringUtils.substringAfterLast(signature.getDeclaringTypeName(), ".")
+                        + "." + signature.getName();
         output = recordAspectData(pjp, aspect, timeStartInMillisecs);
         return output;
     }
@@ -68,9 +77,7 @@ public class ExternalServiceAspect {
     private Object recordAspectData(ProceedingJoinPoint pjp, String aspect,
             long timeStartInMillisecs) throws Throwable {
         Object output = null;
-        StackTraceElement stackTraceElement = getSuperCallerStackTraceElement(pjp);
-        String methodCaller =
-                stackTraceElement.getClassName() + "." + stackTraceElement.getMethodName();
+        String methodCaller = getSuperCallerMethodName(pjp);
         try {
             output = pjp.proceed();
         } catch (Throwable t) {
@@ -84,15 +91,22 @@ public class ExternalServiceAspect {
         return output;
     }
 
-    private StackTraceElement getSuperCallerStackTraceElement(ProceedingJoinPoint pjp) {
+    private String getSuperCallerMethodName(ProceedingJoinPoint pjp) {
+        StackTraceElement stackTraceElement = null;
         Integer index = 0;
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
         for (; index < stackTraceElements.length; index++) {
             if (stackTraceElements[index].getClassName()
                     .contains(pjp.getSourceLocation().getWithinType().getSimpleName())) {
+                stackTraceElement = stackTraceElements[++index];
                 break;
             }
         }
-        return stackTraceElements[++index];
+        String methodCaller = Optional.ofNullable(stackTraceElement)
+                .map(ste ->
+                        StringUtils.substringAfterLast(ste.getClassName(), ".") + "." + ste
+                                .getMethodName())
+                .orElse("unknown");
+        return methodCaller;
     }
 }
