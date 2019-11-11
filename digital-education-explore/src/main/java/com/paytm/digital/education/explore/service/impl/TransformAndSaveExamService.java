@@ -95,7 +95,7 @@ public class TransformAndSaveExamService {
                 incrementalDataHelper.incrementFileVersion(EXAM_FILE_VERSION);
             }
         } catch (Exception e) {
-            log.info("Exam ingestion exceptions : {}", e);
+            log.info("Exam ingestion exceptions : ", e);
             if (Objects.nonNull(versionUpdate)) {
                 throw new BadRequestException(ErrorEnum.CORRUPTED_FILE,
                         ErrorEnum.CORRUPTED_FILE.getExternalMessage());

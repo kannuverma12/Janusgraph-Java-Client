@@ -68,7 +68,7 @@ public class ImportIncrementalDataService {
                         200, HttpStatus.OK, msg, "");
             }
         } catch (EducationException ee) {
-            log.error("Error importing school dump : {}", ee);
+            log.error("Error importing school dump : ", ee);
             dataImportResponse = updateDataIngestionResponse(dataImportResponse,
                     ee.getErrorEnum().getInternalCode(),
                     ee.getErrorEnum().getHttpStatus(),
@@ -101,7 +101,7 @@ public class ImportIncrementalDataService {
                 }
             }
         } catch (EducationException ee) {
-            log.error("Error importing course dump : {}", ee);
+            log.error("Error importing course dump : ", ee);
             dataImportResponse = updateDataIngestionResponse(dataImportResponse,
                     ee.getErrorEnum().getInternalCode(),
                     ee.getErrorEnum().getHttpStatus(),
@@ -134,7 +134,7 @@ public class ImportIncrementalDataService {
                 }
             }
         } catch (EducationException ee) {
-            log.error("Error importing exam dump : {}", ee);
+            log.error("Error importing exam dump : ", ee);
             dataImportResponse = updateDataIngestionResponse(dataImportResponse,
                     ee.getErrorEnum().getInternalCode(),
                     ee.getErrorEnum().getHttpStatus(),
@@ -169,7 +169,7 @@ public class ImportIncrementalDataService {
                 }
             }
         } catch (EducationException ee) {
-            log.error("Error importing institute dump : {}", ee);
+            log.error("Error importing institute dump : ", ee);
             dataImportResponse = updateDataIngestionResponse(dataImportResponse,
                     ee.getErrorEnum().getInternalCode(),
                     ee.getErrorEnum().getHttpStatus(),

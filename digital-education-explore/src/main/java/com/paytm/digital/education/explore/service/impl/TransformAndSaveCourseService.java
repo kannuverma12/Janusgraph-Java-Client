@@ -80,7 +80,7 @@ public class TransformAndSaveCourseService {
                 incrementalDataHelper.incrementFileVersion(COURSE_FILE_VERSION);
             }
         } catch (Exception e) {
-            log.error("Course ingestion exception : {}, {}", e, e.getMessage());
+            log.error("Course ingestion exception : ", e);
             throw new BadRequestException(ErrorEnum.CORRUPTED_FILE,
                     ErrorEnum.CORRUPTED_FILE.getExternalMessage());
         }

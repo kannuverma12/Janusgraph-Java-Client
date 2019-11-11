@@ -78,7 +78,7 @@ public class TransformInstituteService {
             log.info("Institute data dump import done.");
             return institutes.size();
         } catch (Exception e) {
-            log.error("Institute ingestion exceptions : {}", e);
+            log.error("Institute ingestion exceptions : ", e);
             throw new BadRequestException(ErrorEnum.CORRUPTED_FILE,
                     ErrorEnum.CORRUPTED_FILE.getExternalMessage());
         }

@@ -86,7 +86,7 @@ public class TransformSchoolService {
 
             return schoolsFromDb.size();
         } catch (Exception e) {
-            log.error("Schools ingestion exception : {}", e);
+            log.error("Schools ingestion exception : ", e);
             throw new BadRequestException(ErrorEnum.CORRUPTED_FILE,
                     ErrorEnum.CORRUPTED_FILE.getExternalMessage());
 
