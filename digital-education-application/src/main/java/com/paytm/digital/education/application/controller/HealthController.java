@@ -1,6 +1,5 @@
 package com.paytm.digital.education.application.controller;
 
-import com.paytm.digital.education.cache.redis.RedisCacheService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.GitProperties;
@@ -26,11 +25,8 @@ public class HealthController {
     @Value("${spring.application.version}")
     private String applicationVersion;
 
-    @Autowired RedisCacheService redisCacheService;
-
     @GetMapping("/health")
     public ResponseEntity health() {
-        redisCacheService.clearCache("vivek");
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
