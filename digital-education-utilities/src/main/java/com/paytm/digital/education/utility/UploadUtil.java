@@ -92,7 +92,7 @@ public class UploadUtil {
             log.error("IO Exception while downloading file for url :{} and the error is {}",
                     fileUrl, JsonUtils.toJson(e.getMessage()));
         } catch (Exception e) {
-            log.error("Exception in SFTP connection : {}", e.getMessage());
+            log.error("Exception in SFTP connection : {}", e);
         }
         return null;
     }

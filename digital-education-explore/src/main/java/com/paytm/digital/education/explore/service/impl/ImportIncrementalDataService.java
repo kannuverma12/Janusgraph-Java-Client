@@ -62,14 +62,13 @@ public class ImportIncrementalDataService {
                     incrementalDataHelper.retrieveDataFromFile(SCHOOLS_FILE_NAME, SchoolDto.class);
             if (!schoolDtos.isEmpty()) {
                 Integer updatedSchools = transformSchoolService.transformAndSaveSchoolsData(schoolDtos);
-                log.info("DB import done for schools.");
                 String msg = "Imported " + updatedSchools + " schools.";
-                log.info(msg);
+                log.info("DB import done for schools." + msg);
                 dataImportResponse = updateDataIngestionResponse(dataImportResponse,
                         200, HttpStatus.OK, msg, "");
             }
         } catch (EducationException ee) {
-            log.error("Error importing school dump : {}", ee.getInternalMessage());
+            log.error("Error importing school dump : {}", ee);
             dataImportResponse = updateDataIngestionResponse(dataImportResponse,
                     ee.getErrorEnum().getInternalCode(),
                     ee.getErrorEnum().getHttpStatus(),
@@ -88,9 +87,8 @@ public class ImportIncrementalDataService {
                     incrementalDataHelper.retrieveDataFromFile(COURSES_FILE_NAME, Course.class);
             if (!courseDtos.isEmpty()) {
                 Integer updatedCourses = transformAndSaveCourseService.transformAndSave(courseDtos, versionUpdate);
-                log.info("DB import done for course.");
                 String msg = "Imported " + updatedCourses + " courses.";
-                log.info(msg);
+                log.info("DB import done for course." + msg);
                 dataImportResponse = updateDataIngestionResponse(dataImportResponse,
                         200, HttpStatus.OK, msg, "");
             } else {
@@ -103,7 +101,7 @@ public class ImportIncrementalDataService {
                 }
             }
         } catch (EducationException ee) {
-            log.error("Error importing course dump : {}", ee.getInternalMessage());
+            log.error("Error importing course dump : {}", ee);
             dataImportResponse = updateDataIngestionResponse(dataImportResponse,
                     ee.getErrorEnum().getInternalCode(),
                     ee.getErrorEnum().getHttpStatus(),
@@ -122,9 +120,8 @@ public class ImportIncrementalDataService {
                     Exam.class);
             if (!examDtos.isEmpty()) {
                 Integer updatedExams = transformAndSaveExamService.transformAndSave(examDtos, versionUpdate);
-                log.info("DB import done for exams.");
                 String msg = "Imported " + updatedExams + " exams.";
-                log.info(msg);
+                log.info("DB import done for exams." + msg);
                 dataImportResponse = updateDataIngestionResponse(dataImportResponse,
                         200, HttpStatus.OK, msg, "");
             } else {
@@ -137,7 +134,7 @@ public class ImportIncrementalDataService {
                 }
             }
         } catch (EducationException ee) {
-            log.error("Error importing exam dump : {}", ee.getInternalMessage());
+            log.error("Error importing exam dump : {}", ee);
             dataImportResponse = updateDataIngestionResponse(dataImportResponse,
                     ee.getErrorEnum().getInternalCode(),
                     ee.getErrorEnum().getHttpStatus(),
@@ -172,7 +169,7 @@ public class ImportIncrementalDataService {
                 }
             }
         } catch (EducationException ee) {
-            log.error("Error importing institute dump : {}", ee.getInternalMessage());
+            log.error("Error importing institute dump : {}", ee);
             dataImportResponse = updateDataIngestionResponse(dataImportResponse,
                     ee.getErrorEnum().getInternalCode(),
                     ee.getErrorEnum().getHttpStatus(),

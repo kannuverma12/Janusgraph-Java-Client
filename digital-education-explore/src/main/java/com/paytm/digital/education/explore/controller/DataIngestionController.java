@@ -9,8 +9,6 @@ import com.paytm.digital.education.explore.service.impl.ImportIncrementalDataSer
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,20 +36,16 @@ public class DataIngestionController {
     private DataIngestionScheduler       dataIngestionScheduler;
 
     @RequestMapping(method = RequestMethod.GET, path = "/v1/import/data")
-    public @ResponseBody ResponseEntity<List<DataImportResponse>> importData() {
-        List<DataImportResponse> dataImportResponse =
-                importIncrementalDataService.importData(null, null, null);
-        return new ResponseEntity<>(dataImportResponse, HttpStatus.OK);
+    public @ResponseBody List<DataImportResponse> importData() {
+        return importIncrementalDataService.importData(null, null, null);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/v1/import/manual")
-    public @ResponseBody ResponseEntity<List<DataImportResponse>> importDataManually(
+    public @ResponseBody List<DataImportResponse> importDataManually(
             @RequestParam("entity") @NotBlank String entity,
             @RequestParam("version") @Min(1) Integer directory,
             @RequestParam("update_version") @NotNull Boolean updateVersion) {
-        List<DataImportResponse> dataImportResponse =
-                importIncrementalDataService.importData(entity, directory, updateVersion);
-        return new ResponseEntity<>(dataImportResponse, HttpStatus.OK);
+        return importIncrementalDataService.importData(entity, directory, updateVersion);
     }
 
     @RequestMapping(method = RequestMethod.POST, path = "/v1/import/catalog")
@@ -69,10 +63,9 @@ public class DataIngestionController {
     }
 
     @RequestMapping(method = RequestMethod.POST, path = "/v1/import/data/scheduler")
-    public @ResponseBody ResponseEntity<List<DataImportResponse>> importDataScheduler() {
+    public @ResponseBody List<DataImportResponse> importDataScheduler() {
         log.info("Received request to ingest data from scheduler.");
-        List<DataImportResponse> dataImportResponse = dataIngestionScheduler.importDataScheduler();
-        return new ResponseEntity<>(dataImportResponse, HttpStatus.OK);
+        return dataIngestionScheduler.importDataScheduler();
     }
 
 }

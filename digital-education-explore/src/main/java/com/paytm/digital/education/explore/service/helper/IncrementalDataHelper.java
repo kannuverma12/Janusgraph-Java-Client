@@ -173,10 +173,10 @@ public class IncrementalDataHelper {
                 }
             }
         } catch (BadRequestException e) {
-            log.error("Error retrieving file  : " + e.getMessage());
+            log.error("Error retrieving file  : " + e);
             throw e;
         } catch (Exception e) {
-            log.error("Sftp connection exception : " + e.getMessage());
+            log.error("Sftp connection exception : " + e);
             if (Objects.nonNull(version)) {
                 throw new EducationException(ErrorEnum.SFTP_CONNECTION_FAILED,
                         ErrorEnum.SFTP_CONNECTION_FAILED.getExternalMessage());

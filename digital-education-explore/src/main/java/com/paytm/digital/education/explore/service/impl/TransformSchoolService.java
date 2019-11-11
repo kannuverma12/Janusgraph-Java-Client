@@ -62,7 +62,6 @@ public class TransformSchoolService {
                     .collect(Collectors.toMap(School::getSchoolId, Function.identity()));
 
             String[] ignorableKeys = {PAYTM_KEYS};
-            log.info("Transforming Schools.");
             List<School> schoolEntities = schoolDtos
                     .stream()
                     .map(schoolDto ->
@@ -87,7 +86,7 @@ public class TransformSchoolService {
 
             return schoolsFromDb.size();
         } catch (Exception e) {
-            log.info("Schools ingestion exception : " + e.getMessage());
+            log.error("Schools ingestion exception : " + e);
             throw new BadRequestException(ErrorEnum.CORRUPTED_FILE,
                     ErrorEnum.CORRUPTED_FILE.getExternalMessage());
 
