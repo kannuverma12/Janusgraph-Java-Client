@@ -79,7 +79,7 @@ public class CommonMongoRepository {
         return executeQuery(mongoQuery, instance);
     }
 
-    @Cacheable(value = "fields", unless = "#result == null")
+    @Cache(cache = "fields")
     public <T> List<T> getEntityFieldsByValuesIn(String key, List<Long> entityIds,
             Class<T> instance,
             List<String> fields) {

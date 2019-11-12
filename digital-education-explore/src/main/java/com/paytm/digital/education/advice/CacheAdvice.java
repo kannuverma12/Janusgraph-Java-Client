@@ -16,7 +16,10 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.lang.String.join;
 import static java.util.Arrays.stream;
@@ -56,11 +59,15 @@ public class CacheAdvice {
     }
 
     private static String fetchKey(Object o) {
-        if (o instanceof Number || o instanceof CharSequence) {
+        if (o instanceof Number || o instanceof CharSequence || o instanceof Class) {
             return o.toString();
         } else if (o instanceof CacheKeyable) {
             CacheKeyable cacheKeyable = (CacheKeyable) o;
             return join(KEY_DELIMITER, cacheKeyable.cacheKeys());
+        } else if (o instanceof Collection) {
+            Collection c = (Collection) o;
+            Stream<String> keys = c.stream().map(CacheAdvice::fetchKey);
+            return keys.collect(joining(KEY_DELIMITER));
         } else {
             log.error(OBJECT_NOT_KEYABLE_ERROR, o);
             throw new RuntimeException("not keyable");

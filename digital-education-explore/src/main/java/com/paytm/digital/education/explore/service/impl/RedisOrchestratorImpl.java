@@ -21,8 +21,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.time.Duration;
 
+import static java.time.Duration.ofSeconds;
 import static javax.xml.bind.DatatypeConverter.parseHexBinary;
 import static javax.xml.bind.DatatypeConverter.printHexBinary;
 
@@ -66,7 +66,8 @@ public class RedisOrchestratorImpl implements RedisOrchestrator {
         String lockKey = key + "::zookeeper";
         String random = RandomStringUtils.random(10);
         try {
-            Boolean success = template.opsForValue().setIfAbsent(lockKey, random, Duration.ofSeconds(20));
+            Boolean success = template.opsForValue().setIfAbsent(lockKey, random, ofSeconds(LOCK_DURATION_FOR_PROCESS_IN_SECONDS));
+
             if (BooleanUtils.isNotTrue(success)) {
                 throw new CacheUpdateLockedException();
             }
@@ -75,6 +76,7 @@ public class RedisOrchestratorImpl implements RedisOrchestrator {
             writeAndReleaseLock(key, cacheableValue, lockKey, random);
             return o;
         } catch (CachedMethodInvocationException e) {
+            logger.error("asd", e);
             return handleMethodInvocationException(e, oldData, lockKey, random);
         }
     }
