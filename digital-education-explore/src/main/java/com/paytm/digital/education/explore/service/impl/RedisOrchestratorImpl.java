@@ -46,7 +46,7 @@ public class RedisOrchestratorImpl implements RedisOrchestrator {
             String data = (String) template.opsForValue().get(key);
             try {
                 String oldData = cacheValueProcessor.fromCacheValueFormatIfValid(data);
-                return fromString(oldData);
+                return fromString(oldData, key);
             } catch (OldCacheValueExpiredException | OldCacheValueNullException e) {
                 logger.debug("Old cache value exception", e);
             }
@@ -72,17 +72,16 @@ public class RedisOrchestratorImpl implements RedisOrchestrator {
                 throw new CacheUpdateLockedException();
             }
             Object o = cachedMethod.invoke();
-            String cacheableValue = cacheValueProcessor.toCacheValueFormat(toString(o), TTL);
+            String cacheableValue = cacheValueProcessor.toCacheValueFormat(toString(o, key), TTL);
             writeAndReleaseLock(key, cacheableValue, lockKey, random);
             return o;
         } catch (CachedMethodInvocationException e) {
-            logger.error("asd", e);
-            return handleMethodInvocationException(e, oldData, lockKey, random);
+            return handleMethodInvocationException(e, key, oldData, lockKey, random);
         }
     }
 
     private Object handleMethodInvocationException(
-            CachedMethodInvocationException e, String oldData, String lockKey, String random) {
+            CachedMethodInvocationException e, String key, String oldData, String lockKey, String random) {
         Throwable t = e.getCause();
         if (t instanceof EducationException) {
             throw (EducationException) t;
@@ -91,10 +90,10 @@ public class RedisOrchestratorImpl implements RedisOrchestrator {
         if (oldData == null) {
             return null;
         }
-        return fromString(oldData);
+        return fromString(oldData, key);
     }
 
-    private Object fromString(String s) {
+    private Object fromString(String s, String key) {
         try {
             byte[] data = parseHexBinary(s);
             ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
@@ -102,12 +101,12 @@ public class RedisOrchestratorImpl implements RedisOrchestrator {
             ois.close();
             return o;
         } catch (IOException | ClassNotFoundException e) {
-            logger.error("broke", e);
+            logger.error("Key - {}, Data - {}. Cache data parse failed.", e, key, s);
             throw new SerializationException(e);
         }
     }
 
-    private String toString(Object o) {
+    private String toString(Object o, String key) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -115,7 +114,7 @@ public class RedisOrchestratorImpl implements RedisOrchestrator {
             oos.close();
             return printHexBinary(baos.toByteArray());
         } catch (IOException e) {
-            logger.error("broke", e);
+            logger.error("Key - {}, Object - {}. Unable to stringify data for key.", e, key, o);
             throw new SerializationException(e);
         }
     }
