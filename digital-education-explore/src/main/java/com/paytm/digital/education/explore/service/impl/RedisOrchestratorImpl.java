@@ -1,5 +1,11 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import com.paytm.digital.education.exception.CacheUpdateLockedException;
+import com.paytm.digital.education.exception.CachedMethodInvocationException;
+import com.paytm.digital.education.exception.EducationException;
+import com.paytm.digital.education.exception.OldCacheValueExpiredException;
+import com.paytm.digital.education.exception.OldCacheValueNullException;
+import com.paytm.digital.education.explore.service.CachedMethod;
 import com.paytm.digital.education.explore.service.RedisOrchestrator;
 import com.paytm.digital.education.utility.JsonUtils;
 import com.paytm.education.logger.Logger;
@@ -7,10 +13,6 @@ import com.paytm.education.logger.LoggerFactory;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.reflect.MethodSignature;
-import org.joda.time.DateTime;
-import org.joda.time.LocalDateTime;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -20,43 +22,27 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class RedisOrchestratorImpl implements RedisOrchestrator {
     private static final Logger logger = LoggerFactory.getLogger(RedisOrchestratorImpl.class);
+    private static final int LOCK_DURATION_FOR_PROCESS_IN_SECONDS = 10;
+    private static final int NUMBER_OF_BACKLOG_PROCESSES = 3;
+    private static final int PROCESS_SLEEP_TIME_IN_MILLIS = 1000;
+    private static final int TTL = 5 * 60 * 1000;
 
     private final RedisTemplate<String, Object> template;
-
-    private static void sleep(long time, String key) {
-        try {
-            Thread.sleep(time);
-        } catch (InterruptedException e) {
-            logger.debug("Sleep for key - {} failed", e, key);
-        }
-    }
+    private final CacheValueProcessor cacheValueProcessor;
 
     @Override
-    public Object get(String key, ProceedingJoinPoint joinPoint) {
-        for (int i = 0; i < 20; i++) {
+    public Object get(String key, CachedMethod cachedMethod) {
+        int times = (LOCK_DURATION_FOR_PROCESS_IN_SECONDS * 1000 * NUMBER_OF_BACKLOG_PROCESSES) / PROCESS_SLEEP_TIME_IN_MILLIS;
+        for (int i = 0; i < times; i++) {
             String data = (String) template.opsForValue().get(key);
-            MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-            if (data == null) {
-                try {
-                    return generateNewDataAndCache(key, methodSignature.getReturnType(), null, joinPoint);
-                } catch (CacheUpdateLockedException e) {
-                    sleep(500L, key);
-                    continue;
-                }
-            }
-
-            String[] parts = data.split("]\\*\\*", 2);
-            String dateTimeString = parts[0].substring(3);
-            DateTime date = DateTime.parse(dateTimeString);
-
-            if (date.isAfterNow()) {
-                return JsonUtils.fromJson(parts[1], methodSignature.getReturnType());
-            }
-
             try {
-                return generateNewDataAndCache(key, methodSignature.getReturnType(), data, joinPoint);
-            } catch (CacheUpdateLockedException e) {
-                sleep(500L, key);
+                return cacheValueProcessor.fromCacheValueFormatIfValid(data);
+            } catch (OldCacheValueExpiredException | OldCacheValueNullException e) {
+                try {
+                    return generateNewDataAndCache(key, cachedMethod, data);
+                } catch (CacheUpdateLockedException cacheUpdateLockedException) {
+                    sleep(PROCESS_SLEEP_TIME_IN_MILLIS, key);
+                }
             }
         }
         return null;
@@ -64,7 +50,7 @@ public class RedisOrchestratorImpl implements RedisOrchestrator {
 
     /* Not a foolproof solution */
     private Object generateNewDataAndCache(
-            String key, Class clazz, String oldData, ProceedingJoinPoint joinPoint) throws CacheUpdateLockedException {
+            String key, CachedMethod cachedMethod, String oldData) throws CacheUpdateLockedException {
         String lockKey = key + "::zookeeper";
         String random = RandomStringUtils.random(10);
         try {
@@ -72,20 +58,21 @@ public class RedisOrchestratorImpl implements RedisOrchestrator {
             if (BooleanUtils.isNotTrue(success)) {
                 throw new CacheUpdateLockedException();
             }
-            Object o = joinPoint.proceed();
-            int millis = 5 * 60 * 1000;
-            String newDataString = "**[" + new LocalDateTime().plusMillis(millis).toString() + "]**"
-                    + JsonUtils.toJson(o);
-            writeAndReleaseLock(key, newDataString, lockKey, random);
+            Object o = cachedMethod.invoke();
+            String cacheableValue = cacheValueProcessor.toCacheValueFormat(JsonUtils.toJson(o), TTL);
+            writeAndReleaseLock(key, cacheableValue, lockKey, random);
             return o;
-        } catch (CacheUpdateLockedException e) {
-            throw e;
-        } catch (Throwable e) {
-            releaseLock(lockKey, random);
-            if (oldData == null) {
-                return null;
+        } catch (CachedMethodInvocationException e) {
+            Throwable t = e.getCause();
+            if (t instanceof EducationException) {
+                throw (EducationException) t;
+            } else {
+                releaseLock(lockKey, random);
+                if (oldData == null) {
+                    return null;
+                }
+                return JsonUtils.fromJson(oldData, cachedMethod.getReturnType());
             }
-            return JsonUtils.fromJson(oldData, clazz);
         }
     }
 
@@ -104,6 +91,11 @@ public class RedisOrchestratorImpl implements RedisOrchestrator {
         }
     }
 
-    private static class CacheUpdateLockedException extends RuntimeException {
+    private static void sleep(long time, String key) {
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            logger.debug("Sleep for key - {} failed", e, key);
+        }
     }
 }

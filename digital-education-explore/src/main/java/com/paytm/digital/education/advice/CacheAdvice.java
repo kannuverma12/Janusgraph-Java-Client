@@ -1,7 +1,8 @@
 package com.paytm.digital.education.advice;
 
-import com.paytm.digital.education.explore.annotation.Cache;
+import com.paytm.digital.education.annotation.Cache;
 import com.paytm.digital.education.explore.service.RedisOrchestrator;
+import com.paytm.digital.education.explore.service.impl.MethodEnclosedInProceedingJoinPoint;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static java.lang.String.join;
 import static java.util.Arrays.stream;
@@ -36,7 +38,7 @@ public class CacheAdvice {
 
     private final RedisOrchestrator redisOrchestrator;
 
-    @Around("@annotation(com.paytm.digital.education.explore.annotation.Cache)")
+    @Around("@annotation(com.paytm.digital.education.annotation.Cache)")
     public Object interceptCachedMethodCalls(ProceedingJoinPoint pjp) {
         MethodSignature signature = (MethodSignature) pjp.getSignature();
         String[] parameterNames = signature.getParameterNames();
@@ -46,9 +48,13 @@ public class CacheAdvice {
         Method method = signature.getMethod();
         Cache cacheAnnotation = method.getAnnotation(Cache.class);
         String[] keys = cacheAnnotation.keys();
+        String cacheName = cacheAnnotation.cache();
         Object[] valuesProvidingKeys = keys.length == 0 ? args : extractValuesFromParams(params, keys);
-        String cacheKey = stream(valuesProvidingKeys).map(CacheAdvice::fetchKey).collect(joining(KEY_DELIMITER));
-        return redisOrchestrator.get(cacheKey, pjp);
+        String cacheKey = Stream.concat(
+                Stream.of(cacheName),
+                stream(valuesProvidingKeys)
+        ).map(CacheAdvice::fetchKey).collect(joining(KEY_DELIMITER));
+        return redisOrchestrator.get(cacheKey, new MethodEnclosedInProceedingJoinPoint(pjp));
     }
 
     private static String fetchKey(Object o) {

@@ -1,4 +1,4 @@
-package com.paytm.digital.education.explore.annotation;
+package com.paytm.digital.education.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
