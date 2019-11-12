@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Cache {
+public @interface EduCache {
     String[] keys() default {};
-    String cache();
+    String cache() default "defaultCache";
 }

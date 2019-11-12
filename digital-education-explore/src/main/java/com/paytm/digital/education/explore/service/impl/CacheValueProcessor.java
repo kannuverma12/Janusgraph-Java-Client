@@ -5,6 +5,7 @@ import com.paytm.digital.education.exception.OldCacheValueNullException;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import static java.lang.Long.parseLong;
@@ -14,9 +15,9 @@ public class CacheValueProcessor {
     private static final String VALUE_DELIMITER = " **##** ";
     private static final Pattern VALUE_DELIMITER_PATTERN = Pattern.compile(" \\*\\*##\\*\\* ");
 
-    public String fromCacheValueFormatIfValid(String cacheValue)
+    public String parseCacheValueAndValidateExpiry(String cacheValue)
             throws OldCacheValueNullException, OldCacheValueExpiredException {
-        if (cacheValue == null) {
+        if (Objects.isNull(cacheValue)) {
             throw new OldCacheValueNullException();
         }
         CacheValueParseResult result = parse(cacheValue);
@@ -26,12 +27,12 @@ public class CacheValueProcessor {
         throw new OldCacheValueExpiredException();
     }
 
-    public String toCacheValueFormat(String value, long ttlMillis) {
-        return new DateTime().plusMillis((int) ttlMillis).getMillis() + VALUE_DELIMITER + value;
+    public String appendExpiryDateToValue(String value, int ttlMillis) {
+        return new DateTime().plusMillis(ttlMillis).getMillis() + VALUE_DELIMITER + value;
     }
 
     public CacheValueParseResult parse(String cacheValue) {
-        if (cacheValue == null) {
+        if (Objects.isNull(cacheValue)) {
             return null;
         }
         String[] parts = VALUE_DELIMITER_PATTERN.split(cacheValue, 2);

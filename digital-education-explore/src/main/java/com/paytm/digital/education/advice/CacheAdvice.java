@@ -1,6 +1,6 @@
 package com.paytm.digital.education.advice;
 
-import com.paytm.digital.education.annotation.Cache;
+import com.paytm.digital.education.annotation.EduCache;
 import com.paytm.digital.education.explore.service.RedisOrchestrator;
 import com.paytm.digital.education.explore.service.impl.MethodEnclosedInProceedingJoinPoint;
 import com.paytm.education.logger.Logger;
@@ -40,7 +40,7 @@ public class CacheAdvice {
 
     private final RedisOrchestrator redisOrchestrator;
 
-    @Around("@annotation(com.paytm.digital.education.annotation.Cache)")
+    @Around("@annotation(com.paytm.digital.education.annotation.EduCache)")
     public Object interceptCachedMethodCalls(ProceedingJoinPoint pjp) {
         MethodSignature signature = (MethodSignature) pjp.getSignature();
         String[] parameterNames = signature.getParameterNames();
@@ -48,12 +48,12 @@ public class CacheAdvice {
         Map<String, Object> params = zip(
                 stream(parameterNames), stream(args), Pair::of).collect(toMap());
         Method method = signature.getMethod();
-        Cache cacheAnnotation = method.getAnnotation(Cache.class);
-        String[] keys = cacheAnnotation.keys();
-        String cacheName = cacheAnnotation.cache();
+        EduCache eduCacheAnnotation = method.getAnnotation(EduCache.class);
+        String[] keys = eduCacheAnnotation.keys();
+        String cacheName = eduCacheAnnotation.cache();
         Object[] valuesProvidingKeys = keys.length == 0 ? args : extractValuesFromParams(params, keys);
-        String cacheKey = cacheName + CACHE_NAME_DELIMITER +
-            stream(valuesProvidingKeys).map(CacheAdvice::fetchKey).collect(joining(KEY_DELIMITER));
+        String cacheKey = cacheName + CACHE_NAME_DELIMITER
+                + stream(valuesProvidingKeys).map(CacheAdvice::fetchKey).collect(joining(KEY_DELIMITER));
         return redisOrchestrator.get(cacheKey, new MethodEnclosedInProceedingJoinPoint(pjp));
     }
 
@@ -69,13 +69,13 @@ public class CacheAdvice {
             return keys.collect(joining(KEY_DELIMITER));
         } else {
             log.error(OBJECT_NOT_KEYABLE_ERROR, o);
-            throw new RuntimeException("not keyable");
+            throw new RuntimeException(OBJECT_NOT_KEYABLE_ERROR);
         }
     }
 
     private Object[] extractValuesFromParams(Map<String, Object> params, String[] keys) {
         Object[] values = new Object[keys.length];
-        for (int i = 0; i < values.length; i++) {
+        for (int i = 0; i < values.length; ++i) {
             try {
                 values[i] = PROPERTY_UTILS_BEAN.getProperty(params, keys[i]);
             } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {

@@ -1,7 +1,7 @@
 package com.paytm.digital.education.database.repository;
 
 import com.mongodb.client.result.UpdateResult;
-import com.paytm.digital.education.annotation.Cache;
+import com.paytm.digital.education.annotation.EduCache;
 import com.paytm.digital.education.database.entity.FieldGroup;
 import com.paytm.digital.education.database.entity.FtlTemplate;
 import com.paytm.education.logger.Logger;
@@ -55,7 +55,7 @@ public class CommonMongoRepository {
         return executeQuery(mongoQuery, instance);
     }
 
-    @Cache(keys = {"key", "entityId"}, cache = "entity")
+    @EduCache(keys = {"key", "entityId"}, cache = "entity")
     public <T> T getEntityByFields(String key, long entityId, Class<T> instance,
             List<String> fields) {
         Query mongoQuery = new Query(Criteria.where(key).is(entityId));
@@ -79,7 +79,7 @@ public class CommonMongoRepository {
         return executeQuery(mongoQuery, instance);
     }
 
-    @Cache(cache = "fields")
+    @EduCache(cache = "fields")
     public <T> List<T> getEntityFieldsByValuesIn(String key, List<Long> entityIds,
             Class<T> instance,
             List<String> fields) {
