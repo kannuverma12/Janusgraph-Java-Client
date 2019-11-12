@@ -32,7 +32,8 @@ public class RedisOrchestratorImpl implements RedisOrchestrator {
 
     @Override
     public Object get(String key, CachedMethod cachedMethod) {
-        int times = (LOCK_DURATION_FOR_PROCESS_IN_SECONDS * 1000 * NUMBER_OF_BACKLOG_PROCESSES) / PROCESS_SLEEP_TIME_IN_MILLIS;
+        int times = (LOCK_DURATION_FOR_PROCESS_IN_SECONDS * 1000 * NUMBER_OF_BACKLOG_PROCESSES)
+                / PROCESS_SLEEP_TIME_IN_MILLIS;
         for (int i = 0; i < times; i++) {
             String data = (String) template.opsForValue().get(key);
             try {

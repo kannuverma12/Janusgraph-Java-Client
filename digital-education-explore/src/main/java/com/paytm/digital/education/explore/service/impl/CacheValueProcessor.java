@@ -7,9 +7,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CacheValueProcessor {
-    private final String VALUE_DELIMITER = " \\*\\*##\\*\\* ";
+    private static final String VALUE_DELIMITER = " \\*\\*##\\*\\* ";
 
-    public String fromCacheValueFormatIfValid(String cacheValue) throws OldCacheValueNullException, OldCacheValueExpiredException {
+    public String fromCacheValueFormatIfValid(String cacheValue)
+            throws OldCacheValueNullException, OldCacheValueExpiredException {
         if (cacheValue == null) {
             throw new OldCacheValueNullException();
         }
@@ -25,7 +26,9 @@ public class CacheValueProcessor {
     }
 
     public CacheValueParseResult parse(String cacheValue) {
-        if (cacheValue == null) return null;
+        if (cacheValue == null) {
+            return null;
+        }
         String[] parts = cacheValue.split(VALUE_DELIMITER, 1);
         DateTime expiryDateTime = new DateTime(parts[0]);
         return new CacheValueParseResult(expiryDateTime, parts[1]);
