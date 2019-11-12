@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.util.ByteUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
