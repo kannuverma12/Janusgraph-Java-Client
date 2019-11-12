@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.util.ByteUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -82,11 +83,11 @@ public class RedisOrchestratorImpl implements RedisOrchestrator {
 
     private Object handleMethodInvocationException(
             CachedMethodInvocationException e, String key, String oldData, String lockKey, String random) {
+        releaseLock(lockKey, random);
         Throwable t = e.getCause();
         if (t instanceof EducationException) {
             throw (EducationException) t;
         }
-        releaseLock(lockKey, random);
         if (oldData == null) {
             return null;
         }
