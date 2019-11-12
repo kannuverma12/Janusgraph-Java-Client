@@ -7,11 +7,13 @@ import lombok.Data;
 import lombok.ToString;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serializable;
+
 @Data
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SchoolOfficialAddress {
+public class SchoolOfficialAddress implements Serializable {
 
     @Field("city")
     @JsonProperty("city")

@@ -5,9 +5,9 @@ import com.paytm.digital.education.exception.CachedMethodInvocationException;
 import com.paytm.digital.education.exception.EducationException;
 import com.paytm.digital.education.exception.OldCacheValueExpiredException;
 import com.paytm.digital.education.exception.OldCacheValueNullException;
+import com.paytm.digital.education.exception.SerializationException;
 import com.paytm.digital.education.explore.service.CachedMethod;
 import com.paytm.digital.education.explore.service.RedisOrchestrator;
-import com.paytm.digital.education.utility.JsonUtils;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,15 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.time.Duration;
+
+import static javax.xml.bind.DatatypeConverter.parseHexBinary;
+import static javax.xml.bind.DatatypeConverter.printHexBinary;
 
 @Service
 @RequiredArgsConstructor
@@ -37,13 +45,16 @@ public class RedisOrchestratorImpl implements RedisOrchestrator {
         for (int i = 0; i < times; i++) {
             String data = (String) template.opsForValue().get(key);
             try {
-                return cacheValueProcessor.fromCacheValueFormatIfValid(data);
+                String oldData = cacheValueProcessor.fromCacheValueFormatIfValid(data);
+                return fromString(oldData);
             } catch (OldCacheValueExpiredException | OldCacheValueNullException e) {
-                try {
-                    return generateNewDataAndCache(key, cachedMethod, data);
-                } catch (CacheUpdateLockedException cacheUpdateLockedException) {
-                    sleep(PROCESS_SLEEP_TIME_IN_MILLIS, key);
-                }
+                logger.debug("Old cache value exception", e);
+            }
+
+            try {
+                return generateNewDataAndCache(key, cachedMethod, data);
+            } catch (CacheUpdateLockedException cacheUpdateLockedException) {
+                sleep(PROCESS_SLEEP_TIME_IN_MILLIS, key);
             }
         }
         return null;
@@ -60,20 +71,50 @@ public class RedisOrchestratorImpl implements RedisOrchestrator {
                 throw new CacheUpdateLockedException();
             }
             Object o = cachedMethod.invoke();
-            String cacheableValue = cacheValueProcessor.toCacheValueFormat(JsonUtils.toJson(o), TTL);
+            String cacheableValue = cacheValueProcessor.toCacheValueFormat(toString(o), TTL);
             writeAndReleaseLock(key, cacheableValue, lockKey, random);
             return o;
         } catch (CachedMethodInvocationException e) {
-            Throwable t = e.getCause();
-            if (t instanceof EducationException) {
-                throw (EducationException) t;
-            } else {
-                releaseLock(lockKey, random);
-                if (oldData == null) {
-                    return null;
-                }
-                return JsonUtils.fromJson(oldData, cachedMethod.getReturnType());
-            }
+            return handleMethodInvocationException(e, oldData, lockKey, random);
+        }
+    }
+
+    private Object handleMethodInvocationException(
+            CachedMethodInvocationException e, String oldData, String lockKey, String random) {
+        Throwable t = e.getCause();
+        if (t instanceof EducationException) {
+            throw (EducationException) t;
+        }
+        releaseLock(lockKey, random);
+        if (oldData == null) {
+            return null;
+        }
+        return fromString(oldData);
+    }
+
+    private Object fromString(String s) {
+        try {
+            byte[] data = parseHexBinary(s);
+            ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
+            Object o = ois.readObject();
+            ois.close();
+            return o;
+        } catch (IOException | ClassNotFoundException e) {
+            logger.error("broke", e);
+            throw new SerializationException(e);
+        }
+    }
+
+    private String toString(Object o) {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(o);
+            oos.close();
+            return printHexBinary(baos.toByteArray());
+        } catch (IOException e) {
+            logger.error("broke", e);
+            throw new SerializationException(e);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.paytm.digital.education.mapping;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 import org.springframework.http.HttpStatus;
 
@@ -170,7 +171,9 @@ public enum ErrorEnum {
             "Invalid geodistance. Please provide geodistance less than %s kms in request.",
             BAD_REQUEST, 1),
     ENTITY_NOT_SUPPORTED(4073, "Requested entity not supported for this operation.", BAD_REQUEST,
-            0);
+            0),
+    SOMETHING_BROKE_WHILE_SERIALIZING_DESERIALIZING(4074,
+            "Something broke internally.", INTERNAL_SERVER_ERROR,0);
 
     private final int        internalCode;
     private final String     externalMessage;

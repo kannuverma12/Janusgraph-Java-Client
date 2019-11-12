@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static java.lang.String.join;
 import static java.util.Arrays.stream;
@@ -35,6 +34,7 @@ public class CacheAdvice {
     private static final String FAILED_TO_ACCESS_FIELD_ERROR = "Failed to access field {} in bean {}";
     private static final String OBJECT_NOT_KEYABLE_ERROR = "Object {} does not have any way to convert to key";
     private static final String KEY_DELIMITER = ".";
+    private static final String CACHE_NAME_DELIMITER = "##";
 
     private final RedisOrchestrator redisOrchestrator;
 
@@ -50,10 +50,8 @@ public class CacheAdvice {
         String[] keys = cacheAnnotation.keys();
         String cacheName = cacheAnnotation.cache();
         Object[] valuesProvidingKeys = keys.length == 0 ? args : extractValuesFromParams(params, keys);
-        String cacheKey = Stream.concat(
-                Stream.of(cacheName),
-                stream(valuesProvidingKeys)
-        ).map(CacheAdvice::fetchKey).collect(joining(KEY_DELIMITER));
+        String cacheKey = cacheName + CACHE_NAME_DELIMITER +
+            stream(valuesProvidingKeys).map(CacheAdvice::fetchKey).collect(joining(KEY_DELIMITER));
         return redisOrchestrator.get(cacheKey, new MethodEnclosedInProceedingJoinPoint(pjp));
     }
 

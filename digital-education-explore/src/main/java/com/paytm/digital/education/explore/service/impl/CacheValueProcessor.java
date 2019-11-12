@@ -5,9 +5,14 @@ import com.paytm.digital.education.exception.OldCacheValueNullException;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
+import java.util.regex.Pattern;
+
+import static java.lang.Long.parseLong;
+
 @Service
 public class CacheValueProcessor {
-    private static final String VALUE_DELIMITER = " \\*\\*##\\*\\* ";
+    private static final String VALUE_DELIMITER = " **##** ";
+    private static final Pattern VALUE_DELIMITER_PATTERN = Pattern.compile(" \\*\\*##\\*\\* ");
 
     public String fromCacheValueFormatIfValid(String cacheValue)
             throws OldCacheValueNullException, OldCacheValueExpiredException {
@@ -22,15 +27,15 @@ public class CacheValueProcessor {
     }
 
     public String toCacheValueFormat(String value, long ttlMillis) {
-        return ttlMillis + VALUE_DELIMITER + value;
+        return new DateTime().plusMillis((int) ttlMillis).getMillis() + VALUE_DELIMITER + value;
     }
 
     public CacheValueParseResult parse(String cacheValue) {
         if (cacheValue == null) {
             return null;
         }
-        String[] parts = cacheValue.split(VALUE_DELIMITER, 1);
-        DateTime expiryDateTime = new DateTime(parts[0]);
+        String[] parts = VALUE_DELIMITER_PATTERN.split(cacheValue, 2);
+        DateTime expiryDateTime = new DateTime(parseLong(parts[0]));
         return new CacheValueParseResult(expiryDateTime, parts[1]);
     }
 }
