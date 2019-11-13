@@ -47,8 +47,7 @@ public class CoachingCtaManagerService {
 
     public CoachingCtaDTO updateCoachingCta(CoachingCtaDataRequest request) {
         Optional.ofNullable(request.getCtaId())
-                .orElseThrow(
-                        () -> new InvalidRequestException("cta id should be present"));
+                .orElseThrow(() -> new InvalidRequestException("cta id should be present"));
 
         CoachingCtaEntity existingStreamEntity =
                 Optional.ofNullable(ctaDAO.findByCtaId(request.getCtaId()))

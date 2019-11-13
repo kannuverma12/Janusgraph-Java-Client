@@ -1,6 +1,5 @@
 package com.paytm.digital.education.coaching.ingestion.service.importdata.impl;
 
-import com.google.common.collect.ImmutableMap;
 import com.paytm.digital.education.coaching.ingestion.model.ImportResponse;
 import com.paytm.digital.education.coaching.ingestion.model.googleform.CoachingCTAMappingForm;
 import com.paytm.digital.education.coaching.ingestion.model.googleform.CoachingCourseForm;
@@ -9,12 +8,9 @@ import com.paytm.digital.education.coaching.ingestion.model.properties.DataImpor
 import com.paytm.digital.education.coaching.ingestion.service.importdata.AbstractImportService;
 import com.paytm.digital.education.coaching.ingestion.service.importdata.ImportService;
 import com.paytm.digital.education.coaching.ingestion.transformer.importdata.ImportCoachingCTAMappingTransformer;
-import com.paytm.digital.education.coaching.ingestion.transformer.importdata.ImportCoachingCourseTransformer;
 import com.paytm.digital.education.coaching.producer.controller.ProducerCoachingCourseController;
 import com.paytm.digital.education.coaching.producer.model.dto.CoachingCourseDTO;
-import com.paytm.digital.education.coaching.producer.model.request.CoachingCourseDataRequest;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCoursePatchRequest;
-import com.paytm.digital.education.enums.CTAViewType;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +21,6 @@ import java.util.List;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EMPTY_STRING;
-import static com.paytm.digital.education.coaching.constants.GoogleSheetImportConstants.COACHING_COURSE_SHEET_ID;
 import static com.paytm.digital.education.coaching.constants.GoogleSheetImportConstants.COACHING_CTA_MAPPING_SHEET_ID;
 
 @Slf4j
@@ -62,9 +57,11 @@ public class CoachingCTAMappingImportService extends AbstractImportService imple
         final CoachingCTAMappingForm ctaMappingForm = (CoachingCTAMappingForm) clazz.cast(form);
         ResponseEntity<CoachingCourseDTO> response = null;
         String failureMessage = EMPTY_STRING;
-        CoachingCoursePatchRequest coachingCoursePatchRequest = ImportCoachingCTAMappingTransformer.convert(ctaMappingForm);
+        CoachingCoursePatchRequest coachingCoursePatchRequest =
+                ImportCoachingCTAMappingTransformer.convert(ctaMappingForm);
         try {
-            response = this.producerCoachingCourseController.patchCoachingProgram(coachingCoursePatchRequest);
+            response = this.producerCoachingCourseController
+                    .patchCoachingProgram(coachingCoursePatchRequest);
         } catch (final Exception e) {
             log.error("Got Exception in upsertNewRecords for input: {}, exception: ", form, e);
             failureMessage = e.getMessage();
@@ -86,7 +83,8 @@ public class CoachingCTAMappingImportService extends AbstractImportService imple
     protected <T> void upsertFailedRecords(T form, Class<T> clazz) {
         final CoachingCTAMappingForm ctaMappingForm = (CoachingCTAMappingForm) clazz.cast(form);
         try {
-            CoachingCoursePatchRequest coachingCoursePatchRequest = ImportCoachingCTAMappingTransformer.convert(ctaMappingForm);
+            CoachingCoursePatchRequest coachingCoursePatchRequest =
+                    ImportCoachingCTAMappingTransformer.convert(ctaMappingForm);
             this.producerCoachingCourseController.patchCoachingProgram(coachingCoursePatchRequest);
         } catch (final Exception e) {
             log.error("Got Exception in upsertFailedRecords for input: {}, exception: ", form, e);
