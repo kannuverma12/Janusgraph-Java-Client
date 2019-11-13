@@ -12,7 +12,7 @@ import com.paytm.digital.education.coaching.consumer.model.request.MerchantNotif
 import com.paytm.digital.education.coaching.consumer.model.request.VerifyRequest;
 import com.paytm.digital.education.coaching.consumer.model.response.transactionalflow.MerchantNotifyResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.transactionalflow.VerifyResponse;
-import com.paytm.digital.education.coaching.db.dao.CoachingCourseDAO;
+import com.paytm.digital.education.database.dao.CoachingCourseDAO;
 import com.paytm.digital.education.coaching.utils.ComparisonUtils;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.exception.BadRequestException;

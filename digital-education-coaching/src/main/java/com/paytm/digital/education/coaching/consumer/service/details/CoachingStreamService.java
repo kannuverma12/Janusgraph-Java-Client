@@ -8,8 +8,8 @@ import com.paytm.digital.education.coaching.consumer.model.response.details.GetS
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingCourseData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingInstituteData;
 import com.paytm.digital.education.coaching.consumer.model.response.search.ExamData;
+import com.paytm.digital.education.database.dao.CoachingStreamDAO;
 import com.paytm.digital.education.database.entity.StreamEntity;
-import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.CommonUtils;
@@ -49,16 +49,16 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_STREAM_NAME;
 @AllArgsConstructor
 public class CoachingStreamService {
 
-    private final CommonMongoRepository    commonMongoRepository;
     private final CoachingCourseService    coachingCourseService;
     private final CoachingInstituteService coachingInstituteService;
     private final ExamService              examService;
     private final PropertyReader           propertyReader;
+    private final CoachingStreamDAO        coachingStreamDAO;
 
     public GetStreamDetailsResponse getStreamDetails(final long streamId,
             final String urlDisplayKey) {
-        StreamEntity streamEntity = commonMongoRepository.getEntityByFields(STREAM_ID, streamId,
-                StreamEntity.class, STREAM_DETAILS_FIELDS);
+        StreamEntity streamEntity =
+                coachingStreamDAO.findByStreamId(STREAM_ID, streamId, STREAM_DETAILS_FIELDS);
 
         if (Objects.isNull(streamEntity) || !streamEntity.getIsEnabled()) {
             log.error("Stream with id: {} does not exist", streamId);

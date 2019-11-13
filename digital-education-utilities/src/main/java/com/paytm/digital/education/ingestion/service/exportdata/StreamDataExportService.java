@@ -3,7 +3,7 @@ package com.paytm.digital.education.ingestion.service.exportdata;
 import static com.paytm.digital.education.ingestion.constant.IngestionConstants.STREAM_SHEET_ID;
 
 import com.paytm.digital.education.ingestion.converter.StreamDataConverter;
-import com.paytm.digital.education.ingestion.dao.StreamDAO;
+import com.paytm.digital.education.database.dao.StreamDAO;
 import com.paytm.digital.education.ingestion.request.DataExportPropertiesRequest;
 import com.paytm.digital.education.ingestion.response.DataExportPropertiesResponse;
 import com.paytm.digital.education.ingestion.response.ExportResponse;

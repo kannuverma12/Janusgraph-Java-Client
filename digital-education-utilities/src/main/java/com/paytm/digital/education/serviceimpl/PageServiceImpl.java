@@ -30,7 +30,7 @@ import com.paytm.digital.education.database.repository.PageRepository;
 import com.paytm.digital.education.database.repository.SectionRepository;
 import com.paytm.digital.education.exception.EducationException;
 import com.paytm.digital.education.exception.ResourceNotFoundException;
-import com.paytm.digital.education.ingestion.dao.StreamDAO;
+import com.paytm.digital.education.database.dao.StreamDAO;
 import com.paytm.digital.education.service.PageService;
 import com.paytm.digital.education.utility.CommonUtil;
 import lombok.AllArgsConstructor;

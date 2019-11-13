@@ -19,13 +19,17 @@ import com.paytm.digital.education.coaching.consumer.transformer.CoachingCourseT
 import com.paytm.digital.education.coaching.enums.CourseSessionDetails;
 import com.paytm.digital.education.coaching.utils.ComparisonUtils;
 import com.paytm.digital.education.coaching.utils.ImageUtils;
+import com.paytm.digital.education.database.dao.CoachingCenterDAO;
+import com.paytm.digital.education.database.dao.CoachingCourseDAO;
+import com.paytm.digital.education.database.dao.CoachingExamDAO;
+import com.paytm.digital.education.database.dao.CoachingInstituteDAO;
+import com.paytm.digital.education.database.dao.TopRankerDAO;
 import com.paytm.digital.education.database.embedded.Currency;
 import com.paytm.digital.education.database.entity.CoachingCenterEntity;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
 import com.paytm.digital.education.database.repository.CoachingCourseFeatureRepository;
-import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.property.reader.PropertyReader;
@@ -52,7 +56,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.mongodb.QueryOperators.AND;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.CENTER_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_IDS;
@@ -163,13 +166,21 @@ public class CoachingCourseService {
     @Autowired
     private CoachingCourseTransformer       coachingCourseTransformer;
     @Autowired
-    private CommonMongoRepository           commonMongoRepository;
-    @Autowired
     private SearchDataHelper                searchDataHelper;
     @Autowired
     private PropertyReader                  propertyReader;
     @Autowired
     private CoachingCourseFeatureRepository coachingCourseFeatureRepository;
+    @Autowired
+    private CoachingCourseDAO               coachingCourseDAO;
+    @Autowired
+    private CoachingInstituteDAO            coachingInstituteDAO;
+    @Autowired
+    private CoachingExamDAO                 coachingExamDAO;
+    @Autowired
+    private TopRankerDAO                    topRankerDAO;
+    @Autowired
+    private CoachingCenterDAO               coachingCenterDAO;
 
     public GetCoachingCourseDetailsResponse getCourseDetailsByIdAndUrlDisplayKey(
             final long courseId, final String urlDisplayKey) {
@@ -245,12 +256,9 @@ public class CoachingCourseService {
 
     private CoachingCourseEntity fetchCourse(final long courseId, final String urlDisplayKey) {
 
-        final Map<String, Object> searchRequest = new HashMap<>();
-        searchRequest.put(COACHING_COURSE_ID, courseId);
-
-        final List<CoachingCourseEntity> coachingCourseEntityList = this.commonMongoRepository
-                .findAll(searchRequest, CoachingCourseEntity.class,
-                        CoachingCourseService.COURSE_FIELDS, AND);
+        final List<CoachingCourseEntity> coachingCourseEntityList =
+                coachingCourseDAO.findByCourseId(COACHING_COURSE_ID, courseId,
+                        CoachingCourseService.COURSE_FIELDS);
 
         if (CollectionUtils.isEmpty(coachingCourseEntityList)
                 || coachingCourseEntityList.size() > 1
@@ -266,8 +274,8 @@ public class CoachingCourseService {
     }
 
     private CoachingInstituteEntity fetchInstitute(final long instituteId) {
-        final CoachingInstituteEntity institute = this.commonMongoRepository.getEntityByFields(
-                INSTITUTE_ID, instituteId, CoachingInstituteEntity.class, INSTITUTE_FIELDS);
+        final CoachingInstituteEntity institute =
+                coachingInstituteDAO.findByInstituteId(INSTITUTE_ID, instituteId, INSTITUTE_FIELDS);
         if (institute == null) {
             log.error("Got null CoachingInstitute for id: {}", instituteId);
             throw new BadRequestException(INVALID_INSTITUTE_ID,
@@ -296,8 +304,7 @@ public class CoachingCourseService {
 
     private List<CoachingCourseEntity> fetchCourses(final List<Long> coachingCourseIdList,
             final List<String> fields) {
-        return this.commonMongoRepository.getEntityFieldsByValuesIn(COURSE_ID, coachingCourseIdList,
-                CoachingCourseEntity.class, fields);
+        return coachingCourseDAO.findByCourseIdsIn(COURSE_ID, coachingCourseIdList,fields);
     }
 
     private Map<String, List<Exam>> fetchExamTypeAndExamListMap(List<Long> targetExamIdList,
@@ -336,8 +343,7 @@ public class CoachingCourseService {
 
     private List<com.paytm.digital.education.database.entity.Exam> fetchExamsByExamIds(
             final List<Long> examIdList) {
-        return this.commonMongoRepository.getEntityFieldsByValuesIn(EXAM_ID, examIdList,
-                com.paytm.digital.education.database.entity.Exam.class,
+        return coachingExamDAO.findByExamIdsIn(EXAM_ID, examIdList,
                 CoachingCourseService.EXAM_FIELDS);
     }
 
@@ -347,18 +353,17 @@ public class CoachingCourseService {
         sortMap.put(Sort.Direction.DESC, EXAM_YEAR);
         sortMap.put(Sort.Direction.ASC, PRIORITY);
 
-        List<TopRankerEntity> topRankerEntityList = this.commonMongoRepository
-                .getEntityFieldsByValuesInAndSortBy(COACHING_COURSE_IDS,
-                        Collections.singletonList(courseId), TopRankerEntity.class,
+        List<TopRankerEntity> topRankerEntityList =
+                topRankerDAO.findByCourseIdsInAndSortBy(COACHING_COURSE_IDS,
+                        Collections.singletonList(courseId),
                         TOP_RANKER_FIELDS, sortMap);
 
         if (CollectionUtils.isEmpty(topRankerEntityList)) {
             log.warn("Got no topRankers for courseId: {}", courseId);
-
-            topRankerEntityList = this.commonMongoRepository.getEntityFieldsByValuesInAndSortBy(
-                    INSTITUTE_ID, Collections.singletonList(instituteId), TopRankerEntity.class,
-                    CoachingCourseService.TOP_RANKER_FIELDS, sortMap);
-
+            topRankerEntityList =
+                    topRankerDAO.findByInstituteIdsInAndSortBy(INSTITUTE_ID,
+                            Collections.singletonList(instituteId),
+                            CoachingCourseService.TOP_RANKER_FIELDS, sortMap);
             if (CollectionUtils.isEmpty(topRankerEntityList)) {
                 log.warn("Got no topRankers for instituteId: {}", instituteId);
                 return new ArrayList<>();
@@ -377,8 +382,8 @@ public class CoachingCourseService {
                 .map(TopRankerEntity::getCenterId)
                 .collect(Collectors.toList());
 
-        List<CoachingCenterEntity> coachingCenterEntityList = this.commonMongoRepository
-                .getEntityFieldsByValuesIn(CENTER_ID, centerIdList, CoachingCenterEntity.class,
+        List<CoachingCenterEntity> coachingCenterEntityList =
+                coachingCenterDAO.findByCenterIdsIn(CENTER_ID, centerIdList,
                         CENTER_FIELDS);
 
         if (CollectionUtils.isEmpty(coachingCenterEntityList)) {

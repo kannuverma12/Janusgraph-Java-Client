@@ -9,9 +9,10 @@ import com.paytm.digital.education.coaching.consumer.model.request.FetchCartItem
 import com.paytm.digital.education.coaching.consumer.model.request.MerchantData;
 import com.paytm.digital.education.coaching.consumer.model.request.MerchantProduct;
 import com.paytm.digital.education.coaching.consumer.model.response.transactionalflow.CartDataResponse;
+import com.paytm.digital.education.database.dao.CoachingCourseDAO;
+import com.paytm.digital.education.database.dao.CoachingInstituteDAO;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
-import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -29,8 +30,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-import static com.mongodb.QueryOperators.AND;
-import static com.mongodb.QueryOperators.IN;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_VERTICAL_NAME;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.CachingConstants.CACHE_KEY_DELIMITER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.CachingConstants.CACHE_TTL;
@@ -63,7 +62,10 @@ public class MerchantProductsTransformerService {
     private RedisCacheService redisCacheService;
 
     @Autowired
-    private CommonMongoRepository commonMongoRepository;
+    private CoachingInstituteDAO coachingInstituteDAO;
+
+    @Autowired
+    private CoachingCourseDAO coachingCourseDAO;
 
     public CartDataResponse fetchCartDataFromVertical(FetchCartItemsRequestBody request) {
         log.info("Got merchant product data request {}", request);
@@ -77,9 +79,10 @@ public class MerchantProductsTransformerService {
             log.error("Invalid merchant product data received : {}", request);
             throw new BadRequestException(INVALID_MERCHANT_PRODUCTS);
         }
-        CoachingInstituteEntity coachingInstituteEntity = commonMongoRepository
-                .getEntityByFields(PAYTM_MERCHANT_ID, request.getMerchantId().toString(),
-                        CoachingInstituteEntity.class, INSTITUTE_FIELDS);
+        CoachingInstituteEntity coachingInstituteEntity = coachingInstituteDAO
+                .findByPaytmMerchantId(PAYTM_MERCHANT_ID, request.getMerchantId().toString(),
+                        INSTITUTE_FIELDS);
+
         if (Objects.isNull(coachingInstituteEntity) || !coachingInstituteEntity.getIsEnabled()) {
             log.error("No coaching institute found with merchant id: {}", request.getMerchantId());
             throw new BadRequestException(INVALID_MERCHANT_ID);
@@ -93,16 +96,11 @@ public class MerchantProductsTransformerService {
             }
         }
 
-        final Map<String, Object> searchRequest = new HashMap<>();
-        searchRequest.put(COACHING_INSTITUTE_ID, coachingInstituteEntity.getInstituteId());
-        searchRequest.put(IS_DYNAMIC, true);
-        searchRequest.put(IS_ENABLED, true);
-        Map<String, Object> merchantProductIdQueryMap = new HashMap<>();
-        merchantProductIdQueryMap.put(IN, merchantProductIds);
-        searchRequest.put(MERCHANT_PRODUCT_ID, merchantProductIdQueryMap);
-
-        List<CoachingCourseEntity> dynamicCoachingCourses = commonMongoRepository.findAll(
-                searchRequest, CoachingCourseEntity.class, COACHING_COURSE_FIELDS, AND);
+        List<CoachingCourseEntity> dynamicCoachingCourses =
+                coachingCourseDAO.findByCoachingInstIdAndIsDynAndIsEnabledAndMerchantPIdsIn(
+                        COACHING_INSTITUTE_ID, coachingInstituteEntity.getInstituteId(),
+                        IS_DYNAMIC, true, IS_ENABLED, true,
+                        MERCHANT_PRODUCT_ID, merchantProductIds, COACHING_COURSE_FIELDS);
         if (CollectionUtils.isEmpty(dynamicCoachingCourses)) {
             log.error("Dynamic courses for merchant_id: {} does not exist",
                     request.getMerchantId());

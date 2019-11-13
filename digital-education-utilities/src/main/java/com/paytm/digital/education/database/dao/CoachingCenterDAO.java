@@ -1,7 +1,8 @@
-package com.paytm.digital.education.coaching.db.dao;
+package com.paytm.digital.education.database.dao;
 
 import com.paytm.digital.education.database.entity.CoachingCenterEntity;
 import com.paytm.digital.education.database.repository.CoachingCenterRepository;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.database.repository.SequenceGenerator;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,9 @@ public class CoachingCenterDAO {
     @Autowired
     private SequenceGenerator sequenceGenerator;
 
+    @Autowired
+    private CommonMongoRepository commonMongoRepository;
+
     public CoachingCenterEntity save(@NonNull CoachingCenterEntity coachingCenterEntity) {
         if (Objects.isNull(coachingCenterEntity.getCenterId())) {
             coachingCenterEntity.setCenterId(sequenceGenerator
@@ -33,5 +37,18 @@ public class CoachingCenterDAO {
 
     public List<CoachingCenterEntity> findAll() {
         return this.coachingCenterRepository.findAll();
+    }
+
+    public List<CoachingCenterEntity> findByInstituteId(String instituteIdField, long instituteId,
+            List<String> projectionFields) {
+        return commonMongoRepository.getEntitiesByIdAndFields(
+                instituteIdField, instituteId, CoachingCenterEntity.class, projectionFields);
+    }
+
+    public List<CoachingCenterEntity> findByCenterIdsIn(String centerIdField,
+            List<Long> centerIds,
+            List<String> projectionFields) {
+        return this.commonMongoRepository.getEntityFieldsByValuesIn(centerIdField, centerIds,
+                CoachingCenterEntity.class, projectionFields);
     }
 }
