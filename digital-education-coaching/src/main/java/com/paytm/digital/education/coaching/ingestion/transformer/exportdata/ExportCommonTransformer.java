@@ -2,6 +2,7 @@ package com.paytm.digital.education.coaching.ingestion.transformer.exportdata;
 
 import com.paytm.digital.education.enums.CourseLevel;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
@@ -34,5 +35,12 @@ public class ExportCommonTransformer {
             return EMPTY_STRING;
         }
         return StringUtils.join(courseLevelNameList, ",");
+    }
+
+    static String convertListToString(final List<String> input) {
+        if (null == input) {
+            return NO;
+        }
+        return String.join(",",input);
     }
 }

@@ -2,6 +2,7 @@ package com.paytm.digital.education.coaching.ingestion.service.exportdata;
 
 import com.paytm.digital.education.coaching.ingestion.model.IngestionFormEntity;
 import com.paytm.digital.education.coaching.ingestion.service.exportdata.impl.CoachingBannerExportService;
+import com.paytm.digital.education.coaching.ingestion.service.exportdata.impl.CoachingCTAExportService;
 import com.paytm.digital.education.coaching.ingestion.service.exportdata.impl.CoachingCenterExportService;
 import com.paytm.digital.education.coaching.ingestion.service.exportdata.impl.CoachingCourseExportService;
 import com.paytm.digital.education.coaching.ingestion.service.exportdata.impl.CoachingCourseFeatureExportService;
@@ -26,6 +27,8 @@ public class ExportServiceFactory {
     private final CoachingInstituteExportService     coachingInstituteExportService;
     private final CompetitiveExamExportService       competitiveExamExportService;
     private final TopRankerExportService             topRankerExportService;
+    private final CoachingCTAExportService           coachingCTAExportService;
+
 
     public ExportService getExportService(final IngestionFormEntity formEntity) {
 
@@ -53,6 +56,9 @@ public class ExportServiceFactory {
             }
             case TOP_RANKER_FORM: {
                 return this.topRankerExportService;
+            }
+            case COACHING_COURSE_CTA_FORM: {
+                return this.coachingCTAExportService;
             }
             default: {
             }

@@ -103,7 +103,7 @@ public abstract class AbstractImportService {
     protected List<Object> getFormData(
             final DataImportPropertiesResponse dataImportPropertiesResponse) {
         List<Object> formData = new ArrayList<>();
-        if (null == dataImportPropertiesResponse) {
+        if (null == dataImportPropertiesResponse || null == dataImportPropertiesResponse.getSheetId()) {
             log.error("Got null dataImportPropertiesResponse.");
             return formData;
         }
