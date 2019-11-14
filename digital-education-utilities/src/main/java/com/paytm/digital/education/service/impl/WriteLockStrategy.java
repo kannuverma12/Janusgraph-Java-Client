@@ -31,7 +31,7 @@ public class WriteLockStrategy {
 
     public WriteLockStrategy(
             RedisTemplate<String, String> template,
-            @Value("${redis.cache.ttl.millis}") int lockDurationForProcessInSeconds) {
+            @Value("${redis.cache.process.lock.duration.seconds}") int lockDurationForProcessInSeconds) {
         this.template = template;
         this.lockDurationForProcessInSeconds = lockDurationForProcessInSeconds;
     }
@@ -39,26 +39,33 @@ public class WriteLockStrategy {
     public <T, U> Response<T, U> getCacheValue(
             String key, GetData<T> getData, CheckData<T> checkData,
             WriteData<U> writeData, CachedMethod<U> cachedMethod) {
+        Long id = Thread.currentThread().getId();
         for (int i = 0; i < NUMBER_OF_TIMES_THREAD_RETRIES_BEFORE_GIVING_UP; ++i) {
             T data = null;
             try {
+                logger.info("checking " + id);
                 data = getData.doGetData();
                 checkData.doCheckData(data);
+                logger.info("old value is sufficient " + id + " " + data);
                 return new Response<>(data, null);
             } catch (OldCacheValueExpiredException | OldCacheValueNullException e) {
                 logger.debug("Old cache value exception", e);
             }
 
+            logger.info("trying, generating " + id);
             String lockKey = key + "::zookeeper";
             String processId = RandomStringUtils.randomAlphabetic(10);
 
+            logger.info("generated " + id);
             Boolean success = template.opsForValue().setIfAbsent(lockKey, processId,
                     ofSeconds(lockDurationForProcessInSeconds));
             if (BooleanUtils.isNotTrue(success)) {
+                logger.info("failed " + id);
                 sleep(PROCESS_SLEEP_TIME_IN_MILLIS, key);
                 continue;
             }
 
+            logger.info("success " + id);
             U computed = writeAndReleaseLock(lockKey, processId, cachedMethod, writeData);
             return new Response<>(data, computed);
         }
