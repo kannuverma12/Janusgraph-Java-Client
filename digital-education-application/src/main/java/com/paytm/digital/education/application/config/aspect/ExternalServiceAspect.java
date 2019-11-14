@@ -24,7 +24,7 @@ public class ExternalServiceAspect {
     private MetricsAgent metricsAgent;
 
     @Pointcut("execution(* com.paytm.digital.education.database.repository..**(..))")
-    public void executeRepositoryMethods() {
+    public void executeMongoMethods() {
     }
 
     @Pointcut("execution(* com.paytm.digital.education.elasticsearch.service.impl..**(..))")
@@ -35,30 +35,25 @@ public class ExternalServiceAspect {
     public void executeRedisMethods() {
     }
 
-    @Around("executeRepositoryMethods()")
-    public Object profile(ProceedingJoinPoint pjp) throws Throwable {
-        Object output = null;
-        long timeStartInMillisecs = System.currentTimeMillis();
-        String aspect = getMetricName(pjp, "mongo_repository");
-        output = recordAspectData(pjp, aspect, timeStartInMillisecs);
-        return output;
-
+    @Around("executeMongoMethods()")
+    public Object mongoMethods(ProceedingJoinPoint pjp) throws Throwable {
+        return execute(pjp, "mongo_api" );
     }
 
     @Around("executeElasticSearchServiceImplMethods()")
-    public Object daoImplMethods(ProceedingJoinPoint pjp) throws Throwable {
-        Object output = null;
-        long timeStartInMillisecs = System.currentTimeMillis();
-        String aspect = getMetricName(pjp, "elasticsearch_api");
-        output = recordAspectData(pjp, aspect, timeStartInMillisecs);
-        return output;
+    public Object elasticSearchMethods(ProceedingJoinPoint pjp) throws Throwable {
+        return execute(pjp, "elasticsearch_api" );
     }
 
     @Around("executeRedisMethods()")
     public Object redisMethods(ProceedingJoinPoint pjp) throws Throwable {
+        return execute(pjp, "redis_api" );
+    }
+
+    private Object execute(ProceedingJoinPoint pjp, String aspectPrefix) throws Throwable {
         Object output = null;
         long timeStartInMillisecs = System.currentTimeMillis();
-        String aspect = getMetricName(pjp, "redis_api");
+        String aspect = getMetricName(pjp, aspectPrefix);
         output = recordAspectData(pjp, aspect, timeStartInMillisecs);
         return output;
     }
