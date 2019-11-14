@@ -173,7 +173,9 @@ public enum ErrorEnum {
     ENTITY_NOT_SUPPORTED(4073, "Requested entity not supported for this operation.", BAD_REQUEST,
             0),
     SOMETHING_BROKE_WHILE_SERIALIZING_DESERIALIZING(4074,
-            "Something broke internally.", INTERNAL_SERVER_ERROR,0);
+            "Something broke internally.", INTERNAL_SERVER_ERROR,0),
+    CACHE_BEAN_KEY_INACCESSIBLE(4075, "Cache Bean Inaccessible. Bean - %s, Key - %s",
+            INTERNAL_SERVER_ERROR, 2);
 
     private final int        internalCode;
     private final String     externalMessage;
