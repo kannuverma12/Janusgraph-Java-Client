@@ -4,6 +4,7 @@ import com.paytm.digital.education.exception.CachedMethodInvocationException;
 import com.paytm.digital.education.exception.EducationException;
 import com.paytm.digital.education.exception.OldCacheValueExpiredException;
 import com.paytm.digital.education.exception.OldCacheValueNullException;
+import com.paytm.digital.education.method.CachedMethod;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import org.apache.commons.lang3.BooleanUtils;
@@ -35,8 +36,9 @@ public class WriteLockStrategy {
         this.lockDurationForProcessInSeconds = lockDurationForProcessInSeconds;
     }
 
-    public <T, U> Response<T, U> getCacheValue(String key, GetData<T> getData, CheckData<T> checkData,
-                                               ComputeAndWrite<U> computeAndWrite) {
+    public <T, U> Response<T, U> getCacheValue(
+            String key, GetData<T> getData, CheckData<T> checkData,
+            WriteData<U> writeData, CachedMethod<U> cachedMethod) {
         for (int i = 0; i < NUMBER_OF_TIMES_THREAD_RETRIES_BEFORE_GIVING_UP; ++i) {
             T data = null;
             try {
@@ -57,14 +59,15 @@ public class WriteLockStrategy {
                 continue;
             }
 
-            U computed = writeAndReleaseLock(lockKey, processId, computeAndWrite);
+            U computed = writeAndReleaseLock(lockKey, processId, cachedMethod, writeData);
             return new Response<>(data, computed);
         }
 
         return null;
     }
 
-    private <U> U writeAndReleaseLock(String lockKey, String processId, ComputeAndWrite<U> computeAndWrite) {
+    private <U> U writeAndReleaseLock(String lockKey, String processId, CachedMethod<U> cachedMethod,
+                                      WriteData<U> writeData) {
         return template.execute(new SessionCallback<U>() {
             @Override
             public <K, V> U execute(RedisOperations<K, V> operations) throws DataAccessException {
@@ -72,7 +75,7 @@ public class WriteLockStrategy {
                 if (processId.equals(operations.opsForValue().get(lockKey))) {
                     U u = null;
                     try {
-                        u = computeAndWrite.doComputeAndWrite();
+                        u = cachedMethod.invoke();
                     } catch (CachedMethodInvocationException e) {
                         Throwable t = e.getCause();
                         if (t instanceof EducationException) {
@@ -83,6 +86,7 @@ public class WriteLockStrategy {
                         }
                     } finally {
                         operations.multi();
+                        writeData.doWriteData(operations, u);
                         operations.opsForValue().getOperations().delete((K) lockKey);
                         operations.exec();
                     }

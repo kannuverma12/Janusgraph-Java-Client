@@ -3,7 +3,7 @@ package com.paytm.digital.education.method;
 import com.paytm.digital.education.exception.CachedMethodInvocationException;
 import org.aspectj.lang.ProceedingJoinPoint;
 
-public class MethodEnclosedInProceedingJoinPoint implements CachedMethod {
+public class MethodEnclosedInProceedingJoinPoint implements CachedMethod<Object> {
     private final ProceedingJoinPoint proceedingJoinPoint;
 
     public MethodEnclosedInProceedingJoinPoint(ProceedingJoinPoint proceedingJoinPoint) {

@@ -1,7 +1,12 @@
 package com.paytm.digital.education.application.cache;
 
+import com.paytm.digital.education.service.impl.RedisOrchestratorImpl;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
@@ -26,13 +31,16 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest
 @TestPropertySource("/application-test.properties")
 @RunWith(SpringRunner.class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class CacheTest {
+    private static final Logger logger = LoggerFactory.getLogger(RedisOrchestratorImpl.class);
 
     @Autowired
     private TestService testService;
 
     private static int NUMBER_OF_THREADS = 10000;
     private static int THREAD_POOL_SIZE = 10000;
+    private static double EXPECTED_FRACTION_OF_THREADS_WHICH_WROTE = 0.1 / 100;
 
     @Test
     public void testCacheConcurrenceRunsOnlyOnce() throws Exception {
@@ -55,13 +63,16 @@ public class CacheTest {
         }
 
         /*
-         * Note:- In case of cache miss, out of 1000 concurrent requests
-         * only 10 (1%) were able to write.
+         * Note:- In case of cache miss, out of 10000 concurrent requests
+         * only 8 (approx) (0.08%) were able to write.
          * Ideally, only one request should have written, but to ensure that, we would
          * have to lock the whole operation (including the fetch from cache operation),
          * which would have incurred a much greater penalty.
          */
-        assertThat(TestService.TEST_COUNT, lessThanOrEqualTo(NUMBER_OF_THREADS / 500));
+        final int EXPECTED_NUMBER_OF_THREADS_WHICH_WROTE =
+                (int) (EXPECTED_FRACTION_OF_THREADS_WHICH_WROTE * NUMBER_OF_THREADS);
+        assertThat(TestService.TEST_COUNT, lessThanOrEqualTo(EXPECTED_NUMBER_OF_THREADS_WHICH_WROTE));
+        logger.info("Number of writes count (approx) - {}", TestService.TEST_COUNT);
         for (Future<String> future : futureValues) {
             assertTrue(future.isDone());
             assertEquals(future.get(), processTwoStrings(arg1, arg2));

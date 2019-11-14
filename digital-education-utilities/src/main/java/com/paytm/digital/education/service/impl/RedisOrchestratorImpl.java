@@ -1,6 +1,5 @@
 package com.paytm.digital.education.service.impl;
 
-import com.paytm.digital.education.exception.CachedMethodInvocationException;
 import com.paytm.digital.education.exception.OldCacheValueExpiredException;
 import com.paytm.digital.education.exception.OldCacheValueNullException;
 import com.paytm.digital.education.exception.SerializationException;
@@ -9,6 +8,7 @@ import com.paytm.digital.education.service.RedisOrchestrator;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +38,7 @@ public class RedisOrchestratorImpl implements RedisOrchestrator {
     }
 
     @Override
-    public Object get(String key, CachedMethod cachedMethod) {
+    public <U> Object get(String key, CachedMethod<U> cachedMethod) {
         final CheckData<String> checkData = new CheckData<String>() {
             @Override
             public void doCheckData(String data) throws OldCacheValueExpiredException, OldCacheValueNullException {
@@ -54,19 +54,17 @@ public class RedisOrchestratorImpl implements RedisOrchestrator {
             }
         };
 
-        final ComputeAndWrite<Object> computeAndWrite = new ComputeAndWrite<Object>() {
+        final WriteData<U> writeData = new WriteData<U>() {
             @Override
-            public Object doComputeAndWrite() throws CachedMethodInvocationException {
-                Object o = cachedMethod.invoke();
+            public <K, V> void doWriteData(RedisOperations<K, V> redisOperations, U o) {
                 String data = serializeData(o, key);
                 String cacheableValue = cacheValueProcessor.appendExpiryDateToValue(data, ttl);
-                template.opsForValue().set(key, cacheableValue);
-                return o;
+                redisOperations.opsForValue().set((K) key, (V) cacheableValue);
             }
         };
 
-        Response<String, Object> response =
-                writeLockStrategy.getCacheValue(key, getData, checkData, computeAndWrite);
+        Response<String, U> response =
+                writeLockStrategy.getCacheValue(key, getData, checkData, writeData, cachedMethod);
         if (response.isOldValue()) {
             try {
                 return deSerializeData(
