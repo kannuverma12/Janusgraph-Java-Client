@@ -32,7 +32,7 @@ public class PurchaseController {
     @Autowired private PurchaseService purchaseService;
 
     @PostMapping(value = VERIFY)
-    public ResponseEntity<VerifyResponse> verify(@RequestBody VerifyRequest request) {
+    public ResponseEntity<VerifyResponse> verify(@Valid @RequestBody VerifyRequest request) {
         try {
             return ResponseEntity.ok(purchaseService.verify(request));
         } catch (PurchaseException e) {
