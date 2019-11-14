@@ -108,6 +108,12 @@ public class ExamData extends SearchBaseData implements CTAInfoHolder {
     }
 
     @JsonIgnore
+    @Override
+    public boolean hasShareFeature() {
+        return true;
+    }
+
+    @JsonIgnore
     @Accessors(fluent = true)
     private String ctaDbPropertyKey = EXAM_SEARCH_CTA;
 
