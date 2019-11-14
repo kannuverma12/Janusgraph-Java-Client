@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,10 +30,6 @@ public class CoachingCtaDAO {
 
     public CoachingCtaEntity findByCtaId(@NonNull Long id) {
         return ctaRepository.findByCtaId(id);
-    }
-
-    public List<CoachingCtaEntity> findAllByCtaIdIn(@NonNull Collection<Long> id) {
-        return ctaRepository.findAllByCtaIdIn(id);
     }
 
     public List<CoachingCtaEntity> findAll() {

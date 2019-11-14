@@ -17,7 +17,6 @@ public class CoachingConstants {
     public static final String EXAM_ID                         = "exam_id";
     public static final String STREAM_ID                       = "stream_id";
     public static final String COURSE_ID                       = "course_id";
-    public static final String CTA_ID                          = "cta_id";
     public static final String COURSE_TYPE                     = "course_type";
     public static final String COACHING_EXAM_STREAMS           = "stream_names";
     public static final String COACHING_COURSE_EXAMS           = "exam_names";
