@@ -11,7 +11,7 @@ gzip = true
 #elasticsearch-max-seconds = 5
 #elasticsearch-max-bytes = 83886080
 
-namespace-regex = '^digital_education\..*'
+namespace-regex = 'digital_education.location'
 
 # write stats to log file or console
 stats = true

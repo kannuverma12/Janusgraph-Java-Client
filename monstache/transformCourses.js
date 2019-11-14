@@ -21,7 +21,7 @@ function findCollegeById(college_id) {
     var listOfColleges = find({ institute_id: college_id }, collegeQueryOptions);
     if (listOfColleges === undefined || listOfColleges.length !== 1) {
         // requested document not found or invalid case when more then 1 doc found for same id
-        console.warn("WARN Cannot find college with id :" + college_id);
+        warn("Cannot find college with id :" + college_id);
         return null;
     }
     return listOfColleges[0];
@@ -36,7 +36,7 @@ function findExam(examid){
     var listOfExams = find({ exam_id: examid }, examQueryOptions);
     if (listOfExams === undefined || listOfExams.length !== 1) {
         // requested document not found or invalid case when more then 1 doc found for same id
-        console.warn("WARN Cannot find Exam with id :" + examid);
+        warn("Cannot find Exam with id :" + examid);
         return null;
     }
     return listOfExams[0];
@@ -50,6 +50,7 @@ function transformCourse(doc) {
     var college_id = doc.institute_id;
     var targetCollege = findCollegeById(college_id);
     if (targetCollege === null || targetCollege.publishing_status !== "PUBLISHED") {
+        warn("institute_id : " + college_id + " is not published, hence skipping course_id : " + doc.course_id);
         return null;
     }
 
@@ -71,7 +72,7 @@ function transformCourse(doc) {
     transformedCourse.branch = doc.master_branch;
     transformedCourse.study_mode = doc.study_mode;
     transformedCourse.duration_in_months = doc.course_duration;
-    console.log(doc.course_id + " " + doc.lead_enabled);
+    info("course_id : " + doc.course_id + ", lead_enabled = " + doc.lead_enabled);
     transformedCourse.is_accepting_application = doc.lead_enabled;
     transformedCourse.domain_name = [];
     transformedCourse.stream_ids = doc.stream_ids;
@@ -115,7 +116,7 @@ function transformCourse(doc) {
         });
 
     }
-    console.log ("course: " + transformedCourse.course_id);
+    info("Processed course : " + transformedCourse.course_id);
     return transformedCourse;
 }
 
@@ -124,13 +125,32 @@ module.exports = function(doc, ns, updateDesc) {
     var coll = ns.split(".")[1];
     if (db !== database_name)
         return false;
-
-    if (coll === course_collection && doc.publishing_status === "PUBLISHED") {
-        console.log("Collection : " + coll + " course_id : " + doc.course_id);
-    }
-    else {
+    try {
+        if (coll === course_collection && doc.publishing_status === "PUBLISHED") {
+            info("Processing Collection : " + coll + " course_id : " + doc.course_id);
+        } else {
+            warn(" course_id : " + doc.course_id + " is not in published status. skipping");
+            return false;
+        }
+        return transformCourse(doc);
+    } catch (e) {
+        error("Error in processing courses : " + doc.course_id + ", " + e);
         return false;
     }
+}
 
-    return transformCourse(doc);
+function info(message) {
+    console.log("INFO : " + currentTimestamp() + " " + message);
+}
+
+function error(message) {
+    console.error("ERROR : "+ currentTimestamp() + " " + message);
+}
+
+function warn(message) {
+    console.warn("WARN : " + currentTimestamp() + " " + message);
+}
+
+function currentTimestamp() {
+    return new Date().toISOString();
 }

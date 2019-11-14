@@ -97,6 +97,9 @@ public class ExamSectionHelper {
             case DISCLAIMER:
                 return Objects.nonNull(exam.getPaytmKeys()) && StringUtils
                         .isNotBlank(exam.getPaytmKeys().getDisclaimer());
+            case REGISTRATION_GUIDELINES:
+                return Objects.nonNull(exam.getPaytmKeys()) && StringUtils
+                        .isNotBlank(exam.getPaytmKeys().getRegistrationGuidelines());
             default:
                 return false;
         }

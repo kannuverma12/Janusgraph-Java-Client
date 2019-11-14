@@ -149,6 +149,9 @@ public class ExamDetail implements CTAInfoHolder {
     @JsonProperty("disclaimer")
     private String disclaimer;
 
+    @JsonProperty("registration_guidelines")
+    private String registrationGuidelines;
+
     @JsonIgnore
     private Long collegePredictorPid;
 
