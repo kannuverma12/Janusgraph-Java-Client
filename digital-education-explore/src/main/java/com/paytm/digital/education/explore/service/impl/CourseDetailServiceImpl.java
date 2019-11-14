@@ -5,7 +5,7 @@ import com.paytm.digital.education.database.entity.Course;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Institute;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.dto.detail.Event;
+import com.paytm.digital.education.dto.detail.ImportantDate;
 import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.response.dto.detail.CourseDetail;
@@ -17,7 +17,7 @@ import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelpe
 import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
 import com.paytm.digital.education.explore.utility.FieldsRetrievalUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
-import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
+import com.paytm.digital.education.serviceimpl.helper.ExamDatesHelper;
 import com.paytm.digital.education.utility.CommonUtil;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -56,7 +56,7 @@ public class CourseDetailServiceImpl {
     private SimilarInstituteServiceImpl similarInstituteService;
     private BannerDataHelper            bannerDataHelper;
     private LeadDetailHelper            leadDetailHelper;
-    private ExamInstanceHelper          examInstanceHelper;
+    private ExamDatesHelper             examDatesHelper;
 
     public CourseDetail getDetail(Long entityId, String courseUrlKey, Long userId,
             String fieldGroup, List<String> fields, Client client, boolean courseFees,
@@ -132,11 +132,11 @@ public class CourseDetailServiceImpl {
 
         for (Exam exam : exams) {
             ExamDetail examDetail = new ExamDetail();
-            List<Event> impDates = examInstanceHelper.getImportantDates(exam);
+            List<ImportantDate> importantDates = examDatesHelper.getImportantDates(exam, 1);
             examDetail.setExamId(exam.getExamId());
             examDetail.setUrlDisplayName(
                     CommonUtil.convertNameToUrlDisplayName(exam.getExamFullName()));
-            examDetail.setImportantDates(impDates);
+            examDetail.setImportantDates(importantDates);
             examDetail.setExamFullName(exam.getExamFullName());
             examDetail.setExamShortName(exam.getExamShortName());
             examsAccepted.add(examDetail);

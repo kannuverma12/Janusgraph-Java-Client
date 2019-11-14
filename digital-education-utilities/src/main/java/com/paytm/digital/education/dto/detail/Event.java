@@ -47,4 +47,9 @@ public class Event {
     @JsonProperty("certainity")
     private String certainity;
 
+    @JsonProperty("date_name")
+    private String dateName;
+
+    @JsonProperty("ongoing")
+    private boolean ongoing;
 }

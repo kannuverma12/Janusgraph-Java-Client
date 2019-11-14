@@ -1,48 +1,5 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import com.paytm.digital.education.database.entity.Exam;
-import com.paytm.digital.education.database.entity.ExamPaytmKeys;
-import com.paytm.digital.education.database.entity.Instance;
-import com.paytm.digital.education.database.entity.SubExam;
-import com.paytm.digital.education.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.dto.detail.Event;
-import com.paytm.digital.education.dto.detail.Section;
-import com.paytm.digital.education.dto.detail.Topic;
-import com.paytm.digital.education.dto.detail.Unit;
-import com.paytm.digital.education.enums.Client;
-import com.paytm.digital.education.enums.EducationEntity;
-import com.paytm.digital.education.exception.BadRequestException;
-import com.paytm.digital.education.explore.enums.CTAType;
-import com.paytm.digital.education.explore.response.dto.common.CTA;
-import com.paytm.digital.education.explore.response.dto.detail.ExamDetail;
-import com.paytm.digital.education.explore.response.dto.detail.Location;
-import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
-import com.paytm.digital.education.explore.service.helper.CTAHelper;
-import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
-import com.paytm.digital.education.explore.service.helper.DetailPageSectionHelper;
-import com.paytm.digital.education.explore.service.helper.ExamSectionHelper;
-import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
-import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
-import com.paytm.digital.education.explore.service.helper.WidgetsDataHelper;
-import com.paytm.digital.education.property.reader.PropertyReader;
-import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
-import com.paytm.digital.education.serviceimpl.helper.ExamLogoHelper;
-import com.paytm.digital.education.utility.CommonUtil;
-import com.paytm.digital.education.utility.DateUtil;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 import static com.paytm.digital.education.constant.ExploreConstants.APPLICATION;
 import static com.paytm.digital.education.constant.ExploreConstants.DATA;
 import static com.paytm.digital.education.constant.ExploreConstants.DD_MMM_YYYY;
@@ -64,24 +21,72 @@ import static com.paytm.digital.education.enums.Client.APP;
 import static com.paytm.digital.education.enums.EducationEntity.EXAM;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
+import static com.paytm.digital.education.utility.DateUtil.dateToString;
 
-@AllArgsConstructor
+import com.paytm.digital.education.database.entity.Exam;
+import com.paytm.digital.education.database.entity.ExamPaytmKeys;
+import com.paytm.digital.education.database.entity.Instance;
+import com.paytm.digital.education.database.entity.SubExam;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.dto.detail.Event;
+import com.paytm.digital.education.dto.detail.ImportantDate;
+import com.paytm.digital.education.dto.detail.Section;
+import com.paytm.digital.education.dto.detail.Topic;
+import com.paytm.digital.education.dto.detail.Unit;
+import com.paytm.digital.education.enums.Client;
+import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.exception.BadRequestException;
+import com.paytm.digital.education.explore.response.dto.common.CTA;
+import com.paytm.digital.education.explore.response.dto.detail.ExamDetail;
+import com.paytm.digital.education.explore.response.dto.detail.Location;
+import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
+import com.paytm.digital.education.explore.service.helper.CTAHelper;
+import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
+import com.paytm.digital.education.explore.service.helper.DetailPageSectionHelper;
+import com.paytm.digital.education.explore.service.helper.ExamSectionHelper;
+import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
+import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
+import com.paytm.digital.education.explore.service.helper.WidgetsDataHelper;
+import com.paytm.digital.education.property.reader.PropertyReader;
+import com.paytm.digital.education.serviceimpl.helper.ExamDatesHelper;
+import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
+import com.paytm.digital.education.serviceimpl.helper.ExamLogoHelper;
+import com.paytm.digital.education.utility.CommonUtil;
+import com.paytm.digital.education.utility.DateUtil;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 @Service
-@Slf4j
+@RequiredArgsConstructor
 public class ExamDetailServiceImpl {
 
-    private CommonMongoRepository    commonMongoRepository;
-    private ExamLogoHelper           examLogoHelper;
-    private ExamInstanceHelper       examInstanceHelper;
-    private PropertyReader           propertyReader;
-    private DerivedAttributesHelper  derivedAttributesHelper;
-    private DetailPageSectionHelper  detailPageSectionHelper;
-    private BannerDataHelper         bannerDataHelper;
-    private WidgetsDataHelper        widgetsDataHelper;
-    private LeadDetailHelper         leadDetailHelper;
-    private CTAHelper                ctaHelper;
-    private SubscriptionDetailHelper subscriptionDetailHelper;
-    private ExamSectionHelper        examSectionHelper;
+    private final CommonMongoRepository    commonMongoRepository;
+    private final ExamLogoHelper           examLogoHelper;
+    private final ExamInstanceHelper       examInstanceHelper;
+    private final PropertyReader           propertyReader;
+    private final DerivedAttributesHelper  derivedAttributesHelper;
+    private final DetailPageSectionHelper  detailPageSectionHelper;
+    private final BannerDataHelper         bannerDataHelper;
+    private final WidgetsDataHelper        widgetsDataHelper;
+    private final LeadDetailHelper         leadDetailHelper;
+    private final CTAHelper                ctaHelper;
+    private final SubscriptionDetailHelper subscriptionDetailHelper;
+    private final ExamSectionHelper        examSectionHelper;
+    private final ExamDatesHelper examDatesHelper;
+
+    @Value("${exam.default.instances.for.date:2}")
+    private Integer defaultNoOfInstances;
 
     private static int EXAM_PREFIX_LENGTH = EXAM_PREFIX.length();
 
@@ -211,6 +216,44 @@ public class ExamDetailServiceImpl {
         return subExamInstances;
     }
 
+    private void updateApplicationAndExamDates(ExamDetail examDetail, List<ImportantDate> importantDates) {
+        if (CollectionUtils.isEmpty(importantDates))
+            return;
+        boolean applicationDateFound = false, examDateFound = false;
+        for (ImportantDate importantDate : importantDates) {
+            if (CollectionUtils.isEmpty(importantDate.getUpcomingDates())) {
+                for (Event event : importantDate.getUpcomingDates()) {
+                    if (APPLICATION.equalsIgnoreCase(event.getType()) && !applicationDateFound) {
+                        if (NON_TENTATIVE.equalsIgnoreCase(event.getCertainity())) {
+                            examDetail.setApplicationOpening(dateToString(event.getDateStartRange(),
+                                    DD_MMM_YYYY));
+                            if (Objects.nonNull(event.getDateEndRange())) {
+                                examDetail.setApplicationClosing(dateToString(event.getDateEndRange(),
+                                        DD_MMM_YYYY));
+                            }
+                        } else {
+                            examDetail.setApplicationMonth(event.getMonthDate());
+                        }
+                    } else if (EXAM.name().equalsIgnoreCase(event.getType()) && !examDateFound) {
+                        if (NON_TENTATIVE.equalsIgnoreCase(event.getCertainity())) {
+                            examDetail.setExamStartDate(
+                                    dateToString(event.getDateStartRange(),
+                                            DD_MMM_YYYY));
+                            if (Objects.nonNull(event.getDateEndRange())) {
+                                examDetail.setExamEndDate(
+                                        dateToString(event.getDateEndRange(),
+                                                DD_MMM_YYYY));
+                            }
+                        }
+                    }
+                }
+            }
+            if (applicationDateFound && examDateFound) {
+                break;
+            }
+        }
+    }
+
     private void addApplicationAndExamDatesToResponse(ExamDetail examDetail,
             List<Event> importantDates) {
         for (int i = 0; i < importantDates.size(); i++) {
@@ -219,13 +262,12 @@ public class ExamDetailServiceImpl {
                         && importantDates.get(i).getCertainity().equalsIgnoreCase(NON_TENTATIVE)) {
                     if (importantDates.get(i).getDateEndRange() != null) {
                         examDetail.setApplicationOpening(
-                                DateUtil.dateToString(importantDates.get(i).getDateStartRange(),
+                                dateToString(importantDates.get(i).getDateStartRange(),
                                         DD_MMM_YYYY));
-                        examDetail.setApplicationClosing(DateUtil.dateToString(
+                        examDetail.setApplicationClosing(dateToString(
                                 importantDates.get(i).getDateEndRange(), DD_MMM_YYYY));
                     } else {
-                        examDetail.setApplicationOpening(DateUtil
-                                .dateToString(importantDates.get(i).getDateStartRange(),
+                        examDetail.setApplicationOpening(dateToString(importantDates.get(i).getDateStartRange(),
                                         DD_MMM_YYYY));
                     }
 
@@ -237,14 +279,14 @@ public class ExamDetailServiceImpl {
                         && importantDates.get(i).getCertainity().equalsIgnoreCase(NON_TENTATIVE)) {
                     if (importantDates.get(i).getDateEndRange() != null) {
                         examDetail.setExamStartDate(
-                                DateUtil.dateToString(importantDates.get(i).getDateStartRange(),
+                                dateToString(importantDates.get(i).getDateStartRange(),
                                         DD_MMM_YYYY));
                         examDetail.setExamEndDate(
-                                DateUtil.dateToString(importantDates.get(i).getDateEndRange(),
+                                dateToString(importantDates.get(i).getDateEndRange(),
                                         DD_MMM_YYYY));
                     } else {
                         examDetail.setExamStartDate(
-                                DateUtil.dateToString(importantDates.get(i).getDateStartRange(),
+                                dateToString(importantDates.get(i).getDateStartRange(),
                                         DD_MMM_YYYY));
                     }
 
@@ -346,11 +388,11 @@ public class ExamDetailServiceImpl {
             }
         }
         if (importantDatesFlg) {
-            List<Event> importantDates =
-                    examInstanceHelper.getImportantDates(exam, nearestInstance, subExamInstances);
+            List<ImportantDate> importantDates = examDatesHelper.getImportantDates(exam, defaultNoOfInstances);
+            examResponse.setImportantDates(importantDates);
             if (!CollectionUtils.isEmpty(importantDates)) {
                 examResponse.setImportantDates(importantDates);
-                addApplicationAndExamDatesToResponse(examResponse, importantDates);
+                updateApplicationAndExamDates(examResponse, importantDates);
             }
         }
         if (Objects.nonNull(exam.getPaytmKeys())) {
