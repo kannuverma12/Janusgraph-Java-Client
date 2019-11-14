@@ -1,9 +1,5 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
-import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.EXAM_FILE_VERSION;
-import static com.paytm.digital.education.ingestion.constant.IngestionConstants.MERCHANT_CAREER_360;
-
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.exception.EducationException;
@@ -28,6 +24,13 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.paytm.digital.education.constant.ExploreConstants.DEFAULT_EXAM_PRIORITY;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.PRIORITY;
+import static com.paytm.digital.education.constant.ExploreConstants.STREAM_IDS;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.EXAM_FILE_VERSION;
+import static com.paytm.digital.education.ingestion.constant.IngestionConstants.MERCHANT_CAREER_360;
+
 @AllArgsConstructor
 @Service
 public class TransformAndSaveExamService {
@@ -36,7 +39,7 @@ public class TransformAndSaveExamService {
 
     private IncrementalDataHelper incrementalDataHelper;
     private CommonMongoRepository commonMongoRepository;
-    private StreamDataTranslator streamDataTranslator;
+    private StreamDataTranslator  streamDataTranslator;
 
     public Integer transformAndSave(List<Exam> exams, Boolean versionUpdate) throws
             EducationException {
@@ -80,9 +83,15 @@ public class TransformAndSaveExamService {
                     }
                     //set paytm stream
                     if (!CollectionUtils.isEmpty(exam.getDomains())) {
-                        exam.setStreamIds(streamDataTranslator
+                        Map<String, Object> examStreamData = streamDataTranslator
                                 .getPaytmStreams(exam.getDomains(), MERCHANT_CAREER_360,
-                                        exam.getExamId(), Exam.class));
+                                        exam.getExamId(), Exam.class);
+                        if (!CollectionUtils.isEmpty(examStreamData)) {
+                            exam.setStreamIds((List<Long>) examStreamData
+                                    .getOrDefault(STREAM_IDS, new ArrayList<>()));
+                            exam.setPriority((Integer) examStreamData
+                                    .getOrDefault(PRIORITY, DEFAULT_EXAM_PRIORITY));
+                        }
                     }
                     exam.setPaytmKeys(currentExam.getPaytmKeys());
                 }
