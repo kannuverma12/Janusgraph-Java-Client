@@ -141,7 +141,9 @@ public class CourseDetailServiceImpl {
             examDetail.setExamId(exam.getExamId());
             examDetail.setUrlDisplayName(
                     CommonUtil.convertNameToUrlDisplayName(exam.getExamFullName()));
-            examDetail.setImportantDates(importantDates);
+            if (!CollectionUtils.isEmpty(importantDates)) {
+                examDetail.setImportantDates(importantDates);
+            }
             examDetail.setExamFullName(exam.getExamFullName());
             examDetail.setExamShortName(exam.getExamShortName());
             examsAccepted.add(examDetail);

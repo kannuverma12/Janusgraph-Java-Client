@@ -39,17 +39,19 @@ public class ExamDatesHelper {
                 importantDate.setUpcomingDates(new ArrayList<>());
                 importantDate.setName(instance.getInstanceName());
                 importantDate.setExamName(instance.getExamName());
-                for (Event event : instance.getEvents()) {
-                    if (CommonUtils
-                            .isDateEqualsOrAfter(event.calculateCorrespondingDate(), currentDate)) {
-                        importantDate.getUpcomingDates().add(instanceHelper
-                                .convertToResponseEvent(event, instance.getExamName()));
-                    } else {
-                        importantDate.getPastDates().add(instanceHelper
-                                .convertToResponseEvent(event, instance.getExamName()));
+                if (!CollectionUtils.isEmpty(instance.getEvents())) {
+                    for (Event event : instance.getEvents()) {
+                        if (CommonUtils
+                                .isDateEqualsOrAfter(event.calculateCorrespondingDate(), currentDate)) {
+                            importantDate.getUpcomingDates().add(instanceHelper
+                                    .convertToResponseEvent(event, instance.getExamName()));
+                        } else {
+                            importantDate.getPastDates().add(instanceHelper
+                                    .convertToResponseEvent(event, instance.getExamName()));
+                        }
                     }
+                    importantDates.add(importantDate);
                 }
-                importantDates.add(importantDate);
             }
         }
         return importantDates;
