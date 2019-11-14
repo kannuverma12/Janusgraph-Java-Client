@@ -150,7 +150,7 @@ public class MerchantCommitControllerTest {
         cartItem.setVerticalId(17);
         cartItem.setFulfillmentServiceId(102);
         cartItem.setMetaData("{\"reference_id\":\"" + referenceId + "\"}");
-        cartItem.setFulfillmentReq("");
+        cartItem.setFulfillmentReq("abc");
         cartItem.setPrice(10.0f);
         cartItem.setMrp(10.0f);
         cartItem.setConvFee(0.0f);
