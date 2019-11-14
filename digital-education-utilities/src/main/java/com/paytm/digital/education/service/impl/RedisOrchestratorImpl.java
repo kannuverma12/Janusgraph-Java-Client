@@ -1,4 +1,4 @@
-package com.paytm.digital.education.explore.service.impl;
+package com.paytm.digital.education.service.impl;
 
 import com.paytm.digital.education.exception.CacheUpdateLockedException;
 import com.paytm.digital.education.exception.CachedMethodInvocationException;
@@ -6,8 +6,8 @@ import com.paytm.digital.education.exception.EducationException;
 import com.paytm.digital.education.exception.OldCacheValueExpiredException;
 import com.paytm.digital.education.exception.OldCacheValueNullException;
 import com.paytm.digital.education.exception.SerializationException;
-import com.paytm.digital.education.explore.service.CachedMethod;
-import com.paytm.digital.education.explore.service.RedisOrchestrator;
+import com.paytm.digital.education.method.CachedMethod;
+import com.paytm.digital.education.service.RedisOrchestrator;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import org.apache.commons.lang3.BooleanUtils;

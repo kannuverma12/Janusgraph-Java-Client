@@ -1,8 +1,8 @@
 package com.paytm.digital.education.advice;
 
 import com.paytm.digital.education.annotation.EduCache;
-import com.paytm.digital.education.explore.service.RedisOrchestrator;
-import com.paytm.digital.education.explore.service.impl.MethodEnclosedInProceedingJoinPoint;
+import com.paytm.digital.education.method.MethodEnclosedInProceedingJoinPoint;
+import com.paytm.digital.education.service.RedisOrchestrator;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.RequiredArgsConstructor;

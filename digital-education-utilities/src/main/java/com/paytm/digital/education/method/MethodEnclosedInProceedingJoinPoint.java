@@ -1,7 +1,6 @@
-package com.paytm.digital.education.explore.service.impl;
+package com.paytm.digital.education.method;
 
 import com.paytm.digital.education.exception.CachedMethodInvocationException;
-import com.paytm.digital.education.explore.service.CachedMethod;
 import org.aspectj.lang.ProceedingJoinPoint;
 
 public class MethodEnclosedInProceedingJoinPoint implements CachedMethod {
