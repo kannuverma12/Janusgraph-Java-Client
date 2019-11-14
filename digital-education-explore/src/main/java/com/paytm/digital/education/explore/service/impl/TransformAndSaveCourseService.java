@@ -1,18 +1,14 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import static com.paytm.digital.education.constant.ExploreConstants.COURSE_ID;
-import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSES;
-import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSE_FILE_VERSION;
-import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSE_IDS;
-import static com.paytm.digital.education.ingestion.constant.IngestionConstants.MERCHANT_CAREER_360;
-
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.exception.BadRequestException;
+import com.paytm.digital.education.exception.EducationException;
 import com.paytm.digital.education.explore.database.ingestion.Course;
 import com.paytm.digital.education.explore.database.ingestion.Cutoff;
-import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.service.helper.IncrementalDataHelper;
 import com.paytm.digital.education.explore.service.helper.StreamDataTranslator;
 import com.paytm.digital.education.mapping.ErrorEnum;
+import com.paytm.digital.education.utility.JsonUtils;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
@@ -29,6 +25,13 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.paytm.digital.education.constant.ExploreConstants.COURSE_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.STREAM_IDS;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSES;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSE_FILE_VERSION;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSE_IDS;
+import static com.paytm.digital.education.ingestion.constant.IngestionConstants.MERCHANT_CAREER_360;
+
 @Service
 @AllArgsConstructor
 
@@ -38,9 +41,11 @@ public class TransformAndSaveCourseService {
 
     private IncrementalDataHelper incrementalDataHelper;
     private CommonMongoRepository commonMongoRepository;
-    private StreamDataTranslator streamDataTranslator;
+    private StreamDataTranslator  streamDataTranslator;
 
-    public void transformAndSave(List<Course> courseDtos, Boolean versionUpdate) {
+    public Integer transformAndSave(List<Course> courseDtos, Boolean versionUpdate) throws
+            EducationException {
+        int courseUpdated = 0;
         try {
             Map<String, Object> courseData = transformData(courseDtos);
             List<Long> courseIds = (List<Long>) courseData.get(COURSE_IDS);
@@ -50,9 +55,11 @@ public class TransformAndSaveCourseService {
                 List<Course> existingCourse =
                         incrementalDataHelper.getExistingData(Course.class, COURSE_ID,
                                 courseIds);
-                map = existingCourse.stream()
-                        .collect(Collectors.toMap(c -> c.getCourseId(), c -> c.getId()));
+                map = existingCourse.stream().collect(
+                        Collectors.toMap(c -> c.getCourseId(), c -> c.getId(), (c1, c2) -> c2));
             }
+            log.info("Saving courses to db.");
+
             for (Course course : courses) {
                 String id = map.get(course.getCourseId());
                 if (StringUtils.isNotBlank(id)) {
@@ -60,23 +67,29 @@ public class TransformAndSaveCourseService {
                 }
                 //set paytm stream ids
                 if (!CollectionUtils.isEmpty(course.getStreams())) {
-                    course.setStreamIds(streamDataTranslator
+                    Map<String, Object> examStreamData = streamDataTranslator
                             .getPaytmStreams(course.getStreams(), MERCHANT_CAREER_360,
                                     course.getCourseId(),
-                                    com.paytm.digital.education.database.entity.Course.class));
+                                    com.paytm.digital.education.database.entity.Course.class);
+                    if (!CollectionUtils.isEmpty(examStreamData)) {
+                        course.setStreamIds((List<Long>) examStreamData
+                                .getOrDefault(STREAM_IDS, new ArrayList<>()));
+                    }
                 }
                 commonMongoRepository.saveOrUpdate(course);
+                courseUpdated++;
             }
+            log.info("Saved courses to db.");
             if (Objects.isNull(versionUpdate) || versionUpdate == true) {
+                log.info("Updating version number for course");
                 incrementalDataHelper.incrementFileVersion(COURSE_FILE_VERSION);
             }
         } catch (Exception e) {
-            log.info("Course ingestion exception : " + e.getMessage());
-            if (Objects.nonNull(versionUpdate)) {
-                throw new BadRequestException(ErrorEnum.CORRUPTED_FILE,
-                        ErrorEnum.CORRUPTED_FILE.getExternalMessage());
-            }
+            log.error("Course ingestion exception : ", e);
+            throw new BadRequestException(ErrorEnum.CORRUPTED_FILE,
+                    ErrorEnum.CORRUPTED_FILE.getExternalMessage());
         }
+        return courseUpdated;
     }
 
     private Map<String, Object> transformData(List<Course> courses) {
@@ -84,7 +97,10 @@ public class TransformAndSaveCourseService {
         Set<Long> courseIds = new HashSet<>();
         Set<Course> courseSet = new HashSet<>();
 
+        log.info("Transforming Courses.");
         for (Course course : courses) {
+            log.info("Found Course document from dump for id : {}, {} ", course.getCourseId(),
+                    JsonUtils.toJson(course));
             List<Cutoff> cutoffs = course.getCutoffs();
             if (Objects.nonNull(cutoffs)) {
                 List<Cutoff> cutoffList = new ArrayList<>();
@@ -110,7 +126,6 @@ public class TransformAndSaveCourseService {
                 courseSet.add(course);
             }
         }
-        log.info("courseIds : " + courseIds.size() + ", courseSet : " + courseSet.size());
         response.put(COURSE_IDS, new ArrayList<>(courseIds));
         response.put(COURSES, new ArrayList<>(courseSet));
         return response;

@@ -38,4 +38,8 @@ public class ExamPaytmKeys extends PaytmKeys {
     @JsonProperty("disclaimer")
     private String disclaimer;
 
+    @Field("registration_guidelines")
+    @JsonProperty("registration_guidelines")
+    private String registrationGuidelines;
+
 }

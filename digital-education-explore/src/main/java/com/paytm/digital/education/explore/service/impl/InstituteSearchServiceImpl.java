@@ -74,6 +74,7 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -273,7 +274,14 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
                         CommonUtil.convertNameToUrlDisplayName(instituteSearch.getOfficialName()));
                 instituteData.setApprovals(CommonUtil.getApprovals(instituteSearch.getApprovedBy(),
                         instituteSearch.getUniversityName()));
-                instituteData.setExams(instituteSearch.getExamsAccepted());
+
+                List<String> examsList =
+                        !CollectionUtils.isEmpty(instituteSearch.getExamsAccepted())
+                                ? instituteSearch.getExamsAccepted() :
+                                new ArrayList<>();
+                examsList.removeAll(Collections.singleton(null));
+                instituteData.setExams(examsList);
+
                 if (StringUtils.isNotBlank(instituteSearch.getImageLink())) {
                     instituteData
                             .setLogoUrl(CommonUtil.getLogoLink(instituteSearch.getImageLink(),

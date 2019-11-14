@@ -6,6 +6,22 @@ module.exports = function(doc) {
         targetLocation.state_id = doc.state_id;
         targetLocation.city_id = doc.city_id;
         targetLocation.entity_type = 'location';
-        console.log ("doc: " + targetLocation);
+        info("Location doc : " + targetLocation);
         return targetLocation;
+}
+
+function info(message) {
+        console.log("INFO : " + currentTimestamp() + " " + message);
+}
+
+function error(message) {
+        console.error("ERROR : "+ currentTimestamp() + " " + message);
+}
+
+function warn(message) {
+        console.warn("WARN : " + currentTimestamp() + " " + message);
+}
+
+function currentTimestamp() {
+        return new Date().toISOString();
 }

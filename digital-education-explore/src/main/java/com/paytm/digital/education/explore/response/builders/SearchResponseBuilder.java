@@ -1,5 +1,11 @@
 package com.paytm.digital.education.explore.response.builders;
 
+import static com.paytm.digital.education.constant.ExploreConstants.DATA;
+import static com.paytm.digital.education.constant.ExploreConstants.DISPLAY_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.DISTANCE_KILOMETERS;
+import static com.paytm.digital.education.constant.ExploreConstants.FEES;
+import static com.paytm.digital.education.constant.ExploreConstants.KEY;
+
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.AggregationResponse;
 import com.paytm.digital.education.elasticsearch.models.BucketAggregationResponse;
@@ -26,12 +32,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import static com.paytm.digital.education.constant.ExploreConstants.DATA;
-import static com.paytm.digital.education.constant.ExploreConstants.DISPLAY_NAME;
-import static com.paytm.digital.education.constant.ExploreConstants.FEES;
-import static com.paytm.digital.education.constant.ExploreConstants.KEY;
-import static com.paytm.digital.education.constant.ExploreConstants.DISTANCE_KILOMETERS;
 
 @Service
 @RequiredArgsConstructor
@@ -152,7 +152,8 @@ public class SearchResponseBuilder {
                     (List<Map<String, Object>>) propertyMap.get(FEES).get(DATA);
             for (Map<String, Object> range : rangeData) {
                 List<Double> keys = (List<Double>) range.get(KEY);
-                if (maxValue > keys.get(0) && minValue <= keys.get(1)) {
+                if (Double.compare(maxValue, keys.get(0)) > 0
+                        && Double.compare(minValue, keys.get(1)) <= 0) {
                     RangeFilterValue filterValue = new RangeFilterValue();
                     List<Double> minMaxValues = new ArrayList<>();
                     minMaxValues.add(keys.get(0));
@@ -168,13 +169,24 @@ public class SearchResponseBuilder {
     }
 
     private void setSelectedRangeValues(MultipleRangeData rangeValuesData, FilterField filterData) {
-        List<List<Object>> selectedValues = (List<List<Object>>) filterData.getValues();
-        for (List<Object> value : selectedValues) {
-            Double maxSelectedValue = new Double(((Integer) value.get(1)));
+        if (Objects.nonNull(filterData) && Objects.nonNull(filterData.getValues())) {
+            List<List<Integer>> selectedValues = (List<List<Integer>>) filterData.getValues();
+            int minVal = selectedValues.get(0).get(0);
+            int maxVal = selectedValues.get(0).get(1);
+            for (int i = 1; i < selectedValues.size(); i++) {
+                if (selectedValues.get(i).get(0) < minVal) {
+                    minVal = selectedValues.get(i).get(0);
+                }
+                if (selectedValues.get(i).get(1) > maxVal) {
+                    maxVal = selectedValues.get(i).get(1);
+                }
+            }
+
             for (RangeFilterValue rangeFilterValue : rangeValuesData.getValues()) {
-                if (maxSelectedValue.equals(rangeFilterValue.getValues().get(1))) {
+                List<Double> rangeData = rangeFilterValue.getValues();
+                if (Double.compare(minVal, rangeData.get(0)) <= 0
+                        && Double.compare(rangeData.get(1), maxVal) <= 0) {
                     rangeFilterValue.setSelected(true);
-                    break;
                 }
             }
         }
