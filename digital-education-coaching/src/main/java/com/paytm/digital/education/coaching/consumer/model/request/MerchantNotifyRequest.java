@@ -20,11 +20,9 @@ import java.util.Map;
 public class MerchantNotifyRequest {
 
     @NotEmpty
-    @Valid
     private List<MerchantNotifyCartItem> cartItems;
 
     @NotEmpty
-    @Valid
     private Map<Long, NotifyMerchantInfo> merchantData;
 
     @NotNull

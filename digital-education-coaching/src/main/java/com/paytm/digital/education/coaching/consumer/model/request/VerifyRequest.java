@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.CartItem;
 import lombok.Data;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
@@ -14,7 +13,6 @@ import java.util.List;
 public class VerifyRequest {
 
     @NotEmpty
-    @Valid
     @JsonProperty("cart_items")
     private List<CartItem> cartItems;
 }
