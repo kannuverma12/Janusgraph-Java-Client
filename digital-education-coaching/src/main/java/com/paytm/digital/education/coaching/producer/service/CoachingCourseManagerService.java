@@ -2,6 +2,8 @@ package com.paytm.digital.education.coaching.producer.service;
 
 import com.paytm.digital.education.coaching.producer.model.dto.CoachingCourseDTO;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCourseDataRequest;
+import com.paytm.digital.education.coaching.producer.model.request.CoachingCoursePatchRequest;
+import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.exception.InvalidRequestException;
 import lombok.extern.slf4j.Slf4j;
@@ -72,5 +74,15 @@ public class CoachingCourseManagerService {
         return CoachingCourseDTO
                 .builder()
                 .courseId(programService.update(coachingCourseDataRequest).getCourseId()).build();
+    }
+
+    public CoachingCourseDTO patch(CoachingCoursePatchRequest coachingCoursePatchRequest) {
+
+        Optional.ofNullable(coachingCoursePatchRequest.getCourseId())
+                .orElseThrow(() -> new InvalidRequestException("course id should be present"));
+
+        return CoachingCourseDTO
+                .builder()
+                .courseId(programService.patch(coachingCoursePatchRequest).getCourseId()).build();
     }
 }

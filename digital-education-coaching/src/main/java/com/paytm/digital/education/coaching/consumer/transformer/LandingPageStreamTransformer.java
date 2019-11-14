@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_PLACEHOLDER;
-import static com.paytm.digital.education.constant.CommonConstants.COACHING_STREAMS;
+import static com.paytm.digital.education.constant.CommonConstants.STREAMS;
 
 @Slf4j
 @Component
@@ -29,9 +29,9 @@ public class LandingPageStreamTransformer {
                         .fullName(streamEntity.getName())
                         .urlDisplayKey(CommonUtil.convertNameToUrlDisplayName(
                                 streamEntity.getName()))
-                        .displayName(streamEntity.getName())
+                        .displayName(streamEntity.getShortName())
                         .logo(ImageUtils.getImageWithAbsolutePath(streamEntity.getLogo(),
-                                STREAM_PLACEHOLDER, COACHING_STREAMS))
+                                STREAM_PLACEHOLDER, STREAMS))
                         .build();
                 landingPageStreamDtoList.add(landingPageStreamDto);
             }

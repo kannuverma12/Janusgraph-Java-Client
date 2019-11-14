@@ -4,14 +4,15 @@ import com.paytm.digital.education.application.constant.Constant;
 import org.apache.logging.log4j.core.lookup.MainMapLookup;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import paytm.auth.personaaclclient.config.EnableACLPersonaAuth;
 
-@SpringBootApplication
-@EnableCaching
+@SpringBootApplication(exclude = {EmbeddedMongoAutoConfiguration.class})
+@EnableCaching(proxyTargetClass = true)
 @EnableACLPersonaAuth
 @EnableMongoAuditing
 @EnableMongoRepositories(basePackages = Constant.EDUCATION_BASE_PACKAGE)

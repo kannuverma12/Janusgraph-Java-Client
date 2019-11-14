@@ -1,5 +1,27 @@
 package com.paytm.digital.education.explore.service.helper;
 
+import com.paytm.digital.education.database.entity.Institute;
+import com.paytm.digital.education.database.entity.Placement;
+import com.paytm.digital.education.utility.CommonUtil;
+import com.paytm.digital.education.utility.DateUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import static com.paytm.digital.education.enums.Number.ONE;
 import static com.paytm.digital.education.enums.Number.THREE;
 import static com.paytm.digital.education.enums.Number.TWO;
@@ -17,27 +39,6 @@ import static com.paytm.digital.education.explore.constants.CompareConstants.MIN
 import static com.paytm.digital.education.explore.constants.CompareConstants.PLACEMENTS_OF;
 import static com.paytm.digital.education.explore.utility.CompareUtil.getInstituteName;
 
-import com.paytm.digital.education.database.entity.Institute;
-import com.paytm.digital.education.database.entity.Placement;
-import com.paytm.digital.education.utility.CommonUtil;
-import com.paytm.digital.education.utility.DateUtil;
-import javafx.util.Pair;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 @Service
 public class CompareInsightPlacementProcessor {
 
@@ -47,7 +48,8 @@ public class CompareInsightPlacementProcessor {
         Map<String, Placement> placementMap2 = null;
         Map<String, Placement> placementMap3 = null;
         if (size == ONE.getValue()) {
-            String insightMessage = getPlacementInsightForOneInstitute(placementMap1, instituteList.get(0));
+            String insightMessage =
+                    getPlacementInsightForOneInstitute(placementMap1, instituteList.get(0));
             if (StringUtils.isNotBlank(insightMessage)) {
                 return Arrays.asList(insightMessage);
             }
@@ -57,15 +59,20 @@ public class CompareInsightPlacementProcessor {
             placementMap2 = getPlacementData(instituteList.get(1));
             placementMap3 = getPlacementData(instituteList.get(2));
         }
-        Pair<Integer, String> commonMaxIndex = getIndexForCommonData(size, placementMap1, placementMap2, placementMap3);
+        Pair<Integer, String>
+                commonMaxIndex =
+                getIndexForCommonData(size, placementMap1, placementMap2, placementMap3);
 
         List<String> instituteNames =
-                instituteList.stream().map(institute -> getInstituteName(institute)).collect(Collectors.toList());
+                instituteList.stream().map(institute -> getInstituteName(institute))
+                        .collect(Collectors.toList());
         if (commonMaxIndex.getKey() != -1) {
-            return Arrays.asList(getCommonInsightMessage(commonMaxIndex.getKey(), size, commonMaxIndex.getValue(),
+            return Arrays.asList(getCommonInsightMessage(commonMaxIndex.getKey(), size,
+                    commonMaxIndex.getValue(),
                     instituteNames));
         }
-        return getMultipleInsights(size, instituteList, placementMap1, placementMap2, placementMap3);
+        return getMultipleInsights(size, instituteList, placementMap1, placementMap2,
+                placementMap3);
     }
 
     @Cacheable(value = COMPARE_CACHE_NAMESPACE, key = "'placement_'+#institute.instituteId")
@@ -92,21 +99,26 @@ public class CompareInsightPlacementProcessor {
     @Cacheable(value = COMPARE_CACHE_NAMESPACE, key = "{'placement_'+#institute1.instituteId+'_'"
             + "+#institute2.instituteId, 'placement_'+#institute2.instituteId+'_'+#institute1.instituteId}")
     public String getPlacementInsightsBetweenTwoInstitutes(Set<String> commonKeys,
-            Map<String, Placement> placementDataMap1, Map<String, Placement> placementDataMap2, Institute institute1,
+            Map<String, Placement> placementDataMap1, Map<String, Placement> placementDataMap2,
+            Institute institute1,
             Institute institute2) {
         String firstInstitute = getInstituteName(institute1);
         String secondInstitute = getInstituteName(institute2);
         if (commonKeys.contains(MEDIAN)) {
-            return getInsightMessageForTwoInstitutes(MEDIAN, placementDataMap1.get(MEDIAN).getMedian(),
+            return getInsightMessageForTwoInstitutes(MEDIAN,
+                    placementDataMap1.get(MEDIAN).getMedian(),
                     placementDataMap2.get(MEDIAN).getMedian(), firstInstitute, secondInstitute);
         } else if (commonKeys.contains(AVERAGE)) {
-            return getInsightMessageForTwoInstitutes(AVERAGE, placementDataMap1.get(AVERAGE).getAverage(),
+            return getInsightMessageForTwoInstitutes(AVERAGE,
+                    placementDataMap1.get(AVERAGE).getAverage(),
                     placementDataMap2.get(AVERAGE).getAverage(), firstInstitute, secondInstitute);
         } else if (commonKeys.contains(MAXIMUM)) {
-            return getInsightMessageForTwoInstitutes(MAXIMUM, placementDataMap1.get(MAXIMUM).getMaximum(),
+            return getInsightMessageForTwoInstitutes(MAXIMUM,
+                    placementDataMap1.get(MAXIMUM).getMaximum(),
                     placementDataMap2.get(MAXIMUM).getMaximum(), firstInstitute, secondInstitute);
         } else if (commonKeys.contains(MINIMUM)) {
-            return getInsightMessageForTwoInstitutes(MINIMUM, placementDataMap1.get(MINIMUM).getMinimum(),
+            return getInsightMessageForTwoInstitutes(MINIMUM,
+                    placementDataMap1.get(MINIMUM).getMinimum(),
                     placementDataMap2.get(MINIMUM).getMinimum(), firstInstitute, secondInstitute);
         }
         return null;
@@ -122,58 +134,68 @@ public class CompareInsightPlacementProcessor {
         if (!CollectionUtils.isEmpty(commonKeys)) {
             if (commonKeys.contains(MEDIAN)) {
                 List<Integer> medianSalaries =
-                        Arrays.stream(placementDataMaps).filter(placementMap -> Objects.nonNull(placementMap))
-                                .map(placementMap -> placementMap.get(MEDIAN).getMedian()).collect(Collectors.toList());
+                        Arrays.stream(placementDataMaps)
+                                .filter(placementMap -> Objects.nonNull(placementMap))
+                                .map(placementMap -> placementMap.get(MEDIAN).getMedian())
+                                .collect(Collectors.toList());
                 int maxIndex = getMaxPlacementIndex(medianSalaries);
                 if (maxIndex != -1) {
-                    return new Pair<>(maxIndex, MEDIAN);
+                    return new MutablePair<>(maxIndex, MEDIAN);
                 }
             }
             if (commonKeys.contains(AVERAGE)) {
                 List<Integer> averageSalaries =
-                        Arrays.stream(placementDataMaps).filter(placementMap -> Objects.nonNull(placementMap))
+                        Arrays.stream(placementDataMaps)
+                                .filter(placementMap -> Objects.nonNull(placementMap))
                                 .map(placementMap -> placementMap.get(AVERAGE).getAverage())
                                 .collect(Collectors.toList());
                 int maxIndex = getMaxPlacementIndex(averageSalaries);
                 if (maxIndex != -1) {
-                    return new Pair<>(maxIndex, AVERAGE);
+                    return new MutablePair<>(maxIndex, AVERAGE);
                 }
             }
             if (commonKeys.contains(MAXIMUM)) {
                 List<Integer> maxSalaries =
-                        Arrays.stream(placementDataMaps).filter(placementMap -> Objects.nonNull(placementMap))
+                        Arrays.stream(placementDataMaps)
+                                .filter(placementMap -> Objects.nonNull(placementMap))
                                 .map(placementMap -> placementMap.get(MAXIMUM).getMaximum())
                                 .collect(Collectors.toList());
                 int maxIndex = getMaxPlacementIndex(maxSalaries);
                 if (maxIndex != -1) {
-                    return new Pair<>(maxIndex, MAXIMUM);
+                    return new MutablePair<>(maxIndex, MAXIMUM);
                 }
             }
             if (commonKeys.contains(MINIMUM)) {
                 List<Integer> minSalaries =
-                        Arrays.stream(placementDataMaps).filter(placementMap -> Objects.nonNull(placementMap))
+                        Arrays.stream(placementDataMaps)
+                                .filter(placementMap -> Objects.nonNull(placementMap))
                                 .map(placementMap -> placementMap.get(MINIMUM).getMinimum())
                                 .collect(Collectors.toList());
                 int maxIndex = getMaxPlacementIndex(minSalaries);
                 if (maxIndex != -1) {
-                    return new Pair<>(maxIndex, MINIMUM);
+                    return new MutablePair<>(maxIndex, MINIMUM);
                 }
             }
         }
-        return new Pair<>(-1, null);
+        return new MutablePair<>(-1, null);
     }
 
-    private String getCommonInsightMessage(int maxIndex, int size, String commonKey, List<String> instituteNames) {
+    private String getCommonInsightMessage(int maxIndex, int size, String commonKey,
+            List<String> instituteNames) {
         if (size == THREE.getValue()) {
-            return commonKey + PLACEMENTS_OF + instituteNames.get(maxIndex) + IS_HIGHER_THAN + instituteNames
-                    .get((maxIndex + 1) % size) + AND_STRING + instituteNames.get((maxIndex + 2) % size);
+            return commonKey + PLACEMENTS_OF + instituteNames.get(maxIndex) + IS_HIGHER_THAN
+                    + instituteNames
+                    .get((maxIndex + 1) % size) + AND_STRING + instituteNames
+                    .get((maxIndex + 2) % size);
         } else {
-            return commonKey + PLACEMENTS_OF + instituteNames.get(maxIndex) + IS_HIGHER_THAN + instituteNames
+            return commonKey + PLACEMENTS_OF + instituteNames.get(maxIndex) + IS_HIGHER_THAN
+                    + instituteNames
                     .get((maxIndex + 1) % size);
         }
     }
 
-    private String getInsightMessageForTwoInstitutes(String salaryType, Integer firstSalary, Integer secondSalary,
+    private String getInsightMessageForTwoInstitutes(String salaryType, Integer firstSalary,
+            Integer secondSalary,
             String firstInstitute, String secondInstitute) {
         if (firstSalary > secondSalary) {
             return salaryType + PLACEMENTS_OF + firstInstitute + IS_HIGHER_THAN + secondInstitute;
@@ -190,8 +212,10 @@ public class CompareInsightPlacementProcessor {
             Set<String> commonKeys = new HashSet<>(placementDataMaps[i].keySet());
             commonKeys.retainAll(placementDataMaps[(i + 1) % size].keySet());
             if (!CollectionUtils.isEmpty(commonKeys)) {
-                String message = getPlacementInsightsBetweenTwoInstitutes(commonKeys, placementDataMaps[i],
-                        placementDataMaps[(i + 1) % size], instituteList.get(i), instituteList.get((i + 1) % size));
+                String message =
+                        getPlacementInsightsBetweenTwoInstitutes(commonKeys, placementDataMaps[i],
+                                placementDataMaps[(i + 1) % size], instituteList.get(i),
+                                instituteList.get((i + 1) % size));
                 if (Objects.nonNull(message)) {
                     result.add(message);
                 }
@@ -216,7 +240,8 @@ public class CompareInsightPlacementProcessor {
                 .getSalariesPlacement()) {
             if (placement.getYear() >= latestYear) {
                 latestYear = placement.getYear();
-                if (placement.getMedian() != null && (medianSalary == Integer.MIN_VALUE || medianSalary < placement
+                if (placement.getMedian() != null && (medianSalary == Integer.MIN_VALUE
+                        || medianSalary < placement
                         .getMedian())) {
                     medianSalary = placement.getMedian();
                     placementDataMap.put(MEDIAN, placement);

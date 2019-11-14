@@ -11,10 +11,13 @@ import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.Co
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseHighlight;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseImportantDates;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CourseGetStarted;
+import com.paytm.digital.education.database.entity.CoachingCtaEntity;
+import com.paytm.digital.education.enums.CTAViewType;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Builder
@@ -26,6 +29,11 @@ public class GetCoachingCourseDetailsResponse {
     private String courseName;
     private String courseLogo;
     private String courseDescription;
+
+    private long   paytmProductId;
+    private String merchantProductId;
+    private String categoryId;
+    private String educationVertical;
 
     private long   coachingInstituteId;
     private String coachingInstituteName;
@@ -40,5 +48,6 @@ public class GetCoachingCourseDetailsResponse {
     private CoachingCourseFee            coachingCourseFee;
     private CourseGetStarted             courseGetStarted;
 
-    private List<String> sections;
+    private Map<CTAViewType, CoachingCtaEntity> ctaMap;
+    private List<String>                        sections;
 }

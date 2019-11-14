@@ -68,7 +68,7 @@ public class CheckoutService {
 
         TCS tcs = TCS
                 .builder()
-                .basePrice(cartItem.getBasePrice() * 1000)
+                .basePrice(cartItem.getBasePrice() * 1000F)
                 .igst(TCS_IGST_PERCANTAGE)
                 .cgst(TCS_CGST_PERCANTAGE)
                 .sgst(TCS_SGST_PERCANTAGE)
@@ -90,6 +90,7 @@ public class CheckoutService {
                 .courseType(metaData.getCourseType())
                 .courseId(metaData.getCourseId())
                 .userId(metaData.getUserId())
+                .merchantProductId(metaData.getMerchantProductId())
                 .build();
     }
 }

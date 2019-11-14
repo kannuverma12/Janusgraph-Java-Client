@@ -10,6 +10,8 @@ import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.Co
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseHighlight;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CoachingCourseImportantDates;
 import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.CourseGetStarted;
+import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.TaxBreakup;
+import com.paytm.digital.education.coaching.consumer.model.dto.coachingcourse.TaxBreakupInfo;
 import com.paytm.digital.education.coaching.consumer.model.response.details.GetCoachingCourseDetailsResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.CoachingCourseData;
 import com.paytm.digital.education.coaching.consumer.service.search.helper.SearchDataHelper;
@@ -17,20 +19,28 @@ import com.paytm.digital.education.coaching.consumer.transformer.CoachingCourseT
 import com.paytm.digital.education.coaching.enums.CourseSessionDetails;
 import com.paytm.digital.education.coaching.utils.ComparisonUtils;
 import com.paytm.digital.education.coaching.utils.ImageUtils;
+import com.paytm.digital.education.database.dao.CoachingCenterDAO;
+import com.paytm.digital.education.database.dao.CoachingCourseDAO;
+import com.paytm.digital.education.database.dao.CoachingCtaDAO;
+import com.paytm.digital.education.database.dao.CoachingExamDAO;
+import com.paytm.digital.education.database.dao.CoachingInstituteDAO;
+import com.paytm.digital.education.database.dao.TopRankerDAO;
 import com.paytm.digital.education.database.embedded.Currency;
 import com.paytm.digital.education.database.entity.CoachingCenterEntity;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
+import com.paytm.digital.education.database.entity.CoachingCtaEntity;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
 import com.paytm.digital.education.database.repository.CoachingCourseFeatureRepository;
-import com.paytm.digital.education.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.enums.CTAViewType;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.utility.CommonUtils;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -39,6 +49,7 @@ import org.springframework.util.StringUtils;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,12 +58,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.mongodb.QueryOperators.AND;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.CENTER_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_COURSE_IDS;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_VERTICAL_NAME;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DETAILS_PROPERTY_COMPONENT;
@@ -68,6 +80,18 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.N
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.PRIORITY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_IDS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.TransactionConstants.CONVENIENCE_FEE_CGST_PERCENTAGE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.TransactionConstants.CONVENIENCE_FEE_IGST_PERCENTAGE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.TransactionConstants.CONVENIENCE_FEE_PERCENTAGE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.TransactionConstants.CONVENIENCE_FEE_SGST_PERCENTAGE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.TransactionConstants.CONVENIENCE_FEE_UTGST_PERCENTAGE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.TransactionConstants.ITEM_CGST_PERCENTAGE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.TransactionConstants.ITEM_IGST_PERCENTAGE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.TransactionConstants.ITEM_SGST_PERCENTAGE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.TransactionConstants.ITEM_UTGST_PERCENTAGE;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.CGST_HEADER;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.CGST_KEY;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.CGST_OMS_KEY;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.COURSE_DETAILS;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.COURSE_FEATURES_AVAILABLE;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.COURSE_FEE;
@@ -77,14 +101,23 @@ import static com.paytm.digital.education.coaching.enums.DisplayHeadings.DOUBT_S
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.DOWNLOAD_SYLLABUS_AND_BROCHURE;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.DURATION_COURSE;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.ELIGIBILITY_COURSE;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.IGST_HEADER;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.IGST_KEY;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.IGST_OMS_KEY;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.IMPORTANT_DATES;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.LANGUAGE;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.PROGRESS_ANALYSIS;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.PROVIDES_CERTIFICATE;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.RANK_ANALYSIS;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.SGST_HEADER;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.SGST_KEY;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.SGST_OMS_KEY;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TARGET_EXAM_COURSE;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TEACHER_STUDENT_RATIO;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_RANKERS;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.UTGST_HEADER;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.UTGST_KEY;
+import static com.paytm.digital.education.coaching.enums.DisplayHeadings.UTGST_OMS_KEY;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.VALIDITY_COURSE;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_COURSE_BROCHURE;
 import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES_LOGO;
@@ -93,11 +126,13 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID
 
 @Slf4j
 @Service
-@AllArgsConstructor
 public class CoachingCourseService {
 
     private static final String TARGET_EXAM     = "TARGET_EXAM";
     private static final String TOP_RANKER_EXAM = "TOP_RANKER_EXAM";
+
+    @Value("${coaching.category.id}")
+    private String categoryId;
 
     private static final List<String> COURSE_FIELDS =
             Arrays.asList("faqs", "course_id", "name", "coaching_institute_id", "course_type",
@@ -114,7 +149,8 @@ public class CoachingCourseService {
                     "elearning_lecture_duration", "elearning_online_test_count",
                     "elearning_practice_paper_count", "classroom_lecture_count",
                     "classroom_lecture_duration", "classroom_test_count", "sgst", "cgst", "igst",
-                    "tcs", "merchant_product_id", "is_enabled", "validity", "validity_type");
+                    "tcs", "merchant_product_id", "is_enabled", "validity", "validity_type",
+                    "paytm_product_id", "cta_info");
 
     private static final List<String> EXAM_FIELDS =
             Arrays.asList("exam_id", "exam_full_name", "exam_short_name", "conducting_body",
@@ -132,11 +168,26 @@ public class CoachingCourseService {
             Arrays.asList("institute_id", "center_id", "official_name", "official_address",
                     "course_types", "opening_time", "closing_time", "center_image");
 
-    private final CoachingCourseTransformer       coachingCourseTransformer;
-    private final CommonMongoRepository           commonMongoRepository;
-    private final SearchDataHelper                searchDataHelper;
-    private final PropertyReader                  propertyReader;
-    private final CoachingCourseFeatureRepository coachingCourseFeatureRepository;
+    @Autowired
+    private CoachingCourseTransformer       coachingCourseTransformer;
+    @Autowired
+    private SearchDataHelper                searchDataHelper;
+    @Autowired
+    private PropertyReader                  propertyReader;
+    @Autowired
+    private CoachingCourseFeatureRepository coachingCourseFeatureRepository;
+    @Autowired
+    private CoachingCourseDAO               coachingCourseDAO;
+    @Autowired
+    private CoachingInstituteDAO            coachingInstituteDAO;
+    @Autowired
+    private CoachingExamDAO                 coachingExamDAO;
+    @Autowired
+    private TopRankerDAO                    topRankerDAO;
+    @Autowired
+    private CoachingCenterDAO               coachingCenterDAO;
+    @Autowired
+    private CoachingCtaDAO                  coachingCtaDAO;
 
     public GetCoachingCourseDetailsResponse getCourseDetailsByIdAndUrlDisplayKey(
             final long courseId, final String urlDisplayKey) {
@@ -161,10 +212,29 @@ public class CoachingCourseService {
         final Map<Long, CoachingCenterEntity> centerIdAndCenterMap = this.fetchCenterByCenterIds(
                 topRankerEntityList);
 
+        final Map<Long, CoachingCtaEntity> ctaIdToCtaMap;
+        if (! CollectionUtils.isEmpty(course.getCtaInfo())) {
+            ctaIdToCtaMap = this.fetchCtaIdToCtaMapByCtaIds(course.getCtaInfo().values());
+        } else {
+            ctaIdToCtaMap = Collections.emptyMap();
+        }
+
         return this.buildResponse(course, institute, examTypeAndExamListMap,
                 topRankerEntityList, centerIdAndCenterMap, examIdAndNameMap, courseIdAndNameMap,
-                this.fetchCoachingCourseFeatures(course.getCourseFeatureIds()),
+                ctaIdToCtaMap, this.fetchCoachingCourseFeatures(course.getCourseFeatureIds()),
                 this.fetchSections());
+    }
+
+    private Map<Long, CoachingCtaEntity> fetchCtaIdToCtaMapByCtaIds(Collection<Long> ctaIds) {
+
+        List<CoachingCtaEntity> ctaList = this.fetchCtaByCtaIds(new ArrayList<>(ctaIds));
+
+        if (! ctaList.isEmpty()) {
+            return ctaList.stream().collect(Collectors.toMap(cta -> cta.getCtaId(),
+                    Function.identity()));
+        }
+
+        return Collections.emptyMap();
     }
 
     private Map<Long, String> buildCourseIdAndNameMapAndFillExamIds(
@@ -212,12 +282,9 @@ public class CoachingCourseService {
 
     private CoachingCourseEntity fetchCourse(final long courseId, final String urlDisplayKey) {
 
-        final Map<String, Object> searchRequest = new HashMap<>();
-        searchRequest.put(COACHING_COURSE_ID, courseId);
-
-        final List<CoachingCourseEntity> coachingCourseEntityList = this.commonMongoRepository
-                .findAll(searchRequest, CoachingCourseEntity.class,
-                        CoachingCourseService.COURSE_FIELDS, AND);
+        final List<CoachingCourseEntity> coachingCourseEntityList =
+                coachingCourseDAO.findByCourseId(COACHING_COURSE_ID, courseId,
+                        CoachingCourseService.COURSE_FIELDS);
 
         if (CollectionUtils.isEmpty(coachingCourseEntityList)
                 || coachingCourseEntityList.size() > 1
@@ -233,8 +300,8 @@ public class CoachingCourseService {
     }
 
     private CoachingInstituteEntity fetchInstitute(final long instituteId) {
-        final CoachingInstituteEntity institute = this.commonMongoRepository.getEntityByFields(
-                INSTITUTE_ID, instituteId, CoachingInstituteEntity.class, INSTITUTE_FIELDS);
+        final CoachingInstituteEntity institute =
+                coachingInstituteDAO.findByInstituteId(INSTITUTE_ID, instituteId, INSTITUTE_FIELDS);
         if (institute == null) {
             log.error("Got null CoachingInstitute for id: {}", instituteId);
             throw new BadRequestException(INVALID_INSTITUTE_ID,
@@ -263,8 +330,7 @@ public class CoachingCourseService {
 
     private List<CoachingCourseEntity> fetchCourses(final List<Long> coachingCourseIdList,
             final List<String> fields) {
-        return this.commonMongoRepository.getEntityFieldsByValuesIn(COURSE_ID, coachingCourseIdList,
-                CoachingCourseEntity.class, fields);
+        return coachingCourseDAO.findByCourseIdsIn(COURSE_ID, coachingCourseIdList,fields);
     }
 
     private Map<String, List<Exam>> fetchExamTypeAndExamListMap(List<Long> targetExamIdList,
@@ -301,10 +367,13 @@ public class CoachingCourseService {
         return examTypeAndExamListMap;
     }
 
+    private List<CoachingCtaEntity> fetchCtaByCtaIds(final List<Long> ctaIdList) {
+        return coachingCtaDAO.findAllByCtaIdIn(ctaIdList);
+    }
+
     private List<com.paytm.digital.education.database.entity.Exam> fetchExamsByExamIds(
             final List<Long> examIdList) {
-        return this.commonMongoRepository.getEntityFieldsByValuesIn(EXAM_ID, examIdList,
-                com.paytm.digital.education.database.entity.Exam.class,
+        return coachingExamDAO.findByExamIdsIn(EXAM_ID, examIdList,
                 CoachingCourseService.EXAM_FIELDS);
     }
 
@@ -314,18 +383,17 @@ public class CoachingCourseService {
         sortMap.put(Sort.Direction.DESC, EXAM_YEAR);
         sortMap.put(Sort.Direction.ASC, PRIORITY);
 
-        List<TopRankerEntity> topRankerEntityList = this.commonMongoRepository
-                .getEntityFieldsByValuesInAndSortBy(COACHING_COURSE_IDS,
-                        Collections.singletonList(courseId), TopRankerEntity.class,
+        List<TopRankerEntity> topRankerEntityList =
+                topRankerDAO.findByCourseIdsInAndSortBy(COACHING_COURSE_IDS,
+                        Collections.singletonList(courseId),
                         TOP_RANKER_FIELDS, sortMap);
 
         if (CollectionUtils.isEmpty(topRankerEntityList)) {
             log.warn("Got no topRankers for courseId: {}", courseId);
-
-            topRankerEntityList = this.commonMongoRepository.getEntityFieldsByValuesInAndSortBy(
-                    INSTITUTE_ID, Collections.singletonList(instituteId), TopRankerEntity.class,
-                    CoachingCourseService.TOP_RANKER_FIELDS, sortMap);
-
+            topRankerEntityList =
+                    topRankerDAO.findByInstituteIdsInAndSortBy(INSTITUTE_ID,
+                            Collections.singletonList(instituteId),
+                            CoachingCourseService.TOP_RANKER_FIELDS, sortMap);
             if (CollectionUtils.isEmpty(topRankerEntityList)) {
                 log.warn("Got no topRankers for instituteId: {}", instituteId);
                 return new ArrayList<>();
@@ -344,8 +412,8 @@ public class CoachingCourseService {
                 .map(TopRankerEntity::getCenterId)
                 .collect(Collectors.toList());
 
-        List<CoachingCenterEntity> coachingCenterEntityList = this.commonMongoRepository
-                .getEntityFieldsByValuesIn(CENTER_ID, centerIdList, CoachingCenterEntity.class,
+        List<CoachingCenterEntity> coachingCenterEntityList =
+                coachingCenterDAO.findByCenterIdsIn(CENTER_ID, centerIdList,
                         CENTER_FIELDS);
 
         if (CollectionUtils.isEmpty(coachingCenterEntityList)) {
@@ -363,6 +431,7 @@ public class CoachingCourseService {
             final Map<Long, CoachingCenterEntity> centerIdAndCenterMap,
             final Map<Long, String> examIdAndNameMap,
             final Map<Long, String> courseIdAndNameMap,
+            final Map<Long, CoachingCtaEntity> ctaIdToCtaMap,
             final List<CoachingCourseFeature> coachingCourseFeatures,
             final List<String> sections) {
 
@@ -386,12 +455,32 @@ public class CoachingCourseService {
                     .build());
         }
 
+        float convFee =
+                (course.getDiscountedPrice().floatValue() * CONVENIENCE_FEE_PERCENTAGE) / 100;
+        TaxBreakup convFeeTaxInfo = this.getConvFeeTaxInfo(convFee);
+        TaxBreakup taxInfo = this.getTaxInfo(course.getDiscountedPrice().floatValue());
+
+        Map<CTAViewType, CoachingCtaEntity> ctaMap;
+
+        if (! CollectionUtils.isEmpty(course.getCtaInfo())) {
+            ctaMap = new HashMap<>(course.getCtaInfo().size());
+            for (Map.Entry<CTAViewType, Long> entry : course.getCtaInfo().entrySet()) {
+                ctaMap.put(entry.getKey(), ctaIdToCtaMap.get(entry.getValue()));
+            }
+        } else {
+            ctaMap = Collections.emptyMap();
+        }
+
         return GetCoachingCourseDetailsResponse.builder()
                 .courseId(course.getCourseId())
                 .courseName(course.getName())
                 .courseLogo(ImageUtils.getImageWithAbsolutePath(institute.getLogo(),
                         INSTITUTE_PLACEHOLDER, TOP_COACHING_INSTITUTES_LOGO))
                 .courseDescription(course.getDescription())
+                .paytmProductId(course.getPaytmProductId())
+                .merchantProductId(course.getMerchantProductId())
+                .categoryId(categoryId)
+                .educationVertical(COACHING_VERTICAL_NAME)
                 .coachingInstituteId(course.getCoachingInstituteId())
                 .coachingInstituteName(institute.getBrandName())
                 .topRankers(TopRankers.builder()
@@ -423,10 +512,15 @@ public class CoachingCourseService {
                 .coachingCourseFee(CoachingCourseFee.builder()
                         .header(COURSE_FEE.getValue())
                         .currency(Currency.INR.name())
-                        .originalPrice(course.getOriginalPrice())
-                        .discountedPrice(course.getDiscountedPrice())
+                        .originalPrice(course.getOriginalPrice().floatValue())
+                        .discountedPrice(course.getDiscountedPrice().floatValue())
                         .discountPercentage(this.calculateDiscountPercentage(
                                 course.getOriginalPrice(), course.getDiscountedPrice()))
+                        .taxInfo(taxInfo.getTaxInfo())
+                        .totalTax(taxInfo.getTotalTax())
+                        .convFee(convFee)
+                        .convFeeTaxInfo(convFeeTaxInfo.getTaxInfo())
+                        .totalConvFeeTax(convFeeTaxInfo.getTotalTax())
                         .build())
                 .courseGetStarted(CourseGetStarted.builder()
                         .header(String.format(COURSE_HOW_TO_GET_STARTED.getValue(),
@@ -435,6 +529,89 @@ public class CoachingCourseService {
                         .build())
                 .courseHighlights(courseHighlights)
                 .sections(sections)
+                .ctaMap(ctaMap)
+                .build();
+    }
+
+    private TaxBreakup getConvFeeTaxInfo(final float convFee) {
+        float convFeeIGST = (convFee * CONVENIENCE_FEE_IGST_PERCENTAGE) / 100;
+        float convFeeCGST = (convFee * CONVENIENCE_FEE_CGST_PERCENTAGE) / 100;
+        float convFeeSGST = (convFee * CONVENIENCE_FEE_SGST_PERCENTAGE) / 100;
+        float convFeeUTGST = (convFee * CONVENIENCE_FEE_UTGST_PERCENTAGE) / 100;
+
+        List<TaxBreakupInfo> taxInfo = new ArrayList<>();
+        taxInfo.add(TaxBreakupInfo.builder()
+                .key(CGST_KEY.getValue())
+                .omsKey(CGST_OMS_KEY.getValue())
+                .header(CGST_HEADER.getValue())
+                .value(convFeeCGST)
+                .build());
+
+        taxInfo.add(TaxBreakupInfo.builder()
+                .key(IGST_KEY.getValue())
+                .omsKey(IGST_OMS_KEY.getValue())
+                .header(IGST_HEADER.getValue())
+                .value(convFeeIGST)
+                .build());
+
+        taxInfo.add(TaxBreakupInfo.builder()
+                .key(SGST_KEY.getValue())
+                .omsKey(SGST_OMS_KEY.getValue())
+                .header(SGST_HEADER.getValue())
+                .value(convFeeSGST)
+                .build());
+
+        taxInfo.add(TaxBreakupInfo.builder()
+                .key(UTGST_KEY.getValue())
+                .omsKey(UTGST_OMS_KEY.getValue())
+                .header(UTGST_HEADER.getValue())
+                .value(convFeeUTGST)
+                .build());
+
+        return TaxBreakup.builder()
+                .taxInfo(taxInfo)
+                .totalTax(convFeeCGST + convFeeIGST + convFeeSGST + convFeeUTGST)
+                .build();
+    }
+
+    private TaxBreakup getTaxInfo(final float sellingPrice) {
+        float itemIGST = (sellingPrice * ITEM_IGST_PERCENTAGE) / 100;
+        float itemCGST = (sellingPrice * ITEM_CGST_PERCENTAGE) / 100;
+        float itemSGST = (sellingPrice * ITEM_SGST_PERCENTAGE) / 100;
+        float itemUTGST = (sellingPrice * ITEM_UTGST_PERCENTAGE) / 100;
+
+        List<TaxBreakupInfo> taxInfo = new ArrayList<>();
+        taxInfo.add(TaxBreakupInfo.builder()
+                .key(CGST_KEY.getValue())
+                .omsKey(CGST_OMS_KEY.getValue())
+                .header(CGST_HEADER.getValue())
+                .value(itemCGST)
+                .build());
+
+        taxInfo.add(TaxBreakupInfo.builder()
+                .key(IGST_KEY.getValue())
+                .omsKey(IGST_OMS_KEY.getValue())
+                .header(IGST_HEADER.getValue())
+                .value(itemIGST)
+                .build());
+
+        taxInfo.add(TaxBreakupInfo.builder()
+                .key(SGST_KEY.getValue())
+                .omsKey(SGST_OMS_KEY.getValue())
+                .header(SGST_HEADER.getValue())
+                .value(itemSGST)
+                .build());
+
+        taxInfo.add(TaxBreakupInfo.builder()
+                .key(UTGST_KEY.getValue())
+                .omsKey(UTGST_OMS_KEY.getValue())
+                .header(UTGST_HEADER.getValue())
+                .value(itemUTGST)
+                .build());
+
+        return TaxBreakup.builder()
+                .taxInfo(taxInfo)
+                .totalTax(itemCGST + itemCGST + itemSGST + itemUTGST)
                 .build();
     }
 

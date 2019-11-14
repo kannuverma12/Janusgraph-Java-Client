@@ -7,6 +7,7 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.Searc
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResult;
 import com.paytm.digital.education.coaching.consumer.service.search.helper.CoachingSearchAggregateHelper;
+import com.paytm.digital.education.database.dao.CoachingInstituteDAO;
 import com.paytm.digital.education.es.model.CoachingCourseSearch;
 import com.paytm.digital.education.es.model.CoachingInstituteSearch;
 import com.paytm.digital.education.coaching.utils.ImageUtils;
@@ -71,7 +72,7 @@ public class CoachingCourseSearchService extends AbstractSearchService {
     private static Map<String, Float>            searchFieldKeys;
     private static Map<String, FilterQueryType>  filterQueryTypeMap;
     private final  CoachingSearchAggregateHelper coachingSearchAggregateHelper;
-    private final  CommonMongoRepository         commonMongoRepository;
+    private final  CoachingInstituteDAO          coachingInstituteDAO;
 
     private static final List<String> INSTITUTE_FIELDS =
             Arrays.asList("institute_id", "brand_name", "logo");
@@ -97,7 +98,7 @@ public class CoachingCourseSearchService extends AbstractSearchService {
     }
 
     @Override
-    @Cacheable(value = "coaching_course_search")
+    @Cacheable(value = "coaching_course_search",key = "#searchRequest.key")
     public SearchResponse search(SearchRequest searchRequest) {
         validateRequest(searchRequest, filterQueryTypeMap);
         ElasticRequest elasticRequest = buildSearchRequest(searchRequest);
@@ -244,8 +245,8 @@ public class CoachingCourseSearchService extends AbstractSearchService {
     }
 
     private CoachingInstituteEntity fetchInstitute(final long instituteId) {
-        final CoachingInstituteEntity institute = this.commonMongoRepository.getEntityByFields(
-                INSTITUTE_ID, instituteId, CoachingInstituteEntity.class, INSTITUTE_FIELDS);
+        final CoachingInstituteEntity institute =
+                coachingInstituteDAO.findByInstituteId(INSTITUTE_ID, instituteId, INSTITUTE_FIELDS);
         if (institute == null) {
             log.error("Got null CoachingInstitute for id: {}", instituteId);
             throw new BadRequestException(INVALID_INSTITUTE_ID,

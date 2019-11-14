@@ -17,6 +17,7 @@ public class CoachingConstants {
     public static final String EXAM_ID                         = "exam_id";
     public static final String STREAM_ID                       = "stream_id";
     public static final String COURSE_ID                       = "course_id";
+    public static final String CTA_ID                          = "cta_id";
     public static final String COURSE_TYPE                     = "course_type";
     public static final String COACHING_EXAM_STREAMS           = "stream_names";
     public static final String COACHING_COURSE_EXAMS           = "exam_names";
@@ -115,6 +116,8 @@ public class CoachingConstants {
     public static final int LANDING_PAGE_TOP_COURSES_LIMIT      = 4;
     public static final int LANDING_PAGE_TOP_COURSES_PER_STREAM = 1;
     public static final int TOP_ELEMENTS_ANY_PAGE_LIMIT         = 4;
+
+    public static final String COACHING_VERTICAL_NAME = "COACHING";
 
 
     public static class URL {

@@ -30,9 +30,9 @@ import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
 import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
-import javafx.util.Pair;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -136,7 +136,8 @@ public class InstituteDetailResponseBuilder {
 
         if (cutOffs) {
             instituteDetail
-                    .setCutOffs(examInstanceHelper.getExamCutOffs(examList, examRelatedData, examIds));
+                    .setCutOffs(
+                            examInstanceHelper.getExamCutOffs(examList, examRelatedData, examIds));
         }
         String entityName = INSTITUTE.name().toLowerCase();
         Map<String, Object> highlights = new HashMap<>();
@@ -159,7 +160,8 @@ public class InstituteDetailResponseBuilder {
             instituteDetail.setPlacements(placementDataHelper.getSalariesPlacements(institute));
         }
         if (sections) {
-            instituteDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName, client));
+            instituteDetail
+                    .setSections(detailPageSectionHelper.getSectionOrder(entityName, client));
         }
         List<BannerData> banners =
                 bannerDataHelper.getBannerData(entityName, client);
@@ -201,7 +203,8 @@ public class InstituteDetailResponseBuilder {
                 }
                 if (Objects.nonNull(campusEngagement.getArticles())) {
                     instituteDetail.setArticles(campusEngagementHelper
-                            .getCampusArticleData(campusEngagement.getArticles(), campusAmbassadorMap));
+                            .getCampusArticleData(campusEngagement.getArticles(),
+                                    campusAmbassadorMap));
                 }
                 if (Objects.nonNull(campusEngagement.getEvents())) {
                     instituteDetail.setEvents(campusEngagementHelper
