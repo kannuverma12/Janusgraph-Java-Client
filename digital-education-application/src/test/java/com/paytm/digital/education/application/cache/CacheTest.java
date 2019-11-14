@@ -31,8 +31,8 @@ public class CacheTest {
     @Autowired
     private TestService testService;
 
-    private static int NUMBER_OF_THREADS = 1000;
-    private static int THREAD_POOL_SIZE = 1000;
+    private static int NUMBER_OF_THREADS = 10000;
+    private static int THREAD_POOL_SIZE = 10000;
 
     @Test
     public void testCacheConcurrenceRunsOnlyOnce() throws Exception {
@@ -61,7 +61,7 @@ public class CacheTest {
          * have to lock the whole operation (including the fetch from cache operation),
          * which would have incurred a much greater penalty.
          */
-        assertThat(TestService.TEST_COUNT, lessThanOrEqualTo(10));
+        assertThat(TestService.TEST_COUNT, lessThanOrEqualTo(NUMBER_OF_THREADS / 500));
         for (Future<String> future : futureValues) {
             assertTrue(future.isDone());
             assertEquals(future.get(), processTwoStrings(arg1, arg2));
