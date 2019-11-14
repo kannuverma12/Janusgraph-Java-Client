@@ -21,12 +21,15 @@ import javax.validation.constraints.NotNull;
 public class MetaData {
 
     @Valid
+    @NotNull
     private ConvTaxInfo convTaxInfo;
 
     @Valid
+    @NotNull
     private TaxInfo taxInfo;
 
     @Valid
+    @NotNull
     private TCS tcs;
 
     private String courseType;
