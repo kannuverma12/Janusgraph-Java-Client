@@ -1,16 +1,10 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import static com.paytm.digital.education.constant.ExploreConstants.COURSE_ID;
-import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSES;
-import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSE_FILE_VERSION;
-import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSE_IDS;
-import static com.paytm.digital.education.ingestion.constant.IngestionConstants.MERCHANT_CAREER_360;
-
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.exception.EducationException;
 import com.paytm.digital.education.explore.database.ingestion.Course;
 import com.paytm.digital.education.explore.database.ingestion.Cutoff;
-import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.service.helper.IncrementalDataHelper;
 import com.paytm.digital.education.explore.service.helper.StreamDataTranslator;
 import com.paytm.digital.education.mapping.ErrorEnum;
@@ -31,6 +25,13 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.paytm.digital.education.constant.ExploreConstants.COURSE_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.STREAM_IDS;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSES;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSE_FILE_VERSION;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.COURSE_IDS;
+import static com.paytm.digital.education.ingestion.constant.IngestionConstants.MERCHANT_CAREER_360;
+
 @Service
 @AllArgsConstructor
 
@@ -40,7 +41,7 @@ public class TransformAndSaveCourseService {
 
     private IncrementalDataHelper incrementalDataHelper;
     private CommonMongoRepository commonMongoRepository;
-    private StreamDataTranslator streamDataTranslator;
+    private StreamDataTranslator  streamDataTranslator;
 
     public Integer transformAndSave(List<Course> courseDtos, Boolean versionUpdate) throws
             EducationException {
@@ -66,10 +67,14 @@ public class TransformAndSaveCourseService {
                 }
                 //set paytm stream ids
                 if (!CollectionUtils.isEmpty(course.getStreams())) {
-                    course.setStreamIds(streamDataTranslator
+                    Map<String, Object> examStreamData = streamDataTranslator
                             .getPaytmStreams(course.getStreams(), MERCHANT_CAREER_360,
                                     course.getCourseId(),
-                                    com.paytm.digital.education.database.entity.Course.class));
+                                    com.paytm.digital.education.database.entity.Course.class);
+                    if (!CollectionUtils.isEmpty(examStreamData)) {
+                        course.setStreamIds((List<Long>) examStreamData
+                                .getOrDefault(STREAM_IDS, new ArrayList<>()));
+                    }
                 }
                 commonMongoRepository.saveOrUpdate(course);
                 courseUpdated++;
