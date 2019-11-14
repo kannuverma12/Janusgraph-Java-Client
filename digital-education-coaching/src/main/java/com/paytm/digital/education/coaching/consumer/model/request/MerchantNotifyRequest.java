@@ -9,6 +9,7 @@ import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow
 import lombok.Data;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
@@ -18,15 +19,16 @@ import java.util.Map;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class MerchantNotifyRequest {
 
-    @NotNull
+    @NotEmpty
     private List<MerchantNotifyCartItem> cartItems;
 
-    @NotNull
+    @NotEmpty
     private Map<Long, NotifyMerchantInfo> merchantData;
 
+    @NotNull
     @Valid
     private NotifyUserInfo userData;
 
-    @NotNull
+    @NotEmpty
     private String orderCreatedAt;
 }
