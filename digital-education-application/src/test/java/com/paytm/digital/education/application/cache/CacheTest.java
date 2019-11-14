@@ -55,7 +55,8 @@ public class CacheTest {
         }
 
         /*
-         * Note:- Out of 1000 concurrent requests only 10 (1%) were able to write.
+         * Note:- In case of cache miss, out of 1000 concurrent requests
+         * only 10 (1%) were able to write.
          * Ideally, only one request should have written, but to ensure that, we would
          * have to lock the whole operation (including the fetch from cache operation),
          * which would have incurred a much greater penalty.
