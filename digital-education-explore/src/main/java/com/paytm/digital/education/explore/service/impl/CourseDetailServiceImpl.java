@@ -20,7 +20,9 @@ import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.serviceimpl.helper.ExamDatesHelper;
 import com.paytm.digital.education.utility.CommonUtil;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -46,17 +48,20 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_COURSE_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_COURSE_NAME;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 
-@AllArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class CourseDetailServiceImpl {
 
-    private CommonMongoRepository       commonMongoRepository;
-    private DerivedAttributesHelper     derivedAttributesHelper;
-    private PropertyReader              propertyReader;
-    private SimilarInstituteServiceImpl similarInstituteService;
-    private BannerDataHelper            bannerDataHelper;
-    private LeadDetailHelper            leadDetailHelper;
-    private ExamDatesHelper             examDatesHelper;
+    private final CommonMongoRepository       commonMongoRepository;
+    private final DerivedAttributesHelper     derivedAttributesHelper;
+    private final PropertyReader              propertyReader;
+    private final SimilarInstituteServiceImpl similarInstituteService;
+    private final BannerDataHelper            bannerDataHelper;
+    private final LeadDetailHelper            leadDetailHelper;
+    private final ExamDatesHelper             examDatesHelper;
+
+    @Value("${course.default.instances.for.date:1}")
+    private Integer defaultNoOfInstances;
 
     public CourseDetail getDetail(Long entityId, String courseUrlKey, Long userId,
             String fieldGroup, List<String> fields, Client client, boolean courseFees,
@@ -132,7 +137,7 @@ public class CourseDetailServiceImpl {
 
         for (Exam exam : exams) {
             ExamDetail examDetail = new ExamDetail();
-            List<ImportantDate> importantDates = examDatesHelper.getImportantDates(exam, 1);
+            List<ImportantDate> importantDates = examDatesHelper.getImportantDates(exam, defaultNoOfInstances);
             examDetail.setExamId(exam.getExamId());
             examDetail.setUrlDisplayName(
                     CommonUtil.convertNameToUrlDisplayName(exam.getExamFullName()));

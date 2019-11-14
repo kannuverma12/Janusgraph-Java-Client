@@ -217,9 +217,12 @@ public class ExamDetailServiceImpl {
     }
 
     private void updateApplicationAndExamDates(ExamDetail examDetail, List<ImportantDate> importantDates) {
-        if (CollectionUtils.isEmpty(importantDates))
+        if (CollectionUtils.isEmpty(importantDates)) {
             return;
-        boolean applicationDateFound = false, examDateFound = false;
+        }
+
+        boolean applicationDateFound = false;
+        boolean examDateFound = false;
         for (ImportantDate importantDate : importantDates) {
             if (CollectionUtils.isEmpty(importantDate.getUpcomingDates())) {
                 for (Event event : importantDate.getUpcomingDates()) {
