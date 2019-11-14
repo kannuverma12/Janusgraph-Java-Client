@@ -5,12 +5,8 @@ import com.paytm.digital.education.advice.helper.KeyGenerator;
 import com.paytm.digital.education.annotation.EduCache;
 import com.paytm.digital.education.exception.UnableToAccessBeanPropertyException;
 import org.bson.types.ObjectId;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.junit.runners.BlockJUnit4ClassRunner;
-import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.annotation.Annotation;
