@@ -72,7 +72,7 @@ public class SchoolDetail implements CTAInfoHolderWithDefaultSchoolSettings {
 
     @JsonIgnore
     @Override
-    public boolean hasCompareFeature() {
+    public boolean hasShareFeature() {
         return true;
     }
 
