@@ -2,13 +2,13 @@ package com.paytm.digital.education.coaching.ingestion.service.exportdata;
 
 import com.paytm.digital.education.coaching.ingestion.model.IngestionFormEntity;
 import com.paytm.digital.education.coaching.ingestion.service.exportdata.impl.CoachingBannerExportService;
+import com.paytm.digital.education.coaching.ingestion.service.exportdata.impl.CoachingCTAExportService;
 import com.paytm.digital.education.coaching.ingestion.service.exportdata.impl.CoachingCenterExportService;
 import com.paytm.digital.education.coaching.ingestion.service.exportdata.impl.CoachingCourseExportService;
 import com.paytm.digital.education.coaching.ingestion.service.exportdata.impl.CoachingCourseFeatureExportService;
 import com.paytm.digital.education.coaching.ingestion.service.exportdata.impl.CoachingExamExportService;
 import com.paytm.digital.education.coaching.ingestion.service.exportdata.impl.CoachingInstituteExportService;
 import com.paytm.digital.education.coaching.ingestion.service.exportdata.impl.CompetitiveExamExportService;
-import com.paytm.digital.education.coaching.ingestion.service.exportdata.impl.StreamExportService;
 import com.paytm.digital.education.coaching.ingestion.service.exportdata.impl.TopRankerExportService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +26,9 @@ public class ExportServiceFactory {
     private final CoachingExamExportService          coachingExamExportService;
     private final CoachingInstituteExportService     coachingInstituteExportService;
     private final CompetitiveExamExportService       competitiveExamExportService;
-    private final StreamExportService                streamExportService;
     private final TopRankerExportService             topRankerExportService;
+    private final CoachingCTAExportService           coachingCTAExportService;
+
 
     public ExportService getExportService(final IngestionFormEntity formEntity) {
 
@@ -53,11 +54,11 @@ public class ExportServiceFactory {
             case COMPETITIVE_EXAM_FORM: {
                 return this.competitiveExamExportService;
             }
-            case STREAM_FORM: {
-                return this.streamExportService;
-            }
             case TOP_RANKER_FORM: {
                 return this.topRankerExportService;
+            }
+            case COACHING_COURSE_CTA_FORM: {
+                return this.coachingCTAExportService;
             }
             default: {
             }

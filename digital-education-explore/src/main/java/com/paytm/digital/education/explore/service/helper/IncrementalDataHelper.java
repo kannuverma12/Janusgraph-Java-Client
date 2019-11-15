@@ -75,7 +75,7 @@ public class IncrementalDataHelper {
     private CommonMongoRepository commonMongoRepository;
 
     public Map<String, Boolean> downloadFileFromSftp(String entity, Integer version) {
-        log.info("Downloading Files from SFTP.");
+        log.info("Downloading Files from SFTP for Entity : {} ", entity);
         SftpConfig sftpConfig = new SftpConfig();
         sftpConfig.setUsername(DataIngestionSftpConfig.getUsername());
         sftpConfig.setHost(DataIngestionSftpConfig.getHost());
@@ -133,7 +133,7 @@ public class IncrementalDataHelper {
             sftp = (ChannelSftp) session.openChannel(CHANNEL_TYPE);
             sftp.connect();
             if (Objects.nonNull(currentCourseFileName)) {
-                log.info("Connected. Cd path : " + DataIngestionSftpConfig.getFilePath()
+                log.info("SFTP server connected. Current directory path : " + DataIngestionSftpConfig.getFilePath()
                         + COURSES_DIRECTORY);
                 sftp.cd(DataIngestionSftpConfig.getFilePath() + COURSES_DIRECTORY);
                 if (isFileExists(sftp, currentCourseFileName, version)) {
@@ -143,7 +143,7 @@ public class IncrementalDataHelper {
                 }
             }
             if (Objects.nonNull(currentInstituteFileName)) {
-                log.info("Connected. Cd path : " + DataIngestionSftpConfig.getFilePath()
+                log.info("SFTP server connected. Current directory path : " + DataIngestionSftpConfig.getFilePath()
                         + INSTITUTION_DIRECTORY);
                 sftp.cd(DataIngestionSftpConfig.getFilePath() + INSTITUTION_DIRECTORY);
                 if (isFileExists(sftp, currentInstituteFileName, version)) {
@@ -153,7 +153,7 @@ public class IncrementalDataHelper {
                 }
             }
             if (Objects.nonNull(currentExamFileName)) {
-                log.info("Connected. Cd path : " + DataIngestionSftpConfig.getFilePath()
+                log.info("SFTP server connected. Current directory path : " + DataIngestionSftpConfig.getFilePath()
                         + EXAM_DIRECTORY);
                 sftp.cd(DataIngestionSftpConfig.getFilePath() + EXAM_DIRECTORY);
                 if (isFileExists(sftp, currentExamFileName, version)) {
@@ -163,7 +163,7 @@ public class IncrementalDataHelper {
                 }
             }
             if (Objects.nonNull(currentSchoolFileName)) {
-                log.info("Connected. Cd path : " + DataIngestionSftpConfig.getFilePath()
+                log.info("SFTP server connected. Current directory path : " + DataIngestionSftpConfig.getFilePath()
                         + SCHOOL_DIRECTORY);
                 sftp.cd(DataIngestionSftpConfig.getFilePath() + SCHOOL_DIRECTORY);
                 if (isFileExists(sftp, currentSchoolFileName, version)) {
@@ -173,9 +173,10 @@ public class IncrementalDataHelper {
                 }
             }
         } catch (BadRequestException e) {
+            log.error("Error retrieving file  : ", e);
             throw e;
         } catch (Exception e) {
-            log.error("Sftp connection exception : " + e.getMessage());
+            log.error("Sftp connection exception : ", e);
             if (Objects.nonNull(version)) {
                 throw new EducationException(ErrorEnum.SFTP_CONNECTION_FAILED,
                         ErrorEnum.SFTP_CONNECTION_FAILED.getExternalMessage());

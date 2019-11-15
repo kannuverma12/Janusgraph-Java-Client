@@ -353,6 +353,8 @@ public interface ExploreConstants {
     String DOMAINS                          = "domains";
     String APP_DISPLAY_NAME                 = "app_display_name";
     String WEB_FORM_URI_PREFIX              = "webFormUriPrefix";
+    String PRIORITY                         = "priority";
+    int    DEFAULT_EXAM_PRIORITY            = 9999;
 
-    String NO_TOPIC_FOUND                   = "No Topic Found";
+    String NO_TOPIC_FOUND = "No Topic Found";
 }

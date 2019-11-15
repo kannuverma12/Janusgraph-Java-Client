@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -48,5 +49,5 @@ public class CoachingCtaDataRequest {
     private String url;
 
     @ApiModelProperty(value = "map of key value pair associated with cta")
-    private Map<String, String> properties;
+    private List<String> properties;
 }

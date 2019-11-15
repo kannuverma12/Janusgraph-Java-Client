@@ -2,15 +2,15 @@ package com.paytm.digital.education.coaching.consumer.controller;
 
 import com.paytm.digital.education.coaching.consumer.service.details.LandingPageService;
 import com.paytm.digital.education.database.entity.Section;
-import com.paytm.digital.education.service.PageService;
 import com.paytm.digital.education.serviceimpl.CoachingPageServiceImpl;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING;
@@ -20,13 +20,15 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.U
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = COACHING)
+@Validated
 public class CoachingLandingPageController {
 
     private LandingPageService      landingPageService;
     private CoachingPageServiceImpl coachingPageService;
 
     @GetMapping(V1 + LANDING_PAGE)
-    public List<Section> getPageSections(@RequestParam("pageName") final String pageName) {
+    public List<Section> getPageSections(
+            @RequestParam("pageName") @NotEmpty final String pageName) {
         List<Section> sections = coachingPageService.getPageSections(pageName);
         landingPageService.addDynamicData(sections);
         return sections;

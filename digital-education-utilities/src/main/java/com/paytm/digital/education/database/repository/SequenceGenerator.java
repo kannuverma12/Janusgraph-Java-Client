@@ -19,7 +19,6 @@ public class SequenceGenerator {
 
     private MongoOperations mongoOperations;
 
-    @Transactional
     public long getNextSequenceId(String sequenceName) {
         Query mongoQuery = new Query(Criteria.where(DBConstants.KEY).is(sequenceName));
         Update update = new Update();

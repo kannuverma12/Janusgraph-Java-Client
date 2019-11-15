@@ -1,13 +1,5 @@
 package com.paytm.digital.education.admin.service.impl;
 
-import static com.paytm.digital.education.constant.ExploreConstants.COURSE_ID;
-import static com.paytm.digital.education.constant.ExploreConstants.DOMAINS;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
-import static com.paytm.digital.education.constant.ExploreConstants.STREAMS;
-import static com.paytm.digital.education.constant.ExploreConstants.STREAM_IDS;
-import static com.paytm.digital.education.ingestion.constant.IngestionConstants.MERCHANT_CAREER_360;
-import static com.paytm.digital.education.mapping.ErrorEnum.ENTITY_NOT_SUPPORTED;
-
 import com.paytm.digital.education.database.entity.Course;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
@@ -23,10 +15,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import static com.paytm.digital.education.constant.ExploreConstants.COURSE_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.DOMAINS;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.PRIORITY;
+import static com.paytm.digital.education.constant.ExploreConstants.STREAMS;
+import static com.paytm.digital.education.constant.ExploreConstants.STREAM_IDS;
+import static com.paytm.digital.education.ingestion.constant.IngestionConstants.MERCHANT_CAREER_360;
+import static com.paytm.digital.education.mapping.ErrorEnum.ENTITY_NOT_SUPPORTED;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +41,7 @@ public class StreamDataServiceImpl {
     private Integer documentsPageSize;
 
     private static List<String> projectionFields =
-            Arrays.asList(EXAM_ID, COURSE_ID, DOMAINS, STREAMS, STREAM_IDS);
+            Arrays.asList(EXAM_ID, COURSE_ID, DOMAINS, STREAMS, STREAM_IDS, PRIORITY);
 
     public long updatePaytmStream(EducationEntity educationEntity) {
         switch (educationEntity) {
@@ -56,7 +56,8 @@ public class StreamDataServiceImpl {
     }
 
     private <T> long updatePaytmStreams(Class<T> entityType, int page, int size) {
-        Page<T> pagedData = commonMongoRepository.getPagedEntityData(entityType, page, size, projectionFields);
+        Page<T> pagedData =
+                commonMongoRepository.getPagedEntityData(entityType, page, size, projectionFields);
         long updateCount = 0;
         while (Objects.nonNull(pagedData) && pagedData.hasContent()) {
             List<T> entityData = pagedData.getContent();
@@ -64,7 +65,8 @@ public class StreamDataServiceImpl {
                 updateCount += updatePaytmStream(entityType, singleEntity);
             }
             pagedData = commonMongoRepository
-                    .getPagedEntityData(entityType, pagedData.getNumber() + 1, size, projectionFields);
+                    .getPagedEntityData(entityType, pagedData.getNumber() + 1, size,
+                            projectionFields);
         }
         return updateCount;
     }
@@ -84,10 +86,8 @@ public class StreamDataServiceImpl {
             String entityKey) {
         if (!CollectionUtils.isEmpty(streams)) {
             try {
-                List<Long> streamIds = streamDataTranslator
+                Map<String, Object> updateObject = streamDataTranslator
                         .getPaytmStreams(streams, MERCHANT_CAREER_360, entityId, type);
-                Map<String, Object> updateObject = new HashMap<>();
-                updateObject.put(STREAM_IDS, streamIds);
                 return commonMongoRepository.updateFields(updateObject, type, entityId, entityKey);
             } catch (Exception ex) {
                 log.error(

@@ -1,19 +1,19 @@
 package com.paytm.digital.education.explore.database.ingestion;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.database.entity.PaytmKeys;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Field;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.paytm.digital.education.enums.PublishStatus;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Field;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -128,7 +128,7 @@ public class Exam {
 
     @Field("priority")
     @JsonProperty("priority")
-    private List<Long> priority;
+    private Integer priority;
 
     @Field("cutoff")
     @JsonProperty("cutoff")

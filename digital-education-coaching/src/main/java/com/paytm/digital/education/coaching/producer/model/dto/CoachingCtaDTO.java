@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -31,5 +32,5 @@ public class CoachingCtaDTO {
 
     private String url;
 
-    private Map<String, String> properties;
+    private List<String> properties;
 }

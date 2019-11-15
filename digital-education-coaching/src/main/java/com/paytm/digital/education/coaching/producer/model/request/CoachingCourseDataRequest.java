@@ -3,6 +3,7 @@ package com.paytm.digital.education.coaching.producer.model.request;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.paytm.digital.education.coaching.producer.model.embedded.ImportantDate;
+import com.paytm.digital.education.enums.CTAViewType;
 import com.paytm.digital.education.enums.CourseCover;
 import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.CourseType;
@@ -27,6 +28,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Builder
@@ -260,5 +262,5 @@ public class CoachingCourseDataRequest {
 
     private Boolean isDynamic = Boolean.FALSE;
 
-    private String redirectUrl;
+    private Map<CTAViewType, Long> ctaInfo;
 }

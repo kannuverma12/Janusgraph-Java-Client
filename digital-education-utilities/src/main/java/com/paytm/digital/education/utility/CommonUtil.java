@@ -21,10 +21,10 @@ import static com.paytm.digital.education.constant.CommonConstants.COACHING_COUR
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_COURSE_FEATURE;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_INSTITUTE_BROCHURE;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_INSTITUTE_HIGHLIGHT_LOGO;
-import static com.paytm.digital.education.constant.CommonConstants.COACHING_STREAMS;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_EXAMS;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_RANKER;
 import static com.paytm.digital.education.constant.CommonConstants.SECTION;
+import static com.paytm.digital.education.constant.CommonConstants.STREAMS;
 import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES_IMAGE;
 import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES_LOGO;
 import static com.paytm.digital.education.constant.ExploreConstants.AFFILIATED;
@@ -48,7 +48,6 @@ import static com.paytm.digital.education.constant.ExploreConstants.POPULAR_EXAM
 import static com.paytm.digital.education.constant.ExploreConstants.RANKING_LOGO;
 import static com.paytm.digital.education.constant.ExploreConstants.SCHOOLS_IN_FOCUS;
 import static com.paytm.digital.education.constant.ExploreConstants.STANDALONE_INSTITUTE;
-import static com.paytm.digital.education.constant.ExploreConstants.STREAMS;
 import static com.paytm.digital.education.constant.ExploreConstants.TOP_EXAMS_APP;
 import static com.paytm.digital.education.constant.ExploreConstants.TOP_SCHOOLS;
 import static com.paytm.digital.education.constant.ExploreConstants.UGC;
@@ -85,12 +84,6 @@ public class CommonUtil {
                 break;
             case STREAMS:
                 urlBuilder.append(ConfigProperties.getStreamIconPrefix());
-                break;
-            case COACHING_STREAMS:
-                urlBuilder.append(ConfigProperties.getCoachingS3Path())
-                        .append(("/"))
-                        .append(ConfigProperties.getEnvProfile())
-                        .append(ConfigProperties.getCoachingStreamLogoPrefix());
                 break;
             case LOCATIONS:
                 urlBuilder.append(ConfigProperties.getLocationIconPrefix());
@@ -330,9 +323,9 @@ public class CommonUtil {
                         //case STANDALONE_INSTITUTE:
                         output.put(INSTITUTE_TYPE, STANDALONE_INSTITUTE);
                         break;
-                        //case STATE_LEGISLATURE:
-                        //output.put(GOVERNED_BY, STATE_LEGISLATURE);
-                        //break;
+                    //case STATE_LEGISLATURE:
+                    //output.put(GOVERNED_BY, STATE_LEGISLATURE);
+                    //break;
                     default:
                 }
             }

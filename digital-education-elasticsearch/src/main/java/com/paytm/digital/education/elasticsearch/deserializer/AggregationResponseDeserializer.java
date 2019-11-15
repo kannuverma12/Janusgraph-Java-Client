@@ -14,7 +14,8 @@ import com.paytm.digital.education.elasticsearch.utils.JsonUtils;
 import com.paytm.digital.education.enums.es.AggregationType;
 import com.paytm.digital.education.enums.es.BucketAggregationSortParms;
 import com.paytm.digital.education.enums.es.DataSortOrder;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.util.CollectionUtils;
 import org.elasticsearch.search.SearchHit;
@@ -171,7 +172,7 @@ public class AggregationResponseDeserializer {
                     getDocumentsFromBuckets(topHitsAggregtaion, type);
             String entityName = bucket.getKeyAsString();
             Float maxScore = topHitsAggregtaion.getHits().getMaxScore();
-            Pair<String, Float> key = new Pair<>(entityName, maxScore);
+            Pair<String, Float> key = new MutablePair<>(entityName, maxScore);
             documentsPerEntity.put(key, documentsScoreMap);
         }
         aggregationResponse.setDocumentsPerEntity(documentsPerEntity);
@@ -260,7 +261,7 @@ public class AggregationResponseDeserializer {
                         + ESConstants.KEY_SEPERATOR
                         + childBucket.getKeyAsString();
                 Float maxScore = topHitsAggregation.getHits().getMaxScore();
-                Pair<String, Float> key = new Pair<>(entityName, maxScore);
+                Pair<String, Float> key = new MutablePair<>(entityName, maxScore);
                 documentsPerEntity.put(key, documentsScoreMap);
                 aggregationResponse.setDocumentsPerEntity(documentsPerEntity);
             }

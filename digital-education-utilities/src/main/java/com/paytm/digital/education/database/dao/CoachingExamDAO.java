@@ -1,7 +1,9 @@
-package com.paytm.digital.education.coaching.db.dao;
+package com.paytm.digital.education.database.dao;
 
 import com.paytm.digital.education.database.entity.CoachingExamEntity;
+import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.repository.CoachingExamRepositoryNew;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.database.repository.SequenceGenerator;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,9 @@ public class CoachingExamDAO {
     @Autowired
     private SequenceGenerator sequenceGenerator;
 
+    @Autowired
+    private CommonMongoRepository commonMongoRepository;
+
     public CoachingExamEntity save(@NonNull CoachingExamEntity coachingExamEntity) {
         if (Objects.isNull(coachingExamEntity.getCoachingExamId())) {
             coachingExamEntity.setCoachingExamId(sequenceGenerator
@@ -33,6 +38,19 @@ public class CoachingExamDAO {
 
     public List<CoachingExamEntity> findAll() {
         return this.coachingCenterRepository.findAll();
+    }
+
+    public List<Exam> findByExamIdsIn(String examIdField,
+            List<Long> examIds,
+            List<String> projectionFields) {
+        return commonMongoRepository.getEntityFieldsByValuesIn(examIdField, examIds,
+                Exam.class, projectionFields);
+    }
+
+    public Exam findByExamId(String examIdField, long examId,
+            List<String> projectionFields) {
+        return commonMongoRepository.getEntityByFields(
+                examIdField, examId, Exam.class, projectionFields);
     }
 
 }

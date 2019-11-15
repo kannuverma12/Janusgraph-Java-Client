@@ -35,7 +35,7 @@ public class MongoPropertyReaderImpl implements PropertyReader {
     }
 
     @Override
-    @Cacheable(value = "properties", unless = "#result == null ")
+    @Cacheable(value = "properties")
     public Map<String, Map<String, Object>> getPropertiesAsMap(String component, String namespace) {
         List<Properties> propertiesList = propertyRepository
                 .findByComponentAndNamespace(component, namespace);

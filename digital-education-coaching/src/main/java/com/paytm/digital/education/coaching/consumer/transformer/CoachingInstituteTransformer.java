@@ -22,8 +22,8 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.C
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_PLACEHOLDER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.TOP_RANKER_PLACEHOLDER;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_INSTITUTE_HIGHLIGHT_LOGO;
-import static com.paytm.digital.education.constant.CommonConstants.COACHING_STREAMS;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_RANKER;
+import static com.paytm.digital.education.constant.CommonConstants.STREAMS;
 
 @Service
 @AllArgsConstructor
@@ -80,7 +80,7 @@ public class CoachingInstituteTransformer {
                         .id(streamEntity.getStreamId())
                         .name(streamEntity.getName())
                         .logo(ImageUtils.getImageWithAbsolutePath(streamEntity.getLogo(),
-                                STREAM_PLACEHOLDER, COACHING_STREAMS))
+                                STREAM_PLACEHOLDER, STREAMS))
                         .build();
 
                 streamList.add(stream);

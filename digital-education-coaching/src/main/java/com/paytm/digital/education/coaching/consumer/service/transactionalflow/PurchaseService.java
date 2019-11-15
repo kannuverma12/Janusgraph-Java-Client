@@ -5,7 +5,6 @@ import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.CheckoutCartItem;
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.ConvTaxInfo;
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.MerchantNotifyCartItem;
-import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.MerchantOrderData;
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.NotifyMerchantInfo;
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.TaxInfo;
 import com.paytm.digital.education.coaching.consumer.model.request.MerchantCommitRequest;
@@ -13,9 +12,7 @@ import com.paytm.digital.education.coaching.consumer.model.request.MerchantNotif
 import com.paytm.digital.education.coaching.consumer.model.request.VerifyRequest;
 import com.paytm.digital.education.coaching.consumer.model.response.transactionalflow.MerchantNotifyResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.transactionalflow.VerifyResponse;
-import com.paytm.digital.education.coaching.db.dao.CoachingCourseDAO;
-import com.paytm.digital.education.coaching.enums.MerchantNotifyFailureReason;
-import com.paytm.digital.education.coaching.enums.MerchantNotifyStatus;
+import com.paytm.digital.education.database.dao.CoachingCourseDAO;
 import com.paytm.digital.education.coaching.utils.ComparisonUtils;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.exception.BadRequestException;
@@ -26,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -97,8 +95,8 @@ public class PurchaseService {
             Long courseId = cartItem.getMetaData().getCourseId();
             CoachingCourseEntity coachingCourseEntity = courseIdToEntityMap.get(courseId);
 
-            if (Objects.isNull(coachingCourseEntity)) {
-                log.error("No coaching course found for course_id: {}", courseId);
+            boolean validCartItem = this.verifyCartItem(courseId, coachingCourseEntity, cartItem);
+            if (!validCartItem) {
                 throw PurchaseException
                         .builder()
                         .acknowledged(false)
@@ -131,6 +129,40 @@ public class PurchaseService {
                 .builder()
                 .acknowledged(true)
                 .build();
+    }
+
+    private boolean verifyCartItem(Long courseId, CoachingCourseEntity coachingCourseEntity,
+            CartItem cartItem) {
+        if (Objects.isNull(coachingCourseEntity)) {
+            log.error("No coaching course found for course_id: {}", courseId);
+            return false;
+        }
+
+        if (!coachingCourseEntity.getPaytmProductId().equals(cartItem.getProductId())) {
+            log.error("Invalid Product Id for course_id: {}, DB p_id: {}, request p_id: {}",
+                    courseId, coachingCourseEntity.getPaytmProductId(),
+                    cartItem.getProductId());
+            return false;
+        }
+
+        if (!coachingCourseEntity.getMerchantProductId()
+                .equals(cartItem.getMetaData().getMerchantProductId())) {
+            log.error(
+                    "Invalid Merchant Product Id for course_id: {}, DB m_p_id: {}, request m_p_id: {}",
+                    courseId, coachingCourseEntity.getMerchantProductId(),
+                    cartItem.getMetaData().getMerchantProductId());
+            return false;
+        }
+
+        if (!StringUtils.isEmpty(cartItem.getMetaData().getCourseType()) && !coachingCourseEntity
+                .getCourseType().getText().equals(cartItem.getMetaData().getCourseType())) {
+            log.error("Invalid Course type for course_id: {}, DB type: {}, request type: {}",
+                    courseId, coachingCourseEntity.getCourseType().getText(),
+                    cartItem.getMetaData().getCourseType());
+            return false;
+        }
+
+        return true;
     }
 
     private CheckoutCartItem getCartItemFromRedis(CartItem cartItem) {
@@ -187,8 +219,7 @@ public class PurchaseService {
                         redisItemConvFeeTaxInfo.getTotalIGST())
                 && ComparisonUtils
                 .thresholdBasedFloatsComparison(cartItemConvFeeTaxInfo.getTotalUTGST(),
-                        redisItemConvFeeTaxInfo.getTotalUTGST())
-                && cartItemConvFeeTaxInfo.getGstin().equals(redisItemConvFeeTaxInfo.getGstin()));
+                        redisItemConvFeeTaxInfo.getTotalUTGST()));
     }
 
     private boolean verifyTaxInfo(TaxInfo cartItemTaxInfo, TaxInfo redisItemTaxInfo) {
@@ -196,8 +227,7 @@ public class PurchaseService {
             log.error("Tax info not present in redis for cart item: {}", cartItemTaxInfo);
             return false;
         }
-        return (cartItemTaxInfo.getGstin().equals(redisItemTaxInfo.getGstin())
-                && ComparisonUtils.thresholdBasedFloatsComparison(cartItemTaxInfo.getTotalCGST(),
+        return (ComparisonUtils.thresholdBasedFloatsComparison(cartItemTaxInfo.getTotalCGST(),
                 redisItemTaxInfo.getTotalCGST())
                 && ComparisonUtils.thresholdBasedFloatsComparison(cartItemTaxInfo.getTotalIGST(),
                 redisItemTaxInfo.getTotalIGST())

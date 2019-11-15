@@ -5,6 +5,7 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.Searc
 import com.paytm.digital.education.coaching.consumer.service.search.SearchService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -20,6 +21,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.C
 @RestController
 @AllArgsConstructor
 @RequestMapping(COACHING)
+@Validated
 public class CoachingSearchController {
 
     private SearchService searchService;

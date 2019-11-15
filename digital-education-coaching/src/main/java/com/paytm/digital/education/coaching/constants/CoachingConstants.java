@@ -116,6 +116,8 @@ public class CoachingConstants {
     public static final int LANDING_PAGE_TOP_COURSES_PER_STREAM = 1;
     public static final int TOP_ELEMENTS_ANY_PAGE_LIMIT         = 4;
 
+    public static final String COACHING_VERTICAL_NAME = "COACHING";
+
 
     public static class URL {
 
