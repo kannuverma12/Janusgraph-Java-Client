@@ -167,7 +167,7 @@ public class ExamDetail implements CTAInfoHolder {
 
     @JsonIgnore
     @Accessors(fluent = true)
-    private boolean shouldHaveLeadCTA = true;
+    private boolean shouldHaveLeadCTA = false;
 
     @JsonIgnore
     @Accessors(fluent = true)
@@ -199,7 +199,7 @@ public class ExamDetail implements CTAInfoHolder {
     @JsonIgnore
     @Override
     public boolean hasShortListFeature() {
-        return true;
+        return false;
     }
 
     @JsonIgnore
