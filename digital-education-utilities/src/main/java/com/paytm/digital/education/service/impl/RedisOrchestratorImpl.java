@@ -4,9 +4,11 @@ import com.paytm.digital.education.exception.OldCacheValueExpiredException;
 import com.paytm.digital.education.exception.OldCacheValueNullException;
 import com.paytm.digital.education.exception.SerializationException;
 import com.paytm.digital.education.method.CachedMethod;
+import com.paytm.digital.education.service.CacheLockStrategy;
 import com.paytm.digital.education.service.RedisOrchestrator;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -24,17 +26,17 @@ public class RedisOrchestratorImpl implements RedisOrchestrator {
     private final RedisTemplate<String, String> template;
     private final CacheValueProcessor cacheValueProcessor;
     private final int ttl;
-    private final WriteLockStrategy writeLockStrategy;
+    private final CacheLockStrategy cacheLockStrategy;
 
     public RedisOrchestratorImpl(
             RedisTemplate<String, String> template,
             CacheValueProcessor cacheValueProcessor,
             @Value("${redis.cache.ttl.millis}") int ttl,
-            WriteLockStrategy writeLockStrategy) {
+            @Qualifier("writeLockStrategy") CacheLockStrategy cacheLockStrategy) {
         this.template = template;
         this.cacheValueProcessor = cacheValueProcessor;
         this.ttl = ttl;
-        this.writeLockStrategy = writeLockStrategy;
+        this.cacheLockStrategy = cacheLockStrategy;
     }
 
     @Override
@@ -64,7 +66,7 @@ public class RedisOrchestratorImpl implements RedisOrchestrator {
         };
 
         Response<String, U> response =
-                writeLockStrategy.getCacheValue(key, getData, checkData, writeData, cachedMethod);
+                cacheLockStrategy.getCacheValue(key, getData, checkData, writeData, cachedMethod);
         if (response.isOldValue()) {
             try {
                 return deSerializeData(

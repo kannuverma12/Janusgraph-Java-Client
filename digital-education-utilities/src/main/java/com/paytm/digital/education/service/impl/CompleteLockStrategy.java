@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 import static java.time.Duration.ofSeconds;
 
 @Service
-public class WriteLockStrategy implements CacheLockStrategy {
+public class CompleteLockStrategy implements CacheLockStrategy {
 
     private static final Logger logger = LoggerFactory.getLogger(WriteLockStrategy.class);
     private static final int PROCESS_SLEEP_TIME_IN_MILLIS = 500;
@@ -30,7 +30,7 @@ public class WriteLockStrategy implements CacheLockStrategy {
     private final int lockDurationForProcessInSeconds;
 
 
-    public WriteLockStrategy(
+    public CompleteLockStrategy(
             RedisTemplate<String, String> template,
             @Value("${redis.cache.process.lock.duration.seconds}") int lockDurationForProcessInSeconds) {
         this.template = template;
@@ -41,31 +41,41 @@ public class WriteLockStrategy implements CacheLockStrategy {
     public <T, U> Response<T, U> getCacheValue(
             String key, GetData<T> getData, CheckData<T> checkData,
             WriteData<U> writeData, CachedMethod<U> cachedMethod) {
+        long id = Thread.currentThread().getId();
         String lockKey = key + "::zookeeper";
         String processId = RandomStringUtils.randomAlphabetic(10);
-
-        for (int i = 0; i < NUMBER_OF_TIMES_THREAD_RETRIES_BEFORE_GIVING_UP; ++i) {
-            T data = null;
-            try {
-                data = getData.doGetData();
-                checkData.doCheckData(data);
-                return new Response<>(data, null);
-            } catch (OldCacheValueExpiredException | OldCacheValueNullException e) {
-                logger.debug("Old cache value exception", e);
-            }
-
+        for (int i = 0; i < 100000; ++i) {
             Boolean success = template.opsForValue().setIfAbsent(lockKey, processId,
                     ofSeconds(lockDurationForProcessInSeconds));
             if (BooleanUtils.isNotTrue(success)) {
                 sleep(PROCESS_SLEEP_TIME_IN_MILLIS, key);
                 continue;
             }
+            logger.info("entered " + id);
+            T data = null;
+            try {
+                data = getData.doGetData();
+                checkData.doCheckData(data);
+                template.opsForValue().getOperations().delete(lockKey);
+                logger.info("old value " + id);
+                return new Response<>(data, null);
+            } catch (OldCacheValueExpiredException | OldCacheValueNullException e) {
+                logger.debug("Old cache value exception", e);
+            }
 
+            try {
+                U computed = cachedMethod.invoke();
+                template.opsForValue().set(key, "a");
+            } catch (Exception e) {
+                logger.error("error");
+            }
             U computed = writeAndReleaseLock(lockKey, processId, cachedMethod, writeData);
+            logger.info("new value " + id);
             return new Response<>(data, computed);
         }
 
         return null;
+
     }
 
     private <U> U writeAndReleaseLock(String lockKey, String processId, CachedMethod<U> cachedMethod,
@@ -80,13 +90,12 @@ public class WriteLockStrategy implements CacheLockStrategy {
                         u = cachedMethod.invoke();
                         operations.multi();
                         writeData.doWriteData(operations, u);
-                        operations.opsForValue().getOperations().delete((K) lockKey);
                         operations.exec();
                     } catch (CachedMethodInvocationException e) {
-                        final Throwable t = e.getCause();
                         operations.multi();
                         operations.opsForValue().getOperations().delete((K) lockKey);
                         operations.exec();
+                        final Throwable t = e.getCause();
                         if (t instanceof EducationException) {
                             throw (EducationException) t;
                         }

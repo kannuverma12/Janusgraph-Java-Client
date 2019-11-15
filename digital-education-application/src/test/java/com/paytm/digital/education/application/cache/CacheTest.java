@@ -37,7 +37,7 @@ public class CacheTest {
 
     private static int NUMBER_OF_THREADS = 1000;
     private static int THREAD_POOL_SIZE = 1000;
-    private static double EXPECTED_FRACTION_OF_THREADS_WHICH_WROTE = 1.0 / 100;
+    private static double EXPECTED_FRACTION_OF_THREADS_WHICH_WROTE = 2.0 / 100;
 
     @Test
     public void testCacheConcurrenceRunsOnlyOnce() throws Exception {
