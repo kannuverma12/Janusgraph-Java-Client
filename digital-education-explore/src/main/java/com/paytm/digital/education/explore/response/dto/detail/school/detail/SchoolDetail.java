@@ -70,6 +70,12 @@ public class SchoolDetail implements CTAInfoHolderWithDefaultSchoolSettings {
     @JsonProperty("shortlisted")
     private boolean shortlisted;
 
+    @JsonIgnore
+    @Override
+    public boolean hasCompareFeature() {
+        return true;
+    }
+
     @JsonProperty("banners")
     private List<BannerData> banners;
 }
