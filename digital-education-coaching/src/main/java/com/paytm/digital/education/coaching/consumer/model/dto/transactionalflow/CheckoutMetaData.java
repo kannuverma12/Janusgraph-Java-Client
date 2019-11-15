@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @Data
 @Builder
@@ -28,8 +29,11 @@ public class CheckoutMetaData {
     private TaxInfo taxInfo;
 
     private String courseType;
-    private Long   courseId;
-    private Long   userId;
+
+    @NotNull
+    private Long courseId;
+
+    private Long userId;
 
     @NotEmpty
     private String merchantProductId;
