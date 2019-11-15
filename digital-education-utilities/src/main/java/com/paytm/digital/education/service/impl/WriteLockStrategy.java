@@ -42,7 +42,6 @@ public class WriteLockStrategy implements CacheLockStrategy {
             String key, GetData<T> getData, CheckData<T> checkData,
             WriteData<U> writeData, CachedMethod<U> cachedMethod) {
         String lockKey = key + "::zookeeper";
-        String processId = RandomStringUtils.randomAlphabetic(10);
 
         for (int i = 0; i < NUMBER_OF_TIMES_THREAD_RETRIES_BEFORE_GIVING_UP; ++i) {
             T data = null;
@@ -53,7 +52,7 @@ public class WriteLockStrategy implements CacheLockStrategy {
             } catch (OldCacheValueExpiredException | OldCacheValueNullException e) {
                 logger.debug("Old cache value exception", e);
             }
-
+            String processId = RandomStringUtils.randomAlphabetic(10);
             Boolean success = template.opsForValue().setIfAbsent(lockKey, processId,
                     ofSeconds(lockDurationForProcessInSeconds));
             if (BooleanUtils.isNotTrue(success)) {

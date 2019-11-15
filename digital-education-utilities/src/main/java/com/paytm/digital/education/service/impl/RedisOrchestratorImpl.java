@@ -32,7 +32,7 @@ public class RedisOrchestratorImpl implements RedisOrchestrator {
             RedisTemplate<String, String> template,
             CacheValueProcessor cacheValueProcessor,
             @Value("${redis.cache.ttl.millis}") int ttl,
-            @Qualifier("writeLockStrategy") CacheLockStrategy cacheLockStrategy) {
+            @Qualifier("completeLockStrategy") CacheLockStrategy cacheLockStrategy) {
         this.template = template;
         this.cacheValueProcessor = cacheValueProcessor;
         this.ttl = ttl;
