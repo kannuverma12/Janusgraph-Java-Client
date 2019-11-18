@@ -1,5 +1,6 @@
 package com.paytm.digital.education.application.controller;
 
+import com.paytm.digital.education.cache.redis.RedisCacheService;
 import com.paytm.digital.education.coaching.consumer.controller.PurchaseController;
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.CartItem;
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.CheckoutCartItem;
@@ -44,12 +45,12 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.U
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(value = PurchaseController.class, secure = false)
-public class CartItemVerifyControllerTest {
+public class VerifyCartItemControllerTest {
 
-    private static final Logger log = LoggerFactory.getLogger(CartItemVerifyControllerTest.class);
+    private static final Logger log = LoggerFactory.getLogger(VerifyCartItemControllerTest.class);
 
     private final String merchantData  =
-            "{\"product_list\":[{\"description\":\"desc\",\"merchant_product_tax_data\":{\"gstin\":\"abcd\",\"total_cgst\":0,\"total_igst\":0,\"total_sgst\":0,\"total_utgst\":0},\"price\":25378.9,\"product_id\":\"1\",\"product_name\":\"abcd\",\"quantity\":2}]}";
+            "{\"product_list\":[{\"description\":\"desc\",\"merchant_product_tax_data\":{\"gstin\":\"abcd\",\"total_cgst\":0,\"total_igst\":0,\"total_sgst\":0,\"total_utgst\":0},\"price\":25378.9,\"product_id\":\"1\",\"product_name\":\"abcd\",\"quantity\":1}]}";
     private final String transactionId = "abc";
     private final Long   merchantId    = 63794147L;
     private final Long   userId        = 123L;
@@ -62,38 +63,24 @@ public class CartItemVerifyControllerTest {
     private CoachingProgramRepository          coachingProgramRepository;
     @Autowired
     private MerchantProductsTransformerService merchantProductsTransformerService;
+    @Autowired
+    private RedisCacheService                  redisCacheService;
 
     @Before
     public void setup() {
-        CoachingInstituteEntity
-                coachingInstituteEntity = new CoachingInstituteEntity();
-        coachingInstituteEntity.setInstituteId(123L);
-        coachingInstituteEntity.setIsEnabled(true);
-        coachingInstituteEntity.setPaytmMerchantId("63794147");
-        coachingInstituteRepositoryNew.save(coachingInstituteEntity);
-        CoachingCourseEntity coachingCourseEntity =
-                new CoachingCourseEntity();
-        coachingCourseEntity.setPaytmProductId(123L);
-        coachingCourseEntity.setMerchantProductId("1");
-        coachingCourseEntity.setIsEnabled(true);
-        coachingCourseEntity.setCourseId(200L);
-        coachingCourseEntity.setCourseType(CourseType.CLASSROOM_COURSE);
-        coachingCourseEntity.setIsDynamic(true);
-        coachingCourseEntity.setCoachingInstituteId(123L);
-        coachingCourseEntity.setOriginalPrice(123D);
-        coachingCourseEntity.setDiscountedPrice(123D);
-        coachingProgramRepository.save(coachingCourseEntity);
-
     }
 
     @After
     public void clear() {
         coachingInstituteRepositoryNew.deleteAll();
         coachingProgramRepository.deleteAll();
+        redisCacheService.clearCache();
     }
 
     @Test
     public void verifySuccessResponseForDynamicCourse() throws Exception {
+        createInstituteEntity();
+        createDynamicCoachingCourseEntity();
         CartDataResponse cartDataResponse = merchantProductsTransformerService
                 .fetchCartDataFromVertical(getFetchCartItemRequest());
         CheckoutCartItem checkoutCartItem=cartDataResponse.getCartItems().get(0);
@@ -112,6 +99,100 @@ public class CartItemVerifyControllerTest {
         Assert.assertEquals(verifyResponse.getAcknowledged(),true);
     }
 
+    @Test
+    public void verifySuccessResponseForNonDynamicCourse() throws Exception {
+        createInstituteEntity();
+        createStaticCoachingCourseEntity();
+        VerifyRequest request = getVerifyRequest();
+        RequestBuilder requestBuilder =
+                MockMvcRequestBuilders.post(COACHING_BASE + V1 + VERIFY)
+                        .contentType(MediaType.APPLICATION_JSON).content(JsonUtils.toJson(request))
+                        .accept(MediaType.APPLICATION_JSON);
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        Assert.assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
+        VerifyResponse verifyResponse
+                = JsonUtils
+                .fromJson(result.getResponse().getContentAsString(), VerifyResponse.class);
+        Assert.assertNotNull(verifyResponse);
+        Assert.assertEquals(verifyResponse.getAcknowledged(),true);
+    }
+
+    @Test
+    public void failureResponsePriceChange() throws Exception {
+        createInstituteEntity();
+        createStaticCoachingCourseEntity();
+        VerifyRequest request = getVerifyRequest();
+        request.getCartItems().get(0).setSellingPrice(123F);
+        RequestBuilder requestBuilder =
+                MockMvcRequestBuilders.post(COACHING_BASE + V1 + VERIFY)
+                        .contentType(MediaType.APPLICATION_JSON).content(JsonUtils.toJson(request))
+                        .accept(MediaType.APPLICATION_JSON);
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        Assert.assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
+        VerifyResponse verifyResponse
+                = JsonUtils
+                .fromJson(result.getResponse().getContentAsString(), VerifyResponse.class);
+        Assert.assertNotNull(verifyResponse);
+        Assert.assertEquals(verifyResponse.getAcknowledged(),false);
+    }
+
+    @Test
+    public void failureResponseInvalidCourseId() throws Exception {
+        createInstituteEntity();
+       createStaticCoachingCourseEntity();
+        VerifyRequest request = getVerifyRequest();
+        request.getCartItems().get(0).getMetaData().setCourseId(123L);
+        RequestBuilder requestBuilder =
+                MockMvcRequestBuilders.post(COACHING_BASE + V1 + VERIFY)
+                        .contentType(MediaType.APPLICATION_JSON).content(JsonUtils.toJson(request))
+                        .accept(MediaType.APPLICATION_JSON);
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        Assert.assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
+        VerifyResponse verifyResponse
+                = JsonUtils
+                .fromJson(result.getResponse().getContentAsString(), VerifyResponse.class);
+        Assert.assertNotNull(verifyResponse);
+        Assert.assertEquals(verifyResponse.getAcknowledged(),false);
+    }
+
+    private void createInstituteEntity() {
+        CoachingInstituteEntity
+                coachingInstituteEntity = new CoachingInstituteEntity();
+        coachingInstituteEntity.setInstituteId(123L);
+        coachingInstituteEntity.setIsEnabled(true);
+        coachingInstituteEntity.setPaytmMerchantId("63794147");
+        coachingInstituteRepositoryNew.save(coachingInstituteEntity);
+    }
+
+    private void createDynamicCoachingCourseEntity() {
+        CoachingCourseEntity coachingCourseEntity =
+                new CoachingCourseEntity();
+        coachingCourseEntity.setPaytmProductId(123L);
+        coachingCourseEntity.setMerchantProductId("1");
+        coachingCourseEntity.setIsEnabled(true);
+        coachingCourseEntity.setCourseId(200L);
+        coachingCourseEntity.setCourseType(CourseType.CLASSROOM_COURSE);
+        coachingCourseEntity.setIsDynamic(true);
+        coachingCourseEntity.setCoachingInstituteId(123L);
+        coachingCourseEntity.setOriginalPrice(25378.9D);
+        coachingCourseEntity.setDiscountedPrice(25378.9D);
+        coachingProgramRepository.save(coachingCourseEntity);
+    }
+
+    private void createStaticCoachingCourseEntity() {
+        CoachingCourseEntity coachingCourseEntity =
+                new CoachingCourseEntity();
+        coachingCourseEntity.setPaytmProductId(123L);
+        coachingCourseEntity.setMerchantProductId("1");
+        coachingCourseEntity.setIsEnabled(true);
+        coachingCourseEntity.setCourseId(200L);
+        coachingCourseEntity.setCourseType(CourseType.CLASSROOM_COURSE);
+        coachingCourseEntity.setIsDynamic(false);
+        coachingCourseEntity.setCoachingInstituteId(123L);
+        coachingCourseEntity.setOriginalPrice(25378.9D);
+        coachingCourseEntity.setDiscountedPrice(25378.9D);
+        coachingProgramRepository.save(coachingCourseEntity);
+    }
     private VerifyRequest getVerifyRequest(){
         CartItem cartItem=new CartItem();
         ConvTaxInfo convTaxInfo=
@@ -136,7 +217,7 @@ public class CartItemVerifyControllerTest {
                 .merchantProductId("1")
                 .build();
         cartItem.setBasePrice(25378.9F);
-        cartItem.setQuantity(2);
+        cartItem.setQuantity(1);
         cartItem.setConvFee(0F);
         cartItem.setSellingPrice(25378.9F);
         cartItem.setProductId(123L);

@@ -36,9 +36,9 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.U
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(value = CartItemsController.class, secure = false)
-public class CartItemsControllerTest {
+public class FetchCartItemsControllerTest {
 
-    private static final Logger log = LoggerFactory.getLogger(CartItemsControllerTest.class);
+    private static final Logger log = LoggerFactory.getLogger(FetchCartItemsControllerTest.class);
 
     private final String merchantData  =
             "{\"product_list\":[{\"description\":\"desc\",\"merchant_product_tax_data\":{\"gstin\":\"abcd\",\"total_cgst\":1,\"total_igst\":1,\"total_sgst\":1,\"total_utgst\":1},\"price\":25378.9,\"product_id\":\"1\",\"product_name\":\"abcd\",\"quantity\":1}]}";
@@ -86,6 +86,7 @@ public class CartItemsControllerTest {
     public void clear() {
         coachingInstituteRepositoryNew.deleteAll();
         coachingProgramRepository.deleteAll();
+        redisCacheService.clearCache();
     }
 
     @Test
