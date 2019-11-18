@@ -36,6 +36,7 @@ public class CheckoutMetaData {
     private String courseType;
 
     @NotNull
+    @ApiModelProperty(required = true)
     private Long courseId;
 
     private Long userId;
