@@ -34,16 +34,12 @@ public class MerchantNotifyCartItem {
     @NotNull
     private Long merchantId;
 
-    @NotNull
     private Integer verticalId;
-
-    @NotNull
     private Integer fulfillmentServiceId;
 
     @NotEmpty
     private String metaData;
-
-    @NotEmpty
+    
     private String fulfillmentReq;
 
     @NotNull

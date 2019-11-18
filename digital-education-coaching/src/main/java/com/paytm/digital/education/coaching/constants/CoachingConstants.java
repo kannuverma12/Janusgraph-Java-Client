@@ -147,7 +147,6 @@ public class CoachingConstants {
 
     public static class Search {
 
-        public static final String EXAM_INDEX                      = "education_search_exam_v4";
         public static final String SEARCH_INDEX_COACHING_COURSE    = "coaching_course_v1";
         public static final String SEARCH_INDEX_COACHING_INSTITUTE = "coaching_institute_v1";
         public static final String SEARCH_INDEX_COACHING_CENTER    = "coaching_center_v1";
@@ -155,8 +154,6 @@ public class CoachingConstants {
         public static final String IGNORE_GLOBAL_PRIORITY = "ignore_global_priority";
         public static final String IGNORE_ENTITY_POSITION = "ignore_entity_position";
 
-        public static final String EXAM_ANALYZER                      =
-                "word_delimiter_analyzer_search";
         public static final String SEARCH_ANALYZER_COACHING_COURSE    =
                 "word_delimiter_analyzer_search";
         public static final String SEARCH_ANALYZER_COACHING_INSTITUTE =
