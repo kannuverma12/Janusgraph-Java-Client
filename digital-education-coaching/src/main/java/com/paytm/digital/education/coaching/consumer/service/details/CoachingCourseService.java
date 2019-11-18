@@ -75,6 +75,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.N
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.PRIORITY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_IDS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.TOP_ELEMENTS_ANY_PAGE_LIMIT;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.TransactionConstants.CONVENIENCE_FEE_CGST_PERCENTAGE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.TransactionConstants.CONVENIENCE_FEE_IGST_PERCENTAGE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.TransactionConstants.CONVENIENCE_FEE_PERCENTAGE;
@@ -304,7 +305,7 @@ public class CoachingCourseService {
 
     private List<CoachingCourseEntity> fetchCourses(final List<Long> coachingCourseIdList,
             final List<String> fields) {
-        return coachingCourseDAO.findByCourseIdsIn(COURSE_ID, coachingCourseIdList,fields);
+        return coachingCourseDAO.findByCourseIdsIn(COURSE_ID, coachingCourseIdList, fields);
     }
 
     private Map<String, List<Exam>> fetchExamTypeAndExamListMap(List<Long> targetExamIdList,
@@ -643,7 +644,8 @@ public class CoachingCourseService {
         filter.put(EXAM_IDS, Collections.singletonList(examId));
 
         return (List<CoachingCourseData>) (List<?>) searchDataHelper
-                .getTopSearchData(filter, EducationEntity.COACHING_COURSE, null);
+                .getTopSearchData(filter, EducationEntity.COACHING_COURSE, null,
+                        TOP_ELEMENTS_ANY_PAGE_LIMIT);
     }
 
     List<CoachingCourseData> getTopCoachingCoursesForStreamId(Long streamId) {
@@ -651,7 +653,8 @@ public class CoachingCourseService {
         filter.put(STREAM_IDS, Collections.singletonList(streamId));
 
         return (List<CoachingCourseData>) (List<?>) searchDataHelper
-                .getTopSearchData(filter, EducationEntity.COACHING_COURSE, null);
+                .getTopSearchData(filter, EducationEntity.COACHING_COURSE, null,
+                        TOP_ELEMENTS_ANY_PAGE_LIMIT);
     }
 
     private List<String> fetchSections() {
