@@ -34,8 +34,12 @@ public class CheckoutMetaData {
     private TaxInfo taxInfo;
 
     private String courseType;
-    private Long   courseId;
-    private Long   userId;
+
+    @NotNull
+    @ApiModelProperty(required = true)
+    private Long courseId;
+
+    private Long userId;
 
     @NotEmpty
     @ApiModelProperty(required = true)

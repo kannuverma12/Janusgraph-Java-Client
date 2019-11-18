@@ -60,6 +60,10 @@ public class RedisCacheService {
         return value;
     }
 
-    public void clearCache(String cacheName) {
+    public void clearCache() {
+        Jedis jedis = null;
+        if (jedis != null) {
+            jedis.flushAll();
+        }
     }
 }
