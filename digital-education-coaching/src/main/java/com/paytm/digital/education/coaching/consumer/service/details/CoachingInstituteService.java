@@ -89,6 +89,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.S
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_IDS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.IGNORE_GLOBAL_PRIORITY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.TOP_ELEMENTS_ANY_PAGE_LIMIT;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.TOP_RANKER_LIMIT;
 import static com.paytm.digital.education.coaching.consumer.service.details.CoachingCourseService.CENTER_FIELDS;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.BROWSE_BY_COURSE_TYPE;
@@ -359,7 +360,7 @@ public class CoachingInstituteService {
 
         List<CoachingCourseData> topCoachingCourses =
                 (List<CoachingCourseData>) (List<?>) searchDataHelper.getTopSearchData(filter,
-                        EducationEntity.COACHING_COURSE, null);
+                        EducationEntity.COACHING_COURSE, null, TOP_ELEMENTS_ANY_PAGE_LIMIT);
 
         Map<String, List<Object>> searchFilter = new HashMap<>();
         searchFilter.put(COACHING_COURSE_INSTITUTE,
@@ -379,7 +380,7 @@ public class CoachingInstituteService {
             searchFilter.put(COACHING_COURSE_STREAMS, Collections.singletonList(streamName));
             topCoachingCourses =
                     (List<CoachingCourseData>) (List<?>) searchDataHelper.getTopSearchData(filter,
-                            EducationEntity.COACHING_COURSE, null);
+                            EducationEntity.COACHING_COURSE, null, TOP_ELEMENTS_ANY_PAGE_LIMIT);
         }
 
         if (CollectionUtils.isEmpty(topCoachingCourses)) {
@@ -512,9 +513,10 @@ public class CoachingInstituteService {
             if (Objects.nonNull(examEntity) && !CollectionUtils.isEmpty(examEntity.getStreamIds())
                     && Objects.nonNull(examEntity.getIsEnabled())
                     && examEntity.getIsEnabled()) {
-                topRankerEntityList = topRankerDAO.findByInstituteIdAndIsEnabledAndStreamIdsAndSortBy(
-                        INSTITUTE_ID, instituteId, IS_ENABLED, true, STREAM_IDS, streamId,
-                        CoachingCourseService.TOP_RANKER_FIELDS, sortMap, TOP_RANKER_LIMIT);
+                topRankerEntityList =
+                        topRankerDAO.findByInstituteIdAndIsEnabledAndStreamIdsAndSortBy(
+                                INSTITUTE_ID, instituteId, IS_ENABLED, true, STREAM_IDS, streamId,
+                                CoachingCourseService.TOP_RANKER_FIELDS, sortMap, TOP_RANKER_LIMIT);
             }
         }
 
@@ -602,6 +604,7 @@ public class CoachingInstituteService {
         sortOrder.put(IGNORE_GLOBAL_PRIORITY, ASC);
 
         return (List<CoachingInstituteData>) (List<?>) searchDataHelper
-                .getTopSearchData(filter, EducationEntity.COACHING_INSTITUTE, sortOrder);
+                .getTopSearchData(filter, EducationEntity.COACHING_INSTITUTE, sortOrder,
+                        TOP_ELEMENTS_ANY_PAGE_LIMIT);
     }
 }

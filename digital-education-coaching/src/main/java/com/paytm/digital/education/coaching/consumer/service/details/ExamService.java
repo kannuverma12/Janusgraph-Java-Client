@@ -53,6 +53,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.S
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_DETAILS_FIELDS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.TOP_ELEMENTS_ANY_PAGE_LIMIT;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_COACHING_COURSES_FOR;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_COACHING_INSTITUTES_FOR;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
@@ -231,6 +232,6 @@ public class ExamService {
         filter.put(STREAM_IDS, Collections.singletonList(streamId));
 
         return (List<ExamData>) (List<?>) searchDataHelper
-                .getTopSearchData(filter, EducationEntity.EXAM, null);
+                .getTopSearchData(filter, EducationEntity.EXAM, null, TOP_ELEMENTS_ANY_PAGE_LIMIT);
     }
 }
