@@ -149,6 +149,9 @@ public class ExamDetail implements CTAInfoHolder {
     @JsonProperty("disclaimer")
     private String disclaimer;
 
+    @JsonProperty("registration_guidelines")
+    private String registrationGuidelines;
+
     @JsonIgnore
     private Long collegePredictorPid;
 
@@ -164,7 +167,7 @@ public class ExamDetail implements CTAInfoHolder {
 
     @JsonIgnore
     @Accessors(fluent = true)
-    private boolean shouldHaveLeadCTA = true;
+    private boolean shouldHaveLeadCTA = false;
 
     @JsonIgnore
     @Accessors(fluent = true)
@@ -196,7 +199,7 @@ public class ExamDetail implements CTAInfoHolder {
     @JsonIgnore
     @Override
     public boolean hasShortListFeature() {
-        return true;
+        return false;
     }
 
     @JsonIgnore

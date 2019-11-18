@@ -17,6 +17,7 @@ public class CoachingConstants {
     public static final String EXAM_ID                         = "exam_id";
     public static final String STREAM_ID                       = "stream_id";
     public static final String COURSE_ID                       = "course_id";
+    public static final String CTA_ID                          = "cta_id";
     public static final String COURSE_TYPE                     = "course_type";
     public static final String COACHING_EXAM_STREAMS           = "stream_names";
     public static final String COACHING_COURSE_EXAMS           = "exam_names";
@@ -115,6 +116,7 @@ public class CoachingConstants {
     public static final int LANDING_PAGE_TOP_COURSES_LIMIT      = 4;
     public static final int LANDING_PAGE_TOP_COURSES_PER_STREAM = 1;
     public static final int TOP_ELEMENTS_ANY_PAGE_LIMIT         = 4;
+    public static final int TOP_INSTITUTES_COUNT_LANDING_PAGE   = 8;
 
     public static final String COACHING_VERTICAL_NAME = "COACHING";
 
@@ -145,7 +147,6 @@ public class CoachingConstants {
 
     public static class Search {
 
-        public static final String EXAM_INDEX                      = "education_search_exam_v3";
         public static final String SEARCH_INDEX_COACHING_COURSE    = "coaching_course_v1";
         public static final String SEARCH_INDEX_COACHING_INSTITUTE = "coaching_institute_v1";
         public static final String SEARCH_INDEX_COACHING_CENTER    = "coaching_center_v1";
@@ -153,8 +154,6 @@ public class CoachingConstants {
         public static final String IGNORE_GLOBAL_PRIORITY = "ignore_global_priority";
         public static final String IGNORE_ENTITY_POSITION = "ignore_entity_position";
 
-        public static final String EXAM_ANALYZER                      =
-                "word_delimiter_analyzer_search";
         public static final String SEARCH_ANALYZER_COACHING_COURSE    =
                 "word_delimiter_analyzer_search";
         public static final String SEARCH_ANALYZER_COACHING_INSTITUTE =

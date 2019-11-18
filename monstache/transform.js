@@ -25,7 +25,7 @@ function findCollegeById(college_id) {
   var listOfColleges = find({ institute_id: college_id }, collegeQueryOptions);
   if (listOfColleges === undefined || listOfColleges.length !== 1) {
     // requested document not found or invalid case when more then 1 doc found for same id
-    console.warn("WARN Cannot find college with id :" + college_id);
+    warn("Cannot find college with id :" + college_id);
     return null;
   }
   return listOfColleges[0];
@@ -44,6 +44,7 @@ function getCollegeSuperDocument(college_id) {
   var targetCollege = findCollegeById(college_id);
 
   if (targetCollege === null || targetCollege.publishing_status !== "PUBLISHED") {
+    warn("Skipping institute_id : " + college_id + " is not in published status. status : " + targetCollege.publishing_status);
     return null;
   }
 
@@ -229,14 +230,10 @@ function transformCollege(superDoc) {
   transformedCollege.official_name = superDoc.official_name;
   transformedCollege.ownership = superDoc.ownership;
 
-
-
   // if (superDoc.official_address) { // if key exists
   //   transformedCollege.state = superDoc.official_address.state;
   //   transformedCollege.city = superDoc.official_address.city;
   // }
-
-
 
   if(superDoc.institution_city){
     transformedCollege.city = ConvertInCamelCase(superDoc.institution_city);
@@ -246,8 +243,6 @@ function transformCollege(superDoc) {
     transformedCollege.state = ConvertInCamelCase(superDoc.institution_state);
   }
 
-
-
   transformedCollege.year_of_estd = superDoc.established_year;
   transformedCollege.institute_type = superDoc.entity_type;
   transformedCollege.is_client = superDoc.is_client;
@@ -256,8 +251,6 @@ function transformCollege(superDoc) {
     transformedCollege.paytm_keys = superDoc.paytm_keys;
   }
   //transformedCollege.institute_gender = superDoc.genders_accepted; //array
-
-
 
   if (Array.isArray(superDoc.genders_accepted)){
     transformedCollege.institute_gender = [];
@@ -282,22 +275,22 @@ function transformCollege(superDoc) {
       transformedCollege.institute_gender.push('female');
     }
 
-
   }
 
   if (superDoc.facilities) {
     transformedCollege.facilities = superDoc.facilities;
   }
 
-
-
   // exams accepted: array
 
   if (Object.keys(superDoc.exam_map).length > 0) {
-    transformedCollege.exams_accepted = Object.keys(superDoc.exam_map).map(function (key) {
+    transformedCollege.exams_accepted = Object.keys(superDoc.exam_map)
+    .filter(key -> superDoc.exam_map[key])
+    .map(function (key) {
       return superDoc.exam_map[key];
     });
-      transformedCollege.exams_accepted_search = Object.keys(superDoc.exam_map).map(function (key) {
+
+    transformedCollege.exams_accepted_search = Object.keys(superDoc.exam_map).map(function (key) {
       return superDoc.exam_map[key];
     });
   }
@@ -339,13 +332,9 @@ function transformCollege(superDoc) {
         transformedCollege[rating_key] = ranking.score;
     }
 
-     // var stream_rank_key = "ranking_" + rating_prefix + '_' + rating_suffix;
-      //transformedCollege[stream_rank_key.toLowerCase()] = ranking.score;
-      // NOTE: we are keeping minimum rank in max_rank here.
-
-      if (ranking.rank < transformedCollege.max_rank) {
-        transformedCollege.max_rank = ranking.rank;
-      }
+    if (ranking.rank < transformedCollege.max_rank) {
+      transformedCollege.max_rank = ranking.rank;
+    }
 
       // keep max score as max_rating
 
@@ -354,8 +343,6 @@ function transformCollege(superDoc) {
       }
     }
   }
-
-
 
   // update courses data
   transformedCollege.courses = [];
@@ -419,13 +406,11 @@ function transformCollege(superDoc) {
     }
   }
 
-
-
   if (transformedCollege.courses.length === 0) {
     delete transformedCollege.courses;
     delete transformedCollege.courses_offered;
   }
-  console.log(JSON.stringify(transformedCollege.institute_id));
+  info("Transformed college : " + JSON.stringify(transformedCollege.institute_id));
   return transformedCollege;
 
 }
@@ -459,37 +444,51 @@ module.exports = function(doc, ns, updateDesc) {
   if (db !== database_name)
     return false;
 
-
-
-  if (coll === college_collection && doc.publishing_status === "PUBLISHED") {
-    college_id = doc.institute_id;
-    console.log("Collection : " + coll + " institute_id : " + doc.institute_id);
-  } else if (coll === course_collection && doc.publishing_status === "PUBLISHED") {
-    college_id = doc.institute_id;
-    if(doc.course_id){
-      console.log("Collection : " + coll + " course_id : " + doc.course_id);
+  try {
+    if (coll === college_collection && doc.publishing_status === "PUBLISHED") {
+      college_id = doc.institute_id;
+      info("Processing Collection : " + coll + " institute_id : " + doc.institute_id);
+    } else if (coll === course_collection && doc.publishing_status === "PUBLISHED") {
+      college_id = doc.institute_id;
+      if (doc.course_id) {
+        info("Processing Collection : " + coll + " course_id : " + doc.course_id);
+      }
+    } else {
+      // don't handle other collections for now.
+      return false;
     }
-  } else {
-    // don't handle other collections for now.
+
+    var superDocument = getCollegeSuperDocument(college_id);
+
+    if (superDocument === null) {
+      return false;
+    }
+    superDocument = transformCollege(superDocument);
+
+    // update meta
+
+    var meta = {id: superDocument._id, index: target_collection, type: target_doc_type};
+    superDocument._meta_monstache = meta;
+    info("Processed Institute : " + doc.institute_id);
+    return superDocument;
+  } catch (e) {
+    error("Error in processing institute : " + doc.institute_id + ", " + e.);
     return false;
   }
+}
 
-  var superDocument = getCollegeSuperDocument(college_id);
+function info(message) {
+  console.log("INFO : " + currentTimestamp() + " " + message);
+}
 
-  if (superDocument === null) {
-    return false;
-  }
+function error(message) {
+  console.error("ERROR : "+ currentTimestamp() + " " + message);
+}
 
+function warn(message) {
+  console.warn("WARN : " + currentTimestamp() + " " + message);
+}
 
-
-  superDocument = transformCollege(superDocument);
-
-
-
-  // update meta
-
-  var meta = { id: superDocument._id, index: target_collection, type: target_doc_type };
-  superDocument._meta_monstache = meta;
-  return superDocument;
-
+function currentTimestamp() {
+  return new Date().toISOString();
 }

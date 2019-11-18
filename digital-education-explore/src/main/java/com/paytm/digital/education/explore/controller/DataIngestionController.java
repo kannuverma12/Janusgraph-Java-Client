@@ -1,8 +1,10 @@
 package com.paytm.digital.education.explore.controller;
 
 import com.paytm.digital.education.explore.request.dto.EntityData;
+import com.paytm.digital.education.explore.response.dto.dataimport.DataImportResponse;
 import com.paytm.digital.education.explore.response.dto.dataimport.StaticDataIngestionResponse;
 import com.paytm.digital.education.explore.service.IngestStaticDataService;
+import com.paytm.digital.education.explore.scheduler.DataIngestionScheduler;
 import com.paytm.digital.education.explore.service.impl.ImportIncrementalDataService;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
@@ -31,19 +33,19 @@ public class DataIngestionController {
 
     private ImportIncrementalDataService importIncrementalDataService;
     private IngestStaticDataService      importStaticDataService;
+    private DataIngestionScheduler       dataIngestionScheduler;
 
     @RequestMapping(method = RequestMethod.GET, path = "/v1/import/data")
-    public @ResponseBody boolean importData() throws java.io.FileNotFoundException {
-        importIncrementalDataService.importData(null, null, null);
-        return true;
+    public @ResponseBody List<DataImportResponse> importData() {
+        return importIncrementalDataService.importData(null, null, null);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/v1/import/manual")
-    public @ResponseBody boolean importDataManually(@RequestParam("entity") @NotBlank String entity,
+    public @ResponseBody List<DataImportResponse> importDataManually(
+            @RequestParam("entity") @NotBlank String entity,
             @RequestParam("version") @Min(1) Integer directory,
             @RequestParam("update_version") @NotNull Boolean updateVersion) {
-        importIncrementalDataService.importData(entity, directory, updateVersion);
-        return true;
+        return importIncrementalDataService.importData(entity, directory, updateVersion);
     }
 
     @RequestMapping(method = RequestMethod.POST, path = "/v1/import/catalog")
@@ -58,6 +60,12 @@ public class DataIngestionController {
             @RequestBody List<EntityData> entityDataList) {
         log.info("Received request to ingest data. : {}", entityDataList.toString());
         return importStaticDataService.ingestDataEntityWise(entityDataList);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, path = "/v1/import/data/scheduler")
+    public @ResponseBody List<DataImportResponse> importDataScheduler() {
+        log.info("Received request to ingest data from scheduler.");
+        return dataIngestionScheduler.importDataScheduler();
     }
 
 }

@@ -38,7 +38,6 @@ public class SearchController {
             @RequestHeader(value = "fe_client", defaultValue = "WEB",
                     required = false) Client client) throws Exception {
         log.info("Search Request : {}", JsonUtils.toJson(searchRequest));
-        log.info("Client : " + client);
         exploreValidator.validateAndThrowException(searchRequest);
         if (searchRequest.getEntity().equals(EducationEntity.COURSE)) {
             CourseSearchValidator.validateRequest(searchRequest);

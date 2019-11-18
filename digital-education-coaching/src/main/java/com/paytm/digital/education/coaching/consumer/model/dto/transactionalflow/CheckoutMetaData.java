@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,9 +24,13 @@ import javax.validation.constraints.NotNull;
 public class CheckoutMetaData {
 
     @Valid
+    @NotNull
+    @ApiModelProperty(required = true)
     private ConvTaxInfo convTaxInfo;
 
     @Valid
+    @NotNull
+    @ApiModelProperty(required = true)
     private TaxInfo taxInfo;
 
     private String courseType;
@@ -36,5 +41,6 @@ public class CheckoutMetaData {
     private Long userId;
 
     @NotEmpty
+    @ApiModelProperty(required = true)
     private String merchantProductId;
 }

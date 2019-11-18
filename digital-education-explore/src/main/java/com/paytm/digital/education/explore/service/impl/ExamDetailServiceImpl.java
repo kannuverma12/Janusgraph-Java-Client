@@ -101,9 +101,6 @@ public class ExamDetailServiceImpl {
         List<CTA> ctas = ctaHelper.buildCTA(examDetail, client);
 
         if (!CollectionUtils.isEmpty(ctas)) {
-            if (!Client.APP.equals(client)) {
-                ctas.removeIf(cta -> cta.getType().equals(CTAType.SHORTLIST));
-            }
             examDetail.setCtaList(ctas);
         }
         return examDetail;
@@ -363,6 +360,7 @@ public class ExamDetailServiceImpl {
                 examResponse.setTermsAndConditions(exam.getPaytmKeys().getTermsAndConditions());
                 examResponse.setDisclaimer(exam.getPaytmKeys().getDisclaimer());
                 examResponse.setPrivacyPolicies(exam.getPaytmKeys().getPrivacyPolicies());
+                examResponse.setRegistrationGuidelines(exam.getPaytmKeys().getRegistrationGuidelines());
             }
         }
         if (syllabusflg) {
