@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.MerchantNotifyCartItem;
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.NotifyMerchantInfo;
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.NotifyUserInfo;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.Valid;
@@ -21,16 +22,20 @@ public class MerchantNotifyRequest {
 
     @NotEmpty
     @Valid
+    @ApiModelProperty(required = true)
     private List<MerchantNotifyCartItem> cartItems;
 
     @NotEmpty
     @Valid
+    @ApiModelProperty(required = true)
     private Map<Long, NotifyMerchantInfo> merchantData;
 
     @NotNull
     @Valid
+    @ApiModelProperty(required = true)
     private NotifyUserInfo userData;
 
     @NotEmpty
+    @ApiModelProperty(required = true)
     private String orderCreatedAt;
 }
