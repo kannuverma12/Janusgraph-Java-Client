@@ -5,12 +5,12 @@
     <parent>
         <artifactId>digital-education-service</artifactId>
         <groupId>com.paytm.digital.education</groupId>
-        <version>0.0.9-SNAPSHOT</version>
+        <version>0.0.16-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>digital-education-utilities</artifactId>
-    <version>0.0.33-SNAPSHOT</version>
+    <version>0.0.41-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -18,7 +18,7 @@
         <openhtml.version>0.0.1-RC13</openhtml.version>
         <freemarker.version>2.3.28</freemarker.version>
         <swagger.version>2.9.2</swagger.version>
-
+        <datadog.version>2.6.1</datadog.version>
     </properties>
 
     <dependencies>
@@ -127,6 +127,15 @@
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
             <version>${swagger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.datadoghq</groupId>
+            <artifactId>java-dogstatsd-client</artifactId>
+            <version>${datadog.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
     </dependencies>
     <distributionManagement>
