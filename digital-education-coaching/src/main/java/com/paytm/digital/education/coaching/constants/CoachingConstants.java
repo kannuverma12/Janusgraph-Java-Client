@@ -145,7 +145,7 @@ public class CoachingConstants {
 
     public static class Search {
 
-        public static final String EXAM_INDEX                      = "education_search_exam_v3";
+        public static final String EXAM_INDEX                      = "education_search_exam_v4";
         public static final String SEARCH_INDEX_COACHING_COURSE    = "coaching_course_v1";
         public static final String SEARCH_INDEX_COACHING_INSTITUTE = "coaching_institute_v1";
         public static final String SEARCH_INDEX_COACHING_CENTER    = "coaching_center_v1";
