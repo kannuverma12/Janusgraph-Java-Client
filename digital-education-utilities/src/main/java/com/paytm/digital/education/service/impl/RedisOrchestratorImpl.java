@@ -42,61 +42,7 @@ public class RedisOrchestratorImpl implements RedisOrchestrator {
     }
 
     @Override
-    public <U> Object get(String key, CachedMethod<U> cachedMethod) {
-        final CheckData<String> checkData = new CheckData<String>() {
-            @Override
-            public void doCheckData(String data) throws OldCacheValueExpiredException, OldCacheValueNullException {
-                cacheValueProcessor.parseCacheValueAndValidateExpiry(data);
-            }
-        };
-
-        final GetData<String> getData = new GetData<String>() {
-            @Override
-            public String doGetData() {
-                String fullData = template.opsForValue().get(key);
-                return fullData;
-            }
-        };
-
-        final WriteData<U> writeData = new WriteData<U>() {
-            @Override
-            public <K, V> void doWriteData(RedisOperations<K, V> redisOperations, U o) {
-                String data = serializeData(o, key);
-                String cacheableValue = cacheValueProcessor.appendExpiryDateToValue(data, ttl);
-                redisOperations.opsForValue().set((K) key, (V) cacheableValue);
-            }
-        };
-
-        Response<String, U> response =
-                cacheLockStrategy.getCacheValue(key, getData, checkData, writeData, cachedMethod);
-        if (response.isOldValue()) {
-            try {
-                return deSerializeData(
-                        cacheValueProcessor.parseCacheValueAndValidateExpiry(response.getOldValue()), key);
-            } catch (OldCacheValueNullException | OldCacheValueExpiredException e) {
-                return null;
-            }
-        } else {
-            return response.getNewValue();
-        }
-    }
-
-    private Object deSerializeData(String s, String key) {
-        try {
-            return fromHexString(s);
-        } catch (IOException | ClassNotFoundException e) {
-            logger.error("Key - {}, Data - {}. Cache data parse failed.", e, key, s);
-            template.opsForValue().getOperations().delete(key);
-            throw new SerializationException(e);
-        }
-    }
-
-    private String serializeData(Object o, String key) {
-        try {
-            return toHexString(o);
-        } catch (IOException e) {
-            logger.error("Key - {}, Object - {}. Unable to stringify data for key.", e, key, o);
-            throw new SerializationException(e);
-        }
+    public Object get(String key, CachedMethod cachedMethod) {
+        return cacheLockStrategy.getCacheValue(key, cachedMethod);
     }
 }

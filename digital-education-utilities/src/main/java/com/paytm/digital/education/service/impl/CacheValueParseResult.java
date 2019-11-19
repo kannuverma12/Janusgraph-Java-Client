@@ -6,7 +6,7 @@ import org.joda.time.DateTime;
 
 @RequiredArgsConstructor
 @Getter
-public class CacheValueParseResult {
+public class CacheValueParseResult implements CacheData {
     private final DateTime expiryDateTime;
     private final String data;
 }

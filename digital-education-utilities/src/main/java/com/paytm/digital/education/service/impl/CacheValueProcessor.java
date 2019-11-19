@@ -1,7 +1,5 @@
 package com.paytm.digital.education.service.impl;
 
-import com.paytm.digital.education.exception.OldCacheValueExpiredException;
-import com.paytm.digital.education.exception.OldCacheValueNullException;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
@@ -15,16 +13,11 @@ public class CacheValueProcessor {
     private static final String VALUE_DELIMITER = " **##** ";
     private static final Pattern VALUE_DELIMITER_PATTERN = Pattern.compile(" \\*\\*##\\*\\* ");
 
-    public String parseCacheValueAndValidateExpiry(String cacheValue)
-            throws OldCacheValueNullException, OldCacheValueExpiredException {
+    public CacheValueParseResult parseCacheValue(String cacheValue) {
         if (Objects.isNull(cacheValue)) {
-            throw new OldCacheValueNullException();
+            return new CacheValueParseResult(null, null);
         }
-        CacheValueParseResult result = parse(cacheValue);
-        if (result.getExpiryDateTime().isAfterNow()) {
-            return result.getData();
-        }
-        throw new OldCacheValueExpiredException();
+        return parse(cacheValue);
     }
 
     public String appendExpiryDateToValue(String value, int ttlMillis) {

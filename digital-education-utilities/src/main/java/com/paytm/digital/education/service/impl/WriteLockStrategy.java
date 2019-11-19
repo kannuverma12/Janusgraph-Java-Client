@@ -2,8 +2,6 @@ package com.paytm.digital.education.service.impl;
 
 import com.paytm.digital.education.exception.CachedMethodInvocationException;
 import com.paytm.digital.education.exception.EducationException;
-import com.paytm.digital.education.exception.OldCacheValueExpiredException;
-import com.paytm.digital.education.exception.OldCacheValueNullException;
 import com.paytm.digital.education.exception.SerializationException;
 import com.paytm.digital.education.method.CachedMethod;
 import com.paytm.digital.education.service.CacheLockStrategy;
@@ -43,44 +41,55 @@ public class WriteLockStrategy implements CacheLockStrategy {
      *    See:- https://stackoverflow.com/questions/133988/synchronizing-on-string-objects-in-java#answer-134154
      * 2. Add lock token in redis so that processes don't remove other processes' locks
      */
-    public <T, U> Response<T, U> getCacheValue(
-            String key, GetData<T> getData, CheckData<T> checkData,
-            WriteData<U> writeData, CachedMethod<U> cachedMethod) {
-        T oldData = null;
-        try {
-            oldData = getData.doGetData();
-            checkData.doCheckData(oldData);
-            return new Response<>(oldData, null);
-        } catch (OldCacheValueExpiredException | OldCacheValueNullException e) {
-            logger.debug("Old cache value exception", e);
+    public Object getCacheValue(
+            String key, CachedMethod cachedMethod) {
+        CacheData cacheData = cacheValueProcessor.parseCacheValue(template.opsForValue().get(key));
+        Object oldData = null;
+        if (cacheData.getExpiryDateTime() != null && cacheData.getData() != null) {
+            oldData = deSerializeData(cacheData.getData(), key);
         }
+
+        if (cacheData.getExpiryDateTime() != null && cacheData.getExpiryDateTime().isAfterNow()) {
+            return oldData;
+        }
+
+        logger.debug("Old cache value for key ", key);
 
         synchronized (key.intern()) {
             String lockKey = key + "::redisLock";
             Boolean success = template.opsForValue()
                     .setIfAbsent(lockKey, "1", ofSeconds(lockDurationForProcessInSeconds));
             if (BooleanUtils.isNotTrue(success)) {
-                return new Response<>(oldData, null);
+                return oldData;
             }
             try {
-                U u = cachedMethod.invoke();
-                String data = serializeData(u, key);
+                Object computed = cachedMethod.invoke();
+                String data = serializeData(computed, key);
                 String cacheableValue = cacheValueProcessor.appendExpiryDateToValue(data, 3600000);
                 template.opsForValue().set(key, cacheableValue);
                 template.opsForValue().getOperations().delete(lockKey);
-                return new Response<>(null, u);
+                return computed;
             } catch (CachedMethodInvocationException e) {
                 template.opsForValue().getOperations().delete(lockKey);
                 final Throwable t = e.getCause();
                 if (t instanceof EducationException) {
                     throw (EducationException) t;
                 }
-                return new Response<>(oldData, null);
+                return oldData;
             }
         }
     }
 
     private String serializeData(Object o, String key) {
+        try {
+            return toHexString(o);
+        } catch (IOException e) {
+            logger.error("Key - {}, Object - {}. Unable to stringify data for key.", e, key, o);
+            throw new SerializationException(e);
+        }
+    }
+
+    private String deSerializeData(Object o, String key) {
         try {
             return toHexString(o);
         } catch (IOException e) {
