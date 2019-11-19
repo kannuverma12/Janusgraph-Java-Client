@@ -4,6 +4,7 @@ import com.paytm.digital.education.exception.CachedMethodInvocationException;
 import com.paytm.digital.education.exception.EducationException;
 import com.paytm.digital.education.exception.OldCacheValueExpiredException;
 import com.paytm.digital.education.exception.OldCacheValueNullException;
+import com.paytm.digital.education.exception.SerializationException;
 import com.paytm.digital.education.method.CachedMethod;
 import com.paytm.digital.education.service.CacheLockStrategy;
 import com.paytm.education.logger.Logger;
@@ -17,6 +18,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static com.paytm.digital.education.utility.SerializationUtils.toHexString;
 import static java.time.Duration.ofSeconds;
 
 @Service
@@ -25,16 +30,20 @@ public class WriteLockStrategy implements CacheLockStrategy {
     private static final Logger logger = LoggerFactory.getLogger(WriteLockStrategy.class);
     private static final int PROCESS_SLEEP_TIME_IN_MILLIS = 500;
     private static final int NUMBER_OF_TIMES_THREAD_RETRIES_BEFORE_GIVING_UP = 10;
+    private static AtomicInteger mutex = new AtomicInteger();
 
     private final RedisTemplate<String, String> template;
     private final int lockDurationForProcessInSeconds;
+    private final CacheValueProcessor cacheValueProcessor;
 
 
     public WriteLockStrategy(
             RedisTemplate<String, String> template,
-            @Value("${redis.cache.process.lock.duration.seconds}") int lockDurationForProcessInSeconds) {
+            @Value("${redis.cache.process.lock.duration.seconds}") int lockDurationForProcessInSeconds,
+            CacheValueProcessor cacheValueProcessor) {
         this.template = template;
         this.lockDurationForProcessInSeconds = lockDurationForProcessInSeconds;
+        this.cacheValueProcessor = cacheValueProcessor;
     }
 
     @Override
@@ -42,67 +51,54 @@ public class WriteLockStrategy implements CacheLockStrategy {
             String key, GetData<T> getData, CheckData<T> checkData,
             WriteData<U> writeData, CachedMethod<U> cachedMethod) {
         String lockKey = key + "::zookeeper";
-
-        for (int i = 0; i < NUMBER_OF_TIMES_THREAD_RETRIES_BEFORE_GIVING_UP; ++i) {
-            T data = null;
-            try {
-                data = getData.doGetData();
-                checkData.doCheckData(data);
-                return new Response<>(data, null);
-            } catch (OldCacheValueExpiredException | OldCacheValueNullException e) {
-                logger.debug("Old cache value exception", e);
-            }
-            String processId = RandomStringUtils.randomAlphabetic(10);
-            Boolean success = template.opsForValue().setIfAbsent(lockKey, processId,
-                    ofSeconds(lockDurationForProcessInSeconds));
-            if (BooleanUtils.isNotTrue(success)) {
-                sleep(PROCESS_SLEEP_TIME_IN_MILLIS, key);
-                continue;
-            }
-
-            U computed = writeAndReleaseLock(lockKey, processId, cachedMethod, writeData);
-            return new Response<>(data, computed);
+        T data = null;
+        try {
+            data = (T) CacheClass.value;
+            checkData.doCheckData(data);
+            return new Response<>(data, null);
+        } catch (OldCacheValueExpiredException | OldCacheValueNullException e) {
+            logger.debug("Old cache value exception", e);
         }
 
-        return null;
-    }
+        writeData();
 
-    private <U> U writeAndReleaseLock(String lockKey, String processId, CachedMethod<U> cachedMethod,
-                                      WriteData<U> writeData) {
-        return template.execute(new SessionCallback<U>() {
-            @Override
-            public <K, V> U execute(RedisOperations<K, V> operations) throws DataAccessException {
-                operations.watch((K) lockKey);
-                if (processId.equals(operations.opsForValue().get(lockKey))) {
-                    U u = null;
-                    try {
-                        u = cachedMethod.invoke();
-                        operations.multi();
-                        writeData.doWriteData(operations, u);
-                        operations.opsForValue().getOperations().delete((K) lockKey);
-                        operations.exec();
-                    } catch (CachedMethodInvocationException e) {
-                        final Throwable t = e.getCause();
-                        operations.multi();
-                        operations.opsForValue().getOperations().delete((K) lockKey);
-                        operations.exec();
-                        if (t instanceof EducationException) {
-                            throw (EducationException) t;
-                        }
-                    }
-                    return u;
-                }
-                operations.unwatch();
-                return null;
-            }
-        });
-    }
+        String processId = RandomStringUtils.randomAlphabetic(10);
+        if (mutex.getAndSet(1) == 1) {
+            return new Response<>(data, null);
+        }
+        //        Boolean success = template.opsForValue().setIfAbsent(lockKey, processId,
+        //                ofSeconds(lockDurationForProcessInSeconds));
+        //        if (BooleanUtils.isNotTrue(success)) {
+        //            return new Response<>(data, null);
+        //        }
 
-    private static void sleep(long time, String key) {
         try {
-            Thread.sleep(time);
-        } catch (InterruptedException e) {
-            logger.debug("Sleep for key - {} failed", e, key);
+            U u = cachedMethod.invoke();
+            String data2 = serializeData(u, key);
+            String cacheableValue = cacheValueProcessor.appendExpiryDateToValue(data2, 3600000);
+            CacheClass.value = cacheableValue;
+            // template.opsForValue().set(key, cacheableValue);
+            // template.opsForValue().getOperations().delete(lockKey);
+            mutex.set(0);
+            return new Response<>(null, u);
+        } catch (CachedMethodInvocationException e) {
+            final Throwable t = e.getCause();
+            if (t instanceof EducationException) {
+                throw (EducationException) t;
+            }
+            return new Response<>(data, null);
+        }
+    }
+
+    private synchronized void writeData() {
+    }
+
+    private String serializeData(Object o, String key) {
+        try {
+            return toHexString(o);
+        } catch (IOException e) {
+            logger.error("Key - {}, Object - {}. Unable to stringify data for key.", e, key, o);
+            throw new SerializationException(e);
         }
     }
 }
