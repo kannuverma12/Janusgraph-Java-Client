@@ -3,8 +3,10 @@ package com.paytm.digital.education.application.cache;
 import com.paytm.digital.education.service.impl.RedisOrchestratorImpl;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
@@ -21,26 +23,27 @@ import java.util.concurrent.Future;
 import static com.paytm.digital.education.application.cache.TestUtil.processTwoStrings;
 import static java.lang.Long.MAX_VALUE;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
-import static org.hamcrest.number.OrderingComparison.lessThanOrEqualTo;
+import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @SpringBootTest
 @TestPropertySource("/application-test.properties")
 @RunWith(SpringRunner.class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class CacheTest {
     private static final Logger logger = LoggerFactory.getLogger(RedisOrchestratorImpl.class);
 
     @Autowired
     private TestService testService;
 
-    private static int NUMBER_OF_THREADS = 10000;
-    private static int THREAD_POOL_SIZE = 10000;
-    private static double EXPECTED_FRACTION_OF_THREADS_WHICH_WROTE = 2.0 / 100;
+    private static int NUMBER_OF_THREADS = 1000;
+    private static int THREAD_POOL_SIZE = 1000;
 
     @Test
-    public void testCacheConcurrenceRunsOnlyOnce() throws Exception {
+    public void testCacheConcurrenceSequentialExecutionForWriteLock() throws Exception {
         String arg1 = "arg1";
         String arg2 = "arg2";
 
@@ -51,25 +54,14 @@ public class CacheTest {
         }
 
         ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
-        List<Future<String>> futureValues = executorService.invokeAll(callables);
+        executorService.invokeAll(callables);
         executorService.shutdown();
         executorService.awaitTermination(MAX_VALUE, NANOSECONDS);
-//        for (Future<String> future : futureValues) {
-//            assertTrue(future.isDone());
-//            assertEquals(future.get(), processTwoStrings(arg1, arg2));
-//        }
-
-        /*
-         * Note:- In case of cache miss, out of 1000 concurrent requests
-         * only 8 (approx) (1%) were able to write.
-         * Ideally, only one request should have written, but to ensure that, we would
-         * have to lock the whole operation (including the fetch from cache operation),
-         * which would have incurred a much greater penalty.
-         */
-        final int EXPECTED_NUMBER_OF_THREADS_WHICH_WROTE =
-                (int) (EXPECTED_FRACTION_OF_THREADS_WHICH_WROTE * NUMBER_OF_THREADS);
-        assertThat(TestService.TEST_COUNT, lessThanOrEqualTo(EXPECTED_NUMBER_OF_THREADS_WHICH_WROTE));
-        logger.info("Number of writes count (approx) - {}", TestService.TEST_COUNT);
+        assertThat(testService.getEvents().size(), greaterThan(0));
+        for (int i = 0; i < testService.getEvents().size() - 1; ++i) {
+            assertNotEquals(testService.getEvents().get(i), testService.getEvents().get(i + 1));
+        }
+        logger.info("Number of writes count (approx) - {}", testService.getTestCount());
     }
 
     @Test
@@ -91,6 +83,6 @@ public class CacheTest {
             assertTrue(future.isDone());
             assertEquals(future.get(), processTwoStrings(arg1, arg2));
         }
-        assertEquals(TestService.CONTROL_COUNT.get(), NUMBER_OF_THREADS);
+        assertEquals(testService.getControlCount().get(), NUMBER_OF_THREADS);
     }
 }

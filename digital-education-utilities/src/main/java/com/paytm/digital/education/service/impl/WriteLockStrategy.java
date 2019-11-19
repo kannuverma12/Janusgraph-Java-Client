@@ -10,16 +10,11 @@ import com.paytm.digital.education.service.CacheLockStrategy;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.paytm.digital.education.utility.SerializationUtils.toHexString;
 import static java.time.Duration.ofSeconds;
@@ -28,14 +23,10 @@ import static java.time.Duration.ofSeconds;
 public class WriteLockStrategy implements CacheLockStrategy {
 
     private static final Logger logger = LoggerFactory.getLogger(WriteLockStrategy.class);
-    private static final int PROCESS_SLEEP_TIME_IN_MILLIS = 500;
-    private static final int NUMBER_OF_TIMES_THREAD_RETRIES_BEFORE_GIVING_UP = 10;
-    private static AtomicInteger mutex = new AtomicInteger();
 
     private final RedisTemplate<String, String> template;
     private final int lockDurationForProcessInSeconds;
     private final CacheValueProcessor cacheValueProcessor;
-
 
     public WriteLockStrategy(
             RedisTemplate<String, String> template,
@@ -47,50 +38,46 @@ public class WriteLockStrategy implements CacheLockStrategy {
     }
 
     @Override
+    /** TODOs:-
+     * 1. Replace intern with concurrent maps.
+     *    See:- https://stackoverflow.com/questions/133988/synchronizing-on-string-objects-in-java#answer-134154
+     * 2. Add lock token in redis so that processes don't remove other processes' locks
+     */
     public <T, U> Response<T, U> getCacheValue(
             String key, GetData<T> getData, CheckData<T> checkData,
             WriteData<U> writeData, CachedMethod<U> cachedMethod) {
-        String lockKey = key + "::zookeeper";
-        T data = null;
+        T oldData = null;
         try {
-            data = (T) CacheClass.value;
-            checkData.doCheckData(data);
-            return new Response<>(data, null);
+            oldData = getData.doGetData();
+            checkData.doCheckData(oldData);
+            return new Response<>(oldData, null);
         } catch (OldCacheValueExpiredException | OldCacheValueNullException e) {
             logger.debug("Old cache value exception", e);
         }
 
-        writeData();
-
-        String processId = RandomStringUtils.randomAlphabetic(10);
-        if (mutex.getAndSet(1) == 1) {
-            return new Response<>(data, null);
-        }
-        //        Boolean success = template.opsForValue().setIfAbsent(lockKey, processId,
-        //                ofSeconds(lockDurationForProcessInSeconds));
-        //        if (BooleanUtils.isNotTrue(success)) {
-        //            return new Response<>(data, null);
-        //        }
-
-        try {
-            U u = cachedMethod.invoke();
-            String data2 = serializeData(u, key);
-            String cacheableValue = cacheValueProcessor.appendExpiryDateToValue(data2, 3600000);
-            CacheClass.value = cacheableValue;
-            // template.opsForValue().set(key, cacheableValue);
-            // template.opsForValue().getOperations().delete(lockKey);
-            mutex.set(0);
-            return new Response<>(null, u);
-        } catch (CachedMethodInvocationException e) {
-            final Throwable t = e.getCause();
-            if (t instanceof EducationException) {
-                throw (EducationException) t;
+        synchronized (key.intern()) {
+            String lockKey = key + "::redisLock";
+            Boolean success = template.opsForValue()
+                    .setIfAbsent(lockKey, "1", ofSeconds(lockDurationForProcessInSeconds));
+            if (BooleanUtils.isNotTrue(success)) {
+                return new Response<>(oldData, null);
             }
-            return new Response<>(data, null);
+            try {
+                U u = cachedMethod.invoke();
+                String data = serializeData(u, key);
+                String cacheableValue = cacheValueProcessor.appendExpiryDateToValue(data, 3600000);
+                template.opsForValue().set(key, cacheableValue);
+                template.opsForValue().getOperations().delete(lockKey);
+                return new Response<>(null, u);
+            } catch (CachedMethodInvocationException e) {
+                template.opsForValue().getOperations().delete(lockKey);
+                final Throwable t = e.getCause();
+                if (t instanceof EducationException) {
+                    throw (EducationException) t;
+                }
+                return new Response<>(oldData, null);
+            }
         }
-    }
-
-    private synchronized void writeData() {
     }
 
     private String serializeData(Object o, String key) {
