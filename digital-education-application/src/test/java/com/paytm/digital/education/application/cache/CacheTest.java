@@ -42,7 +42,22 @@ public class CacheTest {
     private static int THREAD_POOL_SIZE = 1000;
 
     @Test
-    public void testCacheConcurrenceSequentialExecutionForWriteLock() throws Exception {
+    public void testBasicFunctionalityOfEduCache() {
+        String result1 = testService.basicTest("example1", "example2");
+        String result2 = testService.basicTest("example1", "example2");
+        String result3 = testService.basicTest("example1", "example2");
+        String result4 = testService.basicTest("example1", "example2");
+        String result5 = testService.basicTest("example1", "example2");
+        assertEquals(testService.getBasicCount(), 1);
+        assertEquals(result1, processTwoStrings("example1", "example2"));
+        assertEquals(result2, processTwoStrings("example1", "example2"));
+        assertEquals(result3, processTwoStrings("example1", "example2"));
+        assertEquals(result4, processTwoStrings("example1", "example2"));
+        assertEquals(result5, processTwoStrings("example1", "example2"));
+    }
+
+    @Test
+    public void testCacheConcurrenceSequentialExecutionForWriteLockStrategy() throws Exception {
         String arg1 = "arg1";
         String arg2 = "arg2";
 

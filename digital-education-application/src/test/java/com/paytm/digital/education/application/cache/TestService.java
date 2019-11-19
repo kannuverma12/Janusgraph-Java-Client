@@ -15,6 +15,7 @@ import static com.paytm.digital.education.application.cache.TestUtil.processTwoS
 public class TestService {
 
     private int testCount;
+    private int basicCount;
     private AtomicInteger controlCount = new AtomicInteger();
     private List<Integer> events = new ArrayList<>();
 
@@ -25,6 +26,12 @@ public class TestService {
         String value = processTwoStrings(one, two);
         events.add(1);
         return value;
+    }
+
+    @EduCache(keys = {"one", "two"})
+    public String basicTest(String one, String two) {
+        ++basicCount;
+        return processTwoStrings(one, two);
     }
 
     public String controlMethod(String one, String two) {
