@@ -23,7 +23,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.C
 @Validated
 @RestController
 @RequestMapping(COACHING)
-@Api(description = "Coaching Banner Resource APIs")
+@Api(description = "Coaching CTA Resource APIs")
 public class ProducerCoachingCTAController {
 
     @Autowired
@@ -34,8 +34,8 @@ public class ProducerCoachingCTAController {
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(
-            value = "creates a coaching banner",
-            notes = "Adds new banner in the coaching banner collection")
+            value = "creates a coaching CTA",
+            notes = "Adds new CTA in the coaching CTA collection")
     public ResponseEntity<CoachingCtaDTO> createCoachingCTA(
             @Valid @RequestBody CoachingCtaDataRequest request) {
         return new ResponseEntity<>(coachingCtaManagerService.insertCoachingCta(request),
@@ -47,8 +47,8 @@ public class ProducerCoachingCTAController {
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(
-            value = "update existing coaching banner",
-            notes = "update coaching banner in the coaching banner collection")
+            value = "update existing coaching CTA",
+            notes = "update coaching CTA in the coaching CTA collection")
     public ResponseEntity<CoachingCtaDTO> updateCoachingCTA(
             @Valid @RequestBody CoachingCtaDataRequest request) {
         return new ResponseEntity<>(coachingCtaManagerService.updateCoachingCta(request),
