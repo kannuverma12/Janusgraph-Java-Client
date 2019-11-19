@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import static com.paytm.digital.education.utility.SerializationUtils.fromHexString;
 import static com.paytm.digital.education.utility.SerializationUtils.toHexString;
 
 @Service
@@ -75,11 +76,11 @@ public class CompleteLockStrategy implements CacheLockStrategy {
         }
     }
 
-    private String deSerializeData(Object o, String key) {
+    private Object deSerializeData(String data, String key) {
         try {
-            return toHexString(o);
-        } catch (IOException e) {
-            logger.error("Key - {}, Object - {}. Unable to stringify data for key.", e, key, o);
+            return fromHexString(data);
+        } catch (IOException | ClassNotFoundException e) {
+            logger.error("Key - {}, Object - {}. Unable to stringify data for key.", e, key, data);
             throw new SerializationException(e);
         }
     }

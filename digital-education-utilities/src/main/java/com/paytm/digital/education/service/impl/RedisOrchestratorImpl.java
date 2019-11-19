@@ -1,8 +1,5 @@
 package com.paytm.digital.education.service.impl;
 
-import com.paytm.digital.education.exception.OldCacheValueExpiredException;
-import com.paytm.digital.education.exception.OldCacheValueNullException;
-import com.paytm.digital.education.exception.SerializationException;
 import com.paytm.digital.education.method.CachedMethod;
 import com.paytm.digital.education.service.CacheLockStrategy;
 import com.paytm.digital.education.service.RedisOrchestrator;
@@ -11,14 +8,8 @@ import com.paytm.education.logger.LoggerFactory;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-
-import static com.paytm.digital.education.utility.SerializationUtils.fromHexString;
-import static com.paytm.digital.education.utility.SerializationUtils.toHexString;
 
 @Service
 @Setter
