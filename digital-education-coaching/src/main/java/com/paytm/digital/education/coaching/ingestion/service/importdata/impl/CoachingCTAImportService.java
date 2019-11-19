@@ -2,21 +2,14 @@ package com.paytm.digital.education.coaching.ingestion.service.importdata.impl;
 
 import com.paytm.digital.education.coaching.ingestion.model.ImportResponse;
 import com.paytm.digital.education.coaching.ingestion.model.googleform.CoachingCTAForm;
-import com.paytm.digital.education.coaching.ingestion.model.googleform.CoachingCourseForm;
 import com.paytm.digital.education.coaching.ingestion.model.properties.DataImportPropertiesRequest;
 import com.paytm.digital.education.coaching.ingestion.model.properties.DataImportPropertiesResponse;
 import com.paytm.digital.education.coaching.ingestion.service.importdata.AbstractImportService;
 import com.paytm.digital.education.coaching.ingestion.service.importdata.ImportService;
 import com.paytm.digital.education.coaching.ingestion.transformer.importdata.ImportCoachingCTATransformer;
-import com.paytm.digital.education.coaching.ingestion.transformer.importdata.ImportCoachingCourseTransformer;
 import com.paytm.digital.education.coaching.producer.controller.ProducerCoachingCTAController;
-import com.paytm.digital.education.coaching.producer.controller.ProducerCoachingCourseController;
-import com.paytm.digital.education.coaching.producer.model.dto.CoachingCourseDTO;
 import com.paytm.digital.education.coaching.producer.model.dto.CoachingCtaDTO;
-import com.paytm.digital.education.coaching.producer.model.dto.CoachingExamDTO;
-import com.paytm.digital.education.coaching.producer.model.request.CoachingCourseDataRequest;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCtaDataRequest;
-import com.paytm.digital.education.coaching.producer.service.CoachingCtaManagerService;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +20,6 @@ import java.util.List;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EMPTY_STRING;
-import static com.paytm.digital.education.coaching.constants.GoogleSheetImportConstants.COACHING_COURSE_SHEET_ID;
-import static com.paytm.digital.education.coaching.constants.GoogleSheetImportConstants.COACHING_CTA_MAPPING_SHEET_ID;
 import static com.paytm.digital.education.coaching.constants.GoogleSheetImportConstants.COACHING_CTA_SHEET_ID;
 
 @Slf4j
@@ -67,8 +58,9 @@ public class CoachingCTAImportService extends AbstractImportService
         ResponseEntity<CoachingCtaDTO> response = null;
         String failureMessage = EMPTY_STRING;
         try {
-            final CoachingCtaDataRequest coachingCtaDataRequest = ImportCoachingCTATransformer.convert(
-                    coachingCTAForm);
+            final CoachingCtaDataRequest coachingCtaDataRequest =
+                    ImportCoachingCTATransformer.convert(
+                            coachingCTAForm);
             if (null == coachingCtaDataRequest.getCtaId()) {
                 response = this.coachingCTAController.createCoachingCTA(coachingCtaDataRequest);
             } else {
