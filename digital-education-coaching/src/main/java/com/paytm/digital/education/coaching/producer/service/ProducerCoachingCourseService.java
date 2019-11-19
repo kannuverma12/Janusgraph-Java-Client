@@ -1,12 +1,13 @@
 package com.paytm.digital.education.coaching.producer.service;
 
-import com.paytm.digital.education.database.dao.CoachingCourseDAO;
 import com.paytm.digital.education.coaching.producer.ConverterUtil;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCourseDataRequest;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCoursePatchRequest;
+import com.paytm.digital.education.database.dao.CoachingCourseDAO;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.exception.InvalidRequestException;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.NonTransientDataAccessException;
@@ -16,9 +17,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 public class ProducerCoachingCourseService {
+
+    private static final Logger log = LoggerFactory.getLogger(ProducerCoachingCourseService.class);
 
     @Autowired
     private CoachingCourseDAO coachingCourseDAO;

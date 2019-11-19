@@ -6,10 +6,8 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.Searc
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResult;
 import com.paytm.digital.education.coaching.consumer.service.search.helper.CoachingSearchAggregateHelper;
-import com.paytm.digital.education.database.dao.CoachingInstituteDAO;
-import com.paytm.digital.education.es.model.CoachingCenterSearch;
-import com.paytm.digital.education.es.model.GeoLocation;
 import com.paytm.digital.education.coaching.utils.ImageUtils;
+import com.paytm.digital.education.database.dao.CoachingInstituteDAO;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
@@ -17,8 +15,11 @@ import com.paytm.digital.education.elasticsearch.models.SortField;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.enums.es.DataSortOrder;
 import com.paytm.digital.education.enums.es.FilterQueryType;
+import com.paytm.digital.education.es.model.CoachingCenterSearch;
+import com.paytm.digital.education.es.model.GeoLocation;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
@@ -67,10 +68,11 @@ import static com.paytm.digital.education.constant.CommonConstants.COACHING_CENT
 import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_INSTITUTES_IMAGE;
 import static com.paytm.digital.education.enums.es.FilterQueryType.TERMS;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class CoachingCenterSearchService extends AbstractSearchService {
+
+    private static final Logger log = LoggerFactory.getLogger(CoachingCenterSearchService.class);
 
     private static DecimalFormat                 df = new DecimalFormat("#.#");
     private static Map<String, Float>            searchFieldKeys;
@@ -87,15 +89,15 @@ public class CoachingCenterSearchService extends AbstractSearchService {
         filterQueryTypeMap.put(IS_ENABLED, TERMS);
         searchFieldKeys = new HashMap<>();
         searchFieldKeys.put(COACHING_CENTER_NAME, COACHING_CENTER_NAME_BRAND_BOOST);
-        searchFieldKeys.put(COACHING_CENTER_ADDRESS_1,COACHING_CENTER_ADDRESS_1_BOOST);
-        searchFieldKeys.put(COACHING_CENTER_ADDRESS_2,COACHING_CENTER_ADDRESS_2_BOOST);
-        searchFieldKeys.put(COACHING_CENTER_ADDRESS_3,COACHING_CENTER_ADDRESS_3_BOOST);
-        searchFieldKeys.put(COACHING_CENTER_CITY_ANALYZED,COACHING_CENTER_CITY_BOOST);
-        searchFieldKeys.put(COACHING_CENTER_STATE_ANALYZED,COACHING_CENTER_STATE_BOOST);
+        searchFieldKeys.put(COACHING_CENTER_ADDRESS_1, COACHING_CENTER_ADDRESS_1_BOOST);
+        searchFieldKeys.put(COACHING_CENTER_ADDRESS_2, COACHING_CENTER_ADDRESS_2_BOOST);
+        searchFieldKeys.put(COACHING_CENTER_ADDRESS_3, COACHING_CENTER_ADDRESS_3_BOOST);
+        searchFieldKeys.put(COACHING_CENTER_CITY_ANALYZED, COACHING_CENTER_CITY_BOOST);
+        searchFieldKeys.put(COACHING_CENTER_STATE_ANALYZED, COACHING_CENTER_STATE_BOOST);
     }
 
     @Override
-    @Cacheable(value = "coaching_center_search",key = "#searchRequest.key")
+    @Cacheable(value = "coaching_center_search", key = "#searchRequest.key")
     public SearchResponse search(SearchRequest searchRequest) {
         validateRequest(searchRequest, filterQueryTypeMap);
         ElasticRequest elasticRequest = buildSearchRequest(searchRequest);
@@ -103,13 +105,13 @@ public class CoachingCenterSearchService extends AbstractSearchService {
         try {
             elasticResponse = initiateSearch(elasticRequest, CoachingCenterSearch.class);
         } catch (Exception e) {
-            log.error("Error encountered in search query for coaching center request : {} {}",
-                    elasticRequest, e);
+            log.error("Error encountered in search query for coaching center request : {}",
+                    e, elasticRequest);
             elasticResponse = new ElasticResponse();
         }
         SearchResponse searchResponse = new SearchResponse(searchRequest.getTerm());
-        buildSearchResponse(searchResponse, elasticResponse, elasticRequest,COACHING_COMPONENT,
-                CENTER_FILTER_NAMESPACE,CENTER_SEARCH_NAMESPACE);
+        buildSearchResponse(searchResponse, elasticResponse, elasticRequest, COACHING_COMPONENT,
+                CENTER_FILTER_NAMESPACE, CENTER_SEARCH_NAMESPACE);
         return searchResponse;
     }
 
@@ -191,7 +193,7 @@ public class CoachingCenterSearchService extends AbstractSearchService {
                 .centerId(coachingCenterSearch.getCenterId())
                 .instituteId(coachingCenterSearch.getInstituteId())
                 .officialName(coachingCenterSearch.getOfficialName())
-                .centerImage(getImageWithAbsolutePath(coachingCenterSearch,instituteImage))
+                .centerImage(getImageWithAbsolutePath(coachingCenterSearch, instituteImage))
                 .openingTime(getFormattedTime(coachingCenterSearch.getOpeningTime(),
                         coachingCenterSearch.getCenterId()))
                 .closingTime(getFormattedTime(coachingCenterSearch.getClosingTime(),
@@ -283,7 +285,7 @@ public class CoachingCenterSearchService extends AbstractSearchService {
         }
         String regexp = "^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$";
         if (Pattern.matches(regexp, inputTime)) {
-            String [] timeArray = inputTime.split(":");
+            String[] timeArray = inputTime.split(":");
             int time = Integer.parseInt(timeArray[0]);
             if (time == 0) {
                 formattedTime = "12" + ":" + timeArray[1] + " " + "AM";

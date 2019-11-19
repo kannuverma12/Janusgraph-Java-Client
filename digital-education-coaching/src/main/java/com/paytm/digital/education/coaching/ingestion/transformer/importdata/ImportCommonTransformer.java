@@ -2,14 +2,16 @@ package com.paytm.digital.education.coaching.ingestion.transformer.importdata;
 
 import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.CourseType;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
 public class ImportCommonTransformer {
+
+    private static final Logger log = LoggerFactory.getLogger(ImportCommonTransformer.class);
 
     private static final String YES             = "Yes";
     private static final String DELIMITER_COMMA = ",";

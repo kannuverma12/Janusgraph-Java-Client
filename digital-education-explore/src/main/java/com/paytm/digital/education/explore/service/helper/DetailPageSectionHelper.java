@@ -10,8 +10,9 @@ import com.paytm.digital.education.database.repository.PageRepository;
 import com.paytm.digital.education.database.repository.PropertyRepository;
 import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.property.reader.PropertyReader;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -39,10 +40,11 @@ import static com.paytm.digital.education.explore.constants.CampusEngagementCons
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.KEY;
 import static com.paytm.digital.education.explore.constants.CampusEngagementConstants.NAMESPACE;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class DetailPageSectionHelper {
+
+    private static final Logger log = LoggerFactory.getLogger(DetailPageSectionHelper.class);
 
     private PropertyReader        propertyReader;
     private CommonMongoRepository commonMongoRepository;
@@ -142,7 +144,8 @@ public class DetailPageSectionHelper {
         return orderResponse;
     }
 
-    private SectionOrderResponse updateLandingSectionOrder(SectionOrderRequest sectionOrderRequest) {
+    private SectionOrderResponse updateLandingSectionOrder(
+            SectionOrderRequest sectionOrderRequest) {
         SectionOrderResponse orderResponse = new SectionOrderResponse();
         Page pageEntity = pageRepository.getPageByName(sectionOrderRequest.getEntity());
         if (Objects.nonNull(pageEntity) && Objects.nonNull(pageEntity.getSections())) {
@@ -192,7 +195,8 @@ public class DetailPageSectionHelper {
         return validatedList;
     }
 
-    private SectionOrderResponse updateDetailsOrderSection(SectionOrderRequest sectionOrderRequest) {
+    private SectionOrderResponse updateDetailsOrderSection(
+            SectionOrderRequest sectionOrderRequest) {
         SectionOrderResponse orderResponse = new SectionOrderResponse();
         Client client = sectionOrderRequest.getClient();
         String detailPageSectionOrder = DETAIL_PAGE_SECTION_ORDER;
@@ -228,7 +232,7 @@ public class DetailPageSectionHelper {
                         detailPageSectionOrder);
 
         if (properties != null) {
-            Map<String, Object> sectionOrderMap =  properties.getAttributes();
+            Map<String, Object> sectionOrderMap = properties.getAttributes();
             if (!CollectionUtils.isEmpty(sectionOrderMap) && Objects
                     .nonNull(sectionOrderMap.get(entity))) {
                 orderResponse.setStatus(SUCCESS);

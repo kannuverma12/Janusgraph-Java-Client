@@ -10,8 +10,9 @@ import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.search.model.AutoSuggestEsData;
 import com.paytm.digital.education.search.service.CommonAutoSuggestionService;
 import com.paytm.digital.education.utility.CommonUtil;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -24,11 +25,11 @@ import static com.paytm.digital.education.constant.ExploreConstants.ENTITY_TYPE;
 
 @Service
 @AllArgsConstructor
-@Slf4j
 public class CoachingAutoSuggestService {
 
-    private CommonAutoSuggestionService commonAutoSuggestService;
+    private static final Logger log = LoggerFactory.getLogger(CoachingAutoSuggestService.class);
 
+    private CommonAutoSuggestionService commonAutoSuggestService;
 
     @Cacheable(value = "coaching_autosuggest")
     public AutoSuggestResponse getSuggestions(String searchTerm, List<EducationEntity> entities,

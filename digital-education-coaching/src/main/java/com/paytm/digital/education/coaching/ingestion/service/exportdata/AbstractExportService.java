@@ -10,7 +10,8 @@ import com.paytm.digital.education.config.GoogleConfig;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.GoogleDriveUtil;
 import com.paytm.digital.education.utility.JsonUtils;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -27,9 +28,10 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.D
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EMPTY_STRING;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.GOOGLE_SHEETS_INFO;
 
-@Slf4j
 @Component
 public abstract class AbstractExportService {
+
+    private static final Logger log = LoggerFactory.getLogger(AbstractExportService.class);
 
     @Autowired
     private PropertyReader propertyReader;

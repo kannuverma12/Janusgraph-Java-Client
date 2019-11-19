@@ -1,14 +1,15 @@
 package com.paytm.digital.education.coaching.producer.service;
 
-import com.paytm.digital.education.exception.InvalidRequestException;
 import com.paytm.digital.education.coaching.producer.ConverterUtil;
 import com.paytm.digital.education.coaching.producer.model.dto.CoachingCtaDTO;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCtaDataRequest;
 import com.paytm.digital.education.database.dao.CoachingCtaDAO;
 import com.paytm.digital.education.database.entity.CoachingCtaEntity;
+import com.paytm.digital.education.exception.InvalidRequestException;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.NonTransientDataAccessException;
@@ -21,10 +22,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class CoachingCtaManagerService {
+
+    private static final Logger log = LoggerFactory.getLogger(CoachingCtaManagerService.class);
 
     private CoachingCtaDAO ctaDAO;
 
@@ -37,7 +39,8 @@ public class CoachingCtaManagerService {
 
         CoachingCtaEntity updatedCtaEntity;
         try {
-            updatedCtaEntity = ctaDAO.save(ConverterUtil.toCtaEntity(request, new CoachingCtaEntity()));
+            updatedCtaEntity =
+                    ctaDAO.save(ConverterUtil.toCtaEntity(request, new CoachingCtaEntity()));
         } catch (DataIntegrityViolationException ex) {
             throw new InvalidRequestException(ex.getMessage(), ex);
         }
@@ -56,7 +59,8 @@ public class CoachingCtaManagerService {
         ConverterUtil.toCtaEntity(request, existingStreamEntity);
         CoachingCtaEntity updatedCtaEntity;
         try {
-            updatedCtaEntity = ctaDAO.save(ConverterUtil.toCtaEntity(request, existingStreamEntity));
+            updatedCtaEntity =
+                    ctaDAO.save(ConverterUtil.toCtaEntity(request, existingStreamEntity));
         } catch (NonTransientDataAccessException ex) {
             throw new InvalidRequestException(ex.getMessage(), ex);
         }

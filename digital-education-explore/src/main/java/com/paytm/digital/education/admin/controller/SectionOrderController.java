@@ -1,13 +1,13 @@
 package com.paytm.digital.education.admin.controller;
 
-
 import com.paytm.digital.education.admin.request.SectionOrderRequest;
 import com.paytm.digital.education.admin.response.SectionOrderResponse;
 import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.service.helper.DetailPageSectionHelper;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -25,12 +25,13 @@ import java.util.Objects;
 import static com.paytm.digital.education.constant.ExploreConstants.EDUCATION_BASE_URL;
 import static com.paytm.digital.education.mapping.ErrorEnum.UNAUTHORIZED_REQUEST;
 
-@Slf4j
 @RestController
 @RequestMapping(EDUCATION_BASE_URL)
 @AllArgsConstructor
 @Validated
 public class SectionOrderController {
+
+    private static final Logger log = LoggerFactory.getLogger(SectionOrderController.class);
 
     private DetailPageSectionHelper detailPageSectionHelper;
 

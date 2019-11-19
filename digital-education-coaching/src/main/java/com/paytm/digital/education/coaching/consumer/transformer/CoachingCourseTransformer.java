@@ -9,7 +9,8 @@ import com.paytm.digital.education.database.entity.CoachingCenterEntity;
 import com.paytm.digital.education.database.entity.CoachingCourseFeatureEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
 import com.paytm.digital.education.utility.CommonUtil;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -24,9 +25,10 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.T
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_COURSE_FEATURE;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_RANKER;
 
-@Slf4j
 @Component
 public class CoachingCourseTransformer {
+
+    private static final Logger log = LoggerFactory.getLogger(CoachingCourseTransformer.class);
 
     private static final String YES = "Yes";
     private static final String NO  = "No";

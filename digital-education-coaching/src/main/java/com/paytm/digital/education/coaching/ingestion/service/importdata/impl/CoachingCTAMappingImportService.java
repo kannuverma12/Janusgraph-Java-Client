@@ -12,7 +12,8 @@ import com.paytm.digital.education.coaching.producer.controller.ProducerCoaching
 import com.paytm.digital.education.coaching.producer.model.dto.CoachingCourseDTO;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCoursePatchRequest;
 import com.paytm.digital.education.utility.JsonUtils;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,9 +24,12 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.C
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EMPTY_STRING;
 import static com.paytm.digital.education.coaching.constants.GoogleSheetImportConstants.COACHING_CTA_MAPPING_SHEET_ID;
 
-@Slf4j
 @Service
-public class CoachingCTAMappingImportService extends AbstractImportService implements ImportService {
+public class CoachingCTAMappingImportService extends AbstractImportService
+        implements ImportService {
+
+    private static final Logger log =
+            LoggerFactory.getLogger(CoachingCTAMappingImportService.class);
 
     private static final String TYPE = "CoachingCTAMapping";
 
@@ -63,7 +67,7 @@ public class CoachingCTAMappingImportService extends AbstractImportService imple
             response = this.producerCoachingCourseController
                     .patchCoachingProgram(coachingCoursePatchRequest);
         } catch (final Exception e) {
-            log.error("Got Exception in upsertNewRecords for input: {}, exception: ", form, e);
+            log.error("Got Exception in upsertNewRecords for input: {}, exception: ", e, form);
             failureMessage = e.getMessage();
         }
 
@@ -87,7 +91,7 @@ public class CoachingCTAMappingImportService extends AbstractImportService imple
                     ImportCoachingCTAMappingTransformer.convert(ctaMappingForm);
             this.producerCoachingCourseController.patchCoachingProgram(coachingCoursePatchRequest);
         } catch (final Exception e) {
-            log.error("Got Exception in upsertFailedRecords for input: {}, exception: ", form, e);
+            log.error("Got Exception in upsertFailedRecords for input: {}, exception: ", e, form);
         }
     }
 }

@@ -4,14 +4,16 @@ import com.paytm.digital.education.coaching.consumer.model.request.SearchRequest
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResponse;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.utility.JsonUtils;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class SearchService {
+
+    private static final Logger log = LoggerFactory.getLogger(SearchService.class);
 
     private CoachingCourseSearchService    coachingCourseSearchService;
     private CoachingInstituteSearchService coachingInstituteSearchService;

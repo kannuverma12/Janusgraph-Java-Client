@@ -18,8 +18,9 @@ import com.paytm.digital.education.enums.es.FilterQueryType;
 import com.paytm.digital.education.es.model.ExamSearch;
 import com.paytm.digital.education.serviceimpl.helper.ExamLogoHelper;
 import com.paytm.digital.education.utility.CommonUtil;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -54,10 +55,11 @@ import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_EXAM_
 import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_INDEX_EXAM;
 import static com.paytm.digital.education.enums.es.FilterQueryType.TERMS;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class ExamSearchService extends AbstractSearchService {
+
+    private static final Logger log = LoggerFactory.getLogger(ExamSearchService.class);
 
     private static Map<String, Float>            searchFieldKeys;
     private static Map<String, FilterQueryType>  filterQueryTypeMap;

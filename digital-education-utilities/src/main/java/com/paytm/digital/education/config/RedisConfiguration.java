@@ -1,6 +1,7 @@
 package com.paytm.digital.education.config;
 
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.JedisPool;
@@ -10,9 +11,11 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.Objects;
 
-@Slf4j
 @Component
 public class RedisConfiguration {
+
+    private static final Logger log = LoggerFactory.getLogger(RedisConfiguration.class);
+
     private static final Integer   DEFAULT_CONNECTION_TIMEOUT = 5000;
     private static final Integer   DEFAULT_POOL_SIZE          = 50;
     @Value("${redis.host}")

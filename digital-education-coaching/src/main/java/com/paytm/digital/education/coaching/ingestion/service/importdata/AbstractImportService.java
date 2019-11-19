@@ -13,7 +13,8 @@ import com.paytm.digital.education.utility.DateUtil;
 import com.paytm.digital.education.utility.GoogleDriveUtil;
 import com.paytm.digital.education.utility.JsonUtils;
 import com.paytm.digital.education.utility.UploadUtil;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,9 +41,10 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.F
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.FailedDataCollection.IS_IMPORTABLE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.FailedDataCollection.TYPE;
 
-@Slf4j
 @Component
 public abstract class AbstractImportService {
+
+    private static final Logger log = LoggerFactory.getLogger(AbstractImportService.class);
 
     private static final int    PADDING              = 2;
     private static final String SHEET_HEADER_RANGE   = "A1:";
@@ -103,7 +105,8 @@ public abstract class AbstractImportService {
     protected List<Object> getFormData(
             final DataImportPropertiesResponse dataImportPropertiesResponse) {
         List<Object> formData = new ArrayList<>();
-        if (null == dataImportPropertiesResponse || null == dataImportPropertiesResponse.getSheetId()) {
+        if (null == dataImportPropertiesResponse || null == dataImportPropertiesResponse
+                .getSheetId()) {
             log.error("Got null dataImportPropertiesResponse.");
             return formData;
         }
