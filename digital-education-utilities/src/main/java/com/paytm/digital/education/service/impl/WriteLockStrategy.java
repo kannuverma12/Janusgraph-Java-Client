@@ -26,14 +26,17 @@ public class WriteLockStrategy implements CacheLockStrategy {
     private final RedisTemplate<String, String> template;
     private final int lockDurationForProcessInSeconds;
     private final CacheValueProcessor cacheValueProcessor;
+    private final int ttlInMillis;
 
     public WriteLockStrategy(
             RedisTemplate<String, String> template,
             @Value("${redis.cache.process.lock.duration.seconds}") int lockDurationForProcessInSeconds,
+            @Value("${redis.cache.ttl.millis}") int ttlInMillis,
             CacheValueProcessor cacheValueProcessor) {
         this.template = template;
         this.lockDurationForProcessInSeconds = lockDurationForProcessInSeconds;
         this.cacheValueProcessor = cacheValueProcessor;
+        this.ttlInMillis = ttlInMillis;
     }
 
     @Override
@@ -66,7 +69,7 @@ public class WriteLockStrategy implements CacheLockStrategy {
             try {
                 Object computed = cachedMethod.invoke();
                 String data = serializeData(computed, key);
-                String cacheableValue = cacheValueProcessor.appendExpiryDateToValue(data, 3600000);
+                String cacheableValue = cacheValueProcessor.appendExpiryDateToValue(data, ttlInMillis);
                 template.opsForValue().set(key, cacheableValue);
                 template.opsForValue().getOperations().delete(lockKey);
                 return computed;
