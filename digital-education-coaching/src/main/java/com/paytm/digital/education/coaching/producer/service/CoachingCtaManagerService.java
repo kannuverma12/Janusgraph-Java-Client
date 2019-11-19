@@ -6,9 +6,10 @@ import com.paytm.digital.education.coaching.producer.model.request.CoachingCtaDa
 import com.paytm.digital.education.database.dao.CoachingCtaDAO;
 import com.paytm.digital.education.database.entity.CoachingCtaEntity;
 import com.paytm.digital.education.exception.InvalidRequestException;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.NonTransientDataAccessException;
@@ -22,10 +23,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class CoachingCtaManagerService {
+
+    private static final Logger log = LoggerFactory.getLogger(CoachingCtaManagerService.class);
 
     private CoachingCtaDAO ctaDAO;
 

@@ -4,12 +4,15 @@ import com.google.common.collect.ImmutableMap;
 import com.paytm.digital.education.coaching.ingestion.model.googleform.CoachingCTAMappingForm;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCoursePatchRequest;
 import com.paytm.digital.education.enums.CTAViewType;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 
 import java.util.Optional;
 
-@Slf4j
 public class ImportCoachingCTAMappingTransformer {
+
+    private static final Logger log =
+            LoggerFactory.getLogger(ImportCoachingCTAMappingTransformer.class);
 
     public static CoachingCoursePatchRequest convert(final CoachingCTAMappingForm form) {
         if (null == form) {

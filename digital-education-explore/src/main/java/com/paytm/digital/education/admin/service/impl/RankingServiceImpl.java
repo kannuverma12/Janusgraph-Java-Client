@@ -11,8 +11,9 @@ import com.paytm.digital.education.database.entity.PaytmKeys;
 import com.paytm.digital.education.database.entity.School;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -39,10 +40,11 @@ import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID
 import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_NAME;
 import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_ID;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class RankingServiceImpl implements RankingService {
+
+    private static final Logger log = LoggerFactory.getLogger(RankingServiceImpl.class);
 
     private CommonMongoRepository commonMongoRepository;
 
@@ -117,7 +119,7 @@ public class RankingServiceImpl implements RankingService {
     }
 
     public RankingResponse updateRankings(
-                RankingsRequest rankRequest) {
+            RankingsRequest rankRequest) {
 
         RankingResponse rankingResponse = new RankingResponse();
         EducationEntity entity = rankRequest.getEntity();
@@ -140,8 +142,9 @@ public class RankingServiceImpl implements RankingService {
             }
 
             switch (key) {
-                case INSTITUTE_ID :
-                    rankingResponse = updateRankingsForInstitutes(rankRequest, entityIds, key, type);
+                case INSTITUTE_ID:
+                    rankingResponse =
+                            updateRankingsForInstitutes(rankRequest, entityIds, key, type);
                     break;
                 case EXAM_ID:
                     rankingResponse = updateRankingsForExam(rankRequest, entityIds, key, type);
@@ -257,7 +260,8 @@ public class RankingServiceImpl implements RankingService {
         }
     }
 
-    private List<EntityRankingResponse> getUpdatedExams(List<Long> examIds, String key, Class type) {
+    private List<EntityRankingResponse> getUpdatedExams(List<Long> examIds, String key,
+            Class type) {
         List<Exam> validExams = validEntitities(examIds, key, type);
         List<EntityRankingResponse> rankingResponseList = new ArrayList<>();
         for (Exam exam : validExams) {
@@ -301,7 +305,8 @@ public class RankingServiceImpl implements RankingService {
         }
     }
 
-    private List<EntityRankingResponse> getUpdatedSchools(List<Long> schoolIds, String key, Class type) {
+    private List<EntityRankingResponse> getUpdatedSchools(List<Long> schoolIds, String key,
+            Class type) {
         List<School> validSchools = validEntitities(schoolIds, key, type);
         List<EntityRankingResponse> rankingResponseList = new ArrayList<>();
         for (School school : validSchools) {
@@ -317,10 +322,10 @@ public class RankingServiceImpl implements RankingService {
         queryMap.put(EXISTS, true);
         queryMap.put(NE, null);
         Map<String, Object> objectMap = new HashMap<>();
-        objectMap.put(PAYTM_RANK , queryMap);
+        objectMap.put(PAYTM_RANK, queryMap);
         List<String> fields = Arrays.asList(key, OFFICIAL_NAME, PAYTM_KEYS);
         return commonMongoRepository
-                .findAll(objectMap, type, fields , AND);
+                .findAll(objectMap, type, fields, AND);
     }
 
     private <T> List<T> validEntitities(List<Long> entityIds, String key, Class<T> type) {

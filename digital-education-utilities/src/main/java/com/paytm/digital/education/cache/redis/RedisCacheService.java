@@ -1,16 +1,18 @@
 package com.paytm.digital.education.cache.redis;
 
 import com.paytm.digital.education.config.RedisConfiguration;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import java.util.Objects;
 
-@Slf4j
 @Service()
 public class RedisCacheService {
+
+    private static final Logger log = LoggerFactory.getLogger(RedisCacheService.class);
 
     public RedisCacheService() {
     }

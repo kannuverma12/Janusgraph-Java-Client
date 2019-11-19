@@ -12,14 +12,15 @@ import com.paytm.digital.education.coaching.consumer.model.request.MerchantNotif
 import com.paytm.digital.education.coaching.consumer.model.request.VerifyRequest;
 import com.paytm.digital.education.coaching.consumer.model.response.transactionalflow.MerchantNotifyResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.transactionalflow.VerifyResponse;
-import com.paytm.digital.education.database.dao.CoachingCourseDAO;
 import com.paytm.digital.education.coaching.utils.ComparisonUtils;
+import com.paytm.digital.education.database.dao.CoachingCourseDAO;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.exception.PurchaseException;
 import com.paytm.digital.education.utility.JsonUtils;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -44,10 +45,11 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.T
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_CART_ITEMS;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_MERCHANT_DATA;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class PurchaseService {
+
+    private static final Logger log = LoggerFactory.getLogger(PurchaseService.class);
 
     private RedisCacheService redisCacheService;
     private CoachingCourseDAO coachingCourseDAO;

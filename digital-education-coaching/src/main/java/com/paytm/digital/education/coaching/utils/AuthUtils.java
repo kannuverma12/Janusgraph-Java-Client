@@ -1,7 +1,8 @@
 package com.paytm.digital.education.coaching.utils;
 
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.crypto.Mac;
@@ -11,9 +12,10 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
-@Slf4j
 @UtilityClass
 public class AuthUtils {
+
+    private static final Logger log = LoggerFactory.getLogger(AuthUtils.class);
 
     private static final String UTF8_CHARSET          = "UTF-8";
     private static final String HMAC_SHA256_ALGORITHM = "HmacSHA256";
@@ -30,7 +32,7 @@ public class AuthUtils {
         } catch (UnsupportedEncodingException | NoSuchAlgorithmException | InvalidKeyException ex) {
             log.error(
                     "Error occurred while generating signature for message : {} with exception : ",
-                    message, ex);
+                    ex, message);
         }
         return StringUtils.EMPTY;
     }

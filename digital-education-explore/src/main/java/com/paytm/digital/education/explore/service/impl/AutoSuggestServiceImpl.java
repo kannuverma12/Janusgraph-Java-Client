@@ -1,17 +1,5 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import static com.paytm.digital.education.constant.ExploreConstants.BLANK;
-import static com.paytm.digital.education.constant.ExploreConstants.DEFAULT_AUTOSUGGEST_SIZE;
-import static com.paytm.digital.education.constant.ExploreConstants.DEFAULT_AUTOSUGGEST_COMPARE;
-import static com.paytm.digital.education.constant.ExploreConstants.DUMMY_EXAM_ICON;
-import static com.paytm.digital.education.constant.ExploreConstants.ENTITY_TYPE;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_CLASS;
-import static com.paytm.digital.education.constant.ExploreConstants.MINUS_TEN;
-import static com.paytm.digital.education.constant.ExploreConstants.OTHER;
-import static com.paytm.digital.education.constant.ExploreConstants.RANKING_OVERALL;
-import static com.paytm.digital.education.constant.ExploreConstants.SIXTY;
-import static com.paytm.digital.education.constant.ExploreConstants.ZERO;
-
 import com.paytm.digital.education.elasticsearch.models.AggregationResponse;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationResponse;
@@ -19,16 +7,17 @@ import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.enums.es.DataSortOrder;
 import com.paytm.digital.education.explore.enums.UserAction;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
-import com.paytm.digital.education.search.model.AutoSuggestEsData;
 import com.paytm.digital.education.explore.response.dto.suggest.AutoSuggestData;
 import com.paytm.digital.education.explore.response.dto.suggest.AutoSuggestResponse;
 import com.paytm.digital.education.explore.response.dto.suggest.SuggestResult;
-import com.paytm.digital.education.serviceimpl.helper.ExamLogoHelper;
 import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
+import com.paytm.digital.education.search.model.AutoSuggestEsData;
 import com.paytm.digital.education.search.service.CommonAutoSuggestionService;
+import com.paytm.digital.education.serviceimpl.helper.ExamLogoHelper;
 import com.paytm.digital.education.utility.CommonUtil;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -42,10 +31,23 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-@Slf4j
+import static com.paytm.digital.education.constant.ExploreConstants.BLANK;
+import static com.paytm.digital.education.constant.ExploreConstants.DEFAULT_AUTOSUGGEST_COMPARE;
+import static com.paytm.digital.education.constant.ExploreConstants.DEFAULT_AUTOSUGGEST_SIZE;
+import static com.paytm.digital.education.constant.ExploreConstants.DUMMY_EXAM_ICON;
+import static com.paytm.digital.education.constant.ExploreConstants.ENTITY_TYPE;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_CLASS;
+import static com.paytm.digital.education.constant.ExploreConstants.MINUS_TEN;
+import static com.paytm.digital.education.constant.ExploreConstants.OTHER;
+import static com.paytm.digital.education.constant.ExploreConstants.RANKING_OVERALL;
+import static com.paytm.digital.education.constant.ExploreConstants.SIXTY;
+import static com.paytm.digital.education.constant.ExploreConstants.ZERO;
+
 @AllArgsConstructor
 @Service
 public class AutoSuggestServiceImpl {
+
+    private static final Logger log = LoggerFactory.getLogger(AutoSuggestServiceImpl.class);
 
     private CommonAutoSuggestionService commonAutoSuggestService;
     private SubscriptionDetailHelper    subscriptionDetailHelper;
@@ -112,7 +114,7 @@ public class AutoSuggestServiceImpl {
         try {
             autoSuggestResponse = searchServiceImpl.instituteSearch(searchRequest);
         } catch (Exception e) {
-            log.error("Error in search response : {} ", e.getMessage());
+            log.error("Error in search response ", e);
         }
         return autoSuggestResponse;
     }

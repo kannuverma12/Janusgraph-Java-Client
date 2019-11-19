@@ -38,7 +38,8 @@ import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.utility.CommonUtils;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -125,9 +126,10 @@ import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_COURSE_ID_AND_URL_DISPLAY_KEY;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
 
-@Slf4j
 @Service
 public class CoachingCourseService {
+
+    private static final Logger log = LoggerFactory.getLogger(CoachingCourseService.class);
 
     private static final String TARGET_EXAM     = "TARGET_EXAM";
     private static final String TOP_RANKER_EXAM = "TOP_RANKER_EXAM";
@@ -214,7 +216,7 @@ public class CoachingCourseService {
                 topRankerEntityList);
 
         final Map<Long, CoachingCtaEntity> ctaIdToCtaMap;
-        if (! CollectionUtils.isEmpty(course.getCtaInfo())) {
+        if (!CollectionUtils.isEmpty(course.getCtaInfo())) {
             ctaIdToCtaMap = this.fetchCtaIdToCtaMapByCtaIds(course.getCtaInfo().values());
         } else {
             ctaIdToCtaMap = Collections.emptyMap();
@@ -230,7 +232,7 @@ public class CoachingCourseService {
 
         List<CoachingCtaEntity> ctaList = this.fetchCtaByCtaIds(new ArrayList<>(ctaIds));
 
-        if (! ctaList.isEmpty()) {
+        if (!ctaList.isEmpty()) {
             return ctaList.stream().collect(Collectors.toMap(cta -> cta.getCtaId(),
                     Function.identity()));
         }
@@ -463,7 +465,7 @@ public class CoachingCourseService {
 
         Map<CTAViewType, CoachingCtaEntity> ctaMap;
 
-        if (! CollectionUtils.isEmpty(course.getCtaInfo())) {
+        if (!CollectionUtils.isEmpty(course.getCtaInfo())) {
             ctaMap = new HashMap<>(course.getCtaInfo().size());
             for (Map.Entry<CTAViewType, Long> entry : course.getCtaInfo().entrySet()) {
                 ctaMap.put(entry.getKey(), ctaIdToCtaMap.get(entry.getValue()));
@@ -675,8 +677,7 @@ public class CoachingCourseService {
                     }
                 }
             } catch (final Exception ex) {
-                log.error("Got exception, course: {}, field: {}, exception: ",
-                        course, field, ex);
+                log.error("Got exception, course: {}, field: {}, exception: ", ex, course, field);
             }
         }
         return courseMoreInfoMap;

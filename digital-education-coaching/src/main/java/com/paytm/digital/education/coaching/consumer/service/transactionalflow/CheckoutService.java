@@ -8,7 +8,8 @@ import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow
 import com.paytm.digital.education.coaching.consumer.model.request.CheckoutDataRequest;
 import com.paytm.digital.education.coaching.consumer.model.response.transactionalflow.CheckoutDataResponse;
 import com.paytm.digital.education.exception.BadRequestException;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -25,9 +26,10 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.T
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.TransactionConstants.TCS_UTGST_PERCANTAGE;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_CART_ITEMS;
 
-@Slf4j
 @Service
 public class CheckoutService {
+
+    private static final Logger log = LoggerFactory.getLogger(CheckoutService.class);
 
     public CheckoutDataResponse checkoutData(CheckoutDataRequest request) {
         List<CheckoutCartItem> cartItems = request.getCartItems();

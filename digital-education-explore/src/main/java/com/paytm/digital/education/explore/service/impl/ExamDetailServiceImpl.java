@@ -12,7 +12,6 @@ import com.paytm.digital.education.dto.detail.Unit;
 import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.BadRequestException;
-import com.paytm.digital.education.explore.enums.CTAType;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.detail.ExamDetail;
 import com.paytm.digital.education.explore.response.dto.detail.Location;
@@ -29,8 +28,9 @@ import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
 import com.paytm.digital.education.serviceimpl.helper.ExamLogoHelper;
 import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.utility.DateUtil;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -67,8 +67,9 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
 
 @AllArgsConstructor
 @Service
-@Slf4j
 public class ExamDetailServiceImpl {
+
+    private static final Logger log = LoggerFactory.getLogger(ExamDetailServiceImpl.class);
 
     private CommonMongoRepository    commonMongoRepository;
     private ExamLogoHelper           examLogoHelper;
@@ -93,7 +94,8 @@ public class ExamDetailServiceImpl {
         // fields are not being supported currently. Part of discussion
 
         ExamDetail examDetail = getExamDetail(entityId, examUrlKey, fieldGroup, fields, client,
-                syllabus, importantDates, derivedAttributes, examCenters, sections, widgets, policies);
+                syllabus, importantDates, derivedAttributes, examCenters, sections, widgets,
+                policies);
         if (userId != null && userId > 0) {
             updateInterested(examDetail, userId);
             updateShortlist(examDetail, userId);
@@ -360,7 +362,8 @@ public class ExamDetailServiceImpl {
                 examResponse.setTermsAndConditions(exam.getPaytmKeys().getTermsAndConditions());
                 examResponse.setDisclaimer(exam.getPaytmKeys().getDisclaimer());
                 examResponse.setPrivacyPolicies(exam.getPaytmKeys().getPrivacyPolicies());
-                examResponse.setRegistrationGuidelines(exam.getPaytmKeys().getRegistrationGuidelines());
+                examResponse
+                        .setRegistrationGuidelines(exam.getPaytmKeys().getRegistrationGuidelines());
             }
         }
         if (syllabusflg) {

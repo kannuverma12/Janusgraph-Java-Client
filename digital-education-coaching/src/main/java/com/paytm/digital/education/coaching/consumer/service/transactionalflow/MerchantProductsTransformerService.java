@@ -15,7 +15,8 @@ import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.utility.JsonUtils;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,9 +43,11 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_CART_ITEMS;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_MERCHANT_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_MERCHANT_PRODUCTS;
 
-@Slf4j
 @Service
 public class MerchantProductsTransformerService {
+
+    private static final Logger log =
+            LoggerFactory.getLogger(MerchantProductsTransformerService.class);
 
     @Value("${education.vertical.id}")
     private String educationVerticalId;

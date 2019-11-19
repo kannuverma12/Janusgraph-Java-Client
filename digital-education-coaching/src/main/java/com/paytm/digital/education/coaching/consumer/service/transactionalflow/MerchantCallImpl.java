@@ -19,8 +19,9 @@ import com.paytm.digital.education.coaching.utils.AuthUtils;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.utility.JsonUtils;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -40,10 +41,11 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.P
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.RestTemplateConstants.MERCHANT_COMMIT_TIMEOUT_MS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.RestTemplateConstants.PAYTM_HOST_FOR_SIGNATURE;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class MerchantCallImpl implements MerchantCall {
+
+    private static final Logger log = LoggerFactory.getLogger(MerchantCallImpl.class);
 
     @Override
     public MerchantCommitRequest getMerchantCommitRequestBody(
@@ -181,7 +183,7 @@ public class MerchantCallImpl implements MerchantCall {
             }
 
             log.error("Exception occurred in merchant commit call for body: {} and exception: ",
-                    request, rce);
+                    rce, request);
             return MerchantNotifyResponse
                     .builder()
                     .status(MerchantNotifyStatus.PENDING)

@@ -2,10 +2,13 @@ package com.paytm.digital.education.coaching.ingestion.transformer.importdata;
 
 import com.paytm.digital.education.coaching.ingestion.model.googleform.CoachingBannerForm;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingBannerDataRequest;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 
-@Slf4j
 public class ImportCoachingBannerTransformer {
+
+    private static final Logger log =
+            LoggerFactory.getLogger(ImportCoachingBannerTransformer.class);
 
     public static CoachingBannerDataRequest convert(final CoachingBannerForm form) {
         if (null == form) {

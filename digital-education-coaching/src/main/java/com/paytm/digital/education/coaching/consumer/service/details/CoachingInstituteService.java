@@ -40,8 +40,9 @@ import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.utility.CommonUtils;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -110,10 +111,11 @@ import static com.paytm.digital.education.enums.es.DataSortOrder.ASC;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_NAME;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class CoachingInstituteService {
+
+    private static final Logger log = LoggerFactory.getLogger(CoachingInstituteService.class);
 
     private static final List<String> COACHING_INSTITUTE_FIELDS =
             Arrays.asList("institute_id", "brand_name", "cover_image", "about_institute",

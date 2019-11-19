@@ -1,6 +1,5 @@
 package com.paytm.digital.education.coaching.connections.rest;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -34,7 +33,6 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.P
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.RestTemplateConstants.HTTP_MAX_CONNECTION_ALLOWED;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.RestTemplateConstants.HTTP_MAX_CONNECTION_PER_REQUEST;
 
-@Slf4j
 public class CoachingRestTemplate extends RestTemplate {
 
     CoachingRestTemplate(HttpComponentsClientHttpRequestFactory httpRequestFactory) {

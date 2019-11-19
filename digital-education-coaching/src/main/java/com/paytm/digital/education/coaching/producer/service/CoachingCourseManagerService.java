@@ -5,7 +5,8 @@ import com.paytm.digital.education.coaching.producer.model.request.CoachingCours
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCoursePatchRequest;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.exception.InvalidRequestException;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +14,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 public class CoachingCourseManagerService {
+
+    private static final Logger log = LoggerFactory.getLogger(CoachingCourseManagerService.class);
 
     @Autowired
     private ProducerCoachingCourseService programService;

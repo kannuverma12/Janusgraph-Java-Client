@@ -20,8 +20,9 @@ import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
 import com.paytm.digital.education.serviceimpl.helper.ExamLogoHelper;
 import com.paytm.digital.education.utility.CommonUtils;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -59,10 +60,11 @@ import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_COA
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class ExamService {
+
+    private static final Logger log = LoggerFactory.getLogger(ExamService.class);
 
     private final CoachingCourseService     coachingCourseService;
     private final CoachingInstituteService  coachingInstituteService;

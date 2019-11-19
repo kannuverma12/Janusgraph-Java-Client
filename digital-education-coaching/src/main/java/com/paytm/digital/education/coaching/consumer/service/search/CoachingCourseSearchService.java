@@ -7,23 +7,23 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.Searc
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResult;
 import com.paytm.digital.education.coaching.consumer.service.search.helper.CoachingSearchAggregateHelper;
-import com.paytm.digital.education.database.dao.CoachingInstituteDAO;
-import com.paytm.digital.education.es.model.CoachingCourseSearch;
-import com.paytm.digital.education.es.model.CoachingInstituteSearch;
 import com.paytm.digital.education.coaching.utils.ImageUtils;
 import com.paytm.digital.education.coaching.utils.SearchUtils;
+import com.paytm.digital.education.database.dao.CoachingInstituteDAO;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
-import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationResponse;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.enums.es.FilterQueryType;
+import com.paytm.digital.education.es.model.CoachingCourseSearch;
+import com.paytm.digital.education.es.model.CoachingInstituteSearch;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.utility.CommonUtil;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -64,10 +64,11 @@ import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_
 import static com.paytm.digital.education.enums.es.FilterQueryType.TERMS;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class CoachingCourseSearchService extends AbstractSearchService {
+
+    private static final Logger log = LoggerFactory.getLogger(CoachingCourseSearchService.class);
 
     private static Map<String, Float>            searchFieldKeys;
     private static Map<String, FilterQueryType>  filterQueryTypeMap;
@@ -98,7 +99,7 @@ public class CoachingCourseSearchService extends AbstractSearchService {
     }
 
     @Override
-    @Cacheable(value = "coaching_course_search",key = "#searchRequest.key")
+    @Cacheable(value = "coaching_course_search", key = "#searchRequest.key")
     public SearchResponse search(SearchRequest searchRequest) {
         validateRequest(searchRequest, filterQueryTypeMap);
         ElasticRequest elasticRequest = buildSearchRequest(searchRequest);
