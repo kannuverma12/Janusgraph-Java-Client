@@ -6,6 +6,7 @@ import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.CheckoutCartItem;
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.ConvTaxInfo;
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.MetaData;
+import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.TCS;
 import com.paytm.digital.education.coaching.consumer.model.dto.transactionalflow.TaxInfo;
 import com.paytm.digital.education.coaching.consumer.model.request.FetchCartItemsRequestBody;
 import com.paytm.digital.education.coaching.consumer.model.request.VerifyRequest;
@@ -39,6 +40,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_VERTICAL_NAME;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.TransactionConstants.DPIN;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.TransactionConstants.SAC;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.TransactionConstants.SPIN;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.TransactionConstants.TCS_CGST_PERCANTAGE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.TransactionConstants.TCS_IGST_PERCANTAGE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.TransactionConstants.TCS_SGST_PERCANTAGE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.TransactionConstants.TCS_UTGST_PERCANTAGE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.URL.COACHING_BASE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.URL.V1;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.URL.VERIFY;
@@ -209,12 +217,29 @@ public class VerifyCartItemControllerTest {
                         .totalSGST(0F)
                         .totalUTGST(0F)
                         .build();
+        TCS tcs = TCS
+                .builder()
+                .basePrice(25378.9F * 1000F)
+                .igst(TCS_IGST_PERCANTAGE)
+                .cgst(TCS_CGST_PERCANTAGE)
+                .sgst(TCS_SGST_PERCANTAGE)
+                .utgst(TCS_UTGST_PERCANTAGE)
+                .spin(SPIN)
+                .dpin(DPIN)
+                .sac(SAC)
+                .agstin(null)
+                .hsn(null)
+                .cpin(null)
+                .cgstin(null)
+                .build();
+
         MetaData metaData=MetaData.builder()
                 .courseId(200L)
                 .courseType(CourseType.CLASSROOM_COURSE.getText())
                 .taxInfo(taxInfo)
                 .convTaxInfo(convTaxInfo)
                 .merchantProductId("1")
+                .tcs(tcs)
                 .build();
         cartItem.setBasePrice(25378.9F);
         cartItem.setQuantity(1);
@@ -224,6 +249,7 @@ public class VerifyCartItemControllerTest {
         cartItem.setCategoryId("165018");
         cartItem.setEducationVertical(COACHING_VERTICAL_NAME);
         cartItem.setMetaData(metaData);
+        cartItem.setReferenceId("abc");
 
         VerifyRequest verifyRequest=new VerifyRequest();
         List<CartItem> cartItems=new ArrayList<>();

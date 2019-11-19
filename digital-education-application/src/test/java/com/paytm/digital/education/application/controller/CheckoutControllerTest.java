@@ -135,6 +135,7 @@ public class CheckoutControllerTest {
         cartItem.setCategoryId("165018");
         cartItem.setEducationVertical(COACHING_VERTICAL_NAME);
         cartItem.setMetaData(metaData);
+        cartItem.setReferenceId("abc");
 
         CheckoutDataRequest checkoutDataRequest=new CheckoutDataRequest();
         List<CheckoutCartItem> cartItems=new ArrayList<>();
