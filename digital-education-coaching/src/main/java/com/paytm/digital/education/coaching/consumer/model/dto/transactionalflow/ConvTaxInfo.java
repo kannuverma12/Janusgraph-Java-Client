@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Data
@@ -32,8 +31,4 @@ public class ConvTaxInfo {
     @NotNull
     @JsonProperty("totalUTGST")
     private Float totalUTGST;
-
-    @NotEmpty
-    @JsonProperty("gstin")
-    private String gstin;
 }

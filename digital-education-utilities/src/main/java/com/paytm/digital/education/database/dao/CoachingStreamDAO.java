@@ -1,13 +1,17 @@
-package com.paytm.digital.education.coaching.db.dao;
+package com.paytm.digital.education.database.dao;
 
 import com.paytm.digital.education.database.entity.StreamEntity;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.database.repository.SequenceGenerator;
 import com.paytm.digital.education.database.repository.StreamRepository;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Component
@@ -18,6 +22,9 @@ public class CoachingStreamDAO {
 
     @Autowired
     private SequenceGenerator sequenceGenerator;
+
+    @Autowired
+    private CommonMongoRepository commonMongoRepository;
 
     public StreamEntity save(@NonNull StreamEntity streamEntity) {
         if (Objects.isNull(streamEntity.getStreamId())) {
@@ -41,5 +48,22 @@ public class CoachingStreamDAO {
 
     public StreamEntity findByStreamName(@NonNull String name) {
         return streamRepository.findByStreamName(name);
+    }
+
+    public StreamEntity findByStreamId(String streamIdField, long streamId,
+            List<String> projectionFields) {
+        return commonMongoRepository.getEntityByFields(
+                streamIdField, streamId, StreamEntity.class, projectionFields);
+    }
+
+    public List<StreamEntity> findByStreamIdsIn(String streamIdField, List<Long> streamIds,
+            List<String> projectionFields) {
+        return commonMongoRepository.getEntityFieldsByValuesIn(streamIdField, streamIds,
+                StreamEntity.class, projectionFields);
+    }
+
+    public List<StreamEntity> findAllAndSortBy(Map<Sort.Direction, String> sortMap) {
+        return commonMongoRepository.findAllAndSortBy(StreamEntity.class,
+                Collections.EMPTY_LIST, sortMap);
     }
 }

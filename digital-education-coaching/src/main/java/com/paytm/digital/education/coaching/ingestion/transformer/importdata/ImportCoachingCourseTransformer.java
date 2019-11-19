@@ -80,7 +80,6 @@ public class ImportCoachingCourseTransformer {
                 .isEnabled(ImportCommonTransformer.convertStringToBoolean(form.getStatusActive()))
                 .paytmProductId(form.getPaytmProductId())
                 .isDynamic(ImportCommonTransformer.convertStringToBoolean(form.getIsDynamic()))
-                .redirectUrl(form.getRedirectUrl())
                 .build();
     }
 

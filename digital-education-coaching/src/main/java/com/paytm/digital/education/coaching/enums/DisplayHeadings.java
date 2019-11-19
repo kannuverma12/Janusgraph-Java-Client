@@ -62,7 +62,20 @@ public enum DisplayHeadings {
     TARGET_EXAM_COURSE("Target Exam"),
     ELIGIBILITY_COURSE("Eligibility"),
     DURATION_COURSE("Duration"),
-    VALIDITY_COURSE("Validity");
+    VALIDITY_COURSE("Validity"),
+
+    CGST_KEY("cgst"),
+    CGST_HEADER("Central GST"),
+    CGST_OMS_KEY("totalCGST"),
+    IGST_KEY("igst"),
+    IGST_HEADER("Integrated GST"),
+    IGST_OMS_KEY("totalIGST"),
+    SGST_KEY("sgst"),
+    SGST_HEADER("State GST"),
+    SGST_OMS_KEY("totalSGST"),
+    UTGST_KEY("utgst"),
+    UTGST_HEADER("Union Territory GST"),
+    UTGST_OMS_KEY("totalUTGST");
 
     private String value;
 }

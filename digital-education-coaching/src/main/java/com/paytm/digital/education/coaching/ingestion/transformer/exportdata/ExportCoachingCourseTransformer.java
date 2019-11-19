@@ -3,12 +3,14 @@ package com.paytm.digital.education.coaching.ingestion.transformer.exportdata;
 import com.paytm.digital.education.coaching.ingestion.model.googleform.CoachingCourseForm;
 import com.paytm.digital.education.database.embedded.CoachingCourseImportantDate;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
+import com.paytm.digital.education.enums.CTAViewType;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EMPTY_STRING;
@@ -89,7 +91,6 @@ public class ExportCoachingCourseTransformer {
                             .paytmProductId(entity.getPaytmProductId())
                             .isDynamic(ExportCommonTransformer
                                     .convertBooleanToString(entity.getIsDynamic()))
-                            .redirectUrl(entity.getRedirectUrl())
                             .build();
 
                     if (Objects.nonNull(entity.getValidityType())) {

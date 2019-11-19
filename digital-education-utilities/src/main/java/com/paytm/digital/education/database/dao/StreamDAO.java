@@ -1,4 +1,4 @@
-package com.paytm.digital.education.ingestion.dao;
+package com.paytm.digital.education.database.dao;
 
 import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.database.repository.SequenceGenerator;
