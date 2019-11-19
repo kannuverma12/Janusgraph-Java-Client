@@ -242,7 +242,7 @@ public class ConverterUtil {
 
     public static void patchCoachingCourse(CoachingCoursePatchRequest request,
             CoachingCourseEntity coachingCourseEntity) {
-        coachingCourseEntity.setCtaInfo(request.getCtaInfo());
+        coachingCourseEntity.getCtaInfo().putAll(request.getCtaInfo());
     }
 
     public static void setExamUpdateData(TargetExamUpdateRequest request,

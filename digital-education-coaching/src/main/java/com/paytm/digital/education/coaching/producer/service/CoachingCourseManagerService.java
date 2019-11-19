@@ -3,7 +3,6 @@ package com.paytm.digital.education.coaching.producer.service;
 import com.paytm.digital.education.coaching.producer.model.dto.CoachingCourseDTO;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCourseDataRequest;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCoursePatchRequest;
-import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.exception.InvalidRequestException;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -32,6 +32,8 @@ public class CoachingCourseManagerService {
     @Autowired
     private ProducerCoachingCourseFeatureService producerCoachingCourseFeatureService;
 
+    @Autowired
+    private CoachingCtaManagerService coachingCtaManagerService;
 
     public CoachingCourseDTO save(CoachingCourseDataRequest coachingCourseDataRequest) {
         if (Objects.nonNull(coachingCourseDataRequest.getCourseId())) {
@@ -80,6 +82,9 @@ public class CoachingCourseManagerService {
 
         Optional.ofNullable(coachingCoursePatchRequest.getCourseId())
                 .orElseThrow(() -> new InvalidRequestException("course id should be present"));
+
+        coachingCtaManagerService.isValidCTAIds(coachingCoursePatchRequest.getCtaInfo().values()
+                .stream().collect(Collectors.toList()));
 
         return CoachingCourseDTO
                 .builder()
