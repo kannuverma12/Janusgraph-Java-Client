@@ -1,6 +1,5 @@
 package com.paytm.digital.education.application.cache;
 
-import com.paytm.digital.education.service.impl.RedisOrchestratorImpl;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import org.junit.FixMethodOrder;
@@ -34,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class CacheTest {
-    private static final Logger logger = LoggerFactory.getLogger(RedisOrchestratorImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(CacheTest.class);
 
     @Autowired
     private TestService testService;
