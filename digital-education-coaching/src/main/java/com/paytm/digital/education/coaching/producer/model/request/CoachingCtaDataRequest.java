@@ -9,13 +9,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.URL;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
-import java.util.Map;
 
 @Data
 @Builder
@@ -31,10 +32,12 @@ public class CoachingCtaDataRequest {
     private Long ctaId;
 
     @NotEmpty
+    @Size(max = 100)
     @ApiModelProperty(value = "name of coaching cta")
     private String name;
 
     @NotEmpty
+    @Size(max = 250)
     @ApiModelProperty(value = "description of coaching cta")
     private String description;
 
@@ -42,9 +45,11 @@ public class CoachingCtaDataRequest {
     @ApiModelProperty(value = "elements from predefined cta types")
     private CtaType ctaType;
 
+    @URL
     @ApiModelProperty(value = "cta logo url")
     private String logoUrl;
 
+    @URL
     @ApiModelProperty(value = "cta action url")
     private String url;
 

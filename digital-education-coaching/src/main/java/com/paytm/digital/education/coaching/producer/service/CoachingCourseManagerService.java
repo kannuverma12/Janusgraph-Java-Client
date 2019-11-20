@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CoachingCourseManagerService {
@@ -33,6 +34,8 @@ public class CoachingCourseManagerService {
     @Autowired
     private ProducerCoachingCourseFeatureService producerCoachingCourseFeatureService;
 
+    @Autowired
+    private CoachingCtaManagerService coachingCtaManagerService;
 
     public CoachingCourseDTO save(CoachingCourseDataRequest coachingCourseDataRequest) {
         if (Objects.nonNull(coachingCourseDataRequest.getCourseId())) {
@@ -81,6 +84,9 @@ public class CoachingCourseManagerService {
 
         Optional.ofNullable(coachingCoursePatchRequest.getCourseId())
                 .orElseThrow(() -> new InvalidRequestException("course id should be present"));
+
+        coachingCtaManagerService.isValidCTAIds(coachingCoursePatchRequest.getCtaInfo().values()
+                .stream().collect(Collectors.toList()));
 
         return CoachingCourseDTO
                 .builder()

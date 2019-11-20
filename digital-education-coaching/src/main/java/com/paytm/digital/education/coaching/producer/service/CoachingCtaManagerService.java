@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -84,6 +85,18 @@ public class CoachingCtaManagerService {
         }
         existingCtaEntity.setUrl(data.build().toString());
         return existingCtaEntity;
+    }
+
+    public boolean isValidCTAIds(List<Long> ids) {
+        List<Long> existingCTAIds = ctaDAO.findAllByCtaIdIn(ids)
+                .stream().map(CoachingCtaEntity::getCtaId).collect(Collectors.toList());
+        List<Long> invalidCTAds = ids.stream().filter(id -> !existingCTAIds.contains(id))
+                .collect(Collectors.toList());
+        if (!invalidCTAds.isEmpty()) {
+            throw new InvalidRequestException(
+                    "Invalid CTA ids given : " + invalidCTAds);
+        }
+        return true;
     }
 
 }

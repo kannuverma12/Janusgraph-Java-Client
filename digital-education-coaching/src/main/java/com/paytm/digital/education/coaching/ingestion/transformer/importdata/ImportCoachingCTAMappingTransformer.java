@@ -7,6 +7,8 @@ import com.paytm.digital.education.enums.CTAViewType;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 
+import java.util.Optional;
+
 public class ImportCoachingCTAMappingTransformer {
 
     private static final Logger log =
@@ -19,8 +21,9 @@ public class ImportCoachingCTAMappingTransformer {
         return CoachingCoursePatchRequest
                 .builder()
                 .courseId(form.getCourseId())
-                .ctaInfo(ImmutableMap
-                        .of(CTAViewType.fromString(form.getViewType()), form.getCtaId()))
+                .ctaInfo(Optional.ofNullable(CTAViewType.fromString(form.getViewType()))
+                        .map(ctaViewType -> ImmutableMap.of(ctaViewType, form.getCtaId()))
+                        .orElse(ImmutableMap.of()))
                 .build();
     }
 }
