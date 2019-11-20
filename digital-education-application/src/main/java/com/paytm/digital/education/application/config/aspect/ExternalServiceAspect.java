@@ -1,6 +1,7 @@
 package com.paytm.digital.education.application.config.aspect;
 
 import com.paytm.digital.education.application.config.metric.MetricsAgent;
+import com.paytm.digital.education.utility.JsonUtils;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import org.apache.commons.lang3.StringUtils;
@@ -10,8 +11,15 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
+import java.net.URI;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Aspect
@@ -48,6 +56,39 @@ public class ExternalServiceAspect {
     @Around("executeRedisMethods()")
     public Object redisMethods(ProceedingJoinPoint pjp) throws Throwable {
         return execute(pjp, "redis_api" );
+    }
+
+    @Around("execution(* org.springframework.web.client.RestTemplate.exchange(..)) "
+            + "&& args(url,method,requestEntity,..)")
+    public <T> Object executeRestExternalMethods(ProceedingJoinPoint proceedingJoinPoint, URI url,
+            HttpMethod method, @Nullable
+            HttpEntity<T> requestEntity) {
+        Map<String, Object> requestMap = new LinkedHashMap<>();
+        requestMap.put("ReqType", "Outgoing");
+        requestMap.put("Type", "Request");
+        requestMap.put("HttpMethod", method);
+        requestMap.put("Path", url);
+        requestMap.put("ReqEntity", requestEntity);
+
+        Map<String, Object> responseMap = new LinkedHashMap<>();
+
+        Object value = null;
+        try {
+            value = proceedingJoinPoint.proceed();
+
+            ResponseEntity<T> responseEntity = (ResponseEntity<T>) value;
+            responseMap.put("ReqType", "Outgoing");
+            responseMap.put("Type", "Response");
+            responseMap.put("Path", url);
+            responseMap.put("HttpStatus", responseEntity.getStatusCode());
+            responseMap.put("ResHeaders", responseEntity.getHeaders());
+            responseMap.put("ResBody", responseEntity.getBody());
+        } catch (Throwable e) {
+            LOGGER.error("Exception occured while logging outgoing request :", e);
+        }
+        LOGGER.info("Outgoing Request : {} , Outgoing Response : {}",
+                JsonUtils.toJson(requestMap), JsonUtils.toJson(responseMap));
+        return value;
     }
 
     private Object execute(ProceedingJoinPoint pjp, String aspectPrefix) throws Throwable {

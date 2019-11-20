@@ -21,6 +21,7 @@ public interface ExploreConstants {
     String SORT_DISTANCE_FIELD         = "location";
     String SPACE_SEPERATOR             = " ";
     String DISTANCE_KILOMETERS         = "Km";
+    String PAYTM_APP_REQUEST_ID        = "x-app-rid";
 
     ///// Exam Detail//////////
     String TENTATIVE     = "tentative";

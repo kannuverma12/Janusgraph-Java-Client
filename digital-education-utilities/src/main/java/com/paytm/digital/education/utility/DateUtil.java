@@ -23,12 +23,12 @@ public class DateUtil {
                 return dateFormatter.parse(dateString);
             } catch (ParseException ex) {
                 log.error(
-                        "ParseException caught while parsing the dateString : {}, formatter : {}, Exception : {}",
-                         dateString, dateFormatter, ex);
+                        "ParseException caught while parsing the dateString : {}, formatter : {}, Exception :",
+                         ex, dateString, dateFormatter);
             } catch (Exception ex) {
                 log.error(
-                        "Error caught while parsing the dateString : {}, formatter : {}, Exception : {}",
-                        dateString, dateFormatter, ex);
+                        "Error caught while parsing the dateString : {}, formatter : {}, Exception : ",
+                        ex, dateString, dateFormatter);
             }
         }
         return null;
