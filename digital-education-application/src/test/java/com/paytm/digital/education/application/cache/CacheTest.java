@@ -23,10 +23,12 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.application.cache.TestUtil.processTwoStrings;
 import static java.lang.Long.MAX_VALUE;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -101,7 +103,6 @@ public class CacheTest {
     public void testCacheConcurrenceSequentialExecutionForWriteLockStrategy() throws Exception {
         final int numberOfThreads = 10000;
 
-
         CacheLockStrategy oldCacheLock =
                 this.updateCacheLockStrategyInRedisOrchestrator(writeLockStrategy);
         String arg1 = "arg1";
@@ -114,9 +115,14 @@ public class CacheTest {
         }
 
         ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
-        executorService.invokeAll(callables);
+        List<Future<String>> futures = callables.stream().map(executorService::submit).collect(Collectors.toList());
+
         executorService.shutdown();
-        executorService.awaitTermination(MAX_VALUE, NANOSECONDS);
+        executorService.awaitTermination(60, SECONDS);
+        for (Future<String> future: futures) {
+            assertTrue(future.isDone());
+            assertEquals(future.get(), processTwoStrings(arg1, arg2));
+        }
         assertThat(testService.getEvents().size(), greaterThan(0));
         for (int i = 0; i < testService.getEvents().size() - 1; ++i) {
             assertNotEquals(testService.getEvents().get(i), testService.getEvents().get(i + 1));
