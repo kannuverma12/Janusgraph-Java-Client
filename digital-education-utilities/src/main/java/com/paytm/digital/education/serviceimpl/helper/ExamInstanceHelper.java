@@ -5,7 +5,6 @@ import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Instance;
 import com.paytm.digital.education.database.entity.SubExam;
 import com.paytm.digital.education.dto.detail.ExamAndCutOff;
-import com.paytm.digital.education.dto.detail.ImportantDate;
 import com.paytm.digital.education.dto.detail.Section;
 import com.paytm.digital.education.dto.detail.Syllabus;
 import com.paytm.digital.education.dto.detail.Topic;
@@ -303,10 +302,22 @@ public class ExamInstanceHelper {
         return respEvent;
     }
 
-    private boolean isOngoing(Event event) {
+    private Boolean isOngoing(Event event) {
         Date curDate = new LocalDate().toDate();
-        return  (CommonUtils.isDateEqualsOrAfter(curDate, event.getDateRangeStart())
-                && CommonUtils.isDateEqualsOrAfter(event.getDateRangeEnd(), curDate));
+        if (Objects.nonNull(event.getDateRangeEnd())) {
+            // if range end date is passed, set ongoing to true
+            if (CommonUtils.isDateEqualsOrAfter(curDate, event.getDateRangeEnd())) {
+                return null;
+            }
+            // else set ongoing to true(ongoing) or false(upcoming)
+            return (CommonUtils.isDateEqualsOrAfter(curDate, event.getDateRangeStart())
+                    && CommonUtils.isDateEqualsOrAfter(event.getDateRangeEnd(), curDate));
+        }
+        // if stat date is in future , set ongoing to false
+        if (CommonUtils.isDateEqualsOrAfter(event.getDateRangeStart(), curDate)) {
+            return false;
+        }
+        return null;
     }
 
     public Map<String, Instance> getSubExamInstances(Exam exam, int parentInstanceId) {
@@ -439,5 +450,4 @@ public class ExamInstanceHelper {
         }
         return importantDates;
     }
-
 }

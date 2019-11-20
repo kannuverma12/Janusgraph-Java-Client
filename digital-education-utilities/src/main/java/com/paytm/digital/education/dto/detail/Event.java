@@ -51,5 +51,5 @@ public class Event {
     private String dateName;
 
     @JsonProperty("ongoing")
-    private boolean ongoing;
+    private Boolean ongoing;
 }
