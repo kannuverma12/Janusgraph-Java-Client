@@ -6,12 +6,14 @@ import com.paytm.digital.education.service.impl.RedisOrchestratorImpl;
 import com.paytm.digital.education.service.impl.WriteLockStrategy;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -55,8 +57,12 @@ public class CacheTest {
     @Autowired
     private WriteLockStrategy writeLockStrategy;
 
+    @Autowired
+    private Environment env;
+
     @Test
     public void testBasicFunctionalityOfEduCache() {
+        logger.info("Profiles- " + StringUtils.join(env.getActiveProfiles(), "-"));
         String result1 = testService.basicTest("example1", "example2");
         String result2 = testService.basicTest("example1", "example2");
         String result3 = testService.basicTest("example1", "example2");
