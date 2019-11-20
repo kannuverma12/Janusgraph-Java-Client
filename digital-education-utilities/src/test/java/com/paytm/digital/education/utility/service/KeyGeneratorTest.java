@@ -4,10 +4,15 @@ import com.paytm.digital.education.advice.CacheKeyable;
 import com.paytm.digital.education.advice.helper.KeyGenerator;
 import com.paytm.digital.education.annotation.EduCache;
 import com.paytm.digital.education.exception.UnableToAccessBeanPropertyException;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -18,13 +23,19 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KeyGeneratorTest {
+    private static final Logger logger = LoggerFactory.getLogger(KeyGenerator.class);
 
     private static final String CACHE_NAME = "test_cache";
 
     private KeyGenerator keyGenerator = new KeyGenerator();
 
+    @Autowired
+    private Environment env;
+
     @Test
     public void testDefaultArgs() {
+        logger.info("Profiles- " + StringUtils.join(env.getActiveProfiles(), "-"));
+
         assertNotNull(keyGenerator);
 
         EduCache eduCache = getCache(CACHE_NAME, new String[0]);
