@@ -50,6 +50,7 @@ public class CoachingConstants {
     public static final String COACHING_COURSE_IDS        = "course_ids";
     public static final String NAME                       = "name";
     public static final String PAYTM_REQUEST_ID           = "PaytmRequestId";
+    public static final String PAYTM_APP_REQUEST_ID       = "x-app-rid";
     public static final String CHECKSUM_HASH              = "ChecksumHash";
     public static final String ACCESS_KEY                 = "AccessKey";
     public static final String EXAM_FILTER_NAMESPACE      = "exam_filter";

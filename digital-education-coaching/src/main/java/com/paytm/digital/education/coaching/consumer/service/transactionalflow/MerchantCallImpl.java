@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.PAYTM_APP_REQUEST_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.PAYTM_REQUEST_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.RestTemplateConstants.MERCHANT_COMMIT_TIMEOUT_MS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.RestTemplateConstants.PAYTM_HOST_FOR_SIGNATURE;
@@ -140,7 +141,8 @@ public class MerchantCallImpl implements MerchantCall {
                                             .toUriString(),
                                     HeaderTemplate
                                             .getMerchantHeader(MDC.get(PAYTM_REQUEST_ID), signature,
-                                                    merchantInfo.getAccessKey()),
+                                                    merchantInfo.getAccessKey(),
+                                                    MDC.get(PAYTM_APP_REQUEST_ID)),
                                     requestString,
                                     MerchantCommitResponse.class);
             if (Objects.isNull(merchantCommitResponse)) {
