@@ -1,5 +1,9 @@
 package com.paytm.digital.education.application.cache;
 
+import com.paytm.digital.education.service.CacheLockStrategy;
+import com.paytm.digital.education.service.impl.CompleteLockStrategy;
+import com.paytm.digital.education.service.impl.RedisOrchestratorImpl;
+import com.paytm.digital.education.service.impl.WriteLockStrategy;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import org.junit.FixMethodOrder;
@@ -11,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,8 +43,14 @@ public class CacheTest {
     @Autowired
     private TestService testService;
 
-    private static int NUMBER_OF_THREADS = 1000;
-    private static int THREAD_POOL_SIZE = 1000;
+    @Autowired
+    private RedisOrchestratorImpl redisOrchestrator;
+
+    @Autowired
+    private CompleteLockStrategy completeLockStrategy;
+
+    @Autowired
+    private WriteLockStrategy writeLockStrategy;
 
     @Test
     public void testBasicFunctionalityOfEduCache() {
@@ -57,17 +68,23 @@ public class CacheTest {
     }
 
     @Test
-    public void testCacheConcurrenceSequentialExecutionForWriteLockStrategy() throws Exception {
+    public void testCacheConcurrenceForCompleteLockStrategy() throws Exception {
+
+        final int numberOfThreads = 10000;
+
+        CacheLockStrategy oldCacheLock =
+                this.updateCacheLockStrategyInRedisOrchestrator(completeLockStrategy);
+
         String arg1 = "arg1";
         String arg2 = "arg2";
 
         Set<Callable<String>> callables = new HashSet<>();
 
-        for (int i = 0; i < NUMBER_OF_THREADS; ++i) {
+        for (int i = 0; i < numberOfThreads; ++i) {
             callables.add(() -> testService.testString(arg1, arg2));
         }
 
-        ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+        ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
         executorService.invokeAll(callables);
         executorService.shutdown();
         executorService.awaitTermination(MAX_VALUE, NANOSECONDS);
@@ -76,20 +93,52 @@ public class CacheTest {
             assertNotEquals(testService.getEvents().get(i), testService.getEvents().get(i + 1));
         }
         logger.info("Number of writes count (approx) - {}", testService.getTestCount());
+
+        this.updateCacheLockStrategyInRedisOrchestrator(oldCacheLock);
     }
 
     @Test
-    public void testCacheConcurrenceRunsMultipleTimeWithoutCacheAnnotation() throws Exception {
+    public void testCacheConcurrenceSequentialExecutionForWriteLockStrategy() throws Exception {
+        final int numberOfThreads = 10000;
+
+
+        CacheLockStrategy oldCacheLock =
+                this.updateCacheLockStrategyInRedisOrchestrator(writeLockStrategy);
         String arg1 = "arg1";
         String arg2 = "arg2";
 
         Set<Callable<String>> callables = new HashSet<>();
 
-        for (int i = 0; i < NUMBER_OF_THREADS; ++i) {
+        for (int i = 0; i < numberOfThreads; ++i) {
+            callables.add(() -> testService.testString(arg1, arg2));
+        }
+
+        ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
+        executorService.invokeAll(callables);
+        executorService.shutdown();
+        executorService.awaitTermination(MAX_VALUE, NANOSECONDS);
+        assertThat(testService.getEvents().size(), greaterThan(0));
+        for (int i = 0; i < testService.getEvents().size() - 1; ++i) {
+            assertNotEquals(testService.getEvents().get(i), testService.getEvents().get(i + 1));
+        }
+        logger.info("Number of writes count (approx) - {}", testService.getTestCount());
+        this.updateCacheLockStrategyInRedisOrchestrator(oldCacheLock);
+    }
+
+    @Test
+    public void testCacheConcurrenceRunsMultipleTimeWithoutCacheAnnotation() throws Exception {
+        final int numberOfThreads = 1000;
+
+        String arg1 = "arg1";
+        String arg2 = "arg2";
+
+        Set<Callable<String>> callables = new HashSet<>();
+
+        for (int i = 0; i < numberOfThreads; ++i) {
             callables.add(() -> testService.controlMethod(arg1, arg2));
         }
 
-        ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+        ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
         List<Future<String>> futureValues = executorService.invokeAll(callables);
         executorService.shutdown();
         executorService.awaitTermination(MAX_VALUE, NANOSECONDS);
@@ -97,6 +146,16 @@ public class CacheTest {
             assertTrue(future.isDone());
             assertEquals(future.get(), processTwoStrings(arg1, arg2));
         }
-        assertEquals(testService.getControlCount().get(), NUMBER_OF_THREADS);
+        assertEquals(testService.getControlCount().get(), numberOfThreads);
+    }
+
+    private CacheLockStrategy updateCacheLockStrategyInRedisOrchestrator(CacheLockStrategy newCacheLockStrategy)
+            throws Exception {
+        Field cacheLockStrategyField = redisOrchestrator.getClass().getDeclaredField("cacheLockStrategy");
+        cacheLockStrategyField.setAccessible(true);
+        CacheLockStrategy oldCacheLockStrategy = (CacheLockStrategy) cacheLockStrategyField.get(redisOrchestrator);
+        cacheLockStrategyField.set(redisOrchestrator, newCacheLockStrategy);
+        cacheLockStrategyField.setAccessible(false);
+        return oldCacheLockStrategy;
     }
 }

@@ -3,12 +3,10 @@ package com.paytm.digital.education.service.impl;
 import com.paytm.digital.education.method.CachedMethod;
 import com.paytm.digital.education.service.CacheLockStrategy;
 import com.paytm.digital.education.service.RedisOrchestrator;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
-@Setter
 public class RedisOrchestratorImpl implements RedisOrchestrator {
     private final CacheLockStrategy cacheLockStrategy;
 
