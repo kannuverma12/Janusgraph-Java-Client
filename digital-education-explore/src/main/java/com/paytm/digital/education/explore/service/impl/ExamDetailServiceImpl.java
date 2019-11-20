@@ -224,7 +224,7 @@ public class ExamDetailServiceImpl {
         boolean applicationDateFound = false;
         boolean examDateFound = false;
         for (ImportantDate importantDate : importantDates) {
-            if (CollectionUtils.isEmpty(importantDate.getUpcomingDates())) {
+            if (!CollectionUtils.isEmpty(importantDate.getUpcomingDates())) {
                 for (Event event : importantDate.getUpcomingDates()) {
                     if (APPLICATION.equalsIgnoreCase(event.getType()) && !applicationDateFound) {
                         if (NON_TENTATIVE.equalsIgnoreCase(event.getCertainity())) {
