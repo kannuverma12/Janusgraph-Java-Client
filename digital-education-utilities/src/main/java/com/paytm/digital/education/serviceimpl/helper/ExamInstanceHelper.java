@@ -305,7 +305,7 @@ public class ExamInstanceHelper {
     private Boolean isOngoing(Event event) {
         Date curDate = new LocalDate().toDate();
         if (Objects.nonNull(event.getDateRangeEnd())) {
-            // if range end date is passed, set ongoing to true
+            // if range end date is passed, unset ongoing
             if (CommonUtils.isDateEqualsOrAfter(curDate, event.getDateRangeEnd())) {
                 return null;
             }
