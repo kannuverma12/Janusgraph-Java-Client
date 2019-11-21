@@ -62,10 +62,21 @@ public class RedisCacheService {
         return value;
     }
 
-    public void clearCache() {
+    public void delKeyFromCache(String key) {
+        log.debug("Delete Value From Cache, key : {} ", key);
         Jedis jedis = null;
-        if (jedis != null) {
-            jedis.flushAll();
+        try {
+            JedisPool jedisPool = RedisConfiguration.getJedisPool();
+            jedis = jedisPool.getResource();
+            jedis.del(key);
+        } catch (Exception ex) {
+            log.error("Error while deleting value from redis, key : {}", key);
+            log.error("Error while deleting value from redis,", ex);
+        } finally {
+            if (Objects.nonNull(jedis)) {
+                jedis.close();
+            }
+
         }
     }
 }
