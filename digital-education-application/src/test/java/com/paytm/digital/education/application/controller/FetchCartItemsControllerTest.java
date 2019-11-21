@@ -164,7 +164,7 @@ public class FetchCartItemsControllerTest {
         coachingCourseEntity.setPaytmProductId(123L);
         coachingCourseEntity.setMerchantProductId("1");
         coachingCourseEntity.setIsEnabled(true);
-        coachingCourseEntity.setCourseId(200L);
+        coachingCourseEntity.setCourseId(100000L);
         coachingCourseEntity.setCourseType(CourseType.CLASSROOM_COURSE);
         coachingCourseEntity.setIsDynamic(true);
         coachingCourseEntity.setCoachingInstituteId(123L);

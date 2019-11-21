@@ -176,7 +176,7 @@ public class VerifyCartItemControllerTest {
     private CoachingInstituteEntity createInstituteEntity() {
         CoachingInstituteEntity
                 coachingInstituteEntity = new CoachingInstituteEntity();
-        coachingInstituteEntity.setInstituteId(123L);
+        coachingInstituteEntity.setInstituteId(100000L);
         coachingInstituteEntity.setIsEnabled(true);
         coachingInstituteEntity.setPaytmMerchantId("63794147");
         return coachingInstituteRepositoryNew.save(coachingInstituteEntity);
@@ -188,10 +188,10 @@ public class VerifyCartItemControllerTest {
         coachingCourseEntity.setPaytmProductId(123L);
         coachingCourseEntity.setMerchantProductId("1");
         coachingCourseEntity.setIsEnabled(true);
-        coachingCourseEntity.setCourseId(200L);
+        coachingCourseEntity.setCourseId(100000L);
         coachingCourseEntity.setCourseType(CourseType.CLASSROOM_COURSE);
         coachingCourseEntity.setIsDynamic(true);
-        coachingCourseEntity.setCoachingInstituteId(123L);
+        coachingCourseEntity.setCoachingInstituteId(100000L);
         coachingCourseEntity.setOriginalPrice(25378.9D);
         coachingCourseEntity.setDiscountedPrice(25378.9D);
         return coachingProgramRepository.save(coachingCourseEntity);
@@ -203,10 +203,10 @@ public class VerifyCartItemControllerTest {
         coachingCourseEntity.setPaytmProductId(123L);
         coachingCourseEntity.setMerchantProductId("1");
         coachingCourseEntity.setIsEnabled(true);
-        coachingCourseEntity.setCourseId(200L);
+        coachingCourseEntity.setCourseId(100000L);
         coachingCourseEntity.setCourseType(CourseType.CLASSROOM_COURSE);
         coachingCourseEntity.setIsDynamic(false);
-        coachingCourseEntity.setCoachingInstituteId(123L);
+        coachingCourseEntity.setCoachingInstituteId(100000L);
         coachingCourseEntity.setOriginalPrice(25378.9D);
         coachingCourseEntity.setDiscountedPrice(25378.9D);
         return coachingProgramRepository.save(coachingCourseEntity);
@@ -244,7 +244,7 @@ public class VerifyCartItemControllerTest {
                 .build();
 
         MetaData metaData=MetaData.builder()
-                .courseId(200L)
+                .courseId(100000L)
                 .courseType(CourseType.CLASSROOM_COURSE.getText())
                 .taxInfo(taxInfo)
                 .convTaxInfo(convTaxInfo)
