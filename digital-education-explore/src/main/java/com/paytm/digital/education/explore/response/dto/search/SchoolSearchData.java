@@ -52,7 +52,7 @@ public class SchoolSearchData extends SearchBaseData implements CTAInfoHolderWit
 
     @Override
     public boolean hasShareFeature() {
-        return true;
+        return false;
     }
 
     @JsonProperty("distance")
