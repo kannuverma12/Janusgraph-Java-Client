@@ -20,8 +20,7 @@ public class ImportCoachingCTAMappingTransformer {
         return CoachingCoursePatchRequest
                 .builder()
                 .courseId(form.getCourseId())
-                .ctaInfo(ImmutableMap
-                        .of(CTAViewType.fromString(form.getViewType()), form.getCtaId()))
+                .ctaInfo(ImmutableMap.of(CTAViewType.fromString(form.getViewType()), form.getCtaId()))
                 .build();
     }
 }
