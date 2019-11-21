@@ -28,6 +28,7 @@ import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
 
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ConverterUtil {
@@ -242,7 +243,12 @@ public class ConverterUtil {
 
     public static void patchCoachingCourse(CoachingCoursePatchRequest request,
             CoachingCourseEntity coachingCourseEntity) {
-        coachingCourseEntity.getCtaInfo().putAll(request.getCtaInfo());
+
+        if (Objects.isNull(coachingCourseEntity.getCtaInfo())) {
+            coachingCourseEntity.setCtaInfo(request.getCtaInfo());
+        } else {
+            coachingCourseEntity.getCtaInfo().putAll(request.getCtaInfo());
+        }
     }
 
     public static void setExamUpdateData(TargetExamUpdateRequest request,
