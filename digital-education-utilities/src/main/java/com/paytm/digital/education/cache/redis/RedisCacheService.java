@@ -20,7 +20,7 @@ public class RedisCacheService {
     public void addKeyToCache(String pKey, String pValue, Integer lRecordTtl) {
         Jedis jedis = null;
         log.debug("Add key to cache key : {}, value: {}, ttl : {}",
-                new Object[] {pKey, pValue, lRecordTtl});
+                pKey, pValue, lRecordTtl);
         try {
             JedisPool jedisPool = RedisConfiguration.getJedisPool();
             jedis = jedisPool.getResource();
@@ -30,9 +30,8 @@ public class RedisCacheService {
                 jedis.set(pKey, pValue);
             }
         } catch (Exception ex) {
-            log.error("Error while adding key : {} , value : {}, ttl : {}",
-                    new Object[] {pKey, pValue, lRecordTtl});
-            log.error("Error while adding key", ex);
+            log.error("Exception while adding key : {} , value : {}, ttl : {}",
+                    ex, pKey, pValue, lRecordTtl);
         } finally {
             if (Objects.nonNull(jedis)) {
                 jedis.close();
@@ -51,8 +50,7 @@ public class RedisCacheService {
             jedis = jedisPool.getResource();
             value = jedis.get(pKey);
         } catch (Exception ex) {
-            log.error("Error while getting value from redis, key : {}", pKey);
-            log.error("Error while getting value from redis,", ex);
+            log.error("Exception while getting value from redis, key : {}", ex, pKey);
         } finally {
             if (Objects.nonNull(jedis)) {
                 jedis.close();
@@ -70,8 +68,7 @@ public class RedisCacheService {
             jedis = jedisPool.getResource();
             jedis.del(key);
         } catch (Exception ex) {
-            log.error("Error while deleting value from redis, key : {}", key);
-            log.error("Error while deleting value from redis,", ex);
+            log.error("Error while deleting value from redis, key : {}", ex, key);
         } finally {
             if (Objects.nonNull(jedis)) {
                 jedis.close();
