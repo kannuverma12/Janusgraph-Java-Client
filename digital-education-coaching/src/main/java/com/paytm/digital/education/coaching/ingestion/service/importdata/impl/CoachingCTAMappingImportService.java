@@ -61,9 +61,9 @@ public class CoachingCTAMappingImportService extends AbstractImportService
         final CoachingCTAMappingForm ctaMappingForm = (CoachingCTAMappingForm) clazz.cast(form);
         ResponseEntity<CoachingCourseDTO> response = null;
         String failureMessage = EMPTY_STRING;
-        CoachingCoursePatchRequest coachingCoursePatchRequest =
-                ImportCoachingCTAMappingTransformer.convert(ctaMappingForm);
         try {
+            CoachingCoursePatchRequest coachingCoursePatchRequest =
+                    ImportCoachingCTAMappingTransformer.convert(ctaMappingForm);
             response = this.producerCoachingCourseController
                     .patchCoachingProgram(coachingCoursePatchRequest);
         } catch (final Exception e) {
