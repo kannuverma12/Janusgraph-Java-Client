@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -43,6 +44,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.U
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.URL.V1;
 
 @RunWith(SpringRunner.class)
+@ActiveProfiles(value = {"test"})
 @WebMvcTest(value = CheckoutController.class, secure = false)
 public class CheckoutControllerTest {
 
@@ -63,7 +65,6 @@ public class CheckoutControllerTest {
 
     @Test
     public void successResponse() throws Exception {
-
         CheckoutDataRequest request = getCheckoutDataRequest();
         RequestBuilder requestBuilder =
                 MockMvcRequestBuilders.post(COACHING_BASE + V1 + CHECKOUT_DATA)
@@ -96,6 +97,18 @@ public class CheckoutControllerTest {
     public void invalidCartItems() throws Exception {
         CheckoutDataRequest request = getCheckoutDataRequest();
         request.setCartItems(null);
+        RequestBuilder requestBuilder =
+                MockMvcRequestBuilders.post(COACHING_BASE + V1 + CHECKOUT_DATA)
+                        .contentType(MediaType.APPLICATION_JSON).content(JsonUtils.toJson(request))
+                        .accept(MediaType.APPLICATION_JSON);
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        Assert.assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
+    }
+
+    @Test
+    public void invalidMetaData() throws Exception {
+        CheckoutDataRequest request = getCheckoutDataRequest();
+        request.getCartItems().get(0).setMetaData(null);
         RequestBuilder requestBuilder =
                 MockMvcRequestBuilders.post(COACHING_BASE + V1 + CHECKOUT_DATA)
                         .contentType(MediaType.APPLICATION_JSON).content(JsonUtils.toJson(request))

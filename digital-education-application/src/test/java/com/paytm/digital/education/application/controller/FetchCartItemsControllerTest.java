@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -35,6 +36,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.U
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.URL.V1;
 
 @RunWith(SpringRunner.class)
+@ActiveProfiles(value = {"test"})
 @WebMvcTest(value = CartItemsController.class, secure = false)
 public class FetchCartItemsControllerTest {
 
@@ -61,36 +63,16 @@ public class FetchCartItemsControllerTest {
 
     @Before
     public void setup() {
-        CoachingInstituteEntity
-                coachingInstituteEntity = new CoachingInstituteEntity();
-        coachingInstituteEntity.setInstituteId(123L);
-        coachingInstituteEntity.setIsEnabled(true);
-        coachingInstituteEntity.setPaytmMerchantId("63794147");
-        coachingInstituteRepositoryNew.save(coachingInstituteEntity);
-        CoachingCourseEntity coachingCourseEntity =
-                new CoachingCourseEntity();
-        coachingCourseEntity.setPaytmProductId(123L);
-        coachingCourseEntity.setMerchantProductId("1");
-        coachingCourseEntity.setIsEnabled(true);
-        coachingCourseEntity.setCourseId(200L);
-        coachingCourseEntity.setCourseType(CourseType.CLASSROOM_COURSE);
-        coachingCourseEntity.setIsDynamic(true);
-        coachingCourseEntity.setCoachingInstituteId(123L);
-        coachingCourseEntity.setOriginalPrice(123D);
-        coachingCourseEntity.setDiscountedPrice(123D);
-        coachingProgramRepository.save(coachingCourseEntity);
-
     }
 
     @After
     public void clear() {
-        coachingInstituteRepositoryNew.deleteAll();
-        coachingProgramRepository.deleteAll();
-        redisCacheService.clearCache();
     }
 
     @Test
     public void successResponse() throws Exception {
+        CoachingCourseEntity coachingCourseEntity=createCoachingCourse();
+        CoachingInstituteEntity coachingInstituteEntity=createCoachingInstitute();
         FetchCartItemsRequestBody request = getRequest();
         RequestBuilder requestBuilder =
                 MockMvcRequestBuilders.post(COACHING_BASE + V1 + "/fetch-cart-items")
@@ -107,10 +89,15 @@ public class FetchCartItemsControllerTest {
         String cacheKey=getCacheKey(referenceId,123L,"1");
         String value=redisCacheService.getValueFromCache(cacheKey);
         Assert.assertNotNull(value);
+        coachingInstituteRepositoryNew.delete(coachingInstituteEntity);
+        coachingProgramRepository.delete(coachingCourseEntity);
+        redisCacheService.delKeyFromCache(cacheKey);
     }
 
     @Test
     public void invalidMerchantId() throws Exception {
+        CoachingCourseEntity coachingCourseEntity=createCoachingCourse();
+        CoachingInstituteEntity coachingInstituteEntity=createCoachingInstitute();
         FetchCartItemsRequestBody request = getRequest();
         request.setMerchantId(123L);
         RequestBuilder requestBuilder =
@@ -119,11 +106,15 @@ public class FetchCartItemsControllerTest {
                         .accept(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         Assert.assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
+        coachingInstituteRepositoryNew.delete(coachingInstituteEntity);
+        coachingProgramRepository.delete(coachingCourseEntity);
     }
 
 
     @Test
     public void invalidMerchantProductId() throws Exception {
+        CoachingCourseEntity coachingCourseEntity=createCoachingCourse();
+        CoachingInstituteEntity coachingInstituteEntity=createCoachingInstitute();
         FetchCartItemsRequestBody request = getRequest();
         request.setMerchantData("{\"product_list\":[{\"description\":\"desc\",\"merchant_product_tax_data\":{\"gstin\":\"abcd\",\"total_cgst\":1,\"total_igst\":1,\"total_sgst\":1,\"total_utgst\":1},\"price\":25378.9,\"product_id\":\"123\",\"product_name\":\"abcd\",\"quantity\":1}]}");
         RequestBuilder requestBuilder =
@@ -132,11 +123,15 @@ public class FetchCartItemsControllerTest {
                         .accept(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         Assert.assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
+        coachingInstituteRepositoryNew.delete(coachingInstituteEntity);
+        coachingProgramRepository.delete(coachingCourseEntity);
     }
 
 
     @Test
     public void invalidMerchantData() throws Exception {
+        CoachingCourseEntity coachingCourseEntity=createCoachingCourse();
+        CoachingInstituteEntity coachingInstituteEntity=createCoachingInstitute();
         FetchCartItemsRequestBody request = getRequest();
         request.setMerchantData("{\"product_list\":[\"description\":\"desc\",\"merchant_product_tax_data\":{\"gstin\":\"abcd\",\"total_cgst\":1,\"total_igst\":1,\"total_sgst\":1,\"total_utgst\":1},\"price\":25378.9,\"product_id\":\"123\",\"product_name\":\"abcd\",\"quantity\":1}]}");
         RequestBuilder requestBuilder =
@@ -145,6 +140,8 @@ public class FetchCartItemsControllerTest {
                         .accept(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         Assert.assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
+        coachingInstituteRepositoryNew.delete(coachingInstituteEntity);
+        coachingProgramRepository.delete(coachingCourseEntity);
     }
 
     private FetchCartItemsRequestBody getRequest(){
@@ -159,6 +156,30 @@ public class FetchCartItemsControllerTest {
             String merchantProductId) {
         return referenceId + CACHE_KEY_DELIMITER + merchantProductId
                 + CACHE_KEY_DELIMITER + String.valueOf(paytmProductId);
+    }
+
+    private CoachingCourseEntity createCoachingCourse() {
+        CoachingCourseEntity coachingCourseEntity =
+                new CoachingCourseEntity();
+        coachingCourseEntity.setPaytmProductId(123L);
+        coachingCourseEntity.setMerchantProductId("1");
+        coachingCourseEntity.setIsEnabled(true);
+        coachingCourseEntity.setCourseId(100000L);
+        coachingCourseEntity.setCourseType(CourseType.CLASSROOM_COURSE);
+        coachingCourseEntity.setIsDynamic(true);
+        coachingCourseEntity.setCoachingInstituteId(123L);
+        coachingCourseEntity.setOriginalPrice(123D);
+        coachingCourseEntity.setDiscountedPrice(123D);
+        return coachingProgramRepository.save(coachingCourseEntity);
+    }
+
+    private CoachingInstituteEntity createCoachingInstitute() {
+        CoachingInstituteEntity
+                coachingInstituteEntity = new CoachingInstituteEntity();
+        coachingInstituteEntity.setInstituteId(123L);
+        coachingInstituteEntity.setIsEnabled(true);
+        coachingInstituteEntity.setPaytmMerchantId("63794147");
+        return coachingInstituteRepositoryNew.save(coachingInstituteEntity);
     }
 
 }
