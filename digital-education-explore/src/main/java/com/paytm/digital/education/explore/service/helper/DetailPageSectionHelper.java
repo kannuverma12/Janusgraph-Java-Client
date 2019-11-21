@@ -149,8 +149,8 @@ public class DetailPageSectionHelper {
             List<String> validatedSectionOrder =
                     validateRequestSections(sectionOrderRequest.getSectionOrder(),
                             pageEntity.getSections());
-            if (validatedSectionOrder.size() == pageEntity.getSections().size() &&
-                    validatedSectionOrder.size() == sectionOrderRequest.getSectionOrder().size()) {
+            if (validatedSectionOrder.size() == pageEntity.getSections().size()
+                    && validatedSectionOrder.size() == sectionOrderRequest.getSectionOrder().size()) {
                 Map<String, Object> query = new HashMap<>();
                 query.put(NAME, sectionOrderRequest.getEntity());
                 List<String> fields = Arrays.asList(SECTIONS);
