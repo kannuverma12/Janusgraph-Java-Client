@@ -85,7 +85,7 @@ public class TransformAndSaveExamService {
                     if (!CollectionUtils.isEmpty(exam.getDomains())) {
                         Map<String, Object> examStreamData = streamDataTranslator
                                 .getPaytmStreams(exam.getDomains(), MERCHANT_CAREER_360,
-                                        exam.getExamId(), Exam.class);
+                                        exam.getExamId(), com.paytm.digital.education.database.entity.Exam.class);
                         if (!CollectionUtils.isEmpty(examStreamData)) {
                             exam.setStreamIds((List<Long>) examStreamData
                                     .getOrDefault(STREAM_IDS, new ArrayList<>()));

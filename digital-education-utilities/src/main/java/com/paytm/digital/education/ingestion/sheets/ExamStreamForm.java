@@ -18,28 +18,24 @@ import lombok.ToString;
 public class ExamStreamForm {
 
     @JsonProperty("exam_full_name")
-    @GoogleSheetColumnName("exam full name")
+    @GoogleSheetColumnName("Exam Full Name")
     private String examFullName;
 
     @JsonProperty("exam_id")
-    @GoogleSheetColumnName("exam id")
+    @GoogleSheetColumnName("Exam Id")
     private Long examId;
 
     @JsonProperty("exam_short_name")
-    @GoogleSheetColumnName("exam short name")
+    @GoogleSheetColumnName("Exam Short Name")
     private String examShortName;
 
     @JsonProperty("global_priority")
     @GoogleSheetColumnName("Global Priority")
     private Integer globalPriority;
 
-    @JsonProperty("merchant_stream")
-    @GoogleSheetColumnName("Merchant Stream")
-    private String merchantStream;
-
-    @JsonProperty("paytm_stream")
-    @GoogleSheetColumnName("Paytm Stream")
-    private String paytmStream;
+    @JsonProperty("domains")
+    @GoogleSheetColumnName("Domains")
+    private String domains;
 
     @JsonProperty("status_active")
     @GoogleSheetColumnName("Status Active")

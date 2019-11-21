@@ -3,7 +3,6 @@ package com.paytm.digital.education.database.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -12,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @ToString
@@ -35,17 +35,9 @@ public class ExamStreamEntity extends Base {
     @JsonProperty("exam_short_name")
     private String examShortName;
 
-    @Field("paytm_stream_id")
-    @JsonProperty("paytm_stream_id")
-    private Long paytmStreamId;
-
-    @Field("paytm_stream")
-    @JsonProperty("paytm_stream")
-    private String paytmStream;
-
-    @Field("merchant_stream")
-    @JsonProperty("merchant_stream")
-    private String merchantStream;
+    @Field("paytm_stream_ids")
+    @JsonProperty("paytm_stream_ids")
+    private List<Long> paytmStreamIds;
 
     public ExamStreamEntity() {
         this.setCreatedAt(LocalDateTime.now());
