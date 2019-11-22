@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -19,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.paytm.digital.education.constant.ExploreConstants.CachingConstants.CACHE_KEY_DELIMITER;
 import static com.paytm.digital.education.constant.ExploreConstants.DEFAULT_OFFSET;
 import static com.paytm.digital.education.constant.ExploreConstants.DEFAULT_SIZE;
 import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_REQUEST_MAX_LIMIT;
@@ -91,4 +93,20 @@ public class SearchRequest {
     @Max(value = SEARCH_REQUEST_MAX_RADIUS, message = "Radius should be less than or equal to "
             + SEARCH_REQUEST_MAX_RADIUS + " kms")
     private Integer radius;
+
+    public String getCacheKey() {
+        return term + CACHE_KEY_DELIMITER
+                + ObjectUtils.defaultIfNull(filter, "") + CACHE_KEY_DELIMITER
+                + CACHE_KEY_DELIMITER + ObjectUtils.defaultIfNull(entity.name(), "")
+                + CACHE_KEY_DELIMITER + ObjectUtils.defaultIfNull(offset, "")
+                + CACHE_KEY_DELIMITER + ObjectUtils.defaultIfNull(limit, "")
+                + CACHE_KEY_DELIMITER + ObjectUtils.defaultIfNull(fetchFilter, "")
+                + CACHE_KEY_DELIMITER + ObjectUtils.defaultIfNull(sortOrder, "")
+                + CACHE_KEY_DELIMITER + ObjectUtils.defaultIfNull(fetchSearchResults, "")
+                + CACHE_KEY_DELIMITER + fetchSearchResultsPerFilter
+                + CACHE_KEY_DELIMITER + dataPerFilter
+                + CACHE_KEY_DELIMITER + ObjectUtils.defaultIfNull(client, "")
+                + CACHE_KEY_DELIMITER + ObjectUtils.defaultIfNull(geoLocation, "")
+                + CACHE_KEY_DELIMITER + ObjectUtils.defaultIfNull(dataPerFilter, "");
+    }
 }

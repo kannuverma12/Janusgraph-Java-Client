@@ -1,5 +1,16 @@
 package com.paytm.digital.education.database.repository;
 
+import static com.mongodb.QueryOperators.AND;
+import static com.mongodb.QueryOperators.ELEM_MATCH;
+import static com.mongodb.QueryOperators.EXISTS;
+import static com.mongodb.QueryOperators.NE;
+import static com.mongodb.QueryOperators.OR;
+import static com.paytm.digital.education.constant.DBConstants.EQ_OPERATOR;
+import static com.paytm.digital.education.constant.DBConstants.GROUP_ACTIVE;
+import static com.paytm.digital.education.constant.DBConstants.GROUP_ENTITY;
+import static com.paytm.digital.education.constant.DBConstants.GROUP_NAME;
+import static com.paytm.digital.education.constant.DBConstants.IN_OPERATOR;
+
 import com.mongodb.client.result.UpdateResult;
 import com.paytm.digital.education.database.entity.FieldGroup;
 import com.paytm.digital.education.database.entity.FtlTemplate;
@@ -27,17 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.mongodb.QueryOperators.AND;
-import static com.mongodb.QueryOperators.ELEM_MATCH;
-import static com.mongodb.QueryOperators.EXISTS;
-import static com.mongodb.QueryOperators.NE;
-import static com.mongodb.QueryOperators.OR;
-import static com.paytm.digital.education.constant.DBConstants.EQ_OPERATOR;
-import static com.paytm.digital.education.constant.DBConstants.GROUP_ACTIVE;
-import static com.paytm.digital.education.constant.DBConstants.GROUP_ENTITY;
-import static com.paytm.digital.education.constant.DBConstants.GROUP_NAME;
-import static com.paytm.digital.education.constant.DBConstants.IN_OPERATOR;
-
 @AllArgsConstructor
 @Repository
 public class CommonMongoRepository {
@@ -47,14 +47,15 @@ public class CommonMongoRepository {
     private MongoOperations     mongoOperation;
     private MongoMappingContext context;
 
-    @Cacheable(value = "entities", unless = "#result == null")
+    @Cacheable(value = "entities", key = "'entitiesById.'+#key+'.'+#entityId+'.'+#instance", unless = "#result == null")
     public <T> T getEntityById(String key, long entityId, Class<T> instance) {
         log.debug("Querying entityById for key :  {}, entityId : {}", key, entityId);
         Query mongoQuery = new Query(Criteria.where(key).is(entityId));
         return executeQuery(mongoQuery, instance);
     }
 
-    @Cacheable(value = "fields", unless = "#result == null")
+    @Cacheable(value = "fields", key = "'entitiesByFields.'+#key+'.'+#entityId+'.'"
+            + "+#instance+'.'+#fields", unless = "#result == null")
     public <T> T getEntityByFields(String key, long entityId, Class<T> instance,
             List<String> fields) {
         Query mongoQuery = new Query(Criteria.where(key).is(entityId));
@@ -146,7 +147,8 @@ public class CommonMongoRepository {
         return null;
     }
 
-    @Cacheable(value = "entities", unless = "#result == null")
+    @Cacheable(value = "entities", key = "'entities.'+#key+'.'+#entityId+'.'"
+            + "+#type+'.'+#fields", unless = "#result == null")
     public <T> List<T> getEntitiesByIdAndFields(String key, long entityId, Class<T> type,
             List<String> fields) {
         Query mongoQuery = new Query(Criteria.where(key).is(entityId));
@@ -158,7 +160,8 @@ public class CommonMongoRepository {
         return executeMongoQuery(mongoQuery, type);
     }
 
-    @Cacheable(value = "ftl_templates", unless = "#result == null")
+    @Cacheable(value = "ftl_templates", key = "'ftl_templates.'+#templateName+'.'"
+            + "+#entityName", unless = "#result == null")
     public String getTemplate(String templateName, String entityName) {
         Query mongoQuery = new Query(
                 Criteria.where("name").is(templateName).and("entity").is(entityName).and("active")
@@ -218,7 +221,7 @@ public class CommonMongoRepository {
         return mongoOperation.findDistinct(mongoQuery, field, type, result);
     }
 
-    @Cacheable(value = "findAll")
+    @Cacheable(value = "findAll", key = "'findAll.'+#searchRequest+'.'+#instance+'.'+#fields+'.'+#queryOperatorType")
     public <T> List<T> findAll(Map<String, Object> searchRequest, Class<T> instance,
             List<String> fields, String queryOperatorType) {
         if (queryOperatorType.equals(AND)) {
@@ -229,7 +232,8 @@ public class CommonMongoRepository {
         return null;
     }
 
-    @Cacheable(value = "findAllSortBy")
+    @Cacheable(value = "findAllSortBy", key = "'findAllSortBy.'+#searchRequest+'.'+#instance+'.'"
+            + "+#fields+'.'+#queryOperatorType+'.'+#sortMap+'.'+#limit")
     public <T> List<T> findAllAndSortBy(Map<String, Object> searchRequest, Class<T> instance,
             List<String> fields, String queryOperatorType, Map<Sort.Direction, String> sortMap,
             int limit) {

@@ -73,7 +73,7 @@ public class ExamStreamManagerService {
                         paytmStreamIds));
     }
 
-    @Cacheable(value = "merchant_streams")
+    @Cacheable(value = "merchant_streams", key = "'merchant_streams.'+#merchant")
     public Map<String, MerchantStreamEntity> getMerchantStreamMap(String merchant) {
         List<MerchantStreamEntity> merchantStreamEntities = merchantStreamRepository.findAllByMerchantId(merchant);
         return Optional.ofNullable(merchantStreamEntities).map(streams -> streams.stream()
@@ -81,7 +81,7 @@ public class ExamStreamManagerService {
                 .orElse(new HashMap<>());
     }
 
-    @Cacheable(value = "paytm_streams")
+    @Cacheable(value = "paytm_streams", key = "'paytm_streams_map.all'")
     public Map<Long, StreamEntity> getPaytmStreamMap() {
         List<StreamEntity> streamEntities = streamEntityRepository.findAll();
         return Optional.ofNullable(streamEntities).map(streams -> streams.stream()
