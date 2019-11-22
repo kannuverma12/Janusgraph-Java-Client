@@ -40,7 +40,7 @@ public class StreamDAO {
         return streamRepository.findAllByStreamId(ids);
     }
 
-    @Cacheable(value = "stream_all")
+    @Cacheable(value = "stream_all", key = "'all_streams_entitys'")
     public List<StreamEntity> findAll() {
         return this.streamRepository.findAll();
     }
@@ -49,7 +49,7 @@ public class StreamDAO {
         return streamRepository.findByStreamName(name);
     }
 
-    @Cacheable(value = "streams_id_map")
+    @Cacheable(value = "streams_id_map", key = "'stream_entity_map'")
     public Map<Long, StreamEntity> getStreamEntityMapById() {
         List<StreamEntity> entities = this.streamRepository.findAll();
         return Optional.ofNullable(entities).map(streamEntities -> streamEntities.stream().collect(

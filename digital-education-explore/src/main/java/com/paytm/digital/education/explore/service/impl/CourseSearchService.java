@@ -120,7 +120,7 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
     }
 
     @Override
-    @Cacheable(value = "course_search")
+    @Cacheable(value = "course_search", key = "#searchRequest.key")
     public SearchResponse search(SearchRequest searchRequest) throws IOException, TimeoutException {
         CourseSearchResponse courseSearchResponse = new CourseSearchResponse();
         /*

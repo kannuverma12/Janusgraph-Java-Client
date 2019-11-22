@@ -91,7 +91,7 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
     }
 
     @Override
-    @Cacheable(value = "exam_search")
+    @Cacheable(value = "exam_search", key = "#searchRequest.key")
     public SearchResponse search(SearchRequest searchRequest) throws IOException, TimeoutException {
         validateRequest(searchRequest, filterQueryTypeMap);
         ElasticRequest elasticRequest = buildSearchRequest(searchRequest);

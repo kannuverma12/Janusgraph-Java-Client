@@ -358,4 +358,9 @@ public interface ExploreConstants {
     int    DEFAULT_EXAM_PRIORITY            = 9999;
 
     String NO_TOPIC_FOUND = "No Topic Found";
+
+    public static class CachingConstants {
+        public static final String CACHE_KEY_DELIMITER = "_";
+        public static final int    CACHE_TTL           = 1800;
+    }
 }
