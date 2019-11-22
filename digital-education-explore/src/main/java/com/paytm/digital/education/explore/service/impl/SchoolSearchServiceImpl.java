@@ -122,7 +122,7 @@ public class SchoolSearchServiceImpl extends AbstractSearchServiceImpl {
     }
 
     @Override
-    @Cacheable(value = "school_search", key = "#searchRequest.cacheKey")
+    @Cacheable(value = "school_search", key = "#schoolSearchRequest.cacheKey")
     public SearchResponse search(SearchRequest schoolSearchRequest)
             throws IOException, TimeoutException {
         validateRequest(schoolSearchRequest, filterQueryTypeMap);
