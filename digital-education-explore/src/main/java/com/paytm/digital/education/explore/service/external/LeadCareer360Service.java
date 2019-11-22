@@ -11,12 +11,15 @@ import com.paytm.digital.education.explore.thirdparty.lead.Career360UnfollowResp
 import com.paytm.digital.education.utility.JsonUtils;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.paytm.digital.education.constant.ExploreConstants.PAYTM_APP_REQUEST_ID;
 
 @Service
 public class LeadCareer360Service {
@@ -83,6 +86,7 @@ public class LeadCareer360Service {
         Map<String, String> headers = new HashMap<>();
         headers.put("content-type", "application/json");
         headers.put("x-api-token", apiKey);
+        headers.put(PAYTM_APP_REQUEST_ID, MDC.get(PAYTM_APP_REQUEST_ID));
         return headers;
     }
 

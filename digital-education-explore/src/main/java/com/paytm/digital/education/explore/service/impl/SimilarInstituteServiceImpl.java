@@ -1,5 +1,29 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import static com.mongodb.QueryOperators.AND;
+import static com.mongodb.QueryOperators.EXISTS;
+import static com.mongodb.QueryOperators.NE;
+import static com.paytm.digital.education.constant.ExploreConstants.COLLEGES_PER_STREAM;
+import static com.paytm.digital.education.constant.ExploreConstants.EMPTY_SQUARE_BRACKETS;
+import static com.paytm.digital.education.constant.ExploreConstants.GALLERY_LOGO;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTION_CITY;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTION_STATE;
+import static com.paytm.digital.education.constant.ExploreConstants.IN_OPERATOR;
+import static com.paytm.digital.education.constant.ExploreConstants.MAX_STREAMS;
+import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_ADDRESS;
+import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.OVERALL_RANKING;
+import static com.paytm.digital.education.constant.ExploreConstants.SIMILAR_COLLEGES;
+import static com.paytm.digital.education.constant.ExploreConstants.SIMILAR_COLLEGE_NAMESPACE;
+import static com.paytm.digital.education.constant.ExploreConstants.STREAMS;
+import static com.paytm.digital.education.constant.ExploreConstants.TOTAL_SIMILAR_COLLEGE;
+import static com.paytm.digital.education.enums.EducationEntity.INSTITUTE;
+import static com.paytm.digital.education.enums.Number.ONE;
+import static com.paytm.digital.education.explore.constants.CompareConstants.CAREERS360;
+import static com.paytm.digital.education.explore.constants.CompareConstants.NIRF;
+import static com.paytm.digital.education.explore.constants.CompareConstants.UNIVERSITIES;
+
 import com.paytm.digital.education.database.entity.Course;
 import com.paytm.digital.education.database.entity.Institute;
 import com.paytm.digital.education.database.entity.Ranking;
@@ -29,30 +53,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static com.mongodb.QueryOperators.AND;
-import static com.mongodb.QueryOperators.EXISTS;
-import static com.mongodb.QueryOperators.NE;
-import static com.paytm.digital.education.constant.ExploreConstants.COLLEGES_PER_STREAM;
-import static com.paytm.digital.education.constant.ExploreConstants.EMPTY_SQUARE_BRACKETS;
-import static com.paytm.digital.education.constant.ExploreConstants.GALLERY_LOGO;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTION_CITY;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTION_STATE;
-import static com.paytm.digital.education.constant.ExploreConstants.IN_OPERATOR;
-import static com.paytm.digital.education.constant.ExploreConstants.MAX_STREAMS;
-import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_ADDRESS;
-import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_NAME;
-import static com.paytm.digital.education.constant.ExploreConstants.OVERALL_RANKING;
-import static com.paytm.digital.education.constant.ExploreConstants.SIMILAR_COLLEGES;
-import static com.paytm.digital.education.constant.ExploreConstants.SIMILAR_COLLEGE_NAMESPACE;
-import static com.paytm.digital.education.constant.ExploreConstants.STREAMS;
-import static com.paytm.digital.education.constant.ExploreConstants.TOTAL_SIMILAR_COLLEGE;
-import static com.paytm.digital.education.enums.EducationEntity.INSTITUTE;
-import static com.paytm.digital.education.enums.Number.ONE;
-import static com.paytm.digital.education.explore.constants.CompareConstants.CAREERS360;
-import static com.paytm.digital.education.explore.constants.CompareConstants.NIRF;
-import static com.paytm.digital.education.explore.constants.CompareConstants.UNIVERSITIES;
 
 
 @Service
@@ -266,7 +266,8 @@ public class SimilarInstituteServiceImpl {
         return buildWidgetResponse(instituteList);
     }
 
-    private Map<String, Object> getInstituteQueryMapForLocationAndStreams(String instituteState,
+    @Cacheable(value = SIMILAR_COLLEGE_NAMESPACE, key = "'similar_'+#instituteState+'#'+instituteCity+'#'+streams")
+    public Map<String, Object> getInstituteQueryMapForLocationAndStreams(String instituteState,
             String instituteCity, Collection<String> streams) {
         List<Long> instituteIds = getInstituteIdsByStreams(IN_OPERATOR, streams);
         Map<String, Object> instituteIdMap = new HashMap<>();

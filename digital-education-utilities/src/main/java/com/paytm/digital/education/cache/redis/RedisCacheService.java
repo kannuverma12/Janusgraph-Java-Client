@@ -1,6 +1,8 @@
 package com.paytm.digital.education.cache.redis;
 
 import com.paytm.digital.education.config.RedisConfiguration;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
@@ -8,9 +10,10 @@ import redis.clients.jedis.JedisPool;
 
 import java.util.Objects;
 
-@Slf4j
 @Service()
 public class RedisCacheService {
+
+    private static Logger log = LoggerFactory.getLogger(RedisCacheService.class);
 
     public RedisCacheService() {
     }
@@ -29,8 +32,7 @@ public class RedisCacheService {
             }
         } catch (Exception ex) {
             log.error("Error while adding key : {} , value : {}, ttl : {}",
-                    new Object[] {pKey, pValue, lRecordTtl});
-            log.error("Error while adding key", ex);
+                    ex, pKey, pValue, lRecordTtl);
         } finally {
             if (Objects.nonNull(jedis)) {
                 jedis.close();
@@ -49,8 +51,7 @@ public class RedisCacheService {
             jedis = jedisPool.getResource();
             value = jedis.get(pKey);
         } catch (Exception ex) {
-            log.error("Error while getting value from redis, key : {}", pKey);
-            log.error("Error while getting value from redis,", ex);
+            log.error("Error while getting value from redis, key : {}", ex, pKey);
         } finally {
             if (Objects.nonNull(jedis)) {
                 jedis.close();

@@ -7,6 +7,7 @@ import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.MDC;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +23,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import static com.paytm.digital.education.constant.ExploreConstants.PAYTM_APP_REQUEST_ID;
 
 @Service
 @AllArgsConstructor
@@ -72,6 +75,7 @@ public class BaseRestApiService {
         for (Map.Entry<String, String> entry : headers.entrySet()) {
             httpHeaders.add(entry.getKey(), entry.getValue());
         }
+
         HttpEntity<Object> httpEntity = new HttpEntity<Object>(requestBody, httpHeaders);
         ResponseEntity<T> responseEntity =
                 restTemplate.exchange(url, HttpMethod.POST, httpEntity, clazz);
@@ -83,7 +87,7 @@ public class BaseRestApiService {
         return responseEntity.getBody();
     }
 
-    public URI getURI(String url, Map<String, ?> queryParams, List<String> pathVariablesInOrder) {
+    URI getURI(String url, Map<String, ?> queryParams, List<String> pathVariablesInOrder) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
         if (!CollectionUtils.isEmpty(pathVariablesInOrder)) {
             for (String var : pathVariablesInOrder) {

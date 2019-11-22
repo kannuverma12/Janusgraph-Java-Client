@@ -76,7 +76,7 @@ public class SearchServiceImpl {
             }
             log.debug("Time taken in search : " + (System.currentTimeMillis() - startTime));
             return response;
-        } catch (IOException | TimeoutException e) {
+        } catch (Exception e) {
             log.error(
                     "ElasticSearch Failed. Search Request - {}, UserId - {}, Client - {}",
                     e, searchRequest, userId, client);

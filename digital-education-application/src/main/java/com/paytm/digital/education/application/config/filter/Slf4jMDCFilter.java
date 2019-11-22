@@ -8,11 +8,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
-import java.util.UUID;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.UUID;
 
 
 @Data
@@ -24,6 +24,7 @@ public class Slf4jMDCFilter extends OncePerRequestFilter {
     public static final String PaytmUserIdHeader   = "x-user-id";
     public static final String PaytmOrderIdHeader  = "OrderId";
     public static final String PaytmClientIdHeader = "CustomerId";
+    public static final String PaytmAppRequestId   = "x-app-rid";
 
     @Override
     protected void doFilterInternal(final HttpServletRequest request,
@@ -36,8 +37,12 @@ public class Slf4jMDCFilter extends OncePerRequestFilter {
 
             String requestId = requestCacheWrapperObject.getHeader(PaytmRequestId);
             if (Strings.isBlank(requestId)) {
-                requestId =
-                        UUID.randomUUID().toString().toUpperCase().replace("-", "");
+                requestId = UUID.randomUUID().toString().toUpperCase().replace("-", "");
+            }
+
+            String appRequestId = requestCacheWrapperObject.getHeader(PaytmAppRequestId);
+            if (Strings.isBlank(appRequestId)) {
+                appRequestId = UUID.randomUUID().toString().toUpperCase().replace("-", "");
             }
 
             String clientId = requestCacheWrapperObject.getHeader(PaytmUserIdHeader);
@@ -46,7 +51,9 @@ public class Slf4jMDCFilter extends OncePerRequestFilter {
             MDC.put(PaytmClientIdHeader, clientId);
             MDC.put(PaytmRequestId, requestId);
             MDC.put(PaytmOrderIdHeader, orderId);
+            MDC.put(PaytmAppRequestId, appRequestId);
             response.addHeader(PaytmRequestId, requestId);
+            response.addHeader(PaytmAppRequestId, appRequestId);
             chain.doFilter(request, response);
         } finally {
             MDC.clear();

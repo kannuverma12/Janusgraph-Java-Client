@@ -91,8 +91,8 @@ public class StreamDataServiceImpl {
                 return commonMongoRepository.updateFields(updateObject, type, entityId, entityKey);
             } catch (Exception ex) {
                 log.error(
-                        "Error in updating paytm stream for entity : {}, entityId : {}, exception : {}",
-                        type.getName(), entityId, ex);
+                        "Error in updating paytm stream for entity : {}, entityId : {}",
+                        ex, type.getName(), entityId);
             }
 
         }

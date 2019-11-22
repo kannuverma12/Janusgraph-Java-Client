@@ -329,7 +329,7 @@ public class CommonMongoRepository {
     }
 
     public <T> Page<T> getPagedEntityData(Class<T> entityType, int page, int size, List<String> fields) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("_id"));
+        Pageable pageable = PageRequest.of(page, size);
         Query entityDynamicQuery = new Query().with(pageable);
         if (!CollectionUtils.isEmpty(fields)) {
             fields.forEach(field -> {

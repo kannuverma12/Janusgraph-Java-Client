@@ -5,14 +5,18 @@ import com.paytm.digital.education.explore.thirdparty.catalog.Attributes;
 import com.paytm.digital.education.explore.thirdparty.catalog.CatalogProduct;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.paytm.digital.education.constant.ExploreConstants.PAYTM_APP_REQUEST_ID;
 
 @Service
 public class FeeUrlGenerator {
@@ -73,8 +77,12 @@ public class FeeUrlGenerator {
         Map<String, Object> requestParams = new HashMap<>();
         requestParams.put(Constants.GROUP1, Constants.LOCATION);
         requestParams.put(Constants.GROUP2, Constants.COURSE);
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(PAYTM_APP_REQUEST_ID, MDC.get(PAYTM_APP_REQUEST_ID));
+
         CatalogProduct response =
-                baseRestApiService.get(catalogAdminUrl, requestParams, null, CatalogProduct.class,
+                baseRestApiService.get(catalogAdminUrl, requestParams, httpHeaders, CatalogProduct.class,
                         Arrays.asList("/" + pid.toString()));
         log.info("Catalog merchant API response : {}", response.toString());
         return response;

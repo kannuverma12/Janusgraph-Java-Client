@@ -43,8 +43,8 @@ public class MerchantStreamManagerService {
             return merchantStreamRepository.save(merchantStreamEntity);
         } catch (DataIntegrityViolationException ex) {
             log.error(
-                    "Error in upserting data in mongo db : merchantId : {}, merchantStream : {}, Exception : {}",
-                    request.getMerchantId(), request.getMerchantStream(), ex);
+                    "Error in upserting data in mongo db : merchantId : {}, merchantStream : {}",
+                    ex, request.getMerchantId(), request.getMerchantStream());
             throw new InvalidRequestException(ex.getMessage(), ex);
         }
     }
