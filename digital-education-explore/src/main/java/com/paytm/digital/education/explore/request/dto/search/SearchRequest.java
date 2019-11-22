@@ -94,7 +94,7 @@ public class SearchRequest {
             + SEARCH_REQUEST_MAX_RADIUS + " kms")
     private Integer radius;
 
-    public String getKey() {
+    public String getCacheKey() {
         return term + CACHE_KEY_DELIMITER
                 + ObjectUtils.defaultIfNull(filter, "") + CACHE_KEY_DELIMITER
                 + CACHE_KEY_DELIMITER + ObjectUtils.defaultIfNull(entity.name(), "")

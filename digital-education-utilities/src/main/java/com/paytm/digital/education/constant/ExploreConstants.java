@@ -361,6 +361,5 @@ public interface ExploreConstants {
 
     public static class CachingConstants {
         public static final String CACHE_KEY_DELIMITER = "_";
-        public static final int    CACHE_TTL           = 1800;
     }
 }

@@ -133,7 +133,7 @@ public class InstituteSearchServiceImpl extends AbstractSearchServiceImpl {
     }
 
     @Override
-    @Cacheable(value = "institute_search", key = "#searchRequest.key")
+    @Cacheable(value = "institute_search", key = "#searchRequest.cacheKey")
     public SearchResponse search(SearchRequest searchRequest) throws IOException, TimeoutException {
         validateRequest(searchRequest, filterQueryTypeMap);
         SearchResponse searchResponse = new SearchResponse(searchRequest.getTerm());
