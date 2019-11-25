@@ -2,12 +2,14 @@ package com.paytm.digital.education.application;
 
 import com.paytm.digital.education.application.constant.Constant;
 import com.paytm.digital.education.logging.LoggableDispatcherServlet;
+import com.paytm.digital.education.utility.CustomKeyGenerator;
 import org.apache.logging.log4j.core.lookup.MainMapLookup;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
@@ -36,5 +38,10 @@ public class Application {
     @Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
     public DispatcherServlet dispatcherServlet() {
         return new LoggableDispatcherServlet();
+    }
+
+    @Bean("customKeyGenerator")
+    public KeyGenerator keyGenerator() {
+        return new CustomKeyGenerator();
     }
 }
