@@ -39,7 +39,11 @@ public class CartItem {
 
     @NotNull
     @ApiModelProperty(required = true)
-    private Float sellingPrice;
+    private Float totalSellingPrice;
+
+    @NotNull
+    @ApiModelProperty(required = true)
+    private Float unitSellingPrice;
 
     private String categoryId;
 

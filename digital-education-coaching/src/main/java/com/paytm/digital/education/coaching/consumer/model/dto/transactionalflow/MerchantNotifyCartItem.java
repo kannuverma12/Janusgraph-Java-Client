@@ -48,7 +48,7 @@ public class MerchantNotifyCartItem {
     @NotEmpty
     @ApiModelProperty(required = true)
     private String metaData;
-    
+
     private String fulfillmentReq;
 
     @NotNull
@@ -73,7 +73,7 @@ public class MerchantNotifyCartItem {
 
     @NotNull
     @ApiModelProperty(required = true)
-    private Float sellingPrice;
+    private Float totalSellingPrice;
 
     @NotEmpty
     @ApiModelProperty(required = true)

@@ -41,7 +41,11 @@ public class CheckoutCartItem {
 
     @NotNull
     @ApiModelProperty(required = true)
-    private Float sellingPrice;
+    private Float totalSellingPrice;
+
+    @NotNull
+    @ApiModelProperty(required = true)
+    private Float unitSellingPrice;
 
     @NotEmpty
     @ApiModelProperty(required = true)

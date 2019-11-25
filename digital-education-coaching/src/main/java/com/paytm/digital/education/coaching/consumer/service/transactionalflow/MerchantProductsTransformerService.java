@@ -128,7 +128,8 @@ public class MerchantProductsTransformerService {
                 }
                 String referenceId = UUID.randomUUID().toString();
                 CheckoutCartItem cartItem = CheckoutCartItem.builder()
-                        .sellingPrice(merchantProduct.getPrice())
+                        .totalSellingPrice(merchantProduct.getPrice() * merchantProduct.getQuantity())
+                        .unitSellingPrice(merchantProduct.getPrice())
                         .productId(dynamicCoachingCourse.getPaytmProductId())
                         .categoryId(coachingCategoryId)
                         .educationVertical(COACHING_VERTICAL_NAME)

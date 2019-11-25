@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -17,11 +18,11 @@ public class NotifyUserInfo {
     @ApiModelProperty(required = true)
     private String phone;
 
-    @NotEmpty
+    @NotNull
     @ApiModelProperty(required = true)
     private String email;
 
-    @NotEmpty
+    @NotNull
     @ApiModelProperty(required = true)
     private String firstName;
 

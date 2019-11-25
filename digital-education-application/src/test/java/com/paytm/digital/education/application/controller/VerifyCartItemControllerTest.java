@@ -87,11 +87,11 @@ public class VerifyCartItemControllerTest {
 
     @Test
     public void verifySuccessResponseForDynamicCourse() throws Exception {
-        CoachingInstituteEntity coachingInstituteEntity=createInstituteEntity();
-        CoachingCourseEntity coachingCourseEntity=createDynamicCoachingCourseEntity();
+        CoachingInstituteEntity coachingInstituteEntity = createInstituteEntity();
+        CoachingCourseEntity coachingCourseEntity = createDynamicCoachingCourseEntity();
         CartDataResponse cartDataResponse = merchantProductsTransformerService
                 .fetchCartDataFromVertical(getFetchCartItemRequest());
-        CheckoutCartItem checkoutCartItem=cartDataResponse.getCartItems().get(0);
+        CheckoutCartItem checkoutCartItem = cartDataResponse.getCartItems().get(0);
         VerifyRequest request = getVerifyRequest();
         request.getCartItems().get(0).setReferenceId(checkoutCartItem.getReferenceId());
         RequestBuilder requestBuilder =
@@ -104,8 +104,8 @@ public class VerifyCartItemControllerTest {
                 = JsonUtils
                 .fromJson(result.getResponse().getContentAsString(), VerifyResponse.class);
         Assert.assertNotNull(verifyResponse);
-        Assert.assertEquals(verifyResponse.getAcknowledged(),true);
-        String cacheKey=getCacheKey(checkoutCartItem.getReferenceId(),123L,"1");
+        Assert.assertEquals(verifyResponse.getAcknowledged(), true);
+        String cacheKey = getCacheKey(checkoutCartItem.getReferenceId(), 123L, "1");
         coachingInstituteRepositoryNew.delete(coachingInstituteEntity);
         coachingProgramRepository.delete(coachingCourseEntity);
         redisCacheService.delKeyFromCache(cacheKey);
@@ -113,8 +113,8 @@ public class VerifyCartItemControllerTest {
 
     @Test
     public void verifySuccessResponseForNonDynamicCourse() throws Exception {
-        CoachingInstituteEntity coachingInstituteEntity=createInstituteEntity();
-        CoachingCourseEntity coachingCourseEntity=createStaticCoachingCourseEntity();
+        CoachingInstituteEntity coachingInstituteEntity = createInstituteEntity();
+        CoachingCourseEntity coachingCourseEntity = createStaticCoachingCourseEntity();
         VerifyRequest request = getVerifyRequest();
         RequestBuilder requestBuilder =
                 MockMvcRequestBuilders.post(COACHING_BASE + V1 + VERIFY)
@@ -126,17 +126,17 @@ public class VerifyCartItemControllerTest {
                 = JsonUtils
                 .fromJson(result.getResponse().getContentAsString(), VerifyResponse.class);
         Assert.assertNotNull(verifyResponse);
-        Assert.assertEquals(verifyResponse.getAcknowledged(),true);
+        Assert.assertEquals(verifyResponse.getAcknowledged(), true);
         coachingInstituteRepositoryNew.delete(coachingInstituteEntity);
         coachingProgramRepository.delete(coachingCourseEntity);
     }
 
     @Test
     public void failureResponsePriceChange() throws Exception {
-        CoachingInstituteEntity coachingInstituteEntity=createInstituteEntity();
-        CoachingCourseEntity coachingCourseEntity=createStaticCoachingCourseEntity();
+        CoachingInstituteEntity coachingInstituteEntity = createInstituteEntity();
+        CoachingCourseEntity coachingCourseEntity = createStaticCoachingCourseEntity();
         VerifyRequest request = getVerifyRequest();
-        request.getCartItems().get(0).setSellingPrice(123F);
+        request.getCartItems().get(0).setTotalSellingPrice(123F);
         RequestBuilder requestBuilder =
                 MockMvcRequestBuilders.post(COACHING_BASE + V1 + VERIFY)
                         .contentType(MediaType.APPLICATION_JSON).content(JsonUtils.toJson(request))
@@ -147,15 +147,15 @@ public class VerifyCartItemControllerTest {
                 = JsonUtils
                 .fromJson(result.getResponse().getContentAsString(), VerifyResponse.class);
         Assert.assertNotNull(verifyResponse);
-        Assert.assertEquals(verifyResponse.getAcknowledged(),false);
+        Assert.assertEquals(verifyResponse.getAcknowledged(), false);
         coachingInstituteRepositoryNew.delete(coachingInstituteEntity);
         coachingProgramRepository.delete(coachingCourseEntity);
     }
 
     @Test
     public void failureResponseInvalidCourseId() throws Exception {
-        CoachingInstituteEntity coachingInstituteEntity=createInstituteEntity();
-        CoachingCourseEntity coachingCourseEntity=createStaticCoachingCourseEntity();
+        CoachingInstituteEntity coachingInstituteEntity = createInstituteEntity();
+        CoachingCourseEntity coachingCourseEntity = createStaticCoachingCourseEntity();
         VerifyRequest request = getVerifyRequest();
         request.getCartItems().get(0).getMetaData().setCourseId(123L);
         RequestBuilder requestBuilder =
@@ -168,7 +168,7 @@ public class VerifyCartItemControllerTest {
                 = JsonUtils
                 .fromJson(result.getResponse().getContentAsString(), VerifyResponse.class);
         Assert.assertNotNull(verifyResponse);
-        Assert.assertEquals(verifyResponse.getAcknowledged(),false);
+        Assert.assertEquals(verifyResponse.getAcknowledged(), false);
         coachingInstituteRepositoryNew.delete(coachingInstituteEntity);
         coachingProgramRepository.delete(coachingCourseEntity);
     }
@@ -211,16 +211,17 @@ public class VerifyCartItemControllerTest {
         coachingCourseEntity.setDiscountedPrice(25378.9D);
         return coachingProgramRepository.save(coachingCourseEntity);
     }
-    private VerifyRequest getVerifyRequest(){
-        CartItem cartItem=new CartItem();
-        ConvTaxInfo convTaxInfo=
+
+    private VerifyRequest getVerifyRequest() {
+        CartItem cartItem = new CartItem();
+        ConvTaxInfo convTaxInfo =
                 ConvTaxInfo.builder()
                         .totalCGST(0F)
                         .totalIGST(0F)
                         .totalSGST(0F)
                         .totalUTGST(0F)
                         .build();
-        TaxInfo taxInfo=
+        TaxInfo taxInfo =
                 TaxInfo.builder()
                         .totalCGST(0F)
                         .totalIGST(0F)
@@ -243,7 +244,7 @@ public class VerifyCartItemControllerTest {
                 .cgstin(null)
                 .build();
 
-        MetaData metaData=MetaData.builder()
+        MetaData metaData = MetaData.builder()
                 .courseId(100000L)
                 .courseType(CourseType.CLASSROOM_COURSE.getText())
                 .taxInfo(taxInfo)
@@ -254,21 +255,22 @@ public class VerifyCartItemControllerTest {
         cartItem.setBasePrice(25378.9F);
         cartItem.setQuantity(1);
         cartItem.setConvFee(0F);
-        cartItem.setSellingPrice(25378.9F);
+        cartItem.setTotalSellingPrice(25378.9F);
+        cartItem.setUnitSellingPrice(25378.9F);
         cartItem.setProductId(123L);
         cartItem.setCategoryId("165018");
         cartItem.setEducationVertical(COACHING_VERTICAL_NAME);
         cartItem.setMetaData(metaData);
         cartItem.setReferenceId("abc");
 
-        VerifyRequest verifyRequest=new VerifyRequest();
-        List<CartItem> cartItems=new ArrayList<>();
+        VerifyRequest verifyRequest = new VerifyRequest();
+        List<CartItem> cartItems = new ArrayList<>();
         cartItems.add(cartItem);
         verifyRequest.setCartItems(cartItems);
         return verifyRequest;
     }
 
-    private FetchCartItemsRequestBody getFetchCartItemRequest(){
+    private FetchCartItemsRequestBody getFetchCartItemRequest() {
         return FetchCartItemsRequestBody.builder()
                 .merchantData(merchantData)
                 .merchantId(merchantId)

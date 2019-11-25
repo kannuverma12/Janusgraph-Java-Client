@@ -89,7 +89,7 @@ public class MerchantCallImpl implements MerchantCall {
                     .paytmOrderItemId(String.valueOf(cartItem.getItemId()))
                     .price((double) cartItem.getPrice())
                     .discount((double) cartItem.getDiscount())
-                    .totalPrice((double) cartItem.getSellingPrice())
+                    .totalPrice((double) cartItem.getTotalSellingPrice())
                     .quantity((double) cartItem.getQuantity())
                     .taxInfo(taxInfo)
                     .build());

@@ -157,7 +157,7 @@ public class MerchantCommitControllerTest {
         cartItem.setMrp(10.0f);
         cartItem.setConvFee(0.0f);
         cartItem.setDiscount(0.0f);
-        cartItem.setSellingPrice(10.0f);
+        cartItem.setTotalSellingPrice(10.0f);
         cartItem.setQuantity(1);
         cartItem.setReferenceId(referenceId);
 

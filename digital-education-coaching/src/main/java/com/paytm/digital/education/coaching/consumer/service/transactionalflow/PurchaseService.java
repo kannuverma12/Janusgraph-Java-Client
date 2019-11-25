@@ -181,16 +181,26 @@ public class PurchaseService {
             return false;
         }
 
+        if (cartItem.getQuantity() <= 0) {
+            return false;
+        }
+
         if (!cartItem.getProductId().equals(redisCartItem.getProductId())
                 || !cartItem.getQuantity().equals(redisCartItem.getQuantity())
                 || !ComparisonUtils.thresholdBasedFloatsComparison(cartItem.getBasePrice(),
                 redisCartItem.getBasePrice())
                 || !ComparisonUtils.thresholdBasedFloatsComparison(cartItem.getConvFee(),
                 redisCartItem.getConvFee())
-                || !ComparisonUtils.thresholdBasedFloatsComparison(cartItem.getSellingPrice(),
-                redisCartItem.getSellingPrice())
-                || !cartItem.getCategoryId().equals(redisCartItem.getCategoryId())
+                || !ComparisonUtils.thresholdBasedFloatsComparison(cartItem.getTotalSellingPrice(),
+                redisCartItem.getTotalSellingPrice())
+                || !ComparisonUtils.thresholdBasedFloatsComparison(cartItem.getUnitSellingPrice(),
+                redisCartItem.getUnitSellingPrice())
                 || !cartItem.getEducationVertical().equals(redisCartItem.getEducationVertical())) {
+            return false;
+        }
+
+        if (!StringUtils.isEmpty(cartItem.getCategoryId()) && !cartItem.getCategoryId()
+                .equals(redisCartItem.getCategoryId())) {
             return false;
         }
 
@@ -241,14 +251,13 @@ public class PurchaseService {
 
     private boolean verifyPriceAndTaxes(CartItem cartItem,
             CoachingCourseEntity coachingCourseEntity) {
-        if (Objects.isNull(coachingCourseEntity)) {
+        if (Objects.isNull(coachingCourseEntity) || cartItem.getQuantity() <= 0) {
             return false;
         }
 
         //Verify Base Price
-        float price =
-                (float) (double) (coachingCourseEntity.getDiscountedPrice()) * cartItem
-                        .getQuantity();
+        float unitPrice = (float) (double) (coachingCourseEntity.getDiscountedPrice());
+        float price = unitPrice * cartItem.getQuantity();
         if (!ComparisonUtils.thresholdBasedFloatsComparison(price, cartItem.getBasePrice())) {
             return false;
         }
@@ -260,10 +269,18 @@ public class PurchaseService {
             return false;
         }
 
+        //Verify Unit Price
+        float unitConvenienceFee = convenienceFee / cartItem.getQuantity();
+        float unitSellingPrice = unitPrice + unitConvenienceFee;
+        if (!ComparisonUtils
+                .thresholdBasedFloatsComparison(unitSellingPrice, cartItem.getUnitSellingPrice())) {
+            return false;
+        }
+
         //Verify Selling Price
         float sellingPrice = price + convenienceFee;
         if (!ComparisonUtils.thresholdBasedFloatsComparison(sellingPrice,
-                cartItem.getSellingPrice())) {
+                cartItem.getTotalSellingPrice())) {
             return false;
         }
 

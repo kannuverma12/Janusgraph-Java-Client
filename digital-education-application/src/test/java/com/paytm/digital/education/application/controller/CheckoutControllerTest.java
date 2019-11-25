@@ -75,11 +75,12 @@ public class CheckoutControllerTest {
         CheckoutDataResponse checkoutDataResponse
                 = JsonUtils
                 .fromJson(result.getResponse().getContentAsString(), CheckoutDataResponse.class);
-        CartItem cartItem=checkoutDataResponse.getCartItems().get(0);
+        CartItem cartItem = checkoutDataResponse.getCartItems().get(0);
         Assert.assertNotNull(cartItem);
         Assert.assertNotNull(cartItem.getMetaData());
         Assert.assertNotNull(cartItem.getMetaData().getTcs());
-        Assert.assertTrue(ComparisonUtils.thresholdBasedFloatsComparison(request.getCartItems().get(0).getBasePrice() * 1000F,
+        Assert.assertTrue(ComparisonUtils.thresholdBasedFloatsComparison(
+                request.getCartItems().get(0).getBasePrice() * 1000F,
                 cartItem.getMetaData().getTcs().getBasePrice()));
         Assert.assertEquals(cartItem.getMetaData().getTcs().getCgst(), TCS_CGST_PERCANTAGE);
         Assert.assertEquals(cartItem.getMetaData().getTcs().getSgst(), TCS_SGST_PERCANTAGE);
@@ -117,41 +118,42 @@ public class CheckoutControllerTest {
         Assert.assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
     }
 
-    private CheckoutDataRequest getCheckoutDataRequest(){
-        CheckoutCartItem cartItem=new CheckoutCartItem();
-        ConvTaxInfo convTaxInfo=
+    private CheckoutDataRequest getCheckoutDataRequest() {
+        CheckoutCartItem cartItem = new CheckoutCartItem();
+        ConvTaxInfo convTaxInfo =
                 ConvTaxInfo.builder()
                         .totalCGST(0F)
                         .totalIGST(0F)
                         .totalSGST(0F)
                         .totalUTGST(0F)
                         .build();
-        TaxInfo taxInfo=
+        TaxInfo taxInfo =
                 TaxInfo.builder()
                         .totalCGST(0F)
                         .totalIGST(0F)
                         .totalSGST(0F)
                         .totalUTGST(0F)
                         .build();
-        CheckoutMetaData metaData=CheckoutMetaData.builder()
+        CheckoutMetaData metaData = CheckoutMetaData.builder()
                 .courseId(200L)
                 .courseType(CourseType.CLASSROOM_COURSE.getText())
                 .taxInfo(taxInfo)
                 .convTaxInfo(convTaxInfo)
                 .merchantProductId("1")
                 .build();
-        cartItem.setBasePrice(25378.9F);
+        cartItem.setBasePrice(25378.9F * 2);
         cartItem.setQuantity(2);
         cartItem.setConvFee(0F);
-        cartItem.setSellingPrice(25378.9F);
+        cartItem.setTotalSellingPrice(25378.9F * 2);
+        cartItem.setUnitSellingPrice(25378.9F);
         cartItem.setProductId(123L);
         cartItem.setCategoryId("165018");
         cartItem.setEducationVertical(COACHING_VERTICAL_NAME);
         cartItem.setMetaData(metaData);
         cartItem.setReferenceId("abc");
 
-        CheckoutDataRequest checkoutDataRequest=new CheckoutDataRequest();
-        List<CheckoutCartItem> cartItems=new ArrayList<>();
+        CheckoutDataRequest checkoutDataRequest = new CheckoutDataRequest();
+        List<CheckoutCartItem> cartItems = new ArrayList<>();
         cartItems.add(cartItem);
         checkoutDataRequest.setCartItems(cartItems);
         return checkoutDataRequest;
