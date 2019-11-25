@@ -31,6 +31,7 @@ public class ExamDatesHelper {
 
     private List<ImportantDate> getImportantDates(List<Instance> instanceList) {
         List<ImportantDate> importantDates = new ArrayList<>();
+        boolean upcomingFound = false;
         if (!CollectionUtils.isEmpty(instanceList)) {
             Date currentDate = LocalDate.now().toDate();
             for (Instance instance : instanceList) {
@@ -43,8 +44,12 @@ public class ExamDatesHelper {
                     for (Event event : instance.getEvents()) {
                         if (CommonUtils
                                 .isDateEqualsOrAfter(event.calculateCorrespondingDate(), currentDate)) {
-                            importantDate.getUpcomingDates().add(instanceHelper
-                                    .convertToResponseEvent(event, instance.getExamName()));
+                            com.paytm.digital.education.dto.detail.Event respEvent = instanceHelper
+                                    .convertToResponseEvent(event, instance.getExamName());
+                            importantDate.getUpcomingDates().add(respEvent);
+                            if (!upcomingFound) {
+                                upcomingFound = updateUpcomingEventIfFound(respEvent, currentDate);
+                            }
                         } else {
                             importantDate.getPastDates().add(instanceHelper
                                     .convertToResponseEvent(event, instance.getExamName()));
@@ -55,6 +60,18 @@ public class ExamDatesHelper {
             }
         }
         return importantDates;
+    }
+
+    private boolean updateUpcomingEventIfFound(
+            com.paytm.digital.education.dto.detail.Event respEvent, Date curDate) {
+        if (Objects.isNull(respEvent.getOngoing()) || (Objects.nonNull(respEvent.getOngoing())
+                && !respEvent.getOngoing())) {
+            if (CommonUtils.isDateAfter(respEvent.getDateStartRange(), curDate)) {
+                respEvent.setUpcoming(true);
+                return true;
+            }
+        }
+        return false;
     }
 
     public List<Instance> getNearestInstances(Exam exam, int maxInstances) {

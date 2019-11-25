@@ -52,4 +52,7 @@ public class Event {
 
     @JsonProperty("ongoing")
     private Boolean ongoing;
+
+    @JsonProperty("upcoming")
+    private Boolean upcoming;
 }

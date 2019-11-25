@@ -305,17 +305,13 @@ public class ExamInstanceHelper {
     private Boolean isOngoing(Event event) {
         Date curDate = new LocalDate().toDate();
         if (Objects.nonNull(event.getDateRangeEnd())) {
-            // if range end date is passed, unset ongoing
-            if (CommonUtils.isDateEqualsOrAfter(curDate, event.getDateRangeEnd())) {
-                return null;
-            }
-            // else set ongoing to true(ongoing) or false(upcoming)
+            // set ongoing to true if today's date exists between date range inclusively
             return (CommonUtils.isDateEqualsOrAfter(curDate, event.getDateRangeStart())
                     && CommonUtils.isDateEqualsOrAfter(event.getDateRangeEnd(), curDate));
         }
-        // if stat date is in future , set ongoing to false
-        if (CommonUtils.isDateEqualsOrAfter(event.getDateRangeStart(), curDate)) {
-            return false;
+        // if stat date is today's date, set ongoing to true
+        if (CommonUtils.isDateEquals(event.getDateRangeStart(), curDate)) {
+            return true;
         }
         return null;
     }

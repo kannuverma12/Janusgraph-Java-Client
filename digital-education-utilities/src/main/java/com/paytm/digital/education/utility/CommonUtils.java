@@ -75,6 +75,18 @@ public class CommonUtils {
         return jodaDate1.equals(jodaDate2) || jodaDate1.isAfter(jodaDate2);
     }
 
+    public boolean isDateAfter(Date d1, Date d2) {
+        LocalDate jodaDate1 = LocalDate.fromDateFields(d1);
+        LocalDate jodaDate2 = LocalDate.fromDateFields(d2);
+        return jodaDate1.isAfter(jodaDate2);
+    }
+
+    public boolean isDateEquals(Date d1, Date d2) {
+        LocalDate jodaDate1 = LocalDate.fromDateFields(d1);
+        LocalDate jodaDate2 = LocalDate.fromDateFields(d2);
+        return jodaDate1.isAfter(jodaDate2);
+    }
+
     public <T> Predicate<T> distinctBy(Function<? super T, ?> keyExtractor) {
         Map<Object, Boolean> seen = new HashMap<>();
         return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
