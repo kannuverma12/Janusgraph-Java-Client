@@ -96,8 +96,7 @@ public class SimilarInstituteServiceImpl {
         return null;
     }
 
-
-    private Widget getSimilarCollegesByNirfRanking(Institute institute,
+    public Widget getSimilarCollegesByNirfRanking(Institute institute,
             Map<String, Ranking> nirfRanking) {
         //If Only one stream is present, show similar colleges based on the streams present
         Set<String> streams = getRankingStreams(nirfRanking);
@@ -123,7 +122,9 @@ public class SimilarInstituteServiceImpl {
                 selectTopTwoStreams(streams), nirfRanking);
     }
 
-    private Widget getSimilarCollegesByStreams(Institute institute, String rankingSource,
+    @Cacheable(value = "similar_institutes_by_stream", key = "'similar_institutes_by_stream'"
+            + "+#institute.instituteId + #rankingSource + #limitPerStream")
+    public Widget getSimilarCollegesByStreams(Institute institute, String rankingSource,
             int limitPerStream,
             Collection<String> rankingStreams, Map<String, Ranking> rankingMap) {
         List<Institute> instituteResultList = new ArrayList<>();
@@ -205,7 +206,7 @@ public class SimilarInstituteServiceImpl {
         return nextGreaterIndex;
     }
 
-    @Cacheable(value = SIMILAR_COLLEGE_NAMESPACE, key = "nirf_overall_ranking")
+    @Cacheable(value = SIMILAR_COLLEGE_NAMESPACE, key = "'nirf_overall_ranking'")
     public List<Institute> getByOverAllRankings() {
         List<Institute> instituteList = instituteRepository.findAllByNIRFOverallRanking();
         Collections.sort(instituteList, (institute1, institute2) -> {

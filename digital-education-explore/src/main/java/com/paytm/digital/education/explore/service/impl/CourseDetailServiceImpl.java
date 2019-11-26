@@ -58,6 +58,7 @@ public class CourseDetailServiceImpl {
     private LeadDetailHelper            leadDetailHelper;
     private ExamInstanceHelper          examInstanceHelper;
 
+    @Cacheable(value = "course_detail_service", keyGenerator = "customKeyGenerator")
     public CourseDetail getDetail(Long entityId, String courseUrlKey, Long userId,
             String fieldGroup, List<String> fields, Client client, boolean courseFees,
             boolean institute, boolean widgets, boolean derivedAttributes, boolean examAccepted) {
@@ -73,7 +74,7 @@ public class CourseDetailServiceImpl {
     /*
      ** Method to get the course details and institute details
      */
-    @Cacheable(value = "course_detail")
+    @Cacheable(value = "course_detail", keyGenerator = "customKeyGenerator")
     public CourseDetail getCourseDetails(long entityId, String courseUrlKey, String fieldGroup,
             List<String> fields, Client client, boolean courseFees,
             boolean institute, boolean widgets, boolean derivedAttributes, boolean examAccepted) {
@@ -117,7 +118,8 @@ public class CourseDetailServiceImpl {
         }
     }
 
-    private List<ExamDetail> getExamsAccepted(List<Long> examIds) {
+    @Cacheable(value = "course_accepted_exams", keyGenerator = "customKeyGenerator")
+    public List<ExamDetail> getExamsAccepted(List<Long> examIds) {
 
         List<String> fields = new ArrayList<>();
         fields.add(EXAM_SHORT_NAME);
@@ -149,7 +151,8 @@ public class CourseDetailServiceImpl {
     /*
      ** Find all te exams for the course
      */
-    private Exam getExamNames(List<Long> examIds) {
+    @Cacheable(value = "course_exam_names", keyGenerator = "customKeyGenerator")
+    public Exam getExamNames(List<Long> examIds) {
         List<String> examQueryFields = new ArrayList<>();
         examQueryFields.add(EXAM_SHORT_NAME);
         examQueryFields.add(EXAM_FULL_NAME);
@@ -162,7 +165,8 @@ public class CourseDetailServiceImpl {
     /*
      ** Build the response combining the course and institute details
      */
-    private CourseDetail buildResponse(Course course, Institute institute,
+    @Cacheable(value = "course_detail_build_response", keyGenerator = "customKeyGenerator")
+    public CourseDetail buildResponse(Course course, Institute institute,
             List<Long> examIds, Client client, boolean courseFees,
             boolean instituteFlag, boolean widgets, boolean derivedAttributes, boolean examAccepted) {
         CourseDetail courseDetail = new CourseDetail();
@@ -221,7 +225,9 @@ public class CourseDetailServiceImpl {
         return courseDetail;
     }
 
-    private void updateInterested(CourseDetail courseDetail, Long userId) {
+    @Cacheable(value = "course_interested", key = "'course_interested' + #courseDetail.instituteId "
+            + "+ #userId")
+    public void updateInterested(CourseDetail courseDetail, Long userId) {
         List<Long> leadEntities = leadDetailHelper
                 .getInterestedLeadInstituteIds(userId,
                         Arrays.asList(courseDetail.getInstituteId()));
@@ -242,7 +248,8 @@ public class CourseDetailServiceImpl {
         return null;
     }
 
-    private CourseFee getCourseFee(
+    @Cacheable(value = "course_fee", key = "'course_fee' + #fee.fee + #fee.casteGroup")
+    public CourseFee getCourseFee(
             com.paytm.digital.education.database.entity.CourseFee fee) {
         Map<String, Object> cutoffDisplayNames = propertyReader.getPropertiesAsMapByKey(
                 ExploreConstants.EXPLORE_COMPONENT, ExploreConstants.COURSE_DETAIL,

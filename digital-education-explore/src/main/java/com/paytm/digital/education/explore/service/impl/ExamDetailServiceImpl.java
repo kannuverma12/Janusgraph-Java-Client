@@ -85,6 +85,7 @@ public class ExamDetailServiceImpl {
 
     private static int EXAM_PREFIX_LENGTH = EXAM_PREFIX.length();
 
+    @Cacheable(value = "exam_detail_service", keyGenerator = "customKeyGenerator")
     public ExamDetail getDetail(Long entityId, String examUrlKey, Long userId,
             String fieldGroup, List<String> fields, Client client, boolean syllabus,
             boolean importantDates, boolean derivedAttributes, boolean examCenters,
@@ -107,7 +108,7 @@ public class ExamDetailServiceImpl {
     }
 
     //TODO - modularize methods for caching as. Its fine as of now as userId is not being used As of now.
-    @Cacheable(value = "exam_detail")
+    @Cacheable(value = "exam_detail", keyGenerator = "customKeyGenerator")
     public ExamDetail getExamDetail(Long entityId, String examUrlKey, String fieldGroup,
             List<String> fields, Client client, boolean syllabus,
             boolean importantDates, boolean derivedAttributes, boolean examCenters,
@@ -144,7 +145,8 @@ public class ExamDetailServiceImpl {
                 derivedAttributes, examCenters, sections, widgets, policies);
     }
 
-    private ExamDetail processExamDetail(Exam exam, List<String> examFields, Client client,
+    @Cacheable(value = "process_exam_detail", keyGenerator = "customKeyGenerator")
+    public ExamDetail processExamDetail(Exam exam, List<String> examFields, Client client,
             boolean syllabus, boolean importantDates, boolean derivedAttributes,
             boolean examCenters, boolean sections, boolean widgets, boolean policies) {
 
@@ -158,7 +160,8 @@ public class ExamDetailServiceImpl {
                 subExamInstances);
     }
 
-    private void addAppSpecificData(ExamDetail examDetail, Exam exam, List<String> sections,
+    @Cacheable(value = "exam_app_specific_data", keyGenerator = "customKeyGenerator")
+    public void addAppSpecificData(ExamDetail examDetail, Exam exam, List<String> sections,
             boolean syllabusFlg, Instance nearestInstance,
             Map<String, Instance> subExamInstances) {
         Map<String, Object> sectionConfigurationMap =
@@ -269,7 +272,8 @@ public class ExamDetailServiceImpl {
         examDetail.setLinguisticMedium(examLang);
     }
 
-    private void addWebSpecificData(ExamDetail examDetail, Exam exam, boolean derivedAttributes,
+    @Cacheable(value = "exam_web_specific_data", keyGenerator = "customKeyGenerator")
+    public void addWebSpecificData(ExamDetail examDetail, Exam exam, boolean derivedAttributes,
             boolean sectionsFlag,
             Client client, boolean widgets) {
         examDetail.setDocumentsRequiredAtExam(exam.getDocumentsExam());
@@ -306,7 +310,8 @@ public class ExamDetailServiceImpl {
         }
     }
 
-    private ExamDetail buildResponse(Exam exam, Client client, boolean syllabus,
+    @Cacheable(value = "exam_build_response", keyGenerator = "customKeyGenerator")
+    public  ExamDetail buildResponse(Exam exam, Client client, boolean syllabus,
             boolean importantDatesflag, boolean derivedAttributes, boolean examCenters,
             boolean sectionsFlag, boolean widgets, boolean policies, Instance nearestInstance,
             Map<String, Instance> subExamInstances) {

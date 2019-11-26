@@ -19,7 +19,8 @@ public class EntityDetailsServiceImpl implements EntityDetailsService {
     private CommonMongoRepository commonMongoRepository;
 
     @Override
-    @Cacheable(value = "entity_detail", unless = "#result == null")
+    @Cacheable(value = "entity_detail", unless = "#result == null", key = "#keyName + #entityId "
+            + "+ #type + #fieldGroup")
     public <T> T getEntityDetails(String keyName, long entityId, Class<T> type,
             String fieldGroup, List<String> fields) {
         List<String> queryFields = null;
