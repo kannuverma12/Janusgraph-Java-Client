@@ -10,19 +10,13 @@ import com.paytm.digital.education.dto.detail.Section;
 import com.paytm.digital.education.dto.detail.Topic;
 import com.paytm.digital.education.dto.detail.Unit;
 import com.paytm.digital.education.enums.Client;
-import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.BadRequestException;
-import com.paytm.digital.education.explore.enums.CTAType;
-import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.detail.ExamDetail;
 import com.paytm.digital.education.explore.response.dto.detail.Location;
 import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
-import com.paytm.digital.education.explore.service.helper.CTAHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.service.helper.DetailPageSectionHelper;
 import com.paytm.digital.education.explore.service.helper.ExamSectionHelper;
-import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
-import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import com.paytm.digital.education.explore.service.helper.WidgetsDataHelper;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
@@ -30,7 +24,6 @@ import com.paytm.digital.education.serviceimpl.helper.ExamLogoHelper;
 import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.utility.DateUtil;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -67,7 +60,6 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
 
 @AllArgsConstructor
 @Service
-@Slf4j
 public class ExamDetailServiceImpl {
 
     private CommonMongoRepository    commonMongoRepository;
@@ -78,34 +70,9 @@ public class ExamDetailServiceImpl {
     private DetailPageSectionHelper  detailPageSectionHelper;
     private BannerDataHelper         bannerDataHelper;
     private WidgetsDataHelper        widgetsDataHelper;
-    private LeadDetailHelper         leadDetailHelper;
-    private CTAHelper                ctaHelper;
-    private SubscriptionDetailHelper subscriptionDetailHelper;
     private ExamSectionHelper        examSectionHelper;
 
     private static int EXAM_PREFIX_LENGTH = EXAM_PREFIX.length();
-
-    @Cacheable(value = "exam_detail_service", keyGenerator = "customKeyGenerator")
-    public ExamDetail getDetail(Long entityId, String examUrlKey, Long userId,
-            String fieldGroup, List<String> fields, Client client, boolean syllabus,
-            boolean importantDates, boolean derivedAttributes, boolean examCenters,
-            boolean sections, boolean widgets,
-            boolean policies) throws ParseException {
-        // fields are not being supported currently. Part of discussion
-
-        ExamDetail examDetail = getExamDetail(entityId, examUrlKey, fieldGroup, fields, client,
-                syllabus, importantDates, derivedAttributes, examCenters, sections, widgets, policies);
-        if (userId != null && userId > 0) {
-            updateInterested(examDetail, userId);
-            updateShortlist(examDetail, userId);
-        }
-        List<CTA> ctas = ctaHelper.buildCTA(examDetail, client);
-
-        if (!CollectionUtils.isEmpty(ctas)) {
-            examDetail.setCtaList(ctas);
-        }
-        return examDetail;
-    }
 
     //TODO - modularize methods for caching as. Its fine as of now as userId is not being used As of now.
     @Cacheable(value = "exam_detail", keyGenerator = "customKeyGenerator")
@@ -387,18 +354,6 @@ public class ExamDetailServiceImpl {
         }
     }
 
-
-    private void updateShortlist(ExamDetail examDetail,
-            Long userId) {
-        List<Long> examIds = new ArrayList<>();
-        examIds.add(examDetail.getExamId());
-
-        List<Long> subscribedEntities = subscriptionDetailHelper
-                .getSubscribedEntities(EXAM, userId, examIds);
-
-        examDetail.setShortlisted(!CollectionUtils.isEmpty(subscribedEntities));
-    }
-
     private String getDomainName(List<String> domains) {
         int noOfDomains = domains.size();
         if (noOfDomains == 0) {
@@ -447,14 +402,6 @@ public class ExamDetailServiceImpl {
                 .getPropertiesAsMapByKey(EXPLORE_COMPONENT, EXAM.name().toLowerCase(),
                         PRECEDENCE);
         return (List<String>) propertyMap.get(DATA);
-    }
-
-    private void updateInterested(ExamDetail examDetail, Long userId) {
-        List<Long> leadEntities = leadDetailHelper
-                .getInterestedLeadByEntity(EducationEntity.EXAM, userId, examDetail.getExamId());
-        if (!CollectionUtils.isEmpty(leadEntities)) {
-            examDetail.setInterested(true);
-        }
     }
 
     private List<Location> getExamCenters(Instance nearestInstance) {
