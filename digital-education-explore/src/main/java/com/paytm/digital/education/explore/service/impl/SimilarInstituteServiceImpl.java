@@ -96,8 +96,7 @@ public class SimilarInstituteServiceImpl {
         return null;
     }
 
-
-    private Widget getSimilarCollegesByNirfRanking(Institute institute,
+    public Widget getSimilarCollegesByNirfRanking(Institute institute,
             Map<String, Ranking> nirfRanking) {
         //If Only one stream is present, show similar colleges based on the streams present
         Set<String> streams = getRankingStreams(nirfRanking);
@@ -123,7 +122,9 @@ public class SimilarInstituteServiceImpl {
                 selectTopTwoStreams(streams), nirfRanking);
     }
 
-    private Widget getSimilarCollegesByStreams(Institute institute, String rankingSource,
+    @Cacheable(value = "similar_institutes_by_stream", key = "'similar_institutes_by_stream'"
+            + "+#institute.instituteId + #rankingSource + #limitPerStream")
+    public Widget getSimilarCollegesByStreams(Institute institute, String rankingSource,
             int limitPerStream,
             Collection<String> rankingStreams, Map<String, Ranking> rankingMap) {
         List<Institute> instituteResultList = new ArrayList<>();
@@ -205,7 +206,7 @@ public class SimilarInstituteServiceImpl {
         return nextGreaterIndex;
     }
 
-    @Cacheable(value = SIMILAR_COLLEGE_NAMESPACE, key = "nirf_overall_ranking")
+    @Cacheable(value = SIMILAR_COLLEGE_NAMESPACE, key = "'nirf_overall_ranking'")
     public List<Institute> getByOverAllRankings() {
         List<Institute> instituteList = instituteRepository.findAllByNIRFOverallRanking();
         Collections.sort(instituteList, (institute1, institute2) -> {
@@ -231,7 +232,8 @@ public class SimilarInstituteServiceImpl {
         return instituteList;
     }
 
-    private Widget getSimilarCollegesByLocation(Institute institute) {
+    @Cacheable(value = "similar_colleges_by_location", key = "'similar_by_location.'+#institute.instituteId")
+    public Widget getSimilarCollegesByLocation(Institute institute) {
         Set<String> streams = getCourseStreamForInstitute(institute.getInstituteId());
         Map<String, Object> instituteQueryMap =
                 getInstituteQueryMapForLocationAndStreams(institute.getInstitutionState(),
@@ -334,7 +336,8 @@ public class SimilarInstituteServiceImpl {
         return rankingDataMap;
     }
 
-    private List<Long> getInstituteIdsByStreams(String streamOperator, Collection<String> streams) {
+    @Cacheable(value = "institute_ids_by_streams", keyGenerator = "customKeyGenerator")
+    public List<Long> getInstituteIdsByStreams(String streamOperator, Collection<String> streams) {
         Map<String, Object> streamQueryMap = new HashMap<>();
         streamQueryMap.put(EXISTS, true);
         streamQueryMap.put(NE, EMPTY_SQUARE_BRACKETS);
@@ -355,7 +358,8 @@ public class SimilarInstituteServiceImpl {
         return null;
     }
 
-    private Set<String> getCourseStreamForInstitute(Long instituteId) {
+    @Cacheable(value = "course_stream_for_institute", key = "'course_streams.'+#instituteId")
+    public Set<String> getCourseStreamForInstitute(Long instituteId) {
         List<String> courseFields = Arrays.asList(STREAMS);
         List<Course> courses = commonMongoRepository
                 .getEntityFieldsByValuesIn(INSTITUTE_ID, Arrays.asList(instituteId), Course.class,

@@ -25,7 +25,7 @@ public class CompareInsightsServiceImpl {
     private CompareInsightRankProcessor      compareInsightRankProcessor;
     private CompareInsightFeeProcessor       compareInsightFeeProcessor;
 
-    @Cacheable(value = "compare_insights", key = "'compare_insights.'+#instituteList")
+    @Cacheable(value = "compare_insights", keyGenerator = "customKeyGenerator")
     public Map<String, List<String>> getInstituteKeyInsights(List<Institute> instituteList) {
         Map<String, List<String>> insightResultMap = new HashMap<>();
 
@@ -45,5 +45,4 @@ public class CompareInsightsServiceImpl {
         }
         return insightResultMap;
     }
-
 }

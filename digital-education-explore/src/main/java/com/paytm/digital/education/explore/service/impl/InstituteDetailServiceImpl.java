@@ -10,13 +10,10 @@ import com.paytm.digital.education.enums.Gender;
 import com.paytm.digital.education.enums.PublishStatus;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.response.builders.InstituteDetailResponseBuilder;
-import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.common.Widget;
 import com.paytm.digital.education.explore.response.dto.common.WidgetData;
 import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
-import com.paytm.digital.education.explore.service.helper.CTAHelper;
 import com.paytm.digital.education.explore.service.helper.GenderAndCasteGroupHelper;
-import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
 import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import com.paytm.digital.education.utility.CommonUtil;
 import lombok.AllArgsConstructor;
@@ -28,7 +25,6 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -64,9 +60,7 @@ public class InstituteDetailServiceImpl {
 
     private CommonMongoRepository          commonMongoRepository;
     private InstituteDetailResponseBuilder instituteDetailResponseBuilder;
-    private LeadDetailHelper               leadDetailHelper;
     private SubscriptionDetailHelper       subscriptionDetailHelper;
-    private CTAHelper                      ctaHelper;
 
     private static int EXAM_PREFIX_LENGTH   = EXAM_PREFIX.length();
     private static int COURSE_PREFIX_LENGTH = COURSE_PREFIX.length();
@@ -80,28 +74,7 @@ public class InstituteDetailServiceImpl {
         genderCategoryMap = genderAndCasteGroupHelper.getGenderAndCasteGroupMap();
     }
 
-    public InstituteDetail getDetail(Long entityId, String instituteUrlKey, Long userId,
-            String fieldGroup, List<String> fields, Client client, boolean derivedAttributes,
-            boolean cutOffs, boolean facilities, boolean gallery, boolean placements,
-            boolean notableAlumni, boolean sections, boolean widgets, boolean coursesPerDegree,
-            boolean campusEngagementFlag)
-            throws IOException, TimeoutException {
-        // fields are not being supported currently. Part of discussion
-        InstituteDetail instituteDetail = getinstituteDetail(entityId, instituteUrlKey,
-                fieldGroup, client, derivedAttributes, cutOffs, facilities, gallery, placements,
-                notableAlumni, sections, widgets, coursesPerDegree, campusEngagementFlag);
-        if (userId != null && userId > 0) {
-            updateShortist(instituteDetail, INSTITUTE, userId, client);
-            updateInterested(instituteDetail, INSTITUTE, userId);
-        }
-        List<CTA> ctaList = ctaHelper.buildCTA(instituteDetail, client);
-        if (!CollectionUtils.isEmpty(ctaList)) {
-            instituteDetail.setCtaList(ctaList);
-        }
-        return instituteDetail;
-    }
-
-    @Cacheable(value = "institute_detail")
+    @Cacheable(value = "institute_detail", keyGenerator = "customKeyGenerator")
     public InstituteDetail getinstituteDetail(Long entityId, String instituteUrlKey,
             String fieldGroup, Client client, boolean derivedAttributes,
             boolean cutOffs, boolean facilities, boolean gallery, boolean placements,
@@ -172,7 +145,7 @@ public class InstituteDetailServiceImpl {
                 INVALID_INSTITUTE_ID.getExternalMessage());
     }
 
-    @Cacheable(value = "institutes")
+    @Cacheable(value = "institutes", keyGenerator = "customKeyGenerator")
     public List<Institute> getInstitutes(List<Long> entityIds, List<String> groupFields)
             throws IOException, TimeoutException {
         if (CollectionUtils.isEmpty(groupFields)) {
@@ -298,7 +271,7 @@ public class InstituteDetailServiceImpl {
         return examData;
     }
 
-    private void updateShortist(InstituteDetail instituteDetail, EducationEntity educationEntity,
+    public void updateShortist(InstituteDetail instituteDetail, EducationEntity educationEntity,
             Long userId, Client client) {
 
         List<Long> instituteIds = new ArrayList<>();
@@ -329,16 +302,6 @@ public class InstituteDetailServiceImpl {
                     }
                 }
             }
-        }
-    }
-
-    private void updateInterested(InstituteDetail instituteDetail, EducationEntity educationEntity,
-            Long userId) {
-        List<Long> leadEntities = leadDetailHelper
-                .getInterestedLeadInstituteIds(userId,
-                        Arrays.asList(instituteDetail.getInstituteId()));
-        if (!CollectionUtils.isEmpty(leadEntities)) {
-            instituteDetail.setInterested(true);
         }
     }
 
