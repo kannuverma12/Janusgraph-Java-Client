@@ -51,6 +51,9 @@ public class MerchantNotification extends Base {
     @Field("merchant")
     private String merchant;
 
+    @Field("paytm_stream_id")
+    private Long paytmStreamId;
+
     @Field("merchant_updated_at")
     @LastModifiedDate
     @JsonIgnore

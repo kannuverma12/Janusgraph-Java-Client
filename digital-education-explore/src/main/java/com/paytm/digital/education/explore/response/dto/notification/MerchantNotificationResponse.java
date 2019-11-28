@@ -3,7 +3,6 @@ package com.paytm.digital.education.explore.response.dto.notification;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.database.entity.MerchantNotification;
 import lombok.Data;
 
 @Data
@@ -17,6 +16,6 @@ public class MerchantNotificationResponse {
     private String message;
 
     @JsonProperty("merchant_notification")
-    private MerchantNotification merchantNotification;
+    private NotificationResponseDTO merchantNotification;
 
 }
