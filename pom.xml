@@ -97,6 +97,16 @@
             <groupId>com.paytm.logistics</groupId>
             <artifactId>vault-integration-java</artifactId>
             <version>1.0.2-RELEASE</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-simple</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!--Testing-->
