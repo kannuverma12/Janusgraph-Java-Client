@@ -1,32 +1,8 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import static com.paytm.digital.education.constant.ExploreConstants.APPLICATION;
-import static com.paytm.digital.education.constant.ExploreConstants.DATA;
-import static com.paytm.digital.education.constant.ExploreConstants.DD_MMM_YYYY;
-import static com.paytm.digital.education.constant.ExploreConstants.DEFAULT;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_DETAIL;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FILTER_NAMESPACE;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_PREFIX;
-import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_MEDIUM;
-import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_MEDIUM_NAMESPACE;
-import static com.paytm.digital.education.constant.ExploreConstants.MMM_YYYY;
-import static com.paytm.digital.education.constant.ExploreConstants.NON_TENTATIVE;
-import static com.paytm.digital.education.constant.ExploreConstants.PRECEDENCE;
-import static com.paytm.digital.education.constant.ExploreConstants.SECTION;
-import static com.paytm.digital.education.constant.ExploreConstants.WEB_FORM_URI_PREFIX;
-import static com.paytm.digital.education.constant.ExploreConstants.ZERO;
-import static com.paytm.digital.education.enums.Client.APP;
-import static com.paytm.digital.education.enums.EducationEntity.EXAM;
-import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
-import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
-import static com.paytm.digital.education.utility.DateUtil.dateToString;
-
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.ExamPaytmKeys;
 import com.paytm.digital.education.database.entity.Instance;
-import com.paytm.digital.education.database.entity.SubExam;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.dto.detail.Event;
 import com.paytm.digital.education.dto.detail.ImportantDate;
@@ -67,6 +43,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.paytm.digital.education.constant.ExploreConstants.APPLICATION;
+import static com.paytm.digital.education.constant.ExploreConstants.DATA;
+import static com.paytm.digital.education.constant.ExploreConstants.DD_MMM_YYYY;
+import static com.paytm.digital.education.constant.ExploreConstants.DEFAULT;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_DETAIL;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FILTER_NAMESPACE;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_PREFIX;
+import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_MEDIUM;
+import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_MEDIUM_NAMESPACE;
+import static com.paytm.digital.education.constant.ExploreConstants.MMM_YYYY;
+import static com.paytm.digital.education.constant.ExploreConstants.NON_TENTATIVE;
+import static com.paytm.digital.education.constant.ExploreConstants.PRECEDENCE;
+import static com.paytm.digital.education.constant.ExploreConstants.SECTION;
+import static com.paytm.digital.education.constant.ExploreConstants.WEB_FORM_URI_PREFIX;
+import static com.paytm.digital.education.constant.ExploreConstants.ZERO;
+import static com.paytm.digital.education.enums.Client.APP;
+import static com.paytm.digital.education.enums.EducationEntity.EXAM;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
+import static com.paytm.digital.education.utility.DateUtil.dateToString;
+
 @Service
 @RequiredArgsConstructor
 public class ExamDetailServiceImpl {
@@ -83,7 +82,7 @@ public class ExamDetailServiceImpl {
     private final CTAHelper                ctaHelper;
     private final SubscriptionDetailHelper subscriptionDetailHelper;
     private final ExamSectionHelper        examSectionHelper;
-    private final ExamDatesHelper examDatesHelper;
+    private final ExamDatesHelper          examDatesHelper;
 
     @Value("${exam.default.instances.for.date:2}")
     private Integer defaultNoOfInstances;
@@ -98,7 +97,8 @@ public class ExamDetailServiceImpl {
         // fields are not being supported currently. Part of discussion
 
         ExamDetail examDetail = getExamDetail(entityId, examUrlKey, fieldGroup, fields, client,
-                syllabus, importantDates, derivedAttributes, examCenters, sections, widgets, policies);
+                syllabus, importantDates, derivedAttributes, examCenters, sections, widgets,
+                policies);
         if (userId != null && userId > 0) {
             updateInterested(examDetail, userId);
             updateShortlist(examDetail, userId);
@@ -156,7 +156,7 @@ public class ExamDetailServiceImpl {
         Instance nearestInstance =
                 examInstanceHelper.getNearestInstance(exam.getInstances()).get();
         Map<String, Instance> subExamInstances =
-                getSubExamInstances(exam, nearestInstance.getInstanceId());
+                examInstanceHelper.getSubExamInstances(exam, nearestInstance.getInstanceId());
 
         return buildResponse(exam, client, syllabus, importantDates,
                 derivedAttributes, examCenters, sections, widgets, policies, nearestInstance,
@@ -199,24 +199,8 @@ public class ExamDetailServiceImpl {
         return sectionList;
     }
 
-    private Map<String, Instance> getSubExamInstances(Exam exam, int parentInstanceId) {
-        Map<String, Instance> subExamInstances = new HashMap<>();
-        if (!CollectionUtils.isEmpty(exam.getSubExams())) {
-            for (SubExam subExam : exam.getSubExams()) {
-                if (!CollectionUtils.isEmpty(subExam.getInstances())) {
-                    for (Instance instance : subExam
-                            .getInstances()) {
-                        if (instance.getParentInstanceId() == parentInstanceId) {
-                            subExamInstances.put(subExam.getSubExamName(), instance);
-                        }
-                    }
-                }
-            }
-        }
-        return subExamInstances;
-    }
-
-    private void updateApplicationAndExamDates(ExamDetail examDetail, List<ImportantDate> importantDates) {
+    private void updateApplicationAndExamDates(ExamDetail examDetail,
+            List<ImportantDate> importantDates) {
         if (CollectionUtils.isEmpty(importantDates)) {
             return;
         }
@@ -231,8 +215,9 @@ public class ExamDetailServiceImpl {
                             examDetail.setApplicationOpening(dateToString(event.getDateStartRange(),
                                     DD_MMM_YYYY));
                             if (Objects.nonNull(event.getDateEndRange())) {
-                                examDetail.setApplicationClosing(dateToString(event.getDateEndRange(),
-                                        DD_MMM_YYYY));
+                                examDetail
+                                        .setApplicationClosing(dateToString(event.getDateEndRange(),
+                                                DD_MMM_YYYY));
                             }
                         } else {
                             examDetail.setApplicationMonth(event.getMonthDate());
@@ -270,7 +255,8 @@ public class ExamDetailServiceImpl {
                         examDetail.setApplicationClosing(dateToString(
                                 importantDates.get(i).getDateEndRange(), DD_MMM_YYYY));
                     } else {
-                        examDetail.setApplicationOpening(dateToString(importantDates.get(i).getDateStartRange(),
+                        examDetail.setApplicationOpening(
+                                dateToString(importantDates.get(i).getDateStartRange(),
                                         DD_MMM_YYYY));
                     }
 
@@ -391,8 +377,8 @@ public class ExamDetailServiceImpl {
             }
         }
         if (importantDatesFlg) {
-            List<ImportantDate> importantDates = examDatesHelper.getImportantDates(exam, defaultNoOfInstances);
-            examResponse.setImportantDates(importantDates);
+            List<ImportantDate> importantDates =
+                    examDatesHelper.getImportantDates(exam, defaultNoOfInstances);
             if (!CollectionUtils.isEmpty(importantDates)) {
                 examResponse.setImportantDates(importantDates);
                 updateApplicationAndExamDates(examResponse, importantDates);
@@ -405,7 +391,8 @@ public class ExamDetailServiceImpl {
                 examResponse.setTermsAndConditions(exam.getPaytmKeys().getTermsAndConditions());
                 examResponse.setDisclaimer(exam.getPaytmKeys().getDisclaimer());
                 examResponse.setPrivacyPolicies(exam.getPaytmKeys().getPrivacyPolicies());
-                examResponse.setRegistrationGuidelines(exam.getPaytmKeys().getRegistrationGuidelines());
+                examResponse
+                        .setRegistrationGuidelines(exam.getPaytmKeys().getRegistrationGuidelines());
             }
         }
         if (syllabusflg) {

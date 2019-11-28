@@ -12,8 +12,8 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class ImportantDate {
 
-    private String name;
-    private String examName;
+    private String      name;
+    private String      examName;
     private List<Event> pastDates;
     private List<Event> upcomingDates;
 
