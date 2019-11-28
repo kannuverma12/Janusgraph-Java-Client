@@ -105,12 +105,14 @@ public class ExamDatesHelper {
                 .collect(Collectors.toList());
     }
 
-    private List<Instance> getSubexamInstancesForParentInstance(List<SubExam> subExams, List<Integer> instanceIds) {
+    private List<Instance> getSubexamInstancesForParentInstance(List<SubExam> subExams,
+            List<Integer> instanceIds) {
         return subExams.stream().filter(subExam -> !CollectionUtils.isEmpty(subExam.getInstances()))
                 .flatMap(subExam -> subExam.getInstances().stream()
                         .peek(instance -> instance.setExamName(subExam.getSubExamName())))
                 .filter(instance -> isHierarchicalInstance(instance.getParentInstanceId(),
-                        instanceIds)).collect(Collectors.toList());
+                        instanceIds) && !CollectionUtils.isEmpty(instance.getEvents()))
+                .collect(Collectors.toList());
     }
 
     private boolean isHierarchicalInstance(Integer parentInstanceId, List<Integer> instanceIds) {
