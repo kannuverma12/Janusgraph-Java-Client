@@ -1,5 +1,7 @@
 package com.paytm.digital.education.serviceimpl.helper;
 
+import static com.paytm.digital.education.constant.ExploreConstants.NON_TENTATIVE;
+
 import com.paytm.digital.education.database.entity.Event;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Instance;
@@ -66,7 +68,8 @@ public class ExamDatesHelper {
             com.paytm.digital.education.dto.detail.Event respEvent, Date curDate) {
         if (Objects.isNull(respEvent.getOngoing()) || (Objects.nonNull(respEvent.getOngoing())
                 && !respEvent.getOngoing())) {
-            if (CommonUtils.isDateAfter(respEvent.getDateStartRange(), curDate)) {
+            if (NON_TENTATIVE.equalsIgnoreCase(respEvent.getType()) && CommonUtils
+                    .isDateAfter(respEvent.getDateStartRange(), curDate)) {
                 respEvent.setUpcoming(true);
                 return true;
             }
