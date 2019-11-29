@@ -17,7 +17,7 @@ import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.service.helper.DetailPageSectionHelper;
 import com.paytm.digital.education.explore.service.helper.ExamSectionHelper;
-import com.paytm.digital.education.explore.service.helper.WidgetsDataHelper;
+import com.paytm.digital.education.explore.service.helper.SimilarExamsHelper;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
 import com.paytm.digital.education.serviceimpl.helper.ExamLogoHelper;
@@ -69,8 +69,8 @@ public class ExamDetailServiceImpl {
     private DerivedAttributesHelper  derivedAttributesHelper;
     private DetailPageSectionHelper  detailPageSectionHelper;
     private BannerDataHelper         bannerDataHelper;
-    private WidgetsDataHelper        widgetsDataHelper;
     private ExamSectionHelper        examSectionHelper;
+    private SimilarExamsHelper       similarExamsHelper;
 
     private static int EXAM_PREFIX_LENGTH = EXAM_PREFIX.length();
 
@@ -271,9 +271,7 @@ public class ExamDetailServiceImpl {
         }
         examDetail.setBanners(bannerDataHelper.getBannerData(entityName, null));
         if (widgets) {
-            examDetail.setWidgets(widgetsDataHelper.getWidgets(entityName, exam.getExamId(),
-                    getDomainName(exam.getDomains())
-            ));
+            examDetail.setWidgets(similarExamsHelper.getWidgetsData(exam));
         }
     }
 

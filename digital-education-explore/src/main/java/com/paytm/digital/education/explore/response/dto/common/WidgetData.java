@@ -35,6 +35,9 @@ public class WidgetData {
     @JsonProperty("stream")
     private String stream;
 
+    @JsonProperty("stream_id")
+    private Long streamId;
+
     @JsonProperty("stream_display_name")
     private String streamDisplay;
 
