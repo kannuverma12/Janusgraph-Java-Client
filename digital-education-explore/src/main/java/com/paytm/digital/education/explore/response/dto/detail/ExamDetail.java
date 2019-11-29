@@ -199,7 +199,7 @@ public class ExamDetail implements CTAInfoHolder {
     @JsonIgnore
     @Override
     public boolean hasShortListFeature() {
-        return true;
+        return false;
     }
 
     @JsonIgnore
