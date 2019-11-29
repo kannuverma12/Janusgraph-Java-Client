@@ -2,7 +2,7 @@ package com.paytm.digital.education.ingestion.service;
 
 import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.exception.InvalidRequestException;
-import com.paytm.digital.education.ingestion.dao.StreamDAO;
+import com.paytm.digital.education.database.dao.StreamDAO;
 import com.paytm.digital.education.ingestion.request.StreamDataRequest;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;

@@ -105,7 +105,7 @@ public class AdminServiceImpl implements AdminService {
             }
 
         } catch (Exception ex) {
-            log.error("Error caught while uploading documents : {}", ex);
+            log.error("Error caught while uploading documents : ", ex);
             response.setError(ex.getMessage());
         } finally {
             try {

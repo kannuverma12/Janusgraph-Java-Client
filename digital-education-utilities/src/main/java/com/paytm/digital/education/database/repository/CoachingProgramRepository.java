@@ -18,8 +18,7 @@ public interface CoachingProgramRepository
 
     CoachingCourseEntity findByCourseId(Long id);
 
-    @Query(value = "{course_id: { $in: ?0 } })", fields = "{'course_id':1, _id : 0, "
-            + "'is_dynamic' : 1 , 'original_price' : 1}")
+    @Query(value = "{course_id: { $in: ?0 } }")
     List<CoachingCourseEntity> findAllByCourseId(List<Long> ids);
 
     @Override List<CoachingCourseEntity> findAll();

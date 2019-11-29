@@ -1,5 +1,8 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import static com.paytm.digital.education.enums.es.FilterQueryType.RANGE;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_SORT_FIELD;
+
 import com.paytm.digital.education.elasticsearch.constants.ESConstants;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
@@ -38,7 +41,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -46,9 +48,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
-
-import static com.paytm.digital.education.enums.es.FilterQueryType.RANGE;
-import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_SORT_FIELD;
+import javax.annotation.PostConstruct;
 
 @Component
 public abstract class AbstractSearchServiceImpl {
@@ -88,12 +88,14 @@ public abstract class AbstractSearchServiceImpl {
 
     protected void validateRequest(SearchRequest searchRequest,
             Map<String, FilterQueryType> filterQueryTypeMap) {
-        searchRequest.getFilter().forEach((filterKeyName, values) -> {
-            if (!filterQueryTypeMap.containsKey(filterKeyName)) {
-                throw new EducationException(ErrorEnum.FILTER_DOESNOT_EXIST,
-                        "Applied filter is not present in filterQueryMap");
-            }
-        });
+        if (!CollectionUtils.isEmpty(searchRequest.getFilter())) {
+            searchRequest.getFilter().forEach((filterKeyName, values) -> {
+                if (!filterQueryTypeMap.containsKey(filterKeyName)) {
+                    throw new EducationException(ErrorEnum.FILTER_DOESNOT_EXIST,
+                            "Applied filter is not present in filterQueryMap");
+                }
+            });
+        }
         validateGeoLocationRequest(searchRequest);
     }
 

@@ -1,4 +1,4 @@
-package com.paytm.digital.education.coaching.db.dao;
+package com.paytm.digital.education.database.dao;
 
 import com.paytm.digital.education.database.entity.CoachingCtaEntity;
 import com.paytm.digital.education.database.repository.CoachingCtaRepository;

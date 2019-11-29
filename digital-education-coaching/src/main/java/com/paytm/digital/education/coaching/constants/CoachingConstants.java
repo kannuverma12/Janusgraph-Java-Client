@@ -49,6 +49,7 @@ public class CoachingConstants {
     public static final String COACHING_COURSE_IDS        = "course_ids";
     public static final String NAME                       = "name";
     public static final String PAYTM_REQUEST_ID           = "PaytmRequestId";
+    public static final String PAYTM_APP_REQUEST_ID       = "x-app-rid";
     public static final String CHECKSUM_HASH              = "ChecksumHash";
     public static final String ACCESS_KEY                 = "AccessKey";
     public static final String EXAM_FILTER_NAMESPACE      = "exam_filter";
@@ -115,6 +116,9 @@ public class CoachingConstants {
     public static final int LANDING_PAGE_TOP_COURSES_LIMIT      = 4;
     public static final int LANDING_PAGE_TOP_COURSES_PER_STREAM = 1;
     public static final int TOP_ELEMENTS_ANY_PAGE_LIMIT         = 4;
+    public static final int TOP_INSTITUTES_COUNT_LANDING_PAGE   = 8;
+
+    public static final String COACHING_VERTICAL_NAME = "COACHING";
 
 
     public static class URL {
@@ -143,7 +147,7 @@ public class CoachingConstants {
 
     public static class Search {
 
-        public static final String EXAM_INDEX                      = "education_search_exam_v3";
+        public static final String EXAM_INDEX                      = "education_search_exam_v4";
         public static final String SEARCH_INDEX_COACHING_COURSE    = "coaching_course_v1";
         public static final String SEARCH_INDEX_COACHING_INSTITUTE = "coaching_institute_v1";
         public static final String SEARCH_INDEX_COACHING_CENTER    = "coaching_center_v1";

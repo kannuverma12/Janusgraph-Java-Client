@@ -6,7 +6,7 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.Searc
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResult;
 import com.paytm.digital.education.coaching.consumer.service.search.helper.CoachingSearchAggregateHelper;
-import com.paytm.digital.education.coaching.db.dao.CoachingInstituteDAO;
+import com.paytm.digital.education.database.dao.CoachingInstituteDAO;
 import com.paytm.digital.education.es.model.CoachingCenterSearch;
 import com.paytm.digital.education.es.model.GeoLocation;
 import com.paytm.digital.education.coaching.utils.ImageUtils;
@@ -95,7 +95,7 @@ public class CoachingCenterSearchService extends AbstractSearchService {
     }
 
     @Override
-    @Cacheable(value = "coaching_center_search")
+    @Cacheable(value = "coaching_center_search",key = "#searchRequest.key")
     public SearchResponse search(SearchRequest searchRequest) {
         validateRequest(searchRequest, filterQueryTypeMap);
         ElasticRequest elasticRequest = buildSearchRequest(searchRequest);

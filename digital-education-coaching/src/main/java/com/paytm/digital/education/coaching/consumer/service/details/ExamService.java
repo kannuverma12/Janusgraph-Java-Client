@@ -9,10 +9,11 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.Coach
 import com.paytm.digital.education.coaching.consumer.model.response.search.ExamData;
 import com.paytm.digital.education.coaching.consumer.service.details.helper.CoachingExamSectionHelper;
 import com.paytm.digital.education.coaching.consumer.service.search.helper.SearchDataHelper;
+import com.paytm.digital.education.database.dao.CoachingExamDAO;
+import com.paytm.digital.education.database.dao.CoachingStreamDAO;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Instance;
 import com.paytm.digital.education.database.entity.StreamEntity;
-import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.property.reader.PropertyReader;
@@ -54,6 +55,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.S
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_DETAILS_FIELDS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.TOP_ELEMENTS_ANY_PAGE_LIMIT;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_COACHING_COURSES_FOR;
 import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_COACHING_INSTITUTES_FOR;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
@@ -63,8 +65,6 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
 @Service
 public class ExamService {
 
-    @Autowired
-    private CommonMongoRepository     commonMongoRepository;
     @Autowired
     private CoachingCourseService     coachingCourseService;
     @Autowired
@@ -81,12 +81,16 @@ public class ExamService {
     private ExamLogoHelper            examLogoHelper;
     @Autowired
     private ExamDatesHelper           examDatesHelper;
+    @Autowired
+    private CoachingExamDAO           coachingExamDAO;
+    @Autowired
+    private CoachingStreamDAO         coachingStreamDAO;
 
     @Value("${exam.default.instances.for.date:2}")
     private Integer defaultNoOfInstances;
 
     public GetExamDetailsResponse getExamDetails(final long examId, final String urlDisplayKey) {
-        Exam exam = this.commonMongoRepository.getEntityByFields(EXAM_ID, examId, Exam.class,
+        Exam exam = coachingExamDAO.findByExamId(EXAM_ID, examId,
                 EXAM_DETAILS_FIELDS);
         if (Objects.isNull(exam)) {
             log.error("Exam with id: {} does not exist", examId);
@@ -182,8 +186,8 @@ public class ExamService {
     }
 
     private StreamEntity getStreamEntity(final long streamId) {
-        return commonMongoRepository.getEntityByFields(STREAM_ID,
-                streamId, StreamEntity.class, STREAM_DETAILS_FIELDS);
+        return coachingStreamDAO.findByStreamId(STREAM_ID,
+                streamId, STREAM_DETAILS_FIELDS);
     }
 
     private TopCoachingInstitutes getTopCoachingInstitutes(Exam exam) {
@@ -242,6 +246,6 @@ public class ExamService {
         filter.put(STREAM_IDS, Collections.singletonList(streamId));
 
         return (List<ExamData>) (List<?>) searchDataHelper
-                .getTopSearchData(filter, EducationEntity.EXAM, null);
+                .getTopSearchData(filter, EducationEntity.EXAM, null, TOP_ELEMENTS_ANY_PAGE_LIMIT);
     }
 }

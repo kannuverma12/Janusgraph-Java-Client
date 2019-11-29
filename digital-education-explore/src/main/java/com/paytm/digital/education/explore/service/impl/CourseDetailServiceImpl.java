@@ -14,12 +14,10 @@ import com.paytm.digital.education.explore.response.dto.detail.CourseInstituteDe
 import com.paytm.digital.education.explore.response.dto.detail.ExamDetail;
 import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
-import com.paytm.digital.education.explore.service.helper.LeadDetailHelper;
 import com.paytm.digital.education.explore.utility.FieldsRetrievalUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.serviceimpl.helper.ExamDatesHelper;
 import com.paytm.digital.education.utility.CommonUtil;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,28 +54,15 @@ public class CourseDetailServiceImpl {
     private final PropertyReader              propertyReader;
     private final SimilarInstituteServiceImpl similarInstituteService;
     private final BannerDataHelper            bannerDataHelper;
-    private final LeadDetailHelper            leadDetailHelper;
     private final ExamDatesHelper             examDatesHelper;
 
     @Value("${course.default.instances.for.date:1}")
     private Integer defaultNoOfInstances;
 
-    public CourseDetail getDetail(Long entityId, String courseUrlKey, Long userId,
-            String fieldGroup, List<String> fields, Client client, boolean courseFees,
-            boolean institute, boolean widgets, boolean derivedAttributes, boolean examAccepted) {
-        CourseDetail courseDetail =
-                getCourseDetails(entityId, courseUrlKey, fieldGroup, fields, client,
-                        courseFees, institute, widgets, derivedAttributes, examAccepted);
-        if (userId != null && userId > 0) {
-            updateInterested(courseDetail, userId);
-        }
-        return courseDetail;
-    }
-
     /*
      ** Method to get the course details and institute details
      */
-    @Cacheable(value = "course_detail")
+    @Cacheable(value = "course_detail", keyGenerator = "customKeyGenerator")
     public CourseDetail getCourseDetails(long entityId, String courseUrlKey, String fieldGroup,
             List<String> fields, Client client, boolean courseFees,
             boolean institute, boolean widgets, boolean derivedAttributes, boolean examAccepted) {
@@ -151,7 +135,6 @@ public class CourseDetailServiceImpl {
 
         return examsAccepted;
     }
-
 
     /*
      ** Find all te exams for the course
@@ -226,15 +209,6 @@ public class CourseDetailServiceImpl {
             courseDetail.setInstitute(courseInstituteDetail);
         }
         return courseDetail;
-    }
-
-    private void updateInterested(CourseDetail courseDetail, Long userId) {
-        List<Long> leadEntities = leadDetailHelper
-                .getInterestedLeadInstituteIds(userId,
-                        Arrays.asList(courseDetail.getInstituteId()));
-        if (!CollectionUtils.isEmpty(leadEntities)) {
-            courseDetail.getInstitute().setInterested(true);
-        }
     }
 
     private List<CourseFee> getAllCourseFees(

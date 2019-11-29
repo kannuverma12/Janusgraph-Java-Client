@@ -1,9 +1,5 @@
 package com.paytm.digital.education.explore.service.helper;
 
-import static com.paytm.digital.education.constant.ExploreConstants.COURSE_SIZE_FOR_INSTITUTE_DETAIL;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID_COURSE;
-import static com.paytm.digital.education.constant.ExploreConstants.PARENT_INSTITUTE_ID_COURSE;
-
 import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.enums.CollegeEntityType;
 import com.paytm.digital.education.enums.CourseLevel;
@@ -14,8 +10,9 @@ import com.paytm.digital.education.explore.response.dto.search.CourseSearchRespo
 import com.paytm.digital.education.explore.response.dto.search.SearchBaseData;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.service.impl.CourseSearchService;
-import javafx.util.Pair;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -25,6 +22,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
+
+import static com.paytm.digital.education.constant.ExploreConstants.COURSE_SIZE_FOR_INSTITUTE_DETAIL;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID_COURSE;
+import static com.paytm.digital.education.constant.ExploreConstants.PARENT_INSTITUTE_ID_COURSE;
 
 @Service
 @AllArgsConstructor
@@ -66,9 +67,9 @@ public class CourseDetailHelper {
                 });
             }
             long totalCourses = response.getTotal();
-            return new Pair<>(totalCourses, courses);
+            return new MutablePair<>(totalCourses, courses);
         }
-        return new Pair<>(0L, courses);
+        return new MutablePair<>(0L, courses);
     }
 
     public Pair<Long, Map<String, List<Course>>> getCourseDataPerLevel(List<Object> instituteIds,
@@ -109,8 +110,8 @@ public class CourseDetailHelper {
                         });
             }
             long totalCourses = response.getTotal();
-            return new Pair<>(totalCourses, coursesPerLevel);
+            return new MutablePair<>(totalCourses, coursesPerLevel);
         }
-        return new Pair<>(0L, coursesPerLevel);
+        return new MutablePair<>(0L, coursesPerLevel);
     }
 }

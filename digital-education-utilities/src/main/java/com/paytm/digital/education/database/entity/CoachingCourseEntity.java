@@ -2,6 +2,7 @@ package com.paytm.digital.education.database.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.paytm.digital.education.database.embedded.CoachingCourseImportantDate;
+import com.paytm.digital.education.enums.CTAViewType;
 import com.paytm.digital.education.enums.CourseCover;
 import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.CourseType;
@@ -17,6 +18,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -183,6 +185,6 @@ public class CoachingCourseEntity extends Base {
     @Field("is_dynamic")
     private Boolean isDynamic;
 
-    @Field("redirect_url")
-    private String redirectUrl;
+    @Field("cta_info")
+    private Map<CTAViewType, Long> ctaInfo;
 }

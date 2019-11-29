@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,11 +56,15 @@ public class ExamStreamExportService extends AbstractExportService implements Ex
         return entities.stream()
                 .map(entity -> ExamStreamForm.builder().examFullName(entity.getExamFullName())
                         .examShortName(entity.getExamShortName()).examId(entity.getExamId())
-                        .merchantStream(entity.getMerchantStream())
                         .globalPriority(entity.getPriority())
-                        .paytmStream(entity.getPaytmStream())
+                        .domains(getPaytmDomains(entity.getPaytmStreamIds()))
                         .statusActive(booleanToString(entity.getIsEnabled()))
                         .build()).collect(
                         Collectors.toList());
+    }
+
+    private String getPaytmDomains(List<Long> paytmStreamIds) {
+        return Optional.ofNullable(paytmStreamIds).orElse(Collections.emptyList()).stream()
+                .map(streamId -> streamId.toString()).collect(Collectors.joining(","));
     }
 }

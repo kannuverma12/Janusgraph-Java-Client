@@ -23,7 +23,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -37,6 +36,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.PAYTM_APP_REQUEST_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.PAYTM_REQUEST_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.RestTemplateConstants.MERCHANT_COMMIT_TIMEOUT_MS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.RestTemplateConstants.PAYTM_HOST_FOR_SIGNATURE;
@@ -83,6 +83,7 @@ public class MerchantCallImpl implements MerchantCall {
             orderItems.add(MerchantCommitOrderInfo
                     .builder()
                     .paytmProductId(String.valueOf(cartItem.getProductId()))
+                    .merchantProductId(metaData.getMerchantProductId())
                     .paytmOrderItemId(String.valueOf(cartItem.getItemId()))
                     .price((double) cartItem.getPrice())
                     .discount((double) cartItem.getDiscount())
@@ -128,29 +129,20 @@ public class MerchantCallImpl implements MerchantCall {
 
         String signature = AuthUtils.getSignature(signatureMessage, merchantInfo.getSecretKey());
 
-        ResponseEntity<MerchantCommitResponse> response;
+        MerchantCommitResponse merchantCommitResponse;
         try {
-            response = CoachingRestTemplate.getRequestTemplate(MERCHANT_COMMIT_TIMEOUT_MS)
-                    .postRawForObject(
-                            UriComponentsBuilder.fromHttpUrl(completeEndpoint)
-                                    .queryParam("timestamp", currentTimeStamp).toUriString(),
-                            HeaderTemplate.getMerchantHeader(MDC.get(PAYTM_REQUEST_ID), signature,
-                                    merchantInfo.getAccessKey()),
-                            requestString,
-                            MerchantCommitResponse.class);
-            MerchantCommitResponse merchantCommitResponse = response.getBody();
-            if (response.getStatusCode() == HttpStatus.OK && Objects
-                    .nonNull(merchantCommitResponse)) {
-                return MerchantNotifyResponse
-                        .builder()
-                        .status(merchantCommitResponse.getStatus())
-                        .merchantResponse(MerchantOrderData
-                                .builder()
-                                .merchantReferenceId(
-                                        merchantCommitResponse.getReferenceId())
-                                .build())
-                        .build();
-            }
+            merchantCommitResponse =
+                    CoachingRestTemplate.getRequestTemplate(MERCHANT_COMMIT_TIMEOUT_MS)
+                            .postForObject(
+                                    UriComponentsBuilder.fromHttpUrl(completeEndpoint)
+                                            .queryParam("timestamp", currentTimeStamp)
+                                            .toUriString(),
+                                    HeaderTemplate
+                                            .getMerchantHeader(MDC.get(PAYTM_REQUEST_ID), signature,
+                                                    merchantInfo.getAccessKey(),
+                                                    MDC.get(PAYTM_APP_REQUEST_ID)),
+                                    requestString,
+                                    MerchantCommitResponse.class);
             if (Objects.isNull(merchantCommitResponse)) {
                 log.error(
                         "Received null response from merchant for request : {} "
@@ -163,6 +155,16 @@ public class MerchantCallImpl implements MerchantCall {
                                 MerchantNotifyFailureReason.BAD_RESPONSE_FROM_MERCHANT_COMMIT)
                         .build();
             }
+
+            return MerchantNotifyResponse
+                    .builder()
+                    .status(merchantCommitResponse.getStatus())
+                    .merchantResponse(MerchantOrderData
+                            .builder()
+                            .merchantReferenceId(
+                                    merchantCommitResponse.getReferenceId())
+                            .build())
+                    .build();
         } catch (RestClientException rce) {
             if (rce instanceof HttpClientErrorException) {
                 HttpClientErrorException hce = (HttpClientErrorException) rce;
@@ -188,6 +190,5 @@ public class MerchantCallImpl implements MerchantCall {
                     .failureReason(MerchantNotifyFailureReason.MERCHANT_INFRA_DOWN)
                     .build();
         }
-        return null;
     }
 }

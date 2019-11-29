@@ -1,6 +1,6 @@
 package com.paytm.digital.education.coaching.producer.service;
 
-import com.paytm.digital.education.coaching.db.dao.CoachingInstituteDAO;
+import com.paytm.digital.education.database.dao.CoachingInstituteDAO;
 import com.paytm.digital.education.coaching.producer.ConverterUtil;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingInstituteDataRequest;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;

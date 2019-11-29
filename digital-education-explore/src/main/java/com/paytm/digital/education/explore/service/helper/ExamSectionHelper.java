@@ -44,10 +44,10 @@ public class ExamSectionHelper {
                     JsonUtils.convertValue(sectionConfigurationMap.get(sectionName),
                             SectionConfiguration.class);
             if (!isPresent) {
-                log.error("Section data not found for {} of exam {}.", sectionName,
+                log.warn("Section data not found for {} of exam {}.", sectionName,
                         exam.getExamId());
             } else if (Objects.isNull(sectionConfiguration)) {
-                log.error("Section configuration not found for {} of exam id {}.", sectionName,
+                log.warn("Section configuration not found for {} of exam id {}.", sectionName,
                         exam.getExamId());
             } else {
                 responseSections.add(getResponseSection(sectionConfiguration));

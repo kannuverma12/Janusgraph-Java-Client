@@ -20,9 +20,9 @@ import com.paytm.digital.education.explore.xcel.model.XcelEvent;
 import com.paytm.digital.education.utility.UploadUtil;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
-import javafx.util.Pair;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Update;
@@ -178,13 +178,15 @@ public class CampusAdminServiceImpl implements CampusAdminService {
         queryMap.put(NE, null);
 
         Map<String, Object> objectMap = new HashMap<>();
-        objectMap.put(CAMPUS_AMBASSADORS , queryMap);
+        objectMap.put(CAMPUS_AMBASSADORS, queryMap);
 
-        List<CampusEngagement> campusEngagementList = mongoOperations.findAll(CampusEngagement.class);
+        List<CampusEngagement> campusEngagementList =
+                mongoOperations.findAll(CampusEngagement.class);
 
         for (CampusEngagement campusEngagement : campusEngagementList) {
             if (Objects.nonNull(campusEngagement.getCampusAmbassadors())) {
-                for (CampusAmbassador campusAmbassador : campusEngagement.getCampusAmbassadors().values()) {
+                for (CampusAmbassador campusAmbassador : campusEngagement.getCampusAmbassadors()
+                        .values()) {
                     XcelCampusAmbassador xcelCampusAmbassador = new XcelCampusAmbassador();
                     BeanUtils.copyProperties(campusAmbassador, xcelCampusAmbassador);
                     xcelCampusAmbassador.setImage(campusAmbassador.getImageUrl());
@@ -284,9 +286,10 @@ public class CampusAdminServiceImpl implements CampusAdminService {
         queryMap.put(NE, null);
 
         Map<String, Object> objectMap = new HashMap<>();
-        objectMap.put(ARTICLES , queryMap);
+        objectMap.put(ARTICLES, queryMap);
 
-        List<CampusEngagement> campusEngagementList = mongoOperations.findAll(CampusEngagement.class);
+        List<CampusEngagement> campusEngagementList =
+                mongoOperations.findAll(CampusEngagement.class);
 
         for (CampusEngagement campusEngagement : campusEngagementList) {
             if (Objects.nonNull(campusEngagement.getArticles())) {
@@ -334,7 +337,8 @@ public class CampusAdminServiceImpl implements CampusAdminService {
                     event.setCreatedAt(campusEngagementHelper.convertDateFormat(XCEL_DATE_FORMAT,
                             DB_DATE_FORMAT, xcelEvent.getTimestamp()));
                 } catch (Exception e) {
-                    log.error("error parsing date");
+                    log.error("Error parsing date : {}, expected format is : {}", e.getMessage(),
+                            XCEL_DATE_FORMAT);
                 }
 
                 boolean isMediaEmpty = true;
@@ -343,9 +347,10 @@ public class CampusAdminServiceImpl implements CampusAdminService {
                     isMediaEmpty = setMediaFields(mediaUrl, instituteId, event);
                     if (isMediaEmpty) {
                         List<String> imageBuff = new ArrayList<>();
-                        List<String>  videoBuff = new ArrayList<>();
+                        List<String> videoBuff = new ArrayList<>();
                         for (String media : mediaUrl) {
-                            if (media.endsWith("jpg") || media.endsWith("jpeg") || media.endsWith("png")) {
+                            if (media.endsWith("jpg") || media.endsWith("jpeg") || media
+                                    .endsWith("png")) {
                                 imageBuff.add(media);
                             } else {
                                 videoBuff.add(media);
@@ -390,9 +395,10 @@ public class CampusAdminServiceImpl implements CampusAdminService {
         queryMap.put(NE, null);
 
         Map<String, Object> objectMap = new HashMap<>();
-        objectMap.put(EVENTS , queryMap);
+        objectMap.put(EVENTS, queryMap);
 
-        List<CampusEngagement> campusEngagementList = mongoOperations.findAll(CampusEngagement.class);
+        List<CampusEngagement> campusEngagementList =
+                mongoOperations.findAll(CampusEngagement.class);
 
         for (CampusEngagement campusEngagement : campusEngagementList) {
             if (Objects.nonNull(campusEngagement.getEvents())) {

@@ -38,8 +38,8 @@ public class TemplateProcessor {
             template.process(valuesMap, stringWriter);
             return stringWriter.toString();
         } catch (IOException | TemplateException ex) {
-            log.error("Error caught while processing template named : {} Exception : {}",
-                    templateName, ex);
+            log.error("Error caught while processing template named : {} Exception : ", ex,
+                    templateName);
         }
         return null;
     }

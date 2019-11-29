@@ -13,9 +13,9 @@ import com.paytm.digital.education.coaching.consumer.service.search.CoachingCour
 import com.paytm.digital.education.coaching.consumer.service.search.ExamSearchService;
 import com.paytm.digital.education.coaching.consumer.service.search.helper.SearchDataHelper;
 import com.paytm.digital.education.coaching.consumer.transformer.LandingPageStreamTransformer;
+import com.paytm.digital.education.database.dao.CoachingStreamDAO;
 import com.paytm.digital.education.database.entity.Section;
 import com.paytm.digital.education.database.entity.StreamEntity;
-import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.enums.es.DataSortOrder;
 import com.paytm.digital.education.utility.JsonUtils;
@@ -28,7 +28,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -50,6 +49,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.L
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.GLOBAL_PRIORITY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.IGNORE_ENTITY_POSITION;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.TOP_INSTITUTES_COUNT_LANDING_PAGE;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_STREAMS;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_COURSES;
 import static com.paytm.digital.education.constant.CommonConstants.COACHING_TOP_EXAMS;
@@ -66,15 +66,13 @@ public class LandingPageService {
     private SearchDataHelper             searchDataHelper;
     private ExamSearchService            examSearchService;
     private CoachingCourseSearchService  courseSearchService;
-    private CommonMongoRepository        commonMongoRepository;
     private LandingPageStreamTransformer landingPageStreamTransformer;
+    private CoachingStreamDAO            coachingStreamDAO;
 
     public void addDynamicData(List<Section> sections) {
         Map<Sort.Direction, String> sortMap = new HashMap<>();
         sortMap.put(Sort.Direction.ASC, "priority");
-        List<StreamEntity> streamEntities =
-                commonMongoRepository.findAllAndSortBy(StreamEntity.class,
-                        Collections.EMPTY_LIST, sortMap);
+        List<StreamEntity> streamEntities = coachingStreamDAO.findAllAndSortBy(sortMap);
         List<String> streamIds =
                 streamEntities.stream().map(e -> String.valueOf(e.getStreamId()))
                         .collect(Collectors.toList());
@@ -115,7 +113,8 @@ public class LandingPageService {
         sortOrder.put(IGNORE_ENTITY_POSITION, ASC);
         List<CoachingInstituteData> institutes =
                 (List<CoachingInstituteData>) (List<?>) searchDataHelper
-                        .getTopSearchData(null, EducationEntity.COACHING_INSTITUTE, sortOrder);
+                        .getTopSearchData(null, EducationEntity.COACHING_INSTITUTE, sortOrder,
+                                TOP_INSTITUTES_COUNT_LANDING_PAGE);
         List<Map<String, Object>> itemList = new ArrayList<>();
         for (CoachingInstituteData coachingInstitute : institutes) {
             itemList.add(

@@ -170,7 +170,9 @@ public enum ErrorEnum {
             "Invalid geodistance. Please provide geodistance less than %s kms in request.",
             BAD_REQUEST, 1),
     ENTITY_NOT_SUPPORTED(4073, "Requested entity not supported for this operation.", BAD_REQUEST,
-            0);
+            0),
+    INVALID_EXAM_ID_FOR_EXAM_NAME(4074, "Blank exam id provided for exam name %s .", BAD_REQUEST,
+            1);
 
     private final int        internalCode;
     private final String     externalMessage;

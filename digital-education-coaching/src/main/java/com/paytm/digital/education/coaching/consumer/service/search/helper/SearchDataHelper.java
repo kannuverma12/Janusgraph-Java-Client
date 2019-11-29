@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.TOP_ELEMENTS_ANY_PAGE_LIMIT;
-
 @Service
 @AllArgsConstructor
 @Slf4j
@@ -31,14 +29,14 @@ public class SearchDataHelper {
     private ExamSearchService              examSearchService;
 
     public List<SearchBaseData> getTopSearchData(Map<String, List<Object>> filters,
-            EducationEntity entity, LinkedHashMap<String, DataSortOrder> sortOrderMap) {
+            EducationEntity entity, LinkedHashMap<String, DataSortOrder> sortOrderMap, int limit) {
         SearchRequest searchRequest = SearchRequest
                 .builder()
                 .fetchFilter(false)
                 .entity(entity)
                 .fetchSearchResults(true)
                 .offset(0)
-                .limit(TOP_ELEMENTS_ANY_PAGE_LIMIT)
+                .limit(limit)
                 .filter(filters)
                 .sortOrder(sortOrderMap)
                 .build();

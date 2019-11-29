@@ -8,6 +8,7 @@ import java.util.Map;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.ACCESS_KEY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.CHECKSUM_HASH;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.PAYTM_APP_REQUEST_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.PAYTM_REQUEST_ID;
 
 public class HeaderTemplate {
@@ -16,7 +17,7 @@ public class HeaderTemplate {
     }
 
     public static Map<String, String> getMerchantHeader(String paytmRequestId,
-            String checksumHash, String accessKey) {
+            String checksumHash, String accessKey, String paytmAppRequestId) {
         return new HashMap<String, String>() {
             private static final long serialVersionUID = -8750656206782040960L;
 
@@ -25,6 +26,7 @@ public class HeaderTemplate {
                 put(PAYTM_REQUEST_ID, paytmRequestId);
                 put(CHECKSUM_HASH, checksumHash);
                 put(ACCESS_KEY, accessKey);
+                put(PAYTM_APP_REQUEST_ID, paytmAppRequestId);
             }
         };
     }

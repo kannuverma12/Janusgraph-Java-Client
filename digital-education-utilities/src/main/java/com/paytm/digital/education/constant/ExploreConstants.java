@@ -21,6 +21,7 @@ public interface ExploreConstants {
     String SORT_DISTANCE_FIELD         = "location";
     String SPACE_SEPERATOR             = " ";
     String DISTANCE_KILOMETERS         = "Km";
+    String PAYTM_APP_REQUEST_ID        = "x-app-rid";
 
     ///// Exam Detail//////////
     String TENTATIVE     = "tentative";
@@ -353,6 +354,12 @@ public interface ExploreConstants {
     String DOMAINS                          = "domains";
     String APP_DISPLAY_NAME                 = "app_display_name";
     String WEB_FORM_URI_PREFIX              = "webFormUriPrefix";
+    String PRIORITY                         = "priority";
+    int    DEFAULT_EXAM_PRIORITY            = 9999;
 
-    String NO_TOPIC_FOUND                   = "No Topic Found";
+    String NO_TOPIC_FOUND = "No Topic Found";
+
+    public static class CachingConstants {
+        public static final String CACHE_KEY_DELIMITER = "_";
+    }
 }

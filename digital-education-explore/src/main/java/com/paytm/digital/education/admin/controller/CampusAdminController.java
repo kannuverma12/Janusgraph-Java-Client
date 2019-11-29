@@ -35,8 +35,8 @@ public class CampusAdminController {
     private CampusAdminService campusAdminService;
 
     @PutMapping("/admin/v1/campus-ambassadors")
-    public @ResponseBody CampusAdminResponse addAmbassadors(@RequestBody
-            @Valid AmbassadorRequest campusAmbassador) {
+    public @ResponseBody CampusAdminResponse addAmbassadors(
+            @RequestBody @Valid AmbassadorRequest campusAmbassador) {
         log.info("Adding campus ambassador.");
         return campusAdminService.addAmbassadors(campusAmbassador);
     }
@@ -48,8 +48,8 @@ public class CampusAdminController {
     }
 
     @PutMapping("/admin/v1/campus-articles")
-    public @ResponseBody CampusAdminResponse addArticles(@RequestBody
-            @Valid ArticleRequest campusArticle) {
+    public @ResponseBody CampusAdminResponse addArticles(
+            @RequestBody @Valid ArticleRequest campusArticle) {
         log.info("Adding campus article.");
         return campusAdminService.addArticles(campusArticle);
     }
@@ -61,8 +61,8 @@ public class CampusAdminController {
     }
 
     @PutMapping("/admin/v1/campus-events")
-    public @ResponseBody CampusAdminResponse addEvent(@RequestBody
-            @Valid EventRequest campusEvent) {
+    public @ResponseBody CampusAdminResponse addEvent(
+            @RequestBody @Valid EventRequest campusEvent) {
         log.info("Adding campus event.");
         return campusAdminService.addEvents(campusEvent);
     }

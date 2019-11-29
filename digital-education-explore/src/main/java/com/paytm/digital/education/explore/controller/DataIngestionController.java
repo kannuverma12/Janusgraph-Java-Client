@@ -1,6 +1,7 @@
 package com.paytm.digital.education.explore.controller;
 
 import com.paytm.digital.education.explore.request.dto.EntityData;
+import com.paytm.digital.education.explore.response.dto.dataimport.DataImportResponse;
 import com.paytm.digital.education.explore.response.dto.dataimport.StaticDataIngestionResponse;
 import com.paytm.digital.education.explore.service.IngestStaticDataService;
 import com.paytm.digital.education.explore.scheduler.DataIngestionScheduler;
@@ -35,17 +36,16 @@ public class DataIngestionController {
     private DataIngestionScheduler       dataIngestionScheduler;
 
     @RequestMapping(method = RequestMethod.GET, path = "/v1/import/data")
-    public @ResponseBody boolean importData() throws java.io.FileNotFoundException {
-        importIncrementalDataService.importData(null, null, null);
-        return true;
+    public @ResponseBody List<DataImportResponse> importData() {
+        return importIncrementalDataService.importData(null, null, null);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/v1/import/manual")
-    public @ResponseBody boolean importDataManually(@RequestParam("entity") @NotBlank String entity,
+    public @ResponseBody List<DataImportResponse> importDataManually(
+            @RequestParam("entity") @NotBlank String entity,
             @RequestParam("version") @Min(1) Integer directory,
             @RequestParam("update_version") @NotNull Boolean updateVersion) {
-        importIncrementalDataService.importData(entity, directory, updateVersion);
-        return true;
+        return importIncrementalDataService.importData(entity, directory, updateVersion);
     }
 
     @RequestMapping(method = RequestMethod.POST, path = "/v1/import/catalog")
@@ -63,9 +63,9 @@ public class DataIngestionController {
     }
 
     @RequestMapping(method = RequestMethod.POST, path = "/v1/import/data/scheduler")
-    public void importDataScheduler() {
+    public @ResponseBody List<DataImportResponse> importDataScheduler() {
         log.info("Received request to ingest data from scheduler.");
-        dataIngestionScheduler.importDataScheduler();
+        return dataIngestionScheduler.importDataScheduler();
     }
 
 }

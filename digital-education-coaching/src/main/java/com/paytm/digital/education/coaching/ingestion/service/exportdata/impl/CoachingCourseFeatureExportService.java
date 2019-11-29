@@ -1,6 +1,6 @@
 package com.paytm.digital.education.coaching.ingestion.service.exportdata.impl;
 
-import com.paytm.digital.education.coaching.db.dao.CoachingCourseFeatureDAO;
+import com.paytm.digital.education.database.dao.CoachingCourseFeatureDAO;
 import com.paytm.digital.education.coaching.ingestion.model.ExportResponse;
 import com.paytm.digital.education.coaching.ingestion.model.googleform.CoachingCourseFeatureForm;
 import com.paytm.digital.education.coaching.ingestion.model.properties.DataExportPropertiesRequest;
