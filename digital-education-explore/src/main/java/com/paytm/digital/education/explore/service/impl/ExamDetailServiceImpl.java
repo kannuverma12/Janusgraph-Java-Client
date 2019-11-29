@@ -102,6 +102,10 @@ public class ExamDetailServiceImpl {
             }
         }
 
+        if (APP.equals(client)) {
+            importantDates = false;
+        }
+
         Exam exam =
                 commonMongoRepository.getEntityByFields(EXAM_ID, entityId, Exam.class,
                         examFields);
