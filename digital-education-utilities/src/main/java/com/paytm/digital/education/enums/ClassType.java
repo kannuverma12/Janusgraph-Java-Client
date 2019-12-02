@@ -8,10 +8,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public enum ClassType {
-    PRE_NURSERY("Pre Nursery"),
+    PRE_NURSERY("Pre-nursery"),
     NURSERY("Nursery"),
-    LKG("Lower Kinder Garten (LKG)"),
-    UKG("Upper Kinder Garten (UKG)"),
+    LKG("Lower Kindergarten (LKG)"),
+    UKG("Upper Kindergarten (UKG)"),
     ONE("1st"),
     TWO("2nd"),
     THREE("3rd"),
