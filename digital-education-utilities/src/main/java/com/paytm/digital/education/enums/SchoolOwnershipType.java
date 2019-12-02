@@ -9,7 +9,6 @@ public enum SchoolOwnershipType {
     UNAIDED("Unaided/Independent"),
     GOVERNMENT("Government"),
     AIDED("Aided"),
-    PRIVATE("Private"),
     NOT_PROVIDED("");
 
     private final String readableValue;
