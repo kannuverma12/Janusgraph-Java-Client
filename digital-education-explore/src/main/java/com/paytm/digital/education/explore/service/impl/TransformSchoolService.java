@@ -76,10 +76,9 @@ public class TransformSchoolService {
             log.info("Saving schools to db.");
             for (School school : schoolEntities) {
 
-                if (Objects.nonNull(school)) {
-                    uploadImagestoS3(school.getGallery(), school.getSchoolId());
-                    commonMongoRepository.saveOrUpdate(school);
-                }
+                uploadImagestoS3(school.getGallery(), school.getSchoolId());
+
+                commonMongoRepository.saveOrUpdate(school);
             }
             log.info("Saved schools to db.");
             log.info("Updating version number for schools");
