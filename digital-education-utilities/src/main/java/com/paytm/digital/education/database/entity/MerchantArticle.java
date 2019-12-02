@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
-@Document("merchant_notification")
-public class MerchantNotification extends Base {
+@Document("merchant_articles")
+public class MerchantArticle extends Base {
 
     @Id
     @Field("_id")

@@ -1,4 +1,4 @@
-package com.paytm.digital.education.explore.request.dto.notification;
+package com.paytm.digital.education.explore.request.dto.articles;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -9,7 +9,12 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.*;
+
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 
@@ -18,6 +23,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import java.time.LocalDateTime;
+
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -29,7 +35,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @ApiModel
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class MerchantNotificationRequest {
+public class MerchantArticleRequest {
 
     @NotBlank
     @JsonProperty("merchant")

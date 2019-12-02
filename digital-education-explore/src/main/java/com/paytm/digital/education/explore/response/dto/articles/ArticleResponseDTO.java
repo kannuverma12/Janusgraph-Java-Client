@@ -1,4 +1,4 @@
-package com.paytm.digital.education.explore.response.dto.notification;
+package com.paytm.digital.education.explore.response.dto.articles;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
-public class NotificationResponseDTO {
+public class ArticleResponseDTO {
 
     @JsonProperty("article_title")
     private String articleTitle;
