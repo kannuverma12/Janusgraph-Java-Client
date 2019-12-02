@@ -1,19 +1,20 @@
 package com.paytm.digital.education.explore.service.helper;
 
-import static com.paytm.digital.education.constant.ExploreConstants.APPLICATION;
 import static com.paytm.digital.education.constant.ExploreConstants.DD_MMM_YYYY;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FULL_NAME;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SHORT_NAME;
 import static com.paytm.digital.education.constant.ExploreConstants.INSTANCES;
 import static com.paytm.digital.education.constant.ExploreConstants.LOGO;
+import static com.paytm.digital.education.constant.ExploreConstants.MMM_YYYY;
 import static com.paytm.digital.education.constant.ExploreConstants.NON_TENTATIVE;
-import static com.paytm.digital.education.constant.ExploreConstants.RESULT;
+import static com.paytm.digital.education.constant.ExploreConstants.OTHER;
 import static com.paytm.digital.education.constant.ExploreConstants.SUB_EXAMS;
+import static com.paytm.digital.education.constant.ExploreConstants.YYYY_MM;
 import static com.paytm.digital.education.enums.EducationEntity.EXAM;
 import static com.paytm.digital.education.utility.DateUtil.dateToString;
+import static com.paytm.digital.education.utility.DateUtil.formatDateString;
 
-import com.paytm.digital.education.constant.ExploreConstants;
 import com.paytm.digital.education.database.dao.StreamDAO;
 import com.paytm.digital.education.database.entity.Base;
 import com.paytm.digital.education.database.entity.Event;
@@ -25,14 +26,16 @@ import com.paytm.digital.education.explore.response.dto.common.Widget;
 import com.paytm.digital.education.explore.response.dto.common.WidgetData;
 import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
 import com.paytm.digital.education.utility.CommonUtil;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +48,8 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class SimilarExamsHelper {
+
+    private static final Logger log = LoggerFactory.getLogger(SimilarExamsHelper.class);
 
     private static List<String> examProjectionFields =
             Arrays.asList(EXAM_ID, EXAM_FULL_NAME, EXAM_SHORT_NAME, LOGO, INSTANCES, SUB_EXAMS);
@@ -72,7 +77,9 @@ public class SimilarExamsHelper {
                     Exam exam = examEntityMap.get(widgetData.getEntityId());
                     widgetData.setFullName(exam.getExamFullName());
                     widgetData.setOfficialName(exam.getExamShortName());
-                    widgetData.setLogoUrl(CommonUtil.getLogoLink(exam.getLogo(), EXAM));
+                    if (StringUtils.isNotBlank(exam.getLogo())) {
+                        widgetData.setLogoUrl(CommonUtil.getLogoLink(exam.getLogo(), EXAM));
+                    }
                     widgetData.setImportantDates(getImportantDates(exam));
                 }
             }
@@ -119,24 +126,29 @@ public class SimilarExamsHelper {
     }
 
     private Map<String, String> getImportantDates(Exam exam) {
-        Optional<Instance> nearestInstanceOptional =
-                examInstanceHelper.getNearestInstance(exam.getInstances());
-        if (nearestInstanceOptional.isPresent()) {
-            Instance instance = nearestInstanceOptional.get();
-            if (!CollectionUtils.isEmpty(instance.getEvents())) {
-                Map<String, String> eventsMap = new HashMap<>();
-                for (Event event : instance.getEvents()) {
-                    if (APPLICATION.equalsIgnoreCase(event.getType())) {
-                        eventsMap.put("Application", getEventDate(event));
-                    } else if (ExploreConstants.EXAM.equalsIgnoreCase(event.getCertainty())) {
-                        eventsMap.put("Exam", getEventDate(event));
-                    } else if (RESULT.equalsIgnoreCase(event.getCertainty())) {
-                        eventsMap.put("Result", getEventDate(event));
+        try {
+            Optional<Instance> nearestInstanceOptional =
+                    examInstanceHelper.getNearestInstance(exam.getInstances());
+            if (nearestInstanceOptional.isPresent()) {
+                Instance instance = nearestInstanceOptional.get();
+                if (!CollectionUtils.isEmpty(instance.getEvents())) {
+                    Map<String, String> eventsMap = new HashMap<>();
+                    for (Event event : instance.getEvents()) {
+                        String eventName = event.getType().equalsIgnoreCase(OTHER) && StringUtils
+                                .isNotBlank(event.getOtherEventLabel()) ?
+                                event.getOtherEventLabel() :
+                                CommonUtil.toCamelCase(event.getType());
+                        eventsMap.put(eventName, getEventDate(event));
                     }
+                    return  eventsMap;
                 }
             }
+        } catch (Exception ex) {
+            log.error(
+                    "Error caught while calculating important dates of similar exams. ExamId : {} ",
+                    ex, exam.getExamId());
         }
-        return Collections.emptyMap();
+        return null;
     }
 
     private String getEventDate(Event event) {
@@ -145,6 +157,6 @@ public class SimilarExamsHelper {
                     Objects.nonNull(event.getDate()) ? event.getDate() : event.getDateRangeStart(),
                     DD_MMM_YYYY);
         }
-        return event.getMonthDate() + "(Tentative)";
+        return formatDateString(event.getMonthDate(), YYYY_MM, MMM_YYYY) + "(Tentative)";
     }
 }
