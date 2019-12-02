@@ -13,9 +13,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.sun.org.apache.xml.internal.utils.LocaleUtility.EMPTY_STRING;
 
@@ -144,7 +147,7 @@ public class BoardData {
 
     @Field("enrollments")
     @JsonProperty("enrollments")
-    private Integer enrollments;
+    private List<Enrollment> enrollments;
 
     @Field("school_area_name")
     @JsonProperty("school_area_name")
@@ -155,9 +158,21 @@ public class BoardData {
     private List<String> programType;
 
     public String getStudentRatio() {
-        if (CommonUtils.isNullOrZero(enrollments) || CommonUtils.isNullOrZero(noOfTeachers)) {
+        if (CollectionUtils.isEmpty(enrollments) || CommonUtils.isNullOrZero(noOfTeachers)) {
             return EMPTY_STRING;
         }
-        return String.format("%d : 1", enrollments / noOfTeachers);
+
+        AtomicReference<Integer> enrollmentCount = new AtomicReference<>(0);
+        enrollments.forEach(enrollment -> {
+            if (Objects.nonNull(enrollment.getEnrollment())) {
+                enrollmentCount.updateAndGet(v -> v + enrollment.getEnrollment());
+            }
+        });
+
+        if (CommonUtils.isNullOrZero(enrollmentCount.get())) {
+            return EMPTY_STRING;
+        }
+
+        return String.format("%d : 1", enrollmentCount.get() / noOfTeachers);
     }
 }
