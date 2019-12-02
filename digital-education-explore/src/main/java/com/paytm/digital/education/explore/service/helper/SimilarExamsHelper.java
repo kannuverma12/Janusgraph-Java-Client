@@ -26,6 +26,7 @@ import com.paytm.digital.education.explore.response.dto.common.Widget;
 import com.paytm.digital.education.explore.response.dto.common.WidgetData;
 import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
 import com.paytm.digital.education.utility.CommonUtil;
+import com.paytm.digital.education.utility.CommonUtils;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
@@ -36,8 +37,10 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -131,16 +134,23 @@ public class SimilarExamsHelper {
                     examInstanceHelper.getNearestInstance(exam.getInstances());
             if (nearestInstanceOptional.isPresent()) {
                 Instance instance = nearestInstanceOptional.get();
+                Date presentDate = new Date();
                 if (!CollectionUtils.isEmpty(instance.getEvents())) {
-                    Map<String, String> eventsMap = new HashMap<>();
+                    Collections.sort(instance.getEvents(), Comparator.comparing(
+                            Event::calculateCorrespondingDate));
+                    Map<String, String> eventsMap = new LinkedHashMap<>();
                     for (Event event : instance.getEvents()) {
-                        String eventName = event.getType().equalsIgnoreCase(OTHER) && StringUtils
-                                .isNotBlank(event.getOtherEventLabel()) ?
-                                event.getOtherEventLabel() :
-                                CommonUtil.toCamelCase(event.getType());
-                        eventsMap.put(eventName, getEventDate(event));
+                        if (CommonUtils.isDateEqualsOrAfter(event.calculateCorrespondingDate(),
+                                presentDate)) {
+                            String eventName =
+                                    event.getType().equalsIgnoreCase(OTHER) && StringUtils
+                                            .isNotBlank(event.getOtherEventLabel()) ?
+                                            event.getOtherEventLabel() :
+                                            CommonUtil.toCamelCase(event.getType());
+                            eventsMap.put(eventName, getEventDate(event));
+                        }
                     }
-                    return  eventsMap;
+                    return eventsMap;
                 }
             }
         } catch (Exception ex) {
