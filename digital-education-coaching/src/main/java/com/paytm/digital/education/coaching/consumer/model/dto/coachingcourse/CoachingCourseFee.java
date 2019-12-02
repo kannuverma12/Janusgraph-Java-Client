@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @Builder
 @NoArgsConstructor
@@ -18,7 +20,14 @@ public class CoachingCourseFee {
 
     private String header;
     private String currency;
-    private Double originalPrice;
-    private Double discountedPrice;
+    private Float  originalPrice;
+    private Float  discountedPrice;
     private String discountPercentage;
+
+    private List<TaxBreakupInfo> taxInfo;
+    private Float                totalTax;
+
+    private Float                convFee;
+    private List<TaxBreakupInfo> convFeeTaxInfo;
+    private Float                totalConvFeeTax;
 }

@@ -7,6 +7,7 @@ import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.utility.CommonUtil;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -17,6 +18,7 @@ public class ExamLogoHelper {
 
     private ExamLogoRepository examLogoRepository;
 
+    @Cacheable(value = "examLogoUrl")
     public String getExamLogoUrl(Long examId, String dbLogoUrl) {
 
         ExamLogo examLogo = examLogoRepository.findByExamId(examId);

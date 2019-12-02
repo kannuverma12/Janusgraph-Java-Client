@@ -57,7 +57,7 @@ public class CommonAutoSuggestServiceImpl implements CommonAutoSuggestionService
         try {
             return elasticSearchService.executeSearch(elasticRequest, AutoSuggestEsData.class);
         } catch (TimeoutException | IOException ex) {
-            log.error("Error caught while calling autosuggestion service with exception : {}", ex);
+            log.error("Error caught while calling autosuggestion service with exception : ", ex);
             throw new RuntimeException(ex.getMessage());
         }
     }

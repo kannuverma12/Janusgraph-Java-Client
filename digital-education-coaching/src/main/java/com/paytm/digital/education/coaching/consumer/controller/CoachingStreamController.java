@@ -5,6 +5,7 @@ import com.paytm.digital.education.coaching.consumer.model.response.details.GetS
 import com.paytm.digital.education.coaching.consumer.service.details.CoachingStreamService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +21,7 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.U
 @Slf4j
 @RestController
 @RequestMapping(value = COACHING_BASE + V1)
+@Validated
 public class CoachingStreamController {
 
     @Autowired

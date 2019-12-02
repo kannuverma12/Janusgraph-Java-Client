@@ -1,4 +1,4 @@
-package com.paytm.digital.education.coaching.db.dao;
+package com.paytm.digital.education.database.dao;
 
 import com.paytm.digital.education.database.entity.CoachingCourseFeatureEntity;
 import com.paytm.digital.education.database.repository.CoachingCourseFeatureRepository;
@@ -41,7 +41,7 @@ public class CoachingCourseFeatureDAO {
     }
 
     public List<CoachingCourseFeatureEntity> findAll() {
-        return this.coachingCourseFeatureRepository.findAll();
+        return coachingCourseFeatureRepository.findAll();
     }
 
 }

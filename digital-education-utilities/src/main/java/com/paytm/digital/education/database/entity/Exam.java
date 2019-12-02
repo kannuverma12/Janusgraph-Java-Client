@@ -1,5 +1,6 @@
 package com.paytm.digital.education.database.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.enums.PublishStatus;
 import lombok.Data;
@@ -15,6 +16,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Document(collection = "exam")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Exam extends Base {
 
     @Id

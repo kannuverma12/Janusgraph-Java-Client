@@ -52,6 +52,7 @@ public class AutoSuggestServiceImpl {
     private SearchServiceImpl           searchServiceImpl;
     private ExamLogoHelper              examLogoHelper;
 
+    @Cacheable(value = "autosuggest", key = "'autosuggest_'+#entities+'.'+#limit")
     public AutoSuggestResponse getAll(List<EducationEntity> entities, int limit) {
         AutoSuggestResponse autoSuggestResponse =
                 getSuggestResults(null, entities, limit);
@@ -142,7 +143,7 @@ public class AutoSuggestServiceImpl {
         return autoSuggestResponse;
     }
 
-    @Cacheable(value = "autosuggest")
+    @Cacheable(value = "autosuggest", key = "'autosuggest_'+#entities+'.'+#searchTerm+'.'+#size")
     public AutoSuggestResponse getSuggestResults(String searchTerm,
             List<EducationEntity> entities, int size) {
         ElasticResponse<AutoSuggestEsData> esResponse =

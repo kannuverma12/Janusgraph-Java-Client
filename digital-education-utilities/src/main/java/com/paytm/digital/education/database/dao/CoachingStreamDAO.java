@@ -1,28 +1,30 @@
-package com.paytm.digital.education.ingestion.dao;
+package com.paytm.digital.education.database.dao;
 
 import com.paytm.digital.education.database.entity.StreamEntity;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.database.repository.SequenceGenerator;
-import com.paytm.digital.education.database.repository.StreamEntityRepository;
+import com.paytm.digital.education.database.repository.StreamRepository;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
-public class StreamDAO {
+public class CoachingStreamDAO {
 
     @Autowired
-    private StreamEntityRepository streamRepository;
+    private StreamRepository streamRepository;
 
     @Autowired
     private SequenceGenerator sequenceGenerator;
+
+    @Autowired
+    private CommonMongoRepository commonMongoRepository;
 
     public StreamEntity save(@NonNull StreamEntity streamEntity) {
         if (Objects.isNull(streamEntity.getStreamId())) {
@@ -40,7 +42,6 @@ public class StreamDAO {
         return streamRepository.findAllByStreamId(ids);
     }
 
-    @Cacheable(value = "stream_all")
     public List<StreamEntity> findAll() {
         return this.streamRepository.findAll();
     }
@@ -49,10 +50,20 @@ public class StreamDAO {
         return streamRepository.findByStreamName(name);
     }
 
-    @Cacheable(value = "streams_id_map")
-    public Map<Long, StreamEntity> getStreamEntityMapById() {
-        List<StreamEntity> entities = this.streamRepository.findAll();
-        return Optional.ofNullable(entities).map(streamEntities -> streamEntities.stream().collect(
-                Collectors.toMap(s -> s.getStreamId(), s -> s))).orElse(new HashMap<>());
+    public StreamEntity findByStreamId(String streamIdField, long streamId,
+            List<String> projectionFields) {
+        return commonMongoRepository.getEntityByFields(
+                streamIdField, streamId, StreamEntity.class, projectionFields);
+    }
+
+    public List<StreamEntity> findByStreamIdsIn(String streamIdField, List<Long> streamIds,
+            List<String> projectionFields) {
+        return commonMongoRepository.getEntityFieldsByValuesIn(streamIdField, streamIds,
+                StreamEntity.class, projectionFields);
+    }
+
+    public List<StreamEntity> findAllAndSortBy(Map<Sort.Direction, String> sortMap) {
+        return commonMongoRepository.findAllAndSortBy(StreamEntity.class,
+                Collections.EMPTY_LIST, sortMap);
     }
 }

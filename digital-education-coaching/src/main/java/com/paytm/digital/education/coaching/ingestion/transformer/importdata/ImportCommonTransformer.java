@@ -67,4 +67,19 @@ public class ImportCommonTransformer {
 
         return list;
     }
+
+    static List<String> convertStringToListOfString(final String input) {
+        if (StringUtils.isEmpty(input)) {
+            return new ArrayList<>();
+        }
+
+        final String[] commaSeparatedValues = input.split(DELIMITER_COMMA);
+        final List<String> list = new ArrayList<>();
+
+        for (final String value : commaSeparatedValues) {
+            list.add(value.trim());
+        }
+
+        return list;
+    }
 }

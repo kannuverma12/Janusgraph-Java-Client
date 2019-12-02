@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,12 +26,13 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.U
 @Slf4j
 @RestController
 @RequestMapping(value = COACHING_BASE + V1)
+@Validated
 public class PurchaseController {
 
     @Autowired private PurchaseService purchaseService;
 
     @PostMapping(value = VERIFY)
-    public ResponseEntity<VerifyResponse> verify(@RequestBody VerifyRequest request) {
+    public ResponseEntity<VerifyResponse> verify(@Valid @RequestBody VerifyRequest request) {
         try {
             return ResponseEntity.ok(purchaseService.verify(request));
         } catch (PurchaseException e) {

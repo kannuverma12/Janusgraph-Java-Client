@@ -70,17 +70,27 @@ public class MetricsAgent {
      * Used to record execution time of function, mostly used via Aspect
      *
      */
-    public void recordExecutionTimeOfFn(String fnName, long timeTaken, String fnType) {
-        metricClient.recordExecutionTime("fn_execution_time", timeTaken, "fn_name:" + fnName, "fn_type:" + fnType,
-                "environment:" + digiEduEnv);
+    public void recordExecutionTimeOfFn(String fnName, long timeTaken, String callerMethod) {
+        metricClient.recordExecutionTime("fn_execution_time", timeTaken,
+                "fn_name:" + fnName, "caller_method:" + callerMethod, "environment:" + digiEduEnv);
     }
 
     /**
-     * Used to increase counter of function, mostly used via Aspect
+     * Used to increase counter of function invocations, mostly used via Aspect
      *
      */
-    public void incrementFnCount(String fnName, String fnType, String metricName) {
-        metricClient.increment(metricName, "fn_name:" + fnName, "fn_type:" + fnType,
-                "environment:" + digiEduEnv);
+    public void incrementFnCount(String fnName, String callerMethod) {
+        metricClient.increment("fn_invoke_counter",
+                "fn_name:" + fnName, "caller_method:" + callerMethod, "environment:" + digiEduEnv);
+    }
+
+    /**
+     * Used to increase counter of function error events, mostly used via Aspect
+     *
+     */
+    public void incrementfnErrorCount(String fnName, String exceptionName, String callerMethod) {
+        metricClient.increment("fn_error_counter",
+                "fn_name:" + fnName, "caller_method:" + callerMethod,
+                "error_name:" + exceptionName, "environment:" + digiEduEnv);
     }
 }

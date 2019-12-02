@@ -12,4 +12,5 @@ public class GoogleSheetExportConstants {
     public static final String COMPETITIVE_EXAM_SHEET_ID        = "competitive_exam_sheet_id";
     public static final String STREAM_SHEET_ID                  = "stream_sheet_id";
     public static final String TOP_RANKER_SHEET_ID              = "top_ranker_sheet_id";
+    public static final String COACHING_CTA_SHEET_ID            = "coaching_cta_sheet_id";
 }

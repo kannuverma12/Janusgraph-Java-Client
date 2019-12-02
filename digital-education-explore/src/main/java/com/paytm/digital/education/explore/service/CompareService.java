@@ -1,7 +1,6 @@
 package com.paytm.digital.education.explore.service;
 
 import com.paytm.digital.education.explore.response.dto.detail.CompareDetail;
-import javafx.util.Pair;
 
 import java.io.IOException;
 import java.util.List;

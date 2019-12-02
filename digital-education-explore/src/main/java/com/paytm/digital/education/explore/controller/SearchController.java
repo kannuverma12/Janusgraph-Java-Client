@@ -37,7 +37,7 @@ public class SearchController {
             @RequestHeader(value = "x-user-id", required = false) Long userId,
             @RequestHeader(value = "fe_client", defaultValue = "WEB",
                     required = false) Client client) throws Exception {
-        log.info("Search Request : {}", JsonUtils.toJson(searchRequest));
+        log.debug("Search Request : {}", JsonUtils.toJson(searchRequest));
         exploreValidator.validateAndThrowException(searchRequest);
         if (searchRequest.getEntity().equals(EducationEntity.COURSE)) {
             CourseSearchValidator.validateRequest(searchRequest);
@@ -50,7 +50,7 @@ public class SearchController {
     @PostMapping("/auth/v1/institute/search")
     public @ResponseBody AutoSuggestResponse instituteSearch(@RequestBody SearchRequest searchRequest,
             @RequestHeader(value = "x-user-id", required = false) Long userId) throws Exception {
-        log.info("Search Request : {}", JsonUtils.toJson(searchRequest));
+        log.debug("Institute Search Request : {}", JsonUtils.toJson(searchRequest));
         exploreValidator.validateAndThrowException(searchRequest);
         if (searchRequest.getEntity().equals(EducationEntity.COURSE)) {
             CourseSearchValidator.validateRequest(searchRequest);

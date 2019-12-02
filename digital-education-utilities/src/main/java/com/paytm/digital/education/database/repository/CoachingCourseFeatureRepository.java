@@ -2,6 +2,7 @@ package com.paytm.digital.education.database.repository;
 
 import com.paytm.digital.education.database.entity.CoachingCourseFeatureEntity;
 import org.bson.types.ObjectId;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -22,6 +23,7 @@ public interface CoachingCourseFeatureRepository
 
     List<CoachingCourseFeatureEntity> findByInstituteId(Long id);
 
+    @Cacheable(value = "findByCoachingCourseFeatureIdIn")
     List<CoachingCourseFeatureEntity> findByCoachingCourseFeatureIdIn(List<Long> featureIds);
 
     @Override List<CoachingCourseFeatureEntity> findAll();

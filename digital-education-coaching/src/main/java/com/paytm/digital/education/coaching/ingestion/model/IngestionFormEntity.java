@@ -1,6 +1,6 @@
 package com.paytm.digital.education.coaching.ingestion.model;
 
-import com.paytm.digital.education.coaching.exeption.InvalidRequestException;
+import com.paytm.digital.education.exception.InvalidRequestException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -16,7 +16,9 @@ public enum IngestionFormEntity {
     COACHING_INSTITUTE_FORM("institute"),
     COMPETITIVE_EXAM_FORM("competitive-exam"),
     STREAM_FORM("stream"),
-    TOP_RANKER_FORM("top-ranker");
+    TOP_RANKER_FORM("top-ranker"),
+    COACHING_COURSE_CTA_FORM("coaching-cta"),
+    COACHING_CTA_MAPPING_FORM("cta-mapping");
 
     private String value;
 

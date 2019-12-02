@@ -39,7 +39,7 @@ public class ExamListServiceImpl implements ExamListService {
     private CommonMongoRepository commonMongoRepository;
 
 
-    @Cacheable(value = "exam_list")
+    @Cacheable(value = "exam_list", key = "'exam_list_'+#instituteId")
     public List<ExamInfo> getExamList(long instituteId) {
         Map<String, Object> courseQueryFields = new HashMap<>();
         courseQueryFields.put(INSTITUTE_ID, instituteId);

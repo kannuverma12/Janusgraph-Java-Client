@@ -1,14 +1,13 @@
 package com.paytm.digital.education.utility;
 
-import static com.paytm.digital.education.ingestion.constant.IngestionConstants.NO;
-import static com.paytm.digital.education.ingestion.constant.IngestionConstants.YES;
-
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDate;
 import org.slf4j.helpers.MessageFormatter;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,11 +15,14 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import static com.paytm.digital.education.ingestion.constant.IngestionConstants.NO;
+import static com.paytm.digital.education.ingestion.constant.IngestionConstants.YES;
+
 @UtilityClass
 public class CommonUtils {
 
-    private final String javaLangPackagesStartPath = "java.lang";
-    private static final String ASSET_CDN_PREFIX              =
+    private final        String javaLangPackagesStartPath = "java.lang";
+    private static final String ASSET_CDN_PREFIX          =
             "https://assetscdn1.paytm.com/educationwebassets/education/explore/school/images";
 
     public String messageFormat(String msg, Object... objs) {
@@ -86,5 +88,21 @@ public class CommonUtils {
 
     public static String booleanToString(final Boolean input) {
         return (Objects.nonNull(input) && input) ? YES : NO;
+    }
+
+    public static String toString(Throwable e) {
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw));
+        return sw.toString();
+    }
+
+    public static Long randomLong() {
+        long min = 100000000000L;
+        long max = 999999999999L;
+        return randomLong(min, max);
+    }
+
+    public static Long randomLong(Long min, Long max) {
+        return min + (long) (Math.random() * (max - min));
     }
 }

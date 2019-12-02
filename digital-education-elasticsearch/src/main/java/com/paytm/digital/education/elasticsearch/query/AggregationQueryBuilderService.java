@@ -11,9 +11,10 @@ import com.paytm.digital.education.elasticsearch.utils.DataSortUtil;
 import com.paytm.digital.education.enums.es.AggregationType;
 import com.paytm.digital.education.enums.es.BucketAggregationSortParms;
 import com.paytm.digital.education.enums.es.FilterQueryType;
-import javafx.util.Pair;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.common.geo.GeoPoint;
@@ -94,7 +95,7 @@ public class AggregationQueryBuilderService {
                         filterQueries.put(path, new HashMap<>());
                     }
                     filterQueries.get(path)
-                            .put(new Pair<>(fieldName, field.getOperator()), filterQueryList);
+                            .put(new MutablePair<>(fieldName, field.getOperator()), filterQueryList);
                 }
             }
 
