@@ -1,67 +1,94 @@
 package com.paytm.digital.education.admin.service.impl;
 
-import com.paytm.digital.education.admin.controller.PaytmEntityDataAdminController;
+import com.paytm.digital.education.admin.controller.PaytmSourceDataAdminController;
 import com.paytm.digital.education.admin.request.PaytmSourceDataRequest;
+import com.paytm.digital.education.admin.response.GetPaytmSourceDataResponse;
 import com.paytm.digital.education.admin.response.PaytmSourceDataResponse;
-import com.paytm.digital.education.constant.ExploreConstants;
+
 import com.paytm.digital.education.database.entity.PaytmSourceData;
 import com.paytm.digital.education.database.repository.PaytmSourceDataRepository;
+import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.enums.EntitySourceType;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static com.paytm.digital.education.constant.ExploreConstants.SUCCESS;
+import static com.paytm.digital.education.constant.ExploreConstants.FAILED;
+import static com.paytm.digital.education.constant.ExploreConstants.PARTIAL_FAILED;
 
 @Service
 @AllArgsConstructor
 public class PaytmSourceDataServiceImpl {
 
-    private static final Logger log = LoggerFactory.getLogger(PaytmEntityDataAdminController.class);
+    private static final Logger log = LoggerFactory.getLogger(PaytmSourceDataAdminController.class);
 
     private PaytmSourceDataRepository paytmSourceDataRepository;
 
-    public PaytmSourceDataResponse createPaytmSourceData(
+    public PaytmSourceDataResponse savePaytmSourceData(
             PaytmSourceDataRequest paytmSourceDataRequest) {
 
-        PaytmSourceDataResponse paytmSourceDataResponse = new PaytmSourceDataResponse();
-        List<PaytmSourceData> paytmSourceRequestDataList =
-                paytmSourceDataRequest.getPaytmSourceData();
-
-        if (CollectionUtils.isEmpty(paytmSourceRequestDataList)) {
+        if (CollectionUtils.isEmpty(paytmSourceDataRequest.getPaytmSourceData())) {
             log.error("No paytm source data found in create request, skipping");
             return null;
         }
 
-        for (PaytmSourceData paytmSourceData : paytmSourceRequestDataList) {
+        PaytmSourceDataResponse paytmSourceDataResponse = new PaytmSourceDataResponse();
+        List<PaytmSourceData> paytmSourceDataUpdatedList = new ArrayList<>();
+
+        for (PaytmSourceData paytmSourceData : paytmSourceDataRequest.getPaytmSourceData()) {
             PaytmSourceData paytmSourceDataInDb = paytmSourceDataRepository
                     .findByEntityIdAndEducationEntityAndSource(paytmSourceData.getEntityId(),
                             paytmSourceDataRequest.getEducationEntity().toString(),
                             EntitySourceType.PAYTM.getName());
             if (Objects.nonNull(paytmSourceDataInDb)) {
-                paytmSourceRequestDataList.remove(paytmSourceData);
-                continue;
+                BeanUtils.copyProperties(paytmSourceData, paytmSourceDataInDb);
+                paytmSourceData = paytmSourceDataInDb;
             }
+
             paytmSourceData.setEducationEntity(paytmSourceDataRequest.getEducationEntity());
             paytmSourceData.setSource(EntitySourceType.PAYTM);
-        }
-
-        List<PaytmSourceData> paytmSourceDataUpdatedList =
-                paytmSourceDataRepository.saveAll(paytmSourceRequestDataList);
-
-        if (!CollectionUtils.isEmpty(paytmSourceDataUpdatedList)
-                && paytmSourceDataUpdatedList.size() == paytmSourceRequestDataList.size()) {
-            paytmSourceDataResponse.setStatus(ExploreConstants.SUCCESS);
-        } else {
-            paytmSourceDataResponse.setStatus(ExploreConstants.FAILED);
+            PaytmSourceData paytmSourceDataUpdated =
+                    paytmSourceDataRepository.save(paytmSourceData);
+            paytmSourceDataUpdatedList.add(paytmSourceDataUpdated);
         }
 
         paytmSourceDataResponse.setEducationEntity(paytmSourceDataRequest.getEducationEntity());
         paytmSourceDataResponse.setPaytmSourceData(paytmSourceDataUpdatedList);
+        paytmSourceDataResponse.setStatus(FAILED);
 
+        if (!CollectionUtils.isEmpty(paytmSourceDataUpdatedList)
+                && paytmSourceDataUpdatedList.size() == paytmSourceDataRequest.getPaytmSourceData()
+                .size()) {
+            paytmSourceDataResponse.setStatus(SUCCESS);
+        } else if (!CollectionUtils.isEmpty(paytmSourceDataUpdatedList)
+                && paytmSourceDataUpdatedList.size() > 0) {
+            paytmSourceDataResponse.setStatus(PARTIAL_FAILED);
+        }
+        return paytmSourceDataResponse;
+    }
+
+    public GetPaytmSourceDataResponse getPaytmSourceData(EducationEntity entity, Long entityId) {
+        GetPaytmSourceDataResponse paytmSourceDataResponse = new GetPaytmSourceDataResponse();
+        paytmSourceDataResponse.setEntity(entity);
+        paytmSourceDataResponse.setStatus(FAILED);
+        paytmSourceDataResponse.setEntityId(entityId);
+
+        PaytmSourceData paytmSourceData = paytmSourceDataRepository
+                .findByEntityIdAndEducationEntityAndSource(entityId, entity.toString(),
+                        EntitySourceType.PAYTM.getName());
+
+        if (Objects.nonNull(paytmSourceData)) {
+            paytmSourceDataResponse.setStatus(SUCCESS);
+            paytmSourceDataResponse.setPaytmSourceData(paytmSourceData);
+        }
         return paytmSourceDataResponse;
     }
 }
