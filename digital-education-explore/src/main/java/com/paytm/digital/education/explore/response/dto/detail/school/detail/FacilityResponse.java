@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @NoArgsConstructor
-public class FacilityResponse {
+public class FacilityResponse implements Serializable {
     @JsonProperty("display_name")
     private String displayName;
 
