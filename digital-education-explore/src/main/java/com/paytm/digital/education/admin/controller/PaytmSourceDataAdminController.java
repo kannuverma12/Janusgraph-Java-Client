@@ -9,8 +9,10 @@ import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +33,7 @@ public class PaytmSourceDataAdminController {
 
     private PaytmSourceDataServiceImpl paytmSourceDataService;
 
-    @PutMapping("/admin/v1/paytmSourceData")
+    @PostMapping("/admin/v1/paytmSourceData")
     public @ResponseBody PaytmSourceDataResponse createPaytmSourceData(
             @RequestBody @Valid PaytmSourceDataRequest paytmSourceDataRequest) {
         return paytmSourceDataService.savePaytmSourceData(paytmSourceDataRequest);
@@ -42,6 +44,12 @@ public class PaytmSourceDataAdminController {
             @NotNull @PathVariable("entity") EducationEntity entity,
             @PathVariable("entity_id") Long entityId) {
         return paytmSourceDataService.getPaytmSourceData(entity, entityId);
+    }
+
+    @DeleteMapping("/admin/v1/paytmSourceData")
+    public @ResponseBody PaytmSourceDataResponse deletePaytmSourceData(
+            @RequestBody @Valid PaytmSourceDataRequest paytmSourceDataRequest) {
+        return paytmSourceDataService.deletePaytmSourceData(paytmSourceDataRequest);
     }
 
 }

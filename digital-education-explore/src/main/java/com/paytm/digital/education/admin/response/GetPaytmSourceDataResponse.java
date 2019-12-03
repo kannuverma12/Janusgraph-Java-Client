@@ -15,11 +15,6 @@ import java.util.List;
 public class GetPaytmSourceDataResponse {
     private String status;
 
-    private EducationEntity entity;
-
-    @JsonProperty("entity_id")
-    private Long entityId;
-
     @JsonProperty("data")
     PaytmSourceData paytmSourceData;
 }
