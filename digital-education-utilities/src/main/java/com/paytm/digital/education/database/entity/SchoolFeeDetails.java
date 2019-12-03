@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 @Data
@@ -17,7 +18,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SchoolFeeDetails {
+public class SchoolFeeDetails implements Serializable {
     @Field("fees")
     @JsonProperty("fees")
     private Long feeAmount;

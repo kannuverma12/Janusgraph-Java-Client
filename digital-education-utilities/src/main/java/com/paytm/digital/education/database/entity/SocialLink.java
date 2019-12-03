@@ -6,10 +6,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serializable;
+
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SocialLink {
+public class SocialLink implements Serializable {
 
     @Field("social_link_name")
     @JsonProperty("social_link_name")

@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 @Data
@@ -19,7 +20,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class ShiftDetails {
+public class ShiftDetails implements Serializable {
 
     @Field("class_from")
     @JsonProperty("class_from")

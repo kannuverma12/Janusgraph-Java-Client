@@ -5,10 +5,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor
-public class FacultyDetail {
+public class FacultyDetail implements Serializable {
     @JsonProperty("total_teachers")
     private Integer totalTeachers;
 

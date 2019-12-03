@@ -12,13 +12,14 @@ import com.paytm.digital.education.explore.response.dto.search.SchoolSearchData;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor
-public class SchoolDetail implements CTAInfoHolderWithDefaultSchoolSettings {
+public class SchoolDetail implements CTAInfoHolderWithDefaultSchoolSettings, Serializable {
     @JsonProperty("school_id")
     private Long schoolId;
 
