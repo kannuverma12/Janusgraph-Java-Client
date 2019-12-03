@@ -6,9 +6,6 @@ import com.paytm.digital.education.database.entity.Instance;
 import com.paytm.digital.education.database.entity.SubExam;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.dto.detail.Event;
-import com.paytm.digital.education.dto.detail.Section;
-import com.paytm.digital.education.dto.detail.Topic;
-import com.paytm.digital.education.dto.detail.Unit;
 import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.response.dto.detail.ExamDetail;
@@ -37,9 +34,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static com.paytm.digital.education.constant.ExploreConstants.APPLICATION;
-import static com.paytm.digital.education.constant.ExploreConstants.DATA;
 import static com.paytm.digital.education.constant.ExploreConstants.DD_MMM_YYYY;
-import static com.paytm.digital.education.constant.ExploreConstants.DEFAULT;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_DETAIL;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FILTER_NAMESPACE;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
@@ -49,10 +44,8 @@ import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_M
 import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_MEDIUM_NAMESPACE;
 import static com.paytm.digital.education.constant.ExploreConstants.MMM_YYYY;
 import static com.paytm.digital.education.constant.ExploreConstants.NON_TENTATIVE;
-import static com.paytm.digital.education.constant.ExploreConstants.PRECEDENCE;
 import static com.paytm.digital.education.constant.ExploreConstants.SECTION;
 import static com.paytm.digital.education.constant.ExploreConstants.WEB_FORM_URI_PREFIX;
-import static com.paytm.digital.education.constant.ExploreConstants.ZERO;
 import static com.paytm.digital.education.enums.Client.APP;
 import static com.paytm.digital.education.enums.EducationEntity.EXAM;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
@@ -136,32 +129,6 @@ public class ExamDetailServiceImpl {
         examSectionHelper
                 .addDataPerSection(exam, examDetail, sections, nearestInstance, subExamInstances,
                         sectionConfigurationMap, syllabusFlg);
-    }
-
-    private List<Section> getSectionsFromEntitySyllabus(
-            List<com.paytm.digital.education.database.entity.Syllabus> entitySyllabusList) {
-        List<Section> sectionList = new ArrayList<>();
-        entitySyllabusList.forEach(entitySection -> {
-            List<Unit> units = new ArrayList<>();
-            entitySection.getUnits().forEach(entityUnit -> {
-                String unitName = entityUnit.getName();
-                if (!unitName.equals(ZERO)) {
-                    List<Topic> topics = new ArrayList<>();
-                    entityUnit.getTopics().forEach(entityTopic -> {
-                        String topicName = entityTopic.getName();
-                        if (!topicName.equals(ZERO)) {
-                            Topic topic = new Topic(topicName);
-                            topics.add(topic);
-                        }
-                    });
-                    Unit unit = new Unit(unitName, topics);
-                    units.add(unit);
-                }
-            });
-            Section section = new Section(entitySection.getSubjectName(), units);
-            sectionList.add(section);
-        });
-        return sectionList;
     }
 
     private Map<String, Instance> getSubExamInstances(Exam exam, int parentInstanceId) {
@@ -350,56 +317,6 @@ public class ExamDetailServiceImpl {
             examDetail.getAdditionalProperties()
                     .put(WEB_FORM_URI_PREFIX, examPaytmKeys.getWebFormUriPrefix());
         }
-    }
-
-    private String getDomainName(List<String> domains) {
-        int noOfDomains = domains.size();
-        if (noOfDomains == 0) {
-            // when exam is not associated with any domain
-            return DEFAULT;
-        } else if (noOfDomains == 1) {
-            // when exam is associated with only one domain
-            return ((isDomainExistInDefineList(domains.get(0))) ? domains.get(0) : DEFAULT);
-        } else {
-            // when exam is associated with multiple domains
-            return findHigherPrecedenceDomain(domains);
-        }
-    }
-
-    /*
-     ** Find the domain whose similar exams will be displayed when exam is associated with
-     ** multiple domains.
-     */
-    private String findHigherPrecedenceDomain(List<String> domains) {
-        List<String> domainList = getDefinedDomainList();
-        for (String domain : domainList) {
-            if (domains.contains(domain)) {
-                return domain;
-            }
-        }
-        return DEFAULT;
-    }
-
-    /*
-     ** Check whether the domain exists in the defined list of domains
-     */
-    private boolean isDomainExistInDefineList(String domain) {
-        List<String> domainList = getDefinedDomainList();
-        if (domainList.contains(domain)) {
-            return true;
-        }
-        return false;
-    }
-
-    /*
-     ** Get the defined exam domains list
-     */
-    @Cacheable(value = "exam_domain_list")
-    public List<String> getDefinedDomainList() {
-        Map<String, Object> propertyMap = propertyReader
-                .getPropertiesAsMapByKey(EXPLORE_COMPONENT, EXAM.name().toLowerCase(),
-                        PRECEDENCE);
-        return (List<String>) propertyMap.get(DATA);
     }
 
     private List<Location> getExamCenters(Instance nearestInstance) {

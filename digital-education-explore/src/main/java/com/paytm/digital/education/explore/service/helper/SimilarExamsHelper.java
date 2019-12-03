@@ -62,6 +62,7 @@ public class SimilarExamsHelper {
     private final CommonMongoRepository commonMongoRepository;
     private final ExamInstanceHelper    examInstanceHelper;
 
+    @Cacheable(value = "similar_exams_widgets", key = "'similar_exams.'+#exam.examId")
     public List<Widget> getWidgetsData(Exam exam) {
         Long requiredStreamId = getSimilarStreamId(exam.getStreamIds());
         List<Widget> widgets = widgetsDataHelper
@@ -77,13 +78,18 @@ public class SimilarExamsHelper {
                                 .collect(Collectors.toList());
                 Map<Long, Exam> examEntityMap = getExamEntityMap(entities);
                 for (WidgetData widgetData : widget.getData()) {
-                    Exam exam = examEntityMap.get(widgetData.getEntityId());
-                    widgetData.setFullName(exam.getExamFullName());
-                    widgetData.setOfficialName(exam.getExamShortName());
-                    if (StringUtils.isNotBlank(exam.getLogo())) {
-                        widgetData.setLogoUrl(CommonUtil.getLogoLink(exam.getLogo(), EXAM));
+                    if (examEntityMap.containsKey(widgetData.getEntityId())) {
+                        Exam exam = examEntityMap.get(widgetData.getEntityId());
+                        widgetData.setFullName(exam.getExamFullName());
+                        widgetData.setOfficialName(exam.getExamShortName());
+                        widgetData.setUrlDisplayKey(CommonUtil.convertNameToUrlDisplayName(exam.getExamFullName()));
+                        if (StringUtils.isNotBlank(exam.getLogo())) {
+                            widgetData.setLogoUrl(CommonUtil.getLogoLink(exam.getLogo(), EXAM));
+                        }
+                        widgetData.setImportantDates(getImportantDates(exam));
+                    } else {
+                        log.warn("Exam Id : {} not present in database for similar exams.", widgetData.getEntityId());
                     }
-                    widgetData.setImportantDates(getImportantDates(exam));
                 }
             }
         }
@@ -112,7 +118,7 @@ public class SimilarExamsHelper {
                 .orElse(0L);
     }
 
-    @Cacheable(value = "exam_domain_list")
+    @Cacheable(value = "exam_domain_list", key = "'all_paytm_streams'")
     public List<Long> getAllStreamsSortedByPriority() {
         List<StreamEntity> streamEntities = streamDAO.findAll();
         return streamEntities.stream().sorted(Comparator.comparingInt(Base::getPriority))
@@ -144,9 +150,9 @@ public class SimilarExamsHelper {
                                 presentDate)) {
                             String eventName =
                                     event.getType().equalsIgnoreCase(OTHER) && StringUtils
-                                            .isNotBlank(event.getOtherEventLabel()) ?
-                                            event.getOtherEventLabel() :
-                                            CommonUtil.toCamelCase(event.getType());
+                                            .isNotBlank(event.getOtherEventLabel())
+                                            ? event.getOtherEventLabel()
+                                            : CommonUtil.toCamelCase(event.getType());
                             eventsMap.put(eventName, getEventDate(event));
                         }
                     }
