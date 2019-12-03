@@ -6,12 +6,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SearchBaseData {
+public class SearchBaseData implements Serializable {
 
     @JsonProperty("shortlisted")
     private Boolean shortlisted;

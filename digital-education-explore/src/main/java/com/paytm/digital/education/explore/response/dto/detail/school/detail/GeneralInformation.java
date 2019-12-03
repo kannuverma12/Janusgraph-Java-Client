@@ -3,10 +3,14 @@ package com.paytm.digital.education.explore.response.dto.detail.school.detail;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class GeneralInformation {
+@NoArgsConstructor
+public class GeneralInformation implements Serializable {
     @JsonProperty("street_address")
     private String streetAddress;
     private String phone;
