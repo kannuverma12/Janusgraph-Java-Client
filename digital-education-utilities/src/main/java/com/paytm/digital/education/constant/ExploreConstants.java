@@ -337,6 +337,7 @@ public interface ExploreConstants {
     String SECTIONS                      = "sections";
     String NAME                          = "name";
     String FAILED                        = "failed";
+    String URL_DISPLAY_KEY               = "url_display_key";
 
     //Sections constants
     String BROWSE_BY_EXAM_LEVEL_APP         = "browse_by_exam_level_app";
