@@ -40,8 +40,9 @@ public class LocalSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationProvider(tokenAuthenticationProvider)
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                //.antMatchers("/explore/**").permitAll()
                 .antMatchers("/explore/admin/**").authenticated()
-                .antMatchers("/coaching/v1/admin/**").authenticated()
+                //.antMatchers("/coaching/v1/admin/**").authenticated()
                 .anyRequest().permitAll();
 
         http.headers().frameOptions().disable();
@@ -52,7 +53,7 @@ public class LocalSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/explore");
+        web.ignoring().antMatchers("/explore/^(?!/admin/).*");
     }
 
     @Override

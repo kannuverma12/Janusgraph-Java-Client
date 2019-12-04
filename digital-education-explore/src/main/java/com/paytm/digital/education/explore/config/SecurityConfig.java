@@ -14,7 +14,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import paytm.auth.personaaclclient.domain.DomainUser;
 
-@Profile({"local", "test", "dev", "default"})
+@Profile({"test", "dev", "default"})
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
