@@ -18,7 +18,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import paytm.auth.personaaclclient.infrastructure.security.CookieAuthenticationProvider;
 
 
-@Profile({"staging", "production"})
+@Profile({"local","staging", "production"})
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -40,10 +40,7 @@ public class LocalSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationProvider(tokenAuthenticationProvider)
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .antMatchers("/formfbl/v1/orders").authenticated()
-                .antMatchers("/formfbl/v1/orders/download").authenticated()
-                .antMatchers("/formfbl/v1/orders/bulk-download").authenticated()
-                .antMatchers("/formfbl/v1/download").authenticated()
+                .antMatchers("/explore/admin/**").authenticated()
                 .antMatchers("/coaching/v1/admin/**").authenticated()
                 .anyRequest().permitAll();
 
