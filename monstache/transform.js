@@ -285,7 +285,7 @@ function transformCollege(superDoc) {
 
   if (Object.keys(superDoc.exam_map).length > 0) {
     transformedCollege.exams_accepted = Object.keys(superDoc.exam_map)
-    .filter(key -> superDoc.exam_map[key])
+    .filter(function (key) { return superDoc.exam_map[key]; })
     .map(function (key) {
       return superDoc.exam_map[key];
     });
@@ -314,15 +314,15 @@ function transformCollege(superDoc) {
       // of same stream then only latest year's value will/should be saved.
 
     var ranking = superDoc.rankings[k];
-    var rating_prefix;
-    var rating_suffix;
-    var rating_key;
+    var rating_prefix = "";
+    var rating_suffix = "";
+    var rating_key = "";
     if(ranking.source){
         rating_prefix = ranking.source.toLowerCase();
     }
     if(ranking.ranking_type && ranking.ranking_type !== 'STREAM WISE COLLEGES'){
         rating_suffix = ranking.ranking_type.toLowerCase();
-    } else if(ranking.ranking_stream){
+    } else if(ranking.stream){
         rating_suffix = ranking.stream.toLowerCase();
     }
     if(rating_suffix && rating_prefix) {
@@ -472,7 +472,7 @@ module.exports = function(doc, ns, updateDesc) {
     info("Processed Institute : " + doc.institute_id);
     return superDocument;
   } catch (e) {
-    error("Error in processing institute : " + doc.institute_id + ", " + e.);
+    error("Error in processing institute : " + doc.institute_id + ", " + e);
     return false;
   }
 }
