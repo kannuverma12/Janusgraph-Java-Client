@@ -111,6 +111,7 @@ public class CommonUtils {
     public static Long randomLong(Long min, Long max) {
         return min + (long) (Math.random() * (max - min));
     }
+
     public static void copyNonNullProperties(Object src, Object target) {
         BeanUtils.copyProperties(src, target, getNullPropertyNames(src));
     }
@@ -122,8 +123,9 @@ public class CommonUtils {
         Set<String> emptyNames = new HashSet<>();
         for (PropertyDescriptor pd : pds) {
             Object srcValue = src.getPropertyValue(pd.getName());
-            if (srcValue == null)
+            if (srcValue == null) {
                 emptyNames.add(pd.getName());
+            }
         }
         String[] result = new String[emptyNames.size()];
         return emptyNames.toArray(result);
