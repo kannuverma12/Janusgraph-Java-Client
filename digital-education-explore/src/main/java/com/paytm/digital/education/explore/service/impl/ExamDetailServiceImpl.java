@@ -6,9 +6,6 @@ import com.paytm.digital.education.database.entity.Instance;
 import com.paytm.digital.education.database.entity.SubExam;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.dto.detail.Event;
-import com.paytm.digital.education.dto.detail.Section;
-import com.paytm.digital.education.dto.detail.Topic;
-import com.paytm.digital.education.dto.detail.Unit;
 import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.response.dto.detail.ExamDetail;
@@ -138,32 +135,6 @@ public class ExamDetailServiceImpl {
                         sectionConfigurationMap, syllabusFlg);
     }
 
-    private List<Section> getSectionsFromEntitySyllabus(
-            List<com.paytm.digital.education.database.entity.Syllabus> entitySyllabusList) {
-        List<Section> sectionList = new ArrayList<>();
-        entitySyllabusList.forEach(entitySection -> {
-            List<Unit> units = new ArrayList<>();
-            entitySection.getUnits().forEach(entityUnit -> {
-                String unitName = entityUnit.getName();
-                if (!unitName.equals(ZERO)) {
-                    List<Topic> topics = new ArrayList<>();
-                    entityUnit.getTopics().forEach(entityTopic -> {
-                        String topicName = entityTopic.getName();
-                        if (!topicName.equals(ZERO)) {
-                            Topic topic = new Topic(topicName);
-                            topics.add(topic);
-                        }
-                    });
-                    Unit unit = new Unit(unitName, topics);
-                    units.add(unit);
-                }
-            });
-            Section section = new Section(entitySection.getSubjectName(), units);
-            sectionList.add(section);
-        });
-        return sectionList;
-    }
-
     private Map<String, Instance> getSubExamInstances(Exam exam, int parentInstanceId) {
         Map<String, Instance> subExamInstances = new HashMap<>();
         if (!CollectionUtils.isEmpty(exam.getSubExams())) {
@@ -240,9 +211,8 @@ public class ExamDetailServiceImpl {
     }
 
     @Cacheable(value = "exam_web_specific_data", keyGenerator = "customKeyGenerator")
-    public void addWebSpecificData(ExamDetail examDetail, Exam exam, boolean derivedAttributes,
-            boolean sectionsFlag,
-            Client client, boolean widgets) {
+    public void addWebSpecificData(ExamDetail examDetail, Exam exam, boolean sectionsFlag,
+            boolean widgets) {
         examDetail.setDocumentsRequiredAtExam(exam.getDocumentsExam());
         examDetail.setDocumentsRequiredAtCounselling(exam.getDocumentsCounselling());
         examDetail.setAdmitCard(exam.getAdmitCard());
@@ -258,14 +228,6 @@ public class ExamDetailServiceImpl {
             examDetail.setDurationInHour(exam.getExamDuration());
         }
         String entityName = EXAM.name().toLowerCase();
-        Map<String, Object> highlights = new HashMap<>();
-        highlights.put(entityName, exam);
-        highlights.put(LINGUISTIC_MEDIUM, examDetail.getLinguisticMedium());
-        if (derivedAttributes) {
-            examDetail.setDerivedAttributes(
-                    derivedAttributesHelper.getDerivedAttributes(highlights,
-                            entityName, client));
-        }
         if (sectionsFlag) {
             examDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName, null));
         }
@@ -284,21 +246,21 @@ public class ExamDetailServiceImpl {
             Map<String, Instance> subExamInstances) {
         ExamDetail examDetail = new ExamDetail();
         addCommonData(examDetail, exam, nearestInstance, subExamInstances, syllabus,
-                importantDatesflag, examCenters, policies);
+                importantDatesflag, examCenters, policies, client, derivedAttributes);
         if (APP.equals(client)) {
             List<String> sectionsList =
                     detailPageSectionHelper.getSectionOrder(EXAM.name().toLowerCase(), client);
             addAppSpecificData(examDetail, exam, sectionsList, syllabus, nearestInstance,
                     subExamInstances);
         } else {
-            addWebSpecificData(examDetail, exam, derivedAttributes, sectionsFlag, client, widgets);
+            addWebSpecificData(examDetail, exam, sectionsFlag, widgets);
         }
         return examDetail;
     }
 
     private void addCommonData(ExamDetail examResponse, Exam exam, Instance nearestInstance,
             Map<String, Instance> subExamInstances, boolean syllabusflg, boolean importantDatesFlg,
-            boolean examCentersFlg, boolean policies) {
+            boolean examCentersFlg, boolean policies, Client client, boolean derivedAttributes) {
         examResponse.setExamId(exam.getExamId());
         examResponse.setAbout(exam.getAboutExam());
         examResponse
@@ -341,6 +303,15 @@ public class ExamDetailServiceImpl {
             if (!CollectionUtils.isEmpty(syllabus)) {
                 examResponse.setSyllabus(syllabus);
             }
+        }
+        String entityName = EXAM.name().toLowerCase();
+        Map<String, Object> highlights = new HashMap<>();
+        highlights.put(entityName, exam);
+        highlights.put(LINGUISTIC_MEDIUM, examResponse.getLinguisticMedium());
+        if (derivedAttributes) {
+            examResponse.setDerivedAttributes(
+                    derivedAttributesHelper.getDerivedAttributes(highlights,
+                            entityName, client));
         }
     }
 
