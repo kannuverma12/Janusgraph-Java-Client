@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -43,6 +45,7 @@ public class ExamDatesHelper {
                 importantDate.setName(instance.getInstanceName());
                 importantDate.setExamName(instance.getExamName());
                 if (!CollectionUtils.isEmpty(instance.getEvents())) {
+                    Collections.sort(instance.getEvents(), Comparator.comparing(Event::calculateCorrespondingDate));
                     for (Event event : instance.getEvents()) {
                         if (CommonUtils
                                 .isDateEqualsOrAfter(event.calculateCorrespondingDate(), currentDate)) {
@@ -57,6 +60,9 @@ public class ExamDatesHelper {
                                     .convertToResponseEvent(event, instance.getExamName()));
                         }
                     }
+                    Collections.sort(importantDate.getPastDates(), Comparator.comparing(
+                            com.paytm.digital.education.dto.detail.Event::calculateCorrespondingDate)
+                            .reversed());
                     importantDates.add(importantDate);
                 }
             }
@@ -68,7 +74,7 @@ public class ExamDatesHelper {
             com.paytm.digital.education.dto.detail.Event respEvent, Date curDate) {
         if (Objects.isNull(respEvent.getOngoing()) || (Objects.nonNull(respEvent.getOngoing())
                 && !respEvent.getOngoing())) {
-            if (NON_TENTATIVE.equalsIgnoreCase(respEvent.getType()) && CommonUtils
+            if (NON_TENTATIVE.equalsIgnoreCase(respEvent.getCertainity()) && CommonUtils
                     .isDateAfter(respEvent.getDateStartRange(), curDate)) {
                 respEvent.setUpcoming(true);
                 return true;
