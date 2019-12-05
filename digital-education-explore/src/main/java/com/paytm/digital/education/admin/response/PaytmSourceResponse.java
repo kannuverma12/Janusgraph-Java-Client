@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class GetPaytmSourceDataResponse {
+public class PaytmSourceResponse {
     private String status;
 
     @JsonProperty("data")

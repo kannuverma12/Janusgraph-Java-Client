@@ -91,11 +91,6 @@ public class PaytmSourceDataServiceImplTest {
         when(paytmSourceDataRepository.save(any(PaytmSourceData.class)))
                 .thenReturn(paytmSourceDataExpected);
 
-
-
-
-
-
         PaytmSourceDataResponse paytmSourceDataResponse =
                 paytmSourceDataService.savePaytmSourceData(paytmSourceDataRequestInput);
         assertNotNull(paytmSourceDataResponse);

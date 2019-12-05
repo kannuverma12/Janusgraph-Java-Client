@@ -2,7 +2,7 @@ package com.paytm.digital.education.admin.service.impl;
 
 import com.paytm.digital.education.admin.controller.PaytmSourceDataAdminController;
 import com.paytm.digital.education.admin.request.PaytmSourceDataRequest;
-import com.paytm.digital.education.admin.response.GetPaytmSourceDataResponse;
+import com.paytm.digital.education.admin.response.PaytmSourceResponse;
 import com.paytm.digital.education.admin.response.PaytmSourceDataResponse;
 
 import com.paytm.digital.education.database.entity.PaytmSourceData;
@@ -13,7 +13,6 @@ import com.paytm.digital.education.utility.CommonUtils;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -77,13 +76,15 @@ public class PaytmSourceDataServiceImpl {
         return paytmSourceDataResponse;
     }
 
-    public GetPaytmSourceDataResponse getPaytmSourceData(EducationEntity entity, Long entityId) {
-        GetPaytmSourceDataResponse paytmSourceDataResponse = new GetPaytmSourceDataResponse();
+    public PaytmSourceResponse getPaytmSourceData(EducationEntity entity, Long entityId) {
+        PaytmSourceResponse paytmSourceDataResponse = new PaytmSourceResponse();
         paytmSourceDataResponse.setStatus(FAILED);
 
         PaytmSourceData paytmSourceData = paytmSourceDataRepository
                 .findByEntityIdAndEducationEntityAndSource(entityId, entity.name(),
                         EntitySourceType.PAYTM.name());
+
+        paytmSourceDataResponse.setStatus(FAILED);
 
         if (Objects.nonNull(paytmSourceData)) {
             paytmSourceDataResponse.setStatus(SUCCESS);
