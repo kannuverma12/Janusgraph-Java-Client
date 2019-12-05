@@ -3,6 +3,8 @@ package com.paytm.digital.education.application.config.security;
 
 import com.paytm.digital.education.application.config.filter.PersonaAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
@@ -28,6 +30,7 @@ public class LocalSecurityConfig extends WebSecurityConfigurerAdapter {
     private final LCPTokenAuthenticationProvider tokenAuthenticationProvider;
     private final CookieAuthenticationProvider   cookieAuthenticationProvider;
 
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
@@ -39,10 +42,8 @@ public class LocalSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationProvider(cookieAuthenticationProvider)
                 .authenticationProvider(tokenAuthenticationProvider)
                 .authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                //.antMatchers("/explore/**").permitAll()
+                //.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/explore/admin/**").authenticated()
-                //.antMatchers("/coaching/v1/admin/**").authenticated()
                 .anyRequest().permitAll();
 
         http.headers().frameOptions().disable();
@@ -53,7 +54,8 @@ public class LocalSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/explore/^(?!/admin/).*");
+        web.ignoring().antMatchers(HttpMethod.OPTIONS, "/**")
+                .antMatchers("^(?!/explore/admin/).*");
     }
 
     @Override
