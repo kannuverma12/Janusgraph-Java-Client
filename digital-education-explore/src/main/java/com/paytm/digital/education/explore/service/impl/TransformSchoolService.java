@@ -36,7 +36,7 @@ import static com.paytm.digital.education.database.entity.PaytmKeys.Constants.PA
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.S3_IMAGE_PATH_SUFFIX;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SCHOOL_ENTITY;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SCHOOL_FILE_VERSION;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_ID;
+import static com.paytm.digital.education.constant.SchoolConstants.SCHOOL_ID;
 
 @Service
 @AllArgsConstructor

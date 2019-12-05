@@ -50,19 +50,20 @@ public class PageServiceNewImpl implements PageService {
                         break;
                     case TOP_EXAMS_APP:
                     case BROWSE_BY_EXAM_LEVEL:
-                        responseSection = null;
+                        responseSection = dataDiscoveryService.updateTopExamsAppData(section);
                         break;
                     case STREAMS:
                         responseSection = dataDiscoveryService.updatePaytmStreamData(section);
                         break;
                     case LOCATIONS:
-                        responseSection = null;
+                        responseSection = section;
                         break;
                     case TOP_SCHOOLS:
-                        responseSection = null;
+                    case TOP_SCHOOLS_APP:
+                        responseSection = dataDiscoveryService.updateSchoolData(section);
                         break;
                     case BANNER_MID:
-                        responseSection =null;
+                        responseSection = null;
                         break;
                 }
                 if (Objects.nonNull(responseSection)) {

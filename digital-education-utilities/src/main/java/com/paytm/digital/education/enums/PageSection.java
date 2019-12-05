@@ -10,6 +10,7 @@ public enum PageSection {
     TOP_EXAMS_APP("top_exams_app"),
     BROWSE_BY_EXAM_LEVEL("browse_by_exam_level"),
     TOP_SCHOOLS("top_schools"),
+    TOP_SCHOOLS_APP("top_schools_app"),
     BANNER_MID("banner_mid");
 
     private String value;
