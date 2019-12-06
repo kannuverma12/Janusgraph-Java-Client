@@ -56,14 +56,14 @@ public class PageServiceNewImpl implements PageService {
                         responseSection = dataDiscoveryService.updatePaytmStreamData(section);
                         break;
                     case LOCATIONS:
-                        responseSection = section;
+                        responseSection = dataDiscoveryService.updateLocationData(section);
                         break;
                     case TOP_SCHOOLS:
                     case TOP_SCHOOLS_APP:
                         responseSection = dataDiscoveryService.updateSchoolData(section);
                         break;
                     case BANNER_MID:
-                        responseSection = null;
+                        responseSection = dataDiscoveryService.updateBannerLinks(section);
                         break;
                 }
                 if (Objects.nonNull(responseSection)) {
