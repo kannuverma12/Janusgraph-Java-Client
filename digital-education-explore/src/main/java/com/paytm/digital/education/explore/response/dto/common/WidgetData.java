@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.Map;
 
 @Data
@@ -15,7 +16,9 @@ import java.util.Map;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class WidgetData {
+public class WidgetData implements Serializable {
+
+    private static final long serialVersionUID = 7055440691437455065L;
 
     @JsonProperty("entity_id")
     private long entityId;

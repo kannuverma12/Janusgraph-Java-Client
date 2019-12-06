@@ -4,9 +4,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Course {
+public class Course implements Serializable {
+
+    private static final long serialVersionUID = -6077821045695541689L;
 
     @JsonProperty("course_id")
     private long courseId;

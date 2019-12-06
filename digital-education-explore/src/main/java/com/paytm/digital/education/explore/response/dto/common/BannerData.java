@@ -12,6 +12,8 @@ import java.io.Serializable;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BannerData implements Serializable {
 
+    private static final long serialVersionUID = 1598448888598271179L;
+
     @JsonProperty("url")
     private String url;
 

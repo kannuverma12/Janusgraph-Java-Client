@@ -7,12 +7,15 @@ import com.paytm.digital.education.explore.response.dto.common.BannerData;
 import com.paytm.digital.education.explore.response.dto.common.Widget;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CourseDetail {
+public class CourseDetail implements Serializable {
+
+    private static final long serialVersionUID = -1643033600496465550L;
 
     @JsonProperty("course_id")
     private Long courseId;

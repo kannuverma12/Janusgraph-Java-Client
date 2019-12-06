@@ -1,10 +1,10 @@
 package com.paytm.digital.education.explore.response.dto.detail;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.dto.detail.Event;
@@ -18,7 +18,9 @@ import lombok.experimental.Accessors;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ExamDetail implements CTAInfoHolder {
+public class ExamDetail implements CTAInfoHolder, Serializable {
+
+    private static final long serialVersionUID = -6625619228578283622L;
 
     @JsonProperty("exam_id")
     private Long examId;
