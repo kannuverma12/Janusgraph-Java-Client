@@ -1,16 +1,19 @@
-/*
 package com.paytm.digital.education.explore.service.impl;
 
 import com.paytm.digital.education.admin.request.PaytmSourceDataRequest;
 import com.paytm.digital.education.admin.response.PaytmSourceDataResponse;
 import com.paytm.digital.education.admin.service.impl.PaytmSourceDataServiceImpl;
+import com.paytm.digital.education.admin.validator.PaytmSourceDataValidator;
+import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.PaytmSourceData;
+import com.paytm.digital.education.database.entity.PaytmSourceDataEntity;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.database.repository.ExamRepository;
 import com.paytm.digital.education.database.repository.PaytmSourceDataRepository;
 import com.paytm.digital.education.enums.EducationEntity;
-import com.paytm.digital.education.enums.EntitySourceType;
+import com.paytm.digital.education.explore.database.repository.InstituteRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -22,15 +25,27 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PaytmSourceDataServiceImplTest {
     @Mock
     private PaytmSourceDataRepository paytmSourceDataRepository;
+
+    @Mock
+    private PaytmSourceDataValidator paytmSourceDataValidator;
+
+    @Mock
+    private         ExamRepository           examRepository;
+
+    @Mock
+    private         InstituteRepository      instituteRepository;
+
+    @Mock
+    private         CommonMongoRepository    commonMongoRepository;
 
     @InjectMocks
     private PaytmSourceDataServiceImpl paytmSourceDataService;
@@ -42,18 +57,20 @@ public class PaytmSourceDataServiceImplTest {
         paytmSourceData.setData(
                 (Map<String, Object>) new HashMap<String, Object>().put("exam_id", 1));
 
-        PaytmSourceData paytmSourceDataExpected = new PaytmSourceData();
+        PaytmSourceDataEntity paytmSourceDataExpected = new PaytmSourceDataEntity();
+        Exam exam = new Exam();
+        exam.setExamId(1L);
         paytmSourceDataExpected.setEntityId(1l);
-        paytmSourceDataExpected.setData(
-                (Map<String, Object>) new HashMap<String, Object>().put("exam_id", 1));
+        paytmSourceDataExpected.setExamData(exam);
 
         PaytmSourceDataRequest paytmSourceDataRequestInput = new PaytmSourceDataRequest();
         paytmSourceDataRequestInput.setEducationEntity(EducationEntity.EXAM);
         paytmSourceDataRequestInput.setPaytmSourceData(Arrays.asList(paytmSourceData));
+        doNothing().when(paytmSourceDataValidator).validateRequest(any(PaytmSourceDataRequest.class));
         when(paytmSourceDataRepository
                 .findByEntityIdAndEducationEntityAndSource(anyLong(), anyString(), anyString()))
                 .thenReturn(null);
-        when(paytmSourceDataRepository.save(any(PaytmSourceData.class)))
+        when(paytmSourceDataRepository.save(any(PaytmSourceDataEntity.class)))
                 .thenReturn(paytmSourceDataExpected);
 
         PaytmSourceDataResponse paytmSourceDataResponse =
@@ -70,26 +87,30 @@ public class PaytmSourceDataServiceImplTest {
         PaytmSourceData paytmSourceData = new PaytmSourceData();
         paytmSourceData.setEntityId(1l);
         Map requestMap = new HashMap<String, Object>();
-        requestMap.put("exam_id", 2);
-        requestMap.put("exam_name", "test");
+        requestMap.put("examId", 2);
+        requestMap.put("examFullName", "test");
         paytmSourceData.setData(requestMap);
 
-        PaytmSourceData paytmSourceDataInDb = new PaytmSourceData();
+        PaytmSourceDataEntity paytmSourceDataInDb = new PaytmSourceDataEntity();
         paytmSourceData.setEntityId(2l);
+
         Map map = new HashMap<String, Object>();
         map.put("exam_id", 2);
 
-        PaytmSourceData paytmSourceDataExpected = new PaytmSourceData();
+        PaytmSourceDataEntity paytmSourceDataExpected = new PaytmSourceDataEntity();
         paytmSourceDataExpected.setEntityId(2l);
-        paytmSourceDataExpected.setData(requestMap);
+        Exam exam = new Exam();
+        exam.setExamId(2L);
+        paytmSourceDataExpected.setExamData(exam);
 
         PaytmSourceDataRequest paytmSourceDataRequestInput = new PaytmSourceDataRequest();
         paytmSourceDataRequestInput.setEducationEntity(EducationEntity.EXAM);
         paytmSourceDataRequestInput.setPaytmSourceData(Arrays.asList(paytmSourceData));
+        doNothing().when(paytmSourceDataValidator).validateRequest(any(PaytmSourceDataRequest.class));
         when(paytmSourceDataRepository
                 .findByEntityIdAndEducationEntityAndSource(anyLong(), anyString(), anyString()))
                 .thenReturn(paytmSourceDataInDb);
-        when(paytmSourceDataRepository.save(any(PaytmSourceData.class)))
+        when(paytmSourceDataRepository.save(any(PaytmSourceDataEntity.class)))
                 .thenReturn(paytmSourceDataExpected);
 
         PaytmSourceDataResponse paytmSourceDataResponse =
@@ -101,8 +122,7 @@ public class PaytmSourceDataServiceImplTest {
         assertEquals(1, paytmSourceDataResponse.getPaytmSourceData().size());
         assertEquals(paytmSourceData.getEntityId(),
                 paytmSourceDataResponse.getPaytmSourceData().get(0).getEntityId());
-        assertEquals(requestMap.get("exam_name"),
-                paytmSourceDataResponse.getPaytmSourceData().get(0).getData().get("exam_name"));
+        assertEquals(exam.getExamId(),
+                paytmSourceDataResponse.getPaytmSourceData().get(0).getExamData().getExamId());
     }
 }
-*/
