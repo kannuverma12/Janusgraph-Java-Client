@@ -2,6 +2,7 @@ package com.paytm.digital.education.database.entity;
 
 import static com.paytm.digital.education.constant.DBConstants.NON_TENTATIVE;
 import static com.paytm.digital.education.constant.DBConstants.YYYY_MM;
+import static com.paytm.digital.education.utility.CommonUtils.setLastDateOfMonth;
 import static com.paytm.digital.education.utility.DateUtil.stringToDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -68,7 +69,7 @@ public class Event {
                     ? this.getDateRangeEnd()
                     : this.getDateRangeStart());
         } else {
-            eventDate = stringToDate(this.getMonthDate(), YYYY_MM);
+            eventDate = setLastDateOfMonth(stringToDate(this.getMonthDate(), YYYY_MM));
         }
         return eventDate;
     }
