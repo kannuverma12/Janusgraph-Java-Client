@@ -19,6 +19,9 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SchoolFeeDetails implements Serializable {
+
+    private static final long serialVersionUID = -979917408344474322L;
+
     @Field("fees")
     @JsonProperty("fees")
     private Long feeAmount;

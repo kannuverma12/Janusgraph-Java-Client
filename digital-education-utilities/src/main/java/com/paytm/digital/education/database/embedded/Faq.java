@@ -18,6 +18,8 @@ import java.io.Serializable;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Faq implements Serializable {
 
+    private static final long serialVersionUID = -7645833042841691666L;
+
     @NotEmpty
     private String question;
 

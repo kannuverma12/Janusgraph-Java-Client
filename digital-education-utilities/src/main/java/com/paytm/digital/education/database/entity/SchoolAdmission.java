@@ -19,6 +19,8 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NoArgsConstructor
 public class SchoolAdmission implements Serializable {
+    private static final long serialVersionUID = -8374521150347552708L;
+
     @Field("start_date")
     @JsonFormat(pattern = "yyyy-MM-dd")
     @JsonProperty("start_date")

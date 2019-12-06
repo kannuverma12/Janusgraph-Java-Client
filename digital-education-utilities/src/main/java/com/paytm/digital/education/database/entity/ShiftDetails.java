@@ -22,6 +22,8 @@ import java.util.Objects;
 @AllArgsConstructor
 public class ShiftDetails implements Serializable {
 
+    private static final long serialVersionUID = -8702929384324037194L;
+
     @Field("class_from")
     @JsonProperty("class_from")
     private ClassType classFrom;

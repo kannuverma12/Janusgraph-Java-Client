@@ -10,6 +10,7 @@ import java.io.Serializable;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GeoLocation implements Serializable {
+    private static final long serialVersionUID = 5803860820856084809L;
     private Double lat;
     private Double lon;
 }
