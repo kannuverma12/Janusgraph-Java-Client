@@ -8,12 +8,12 @@ import com.paytm.digital.education.database.entity.School;
 import com.paytm.digital.education.database.entity.SchoolFeeDetails;
 import com.paytm.digital.education.database.entity.SchoolOfficialAddress;
 import com.paytm.digital.education.database.entity.ShiftDetails;
-import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.SchoolDetail;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.ShiftTable;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.response.dto.search.SearchResult;
-import com.paytm.digital.education.explore.service.impl.SchoolDetailServiceImpl;
+import com.paytm.digital.education.explore.service.SchoolService;
+import com.paytm.digital.education.explore.service.impl.SchoolServiceImpl;
 import com.paytm.digital.education.explore.service.impl.SearchServiceImpl;
 import com.paytm.digital.education.explore.utility.SchoolUtilService;
 import org.assertj.core.util.Lists;
@@ -63,18 +63,17 @@ public class SchoolDuplicateDataPruneTest {
     @Mock
     private SchoolConfig schoolConfig;
 
-    private SchoolDetailServiceImpl schoolDetailService;
+    private SchoolService schoolService;
 
     @Before
     public void setUpPrerequisites() {
         SchoolUtilService schoolUtilService = new SchoolUtilService(schoolConfig);
-        schoolDetailService = new SchoolDetailServiceImpl(
+        schoolService = new SchoolServiceImpl(
                 commonMongoRepository,
                 derivedAttributesHelper,
                 facilityDataHelper,
                 ctaHelper,
                 searchService,
-                null,
                 schoolConfig,
                 schoolUtilService,
                 null,
@@ -107,8 +106,8 @@ public class SchoolDuplicateDataPruneTest {
         List<String> fields = Collections.singletonList(field);
 
 
-        SchoolDetail schoolDetail = schoolDetailService.getSchoolDetails(
-                1L, APP, school.getOfficialName(), fields, null, null);
+        SchoolDetail schoolDetail = schoolService.getSchoolDetails(
+                1L, APP, school.getOfficialName(), fields, null);
 
         assertEquals(schoolDetail.getShiftTables().size(), 1);
         ShiftTable shiftTable = schoolDetail.getShiftTables().get(0);
@@ -133,8 +132,8 @@ public class SchoolDuplicateDataPruneTest {
         List<String> fields = Collections.singletonList(field);
 
 
-        SchoolDetail schoolDetail = schoolDetailService.getSchoolDetails(
-                1L, APP, school.getOfficialName(), fields, null, null);
+        SchoolDetail schoolDetail = schoolService.getSchoolDetails(
+                1L, APP, school.getOfficialName(), fields, null);
 
         assertEquals(schoolDetail.getShiftTables().size(), 1);
         ShiftTable shiftTable = schoolDetail.getShiftTables().get(0);
@@ -160,8 +159,8 @@ public class SchoolDuplicateDataPruneTest {
         String field = "test";
         List<String> fields = Collections.singletonList(field);
 
-        SchoolDetail schoolDetail = schoolDetailService.getSchoolDetails(
-                1L, APP, school.getOfficialName(), fields, null, null);
+        SchoolDetail schoolDetail = schoolService.getSchoolDetails(
+                1L, APP, school.getOfficialName(), fields, null);
 
         assertEquals(schoolDetail.getFeesDetails().size(), 1);
         assertEquals(schoolDetail.getFeesDetails().get(0).getFeeAmount().longValue(), 1);
@@ -180,8 +179,8 @@ public class SchoolDuplicateDataPruneTest {
         String field = "test";
         List<String> fields = Collections.singletonList(field);
 
-        SchoolDetail schoolDetail = schoolDetailService.getSchoolDetails(
-                1L, APP, school.getOfficialName(), fields, null, null);
+        SchoolDetail schoolDetail = schoolService.getSchoolDetails(
+                1L, APP, school.getOfficialName(), fields, null);
 
         assertEquals(schoolDetail.getFeesDetails().size(), 2);
         assertEquals(schoolDetail.getFeesDetails().get(0).getFeeAmount().longValue(), 1);

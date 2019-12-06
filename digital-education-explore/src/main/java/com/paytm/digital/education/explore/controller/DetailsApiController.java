@@ -56,7 +56,7 @@ public class DetailsApiController {
             @RequestParam(value = "policies", required = false, defaultValue = "true")
                     Boolean policies,
             @RequestHeader(value = "x-user-id", required = false) Long userId,
-            @RequestHeader(value = "fe_client", required = false) Client client) throws Exception {
+            @RequestHeader(value = "fe_client", required = false) Client client) {
         exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
 
         return detailsService
@@ -133,7 +133,7 @@ public class DetailsApiController {
                                 @RequestHeader(value = "fe_client", required = false, defaultValue = "WEB")
                                         Client client) {
         exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
-        return schoolService
+        return detailsService
                 .getSchoolDetails(schoolId, client, schoolName, fields, fieldGroup, userId);
     }
 

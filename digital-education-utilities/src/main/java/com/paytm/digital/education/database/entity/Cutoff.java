@@ -6,10 +6,14 @@ import lombok.Data;
 import lombok.ToString;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serializable;
+
 @Data
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Cutoff {
+public class Cutoff implements Serializable {
+
+    private static final long serialVersionUID = 2646583925783599734L;
 
     @Field("caste_group")
     private String casteGroup;

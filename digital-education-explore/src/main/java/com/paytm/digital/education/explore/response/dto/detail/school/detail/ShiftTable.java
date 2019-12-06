@@ -5,11 +5,12 @@ import com.paytm.digital.education.enums.SchoolBoardType;
 import lombok.Builder;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Builder
 @Data
-public class ShiftTable {
+public class ShiftTable implements Serializable {
     @JsonProperty("board")
     private SchoolBoardType boardType;
 

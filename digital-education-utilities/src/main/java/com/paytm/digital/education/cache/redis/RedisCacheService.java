@@ -1,9 +1,8 @@
 package com.paytm.digital.education.cache.redis;
 
-import com.paytm.digital.education.config.RedisConfiguration;
+import com.paytm.digital.education.config.JedisConfiguration;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -23,7 +22,7 @@ public class RedisCacheService {
         log.debug("Add key to cache key : {}, value: {}, ttl : {}",
                 new Object[] {pKey, pValue, lRecordTtl});
         try {
-            JedisPool jedisPool = RedisConfiguration.getJedisPool();
+            JedisPool jedisPool = JedisConfiguration.getJedisPool();
             jedis = jedisPool.getResource();
             if (lRecordTtl != -1) {
                 jedis.setex(pKey, lRecordTtl, pValue);
@@ -47,7 +46,7 @@ public class RedisCacheService {
         String value = null;
 
         try {
-            JedisPool jedisPool = RedisConfiguration.getJedisPool();
+            JedisPool jedisPool = JedisConfiguration.getJedisPool();
             jedis = jedisPool.getResource();
             value = jedis.get(pKey);
         } catch (Exception ex) {
