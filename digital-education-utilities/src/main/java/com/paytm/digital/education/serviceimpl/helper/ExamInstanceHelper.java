@@ -1,5 +1,21 @@
 package com.paytm.digital.education.serviceimpl.helper;
 
+import static com.paytm.digital.education.constant.CommonConstants.APPLICATION;
+import static com.paytm.digital.education.constant.CommonConstants.DATES;
+import static com.paytm.digital.education.constant.CommonConstants.EVENT_TYPE_EXAM;
+import static com.paytm.digital.education.constant.CommonConstants.EXAM_CUTOFF_CASTEGROUP;
+import static com.paytm.digital.education.constant.CommonConstants.EXAM_CUTOFF_GENDER;
+import static com.paytm.digital.education.constant.CommonConstants.EXAM_DEGREES;
+import static com.paytm.digital.education.constant.CommonConstants.EXAM_SEARCH_NAMESPACE;
+import static com.paytm.digital.education.constant.CommonConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.constant.CommonConstants.MMM_YYYY;
+import static com.paytm.digital.education.constant.CommonConstants.OTHER_CATEGORIES;
+import static com.paytm.digital.education.constant.CommonConstants.YYYY_MM;
+import static com.paytm.digital.education.constant.CommonConstants.ZERO;
+import static com.paytm.digital.education.constant.ExploreConstants.NO_TOPIC_FOUND;
+import static com.paytm.digital.education.enums.Gender.OTHERS;
+import static java.util.Collections.emptyList;
+
 import com.paytm.digital.education.database.entity.Event;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Instance;
@@ -31,22 +47,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
-import static com.paytm.digital.education.constant.CommonConstants.APPLICATION;
-import static com.paytm.digital.education.constant.CommonConstants.DATES;
-import static com.paytm.digital.education.constant.CommonConstants.EVENT_TYPE_EXAM;
-import static com.paytm.digital.education.constant.CommonConstants.EXAM_CUTOFF_CASTEGROUP;
-import static com.paytm.digital.education.constant.CommonConstants.EXAM_CUTOFF_GENDER;
-import static com.paytm.digital.education.constant.CommonConstants.EXAM_DEGREES;
-import static com.paytm.digital.education.constant.CommonConstants.EXAM_SEARCH_NAMESPACE;
-import static com.paytm.digital.education.constant.CommonConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.constant.CommonConstants.MMM_YYYY;
-import static com.paytm.digital.education.constant.CommonConstants.OTHER_CATEGORIES;
-import static com.paytm.digital.education.constant.CommonConstants.YYYY_MM;
-import static com.paytm.digital.education.constant.CommonConstants.ZERO;
-import static com.paytm.digital.education.constant.ExploreConstants.NO_TOPIC_FOUND;
-import static com.paytm.digital.education.enums.Gender.OTHERS;
-import static java.util.Collections.emptyList;
 
 @AllArgsConstructor
 @Service
@@ -278,7 +278,6 @@ public class ExamInstanceHelper {
             respEvent.setDateStartRange(event.getDateRangeStart());
             respEvent.setDateEndRangeTimestamp(event.getDateRangeEnd());
             respEvent.setDateStartRangeTimestamp(event.getDateRangeStart());
-            respEvent.setOngoing(isOngoing(event));
         } else {
             respEvent.setDateStartRangeTimestamp(event.getDate());
             respEvent.setDateStartRange(event.getDate());
@@ -299,6 +298,7 @@ public class ExamInstanceHelper {
         respEvent.setType(event.getType());
         respEvent.setCertainity(event.getCertainty());
         respEvent.setDateName(event.getDateName());
+        respEvent.setOngoing(isOngoing(event));
         return respEvent;
     }
 
@@ -309,11 +309,9 @@ public class ExamInstanceHelper {
             return (CommonUtils.isDateEqualsOrAfter(curDate, event.getDateRangeStart())
                     && CommonUtils.isDateEqualsOrAfter(event.getDateRangeEnd(), curDate));
         }
-        // if stat date is today's date, set ongoing to true
-        if (CommonUtils.isDateEquals(event.getDateRangeStart(), curDate)) {
-            return true;
-        }
-        return null;
+        // else check for the date field
+        return (Objects.nonNull(event.getDate()) && CommonUtils
+                .isDateEqual(event.getDate(), curDate));
     }
 
     public Map<String, Instance> getSubExamInstances(Exam exam, int parentInstanceId) {
