@@ -8,6 +8,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -116,5 +117,17 @@ public class CommonUtils {
 
     public static Long randomLong(Long min, Long max) {
         return min + (long) (Math.random() * (max - min));
+    }
+
+    public static Date setLastDateOfMonth(Date inDate) {
+        if (Objects.nonNull(inDate)) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(inDate);
+            cal.add(Calendar.MONTH, 1);
+            cal.set(Calendar.DAY_OF_MONTH, 1);
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            return cal.getTime();
+        }
+        return null;
     }
 }
