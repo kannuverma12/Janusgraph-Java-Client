@@ -13,6 +13,8 @@ import java.io.Serializable;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SocialLink implements Serializable {
 
+    private static final long serialVersionUID = -5558975548960996067L;
+
     @Field("social_link_name")
     @JsonProperty("social_link_name")
     private String socialLinkName;

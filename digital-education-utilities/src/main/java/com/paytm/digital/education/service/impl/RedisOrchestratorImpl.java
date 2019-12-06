@@ -16,7 +16,7 @@ public class RedisOrchestratorImpl implements RedisOrchestrator {
     }
 
     @Override
-    public Object get(String key, CachedMethod cachedMethod) {
-        return cacheLockStrategy.getCacheValue(key, cachedMethod);
+    public Object get(String key, CachedMethod cachedMethod, boolean shouldCacheNull) {
+        return cacheLockStrategy.getCacheValue(key, cachedMethod, shouldCacheNull);
     }
 }

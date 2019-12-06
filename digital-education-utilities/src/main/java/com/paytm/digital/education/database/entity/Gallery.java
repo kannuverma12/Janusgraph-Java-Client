@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.ToString;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +15,8 @@ import java.util.Map;
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Gallery {
+public class Gallery implements Serializable {
+    private static final long serialVersionUID = 4994193724740640832L;
 
     @Field("images")
     private Map<String, List<String>> images;

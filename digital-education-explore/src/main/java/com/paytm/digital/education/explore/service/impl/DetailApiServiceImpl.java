@@ -44,7 +44,7 @@ public class DetailApiServiceImpl implements SchoolDetailService {
             String fieldGroup, List<String> fields, Client client, boolean syllabus,
             boolean importantDates, boolean derivedAttributes, boolean examCenters,
             boolean sections, boolean widgets,
-            boolean policies) throws ParseException {
+            boolean policies) {
         // fields are not being supported currently. Part of discussion
 
         ExamDetail examDetail = examDetailService.getExamDetail(entityId, examUrlKey, fieldGroup, fields, client,

@@ -16,6 +16,8 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document("stream")
 public class StreamEntity extends Base {
 
+    private static final long serialVersionUID = -6827315571130998541L;
+
     @Id
     @Field("_id")
     @JsonIgnore

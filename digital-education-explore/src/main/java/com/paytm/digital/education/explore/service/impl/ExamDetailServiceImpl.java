@@ -1,5 +1,6 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import com.paytm.digital.education.annotation.EduCache;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.ExamPaytmKeys;
 import com.paytm.digital.education.database.entity.Instance;
@@ -26,7 +27,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,13 +71,12 @@ public class ExamDetailServiceImpl {
 
     private static int EXAM_PREFIX_LENGTH = EXAM_PREFIX.length();
 
-    //TODO - modularize methods for caching as. Its fine as of now as userId is not being used As of now.
-    @Cacheable(value = "exam_detail", keyGenerator = "customKeyGenerator")
+    @EduCache(cache = "exam_detail")
     public ExamDetail getExamDetail(Long entityId, String examUrlKey, String fieldGroup,
             List<String> fields, Client client, boolean syllabus,
             boolean importantDates, boolean derivedAttributes, boolean examCenters,
             boolean sections,
-            boolean widgets, boolean policies) throws ParseException {
+            boolean widgets, boolean policies) {
 
         // TODO: fields are not being supported currently. Part of discussion
         List<String> groupFields =
@@ -87,7 +86,7 @@ public class ExamDetailServiceImpl {
             for (String requestedField : groupFields) {
                 if (requestedField.contains(EXAM_PREFIX)) {
                     examFields.add(requestedField
-                            .substring(EXAM_PREFIX_LENGTH, requestedField.length()));
+                            .substring(EXAM_PREFIX_LENGTH));
                 }
             }
         }
@@ -109,6 +108,15 @@ public class ExamDetailServiceImpl {
                 derivedAttributes, examCenters, sections, widgets, policies);
     }
 
+    /**
+     * TODO:-
+     * Problem:- A cached method is calling another cached method in same service.
+     * Cache by pass issue can arise.
+     * Possible solutions:-
+     *   1. Is caching this method required ?
+     *   2. Refactor to move this method out
+     *   3. Autowire self
+     */
     @Cacheable(value = "process_exam_detail", keyGenerator = "customKeyGenerator")
     public ExamDetail processExamDetail(Exam exam, List<String> examFields, Client client,
             boolean syllabus, boolean importantDates, boolean derivedAttributes,

@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import static com.paytm.digital.education.utility.CommonUtils.sortMapByKeys;
+import static com.paytm.digital.education.utility.JsonUtils.toJson;
 import static io.netty.util.internal.StringUtil.EMPTY_STRING;
 import static java.lang.String.join;
 import static java.util.Arrays.stream;
@@ -65,8 +67,10 @@ public class KeyGenerator {
     private static String fetchKey(Object o) {
         if (Objects.isNull(o)) {
             return EMPTY_STRING;
-        } else if (o instanceof Number || o instanceof CharSequence) {
+        } else if (o instanceof Number || o instanceof Boolean || o instanceof CharSequence || o instanceof Enum) {
             return o.toString();
+        } else if (o instanceof Map) {
+            return toJson(sortMapByKeys((Map) o));
         } else if (o instanceof Class) {
             return ((Class) o).getCanonicalName();
         } else if (o instanceof CacheKeyable) {

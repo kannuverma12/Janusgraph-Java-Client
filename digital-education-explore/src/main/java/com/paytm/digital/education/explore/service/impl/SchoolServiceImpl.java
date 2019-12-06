@@ -40,7 +40,6 @@ import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
 import com.paytm.digital.education.explore.service.helper.CTAHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.service.helper.FacilityDataHelper;
-import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import com.paytm.digital.education.explore.utility.SchoolUtilService;
 import com.paytm.digital.education.utility.CommonUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -87,7 +86,6 @@ public class SchoolServiceImpl implements SchoolService {
     private final FacilityDataHelper       facilityDataHelper;
     private final CTAHelper                ctaHelper;
     private final SearchServiceImpl        searchService;
-    private final SubscriptionDetailHelper subscriptionDetailHelper;
     private final SchoolConfig             schoolConfig;
     private final SchoolUtilService        schoolUtilService;
     private final BannerDataHelper         bannerDataHelper;
@@ -99,7 +97,6 @@ public class SchoolServiceImpl implements SchoolService {
             FacilityDataHelper facilityDataHelper,
             CTAHelper ctaHelper,
             SearchServiceImpl searchService,
-            SubscriptionDetailHelper subscriptionDetailHelper,
             SchoolConfig schoolConfig,
             SchoolUtilService schoolUtilService,
             BannerDataHelper bannerDataHelper,
@@ -110,7 +107,6 @@ public class SchoolServiceImpl implements SchoolService {
         this.facilityDataHelper = facilityDataHelper;
         this.ctaHelper = ctaHelper;
         this.searchService = searchService;
-        this.subscriptionDetailHelper = subscriptionDetailHelper;
         this.schoolConfig = schoolConfig;
         this.schoolUtilService = schoolUtilService;
         this.bannerDataHelper = bannerDataHelper;

@@ -1,5 +1,6 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import com.paytm.digital.education.annotation.EduCache;
 import com.paytm.digital.education.database.entity.Course;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Institute;
@@ -74,7 +75,7 @@ public class InstituteDetailServiceImpl {
         genderCategoryMap = genderAndCasteGroupHelper.getGenderAndCasteGroupMap();
     }
 
-    @Cacheable(value = "institute_detail", keyGenerator = "customKeyGenerator")
+    @EduCache(cache = "institute_detail")
     public InstituteDetail getinstituteDetail(Long entityId, String instituteUrlKey,
             String fieldGroup, Client client, boolean derivedAttributes,
             boolean cutOffs, boolean facilities, boolean gallery, boolean placements,

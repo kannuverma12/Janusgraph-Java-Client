@@ -4,20 +4,35 @@ import com.paytm.digital.education.advice.CacheKeyable;
 import com.paytm.digital.education.advice.helper.KeyGenerator;
 import com.paytm.digital.education.annotation.EduCache;
 import com.paytm.digital.education.exception.UnableToAccessBeanPropertyException;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.data.domain.Sort;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import static com.google.common.collect.ImmutableMap.of;
+import static com.paytm.digital.education.enums.ClassType.ONE;
+import static com.paytm.digital.education.utility.CommonUtils.sortMapByKeys;
+import static com.paytm.digital.education.utility.JsonUtils.toJson;
+import static com.paytm.digital.education.utility.enums.Test.VALUE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.springframework.data.domain.Sort.Direction.ASC;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KeyGeneratorTest {
+    private static final Logger log = LoggerFactory.getLogger(KeyGeneratorTest.class);
+
     private static final String CACHE_NAME = "test_cache";
 
     private KeyGenerator keyGenerator = new KeyGenerator();
@@ -82,12 +97,65 @@ public class KeyGeneratorTest {
                         + oid.toString());
     }
 
+    @Test
+    public void testMapKey() {
+        assertNotNull(keyGenerator);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("a", 1);
+        map.put("b", "something");
+
+        EduCache eduCache = getCache(CACHE_NAME, new String[]{});
+        String[] params = {"param1"};
+        Object[] values = { map };
+        assertEquals(
+                keyGenerator.generateKey(eduCache, KeyGeneratorTest.class, "test_method", params, values),
+                "test_cache##com.paytm.digital.education.utility.service.KeyGeneratorTest.test_method."
+                        + "{\"a\":1,\"b\":\"something\"}");
+    }
+
+    @Test
+    public void testEnumKey() {
+        assertNotNull(keyGenerator);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("a", 1);
+        map.put("b", "something");
+
+        EduCache eduCache = getCache(CACHE_NAME, new String[]{});
+        String[] params = {"param1"};
+        Object[] values = { VALUE };
+        assertEquals(
+                keyGenerator.generateKey(eduCache, KeyGeneratorTest.class, "test_method", params, values),
+                "test_cache##com.paytm.digital.education.utility.service.KeyGeneratorTest.test_method.VALUE");
+    }
+
     @Test(expected = UnableToAccessBeanPropertyException.class)
     public void exceptionWhenNoGetterDefined() {
         EduCache eduCache = getCache(CACHE_NAME, new String[]{"param1.val"});
         String[] params = {"param1"};
         Object[] values = {new CacheKeyableExample(1, new ObjectId(), 2L, "someVal")};
         keyGenerator.generateKey(eduCache, KeyGenerator.class, "test_method", params, values);
+    }
+
+    @Test
+    public void sortedMapTests() {
+        assertEquals(ONE.toString(), "ONE");
+        Map<String, Integer> stringObjectMap = sortMapByKeys(of("b", 1, "a", 3));
+        Iterator<Map.Entry<String, Integer>> stringMapIterator = stringObjectMap.entrySet().iterator();
+        assertEquals("a", stringMapIterator.next().getKey());
+        assertEquals("b", stringMapIterator.next().getKey());
+
+        Map<Sort.Direction, Integer> directionObjectMap = sortMapByKeys(of(DESC, 1, ASC, 3));
+        Iterator<Map.Entry<Sort.Direction, Integer>> directionMapIterator = directionObjectMap.entrySet().iterator();
+        assertEquals(ASC, directionMapIterator.next().getKey());
+        assertEquals(DESC, directionMapIterator.next().getKey());
+        assertEquals("{\"a\":3,\"b\":1}", toJson(stringObjectMap));
+        Object o = new Object();
+        Map nonComparableKeyMap = of(o, "val");
+        Map nonComparableKeyMapSorted = sortMapByKeys(nonComparableKeyMap);
+        assertEquals(1, nonComparableKeyMapSorted.entrySet().size());
+        assertEquals("val", nonComparableKeyMapSorted.get(o));
     }
 
     private EduCache getCache(String cacheName, String[] keys) {
@@ -107,7 +175,11 @@ public class KeyGeneratorTest {
             public String cache() {
                 return cacheName;
             }
+
+            @Override
+            public boolean shouldCacheNull() {
+                return true;
+            }
         };
     }
-
 }

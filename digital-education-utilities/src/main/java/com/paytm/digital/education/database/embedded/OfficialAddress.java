@@ -8,11 +8,13 @@ import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serializable;
+
 @Data
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class OfficialAddress {
+public class OfficialAddress implements Serializable {
 
     @Field("address_line1")
     private String addressLine1;

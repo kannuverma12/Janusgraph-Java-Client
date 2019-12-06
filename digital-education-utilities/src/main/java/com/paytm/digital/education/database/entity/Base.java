@@ -6,10 +6,13 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
-public class Base {
+public class Base implements Serializable {
+
+    private static final long serialVersionUID = -4547824612782892387L;
 
     @Field("created_at")
     @CreatedDate
