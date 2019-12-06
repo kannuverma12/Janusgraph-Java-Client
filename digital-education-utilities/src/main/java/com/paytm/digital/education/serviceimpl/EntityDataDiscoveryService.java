@@ -7,6 +7,7 @@ import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SHORT_NAME;
 import static com.paytm.digital.education.constant.ExploreConstants.GALLERY_LOGO;
 import static com.paytm.digital.education.constant.ExploreConstants.ICON;
+import static com.paytm.digital.education.constant.ExploreConstants.IMAGE_URL;
 import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.constant.ExploreConstants.LOGO;
 import static com.paytm.digital.education.constant.ExploreConstants.NAME;
@@ -192,6 +193,28 @@ public class EntityDataDiscoveryService {
                     log.error("School Id : {} not found in our database of school entity.",
                             item.get(SCHOOL_ID));
                 }
+            }
+            return section;
+        }
+        return null;
+    }
+
+    public Section updateLocationData(Section section) {
+        if (Objects.nonNull(section) && !CollectionUtils.isEmpty(section.getItems())) {
+            for (Map<String, Object> item : section.getItems()) {
+                item.put(ICON, CommonUtil.getAbsoluteUrl(item.get(ICON).toString(),
+                        section.getType()));
+            }
+            return section;
+        }
+        return null;
+    }
+
+    public Section updateBannerLinks(Section section) {
+        if (!CollectionUtils.isEmpty(section.getItems())) {
+            for (Map<String, Object> item : section.getItems()) {
+                item.put(IMAGE_URL, CommonUtil.getAbsoluteUrl(item.get(IMAGE_URL).toString(),
+                        section.getType()));
             }
             return section;
         }
