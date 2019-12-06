@@ -184,7 +184,7 @@ public enum ErrorEnum {
     INVALID_PAYTM_SOURCE_MAPPING_DATA(4080,
             "No paytm source data present for entityId  %s, cannot set mapping", BAD_REQUEST, 1),
     INVALID_MERCHANT_SOURCE_MAPPING_DATA(4081,
-            "No merchant source data present for entityId  %s, cannot set mapping", BAD_REQUEST, 1),
+            "No merchant source data present for entityId  %s, cannot set mapping", BAD_REQUEST, 1)
     ;
 
 
