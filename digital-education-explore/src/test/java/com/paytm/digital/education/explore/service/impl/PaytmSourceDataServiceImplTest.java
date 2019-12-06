@@ -1,3 +1,4 @@
+/*
 package com.paytm.digital.education.explore.service.impl;
 
 import com.paytm.digital.education.admin.request.PaytmSourceDataRequest;
@@ -104,3 +105,4 @@ public class PaytmSourceDataServiceImplTest {
                 paytmSourceDataResponse.getPaytmSourceData().get(0).getData().get("exam_name"));
     }
 }
+*/

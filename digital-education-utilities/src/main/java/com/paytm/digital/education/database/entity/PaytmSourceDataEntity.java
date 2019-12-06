@@ -1,6 +1,5 @@
 package com.paytm.digital.education.database.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,18 +13,17 @@ import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.util.List;
 import java.util.Map;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-//@Document("paytm_source_data")
+@Document("paytm_source_data")
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
-//@CompoundIndexes({
-//        @CompoundIndex(name = "entity_entity_id", def = "{'entity' : 1, 'entity_id': 1} ",unique = true)
-//    })
-public class PaytmSourceData {
+@CompoundIndexes({
+        @CompoundIndex(name = "entity_entity_id", def = "{'entity' : 1, 'entity_id': 1} ",unique = true)
+    })
+public class PaytmSourceDataEntity {
 
     @Id
     @Field("_id")
@@ -45,8 +43,20 @@ public class PaytmSourceData {
     @Field("is_active")
     private boolean isActive;
 
-    @Field("data")
-    @JsonProperty("entity_data")
-    private Map<String, Object> data;
+    @Field("exam_data")
+    @JsonProperty("exam_data")
+    private Exam examData;
+
+    @Field("institute_data")
+    @JsonProperty("institute_data")
+    private Institute instituteData;
+
+    @Field("school_data")
+    @JsonProperty("school_data")
+    private School schoolData;
+
+    @Field("course_data")
+    @JsonProperty("course_data")
+    private Course courseData;
 
 }

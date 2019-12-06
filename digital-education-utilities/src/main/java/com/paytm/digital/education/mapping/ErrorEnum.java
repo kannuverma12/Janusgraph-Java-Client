@@ -172,7 +172,9 @@ public enum ErrorEnum {
     ENTITY_NOT_SUPPORTED(4073, "Requested entity not supported for this operation.", BAD_REQUEST,
             0),
     INVALID_EXAM_ID_FOR_EXAM_NAME(4074, "Blank exam id provided for exam name %s .", BAD_REQUEST,
-            1);
+            1),
+    INVALID_PAYTM_SOURCE_DATA(4075, "Invalid paytm source data for entityId  %s .", BAD_REQUEST, 1),
+    NO_PAYTM_SOURCE_DATA(4076, "Empty paytm source data present in request.", BAD_REQUEST, 1);
 
     private final int        internalCode;
     private final String     externalMessage;

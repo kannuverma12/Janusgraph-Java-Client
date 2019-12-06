@@ -1,6 +1,7 @@
 package com.paytm.digital.education.admin.controller;
 
 import com.paytm.digital.education.admin.request.PaytmSourceDataRequest;
+import com.paytm.digital.education.admin.response.MerchantSourceResponse;
 import com.paytm.digital.education.admin.response.PaytmSourceResponse;
 import com.paytm.digital.education.admin.response.PaytmSourceDataResponse;
 import com.paytm.digital.education.admin.service.impl.PaytmSourceDataServiceImpl;
@@ -50,6 +51,13 @@ public class PaytmSourceDataAdminController {
     public @ResponseBody PaytmSourceDataResponse deletePaytmSourceData(
             @RequestBody @Valid PaytmSourceDataRequest paytmSourceDataRequest) {
         return paytmSourceDataService.deletePaytmSourceData(paytmSourceDataRequest);
+    }
+
+    @GetMapping("/admin/v1/merchantSourceData/{entity}/{entity_id}")
+    public @ResponseBody MerchantSourceResponse getMerchantSourceData(
+            @NotNull @PathVariable("entity") EducationEntity entity,
+            @PathVariable("entity_id") Long entityId) {
+        return paytmSourceDataService.getMerchantSourceData(entity, entityId);
     }
 
 }

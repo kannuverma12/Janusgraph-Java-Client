@@ -4,20 +4,16 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.database.entity.PaytmSourceData;
-import com.paytm.digital.education.database.entity.PaytmSourceDataEntity;
-import com.paytm.digital.education.enums.EducationEntity;
 import lombok.Data;
 
-import java.util.List;
+import java.util.Map;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PaytmSourceResponse {
+public class MerchantSourceResponse {
     private String status;
 
-    private String message;
-
     @JsonProperty("data")
-    PaytmSourceDataEntity paytmSourceData;
+    Map<String,Object> merchantSourceData;
 }

@@ -3,7 +3,7 @@ package com.paytm.digital.education.admin.response;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.database.entity.PaytmSourceData;
+import com.paytm.digital.education.database.entity.PaytmSourceDataEntity;
 import com.paytm.digital.education.enums.EducationEntity;
 import lombok.Data;
 
@@ -18,6 +18,6 @@ public class PaytmSourceDataResponse {
     @JsonProperty("entity")
     private EducationEntity educationEntity;
 
-    @JsonProperty("success_data")
-    private List<PaytmSourceData> paytmSourceData;
+    @JsonProperty("data")
+    private List<PaytmSourceDataEntity> paytmSourceData;
 }
