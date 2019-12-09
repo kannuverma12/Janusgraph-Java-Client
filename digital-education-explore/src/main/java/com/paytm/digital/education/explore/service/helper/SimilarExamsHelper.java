@@ -73,6 +73,10 @@ public class SimilarExamsHelper {
     private List<Widget> buildSimilarExamResponse(List<Widget> widgets) {
         if (!CollectionUtils.isEmpty(widgets)) {
             for (Widget widget : widgets) {
+                if (CollectionUtils.isEmpty(widget.getData())) {
+                    continue;
+                }
+
                 List<Long> entities =
                         widget.getData().stream().map(widgetData -> widgetData.getEntityId())
                                 .collect(Collectors.toList());
@@ -149,7 +153,7 @@ public class SimilarExamsHelper {
                         if (CommonUtils.isDateEqualsOrAfter(event.calculateCorrespondingDate(),
                                 presentDate)) {
                             String eventName =
-                                    event.getType().equalsIgnoreCase(OTHER) && StringUtils
+                                    OTHER.equalsIgnoreCase(event.getType()) && StringUtils
                                             .isNotBlank(event.getOtherEventLabel())
                                             ? event.getOtherEventLabel()
                                             : CommonUtil.toCamelCase(event.getType());
