@@ -178,7 +178,9 @@ public enum ErrorEnum {
             "Something broke while serializing/deserializing.", INTERNAL_SERVER_ERROR,0),
     CACHE_BEAN_KEY_INACCESSIBLE(4076, "Cache Bean Inaccessible. Bean - %s, Key - %s",
             INTERNAL_SERVER_ERROR, 2),
-    TEST_ENUM(4077, "Test Enum", INTERNAL_SERVER_ERROR, 0);
+    TEST_ENUM(4077, "Test Enum", INTERNAL_SERVER_ERROR, 0),
+    INVALID_PAYTM_SOURCE_DATA(4078, "Invalid paytm source data for entityId  %s .", BAD_REQUEST, 1),
+    NO_PAYTM_SOURCE_DATA(4079, "Empty paytm source data present in request.", BAD_REQUEST, 1);
 
     private final int        internalCode;
     private final String     externalMessage;
