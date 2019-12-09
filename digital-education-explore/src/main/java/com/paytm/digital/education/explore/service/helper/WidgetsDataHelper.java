@@ -74,11 +74,11 @@ public class WidgetsDataHelper {
     public List<Widget> getWidgets(String entity, long excludeEntity, long streamId) {
         Map<String, Object> widgetsDataMap =
                 propertyReader.getPropertiesAsMapByKey(EXPLORE_COMPONENT, entity, WIDGETS);
-        List<Widget> widgetList =
-                JsonUtils.convertValue(widgetsDataMap.get(DATA_STRING),
-                        new TypeReference<List<Widget>>() {
-                        });
         if (!CollectionUtils.isEmpty(widgetsDataMap)) {
+            List<Widget> widgetList =
+                    JsonUtils.convertValue(widgetsDataMap.get(DATA_STRING),
+                            new TypeReference<List<Widget>>() {
+                            });
             for (Widget widget : widgetList) {
                 List<WidgetData> widgetDataList =
                         widget.getData().stream()
@@ -87,7 +87,8 @@ public class WidgetsDataHelper {
                                 .collect(Collectors.toList());
                 widget.setData(widgetDataList);
             }
+            return widgetList;
         }
-        return widgetList;
+        return null;
     }
 }
