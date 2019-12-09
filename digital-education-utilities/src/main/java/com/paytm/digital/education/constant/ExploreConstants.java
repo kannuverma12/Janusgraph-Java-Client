@@ -199,6 +199,7 @@ public interface ExploreConstants {
     // Detail APIs constants
     String EXAM_SHORT_NAME     = "exam_short_name";
     String EXAM_FULL_NAME      = "exam_full_name";
+    String ABOUT_EXAM          = "about_exam";
     String COURSE_PREFIX       = "course.";
     String INSTITUTE_PREFIX    = "institute.";
     String HIGHLIGHTS_TEMPLATE = "highlights";
@@ -336,7 +337,10 @@ public interface ExploreConstants {
     String LANDING                       = "landing";
     String SECTIONS                      = "sections";
     String NAME                          = "name";
+    String FULL_NAME                     = "full_name";
     String FAILED                        = "failed";
+    String URL_DISPLAY_KEY               = "url_display_key";
+    String DESCRIPTION                   = "description";
     String PARTIAL_FAILED                = "partial_failed";
 
     //Sections constants

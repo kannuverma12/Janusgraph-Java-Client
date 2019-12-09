@@ -32,7 +32,7 @@ import com.paytm.digital.education.explore.database.repository.InstituteReposito
 import com.paytm.digital.education.explore.enums.CourseStream;
 import com.paytm.digital.education.explore.response.dto.common.Widget;
 import com.paytm.digital.education.explore.response.dto.common.WidgetData;
-import com.paytm.digital.education.explore.service.helper.WidgetsDataHelper;
+import com.paytm.digital.education.explore.service.helper.SimilarInstituteHelper;
 import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
@@ -61,9 +61,9 @@ public class SimilarInstituteServiceImpl {
 
     private static final Logger log = LoggerFactory.getLogger(SimilarInstituteServiceImpl.class);
 
-    private CommonMongoRepository commonMongoRepository;
-    private InstituteRepository   instituteRepository;
-    private WidgetsDataHelper     widgetsDataHelper;
+    private CommonMongoRepository  commonMongoRepository;
+    private InstituteRepository    instituteRepository;
+    private SimilarInstituteHelper similarInstituteHelper;
 
     private static List<String> projectionFields =
             Arrays.asList(INSTITUTE_ID, OFFICIAL_NAME, GALLERY_LOGO, OFFICIAL_ADDRESS,
@@ -90,8 +90,7 @@ public class SimilarInstituteServiceImpl {
                 log.error("Error caught while getting similar colleges for the instituteId : "
                         + institute.getInstituteId(), ex);
             }
-            return widgetsDataHelper
-                    .getWidgets(INSTITUTE.name().toLowerCase(), institute.getInstituteId());
+            return similarInstituteHelper.getSimilarInstituteWigets(institute);
         }
         return null;
     }

@@ -5,12 +5,16 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CampusEventDetail {
+public class CampusEventDetail implements Serializable {
+
+    private static final long serialVersionUID = 2033625092172304947L;
+
     @JsonProperty("event_type")
     private String eventType;
 

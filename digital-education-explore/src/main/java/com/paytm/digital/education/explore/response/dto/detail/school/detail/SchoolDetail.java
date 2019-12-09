@@ -20,6 +20,8 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor
 public class SchoolDetail implements CTAInfoHolderWithDefaultSchoolSettings, Serializable {
+    private static final long serialVersionUID = -4842586288197124640L;
+
     @JsonProperty("school_id")
     private Long schoolId;
 

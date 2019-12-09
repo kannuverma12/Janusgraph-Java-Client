@@ -4,9 +4,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Placement {
+public class Placement implements Serializable {
+
+    private static final long serialVersionUID = 4804286047261626936L;
 
     @JsonProperty("degree")
     private String degree;

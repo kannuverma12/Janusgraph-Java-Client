@@ -11,6 +11,8 @@ import java.io.Serializable;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PaytmKeys implements Serializable {
 
+    private static final long serialVersionUID = 373337147728599200L;
+
     public static class Constants {
 
         public static final String PAYTM_KEYS = "paytm_keys";

@@ -18,6 +18,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Board implements Serializable {
+    private static final long serialVersionUID = 7570905243672352856L;
 
     @JsonProperty("name")
     private SchoolBoardType name;

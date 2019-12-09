@@ -15,6 +15,8 @@ import java.io.Serializable;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SchoolOfficialAddress implements Serializable {
 
+    private static final long serialVersionUID = -4715217337527793707L;
+
     @Field("city")
     @JsonProperty("city")
     private String city;

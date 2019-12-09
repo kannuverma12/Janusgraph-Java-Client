@@ -175,7 +175,7 @@ public enum ErrorEnum {
     INVALID_EXAM_ID_FOR_EXAM_NAME(4074, "Blank exam id provided for exam name %s .", BAD_REQUEST,
             1),
     SOMETHING_BROKE_WHILE_SERIALIZING_DESERIALIZING(4075,
-            "Something broke internally.", INTERNAL_SERVER_ERROR,0),
+            "Something broke while serializing/deserializing.", INTERNAL_SERVER_ERROR,0),
     CACHE_BEAN_KEY_INACCESSIBLE(4076, "Cache Bean Inaccessible. Bean - %s, Key - %s",
             INTERNAL_SERVER_ERROR, 2),
     TEST_ENUM(4077, "Test Enum", INTERNAL_SERVER_ERROR, 0),
@@ -186,7 +186,6 @@ public enum ErrorEnum {
     INVALID_MERCHANT_SOURCE_MAPPING_DATA(4081,
             "No merchant source data present for entityId  %s, cannot set mapping", BAD_REQUEST, 1)
     ;
-
 
     private final int        internalCode;
     private final String     externalMessage;

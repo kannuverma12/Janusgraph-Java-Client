@@ -10,6 +10,7 @@ import com.paytm.digital.education.admin.response.PaytmSourceDataResponse;
 
 import com.paytm.digital.education.admin.validator.PaytmSourceDataValidator;
 import com.paytm.digital.education.constant.ExploreConstants;
+import com.paytm.digital.education.constant.SchoolConstants;
 import com.paytm.digital.education.database.entity.Course;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Institute;
@@ -21,7 +22,7 @@ import com.paytm.digital.education.database.repository.ExamRepository;
 import com.paytm.digital.education.database.repository.PaytmSourceDataRepository;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.enums.EntitySourceType;
-import com.paytm.digital.education.explore.constants.SchoolConstants;
+import com.paytm.digital.education.constant.SchoolConstants;
 import com.paytm.digital.education.explore.database.repository.InstituteRepository;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.utility.CommonUtils;
