@@ -34,26 +34,26 @@ public class PaytmSourceDataAdminController {
 
     private PaytmSourceDataServiceImpl paytmSourceDataService;
 
-    @PostMapping("/admin/v1/paytmSourceData")
+    @PostMapping("/admin/v2/paytmSourceData")
     public @ResponseBody PaytmSourceDataResponse createPaytmSourceData(
             @RequestBody @Valid PaytmSourceDataRequest paytmSourceDataRequest) {
         return paytmSourceDataService.savePaytmSourceData(paytmSourceDataRequest);
     }
 
-    @GetMapping("/admin/v1/paytmSourceData/{entity}/{entity_id}")
+    @GetMapping("/admin/v2/paytmSourceData/{entity}/{entity_id}")
     public @ResponseBody PaytmSourceResponse getPaytmSourceData(
             @NotNull @PathVariable("entity") EducationEntity entity,
             @PathVariable("entity_id") Long entityId) {
         return paytmSourceDataService.getPaytmSourceData(entity, entityId);
     }
 
-    @DeleteMapping("/admin/v1/paytmSourceData")
+    @DeleteMapping("/admin/v2/paytmSourceData")
     public @ResponseBody PaytmSourceDataResponse deletePaytmSourceData(
             @RequestBody @Valid PaytmSourceDataRequest paytmSourceDataRequest) {
         return paytmSourceDataService.deletePaytmSourceData(paytmSourceDataRequest);
     }
 
-    @GetMapping("/admin/v1/merchantSourceData/{entity}/{entity_id}")
+    @GetMapping("/admin/v2/merchantSourceData/{entity}/{entity_id}")
     public @ResponseBody MerchantSourceResponse getMerchantSourceData(
             @NotNull @PathVariable("entity") EducationEntity entity,
             @PathVariable("entity_id") Long entityId) {

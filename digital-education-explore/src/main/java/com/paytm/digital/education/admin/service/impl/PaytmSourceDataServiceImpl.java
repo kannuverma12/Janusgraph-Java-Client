@@ -9,6 +9,7 @@ import com.paytm.digital.education.admin.response.PaytmSourceResponse;
 import com.paytm.digital.education.admin.response.PaytmSourceDataResponse;
 
 import com.paytm.digital.education.admin.validator.PaytmSourceDataValidator;
+import com.paytm.digital.education.constant.ExploreConstants;
 import com.paytm.digital.education.database.entity.Course;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Institute;
@@ -20,6 +21,7 @@ import com.paytm.digital.education.database.repository.ExamRepository;
 import com.paytm.digital.education.database.repository.PaytmSourceDataRepository;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.enums.EntitySourceType;
+import com.paytm.digital.education.explore.constants.SchoolConstants;
 import com.paytm.digital.education.explore.database.repository.InstituteRepository;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.utility.CommonUtils;
@@ -70,7 +72,6 @@ public class PaytmSourceDataServiceImpl {
                     .findByEntityIdAndEducationEntityAndSource(paytmSourceData.getEntityId(),
                             paytmSourceDataRequest.getEducationEntity().name(),
                             EntitySourceType.PAYTM.name());
-
 
             if (Objects.isNull(paytmSourceDataInDb)) {
                 paytmSourceDataInDb = new PaytmSourceDataEntity();
@@ -218,7 +219,7 @@ public class PaytmSourceDataServiceImpl {
                 break;
             case SCHOOL:
                 School school =
-                        commonMongoRepository.getEntityById("school_id", entityId, School.class);
+                        commonMongoRepository.getEntityById(SchoolConstants.SCHOOL_ID, entityId, School.class);
                 if (Objects.nonNull(school)) {
                     Map<String, Object> entityDatamap =
                             mapper.convertValue(school, new TypeReference<Map<String, Object>>() {
@@ -229,7 +230,7 @@ public class PaytmSourceDataServiceImpl {
                 break;
             case COURSE:
                 Course course =
-                        commonMongoRepository.getEntityById("course_id", entityId, Course.class);
+                        commonMongoRepository.getEntityById(ExploreConstants.COURSE_ID, entityId, Course.class);
                 if (Objects.nonNull(course)) {
                     Map<String, Object> entityDatamap =
                             mapper.convertValue(course, new TypeReference<Map<String, Object>>() {
