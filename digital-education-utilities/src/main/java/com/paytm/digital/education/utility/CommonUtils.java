@@ -8,6 +8,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -77,6 +78,18 @@ public class CommonUtils {
         return jodaDate1.equals(jodaDate2) || jodaDate1.isAfter(jodaDate2);
     }
 
+    public boolean isDateAfter(Date d1, Date d2) {
+        LocalDate jodaDate1 = LocalDate.fromDateFields(d1);
+        LocalDate jodaDate2 = LocalDate.fromDateFields(d2);
+        return jodaDate1.isAfter(jodaDate2);
+    }
+
+    public boolean isDateEqual(Date d1, Date d2) {
+        LocalDate jodaDate1 = LocalDate.fromDateFields(d1);
+        LocalDate jodaDate2 = LocalDate.fromDateFields(d2);
+        return jodaDate1.isEqual(jodaDate2);
+    }
+
     public <T> Predicate<T> distinctBy(Function<? super T, ?> keyExtractor) {
         Map<Object, Boolean> seen = new HashMap<>();
         return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
@@ -104,5 +117,17 @@ public class CommonUtils {
 
     public static Long randomLong(Long min, Long max) {
         return min + (long) (Math.random() * (max - min));
+    }
+
+    public static Date setLastDateOfMonth(Date inDate) {
+        if (Objects.nonNull(inDate)) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(inDate);
+            cal.add(Calendar.MONTH, 1);
+            cal.set(Calendar.DAY_OF_MONTH, 1);
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            return cal.getTime();
+        }
+        return null;
     }
 }

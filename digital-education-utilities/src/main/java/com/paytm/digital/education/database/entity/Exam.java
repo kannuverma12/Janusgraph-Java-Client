@@ -15,7 +15,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-@Document(collection = "exam")
+@Document(collection = "exam_new")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Exam extends Base {
 

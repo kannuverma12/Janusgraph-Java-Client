@@ -1,5 +1,6 @@
 package com.paytm.digital.education.database.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -11,6 +12,7 @@ import java.util.List;
 @Data
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Instance {
 
     @Field("admission_year")
@@ -58,4 +60,6 @@ public class Instance {
 
     @Field("results_url")
     private String resultUrl;
+
+    private String examName;
 }

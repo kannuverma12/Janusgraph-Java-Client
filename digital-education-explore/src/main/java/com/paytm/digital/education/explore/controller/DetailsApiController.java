@@ -133,7 +133,7 @@ public class DetailsApiController {
                                 @RequestHeader(value = "fe_client", required = false, defaultValue = "WEB")
                                         Client client) {
         exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
-        return schoolService
+        return detailsService
                 .getSchoolDetails(schoolId, client, schoolName, fields, fieldGroup, userId);
     }
 

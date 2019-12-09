@@ -14,6 +14,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,7 +26,7 @@ import static com.sun.org.apache.xml.internal.utils.LocaleUtility.EMPTY_STRING;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class BoardData {
+public class BoardData implements Serializable {
     @Field("affiliation_type")
     @JsonProperty("affiliation_type")
     private String affiliationType;

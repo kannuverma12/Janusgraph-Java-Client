@@ -1,5 +1,21 @@
 package com.paytm.digital.education.serviceimpl.helper;
 
+import static com.paytm.digital.education.constant.CommonConstants.APPLICATION;
+import static com.paytm.digital.education.constant.CommonConstants.DATES;
+import static com.paytm.digital.education.constant.CommonConstants.EVENT_TYPE_EXAM;
+import static com.paytm.digital.education.constant.CommonConstants.EXAM_CUTOFF_CASTEGROUP;
+import static com.paytm.digital.education.constant.CommonConstants.EXAM_CUTOFF_GENDER;
+import static com.paytm.digital.education.constant.CommonConstants.EXAM_DEGREES;
+import static com.paytm.digital.education.constant.CommonConstants.EXAM_SEARCH_NAMESPACE;
+import static com.paytm.digital.education.constant.CommonConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.constant.CommonConstants.MMM_YYYY;
+import static com.paytm.digital.education.constant.CommonConstants.OTHER_CATEGORIES;
+import static com.paytm.digital.education.constant.CommonConstants.YYYY_MM;
+import static com.paytm.digital.education.constant.CommonConstants.ZERO;
+import static com.paytm.digital.education.constant.ExploreConstants.NO_TOPIC_FOUND;
+import static com.paytm.digital.education.enums.Gender.OTHERS;
+import static java.util.Collections.emptyList;
+
 import com.paytm.digital.education.database.entity.Event;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Instance;
@@ -31,22 +47,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
-import static com.paytm.digital.education.constant.CommonConstants.APPLICATION;
-import static com.paytm.digital.education.constant.CommonConstants.DATES;
-import static com.paytm.digital.education.constant.CommonConstants.EVENT_TYPE_EXAM;
-import static com.paytm.digital.education.constant.CommonConstants.EXAM_CUTOFF_CASTEGROUP;
-import static com.paytm.digital.education.constant.CommonConstants.EXAM_CUTOFF_GENDER;
-import static com.paytm.digital.education.constant.CommonConstants.EXAM_DEGREES;
-import static com.paytm.digital.education.constant.CommonConstants.EXAM_SEARCH_NAMESPACE;
-import static com.paytm.digital.education.constant.CommonConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.constant.CommonConstants.MMM_YYYY;
-import static com.paytm.digital.education.constant.CommonConstants.OTHER_CATEGORIES;
-import static com.paytm.digital.education.constant.CommonConstants.YYYY_MM;
-import static com.paytm.digital.education.constant.CommonConstants.ZERO;
-import static com.paytm.digital.education.constant.ExploreConstants.NO_TOPIC_FOUND;
-import static com.paytm.digital.education.enums.Gender.OTHERS;
-import static java.util.Collections.emptyList;
 
 @AllArgsConstructor
 @Service
@@ -260,39 +260,58 @@ public class ExamInstanceHelper {
                 new ArrayList<>();
 
         if (!CollectionUtils.isEmpty(entityEvents)) {
-            Map<String, Object> typeDisplayNames =
-                    propertyReader.getPropertiesAsMapByKey(EXPLORE_COMPONENT, EXAM_SEARCH_NAMESPACE,
-                            DATES);
             entityEvents.forEach(event -> {
-                com.paytm.digital.education.dto.detail.Event
-                        respEvent =
-                        new com.paytm.digital.education.dto.detail.Event();
-                respEvent.setName(examName);
-                if (event.getDateRangeStart() != null) {
-                    respEvent.setDateEndRange(event.getDateRangeEnd());
-                    respEvent.setDateStartRange(event.getDateRangeStart());
-                    respEvent.setDateEndRangeTimestamp(event.getDateRangeEnd());
-                    respEvent.setDateStartRangeTimestamp(event.getDateRangeStart());
-                } else {
-                    respEvent.setDateStartRangeTimestamp(event.getDate());
-                    respEvent.setDateStartRange(event.getDate());
-                }
-                respEvent.setMonthTimestamp(DateUtil.stringToDate(event.getMonthDate(), YYYY_MM));
-                respEvent.setMonthDate(
-                        DateUtil.formatDateString(event.getMonthDate(), YYYY_MM, MMM_YYYY));
-                if (!CollectionUtils.isEmpty(typeDisplayNames) && typeDisplayNames
-                        .containsKey(event.getType())) {
-                    respEvent.setTypeDisplayName((String) typeDisplayNames.get(event.getType()));
-                } else {
-                    respEvent.setTypeDisplayName(event.getType());
-                }
-                respEvent.setModes(event.getModes());
-                respEvent.setType(event.getType());
-                respEvent.setCertainity(event.getCertainty());
+                com.paytm.digital.education.dto.detail.Event respEvent = convertToResponseEvent(event, examName);
                 responseEvents.add(respEvent);
             });
         }
         return responseEvents;
+    }
+
+    public com.paytm.digital.education.dto.detail.Event convertToResponseEvent(Event event, String examName) {
+        com.paytm.digital.education.dto.detail.Event
+                respEvent =
+                new com.paytm.digital.education.dto.detail.Event();
+        respEvent.setName(examName);
+        if (event.getDateRangeStart() != null) {
+            respEvent.setDateEndRange(event.getDateRangeEnd());
+            respEvent.setDateStartRange(event.getDateRangeStart());
+            respEvent.setDateEndRangeTimestamp(event.getDateRangeEnd());
+            respEvent.setDateStartRangeTimestamp(event.getDateRangeStart());
+        } else {
+            respEvent.setDateStartRangeTimestamp(event.getDate());
+            respEvent.setDateStartRange(event.getDate());
+        }
+        respEvent.setMonthTimestamp(DateUtil.stringToDate(event.getMonthDate(), YYYY_MM));
+        respEvent.setMonthDate(
+                DateUtil.formatDateString(event.getMonthDate(), YYYY_MM, MMM_YYYY));
+        Map<String, Object> typeDisplayNames =
+                propertyReader.getPropertiesAsMapByKey(EXPLORE_COMPONENT, EXAM_SEARCH_NAMESPACE,
+                        DATES);
+        if (!CollectionUtils.isEmpty(typeDisplayNames) && typeDisplayNames
+                .containsKey(event.getType())) {
+            respEvent.setTypeDisplayName((String) typeDisplayNames.get(event.getType()));
+        } else {
+            respEvent.setTypeDisplayName(event.getType());
+        }
+        respEvent.setModes(event.getModes());
+        respEvent.setType(event.getType());
+        respEvent.setCertainity(event.getCertainty());
+        respEvent.setDateName(event.getDateName());
+        respEvent.setOngoing(isOngoing(event));
+        return respEvent;
+    }
+
+    private Boolean isOngoing(Event event) {
+        Date curDate = new LocalDate().toDate();
+        if (Objects.nonNull(event.getDateRangeEnd())) {
+            // set ongoing to true if today's date exists between date range inclusively
+            return (CommonUtils.isDateEqualsOrAfter(curDate, event.getDateRangeStart())
+                    && CommonUtils.isDateEqualsOrAfter(event.getDateRangeEnd(), curDate));
+        }
+        // else check for the date field
+        return (Objects.nonNull(event.getDate()) && CommonUtils
+                .isDateEqual(event.getDate(), curDate));
     }
 
     public Map<String, Instance> getSubExamInstances(Exam exam, int parentInstanceId) {
@@ -385,7 +404,7 @@ public class ExamInstanceHelper {
             examAndCutOff.setGenders(genders);
         }
     }
-    
+
     private Optional<Instance> getInstanceAccordingToFilterAndComparator(
             List<Instance> instances,
             Predicate<EventInstanceDateHolder> predicate,

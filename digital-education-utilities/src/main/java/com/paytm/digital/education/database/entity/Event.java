@@ -1,5 +1,10 @@
 package com.paytm.digital.education.database.entity;
 
+import static com.paytm.digital.education.constant.DBConstants.NON_TENTATIVE;
+import static com.paytm.digital.education.constant.DBConstants.YYYY_MM;
+import static com.paytm.digital.education.utility.CommonUtils.setLastDateOfMonth;
+import static com.paytm.digital.education.utility.DateUtil.stringToDate;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -10,10 +15,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Date;
 import java.util.List;
-
-import static com.paytm.digital.education.constant.DBConstants.NON_TENTATIVE;
-import static com.paytm.digital.education.constant.DBConstants.YYYY_MM;
-import static com.paytm.digital.education.utility.DateUtil.stringToDate;
 
 @Data
 @ToString
@@ -55,14 +56,20 @@ public class Event {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date dateRangeEnd;
 
+    @Field("date_name")
+    @JsonProperty("date_name")
+    private String dateName;
+
     public Date calculateCorrespondingDate() {
         Date eventDate;
         if (NON_TENTATIVE.equalsIgnoreCase(this.getCertainty())) {
             eventDate = this.getDate() != null
                     ? this.getDate()
-                    : this.getDateRangeStart();
+                    : (this.getDateRangeEnd() != null
+                    ? this.getDateRangeEnd()
+                    : this.getDateRangeStart());
         } else {
-            eventDate = stringToDate(this.getMonthDate(), YYYY_MM);
+            eventDate = setLastDateOfMonth(stringToDate(this.getMonthDate(), YYYY_MM));
         }
         return eventDate;
     }

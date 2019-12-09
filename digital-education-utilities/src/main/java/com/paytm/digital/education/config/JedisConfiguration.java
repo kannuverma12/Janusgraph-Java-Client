@@ -2,9 +2,8 @@ package com.paytm.digital.education.config;
 
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
@@ -12,11 +11,12 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.Objects;
 
-@Component
-public class RedisConfiguration {
-    private static       Logger  log                        = LoggerFactory.getLogger(RedisConfiguration.class);
-    private static final Integer DEFAULT_CONNECTION_TIMEOUT = 5000;
-    private static final Integer DEFAULT_POOL_SIZE          = 50;
+@Configuration
+public class JedisConfiguration {
+    private static final Logger    log                        = LoggerFactory.getLogger(JedisConfiguration.class);
+    private static final Integer   DEFAULT_CONNECTION_TIMEOUT = 5000;
+    private static final Integer   DEFAULT_POOL_SIZE          = 50;
+
     @Value("${redis.host}")
     private              String  redisHost;
     @Value("${redis.port}")
@@ -26,9 +26,6 @@ public class RedisConfiguration {
     @Value("${redis.connection_timeout_in_ms}")
     private              String  redisConnectionTimeoutInMs;
     private static       JedisPool jedisPool;
-
-    public RedisConfiguration() {
-    }
 
     @PostConstruct
     public void init() {
