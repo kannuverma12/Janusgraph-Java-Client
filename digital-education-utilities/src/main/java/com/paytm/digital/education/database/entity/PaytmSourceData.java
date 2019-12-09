@@ -19,33 +19,25 @@ import java.util.Map;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-//@Document("paytm_source_data")
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
-//@CompoundIndexes({
-//        @CompoundIndex(name = "entity_entity_id", def = "{'entity' : 1, 'entity_id': 1} ",unique = true)
-//    })
 public class PaytmSourceData {
 
     @Id
-    @Field("_id")
     private String id;
 
-    @Field("entity_id")
     @JsonProperty("entity_id")
     private Long entityId;
 
-    @Field("entity")
     @JsonProperty("entity")
     private EducationEntity educationEntity;
 
-    @Field("source")
+    @JsonProperty("source")
     private EntitySourceType source;
 
-    @Field("is_active")
+    @JsonProperty("is_active")
     private boolean isActive;
 
-    @Field("data")
     @JsonProperty("entity_data")
     private Map<String, Object> data;
 

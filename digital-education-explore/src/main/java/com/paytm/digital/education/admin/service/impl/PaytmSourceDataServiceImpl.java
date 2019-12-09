@@ -160,9 +160,18 @@ public class PaytmSourceDataServiceImpl {
                     .findByEntityIdAndEducationEntityAndSource(paytmSourceData.getEntityId(),
                             paytmSourceDataRequest.getEducationEntity().name(),
                             EntitySourceType.PAYTM.name());
+
+            if (Objects.isNull(paytmSourceDataInDb)) {
+                log.info(
+                        "Paytm source data is not present in db for entityId :{}, entity: {}, skipping",
+                        paytmSourceData.getEntityId(),
+                        paytmSourceDataRequest.getEducationEntity());
+                continue;
+            }
             paytmSourceDataInDb.setActive(false);
-            paytmSourceDataRepository.save(paytmSourceDataInDb);
-            paytmSourceDataUpdatedList.add(paytmSourceDataInDb);
+            PaytmSourceDataEntity paytmSourceDataUpdated =
+                    paytmSourceDataRepository.save(paytmSourceDataInDb);
+            paytmSourceDataUpdatedList.add(paytmSourceDataUpdated);
         }
 
         paytmSourceDataResponse.setEducationEntity(paytmSourceDataRequest.getEducationEntity());
