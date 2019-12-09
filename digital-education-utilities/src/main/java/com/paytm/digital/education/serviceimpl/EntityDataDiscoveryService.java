@@ -125,7 +125,8 @@ public class EntityDataDiscoveryService {
                     Map<String, Object> subitems =
                             (Map<String, Object>) topExamsPerLevel.getValue();
                     List<Map<String, Object>> topExams =
-                            (List<Map<String, Object>>) subitems.get(SUB_ITEMS);
+                            (List<Map<String, Object>>) Optional.ofNullable(subitems.get(SUB_ITEMS))
+                                    .orElse(new ArrayList<>());
                     List<Long> itemsExamIds =
                             topExams.stream().map(exam -> ((Integer) exam.get(EXAM_ID)).longValue())
                                     .collect(Collectors.toList());
@@ -139,7 +140,8 @@ public class EntityDataDiscoveryService {
                     Map<String, Object> subitems =
                             (Map<String, Object>) topExamsPerLevel.getValue();
                     List<Map<String, Object>> topExams =
-                            (List<Map<String, Object>>) subitems.get(SUB_ITEMS);
+                            (List<Map<String, Object>>) Optional.ofNullable(subitems.get(SUB_ITEMS))
+                                    .orElse(new ArrayList<>());
                     updateExamData(topExams, examEntityMap);
                 }
             }

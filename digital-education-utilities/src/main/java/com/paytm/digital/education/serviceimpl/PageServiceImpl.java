@@ -1,7 +1,6 @@
 package com.paytm.digital.education.serviceimpl;
 
 import com.paytm.digital.education.constant.ErrorCode;
-import com.paytm.digital.education.database.dao.StreamDAO;
 import com.paytm.digital.education.database.entity.Page;
 import com.paytm.digital.education.database.entity.Section;
 import com.paytm.digital.education.database.repository.PageRepository;
@@ -14,7 +13,6 @@ import com.paytm.education.logger.LoggerFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
