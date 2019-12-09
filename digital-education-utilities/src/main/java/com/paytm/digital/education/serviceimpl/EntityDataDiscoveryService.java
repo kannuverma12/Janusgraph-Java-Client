@@ -12,6 +12,7 @@ import static com.paytm.digital.education.constant.ExploreConstants.FULL_NAME;
 import static com.paytm.digital.education.constant.ExploreConstants.GALLERY_LOGO;
 import static com.paytm.digital.education.constant.ExploreConstants.ICON;
 import static com.paytm.digital.education.constant.ExploreConstants.ID;
+import static com.paytm.digital.education.constant.ExploreConstants.IMAGE_URL;
 import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.constant.ExploreConstants.LOGO;
 import static com.paytm.digital.education.constant.ExploreConstants.NAME;
@@ -215,13 +216,13 @@ public class EntityDataDiscoveryService {
     }
 
     public void updateSchoolData(Section section) {
-        if (Objects.nonNull(section) && CollectionUtils.isEmpty(section.getItems())) {
+        if (Objects.nonNull(section) && !CollectionUtils.isEmpty(section.getItems())) {
             List<Long> schoolIds = section.getItems().stream()
                             .map(item -> ((Integer)item.get(SCHOOL_ID)).longValue())
                             .collect(Collectors.toList());
             Map<Long, School> schoolEntityMap = getSchoolEntityMap(schoolIds);
             for (Map<String, Object> item : section.getItems()) {
-                Long schoolId = ((Long) item.get(SCHOOL_ID)).longValue();
+                Long schoolId = ((Integer) item.get(SCHOOL_ID)).longValue();
                 if (schoolEntityMap.containsKey(schoolId)) {
                     School school = schoolEntityMap.get(schoolId);
                     item.put(SCHOOL_OFFICIAL_NAME, school.getOfficialName());
@@ -274,6 +275,15 @@ public class EntityDataDiscoveryService {
                 } else {
                     log.error("Exam Id : {} not present in our database .", examId);
                 }
+            }
+        }
+    }
+
+    public void updateBannerLinks(Section section) {
+        if (!CollectionUtils.isEmpty(section.getItems())) {
+            for (Map<String, Object> item : section.getItems()) {
+                item.put(IMAGE_URL, CommonUtil
+                        .getAbsoluteUrl(item.get(IMAGE_URL).toString(), section.getType()));
             }
         }
     }
