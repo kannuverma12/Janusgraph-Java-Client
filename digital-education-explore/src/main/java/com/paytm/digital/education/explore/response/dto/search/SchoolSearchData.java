@@ -6,13 +6,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.dto.OfficialAddress;
 import com.paytm.digital.education.explore.es.model.GeoLocation;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
 
 import static com.paytm.digital.education.constant.ExploreConstants.SCHOOL_SEARCH_CTA;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SchoolSearchData extends SearchBaseData implements CTAInfoHolderWithDefaultSchoolSettings {
+@NoArgsConstructor
+public class SchoolSearchData extends SearchBaseData implements CTAInfoHolderWithDefaultSchoolSettings, Serializable {
 
     @JsonProperty("school_id")
     private long schoolId;

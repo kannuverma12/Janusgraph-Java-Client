@@ -32,4 +32,7 @@ public class Event {
 
     @JsonProperty("certainty")
     private String certainty;
+
+    @JsonProperty("date_name")
+    private String dateName;
 }

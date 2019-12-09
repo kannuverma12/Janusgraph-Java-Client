@@ -3,13 +3,19 @@ package com.paytm.digital.education.explore.response.dto.common;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.explore.enums.CTAType;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 @Data
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CTA {
+@NoArgsConstructor
+@AllArgsConstructor
+public class CTA implements Serializable {
 
     @JsonProperty("logo")
     private String logo;

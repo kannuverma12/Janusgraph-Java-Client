@@ -2,6 +2,7 @@ package com.paytm.digital.education.explore.service.impl;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.paytm.digital.education.annotation.EduCache;
 import com.paytm.digital.education.config.SchoolConfig;
 import com.paytm.digital.education.database.entity.Board;
 import com.paytm.digital.education.database.entity.BoardData;
@@ -13,7 +14,6 @@ import com.paytm.digital.education.database.entity.SchoolPaytmKeys;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.enums.ClassType;
 import com.paytm.digital.education.enums.Client;
-import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.enums.es.DataSortOrder;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.exception.EntityRequiredFieldMissingInDBException;
@@ -49,16 +49,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -82,9 +79,8 @@ import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.elasticsearch.common.geo.parsers.GeoWKTParser.COMMA;
 
-
 @Service
-public class SchoolDetailServiceImpl implements SchoolService {
+public class SchoolServiceImpl implements SchoolService {
 
     private final CommonMongoRepository    commonMongoRepository;
     private final DerivedAttributesHelper  derivedAttributesHelper;
@@ -97,7 +93,7 @@ public class SchoolDetailServiceImpl implements SchoolService {
     private final BannerDataHelper         bannerDataHelper;
     private final int                      nearbySchoolsCount;
 
-    public SchoolDetailServiceImpl(
+    public SchoolServiceImpl(
             CommonMongoRepository commonMongoRepository,
             DerivedAttributesHelper derivedAttributesHelper,
             FacilityDataHelper facilityDataHelper,
@@ -121,25 +117,10 @@ public class SchoolDetailServiceImpl implements SchoolService {
         this.nearbySchoolsCount = nearbySchoolsCount;
     }
 
-    public List<School> getSchools(List<Long> entityIds, List<String> groupFields) {
-        if (CollectionUtils.isEmpty(groupFields)) {
-            throw new BadRequestException(INVALID_FIELD_GROUP,
-                    INVALID_FIELD_GROUP.getExternalMessage());
-        }
-
-        Set<Long> searchIds = new HashSet<>(entityIds);
-        List<School> schools =
-                commonMongoRepository
-                        .getEntityFieldsByValuesIn(SCHOOL_ID, new ArrayList<>(searchIds),
-                                School.class,
-                                groupFields);
-
-        return schools;
-    }
-
     @Override
+    @EduCache(cache = "schoolCache", keys = {"schoolId", "client.name", "fieldGroup"})
     public SchoolDetail getSchoolDetails(Long schoolId, Client client, String schoolName,
-            List<String> fields, String fieldGroup, Long userId) {
+            List<String> fields, String fieldGroup) {
         List<String> fieldsToBeFetched =
                 getFieldsByGroupAndCollectioName(SchoolConstants.SCHOOL, fields,
                         fieldGroup);
@@ -222,10 +203,6 @@ public class SchoolDetailServiceImpl implements SchoolService {
             schoolDetail.setCtaList(ctaList);
             addNearbySchoolsInResponse(schoolDetail, school);
 
-            if (Objects.nonNull(userId) && userId > 0) {
-                updateShortList(schoolDetail, SCHOOL, userId);
-            }
-
             if (!Client.APP.equals(client)) {
                 schoolDetail.setBanners(bannerDataHelper.getBannerData(entityName, client));
             }
@@ -282,17 +259,6 @@ public class SchoolDetailServiceImpl implements SchoolService {
                 .classTo(classLevelTriple.getMiddle())
                 .educationLevel(classLevelTriple.getRight())
                 .build();
-    }
-
-    private void updateShortList(SchoolDetail schoolDetail, EducationEntity educationEntity,
-            Long userId) {
-        List<Long> schoolIds = new ArrayList<>();
-        schoolIds.add(schoolDetail.getSchoolId());
-
-        List<Long> subscribedEntities = subscriptionDetailHelper
-                .getSubscribedEntities(educationEntity, userId, schoolIds);
-
-        schoolDetail.setShortlisted(!CollectionUtils.isEmpty(subscribedEntities));
     }
 
     private void addNearbySchoolsInResponse(SchoolDetail schoolDetail, School school) {
