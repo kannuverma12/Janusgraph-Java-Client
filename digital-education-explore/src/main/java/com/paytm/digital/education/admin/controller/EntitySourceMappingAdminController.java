@@ -32,20 +32,20 @@ public class EntitySourceMappingAdminController {
 
     private EntitySourceMappingServiceImpl entitySourceMappingService;
 
-    @PostMapping("/admin/v1/entitySourceMapping")
+    @PostMapping("/admin/v2/entitySourceMapping")
     public @ResponseBody EntitySourceMappingResponse createEntitySourceMapping(
             @RequestBody @Valid EntitySourceMappingRequest entitySourceMappingRequest) {
         return entitySourceMappingService.saveEntitySourceMapping(entitySourceMappingRequest);
     }
 
-    @GetMapping("/admin/v1/entitySourceMapping/{entity}/{entity_id}")
+    @GetMapping("/admin/v2/entitySourceMapping/{entity}/{entity_id}")
     public @ResponseBody EntitySourceMappingResponse getEntitySourceMapping(
             @NotNull @PathVariable("entity") EducationEntity entity,
             @PathVariable("entity_id") Long entityId) {
         return entitySourceMappingService.getEntitySourceMapping(entity, entityId);
     }
 
-    @DeleteMapping("/admin/v1/entitySourceMapping")
+    @DeleteMapping("/admin/v2/entitySourceMapping")
     public @ResponseBody EntitySourceMappingResponse deleteEntitySourceMapping(
             @RequestBody @Valid EntitySourceMappingRequest entitySourceMappingRequest) {
         return entitySourceMappingService.deleteEntitySourceMapping(entitySourceMappingRequest);
