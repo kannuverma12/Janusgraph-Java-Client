@@ -30,7 +30,7 @@ public class EntitySourceMappingServiceImpl {
     private static final Logger log =
             LoggerFactory.getLogger(EntitySourceMappingServiceImpl.class);
 
-    private EntitySourceMappingRepository entitySourceMappingRepository;
+    private EntitySourceMappingRepository    entitySourceMappingRepository;
     private EntitySourceMappingDataValidator validator;
 
     public EntitySourceMappingResponse saveEntitySourceMapping(
@@ -44,42 +44,67 @@ public class EntitySourceMappingServiceImpl {
         validator.validateEntitySourceMappingData(entitySourceMappingRequest);
 
         List<EntitySourceMappingEntity> entitySourceMappingEntityList = new ArrayList<>();
-        for (EntitySourceMappingData entitySourceMappingData : entitySourceMappingRequest
-                .getEntitySourceMappingData()) {
-
-            EntitySourceMappingEntity entitySourceMappingEntity = entitySourceMappingRepository
-                    .findByEntityIdAndEducationEntity(entitySourceMappingData.getEntityId(),
-                            entitySourceMappingRequest.getEducationEntity().name());
-
-            if (Objects.isNull(entitySourceMappingEntity)) {
-                entitySourceMappingEntity = new EntitySourceMappingEntity();
-                entitySourceMappingEntity
-                        .setEducationEntity(entitySourceMappingRequest.getEducationEntity());
-            }
-
-            CommonUtils.copyNonNullProperties(entitySourceMappingData, entitySourceMappingEntity);
-            entitySourceMappingEntity.setActive(true);
-            EntitySourceMappingEntity entitySourceMappingEntityUpdated =
-                    entitySourceMappingRepository.save(entitySourceMappingEntity);
-            entitySourceMappingEntityList.add(entitySourceMappingEntityUpdated);
-        }
-        EntitySourceMappingResponse entitySourceMappingResponse = new EntitySourceMappingResponse();
+        EntitySourceMappingResponse entitySourceMappingResponse =
+                new EntitySourceMappingResponse();
         entitySourceMappingResponse
                 .setEducationEntity(entitySourceMappingRequest.getEducationEntity());
-        entitySourceMappingResponse.setData(entitySourceMappingEntityList);
-        entitySourceMappingResponse.setStatus(SUCCESS);
+        entitySourceMappingResponse.setStatus(FAILED);
+        try {
+            for (EntitySourceMappingData entitySourceMappingData : entitySourceMappingRequest
+                    .getEntitySourceMappingData()) {
+
+                EntitySourceMappingEntity entitySourceMappingEntity = entitySourceMappingRepository
+                        .findByEntityIdAndEducationEntity(entitySourceMappingData.getEntityId(),
+                                entitySourceMappingRequest.getEducationEntity().name());
+
+                if (Objects.isNull(entitySourceMappingEntity)) {
+                    entitySourceMappingEntity = new EntitySourceMappingEntity();
+                    entitySourceMappingEntity
+                            .setEducationEntity(entitySourceMappingRequest.getEducationEntity());
+                }
+
+                CommonUtils
+                        .copyNonNullProperties(entitySourceMappingData, entitySourceMappingEntity);
+                entitySourceMappingEntity.setActive(true);
+                EntitySourceMappingEntity entitySourceMappingEntityUpdated =
+                        entitySourceMappingRepository.save(entitySourceMappingEntity);
+                if (Objects.nonNull(entitySourceMappingEntityUpdated)) {
+                    entitySourceMappingEntityList.add(entitySourceMappingEntityUpdated);
+                }
+            }
+
+            entitySourceMappingResponse.setData(entitySourceMappingEntityList);
+            if (!CollectionUtils.isEmpty(entitySourceMappingEntityList)
+                    && entitySourceMappingEntityList.size() == entitySourceMappingRequest
+                    .getEntitySourceMappingData()
+                    .size()) {
+                entitySourceMappingResponse.setStatus(SUCCESS);
+            } else if (!CollectionUtils.isEmpty(entitySourceMappingEntityList)
+                    && entitySourceMappingEntityList.size() > 0) {
+                entitySourceMappingResponse.setStatus(PARTIAL_FAILED);
+            }
+        } catch (Exception e) {
+            log.error(
+                    "Exception occurred while saving entity source mapping, returning failure response.",
+                    e);
+        }
         return entitySourceMappingResponse;
     }
 
     public EntitySourceMappingResponse getEntitySourceMapping(EducationEntity entity,
             Long entityId) {
         EntitySourceMappingResponse entitySourceMappingResponse = new EntitySourceMappingResponse();
+        entitySourceMappingResponse.setStatus(FAILED);
+        entitySourceMappingResponse.setEducationEntity(entity);
+
         EntitySourceMappingEntity entitySourceMappingEntity = entitySourceMappingRepository
                 .findByEntityIdAndEducationEntity(entityId,
                         entity.name());
-        entitySourceMappingResponse.setStatus(SUCCESS);
-        entitySourceMappingResponse.setEducationEntity(entity);
-        entitySourceMappingResponse.setData(Collections.singletonList(entitySourceMappingEntity));
+        if (Objects.nonNull(entitySourceMappingEntity)) {
+            entitySourceMappingResponse.setStatus(SUCCESS);
+            entitySourceMappingResponse
+                    .setData(Collections.singletonList(entitySourceMappingEntity));
+        }
         return entitySourceMappingResponse;
     }
 
@@ -90,39 +115,47 @@ public class EntitySourceMappingServiceImpl {
             return null;
         }
         EntitySourceMappingResponse entitySourceMappingResponse = new EntitySourceMappingResponse();
-        List<EntitySourceMappingEntity> paytmSourceDataUpdatedList = new ArrayList<>();
-
-        for (EntitySourceMappingData entitySourceMappingData : entitySourceMappingRequest
-                .getEntitySourceMappingData()) {
-            EntitySourceMappingEntity paytmSourceDataInDb = entitySourceMappingRepository
-                    .findByEntityIdAndEducationEntity(entitySourceMappingData.getEntityId(),
-                            entitySourceMappingRequest.getEducationEntity().name());
-
-            if (Objects.isNull(paytmSourceDataInDb)) {
-                log.info(
-                        "Entity Source Mapping is not present in db for entityId :{}, entity: {}, skipping",
-                        entitySourceMappingData.getEntityId(),
-                        entitySourceMappingRequest.getEducationEntity());
-                continue;
-            }
-            paytmSourceDataInDb.setActive(false);
-            EntitySourceMappingEntity entitySourceMappingEntityUpdated =
-                    entitySourceMappingRepository.save(paytmSourceDataInDb);
-            paytmSourceDataUpdatedList.add(entitySourceMappingEntityUpdated);
-        }
-
         entitySourceMappingResponse
                 .setEducationEntity(entitySourceMappingRequest.getEducationEntity());
-        entitySourceMappingResponse.setData(paytmSourceDataUpdatedList);
+        List<EntitySourceMappingEntity> entitySourceMappingResponseList = new ArrayList<>();
+
+        try {
+            for (EntitySourceMappingData entitySourceMappingData : entitySourceMappingRequest
+                    .getEntitySourceMappingData()) {
+                EntitySourceMappingEntity entitySourceMappingUpdated = entitySourceMappingRepository
+                        .findByEntityIdAndEducationEntity(entitySourceMappingData.getEntityId(),
+                                entitySourceMappingRequest.getEducationEntity().name());
+
+                if (Objects.isNull(entitySourceMappingUpdated)) {
+                    log.info(
+                            "Entity Source Mapping is not present in db for entityId :{}, entity: {}, skipping",
+                            entitySourceMappingData.getEntityId(),
+                            entitySourceMappingRequest.getEducationEntity());
+                    continue;
+                }
+                entitySourceMappingUpdated.setActive(false);
+                EntitySourceMappingEntity entitySourceMappingEntityUpdated =
+                        entitySourceMappingRepository.save(entitySourceMappingUpdated);
+                if (Objects.nonNull(entitySourceMappingEntityUpdated)) {
+                    entitySourceMappingResponseList.add(entitySourceMappingEntityUpdated);
+                }
+            }
+        } catch (Exception e) {
+            log.error(
+                    "Exception occurred while saving entity source mapping, returning failure response.",
+                    e);
+        }
+
+        entitySourceMappingResponse.setData(entitySourceMappingResponseList);
         entitySourceMappingResponse.setStatus(FAILED);
 
-        if (!CollectionUtils.isEmpty(paytmSourceDataUpdatedList)
-                && paytmSourceDataUpdatedList.size() == entitySourceMappingRequest
+        if (!CollectionUtils.isEmpty(entitySourceMappingResponseList)
+                && entitySourceMappingResponseList.size() == entitySourceMappingRequest
                 .getEntitySourceMappingData()
                 .size()) {
             entitySourceMappingResponse.setStatus(SUCCESS);
-        } else if (!CollectionUtils.isEmpty(paytmSourceDataUpdatedList)
-                && paytmSourceDataUpdatedList.size() > 0) {
+        } else if (!CollectionUtils.isEmpty(entitySourceMappingResponseList)
+                && entitySourceMappingResponseList.size() > 0) {
             entitySourceMappingResponse.setStatus(PARTIAL_FAILED);
         }
         return entitySourceMappingResponse;
