@@ -14,7 +14,7 @@ import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.enums.EntitySourceType;
 import com.paytm.digital.education.exception.EducationException;
 
-import com.paytm.digital.education.explore.constants.SchoolConstants;
+import com.paytm.digital.education.constant.SchoolConstants;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 

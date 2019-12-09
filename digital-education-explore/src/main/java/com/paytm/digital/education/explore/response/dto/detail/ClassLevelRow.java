@@ -15,6 +15,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClassLevelRow implements Serializable {
+    private static final long serialVersionUID = -5819772704296122643L;
+
     @JsonProperty("education_level")
     private ClassLevel educationLevel;
 

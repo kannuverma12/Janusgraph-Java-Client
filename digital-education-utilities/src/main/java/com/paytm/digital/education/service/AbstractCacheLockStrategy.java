@@ -25,7 +25,7 @@ public abstract class AbstractCacheLockStrategy implements CacheLockStrategy {
         try {
             return toHexString(o);
         } catch (IOException e) {
-            logger.error("Key - {}, Object - {}. Unable to stringify data for key.", e, key, o);
+            logger.error("Key - {}. Unable to serialize data for key.", e, key);
             throw new SerializationException(e);
         }
     }
@@ -34,7 +34,7 @@ public abstract class AbstractCacheLockStrategy implements CacheLockStrategy {
         try {
             return fromHexString(data);
         } catch (IOException | ClassNotFoundException e) {
-            logger.error("Key - {}, Object - {}. Unable to stringify data for key.", e, key, data);
+            logger.error("Key - {}. Unable to serialize data for key.", e, key);
             throw new SerializationException(e);
         }
     }

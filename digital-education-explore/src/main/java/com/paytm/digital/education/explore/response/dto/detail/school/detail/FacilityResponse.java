@@ -9,6 +9,9 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 public class FacilityResponse implements Serializable {
+
+    private static final long serialVersionUID = -511298418784159332L;
+
     @JsonProperty("display_name")
     private String displayName;
 

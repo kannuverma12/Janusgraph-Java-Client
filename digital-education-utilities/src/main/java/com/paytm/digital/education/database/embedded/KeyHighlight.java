@@ -16,6 +16,8 @@ import java.io.Serializable;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class KeyHighlight implements Serializable {
 
+    private static final long serialVersionUID = -8463087836562100120L;
+
     @URL
     @NotEmpty
     private String logo;

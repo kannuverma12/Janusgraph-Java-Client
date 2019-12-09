@@ -277,7 +277,7 @@ public class InstituteDetailServiceImpl {
 
         List<Long> instituteIds = new ArrayList<>();
         instituteIds.add(instituteDetail.getInstituteId());
-        if (Client.APP.equals(client)) {
+        if (Client.APP.equals(client) && !CollectionUtils.isEmpty(instituteDetail.getWidgets())) {
             for (Widget widget : instituteDetail.getWidgets()) {
                 if (INSTITUTE.name().equals(widget.getEntity())) {
                     for (WidgetData widgetData : widget.getData()) {
@@ -292,7 +292,7 @@ public class InstituteDetailServiceImpl {
             if (subscribedEntities.contains(instituteDetail.getInstituteId())) {
                 instituteDetail.setShortlisted(true);
             }
-            if (Client.APP.equals(client)) {
+            if (Client.APP.equals(client) && !CollectionUtils.isEmpty(instituteDetail.getWidgets())) {
                 for (Widget widget : instituteDetail.getWidgets()) {
                     if (INSTITUTE.name().equals(widget.getEntity())) {
                         for (WidgetData widgetData : widget.getData()) {

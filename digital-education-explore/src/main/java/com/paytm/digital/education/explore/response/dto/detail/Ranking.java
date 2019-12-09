@@ -5,10 +5,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties( { "label", "institute_id" })
-public class Ranking {
+public class Ranking implements Serializable {
+
+    private static final long serialVersionUID = -1862888698435339250L;
 
     @JsonProperty("rank")
     public Integer rank;

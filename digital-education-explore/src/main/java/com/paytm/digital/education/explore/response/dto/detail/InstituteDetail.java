@@ -12,6 +12,7 @@ import com.paytm.digital.education.explore.response.dto.common.Widget;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,7 +21,9 @@ import static com.paytm.digital.education.enums.EducationEntity.INSTITUTE;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class InstituteDetail implements CTAInfoHolder {
+public class InstituteDetail implements CTAInfoHolder, Serializable {
+
+    private static final long serialVersionUID = -653557675224255635L;
 
     @JsonProperty("institute_id")
     private long instituteId;
