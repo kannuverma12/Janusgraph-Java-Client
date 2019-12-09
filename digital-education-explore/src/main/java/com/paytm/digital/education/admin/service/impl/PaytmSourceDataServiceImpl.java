@@ -169,7 +169,8 @@ public class PaytmSourceDataServiceImpl {
                 continue;
             }
             paytmSourceDataInDb.setActive(false);
-            PaytmSourceDataEntity paytmSourceDataUpdated =paytmSourceDataRepository.save(paytmSourceDataInDb);
+            PaytmSourceDataEntity paytmSourceDataUpdated =
+                    paytmSourceDataRepository.save(paytmSourceDataInDb);
             paytmSourceDataUpdatedList.add(paytmSourceDataUpdated);
         }
 
