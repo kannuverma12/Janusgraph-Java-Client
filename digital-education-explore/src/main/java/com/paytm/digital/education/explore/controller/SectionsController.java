@@ -19,8 +19,8 @@ import static com.paytm.digital.education.constant.ExploreConstants.EDUCATION_BA
 @AllArgsConstructor
 public class SectionsController {
 
-    private PageServiceImpl        pageService;
     private SectionServiceImpl sectionService;
+    private PageServiceImpl    pageService;
 
     @GetMapping("/v1/page/{pageName}/sections")
     public List<Section> getPageSections(@PathVariable("pageName") String pageName) {

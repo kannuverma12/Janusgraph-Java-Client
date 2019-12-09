@@ -1,4 +1,4 @@
-package com.paytm.digital.education.explore.constants;
+package com.paytm.digital.education.constant;
 
 public interface SchoolConstants {
     String SCHOOL_CITY                      = "city";
@@ -14,6 +14,7 @@ public interface SchoolConstants {
     String SCHOOL_ID                     = "school_id";
     String OFFICIAL_NAME_SEARCH          = "official_name.search";
     String OFFICIAL_NAME                 = "official_name";
+    String SCHOOL_LOGO                   = "gallery.logo";
     String NAMES                         = "names";
     String SCHOOL_LOCATION               = "location";
     String GEODISTANCE_DEFAULT_RANGE_KMS = "20";

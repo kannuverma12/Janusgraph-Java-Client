@@ -38,7 +38,7 @@ import static com.paytm.digital.education.admin.utility.AdminConstants.PAYTM_RAN
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_NAME;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_ID;
+import static com.paytm.digital.education.constant.SchoolConstants.SCHOOL_ID;
 import static java.util.Collections.emptyList;
 
 @Slf4j
