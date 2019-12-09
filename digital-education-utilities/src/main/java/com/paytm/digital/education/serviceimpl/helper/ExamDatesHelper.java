@@ -28,6 +28,20 @@ public class ExamDatesHelper {
 
     private final ExamInstanceHelper instanceHelper;
 
+    private static Comparator<Event> eventComparator = new Comparator<Event>() {
+        @Override public int compare(Event o1, Event o2) {
+            if (CommonUtils.isDateEqual(o1.calculateCorrespondingDate(),
+                    o2.calculateCorrespondingDate())) {
+                if (NON_TENTATIVE.equalsIgnoreCase(o1.getCertainty()) && NON_TENTATIVE
+                        .equalsIgnoreCase(o2.getCertainty())) {
+                    return 0;
+                }
+                return NON_TENTATIVE.equalsIgnoreCase(o1.getCertainty()) ? -1 : 1;
+            }
+            return o1.calculateCorrespondingDate().compareTo(o2.calculateCorrespondingDate());
+        }
+    };
+
     public List<ImportantDate> getImportantDates(Exam exam, int maxInstances) {
         List<Instance> instances = getNearestInstances(exam, maxInstances);
         return getImportantDates(instances);
@@ -45,7 +59,7 @@ public class ExamDatesHelper {
                 importantDate.setName(instance.getInstanceName());
                 importantDate.setExamName(instance.getExamName());
                 if (!CollectionUtils.isEmpty(instance.getEvents())) {
-                    Collections.sort(instance.getEvents(), Comparator.comparing(Event::calculateCorrespondingDate));
+                    Collections.sort(instance.getEvents(), eventComparator);
                     for (Event event : instance.getEvents()) {
                         if (CommonUtils
                                 .isDateEqualsOrAfter(event.calculateCorrespondingDate(), currentDate)) {
