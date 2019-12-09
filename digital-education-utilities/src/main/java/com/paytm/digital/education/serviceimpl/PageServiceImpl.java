@@ -89,6 +89,7 @@ public class PageServiceImpl implements PageService {
                             break;
                         case BANNER_MID:
                             dataDiscoveryService.updateBannerLinks(section);
+                            break;
                         default:
                     }
                     response.add(section);
