@@ -3,7 +3,7 @@ package com.paytm.digital.education.explore.validators;
 import com.paytm.digital.education.constant.ExploreConstants;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Institute;
-import com.paytm.digital.education.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.utility.CommonUtil;
 import lombok.AllArgsConstructor;
@@ -13,8 +13,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
@@ -24,12 +22,12 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_NA
 @AllArgsConstructor
 public class UrlParamsValidator {
 
-    CommonMongoRepository commonMongoRepository;
+    CommonEntityMongoDAO  commonEntityMongoDAO;
 
     public void validateInstuteUrlKey(long instituteId, String instituteUrlKey) {
         List<String> instituteFields = Arrays.asList(ExploreConstants.OFFICIAL_NAME);
-        Institute institute = commonMongoRepository
-                .getEntityByFields(INSTITUTE_ID, instituteId, Institute.class, instituteFields);
+        Institute institute =
+                commonEntityMongoDAO.getInstituteByIdsIn(instituteId, instituteFields);
         if (Objects.isNull(institute)) {
             throw new BadRequestException(INVALID_INSTITUTE_ID,
                     INVALID_INSTITUTE_ID.getExternalMessage());
@@ -43,8 +41,7 @@ public class UrlParamsValidator {
 
     public void validateExamUrlKey(long examId, String examUrlKey) {
         List<String> examFields = Arrays.asList(ExploreConstants.EXAM_FULL_NAME);
-        Exam exam = commonMongoRepository
-                .getEntityByFields(EXAM_ID, examId, Exam.class, examFields);
+        Exam exam = commonEntityMongoDAO.getExamById(examId, examFields);
         if (Objects.isNull(exam)) {
             throw new BadRequestException(INVALID_EXAM_ID,
                     INVALID_EXAM_ID.getExternalMessage());

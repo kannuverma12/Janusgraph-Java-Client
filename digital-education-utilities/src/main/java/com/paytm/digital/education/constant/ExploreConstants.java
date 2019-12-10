@@ -364,6 +364,13 @@ public interface ExploreConstants {
 
     String NO_TOPIC_FOUND = "No Topic Found";
 
+    //Incremental data constants
+    String DOT_SEPERATOR        = ".";
+    String ENTITY               = "entity";
+    String INSTITUTE_DATA_FIELD = "institute_data";
+    String EXAM_DATA_FIELD      = "exam_data";
+    String COURSE_DATA_FIELD    = "course_data";
+
     public static class CachingConstants {
         public static final String CACHE_KEY_DELIMITER = "_";
     }

@@ -4,6 +4,7 @@ import com.paytm.digital.education.database.entity.Course;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Institute;
 import com.paytm.digital.education.database.entity.Placement;
+import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.dto.OfficialAddress;
 import com.paytm.digital.education.enums.EducationEntity;
@@ -36,6 +37,7 @@ import java.util.TreeSet;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
+import static com.mongodb.QueryOperators.AND;
 import static com.mongodb.QueryOperators.OR;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SHORT_NAME;
@@ -70,6 +72,7 @@ public class CompareServiceImpl implements CompareService {
     private        FacilityDataHelper         facilityDataHelper;
     private        CompareInsightsServiceImpl compareInsightsService;
     private        SubscriptionDetailHelper   subscriptionDetailHelper;
+    private        CommonEntityMongoDAO       commonEntityMongoDAO;
 
     @Override
     public CompareDetail compareInstitutes(Map<Long, String> instKeyMap, String fieldGroup,
@@ -128,18 +131,17 @@ public class CompareServiceImpl implements CompareService {
         Map<String, Object> queryObject = new HashMap<>();
         queryObject.put(EXAM_ID, new ArrayList<>(examIds));
         queryObject.put(SUBEXAM_ID, new ArrayList<>(examIds));
-        List<Exam> examList = commonMongoRepository
-                .findAll(queryObject, Exam.class, examFields, OR);
+        List<Exam> examList = commonEntityMongoDAO.findAllExams(queryObject, examFields, OR);
         return examList;
     }
 
-    private void updateInstituteCoursesMap(List<Long> institutes) {
+    private void updateInstituteCoursesMap(List<Long> instituteIds) {
         List<String> courseFields = commonMongoRepository.getFieldsByGroup(Course.class, DETAILS);
         List<Course> courses = new ArrayList<>();
         if (!CollectionUtils.isEmpty(courseFields)) {
-            courses = commonMongoRepository
-                    .getEntityFieldsByValuesIn(INSTITUTE_ID, institutes, Course.class,
-                            courseFields);
+            Map<String,Object> queryMap = new HashMap<>();
+            queryMap.put(INSTITUTE_ID, instituteIds);
+            courses = commonEntityMongoDAO.getAllCourses(queryMap, courseFields, AND);
         }
 
         instituteCoursesMap = courses.stream().filter(c -> Objects.nonNull(c.getInstitutionId()))
@@ -158,9 +160,8 @@ public class CompareServiceImpl implements CompareService {
                 institutes.stream().filter(i -> Objects.nonNull(i.getParentInstitution()))
                         .map(i -> i.getParentInstitution()).collect(Collectors.toList());
 
-        List<Institute> parentInstitutions = commonMongoRepository
-                .getEntityFieldsByValuesIn(INSTITUTE_ID, parentInstitutionIds, Institute.class,
-                        parentInstitutionFields);
+        List<Institute> parentInstitutions = commonEntityMongoDAO
+                .getInstitutesByIdsIn(parentInstitutionIds, parentInstitutionFields);
 
         Set<Institute> uniqueInstitutions = new HashSet<>(parentInstitutions);
         parentInstituteNameMap = uniqueInstitutions.stream().filter(Objects::nonNull)

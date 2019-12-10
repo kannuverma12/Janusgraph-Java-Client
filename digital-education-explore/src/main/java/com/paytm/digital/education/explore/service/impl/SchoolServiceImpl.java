@@ -12,6 +12,7 @@ import com.paytm.digital.education.database.entity.SchoolGallery;
 import com.paytm.digital.education.database.entity.SchoolOfficialAddress;
 import com.paytm.digital.education.database.entity.SchoolPaytmKeys;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
 import com.paytm.digital.education.enums.ClassType;
 import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.enums.es.DataSortOrder;
@@ -41,6 +42,7 @@ import com.paytm.digital.education.explore.service.helper.CTAHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.service.helper.FacilityDataHelper;
 import com.paytm.digital.education.explore.utility.SchoolUtilService;
+import com.paytm.digital.education.serviceimpl.helper.EntitySourceMappingHelper;
 import com.paytm.digital.education.utility.CommonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Triple;
@@ -82,14 +84,15 @@ import static org.elasticsearch.common.geo.parsers.GeoWKTParser.COMMA;
 public class SchoolServiceImpl implements SchoolService {
 
     private final CommonMongoRepository    commonMongoRepository;
-    private final DerivedAttributesHelper  derivedAttributesHelper;
-    private final FacilityDataHelper       facilityDataHelper;
-    private final CTAHelper                ctaHelper;
-    private final SearchServiceImpl        searchService;
-    private final SchoolConfig             schoolConfig;
-    private final SchoolUtilService        schoolUtilService;
-    private final BannerDataHelper         bannerDataHelper;
-    private final int                      nearbySchoolsCount;
+    private final DerivedAttributesHelper derivedAttributesHelper;
+    private final FacilityDataHelper      facilityDataHelper;
+    private final CTAHelper               ctaHelper;
+    private final SearchServiceImpl       searchService;
+    private final SchoolConfig            schoolConfig;
+    private final SchoolUtilService       schoolUtilService;
+    private final BannerDataHelper        bannerDataHelper;
+    private final int                     nearbySchoolsCount;
+    private final CommonEntityMongoDAO    educationEntityMongoRepository;
 
     public SchoolServiceImpl(
             CommonMongoRepository commonMongoRepository,
@@ -101,7 +104,9 @@ public class SchoolServiceImpl implements SchoolService {
             SchoolUtilService schoolUtilService,
             BannerDataHelper bannerDataHelper,
             @Value("${nearby.schools.count}")
-            int nearbySchoolsCount) {
+            int nearbySchoolsCount,
+            CommonEntityMongoDAO educationEntityMongoRepository,
+            EntitySourceMappingHelper entitySourceMappingHelper) {
         this.commonMongoRepository = commonMongoRepository;
         this.derivedAttributesHelper = derivedAttributesHelper;
         this.facilityDataHelper = facilityDataHelper;
@@ -111,6 +116,7 @@ public class SchoolServiceImpl implements SchoolService {
         this.schoolUtilService = schoolUtilService;
         this.bannerDataHelper = bannerDataHelper;
         this.nearbySchoolsCount = nearbySchoolsCount;
+        this.educationEntityMongoRepository = educationEntityMongoRepository;
     }
 
     @Override
@@ -121,8 +127,8 @@ public class SchoolServiceImpl implements SchoolService {
                 getFieldsByGroupAndCollectioName(SchoolConstants.SCHOOL, fields,
                         fieldGroup);
         School school =
-                commonMongoRepository
-                        .getEntityByFields(SCHOOL_ID, schoolId, School.class, fieldsToBeFetched);
+                educationEntityMongoRepository.getSchoolById(schoolId, fieldsToBeFetched);
+
         if (Objects.isNull(school)) {
             throw new BadRequestException(NO_ENTITY_FOUND,
                     new Object[] {SchoolConstants.SCHOOL, SCHOOL_ID, schoolId});

@@ -8,6 +8,7 @@ import static com.paytm.digital.education.constant.ExploreConstants.IS_ACCEPTING
 
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.StreamEntity;
+import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
 import com.paytm.digital.education.database.repository.StreamEntityRepository;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.database.entity.BaseLeadResponse;
@@ -45,6 +46,7 @@ public class LeadServiceImpl implements LeadService {
     private LeadCareer360Service  leadCareer360Service;
     private UserDetailsRepository userDetailsRepository;
     private StreamEntityRepository streamEntityRepository;
+    private CommonEntityMongoDAO commonEntityMongoDAO;
 
     @Override
     public com.paytm.digital.education.explore.response.dto.common.Lead captureLead(Lead lead) {
@@ -195,8 +197,7 @@ public class LeadServiceImpl implements LeadService {
             throw new BadRequestException(ErrorEnum.VALID_INSTITUTE_ID_FOR_COURSE_LEAD,
                     ErrorEnum.VALID_INSTITUTE_ID_FOR_COURSE_LEAD.getExternalMessage());
         }
-        Course course = commonMongoRepository
-                .getEntityByFields(COURSE_ID, lead.getEntityId(), Course.class, fieldGroup);
+        Course course = commonEntityMongoDAO.getCourseById(lead.getEntityId(), fieldGroup);
         if (Objects.isNull(course)) {
             throw new BadRequestException(ErrorEnum.INVALID_COURSE_ID,
                     ErrorEnum.INVALID_COURSE_ID.getExternalMessage());
@@ -213,8 +214,7 @@ public class LeadServiceImpl implements LeadService {
 
     private void validateExamLead(Lead lead) {
         List<String> fieldGroup = Arrays.asList(EXAM_ID);
-        Exam exam = commonMongoRepository
-                .getEntityByFields(EXAM_ID, lead.getEntityId(), Exam.class, fieldGroup);
+        Exam exam = commonEntityMongoDAO.getExamById(lead.getEntityId(), fieldGroup);
         if (Objects.isNull(exam)) {
             throw new BadRequestException(ErrorEnum.INVALID_EXAM_ID,
                     ErrorEnum.INVALID_EXAM_ID.getExternalMessage());

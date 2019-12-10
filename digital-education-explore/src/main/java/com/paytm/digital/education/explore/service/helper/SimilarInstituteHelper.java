@@ -1,13 +1,7 @@
 package com.paytm.digital.education.explore.service.helper;
 
-import static com.paytm.digital.education.constant.ExploreConstants.GALLERY_LOGO;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTION_CITY;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTION_STATE;
-import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_NAME;
-import static com.paytm.digital.education.enums.EducationEntity.INSTITUTE;
-
 import com.paytm.digital.education.database.entity.Institute;
+import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.dto.OfficialAddress;
 import com.paytm.digital.education.explore.response.dto.common.Widget;
@@ -30,6 +24,13 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.paytm.digital.education.constant.ExploreConstants.GALLERY_LOGO;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTION_CITY;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTION_STATE;
+import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_NAME;
+import static com.paytm.digital.education.enums.EducationEntity.INSTITUTE;
+
 @Service
 @AllArgsConstructor
 public class SimilarInstituteHelper {
@@ -42,6 +43,7 @@ public class SimilarInstituteHelper {
 
     private final WidgetsDataHelper     widgetsDataHelper;
     private final CommonMongoRepository commonMongoRepository;
+    private final CommonEntityMongoDAO  commonEducationEntityMongoRepository;
 
     @Cacheable(value = "similar_institutes_widgets", key = "'institute_id.'+#institute.instituteId")
     public List<Widget> getSimilarInstituteWigets(Institute institute) {
@@ -83,9 +85,8 @@ public class SimilarInstituteHelper {
     }
 
     private Map<Long, Institute> getInstituteDataMap(List<Long> instituteIds) {
-        List<Institute> institutes = commonMongoRepository
-                .getEntityFieldsByValuesIn(INSTITUTE_ID, instituteIds, Institute.class,
-                        projectionFields);
+        List<Institute> institutes = commonEducationEntityMongoRepository
+                .getInstitutesByIdsIn(instituteIds, projectionFields);
         return Optional.ofNullable(institutes).orElse(new ArrayList<>()).stream()
                 .collect(Collectors.toMap(Institute::getInstituteId, Function
                         .identity()));

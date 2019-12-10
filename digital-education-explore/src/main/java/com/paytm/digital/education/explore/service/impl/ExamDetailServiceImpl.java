@@ -5,6 +5,7 @@ import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.ExamPaytmKeys;
 import com.paytm.digital.education.database.entity.Instance;
 import com.paytm.digital.education.database.entity.SubExam;
+import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.dto.detail.Event;
 import com.paytm.digital.education.enums.Client;
@@ -37,7 +38,6 @@ import static com.paytm.digital.education.constant.ExploreConstants.APPLICATION;
 import static com.paytm.digital.education.constant.ExploreConstants.DD_MMM_YYYY;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_DETAIL;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FILTER_NAMESPACE;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_PREFIX;
 import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_MEDIUM;
@@ -64,6 +64,7 @@ public class ExamDetailServiceImpl {
     private BannerDataHelper         bannerDataHelper;
     private ExamSectionHelper        examSectionHelper;
     private SimilarExamsHelper       similarExamsHelper;
+    private CommonEntityMongoDAO     commonEntityMongoDAO;
 
     private static int EXAM_PREFIX_LENGTH = EXAM_PREFIX.length();
 
@@ -87,9 +88,7 @@ public class ExamDetailServiceImpl {
             }
         }
 
-        Exam exam =
-                commonMongoRepository.getEntityByFields(EXAM_ID, entityId, Exam.class,
-                        examFields);
+        Exam exam = commonEntityMongoDAO.getExamById(entityId, examFields);
 
         if (Objects.isNull(exam)) {
             throw new BadRequestException(INVALID_EXAM_ID, INVALID_EXAM_ID.getExternalMessage());

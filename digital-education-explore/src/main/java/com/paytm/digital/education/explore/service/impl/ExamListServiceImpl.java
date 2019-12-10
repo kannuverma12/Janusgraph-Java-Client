@@ -3,6 +3,7 @@ package com.paytm.digital.education.explore.service.impl;
 import com.paytm.digital.education.database.entity.Course;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.SubExam;
+import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.exception.NotFoundException;
 import com.paytm.digital.education.explore.response.dto.detail.ExamInfo;
@@ -37,7 +38,7 @@ import static com.paytm.digital.education.mapping.ErrorEnum.NO_EXAM_LIST_EXISTS;
 public class ExamListServiceImpl implements ExamListService {
     private UrlParamsValidator    urlParamsValidator;
     private CommonMongoRepository commonMongoRepository;
-
+    private CommonEntityMongoDAO commonEntityMongoDAO;
 
     @Cacheable(value = "exam_list", key = "'exam_list_'+#instituteId")
     public List<ExamInfo> getExamList(long instituteId) {
@@ -55,8 +56,7 @@ public class ExamListServiceImpl implements ExamListService {
             Map<String, Object> queryObject = new HashMap<>();
             queryObject.put(SUBEXAM_ID, examIds);
             queryObject.put(EXAM_ID, examIds);
-            List<Exam> exams = commonMongoRepository
-                    .findAll(queryObject, Exam.class, examFields, OR);
+            List<Exam> exams = commonEntityMongoDAO.findAllExams(queryObject, examFields, OR);
             if (!CollectionUtils.isEmpty(exams)) {
                 return buildExamListResponse(exams, examIds);
             }

@@ -27,6 +27,7 @@ import static com.paytm.digital.education.explore.constants.CompareConstants.UNI
 import com.paytm.digital.education.database.entity.Course;
 import com.paytm.digital.education.database.entity.Institute;
 import com.paytm.digital.education.database.entity.Ranking;
+import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.database.repository.InstituteRepository;
 import com.paytm.digital.education.explore.enums.CourseStream;
@@ -64,6 +65,8 @@ public class SimilarInstituteServiceImpl {
     private CommonMongoRepository  commonMongoRepository;
     private InstituteRepository    instituteRepository;
     private SimilarInstituteHelper similarInstituteHelper;
+    private CommonEntityMongoDAO   educationEntityMongoRepository;
+    private CommonEntityMongoDAO commonEntityMongoDAO;
 
     private static List<String> projectionFields =
             Arrays.asList(INSTITUTE_ID, OFFICIAL_NAME, GALLERY_LOGO, OFFICIAL_ADDRESS,
@@ -207,7 +210,8 @@ public class SimilarInstituteServiceImpl {
 
     @Cacheable(value = SIMILAR_COLLEGE_NAMESPACE, key = "'nirf_overall_ranking'")
     public List<Institute> getByOverAllRankings() {
-        List<Institute> instituteList = instituteRepository.findAllByNIRFOverallRanking();
+        List<Institute> instituteList =
+                educationEntityMongoRepository.findAllInstitutesByNIRFOverallRanking();
         Collections.sort(instituteList, (institute1, institute2) -> {
             if (CollectionUtils.isEmpty(institute1.getRankings())) {
                 return 1;
@@ -237,8 +241,8 @@ public class SimilarInstituteServiceImpl {
         Map<String, Object> instituteQueryMap =
                 getInstituteQueryMapForLocationAndStreams(institute.getInstitutionState(),
                         institute.getInstitutionCity(), selectTopTwoStreams(streams));
-        List<Institute> instituteList = commonMongoRepository
-                .findAll(instituteQueryMap, Institute.class, projectionFields, AND);
+        List<Institute> instituteList = educationEntityMongoRepository
+                .getAllInstitutes(instituteQueryMap, projectionFields, AND);
         if (!CollectionUtils.isEmpty(instituteList)
                 && instituteList.size() > TOTAL_SIMILAR_COLLEGE) {
             instituteList = instituteList.stream()
@@ -250,8 +254,8 @@ public class SimilarInstituteServiceImpl {
         if (CollectionUtils.isEmpty(instituteList)
                 || instituteList.size() < TOTAL_SIMILAR_COLLEGE) {
             instituteQueryMap.remove(INSTITUTION_CITY);
-            instituteList = commonMongoRepository
-                    .findAll(instituteQueryMap, Institute.class, projectionFields, AND);
+            instituteList = educationEntityMongoRepository
+                    .getAllInstitutes(instituteQueryMap,projectionFields,AND);
             if (!CollectionUtils.isEmpty(instituteList)) {
                 instituteList = instituteList.stream()
                         .filter(institute1 -> !institute1.getInstituteId()
@@ -360,9 +364,10 @@ public class SimilarInstituteServiceImpl {
     @Cacheable(value = "course_stream_for_institute", key = "'course_streams.'+#instituteId")
     public Set<String> getCourseStreamForInstitute(Long instituteId) {
         List<String> courseFields = Arrays.asList(STREAMS);
-        List<Course> courses = commonMongoRepository
-                .getEntityFieldsByValuesIn(INSTITUTE_ID, Arrays.asList(instituteId), Course.class,
-                        courseFields);
+        Map<String,Object> queryMap = new HashMap<>();
+        queryMap.put(INSTITUTE_ID,Arrays.asList(instituteId)
+        );
+        List<Course> courses = commonEntityMongoDAO.getAllCourses(queryMap, courseFields, AND);
         Set<String> courseStreams = courses.stream().filter(c -> Objects.nonNull(c.getStreams()))
                 .flatMap(course -> course.getStreams().stream()).collect(Collectors.toSet());
         return courseStreams;

@@ -27,5 +27,5 @@ public interface SchoolConstants {
     String SCHOOL_OFFICIAL_NAME = "name";
     String BOARD                = "board";
     String BOARD_DATA           = "board_data";
-
+    String SCHOOL_DATA_FIELD    = "school_data";
 }

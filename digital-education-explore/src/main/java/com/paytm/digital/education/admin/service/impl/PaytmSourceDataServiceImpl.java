@@ -67,9 +67,8 @@ public class PaytmSourceDataServiceImpl {
         for (PaytmSourceData paytmSourceData : paytmSourceDataRequest.getPaytmSourceData()) {
 
             PaytmSourceDataEntity paytmSourceDataInDb = paytmSourceDataRepository
-                    .findByEntityIdAndEducationEntityAndSource(paytmSourceData.getEntityId(),
-                            paytmSourceDataRequest.getEducationEntity().name(),
-                            EntitySourceType.PAYTM.name());
+                    .findByEntityIdAndEducationEntity(paytmSourceData.getEntityId(),
+                            paytmSourceDataRequest.getEducationEntity().name());
 
             if (Objects.isNull(paytmSourceDataInDb)) {
                 paytmSourceDataInDb = new PaytmSourceDataEntity();
@@ -132,8 +131,7 @@ public class PaytmSourceDataServiceImpl {
         paytmSourceDataResponse.setStatus(FAILED);
 
         PaytmSourceDataEntity paytmSourceData = paytmSourceDataRepository
-                .findByEntityIdAndEducationEntityAndSource(entityId, entity.name(),
-                        EntitySourceType.PAYTM.name());
+                .findByEntityIdAndEducationEntity(entityId, entity.name());
 
         paytmSourceDataResponse.setStatus(FAILED);
         paytmSourceDataResponse.setMessage(ErrorEnum.NO_PAYTM_SOURCE_DATA.name());
@@ -156,9 +154,8 @@ public class PaytmSourceDataServiceImpl {
 
         for (PaytmSourceData paytmSourceData : paytmSourceDataRequest.getPaytmSourceData()) {
             PaytmSourceDataEntity paytmSourceDataInDb = paytmSourceDataRepository
-                    .findByEntityIdAndEducationEntityAndSource(paytmSourceData.getEntityId(),
-                            paytmSourceDataRequest.getEducationEntity().name(),
-                            EntitySourceType.PAYTM.name());
+                    .findByEntityIdAndEducationEntity(paytmSourceData.getEntityId(),
+                            paytmSourceDataRequest.getEducationEntity().name());
 
             if (Objects.isNull(paytmSourceDataInDb)) {
                 log.info(

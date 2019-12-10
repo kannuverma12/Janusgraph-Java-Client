@@ -1,5 +1,31 @@
 package com.paytm.digital.education.serviceimpl;
 
+import com.paytm.digital.education.config.SchoolConfig;
+import com.paytm.digital.education.database.dao.StreamDAO;
+import com.paytm.digital.education.database.entity.Exam;
+import com.paytm.digital.education.database.entity.Institute;
+import com.paytm.digital.education.database.entity.School;
+import com.paytm.digital.education.database.entity.Section;
+import com.paytm.digital.education.database.entity.StreamEntity;
+import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
+import com.paytm.digital.education.exception.EducationException;
+import com.paytm.digital.education.utility.CommonUtil;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import static com.paytm.digital.education.constant.ExploreConstants.ABOUT_EXAM;
 import static com.paytm.digital.education.constant.ExploreConstants.APP_DISPLAY_NAME;
 import static com.paytm.digital.education.constant.ExploreConstants.DESCRIPTION;
@@ -27,32 +53,6 @@ import static com.paytm.digital.education.enums.EducationEntity.INSTITUTE;
 import static com.paytm.digital.education.enums.EducationEntity.SCHOOL;
 import static com.paytm.digital.education.mapping.ErrorEnum.PAYTM_STREAM_DISABLED;
 
-import com.paytm.digital.education.config.SchoolConfig;
-import com.paytm.digital.education.database.dao.StreamDAO;
-import com.paytm.digital.education.database.entity.Exam;
-import com.paytm.digital.education.database.entity.Institute;
-import com.paytm.digital.education.database.entity.School;
-import com.paytm.digital.education.database.entity.Section;
-import com.paytm.digital.education.database.entity.StreamEntity;
-import com.paytm.digital.education.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.exception.EducationException;
-import com.paytm.digital.education.utility.CommonUtil;
-import com.paytm.education.logger.Logger;
-import com.paytm.education.logger.LoggerFactory;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 @Service
 @RequiredArgsConstructor
 public class EntityDataDiscoveryService {
@@ -61,15 +61,16 @@ public class EntityDataDiscoveryService {
             Arrays.asList(INSTITUTE_ID, OFFICIAL_NAME, GALLERY_LOGO);
     private static final List<String> EXAM_PROJECTION_FIELDS      =
             Arrays.asList(EXAM_ID, EXAM_FULL_NAME, EXAM_SHORT_NAME, LOGO);
-    private static final List<String> EXAM_FIELDS_WITH_ABOUT     =
+    private static final List<String>                   EXAM_FIELDS_WITH_ABOUT     =
             Arrays.asList(EXAM_ID, EXAM_FULL_NAME, EXAM_SHORT_NAME, LOGO, ABOUT_EXAM);
-    private static final List<String> SCHOOL_PROJECTION_FIELDS    =
+    private static final List<String>              SCHOOL_PROJECTION_FIELDS    =
             Arrays.asList(SCHOOL_ID, SCHOOL_OFFICIAL_NAME, SCHOOL_LOGO);
-    private static final Logger       log                         =
+    private static final Logger                    log                         =
             LoggerFactory.getLogger(EntityDataDiscoveryService.class);
-    private final CommonMongoRepository commonMongoRepository;
-    private final StreamDAO             streamDAO;
-    private final SchoolConfig          schoolConfig;
+    private final        StreamDAO                 streamDAO;
+    private final        SchoolConfig              schoolConfig;
+    private final        CommonEntityMongoDAO      commonEntityMongoDAO;
+
 
     public void updateInstituteData(Section section) {
         List<Map<String, Object>> sectionItems = section.getItems();
@@ -277,26 +278,24 @@ public class EntityDataDiscoveryService {
     }
 
     private Map<Long, Exam> getExamDataMap(List<Long> examIds, List<String> fields) {
-        List<Exam> examList = commonMongoRepository
-                .getEntityFieldsByValuesIn(EXAM_ID, examIds, Exam.class, fields);
+        List<Exam> examList = commonEntityMongoDAO.getExamsByIdsIn(examIds, fields);
         return Optional.ofNullable(examList).orElse(new ArrayList<>()).stream()
                 .collect(Collectors.toMap(Exam::getExamId, Function.identity()));
     }
 
     private Map<Long, Institute> getInstituteMap(List<Long> instituteIds) {
-        List<Institute> instituteList = commonMongoRepository
-                .getEntityFieldsByValuesIn(INSTITUTE_ID, instituteIds, Institute.class,
-                        INSTITUTE_PROJECTION_FIELDS);
+        List<Institute> instituteList = commonEntityMongoDAO
+                .getInstitutesByIdsIn(instituteIds, INSTITUTE_PROJECTION_FIELDS);
         return Optional.ofNullable(instituteList).orElse(new ArrayList<>()).stream()
                 .collect(Collectors.toMap(Institute::getInstituteId, Function
                         .identity()));
     }
 
     private Map<Long, School> getSchoolEntityMap(List<Long> schoolIds) {
-        List<School> instituteList = commonMongoRepository
-                .getEntityFieldsByValuesIn(SCHOOL_ID, schoolIds, School.class,
-                        SCHOOL_PROJECTION_FIELDS);
-        return Optional.ofNullable(instituteList).orElse(new ArrayList<>()).stream()
+        List<School> schoolList = commonEntityMongoDAO
+                .getSchoolsByIdsIn(schoolIds, SCHOOL_PROJECTION_FIELDS);
+
+        return Optional.ofNullable(schoolList).orElse(new ArrayList<>()).stream()
                 .collect(Collectors.toMap(School::getSchoolId, Function
                         .identity()));
     }
