@@ -23,6 +23,8 @@ import org.springframework.data.mongodb.core.mapping.Field;
     })
 public class EntitySourceMappingEntity {
 
+    private static final long serialVersionUID = -8592325086959190L;
+
     @Id
     @Field("_id")
     private String id;
@@ -30,7 +32,6 @@ public class EntitySourceMappingEntity {
     @Field("entity_id")
     @JsonProperty("entity_id")
     private Long entityId;
-
 
     @Field("entity")
     @JsonProperty("entity")

@@ -43,16 +43,18 @@ public class CommonEntityMongoDAO {
 
     public List<School> getSchoolsByIdsIn(List<Long> schoolIds,
             List<String> schoolProjectionFields) {
-        Map<EntitySourceType, List<Long>> sourceAndSchoolIdsMap =
+        Map<EntitySourceType, List<Long>> sourceAndEntityIdsMap =
                 entitySourceMappingProvider.getSourceAndEntitiesMapping(SCHOOL, schoolIds);
 
-        if (CollectionUtils.isEmpty(sourceAndSchoolIdsMap)) {
-            return new ArrayList<>();
+        List<Long> idsWithSourceMerchant;
+        if (CollectionUtils.isEmpty(sourceAndEntityIdsMap)) {
+            idsWithSourceMerchant = schoolIds;
+        } else {
+            idsWithSourceMerchant = sourceAndEntityIdsMap.get(C360);
         }
 
         List<School> schools = new ArrayList<>();
-        List<Long> schoolIdsWithSourcePaytm = sourceAndSchoolIdsMap.get(PAYTM);
-        List<Long> schoolIdsWithSourceMerchant = sourceAndSchoolIdsMap.get(C360);
+        List<Long> schoolIdsWithSourcePaytm = sourceAndEntityIdsMap.get(PAYTM);
 
         if (!CollectionUtils.isEmpty(schoolIdsWithSourcePaytm)) {
             schools.addAll(Optional.ofNullable(commonMongoRepository
@@ -65,9 +67,9 @@ public class CommonEntityMongoDAO {
                             Collectors.toList()));
         }
 
-        if (!CollectionUtils.isEmpty(schoolIdsWithSourceMerchant)) {
+        if (!CollectionUtils.isEmpty(idsWithSourceMerchant)) {
             schools.addAll(commonMongoRepository
-                    .getEntityFieldsByValuesIn(SCHOOL_ID, schoolIdsWithSourceMerchant, School.class,
+                    .getEntityFieldsByValuesIn(SCHOOL_ID, idsWithSourceMerchant, School.class,
                             schoolProjectionFields));
         }
         return schools;
@@ -78,13 +80,15 @@ public class CommonEntityMongoDAO {
         Map<EntitySourceType, List<Long>> sourceAndEntityIdsMap =
                 entitySourceMappingProvider.getSourceAndEntitiesMapping(INSTITUTE, instituteIds);
 
+        List<Long> idsWithSourceMerchant;
         if (CollectionUtils.isEmpty(sourceAndEntityIdsMap)) {
-            return new ArrayList<>();
+            idsWithSourceMerchant = instituteIds;
+        } else {
+            idsWithSourceMerchant = sourceAndEntityIdsMap.get(C360);
         }
 
         List<Institute> institutes = new ArrayList<>();
         List<Long> idsWithSourcePaytm = sourceAndEntityIdsMap.get(PAYTM);
-        List<Long> idsWithSourceMerchant = sourceAndEntityIdsMap.get(C360);
 
         if (!CollectionUtils.isEmpty(idsWithSourcePaytm)) {
             List<PaytmSourceDataEntity> paytmSourceDataEntities = commonMongoRepository
@@ -110,8 +114,11 @@ public class CommonEntityMongoDAO {
         Map<EntitySourceType, List<Long>> sourceAndEntityIdsMap =
                 entitySourceMappingProvider.getSourceAndEntitiesMapping(EXAM, examIds);
 
+        List<Long> idsWithSourceMerchant;
         if (CollectionUtils.isEmpty(sourceAndEntityIdsMap)) {
-            return new ArrayList<>();
+            idsWithSourceMerchant = examIds;
+        } else {
+            idsWithSourceMerchant = sourceAndEntityIdsMap.get(C360);
         }
         List<Exam> exams = new ArrayList<>();
         List<Long> idsWithSourcePaytm = sourceAndEntityIdsMap.get(PAYTM);
@@ -126,8 +133,6 @@ public class CommonEntityMongoDAO {
                             PaytmSourceDataEntity::getExamData).collect(
                             Collectors.toList()));
         }
-        List<Long> idsWithSourceMerchant =
-                sourceAndEntityIdsMap.get(C360);
         if (!CollectionUtils.isEmpty(idsWithSourceMerchant)) {
             exams.addAll(commonMongoRepository
                     .getEntityFieldsByValuesIn(EXAM_ID, idsWithSourceMerchant, Exam.class,
@@ -285,7 +290,8 @@ public class CommonEntityMongoDAO {
 
     public List<Exam> getAllExams(Map<String, Object> queryObject,
             List<String> fields, String operator) {
-        List<Long> examIds = Optional.ofNullable((List<Long>) queryObject.get(EXAM_ID)).orElse(new ArrayList<>());
+        List<Long> examIds = Optional.ofNullable((List<Long>) queryObject.get(EXAM_ID))
+                .orElse(new ArrayList<>());
         Map<EntitySourceType, List<Long>> sourceAndEntityIdsMap =
                 entitySourceMappingProvider.getSourceAndEntitiesMapping(EXAM, examIds);
         List<Exam> exams = new ArrayList<>();

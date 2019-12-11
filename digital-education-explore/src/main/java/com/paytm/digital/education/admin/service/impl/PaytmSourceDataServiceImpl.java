@@ -75,6 +75,7 @@ public class PaytmSourceDataServiceImpl {
             }
             CommonUtils.copyNonNullProperties(paytmSourceData, paytmSourceDataInDb);
 
+            paytmSourceDataInDb.setExamData(new Exam());
             switch (paytmSourceDataRequest.getEducationEntity()) {
                 case EXAM:
                     Exam examDataToBeUpdated =

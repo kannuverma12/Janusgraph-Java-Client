@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,21 +46,33 @@ public class EntitySourceMappingProvider {
     }
 
     public Map<EntitySourceType, List<Long>> getSourceAndEntitiesMapping(EducationEntity entity,
-            List<Long> entityId) {
+            List<Long> entityIds) {
         Map<EntitySourceType, List<Long>> sourceAndEntityIdsMap = new HashMap<>();
 
         try {
             List<EntitySourceMappingEntity> entitySourceMappings = entitySourceMappingRepository
-                    .findByEducationEntityAndEntityIdIn(entity.name(), entityId);
+                    .findByEducationEntityAndEntityIdIn(entity.name(), entityIds);
             sourceAndEntityIdsMap =
                     Optional.ofNullable(entitySourceMappings).orElse(new ArrayList<>()).stream()
                             .filter(e -> Objects.nonNull(e.getSource()))
-                            .collect(Collectors.groupingBy(e -> e.getSource(),
-                                    Collectors.mapping(e -> e.getEntityId(), Collectors.toList())));
+                            .collect(Collectors.groupingBy(EntitySourceMappingEntity::getSource,
+                                    Collectors.mapping(EntitySourceMappingEntity::getEntityId,
+                                            Collectors.toList())));
+
+            if (!CollectionUtils.isEmpty(sourceAndEntityIdsMap)) {
+                List<Long> entitiesWithSourcePaytm =
+                        sourceAndEntityIdsMap.get(EntitySourceType.PAYTM);
+                entityIds.removeAll(
+                        Optional.ofNullable(entitiesWithSourcePaytm).orElse(new ArrayList<>()));
+            } else {
+                sourceAndEntityIdsMap = new HashMap<>();
+            }
+
+            sourceAndEntityIdsMap.put(EntitySourceType.C360, entityIds);
         } catch (Exception e) {
             log.error(
                     "Exception occurred while finding source type for entity :{}, entityId :{}, "
-                            + "returning default source (merchant)", e, entity, entityId);
+                            + "returning default source (merchant)", e, entity, entityIds);
         }
         return sourceAndEntityIdsMap;
     }

@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.lang.Nullable;
 
 import java.util.Map;
 
@@ -24,6 +25,8 @@ import java.util.Map;
         @CompoundIndex(name = "entity_entity_id", def = "{'entity' : 1, 'entity_id': 1} ",unique = true)
     })
 public class PaytmSourceDataEntity {
+
+    private static final long serialVersionUID = -8592325086959190899L;
 
     @Id
     @Field("_id")
@@ -44,7 +47,7 @@ public class PaytmSourceDataEntity {
     private boolean isActive;
 
     @Field("exam_data")
-    @JsonProperty("exam_data")
+    @JsonProperty(value = "exam_data")
     private Exam examData;
 
     @Field("institute_data")

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.PublishStatus;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -17,6 +18,7 @@ import java.util.List;
 @Data
 @ToString
 @Document
+@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Course implements Serializable {
 
