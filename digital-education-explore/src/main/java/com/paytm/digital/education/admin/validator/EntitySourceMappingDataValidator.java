@@ -57,10 +57,9 @@ public class EntitySourceMappingDataValidator {
                 .getEntitySourceMappingData()) {
             if (EntitySourceType.PAYTM.equals(entitySourceMappingData.getSource())) {
                 PaytmSourceDataEntity examEntity = paytmSourceDataRepository
-                        .findByEntityIdAndEducationEntityAndSource(
+                        .findByEntityIdAndEducationEntity(
                                 entitySourceMappingData.getEntityId(),
-                                EducationEntity.EXAM.name(),
-                                entitySourceMappingData.getSource().name());
+                                EducationEntity.EXAM.name());
                 if (Objects.isNull(examEntity)) {
                     throw new EducationException(INVALID_MERCHANT_SOURCE_MAPPING_DATA,
                             new Object[] {entitySourceMappingData.getEntityId().toString()});
@@ -83,10 +82,9 @@ public class EntitySourceMappingDataValidator {
                 .getEntitySourceMappingData()) {
             if (EntitySourceType.PAYTM.equals(entitySourceMappingData.getSource())) {
                 PaytmSourceDataEntity courseEntity = paytmSourceDataRepository
-                        .findByEntityIdAndEducationEntityAndSource(
+                        .findByEntityIdAndEducationEntity(
                                 entitySourceMappingData.getEntityId(),
-                                EducationEntity.COURSE.name(),
-                                entitySourceMappingData.getSource().name());
+                                EducationEntity.COURSE.name());
                 if (Objects.isNull(courseEntity)) {
                     throw new EducationException(INVALID_MERCHANT_SOURCE_MAPPING_DATA,
                             new Object[] {entitySourceMappingData.getEntityId().toString()});
@@ -109,10 +107,9 @@ public class EntitySourceMappingDataValidator {
                 .getEntitySourceMappingData()) {
             if (EntitySourceType.PAYTM.equals(entitySourceMappingData.getSource())) {
                 PaytmSourceDataEntity instituteEntity = paytmSourceDataRepository
-                        .findByEntityIdAndEducationEntityAndSource(
+                        .findByEntityIdAndEducationEntity(
                                 entitySourceMappingData.getEntityId(),
-                                EducationEntity.INSTITUTE.name(),
-                                entitySourceMappingData.getSource().name());
+                                EducationEntity.INSTITUTE.name());
                 if (Objects.isNull(instituteEntity)) {
                     throw new EducationException(INVALID_MERCHANT_SOURCE_MAPPING_DATA,
                             new Object[] {entitySourceMappingData.getEntityId().toString()});
@@ -136,10 +133,9 @@ public class EntitySourceMappingDataValidator {
                 .getEntitySourceMappingData()) {
             if (EntitySourceType.PAYTM.equals(entitySourceMappingData.getSource())) {
                 PaytmSourceDataEntity schoolEntity = paytmSourceDataRepository
-                        .findByEntityIdAndEducationEntityAndSource(
+                        .findByEntityIdAndEducationEntity(
                                 entitySourceMappingData.getEntityId(),
-                                EducationEntity.SCHOOL.name(),
-                                entitySourceMappingData.getSource().name());
+                                EducationEntity.SCHOOL.name());
                 if (Objects.isNull(schoolEntity)) {
                     throw new EducationException(INVALID_MERCHANT_SOURCE_MAPPING_DATA,
                             new Object[] {entitySourceMappingData.getEntityId().toString()});

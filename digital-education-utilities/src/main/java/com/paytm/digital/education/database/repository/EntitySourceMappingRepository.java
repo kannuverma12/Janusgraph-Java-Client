@@ -15,8 +15,6 @@ public interface EntitySourceMappingRepository
     EntitySourceMappingEntity findByEntityIdAndEducationEntity(Long entityId,
             String educationEntity);
 
-    EntitySourceType findByEducationEntityAndEntityId(String name, Long entityId);
-
     List<EntitySourceMappingEntity> findByEducationEntityAndEntityIdIn(
             String educationEntity, List<Long> entityId);
 }

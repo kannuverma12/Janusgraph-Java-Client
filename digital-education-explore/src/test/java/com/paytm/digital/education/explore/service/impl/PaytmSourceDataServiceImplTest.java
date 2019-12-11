@@ -9,9 +9,9 @@ import com.paytm.digital.education.database.entity.PaytmSourceData;
 import com.paytm.digital.education.database.entity.PaytmSourceDataEntity;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.database.repository.ExamRepository;
+import com.paytm.digital.education.database.repository.InstituteRepository;
 import com.paytm.digital.education.database.repository.PaytmSourceDataRepository;
 import com.paytm.digital.education.enums.EducationEntity;
-import com.paytm.digital.education.explore.database.repository.InstituteRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -42,7 +42,7 @@ public class PaytmSourceDataServiceImplTest {
     private         ExamRepository           examRepository;
 
     @Mock
-    private         InstituteRepository      instituteRepository;
+    private InstituteRepository instituteRepository;
 
     @Mock
     private         CommonMongoRepository    commonMongoRepository;
@@ -68,7 +68,7 @@ public class PaytmSourceDataServiceImplTest {
         paytmSourceDataRequestInput.setPaytmSourceData(Arrays.asList(paytmSourceData));
         doNothing().when(paytmSourceDataValidator).validateRequest(any(PaytmSourceDataRequest.class));
         when(paytmSourceDataRepository
-                .findByEntityIdAndEducationEntityAndSource(anyLong(), anyString(), anyString()))
+                .findByEntityIdAndEducationEntity(anyLong(), anyString()))
                 .thenReturn(null);
         when(paytmSourceDataRepository.save(any(PaytmSourceDataEntity.class)))
                 .thenReturn(paytmSourceDataExpected);
@@ -108,7 +108,7 @@ public class PaytmSourceDataServiceImplTest {
         paytmSourceDataRequestInput.setPaytmSourceData(Arrays.asList(paytmSourceData));
         doNothing().when(paytmSourceDataValidator).validateRequest(any(PaytmSourceDataRequest.class));
         when(paytmSourceDataRepository
-                .findByEntityIdAndEducationEntityAndSource(anyLong(), anyString(), anyString()))
+                .findByEntityIdAndEducationEntity(anyLong(), anyString()))
                 .thenReturn(paytmSourceDataInDb);
         when(paytmSourceDataRepository.save(any(PaytmSourceDataEntity.class)))
                 .thenReturn(paytmSourceDataExpected);

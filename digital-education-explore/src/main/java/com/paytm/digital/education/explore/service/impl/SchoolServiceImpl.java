@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.paytm.digital.education.annotation.EduCache;
 import com.paytm.digital.education.config.SchoolConfig;
+import com.paytm.digital.education.constant.SchoolConstants;
 import com.paytm.digital.education.database.entity.Board;
 import com.paytm.digital.education.database.entity.BoardData;
 import com.paytm.digital.education.database.entity.RelevantLink;
@@ -11,14 +12,13 @@ import com.paytm.digital.education.database.entity.School;
 import com.paytm.digital.education.database.entity.SchoolGallery;
 import com.paytm.digital.education.database.entity.SchoolOfficialAddress;
 import com.paytm.digital.education.database.entity.SchoolPaytmKeys;
-import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.enums.ClassType;
 import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.enums.es.DataSortOrder;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.exception.EntityRequiredFieldMissingInDBException;
-import com.paytm.digital.education.constant.SchoolConstants;
 import com.paytm.digital.education.explore.enums.ClassLevel;
 import com.paytm.digital.education.explore.es.model.GeoLocation;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
@@ -42,7 +42,6 @@ import com.paytm.digital.education.explore.service.helper.CTAHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.service.helper.FacilityDataHelper;
 import com.paytm.digital.education.explore.utility.SchoolUtilService;
-import com.paytm.digital.education.serviceimpl.helper.EntitySourceMappingHelper;
 import com.paytm.digital.education.utility.CommonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Triple;
@@ -63,14 +62,14 @@ import java.util.stream.Stream;
 import static com.paytm.digital.education.constant.ExploreConstants.CLIENT;
 import static com.paytm.digital.education.constant.ExploreConstants.SORT_DISTANCE_FIELD;
 import static com.paytm.digital.education.constant.ExploreConstants.TENTATIVE;
-import static com.paytm.digital.education.enums.EducationEntity.SCHOOL;
-import static com.paytm.digital.education.enums.es.DataSortOrder.ASC;
 import static com.paytm.digital.education.constant.SchoolConstants.ACTUAL;
 import static com.paytm.digital.education.constant.SchoolConstants.BOARD;
 import static com.paytm.digital.education.constant.SchoolConstants.BOARD_DATA;
 import static com.paytm.digital.education.constant.SchoolConstants.OFFICIAL_WEBSITE_LINK;
 import static com.paytm.digital.education.constant.SchoolConstants.SCHOOL_ID;
 import static com.paytm.digital.education.constant.SchoolConstants.SCHOOL_OFFICIAL_NAME;
+import static com.paytm.digital.education.enums.EducationEntity.SCHOOL;
+import static com.paytm.digital.education.enums.es.DataSortOrder.ASC;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_SCHOOL_NAME;
 import static com.paytm.digital.education.mapping.ErrorEnum.NO_ENTITY_FOUND;
@@ -92,7 +91,7 @@ public class SchoolServiceImpl implements SchoolService {
     private final SchoolUtilService       schoolUtilService;
     private final BannerDataHelper        bannerDataHelper;
     private final int                     nearbySchoolsCount;
-    private final CommonEntityMongoDAO    educationEntityMongoRepository;
+    private final CommonEntityMongoDAO    commonEntityMongoDAO;
 
     public SchoolServiceImpl(
             CommonMongoRepository commonMongoRepository,
@@ -105,8 +104,7 @@ public class SchoolServiceImpl implements SchoolService {
             BannerDataHelper bannerDataHelper,
             @Value("${nearby.schools.count}")
             int nearbySchoolsCount,
-            CommonEntityMongoDAO educationEntityMongoRepository,
-            EntitySourceMappingHelper entitySourceMappingHelper) {
+            CommonEntityMongoDAO commonEntityMongoDAO) {
         this.commonMongoRepository = commonMongoRepository;
         this.derivedAttributesHelper = derivedAttributesHelper;
         this.facilityDataHelper = facilityDataHelper;
@@ -116,7 +114,7 @@ public class SchoolServiceImpl implements SchoolService {
         this.schoolUtilService = schoolUtilService;
         this.bannerDataHelper = bannerDataHelper;
         this.nearbySchoolsCount = nearbySchoolsCount;
-        this.educationEntityMongoRepository = educationEntityMongoRepository;
+        this.commonEntityMongoDAO = commonEntityMongoDAO;
     }
 
     @Override
@@ -127,7 +125,7 @@ public class SchoolServiceImpl implements SchoolService {
                 getFieldsByGroupAndCollectioName(SchoolConstants.SCHOOL, fields,
                         fieldGroup);
         School school =
-                educationEntityMongoRepository.getSchoolById(schoolId, fieldsToBeFetched);
+                commonEntityMongoDAO.getSchoolById(schoolId, fieldsToBeFetched);
 
         if (Objects.isNull(school)) {
             throw new BadRequestException(NO_ENTITY_FOUND,

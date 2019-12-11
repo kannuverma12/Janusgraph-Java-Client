@@ -1,13 +1,12 @@
 package com.paytm.digital.education.serviceimpl.helper;
 
 import com.paytm.digital.education.database.entity.EntitySourceMappingEntity;
-import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.database.repository.EntitySourceMappingRepository;
-import com.paytm.digital.education.database.repository.PaytmSourceDataRepository;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.enums.EntitySourceType;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
@@ -21,30 +20,28 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
-@RequiredArgsConstructor
-public class EntitySourceMappingHelper {
+@AllArgsConstructor
+public class EntitySourceMappingProvider {
 
-    private static final Logger log =
-            LoggerFactory.getLogger(EntitySourceMappingHelper.class);
-    private final CommonMongoRepository         commonMongoRepository;
-    private       EntitySourceMappingRepository entitySourceMappingRepository;
-    private       PaytmSourceDataRepository     paytmSourceDataRepository;
+    private static final Logger                        log =
+            LoggerFactory.getLogger(EntitySourceMappingProvider.class);
+    private              EntitySourceMappingRepository entitySourceMappingRepository;
 
-    @Cacheable(value = "entity_source_mapping", key = "'entity_source_'+ #entity + '.'+ #entityId")
+    //@Cacheable(value = "entity_source_mapping", key = "'entity_source_'+ #entity + '.'+ #entityId")
     public EntitySourceType getSourceAndEntitiesMapping(EducationEntity entity,
             Long entityId) {
-        EntitySourceType entitySourceType;
+        EntitySourceType entitySourceType = null;
 
         try {
-            entitySourceType = entitySourceMappingRepository
-                    .findByEducationEntityAndEntityId(entity.name(), entityId);
+            entitySourceType = Optional.ofNullable(entitySourceMappingRepository
+                    .findByEntityIdAndEducationEntity(entityId, entity.name()))
+                    .map(EntitySourceMappingEntity::getSource).orElse(EntitySourceType.C360);
         } catch (Exception e) {
             log.error(
                     "Exception occurred while finding source type for entity :{}, entityId :{}, "
                             + "returning default source (merchant)", e, entity, entityId);
-            entitySourceType = EntitySourceType.C360;
         }
-        return entitySourceType;
+        return Objects.nonNull(entitySourceType) ? entitySourceType : EntitySourceType.C360;
     }
 
     public Map<EntitySourceType, List<Long>> getSourceAndEntitiesMapping(EducationEntity entity,

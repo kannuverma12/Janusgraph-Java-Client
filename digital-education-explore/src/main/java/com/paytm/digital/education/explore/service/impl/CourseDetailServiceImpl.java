@@ -90,7 +90,7 @@ public class CourseDetailServiceImpl {
             if (course.getInstitutionId() != null && !CollectionUtils
                     .isEmpty(instituteQueryFields)) {
                 instituteDetails = commonEntityMongoDAO
-                        .getInstituteByIdsIn(course.getInstitutionId(), instituteQueryFields);
+                        .getInstituteById(course.getInstitutionId(), instituteQueryFields);
             }
             return buildResponse(course, instituteDetails, course.getExamsAccepted(), client,
                     courseFees, institute, widgets, derivedAttributes, examAccepted);

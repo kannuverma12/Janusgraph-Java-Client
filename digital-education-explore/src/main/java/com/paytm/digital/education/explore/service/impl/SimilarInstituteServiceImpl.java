@@ -29,7 +29,7 @@ import com.paytm.digital.education.database.entity.Institute;
 import com.paytm.digital.education.database.entity.Ranking;
 import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.explore.database.repository.InstituteRepository;
+import com.paytm.digital.education.database.repository.InstituteRepository;
 import com.paytm.digital.education.explore.enums.CourseStream;
 import com.paytm.digital.education.explore.response.dto.common.Widget;
 import com.paytm.digital.education.explore.response.dto.common.WidgetData;

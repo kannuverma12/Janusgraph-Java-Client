@@ -134,7 +134,7 @@ public class InstituteDetailServiceImpl {
             String parentInstitutionName = null;
             if (parentInstitutionId != null) {
                 Institute parentInstitution = commonEntityMongoDAO
-                        .getInstituteByIdsIn(parentInstitutionId, parentInstitutionFields);
+                        .getInstituteById(parentInstitutionId, parentInstitutionFields);
                 parentInstitutionName =
                         parentInstitution != null ? parentInstitution.getOfficialName() : null;
             }
@@ -197,7 +197,7 @@ public class InstituteDetailServiceImpl {
             Map<String, Object> queryObject = new HashMap<>();
             queryObject.put(SUBEXAM_ID, new ArrayList<>(examIds));
             queryObject.put(EXAM_ID, new ArrayList<>(examIds));
-            examList = commonEntityMongoDAO.findAllExams(queryObject, examFields, OR);
+            examList = commonEntityMongoDAO.getAllExams(queryObject, examFields, OR);
         }
         return instituteDetailResponseBuilder
                 .buildResponse(institute, courses, examList, examData, examIds,

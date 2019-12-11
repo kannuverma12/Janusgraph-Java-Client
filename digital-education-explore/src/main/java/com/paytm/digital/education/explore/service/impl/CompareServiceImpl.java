@@ -131,7 +131,7 @@ public class CompareServiceImpl implements CompareService {
         Map<String, Object> queryObject = new HashMap<>();
         queryObject.put(EXAM_ID, new ArrayList<>(examIds));
         queryObject.put(SUBEXAM_ID, new ArrayList<>(examIds));
-        List<Exam> examList = commonEntityMongoDAO.findAllExams(queryObject, examFields, OR);
+        List<Exam> examList = commonEntityMongoDAO.getAllExams(queryObject, examFields, OR);
         return examList;
     }
 

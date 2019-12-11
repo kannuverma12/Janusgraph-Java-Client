@@ -370,6 +370,7 @@ public interface ExploreConstants {
     String INSTITUTE_DATA_FIELD = "institute_data";
     String EXAM_DATA_FIELD      = "exam_data";
     String COURSE_DATA_FIELD    = "course_data";
+    String SCHOOL_DATA_FIELD    = "school_data";
 
     public static class CachingConstants {
         public static final String CACHE_KEY_DELIMITER = "_";

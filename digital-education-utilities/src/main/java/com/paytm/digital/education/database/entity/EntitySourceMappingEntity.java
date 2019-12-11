@@ -31,6 +31,7 @@ public class EntitySourceMappingEntity {
     @JsonProperty("entity_id")
     private Long entityId;
 
+
     @Field("entity")
     @JsonProperty("entity")
     private EducationEntity educationEntity;

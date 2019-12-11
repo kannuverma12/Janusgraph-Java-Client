@@ -56,7 +56,7 @@ public class ExamListServiceImpl implements ExamListService {
             Map<String, Object> queryObject = new HashMap<>();
             queryObject.put(SUBEXAM_ID, examIds);
             queryObject.put(EXAM_ID, examIds);
-            List<Exam> exams = commonEntityMongoDAO.findAllExams(queryObject, examFields, OR);
+            List<Exam> exams = commonEntityMongoDAO.getAllExams(queryObject, examFields, OR);
             if (!CollectionUtils.isEmpty(exams)) {
                 return buildExamListResponse(exams, examIds);
             }

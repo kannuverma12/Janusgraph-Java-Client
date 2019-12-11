@@ -35,7 +35,7 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 public class CompareCourseServiceImpl implements CompareCourseService {
     private CommonMongoRepository commonMongoRepository;
     private CompareServiceImpl    compareService;
-    private CommonEntityMongoDAO commonEntityMongoDAO;
+    private CommonEntityMongoDAO  commonEntityMongoDAO;
 
     public List<CompareCourseDetail> compareCourses(List<Long> courseList, String fieldGroup,
             List<String> fields) {

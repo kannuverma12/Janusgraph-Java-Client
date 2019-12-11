@@ -1,22 +1,15 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_PAYTM_STREAM;
-import static com.paytm.digital.education.constant.ExploreConstants.COURSE_ID;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.constant.ExploreConstants.IS_ACCEPTING_APPLICATION;
-
-import com.paytm.digital.education.database.entity.Exam;
-import com.paytm.digital.education.database.entity.StreamEntity;
-import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
-import com.paytm.digital.education.database.repository.StreamEntityRepository;
-import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.database.entity.BaseLeadResponse;
 import com.paytm.digital.education.database.entity.Course;
+import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Lead;
+import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.database.entity.UserDetails;
-import com.paytm.digital.education.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
+import com.paytm.digital.education.database.repository.StreamEntityRepository;
 import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.database.repository.LeadRepository;
 import com.paytm.digital.education.explore.database.repository.UserDetailsRepository;
 import com.paytm.digital.education.explore.service.LeadService;
@@ -35,6 +28,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.paytm.digital.education.constant.ExploreConstants.COURSE_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.IS_ACCEPTING_APPLICATION;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_PAYTM_STREAM;
+
 @Service
 @AllArgsConstructor
 public class LeadServiceImpl implements LeadService {
@@ -42,7 +41,6 @@ public class LeadServiceImpl implements LeadService {
     private static final Logger log = LoggerFactory.getLogger(LeadServiceImpl.class);
 
     private LeadRepository        leadRepository;
-    private CommonMongoRepository commonMongoRepository;
     private LeadCareer360Service  leadCareer360Service;
     private UserDetailsRepository userDetailsRepository;
     private StreamEntityRepository streamEntityRepository;

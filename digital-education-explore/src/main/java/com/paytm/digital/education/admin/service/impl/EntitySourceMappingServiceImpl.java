@@ -7,7 +7,6 @@ import com.paytm.digital.education.admin.validator.EntitySourceMappingDataValida
 import com.paytm.digital.education.database.entity.EntitySourceMappingEntity;
 import com.paytm.digital.education.database.repository.EntitySourceMappingRepository;
 import com.paytm.digital.education.enums.EducationEntity;
-import com.paytm.digital.education.enums.EntitySourceType;
 import com.paytm.digital.education.utility.CommonUtils;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;

@@ -27,7 +27,7 @@ public class UrlParamsValidator {
     public void validateInstuteUrlKey(long instituteId, String instituteUrlKey) {
         List<String> instituteFields = Arrays.asList(ExploreConstants.OFFICIAL_NAME);
         Institute institute =
-                commonEntityMongoDAO.getInstituteByIdsIn(instituteId, instituteFields);
+                commonEntityMongoDAO.getInstituteById(instituteId, instituteFields);
         if (Objects.isNull(institute)) {
             throw new BadRequestException(INVALID_INSTITUTE_ID,
                     INVALID_INSTITUTE_ID.getExternalMessage());

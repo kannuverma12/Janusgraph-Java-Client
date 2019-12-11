@@ -2,7 +2,6 @@ package com.paytm.digital.education.explore.service.helper;
 
 import com.paytm.digital.education.database.entity.Institute;
 import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
-import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.dto.OfficialAddress;
 import com.paytm.digital.education.explore.response.dto.common.Widget;
 import com.paytm.digital.education.explore.response.dto.common.WidgetData;
@@ -42,7 +41,6 @@ public class SimilarInstituteHelper {
                     GALLERY_LOGO);
 
     private final WidgetsDataHelper     widgetsDataHelper;
-    private final CommonMongoRepository commonMongoRepository;
     private final CommonEntityMongoDAO  commonEducationEntityMongoRepository;
 
     @Cacheable(value = "similar_institutes_widgets", key = "'institute_id.'+#institute.instituteId")

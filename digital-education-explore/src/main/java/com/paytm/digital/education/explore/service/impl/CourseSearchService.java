@@ -3,7 +3,6 @@ package com.paytm.digital.education.explore.service.impl;
 import com.paytm.digital.education.constant.ExploreConstants;
 import com.paytm.digital.education.database.entity.Institute;
 import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
-import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationResponse;
@@ -88,7 +87,6 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
     private static LinkedHashMap<String, DataSortOrder> alphabeticalSortKeysDesc;
     private static Set<String>                          allowedSortFields;
     private        SearchAggregateHelper                searchAggregateHelper;
-    private        CommonMongoRepository                commonMongoRepository;
     private        PropertyReader                       propertyReader;
     private        SearchResponseBuilder                searchResponseBuilder;
     private        CommonEntityMongoDAO                 educationEntityMongoRepository;
@@ -173,7 +171,7 @@ public class CourseSearchService extends AbstractSearchServiceImpl {
         String instituteUrlKey = (String) searchRequest.getFilter().get(ENTITY_NAME).get(0);
         searchRequest.getFilter().remove(ENTITY_NAME);
         Institute institute = educationEntityMongoRepository
-                .getInstituteByIdsIn(instituteId.longValue(), fields);
+                .getInstituteById(instituteId.longValue(), fields);
         if (institute == null) {
             throw new BadRequestException(INVALID_INSTITUTE_ID,
                     INVALID_INSTITUTE_ID.getExternalMessage());
