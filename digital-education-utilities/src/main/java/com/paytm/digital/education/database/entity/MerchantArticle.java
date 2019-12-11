@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -33,6 +33,7 @@ public class MerchantArticle extends Base {
     private Long articleId;
 
     @Field("article_url")
+    @Indexed(unique = true)
     private String articleUrl;
 
     @Field("article_thumb_url")
@@ -60,7 +61,6 @@ public class MerchantArticle extends Base {
     private Long paytmStreamId;
 
     @Field("merchant_updated_at")
-    @LastModifiedDate
     @JsonIgnore
     private LocalDateTime merchantUpdatedAt;
 
