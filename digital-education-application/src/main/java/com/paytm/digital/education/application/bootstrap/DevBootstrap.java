@@ -10,7 +10,7 @@ import com.paytm.digital.education.database.repository.StreamRepository;
 import com.paytm.digital.education.enums.StateType;
 import com.paytm.digital.education.enums.SubscribableEntityType;
 import com.paytm.digital.education.enums.SubscriptionStatus;
-import com.paytm.digital.education.explore.database.repository.InstituteRepository;
+import com.paytm.digital.education.database.repository.InstituteRepository;
 import com.paytm.digital.education.explore.database.repository.StateRepository;
 import com.paytm.digital.education.explore.database.repository.SubscriptionRepository;
 import lombok.RequiredArgsConstructor;
