@@ -1,10 +1,9 @@
 package com.paytm.digital.education.dto.detail;
 
 import static com.paytm.digital.education.constant.DBConstants.NON_TENTATIVE;
-import static com.paytm.digital.education.constant.DBConstants.YYYY_MM;
 import static com.paytm.digital.education.utility.CommonUtils.setLastDateOfMonth;
-import static com.paytm.digital.education.utility.DateUtil.stringToDate;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -15,7 +14,9 @@ import lombok.Data;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Event {
+public class Event implements Serializable {
+
+    private static final long serialVersionUID = -4075647661530875680L;
 
     @JsonProperty("name")
     private String name;

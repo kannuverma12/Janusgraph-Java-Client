@@ -6,11 +6,15 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Ambassador {
+public class Ambassador implements Serializable {
+
+    private static final long serialVersionUID = -6916686011636462346L;
+
     @JsonProperty("name")
     private String name;
 

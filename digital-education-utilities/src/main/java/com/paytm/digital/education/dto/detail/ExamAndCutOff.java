@@ -5,11 +5,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.enums.Gender;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Map;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ExamAndCutOff {
+public class ExamAndCutOff implements Serializable {
+
+    private static final long serialVersionUID = -2345675229431173057L;
 
     @JsonProperty("exam_short_name")
     private String examShortName;

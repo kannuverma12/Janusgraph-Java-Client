@@ -7,13 +7,16 @@ import lombok.Data;
 import lombok.ToString;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Instance {
+public class Instance implements Serializable {
+
+    private static final long serialVersionUID = -1806178596870425587L;
 
     @Field("admission_year")
     private Integer admissionYear;

@@ -19,6 +19,8 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Exam extends Base {
 
+    private static final long serialVersionUID = -8592325086959190870L;
+
     @Id
     @Field("_id")
     private String id;

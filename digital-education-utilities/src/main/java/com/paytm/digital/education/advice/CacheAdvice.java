@@ -30,6 +30,7 @@ public class CacheAdvice {
         EduCache eduCacheAnnotation = method.getAnnotation(EduCache.class);
         String cacheKey = keyGenerator.generateKey(
                 eduCacheAnnotation, method.getDeclaringClass(), method.getName(), parameterNames, args);
-        return redisOrchestrator.get(cacheKey, new MethodEnclosedInProceedingJoinPoint(pjp));
+        return redisOrchestrator.get(
+                cacheKey, new MethodEnclosedInProceedingJoinPoint(pjp), eduCacheAnnotation.shouldCacheNull());
     }
 }

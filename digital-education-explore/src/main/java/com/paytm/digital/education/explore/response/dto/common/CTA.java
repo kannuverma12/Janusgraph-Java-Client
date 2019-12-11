@@ -17,6 +17,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class CTA implements Serializable {
 
+    private static final long serialVersionUID = -6699794153754403121L;
+
     @JsonProperty("logo")
     private String logo;
 

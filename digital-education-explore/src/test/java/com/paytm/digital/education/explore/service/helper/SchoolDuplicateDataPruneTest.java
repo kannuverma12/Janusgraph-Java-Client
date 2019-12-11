@@ -74,7 +74,6 @@ public class SchoolDuplicateDataPruneTest {
                 facilityDataHelper,
                 ctaHelper,
                 searchService,
-                null,
                 schoolConfig,
                 schoolUtilService,
                 null,

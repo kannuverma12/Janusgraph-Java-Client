@@ -92,7 +92,7 @@ public class ErrorAdvice extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     public final ResponseEntity<Object> exceptionHandler(ConstraintViolationException ex) {
         logException(ex.getLocalizedMessage(), ex);
-        ValidationException v = ValidationException.buildValidationException(ex.getConstraintViolations());
+        ValidationException v = ValidationException.buildValidationExceptionForUnknown(ex.getConstraintViolations());
         return new ResponseEntity<>(v.getValidationErrors(), HttpStatus.BAD_REQUEST);
     }
 
@@ -100,8 +100,8 @@ public class ErrorAdvice extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         logException(ex.getLocalizedMessage(), ex);
-        return new ResponseEntity<>(ValidationException.ValidationError.fromFieldErrors(
-            ex.getBindingResult().getFieldErrors()), HttpStatus.BAD_REQUEST);
+        ValidationException v = new ValidationException(ex.getBindingResult().getFieldErrors());
+        return new ResponseEntity<>(v.getValidationErrors(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)

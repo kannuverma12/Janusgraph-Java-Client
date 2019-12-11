@@ -7,12 +7,15 @@ import lombok.Data;
 import lombok.ToString;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SubExam {
+public class SubExam implements Serializable {
+
+    private static final long serialVersionUID = -8777541979474315663L;
 
     @Field("duration_hours")
     private Float durationHours;

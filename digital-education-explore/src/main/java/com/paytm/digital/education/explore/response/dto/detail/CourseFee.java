@@ -6,11 +6,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.io.Serializable;
+
 @Getter
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CourseFee {
-
+public class CourseFee implements Serializable {
+    private static final long serialVersionUID = 1559795930100121669L;
     @JsonProperty("fee")
     private Integer fee;
 

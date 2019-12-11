@@ -341,6 +341,7 @@ public interface ExploreConstants {
     String FAILED                        = "failed";
     String URL_DISPLAY_KEY               = "url_display_key";
     String DESCRIPTION                   = "description";
+    String PARTIAL_FAILED                = "partial_failed";
 
     //Sections constants
     String BROWSE_BY_EXAM_LEVEL_APP         = "browse_by_exam_level_app";
@@ -360,6 +361,8 @@ public interface ExploreConstants {
     String WEB_FORM_URI_PREFIX              = "webFormUriPrefix";
     String PRIORITY                         = "priority";
     int    DEFAULT_EXAM_PRIORITY            = 9999;
+    String UPDATED_AT                       = "updated_at";
+    String NEWS_ARTICLE_TITLE               = "Trending News and Articles";
 
     String NO_TOPIC_FOUND = "No Topic Found";
 

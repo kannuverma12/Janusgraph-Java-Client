@@ -11,13 +11,14 @@ import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import org.joda.time.DateTime;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisOperations;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.context.TestPropertySource;
@@ -191,7 +192,7 @@ public class CacheTest {
 
     @Test(expected = EducationException.class)
     public void testThrowsExceptionWhenEducationExceptionOccurs() throws Exception {
-        RedisTemplate mockRedisTemplate = mock(RedisTemplate.class);
+        StringRedisTemplate mockRedisTemplate = mock(StringRedisTemplate.class);
         ValueOperations mockValueOperations = mock(ValueOperations.class);
         when(mockValueOperations.setIfAbsent(any(), any(), any())).thenReturn(true);
         when(mockValueOperations.getOperations()).thenReturn(mock(RedisOperations.class));
@@ -208,7 +209,7 @@ public class CacheTest {
 
     @Test
     public void testExceptionsAreSwallowedInCaseOfNonEducationExceptions() throws Exception {
-        RedisTemplate mockRedisTemplate = mock(RedisTemplate.class);
+        StringRedisTemplate mockRedisTemplate = mock(StringRedisTemplate.class);
         ValueOperations mockValueOperations = mock(ValueOperations.class);
         when(mockValueOperations.setIfAbsent(any(), any(), any())).thenReturn(true);
         when(mockValueOperations.getOperations()).thenReturn(mock(RedisOperations.class));

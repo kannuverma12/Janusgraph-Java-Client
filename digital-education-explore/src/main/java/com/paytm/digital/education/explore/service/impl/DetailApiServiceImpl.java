@@ -44,11 +44,11 @@ public class DetailApiServiceImpl implements SchoolDetailService {
             String fieldGroup, List<String> fields, Client client, boolean syllabus,
             boolean importantDates, boolean derivedAttributes, boolean examCenters,
             boolean sections, boolean widgets,
-            boolean policies) throws ParseException {
+            boolean policies, boolean newsArticles) {
         // fields are not being supported currently. Part of discussion
 
         ExamDetail examDetail = examDetailService.getExamDetail(entityId, examUrlKey, fieldGroup, fields, client,
-                syllabus, importantDates, derivedAttributes, examCenters, sections, widgets, policies);
+                syllabus, importantDates, derivedAttributes, examCenters, sections, widgets, policies, newsArticles);
         if (userId != null && userId > 0) {
             examDetail.setInterested(isInterested(EXAM, examDetail.getExamId(), userId));
             examDetail.setShortlisted(isShortlisted(examDetail.getExamId(), userId, EXAM));
@@ -65,12 +65,12 @@ public class DetailApiServiceImpl implements SchoolDetailService {
             String fieldGroup, List<String> fields, Client client, boolean derivedAttributes,
             boolean cutOffs, boolean facilities, boolean gallery, boolean placements,
             boolean notableAlumni, boolean sections, boolean widgets, boolean coursesPerDegree,
-            boolean campusEngagementFlag)
+            boolean campusEngagementFlag, boolean newsArticles)
             throws IOException, TimeoutException {
         // fields are not being supported currently. Part of discussion
         InstituteDetail instituteDetail = instituteDetailService.getinstituteDetail(entityId, instituteUrlKey,
                 fieldGroup, client, derivedAttributes, cutOffs, facilities, gallery, placements,
-                notableAlumni, sections, widgets, coursesPerDegree, campusEngagementFlag);
+                notableAlumni, sections, widgets, coursesPerDegree, campusEngagementFlag, newsArticles);
         if (userId != null && userId > 0) {
             instituteDetailService.updateShortist(instituteDetail, INSTITUTE, userId, client);
             instituteDetail.setInterested(isInterestedInInstitute(instituteDetail.getInstituteId(), userId));

@@ -19,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SchoolGallery implements Serializable {
-
+    private static final long serialVersionUID = 3789721435216048371L;
     @Field("images")
     private List<String> images;
 

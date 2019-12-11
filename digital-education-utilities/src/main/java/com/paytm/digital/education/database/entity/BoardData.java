@@ -27,6 +27,8 @@ import static com.sun.org.apache.xml.internal.utils.LocaleUtility.EMPTY_STRING;
 @Builder
 @AllArgsConstructor
 public class BoardData implements Serializable {
+    private static final long serialVersionUID = 2210782670158787979L;
+
     @Field("affiliation_type")
     @JsonProperty("affiliation_type")
     private String affiliationType;

@@ -26,6 +26,8 @@ import java.util.List;
 @NoArgsConstructor
 public class School implements Serializable {
 
+    private static final long serialVersionUID = -1753614543628299736L;
+
     @Id
     @Field("_id")
     @JsonIgnore

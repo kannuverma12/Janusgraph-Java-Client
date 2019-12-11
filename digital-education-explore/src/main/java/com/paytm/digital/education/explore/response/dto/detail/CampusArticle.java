@@ -5,11 +5,15 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CampusArticle {
+public class CampusArticle implements Serializable {
+
+    private static final long serialVersionUID = 2192860288551578636L;
+
     @JsonProperty("article_title")
     private String articleTitle;
 

@@ -10,4 +10,5 @@ import java.lang.annotation.Target;
 public @interface EduCache {
     String[] keys() default {};
     String cache() default "defaultCache";
+    boolean shouldCacheNull() default true;
 }

@@ -1,5 +1,6 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import com.paytm.digital.education.annotation.EduCache;
 import com.paytm.digital.education.constant.ExploreConstants;
 import com.paytm.digital.education.database.entity.Course;
 import com.paytm.digital.education.database.entity.Exam;
@@ -21,7 +22,6 @@ import com.paytm.digital.education.utility.CommonUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -62,7 +62,7 @@ public class CourseDetailServiceImpl {
     /*
      ** Method to get the course details and institute details
      */
-    @Cacheable(value = "course_detail", keyGenerator = "customKeyGenerator")
+    @EduCache(cache = "course_detail")
     public CourseDetail getCourseDetails(long entityId, String courseUrlKey, String fieldGroup,
             List<String> fields, Client client, boolean courseFees,
             boolean institute, boolean widgets, boolean derivedAttributes, boolean examAccepted) {
