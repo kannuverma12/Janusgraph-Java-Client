@@ -9,15 +9,16 @@ import com.paytm.education.logger.LoggerFactory;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import static com.paytm.digital.education.constant.ExploreConstants.EDUCATION_BASE_URL;
 
@@ -34,10 +35,12 @@ public class MerchantArticleController {
 
     @RequestMapping(method = RequestMethod.POST, path = "/auth/v1/merchant/article")
     @ApiOperation(value = "Save Merchant Articles")
-    public @ResponseBody MerchantArticleResponse saveArticle(
-            @Valid @RequestBody MerchantArticleRequest merchantArticleRequest) {
+    public ResponseEntity<MerchantArticleResponse> saveArticle(
+            @Valid @RequestBody @NotNull MerchantArticleRequest merchantArticleRequest) {
         log.info("Merchant Article Request : {}", JsonUtils.toJson(merchantArticleRequest));
-        return merchantArticleServiceImpl.saveArticle(merchantArticleRequest);
+        MerchantArticleResponse merchantArticleResponse =
+                merchantArticleServiceImpl.saveArticle(merchantArticleRequest);
+        return new ResponseEntity<>(merchantArticleResponse, merchantArticleResponse.getStatus());
     }
 
 }

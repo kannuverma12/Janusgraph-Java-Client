@@ -19,7 +19,7 @@ public class ArticleResponseDTO {
     private String articleTitle;
 
     @JsonProperty("article_id")
-    private Integer articleId;
+    private Long articleId;
 
     @JsonProperty("article_url")
     private String articleUrl;
@@ -31,7 +31,7 @@ public class ArticleResponseDTO {
     private String articleDescription;
 
     @JsonProperty("exam_id")
-    private Integer examId;
+    private Long examId;
 
     @JsonProperty("stream")
     private String stream;

@@ -1,9 +1,12 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.constant.ExploreConstants.UPDATED_AT;
 
+import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.MerchantArticle;
 import com.paytm.digital.education.database.entity.MerchantStreamEntity;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.database.repository.MerchantStreamRepository;
 import com.paytm.digital.education.explore.database.repository.MerchantArticleRepository;
 import com.paytm.digital.education.explore.request.dto.articles.MerchantArticleRequest;
@@ -17,7 +20,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -31,12 +36,26 @@ public class MerchantArticleServiceImpl {
 
     private MerchantArticleRepository merchantArticleRepository;
     private MerchantStreamRepository  merchantStreamRepository;
+    private CommonMongoRepository commonMongoRepository;
 
     public MerchantArticleResponse saveArticle(
             MerchantArticleRequest merchantArticleRequest) {
 
         MerchantArticleResponse articleResponse = new MerchantArticleResponse();
+        Exam exam = validateExam(merchantArticleRequest.getExamId());
 
+        if (Objects.isNull(exam) && merchantArticleRequest.getExamId() != 0) {
+            log.error("Invalid exam id : ", merchantArticleRequest.getExamId());
+            return updateResponse(articleResponse, HttpStatus.NOT_FOUND,
+                    "Invalid exam id", null);
+        }
+
+        Boolean validArticle = validateArticle(merchantArticleRequest.getArticleUrl());
+        if (!validArticle) {
+            log.error("Duplicate article found : ", merchantArticleRequest.getArticleUrl());
+            return updateResponse(articleResponse, HttpStatus.CONFLICT,
+                    "Duplicate article found", null);
+        }
         MerchantArticle merchantArticle = new MerchantArticle();
         BeanUtils.copyProperties(merchantArticleRequest, merchantArticle);
         merchantArticle.setMerchantUpdatedAt(merchantArticleRequest.getUpdatedAt());
@@ -44,7 +63,7 @@ public class MerchantArticleServiceImpl {
                 merchantArticleRequest.getMerchant());
         if (Objects.isNull(paytmStreamId)) {
             log.error("Stream does not exists. Article not saved.");
-            return updateResponse(articleResponse,4012,
+            return updateResponse(articleResponse,HttpStatus.NOT_FOUND,
                     "Stream does not exists. Article not saved.", null);
         }
         merchantArticle.setPaytmStreamId(paytmStreamId);
@@ -54,15 +73,28 @@ public class MerchantArticleServiceImpl {
             if (Objects.nonNull(dbMerchantArticle)) {
                 ArticleResponseDTO articleResponseDTO = new ArticleResponseDTO();
                 BeanUtils.copyProperties(dbMerchantArticle, articleResponseDTO);
-                articleResponse = updateResponse(articleResponse,200,
+                articleResponse = updateResponse(articleResponse,HttpStatus.OK,
                         "Article Saved successfully", articleResponseDTO);
             }
         } catch (Exception e) {
             log.error("Error saving Article : ", e);
-            articleResponse = updateResponse(articleResponse,4012,
+            articleResponse = updateResponse(articleResponse,HttpStatus.INTERNAL_SERVER_ERROR,
                     "Error saving Article", null);
         }
+
         return articleResponse;
+    }
+
+    private Boolean validateArticle(String articleUrl) {
+        List<MerchantArticle> dbArticle = merchantArticleRepository.findAllByArticleUrl(articleUrl);
+        if (CollectionUtils.isEmpty(dbArticle)) {
+            return true;
+        }
+        return false;
+    }
+
+    private Exam validateExam(Long examId) {
+        return commonMongoRepository.getEntityById(EXAM_ID, examId, Exam.class);
     }
 
     public List<MerchantArticle> getArticlesByStreamIds(List<Long> paytmStreamIds, int limit) {
@@ -94,7 +126,7 @@ public class MerchantArticleServiceImpl {
     }
 
     private MerchantArticleResponse updateResponse(MerchantArticleResponse
-            articleResponse, int status, String message,
+            articleResponse, HttpStatus status, String message,
             ArticleResponseDTO articleResponseDTO) {
         articleResponse.setStatus(status);
         articleResponse.setMessage(message);
