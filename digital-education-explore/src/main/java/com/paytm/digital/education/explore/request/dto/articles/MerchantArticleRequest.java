@@ -10,11 +10,11 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 
@@ -47,10 +47,11 @@ public class MerchantArticleRequest {
     @ApiModelProperty(value = "Article title")
     private String articleTitle;
 
+    @NotNull
     @Min(1)
     @JsonProperty("article_id")
     @ApiModelProperty(value = "Article id")
-    private Integer articleId;
+    private Long articleId;
 
     @NotBlank
     @JsonProperty("article_url")
@@ -67,9 +68,10 @@ public class MerchantArticleRequest {
     @ApiModelProperty(value = "Article description")
     private String articleDescription;
 
-    @Min(1)
+    @NotNull
+    @Min(0)
     @JsonProperty("exam_id")
-    @ApiModelProperty(value = "exam id ")
+    @ApiModelProperty(value = "exam id")
     private Long examId;
 
     @NotBlank
