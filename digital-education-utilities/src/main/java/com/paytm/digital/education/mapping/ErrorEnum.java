@@ -180,7 +180,12 @@ public enum ErrorEnum {
             INTERNAL_SERVER_ERROR, 2),
     TEST_ENUM(4077, "Test Enum", INTERNAL_SERVER_ERROR, 0),
     INVALID_PAYTM_SOURCE_DATA(4078, "Invalid paytm source data for entityId  %s .", BAD_REQUEST, 1),
-    NO_PAYTM_SOURCE_DATA(4079, "Empty paytm source data present in request.", BAD_REQUEST, 1);
+    NO_PAYTM_SOURCE_DATA(4079, "Empty paytm source data present in request.", BAD_REQUEST, 1),
+    INVALID_PAYTM_SOURCE_MAPPING_DATA(4080,
+            "No paytm source data present for entityId  %s, cannot set mapping", BAD_REQUEST, 1),
+    INVALID_MERCHANT_SOURCE_MAPPING_DATA(4081,
+            "No merchant source data present for entityId  %s, cannot set mapping", BAD_REQUEST, 1)
+    ;
 
     private final int        internalCode;
     private final String     externalMessage;

@@ -4,9 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paytm.digital.education.admin.request.PaytmSourceDataRequest;
 import com.paytm.digital.education.admin.response.MerchantSourceResponse;
-import com.paytm.digital.education.admin.response.PaytmSourceResponse;
 import com.paytm.digital.education.admin.response.PaytmSourceDataResponse;
-
+import com.paytm.digital.education.admin.response.PaytmSourceResponse;
 import com.paytm.digital.education.admin.validator.PaytmSourceDataValidator;
 import com.paytm.digital.education.constant.ExploreConstants;
 import com.paytm.digital.education.constant.SchoolConstants;
@@ -35,9 +34,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.paytm.digital.education.constant.ExploreConstants.SUCCESS;
 import static com.paytm.digital.education.constant.ExploreConstants.FAILED;
 import static com.paytm.digital.education.constant.ExploreConstants.PARTIAL_FAILED;
+import static com.paytm.digital.education.constant.ExploreConstants.SUCCESS;
 
 @Service
 @AllArgsConstructor
