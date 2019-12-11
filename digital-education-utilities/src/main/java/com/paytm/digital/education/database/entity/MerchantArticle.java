@@ -1,6 +1,9 @@
 package com.paytm.digital.education.database.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
@@ -13,6 +16,8 @@ import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @Document("merchant_articles")
 public class MerchantArticle extends Base {
 
@@ -25,7 +30,7 @@ public class MerchantArticle extends Base {
     private String articleTitle;
 
     @Field("article_id")
-    private Integer articleId;
+    private Long articleId;
 
     @Field("article_url")
     private String articleUrl;
@@ -37,7 +42,7 @@ public class MerchantArticle extends Base {
     private String articleDescription;
 
     @Field("exam_id")
-    private Integer examId;
+    private Long examId;
 
     @Field("stream")
     private String stream;

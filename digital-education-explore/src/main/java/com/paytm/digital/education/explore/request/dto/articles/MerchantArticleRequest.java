@@ -70,7 +70,7 @@ public class MerchantArticleRequest {
     @Min(1)
     @JsonProperty("exam_id")
     @ApiModelProperty(value = "exam id ")
-    private Integer examId;
+    private Long examId;
 
     @NotBlank
     @JsonProperty("stream")

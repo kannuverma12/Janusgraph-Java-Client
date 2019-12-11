@@ -2,6 +2,7 @@ package com.paytm.digital.education.database.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.PublishStatus;
 import lombok.Data;
@@ -110,4 +111,7 @@ public class Course implements Serializable {
 
     @Field("status")
     private String status;
+
+    @Field("stream_ids")
+    private List<Long> streamIds;
 }
