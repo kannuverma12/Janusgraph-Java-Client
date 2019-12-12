@@ -141,7 +141,7 @@ public class InstituteDetail implements CTAInfoHolder {
     @JsonIgnore
     @Override
     public boolean hasShareFeature() {
-        return false;
+        return true;
     }
 
     @Override

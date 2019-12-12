@@ -205,7 +205,7 @@ public class ExamDetail implements CTAInfoHolder {
     @JsonIgnore
     @Override
     public boolean hasShareFeature() {
-        return false;
+        return true;
     }
 
     @Override
