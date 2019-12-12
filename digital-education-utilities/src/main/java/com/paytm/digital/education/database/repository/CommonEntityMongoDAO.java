@@ -41,22 +41,85 @@ public class CommonEntityMongoDAO {
     private final EntitySourceMappingProvider entitySourceMappingProvider;
     private final InstituteRepository         instituteRepository;
 
+    public Institute getInstituteById(Long instituteId, List<String> projectionFields) {
+        EntitySourceType sourceType =
+                entitySourceMappingProvider.getSourceAndEntitiesMapping(INSTITUTE, instituteId);
+
+        if (PAYTM.equals(sourceType)) {
+            return Optional.ofNullable(
+                    commonMongoRepository.getEntityFromPaytmSourceByFields(instituteId,
+                            INSTITUTE.name(), PaytmSourceDataEntity.class,
+                            getProjectionFieldsForPaytmSource(projectionFields,
+                                    INSTITUTE_DATA_FIELD))).map(
+                    PaytmSourceDataEntity::getInstituteData)
+                    .orElse(null);
+        }
+        return commonMongoRepository
+                .getEntityByFields(INSTITUTE_ID, instituteId, Institute.class, projectionFields);
+    }
+
+    public Course getCourseById(Long courseId, List<String> fields) {
+        EntitySourceType sourceType =
+                entitySourceMappingProvider.getSourceAndEntitiesMapping(COURSE, courseId);
+
+        if (PAYTM.equals(sourceType)) {
+            return Optional.ofNullable(
+                    commonMongoRepository.getEntityFromPaytmSourceByFields(courseId,
+                            COURSE.name(), PaytmSourceDataEntity.class,
+                            getProjectionFieldsForPaytmSource(fields, COURSE_DATA_FIELD)))
+                    .map(PaytmSourceDataEntity::getCourseData).orElse(null);
+        }
+        return commonMongoRepository
+                .getEntityByFields(COURSE_ID, courseId, Course.class, fields);
+    }
+
+    public Exam getExamById(Long examId, List<String> projectionFields) {
+        EntitySourceType sourceType =
+                entitySourceMappingProvider.getSourceAndEntitiesMapping(EXAM, examId);
+
+        if (PAYTM.equals(sourceType)) {
+            return Optional.ofNullable(
+                    commonMongoRepository.getEntityFromPaytmSourceByFields(examId,
+                            EXAM.name(), PaytmSourceDataEntity.class,
+                            getProjectionFieldsForPaytmSource(projectionFields, EXAM_DATA_FIELD)))
+                    .map(PaytmSourceDataEntity::getExamData).orElse(null);
+        }
+        return commonMongoRepository
+                .getEntityByFields(EXAM_ID, examId, Exam.class, projectionFields);
+    }
+
+    public School getSchoolById(Long schoolId, List<String> schoolProjectionFields) {
+        EntitySourceType sourceType =
+                entitySourceMappingProvider.getSourceAndEntitiesMapping(SCHOOL, schoolId);
+
+        if (PAYTM.equals(sourceType)) {
+            return Optional.ofNullable(
+                    commonMongoRepository.getEntityFromPaytmSourceByFields(schoolId,
+                            SCHOOL.name(), PaytmSourceDataEntity.class,
+                            getProjectionFieldsForPaytmSource(schoolProjectionFields,
+                                    SCHOOL_DATA_FIELD))).map(PaytmSourceDataEntity::getSchoolData)
+                    .orElse(null);
+        }
+        return commonMongoRepository
+                .getEntityByFields(SCHOOL_ID, schoolId, School.class, schoolProjectionFields);
+    }
+
     public List<School> getSchoolsByIdsIn(List<Long> schoolIds,
             List<String> schoolProjectionFields) {
         Map<EntitySourceType, List<Long>> sourceAndEntityIdsMap =
                 entitySourceMappingProvider.getSourceAndEntitiesMapping(SCHOOL, schoolIds);
 
-        List<Long> idsWithSourceMerchant;
-        if (CollectionUtils.isEmpty(sourceAndEntityIdsMap)) {
-            idsWithSourceMerchant = schoolIds;
-        } else {
+        List<Long> idsWithSourceMerchant = schoolIds;
+        List<School> schools = new ArrayList<>();
+
+        if (!CollectionUtils.isEmpty(sourceAndEntityIdsMap) && sourceAndEntityIdsMap
+                .containsKey(C360)) {
             idsWithSourceMerchant = sourceAndEntityIdsMap.get(C360);
         }
 
-        List<School> schools = new ArrayList<>();
-        List<Long> schoolIdsWithSourcePaytm = sourceAndEntityIdsMap.get(PAYTM);
-
-        if (!CollectionUtils.isEmpty(schoolIdsWithSourcePaytm)) {
+        if (!CollectionUtils.isEmpty(sourceAndEntityIdsMap) && sourceAndEntityIdsMap
+                .containsKey(PAYTM)) {
+            List<Long> schoolIdsWithSourcePaytm = sourceAndEntityIdsMap.get(PAYTM);
             schools.addAll(Optional.ofNullable(commonMongoRepository
                     .getEntityFieldsFromPaytmSourceByValuesIn(SCHOOL.name(),
                             schoolIdsWithSourcePaytm, PaytmSourceDataEntity.class,
@@ -80,17 +143,17 @@ public class CommonEntityMongoDAO {
         Map<EntitySourceType, List<Long>> sourceAndEntityIdsMap =
                 entitySourceMappingProvider.getSourceAndEntitiesMapping(INSTITUTE, instituteIds);
 
-        List<Long> idsWithSourceMerchant;
-        if (CollectionUtils.isEmpty(sourceAndEntityIdsMap)) {
-            idsWithSourceMerchant = instituteIds;
-        } else {
+        List<Long> idsWithSourceMerchant = instituteIds;
+        List<Institute> institutes = new ArrayList<>();
+
+        if (!CollectionUtils.isEmpty(sourceAndEntityIdsMap) && sourceAndEntityIdsMap
+                .containsKey(C360)) {
             idsWithSourceMerchant = sourceAndEntityIdsMap.get(C360);
         }
 
-        List<Institute> institutes = new ArrayList<>();
-        List<Long> idsWithSourcePaytm = sourceAndEntityIdsMap.get(PAYTM);
-
-        if (!CollectionUtils.isEmpty(idsWithSourcePaytm)) {
+        if (!CollectionUtils.isEmpty(sourceAndEntityIdsMap) && sourceAndEntityIdsMap
+                .containsKey(PAYTM)) {
+            List<Long> idsWithSourcePaytm = sourceAndEntityIdsMap.get(PAYTM);
             List<PaytmSourceDataEntity> paytmSourceDataEntities = commonMongoRepository
                     .getEntityFieldsFromPaytmSourceByValuesIn(INSTITUTE.name(),
                             idsWithSourcePaytm, PaytmSourceDataEntity.class,
@@ -114,16 +177,17 @@ public class CommonEntityMongoDAO {
         Map<EntitySourceType, List<Long>> sourceAndEntityIdsMap =
                 entitySourceMappingProvider.getSourceAndEntitiesMapping(EXAM, examIds);
 
-        List<Long> idsWithSourceMerchant;
-        if (CollectionUtils.isEmpty(sourceAndEntityIdsMap)) {
-            idsWithSourceMerchant = examIds;
-        } else {
+        List<Long> idsWithSourceMerchant = examIds;
+        List<Exam> exams = new ArrayList<>();
+
+        if (!CollectionUtils.isEmpty(sourceAndEntityIdsMap) && sourceAndEntityIdsMap
+                .containsKey(C360)) {
             idsWithSourceMerchant = sourceAndEntityIdsMap.get(C360);
         }
-        List<Exam> exams = new ArrayList<>();
-        List<Long> idsWithSourcePaytm = sourceAndEntityIdsMap.get(PAYTM);
 
-        if (!CollectionUtils.isEmpty(idsWithSourcePaytm)) {
+        if (!CollectionUtils.isEmpty(sourceAndEntityIdsMap) && sourceAndEntityIdsMap
+                .containsKey(PAYTM)) {
+            List<Long> idsWithSourcePaytm = sourceAndEntityIdsMap.get(PAYTM);
             List<PaytmSourceDataEntity> paytmSourceDataEntities = commonMongoRepository
                     .getEntityFieldsFromPaytmSourceByValuesIn(EXAM.name(),
                             idsWithSourcePaytm, PaytmSourceDataEntity.class,
@@ -146,13 +210,17 @@ public class CommonEntityMongoDAO {
         Map<EntitySourceType, List<Long>> sourceAndEntityIdsMap =
                 entitySourceMappingProvider.getSourceAndEntitiesMapping(COURSE, courseIds);
 
-        if (CollectionUtils.isEmpty(sourceAndEntityIdsMap)) {
-            return new ArrayList<>();
-        }
+        List<Long> idsWithSourceMerchant = courseIds;
         List<Course> courses = new ArrayList<>();
-        List<Long> idsWithSourcePaytm = sourceAndEntityIdsMap.get(PAYTM);
 
-        if (!CollectionUtils.isEmpty(idsWithSourcePaytm)) {
+        if (!CollectionUtils.isEmpty(sourceAndEntityIdsMap) && sourceAndEntityIdsMap
+                .containsKey(C360)) {
+            idsWithSourceMerchant = sourceAndEntityIdsMap.get(C360);
+        }
+
+        if (!CollectionUtils.isEmpty(sourceAndEntityIdsMap) && sourceAndEntityIdsMap
+                .containsKey(PAYTM)) {
+            List<Long> idsWithSourcePaytm = sourceAndEntityIdsMap.get(PAYTM);
             List<PaytmSourceDataEntity> paytmSourceDataEntities = commonMongoRepository
                     .getEntityFieldsFromPaytmSourceByValuesIn(COURSE.name(),
                             idsWithSourcePaytm, PaytmSourceDataEntity.class,
@@ -162,8 +230,6 @@ public class CommonEntityMongoDAO {
                             PaytmSourceDataEntity::getCourseData).collect(
                             Collectors.toList()));
         }
-        List<Long> idsWithSourceMerchant =
-                sourceAndEntityIdsMap.get(C360);
         if (!CollectionUtils.isEmpty(idsWithSourceMerchant)) {
             courses.addAll(commonMongoRepository
                     .getEntityFieldsByValuesIn(COURSE_ID, idsWithSourceMerchant, Course.class,
@@ -172,112 +238,35 @@ public class CommonEntityMongoDAO {
         return courses;
     }
 
-    public School getSchoolById(Long schoolId,
-            List<String> schoolProjectionFields) {
-        EntitySourceType sourceType =
-                entitySourceMappingProvider.getSourceAndEntitiesMapping(SCHOOL, schoolId);
-        School school;
-        if (PAYTM.equals(sourceType)) {
-            school = Optional.ofNullable(
-                    commonMongoRepository.getEntityFromPaytmSourceByFields(schoolId,
-                            SCHOOL.name(), PaytmSourceDataEntity.class,
-                            getProjectionFieldsForPaytmSource(schoolProjectionFields,
-                                    SCHOOL_DATA_FIELD))).map(PaytmSourceDataEntity::getSchoolData)
-                    .orElse(null);
-        } else {
-            school = commonMongoRepository
-                    .getEntityByFields(SCHOOL_ID, schoolId, School.class, schoolProjectionFields);
-        }
-        return school;
-    }
-
-    public Institute getInstituteById(Long instituteId,
-            List<String> projectionFields) {
-        EntitySourceType sourceType =
-                entitySourceMappingProvider.getSourceAndEntitiesMapping(INSTITUTE, instituteId);
-        Institute institute;
-        if (PAYTM.equals(sourceType)) {
-            institute = Optional.ofNullable(
-                    commonMongoRepository.getEntityFromPaytmSourceByFields(instituteId,
-                            INSTITUTE.name(), PaytmSourceDataEntity.class,
-                            getProjectionFieldsForPaytmSource(projectionFields,
-                                    INSTITUTE_DATA_FIELD))).map(
-                    PaytmSourceDataEntity::getInstituteData)
-                    .orElse(null);
-        } else {
-            institute = commonMongoRepository
-                    .getEntityByFields(INSTITUTE_ID, instituteId, Institute.class,
-                            projectionFields);
-        }
-        return institute;
-    }
-
-    public Course getCourseById(Long courseId,
-            List<String> fields) {
-        EntitySourceType sourceType =
-                entitySourceMappingProvider.getSourceAndEntitiesMapping(COURSE, courseId);
-
-        Course course;
-        if (PAYTM.equals(sourceType)) {
-            course = Optional.ofNullable(
-                    commonMongoRepository.getEntityFromPaytmSourceByFields(courseId,
-                            COURSE.name(), PaytmSourceDataEntity.class,
-                            getProjectionFieldsForPaytmSource(fields, COURSE_DATA_FIELD)))
-                    .map(PaytmSourceDataEntity::getCourseData).orElse(null);
-        } else {
-            course = commonMongoRepository
-                    .getEntityByFields(COURSE_ID, courseId, Course.class, fields);
-        }
-        return course;
-    }
-
-    public Exam getExamById(Long examId,
-            List<String> projectionFields) {
-        EntitySourceType sourceType =
-                entitySourceMappingProvider.getSourceAndEntitiesMapping(EXAM, examId);
-
-        Exam exam;
-        if (PAYTM.equals(sourceType)) {
-            exam = Optional.ofNullable(
-                    commonMongoRepository.getEntityFromPaytmSourceByFields(examId,
-                            EXAM.name(), PaytmSourceDataEntity.class,
-                            getProjectionFieldsForPaytmSource(projectionFields, EXAM_DATA_FIELD)))
-                    .map(PaytmSourceDataEntity::getExamData).orElse(null);
-        } else {
-            exam = commonMongoRepository
-                    .getEntityByFields(EXAM_ID, examId, Exam.class,
-                            projectionFields);
-        }
-        return exam;
-    }
 
     public List<Institute> getAllInstitutes(Map<String, Object> queryObject,
             List<String> instituteFields, String operator) {
         List<Long> instituteIds = (List<Long>) queryObject.get(INSTITUTE_ID);
         Map<EntitySourceType, List<Long>> sourceAndEntityIdsMap =
                 entitySourceMappingProvider.getSourceAndEntitiesMapping(INSTITUTE, instituteIds);
-        List<Institute> institutes = new ArrayList<>();
 
-        if (CollectionUtils.isEmpty(sourceAndEntityIdsMap)) {
-            return institutes;
+        List<Institute> institutes = new ArrayList<>();
+        List<Long> idsWithSourceMerchant = instituteIds;
+
+        if (!CollectionUtils.isEmpty(sourceAndEntityIdsMap) && sourceAndEntityIdsMap
+                .containsKey(C360)) {
+            idsWithSourceMerchant = sourceAndEntityIdsMap.get(C360);
         }
 
-        List<Long> idsWithSourceMerchant =
-                sourceAndEntityIdsMap.get(C360);
         if (!CollectionUtils.isEmpty(idsWithSourceMerchant)) {
             institutes.addAll(commonMongoRepository.findAll(queryObject, Institute.class,
                     instituteFields, operator));
         }
 
-        List<Long> idsWithSourcePaytm = sourceAndEntityIdsMap.get(PAYTM);
-        if (!CollectionUtils.isEmpty(idsWithSourcePaytm)) {
+        if (!CollectionUtils.isEmpty(sourceAndEntityIdsMap) && sourceAndEntityIdsMap
+                .containsKey(PAYTM)) {
+            List<Long> idsWithSourcePaytm = sourceAndEntityIdsMap.get(PAYTM);
             queryObject.put(INSTITUTE_ID, idsWithSourcePaytm);
-            Map<String, Object> instituteQueryObject =
-                    getQueryMapForPaytmSource(queryObject, INSTITUTE_DATA_FIELD);
 
             List<PaytmSourceDataEntity> paytmSourceDataEntities =
                     commonMongoRepository
-                            .findAll(instituteQueryObject, PaytmSourceDataEntity.class,
+                            .findAll(getQueryMapForPaytmSource(queryObject, INSTITUTE_DATA_FIELD),
+                                    PaytmSourceDataEntity.class,
                                     getProjectionFieldsForPaytmSource(instituteFields,
                                             INSTITUTE_DATA_FIELD), operator);
             institutes.addAll(Optional.ofNullable(paytmSourceDataEntities)
@@ -295,26 +284,27 @@ public class CommonEntityMongoDAO {
         Map<EntitySourceType, List<Long>> sourceAndEntityIdsMap =
                 entitySourceMappingProvider.getSourceAndEntitiesMapping(EXAM, examIds);
         List<Exam> exams = new ArrayList<>();
-        if (CollectionUtils.isEmpty(sourceAndEntityIdsMap)) {
-            return exams;
+        List<Long> idsWithSourceMerchant = examIds;
+
+        if (!CollectionUtils.isEmpty(sourceAndEntityIdsMap) && sourceAndEntityIdsMap
+                .containsKey(C360)) {
+            idsWithSourceMerchant = sourceAndEntityIdsMap.get(C360);
         }
 
-        List<Long> idsWithSourceMerchant =
-                sourceAndEntityIdsMap.get(C360);
         if (!CollectionUtils.isEmpty(idsWithSourceMerchant)) {
             exams.addAll(commonMongoRepository.findAll(queryObject, Exam.class,
                     fields, operator));
         }
 
-        List<Long> idsWithSourcePaytm = sourceAndEntityIdsMap.get(PAYTM);
-        if (!CollectionUtils.isEmpty(idsWithSourcePaytm)) {
+        if (!CollectionUtils.isEmpty(sourceAndEntityIdsMap) && sourceAndEntityIdsMap
+                .containsKey(PAYTM)) {
+            List<Long> idsWithSourcePaytm = sourceAndEntityIdsMap.get(PAYTM);
             queryObject.put(EXAM_ID, idsWithSourcePaytm);
-            Map<String, Object> examQueryObject =
-                    getQueryMapForPaytmSource(queryObject, EXAM_DATA_FIELD);
 
             List<PaytmSourceDataEntity> paytmSourceDataEntities =
                     commonMongoRepository
-                            .findAll(examQueryObject, PaytmSourceDataEntity.class,
+                            .findAll(getQueryMapForPaytmSource(queryObject, EXAM_DATA_FIELD),
+                                    PaytmSourceDataEntity.class,
                                     getProjectionFieldsForPaytmSource(fields, EXAM_DATA_FIELD),
                                     operator);
             exams.addAll(Optional.ofNullable(paytmSourceDataEntities)
@@ -331,25 +321,27 @@ public class CommonEntityMongoDAO {
         Map<EntitySourceType, List<Long>> sourceAndEntityIdsMap =
                 entitySourceMappingProvider.getSourceAndEntitiesMapping(COURSE, courseIds);
         List<Course> courses = new ArrayList<>();
-        if (CollectionUtils.isEmpty(sourceAndEntityIdsMap)) {
-            return courses;
+        List<Long> idsWithSourceMerchant = courseIds;
+
+        if (!CollectionUtils.isEmpty(sourceAndEntityIdsMap) && sourceAndEntityIdsMap
+                .containsKey(C360)) {
+            idsWithSourceMerchant = sourceAndEntityIdsMap.get(C360);
         }
 
-        List<Long> idsWithSourceMerchant = sourceAndEntityIdsMap.get(C360);
         if (!CollectionUtils.isEmpty(idsWithSourceMerchant)) {
             courses.addAll(commonMongoRepository.findAll(queryObject, Course.class,
                     fields, operator));
         }
 
-        List<Long> idsWithSourcePaytm = sourceAndEntityIdsMap.get(PAYTM);
-        if (!CollectionUtils.isEmpty(idsWithSourcePaytm)) {
+        if (!CollectionUtils.isEmpty(sourceAndEntityIdsMap) && sourceAndEntityIdsMap
+                .containsKey(PAYTM)) {
+            List<Long> idsWithSourcePaytm = sourceAndEntityIdsMap.get(PAYTM);
             queryObject.put(COURSE_ID, idsWithSourcePaytm);
-            Map<String, Object> courseQueryObject =
-                    getQueryMapForPaytmSource(queryObject, COURSE_DATA_FIELD);
 
             List<PaytmSourceDataEntity> paytmSourceDataEntities =
                     commonMongoRepository
-                            .findAll(courseQueryObject, PaytmSourceDataEntity.class,
+                            .findAll(getQueryMapForPaytmSource(queryObject, COURSE_DATA_FIELD),
+                                    PaytmSourceDataEntity.class,
                                     getProjectionFieldsForPaytmSource(fields, COURSE_DATA_FIELD),
                                     operator);
             courses.addAll(Optional.ofNullable(paytmSourceDataEntities)

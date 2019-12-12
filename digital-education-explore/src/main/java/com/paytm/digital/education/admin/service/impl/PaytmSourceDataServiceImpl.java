@@ -215,7 +215,8 @@ public class PaytmSourceDataServiceImpl {
                 break;
             case SCHOOL:
                 School school =
-                        commonMongoRepository.getEntityById(SchoolConstants.SCHOOL_ID, entityId, School.class);
+                        commonMongoRepository
+                                .getEntityById(SchoolConstants.SCHOOL_ID, entityId, School.class);
                 if (Objects.nonNull(school)) {
                     Map<String, Object> entityDatamap =
                             mapper.convertValue(school, new TypeReference<Map<String, Object>>() {
@@ -226,7 +227,8 @@ public class PaytmSourceDataServiceImpl {
                 break;
             case COURSE:
                 Course course =
-                        commonMongoRepository.getEntityById(ExploreConstants.COURSE_ID, entityId, Course.class);
+                        commonMongoRepository
+                                .getEntityById(ExploreConstants.COURSE_ID, entityId, Course.class);
                 if (Objects.nonNull(course)) {
                     Map<String, Object> entityDatamap =
                             mapper.convertValue(course, new TypeReference<Map<String, Object>>() {

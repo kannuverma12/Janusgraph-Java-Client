@@ -61,7 +61,7 @@ public class EntitySourceMappingDataValidator {
                                 entitySourceMappingData.getEntityId(),
                                 EducationEntity.EXAM.name());
                 if (Objects.isNull(examEntity)) {
-                    throw new EducationException(INVALID_MERCHANT_SOURCE_MAPPING_DATA,
+                    throw new EducationException(INVALID_PAYTM_SOURCE_MAPPING_DATA,
                             new Object[] {entitySourceMappingData.getEntityId().toString()});
                 }
             } else if (EntitySourceType.C360.equals(entitySourceMappingData.getSource())) {
@@ -69,7 +69,7 @@ public class EntitySourceMappingDataValidator {
                         entitySourceMappingData.getEntityId(),
                         Exam.class);
                 if (Objects.isNull(exam)) {
-                    throw new EducationException(INVALID_PAYTM_SOURCE_MAPPING_DATA,
+                    throw new EducationException(INVALID_MERCHANT_SOURCE_MAPPING_DATA,
                             new Object[] {entitySourceMappingData.getEntityId().toString()});
                 }
             }

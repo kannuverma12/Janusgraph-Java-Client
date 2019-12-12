@@ -12,9 +12,8 @@ import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.lang.Nullable;
 
-import java.util.Map;
+import java.io.Serializable;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -24,7 +23,7 @@ import java.util.Map;
 @CompoundIndexes({
         @CompoundIndex(name = "entity_entity_id", def = "{'entity' : 1, 'entity_id': 1} ",unique = true)
     })
-public class PaytmSourceDataEntity {
+public class PaytmSourceDataEntity implements Serializable {
 
     private static final long serialVersionUID = -8592325086959190899L;
 

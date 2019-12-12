@@ -3,6 +3,7 @@ package com.paytm.digital.education.utility.service;
 import com.paytm.digital.education.advice.CacheKeyable;
 import com.paytm.digital.education.advice.helper.KeyGenerator;
 import com.paytm.digital.education.annotation.EduCache;
+import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.UnableToAccessBeanPropertyException;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
@@ -141,6 +142,7 @@ public class KeyGeneratorTest {
     @Test
     public void sortedMapTests() {
         assertEquals(ONE.toString(), "ONE");
+        assertEquals(EducationEntity.EXAM.toString(),"EXAM");
         Map<String, Integer> stringObjectMap = sortMapByKeys(of("b", 1, "a", 3));
         Iterator<Map.Entry<String, Integer>> stringMapIterator = stringObjectMap.entrySet().iterator();
         assertEquals("a", stringMapIterator.next().getKey());

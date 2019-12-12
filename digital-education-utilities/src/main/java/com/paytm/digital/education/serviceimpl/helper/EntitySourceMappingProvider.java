@@ -1,5 +1,6 @@
 package com.paytm.digital.education.serviceimpl.helper;
 
+import com.paytm.digital.education.annotation.EduCache;
 import com.paytm.digital.education.database.entity.EntitySourceMappingEntity;
 import com.paytm.digital.education.database.repository.EntitySourceMappingRepository;
 import com.paytm.digital.education.enums.EducationEntity;
@@ -28,7 +29,7 @@ public class EntitySourceMappingProvider {
             LoggerFactory.getLogger(EntitySourceMappingProvider.class);
     private              EntitySourceMappingRepository entitySourceMappingRepository;
 
-    //@Cacheable(value = "entity_source_mapping", key = "'entity_source_'+ #entity + '.'+ #entityId")
+    @EduCache(cache = "entity_source_mapping", shouldCacheNull = false)
     public EntitySourceType getSourceAndEntitiesMapping(EducationEntity entity,
             Long entityId) {
         EntitySourceType entitySourceType = null;

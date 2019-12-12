@@ -2,6 +2,7 @@ package com.paytm.digital.education.advice.helper;
 
 import com.paytm.digital.education.advice.CacheKeyable;
 import com.paytm.digital.education.annotation.EduCache;
+import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.UnableToAccessBeanPropertyException;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
