@@ -30,7 +30,7 @@ public interface CTAInfoHolder {
     }
 
     default boolean hasShortListFeature() {
-        return false;
+        return true;
     }
 
     default boolean hasShareFeature() {
