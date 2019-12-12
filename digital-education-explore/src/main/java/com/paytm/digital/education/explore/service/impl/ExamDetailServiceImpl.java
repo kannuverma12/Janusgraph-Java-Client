@@ -51,6 +51,7 @@ import static com.paytm.digital.education.enums.EducationEntity.EXAM;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
 
+
 @AllArgsConstructor
 @Service
 public class ExamDetailServiceImpl {
@@ -64,6 +65,7 @@ public class ExamDetailServiceImpl {
     private BannerDataHelper         bannerDataHelper;
     private ExamSectionHelper        examSectionHelper;
     private SimilarExamsHelper       similarExamsHelper;
+    private NewsArticleServiceImpl      newsArticleService;
     private CommonEntityMongoDAO     commonEntityMongoDAO;
 
     private static int EXAM_PREFIX_LENGTH = EXAM_PREFIX.length();
@@ -73,7 +75,7 @@ public class ExamDetailServiceImpl {
             List<String> fields, Client client, boolean syllabus,
             boolean importantDates, boolean derivedAttributes, boolean examCenters,
             boolean sections,
-            boolean widgets, boolean policies) {
+            boolean widgets, boolean policies, boolean newsArticles) {
 
         // TODO: fields are not being supported currently. Part of discussion
         List<String> groupFields =
@@ -100,7 +102,7 @@ public class ExamDetailServiceImpl {
                     INVALID_EXAM_NAME.getExternalMessage());
         }
         return processExamDetail(exam, examFields, client, syllabus, importantDates,
-                derivedAttributes, examCenters, sections, widgets, policies);
+                derivedAttributes, examCenters, sections, widgets, policies, newsArticles);
     }
 
     /**
@@ -115,7 +117,8 @@ public class ExamDetailServiceImpl {
     @Cacheable(value = "process_exam_detail", keyGenerator = "customKeyGenerator")
     public ExamDetail processExamDetail(Exam exam, List<String> examFields, Client client,
             boolean syllabus, boolean importantDates, boolean derivedAttributes,
-            boolean examCenters, boolean sections, boolean widgets, boolean policies) {
+            boolean examCenters, boolean sections, boolean widgets, boolean policies,
+            boolean newsArticles) {
 
         Instance nearestInstance =
                 examInstanceHelper.getNearestInstance(exam.getInstances()).get();
@@ -123,8 +126,8 @@ public class ExamDetailServiceImpl {
                 getSubExamInstances(exam, nearestInstance.getInstanceId());
 
         return buildResponse(exam, client, syllabus, importantDates,
-                derivedAttributes, examCenters, sections, widgets, policies, nearestInstance,
-                subExamInstances);
+                derivedAttributes, examCenters, sections, widgets, policies, newsArticles,
+                nearestInstance, subExamInstances);
     }
 
     @Cacheable(value = "exam_app_specific_data", keyGenerator = "customKeyGenerator")
@@ -243,11 +246,11 @@ public class ExamDetailServiceImpl {
     @Cacheable(value = "exam_build_response", keyGenerator = "customKeyGenerator")
     public  ExamDetail buildResponse(Exam exam, Client client, boolean syllabus,
             boolean importantDatesflag, boolean derivedAttributes, boolean examCenters,
-            boolean sectionsFlag, boolean widgets, boolean policies, Instance nearestInstance,
-            Map<String, Instance> subExamInstances) {
+            boolean sectionsFlag, boolean widgets, boolean policies, boolean newsArticles,
+            Instance nearestInstance, Map<String, Instance> subExamInstances) {
         ExamDetail examDetail = new ExamDetail();
         addCommonData(examDetail, exam, nearestInstance, subExamInstances, syllabus,
-                importantDatesflag, examCenters, policies, client, derivedAttributes);
+                importantDatesflag, examCenters, policies, client, derivedAttributes, newsArticles);
         if (APP.equals(client)) {
             List<String> sectionsList =
                     detailPageSectionHelper.getSectionOrder(EXAM.name().toLowerCase(), client);
@@ -261,7 +264,8 @@ public class ExamDetailServiceImpl {
 
     private void addCommonData(ExamDetail examResponse, Exam exam, Instance nearestInstance,
             Map<String, Instance> subExamInstances, boolean syllabusflg, boolean importantDatesFlg,
-            boolean examCentersFlg, boolean policies, Client client, boolean derivedAttributes) {
+            boolean examCentersFlg, boolean policies, Client client, boolean derivedAttributes,
+            boolean newsArticles) {
         examResponse.setExamId(exam.getExamId());
         examResponse.setAbout(exam.getAboutExam());
         examResponse
@@ -313,6 +317,10 @@ public class ExamDetailServiceImpl {
             examResponse.setDerivedAttributes(
                     derivedAttributesHelper.getDerivedAttributes(highlights,
                             entityName, client));
+        }
+        if (newsArticles) {
+            examResponse.setNewsArticleResponse(newsArticleService
+                    .getMerchantAritcleForExam(exam.getExamId(), exam.getStreamIds()));
         }
     }
 

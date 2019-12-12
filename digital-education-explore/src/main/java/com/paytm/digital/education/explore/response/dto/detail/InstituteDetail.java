@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.dto.OfficialAddress;
 import com.paytm.digital.education.dto.detail.ExamAndCutOff;
 import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.explore.response.dto.articles.NewsArticleResponse;
 import com.paytm.digital.education.explore.response.dto.common.BannerData;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.common.Widget;
@@ -120,6 +121,9 @@ public class InstituteDetail implements CTAInfoHolder, Serializable {
 
     @JsonProperty("articles")
     private List<CampusArticle> articles;
+
+    @JsonProperty("news_article")
+    private NewsArticleResponse newsArticle;
 
     @JsonProperty("events")
     private List<CampusEventDetail> events;

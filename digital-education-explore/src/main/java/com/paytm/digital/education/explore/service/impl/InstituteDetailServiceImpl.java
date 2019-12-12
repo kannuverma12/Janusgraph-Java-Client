@@ -38,6 +38,7 @@ import java.util.concurrent.TimeoutException;
 import static com.mongodb.QueryOperators.OR;
 import static com.paytm.digital.education.constant.ExploreConstants.CASTEGROUP;
 import static com.paytm.digital.education.constant.ExploreConstants.COURSE_PREFIX;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAMS_ACCEPTED;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_CUTOFF_CASTEGROUP;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_CUTOFF_GENDER;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_DEGREES;
@@ -48,6 +49,7 @@ import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID
 import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_NAME;
 import static com.paytm.digital.education.constant.ExploreConstants.OTHER_CATEGORIES;
 import static com.paytm.digital.education.constant.ExploreConstants.PARENT_INSTITUTION;
+import static com.paytm.digital.education.constant.ExploreConstants.STREAM_IDS;
 import static com.paytm.digital.education.constant.ExploreConstants.SUBEXAM_ID;
 import static com.paytm.digital.education.enums.EducationEntity.INSTITUTE;
 import static com.paytm.digital.education.enums.Gender.OTHERS;
@@ -82,7 +84,7 @@ public class InstituteDetailServiceImpl {
             String fieldGroup, Client client, boolean derivedAttributes,
             boolean cutOffs, boolean facilities, boolean gallery, boolean placements,
             boolean notableAlumni, boolean sections, boolean widgets, boolean coursesPerDegree,
-            boolean campusEngagementFlag)
+            boolean campusEngagementFlag, boolean newsArticles)
             throws IOException, TimeoutException {
         List<String> groupFields =
                 commonMongoRepository.getFieldsByGroup(Institute.class, fieldGroup);
@@ -141,7 +143,7 @@ public class InstituteDetailServiceImpl {
             return processInstituteDetail(institute, entityId, courseFields, examFields,
                     parentInstitutionName, instituteIdList, client, derivedAttributes, cutOffs,
                     facilities, gallery, placements, notableAlumni, sections, widgets,
-                    coursesPerDegree, campusEngagementFlag);
+                    coursesPerDegree, campusEngagementFlag, newsArticles);
         }
         throw new BadRequestException(INVALID_INSTITUTE_ID,
                 INVALID_INSTITUTE_ID.getExternalMessage());
@@ -181,14 +183,19 @@ public class InstituteDetailServiceImpl {
             List<Long> instituteIdList, Client client, boolean derivedAttributes,
             boolean cutOffs, boolean facilities, boolean gallery, boolean placements,
             boolean notableAlumni, boolean sections, boolean widgets, boolean coursesPerDegree,
-            boolean campusEngagementFlag)
+            boolean campusEngagementFlag, boolean newsArticles)
             throws IOException, TimeoutException {
         List<Course> courses = null;
         if (!CollectionUtils.isEmpty(courseFields)) {
             Map<String, Object> queryObject = new HashMap<>();
             queryObject.put(INSTITUTE_ID, instituteIdList);
             courseFields.add(INSTITUTE_ID); // it will be removed in the future
+            courseFields.add(STREAM_IDS);
+            courseFields.add(EXAMS_ACCEPTED);
             courses = commonEntityMongoDAO.getAllCourses(queryObject, courseFields, OR);
+            courses = commonMongoRepository
+                    .findAll(queryObject, Course.class,
+                            courseFields, OR);
         }
         Map<String, Object> examData = getExamData(courses, entityId);
         Set<Long> examIds = (Set<Long>) examData.get(EXAM_ID);
@@ -203,7 +210,7 @@ public class InstituteDetailServiceImpl {
                 .buildResponse(institute, courses, examList, examData, examIds,
                         parentInstitutionName, client, derivedAttributes, cutOffs, facilities,
                         gallery, placements, notableAlumni, sections, widgets, coursesPerDegree,
-                        campusEngagementFlag);
+                        campusEngagementFlag, newsArticles);
     }
 
     private Map<String, Object> getExamData(List<Course> courses, Long instituteId) {

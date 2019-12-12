@@ -16,7 +16,9 @@ public enum PageSection {
     SCHOOLS_FOCUS("schools_focus"),
     COLLEGES_FOOTER("colleges_footer"),
     EXAMS_FOOTER("exams_footer"),
+    COURSES_FOOTER("courses_footer"),
     APP_FOOTER("app_footer"),
+    CAROUSEL("CAROUSEL"),
     BANNER_MID("banner_mid");
 
     private String value;

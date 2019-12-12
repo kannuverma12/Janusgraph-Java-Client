@@ -24,7 +24,8 @@ public enum ExamSectionType {
 
     DISCLAIMER("disclaimer"),
 
-    REGISTRATION_GUIDELINES("registration_guidelines");
+    REGISTRATION_GUIDELINES("registration_guidelines"),
+    NEWS_ARTICLES("news_articles");
 
     private String key;
 

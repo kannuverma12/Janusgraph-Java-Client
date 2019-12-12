@@ -55,6 +55,8 @@ public class DetailsApiController {
                     Boolean widgets,
             @RequestParam(value = "policies", required = false, defaultValue = "true")
                     Boolean policies,
+            @RequestParam(value = "news_articles", required = false, defaultValue = "true")
+                    Boolean newsArticles,
             @RequestHeader(value = "x-user-id", required = false) Long userId,
             @RequestHeader(value = "fe_client", required = false) Client client) {
         exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
@@ -62,7 +64,7 @@ public class DetailsApiController {
         return detailsService
                 .getExamDetail(examId, examName, userId, fieldGroup, fields, client, syllabus,
                         importantDates, derivedAttributes, examCenters, sections,
-                        widgets, policies);
+                        widgets, policies, newsArticles);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/institute/{instituteId}/{instituteName}")
@@ -92,13 +94,15 @@ public class DetailsApiController {
             @RequestParam(value = "courses_per_degree", required = false, defaultValue = "true")
                     Boolean coursesPerDegree,
             @RequestParam(value = "campus_engagement", required = false, defaultValue = "true")
-                    Boolean campusEngagementFlag)
+                    Boolean campusEngagementFlag,
+            @RequestParam(value = "news_articles", required = false, defaultValue = "true")
+                        Boolean newsArticles)
             throws Exception {
         exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
         return detailsService
                 .getinstituteDetail(instituteId, instituteName, userId, fieldGroup, fields, client,
                         derivedAttributes, cutOffs, facilities, gallery, placements, notableAlumni,
-                        sections, widgets, coursesPerDegree, campusEngagementFlag);
+                        sections, widgets, coursesPerDegree, campusEngagementFlag, newsArticles);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/course/{courseId}/{courseName}")

@@ -1,11 +1,14 @@
 package com.paytm.digital.education.database.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -13,6 +16,8 @@ import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @Document("merchant_articles")
 public class MerchantArticle extends Base {
 
@@ -25,9 +30,10 @@ public class MerchantArticle extends Base {
     private String articleTitle;
 
     @Field("article_id")
-    private Integer articleId;
+    private Long articleId;
 
     @Field("article_url")
+    @Indexed(unique = true)
     private String articleUrl;
 
     @Field("article_thumb_url")
@@ -37,7 +43,7 @@ public class MerchantArticle extends Base {
     private String articleDescription;
 
     @Field("exam_id")
-    private Integer examId;
+    private Long examId;
 
     @Field("stream")
     private String stream;
@@ -55,7 +61,6 @@ public class MerchantArticle extends Base {
     private Long paytmStreamId;
 
     @Field("merchant_updated_at")
-    @LastModifiedDate
     @JsonIgnore
     private LocalDateTime merchantUpdatedAt;
 
