@@ -119,10 +119,6 @@ public class IngestStaticDataServiceImpl implements IngestStaticDataService {
     }
 
     private String ingestInInstituteOrSchoolCollection(EntityData entityData) {
-        if (Objects.isNull(entityData.getPid())) {
-            return String.format(ErrorEnum.PID_MISSING.getExternalMessage(),
-                    entityData.getEducationEntity().name());
-        }
         String errorMessage = null;
         PaytmKeys paytmKeys = writeEntityDataToCorrespondingPaytmKeys(entityData);
         exploreValidator.validateAndThrowException(paytmKeys);
