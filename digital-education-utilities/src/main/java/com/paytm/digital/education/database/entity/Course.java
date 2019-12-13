@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.PublishStatus;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -19,6 +20,7 @@ import java.util.List;
 @ToString
 @Document
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@NoArgsConstructor
 public class Course implements Serializable {
 
     private static final long serialVersionUID = -7263845681788980171L;

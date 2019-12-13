@@ -28,7 +28,7 @@ public class Base implements Serializable {
     @Field("updated_at")
     @LastModifiedDate
     @JsonProperty("updated_at")
-    @JsonFormat(pattern = "dd MMM yyyy")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime updatedAt;
