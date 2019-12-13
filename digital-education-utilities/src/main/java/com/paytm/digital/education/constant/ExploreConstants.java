@@ -300,6 +300,8 @@ public interface ExploreConstants {
     int    DELETE_RECENTS_BATCH_SIZE    = 100;
     String RECENT_SEARCHES_ENTITY       = "entity";
     String RECENT_SEARCHES_ID_SEPERATOR = "-";
+    String DUMMY_INSTITUTE_ICON         = "/institute_placeholder.svg";
+    String DUMMY_SCHOOL_ICON            = "/school_placeholder.svg";
 
     String CTA                  = "cta";
     String EXAM_SEARCH_CTA      = "exam_search_cta";
