@@ -2,14 +2,17 @@ package com.paytm.digital.education.database.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.PublishStatus;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -17,7 +20,10 @@ import java.util.List;
 @ToString
 @Document
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Course {
+@NoArgsConstructor
+public class Course implements Serializable {
+
+    private static final long serialVersionUID = -7263845681788980171L;
 
     @Id
     @Field("_id")
@@ -107,4 +113,7 @@ public class Course {
 
     @Field("status")
     private String status;
+
+    @Field("stream_ids")
+    private List<Long> streamIds;
 }

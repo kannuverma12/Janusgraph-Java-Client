@@ -4,9 +4,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @NoArgsConstructor
-public class FacilityResponse {
+public class FacilityResponse implements Serializable {
+
+    private static final long serialVersionUID = -511298418784159332L;
+
     @JsonProperty("display_name")
     private String displayName;
 

@@ -180,7 +180,7 @@ public class AutoSuggestServiceImpl {
             } else {
                 if (StringUtils.isNotBlank(esDocument.getLogo())) {
                     responseDoc.setLogo(CommonUtil
-                            .getLogoLink(esDocument.getLogo(), EducationEntity.EXAM));
+                            .getLogoLink(esDocument.getLogo(), esDocument.getEntityType()));
                 }
             }
             if (Objects.nonNull(esDocument.getOfficialAddress())) {

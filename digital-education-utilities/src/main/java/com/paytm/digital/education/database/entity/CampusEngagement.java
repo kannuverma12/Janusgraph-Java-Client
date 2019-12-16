@@ -8,13 +8,16 @@ import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Document("campus_engagement")
-public class CampusEngagement {
+public class CampusEngagement implements Serializable {
+
+    private static final long serialVersionUID = 2098241361361620072L;
 
     @Field("institute_id")
     private Long instituteId;

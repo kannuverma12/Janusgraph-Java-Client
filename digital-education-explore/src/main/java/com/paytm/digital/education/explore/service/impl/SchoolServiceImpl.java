@@ -2,6 +2,7 @@ package com.paytm.digital.education.explore.service.impl;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.paytm.digital.education.annotation.EduCache;
 import com.paytm.digital.education.config.SchoolConfig;
 import com.paytm.digital.education.database.entity.Board;
 import com.paytm.digital.education.database.entity.BoardData;
@@ -13,11 +14,10 @@ import com.paytm.digital.education.database.entity.SchoolPaytmKeys;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.enums.ClassType;
 import com.paytm.digital.education.enums.Client;
-import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.enums.es.DataSortOrder;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.exception.EntityRequiredFieldMissingInDBException;
-import com.paytm.digital.education.explore.constants.SchoolConstants;
+import com.paytm.digital.education.constant.SchoolConstants;
 import com.paytm.digital.education.explore.enums.ClassLevel;
 import com.paytm.digital.education.explore.es.model.GeoLocation;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
@@ -40,7 +40,6 @@ import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
 import com.paytm.digital.education.explore.service.helper.CTAHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.service.helper.FacilityDataHelper;
-import com.paytm.digital.education.explore.service.helper.SubscriptionDetailHelper;
 import com.paytm.digital.education.explore.utility.SchoolUtilService;
 import com.paytm.digital.education.utility.CommonUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -49,16 +48,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -67,12 +63,12 @@ import static com.paytm.digital.education.constant.ExploreConstants.SORT_DISTANC
 import static com.paytm.digital.education.constant.ExploreConstants.TENTATIVE;
 import static com.paytm.digital.education.enums.EducationEntity.SCHOOL;
 import static com.paytm.digital.education.enums.es.DataSortOrder.ASC;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.ACTUAL;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.BOARD;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.BOARD_DATA;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.OFFICIAL_WEBSITE_LINK;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_ID;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_OFFICIAL_NAME;
+import static com.paytm.digital.education.constant.SchoolConstants.ACTUAL;
+import static com.paytm.digital.education.constant.SchoolConstants.BOARD;
+import static com.paytm.digital.education.constant.SchoolConstants.BOARD_DATA;
+import static com.paytm.digital.education.constant.SchoolConstants.OFFICIAL_WEBSITE_LINK;
+import static com.paytm.digital.education.constant.SchoolConstants.SCHOOL_ID;
+import static com.paytm.digital.education.constant.SchoolConstants.SCHOOL_OFFICIAL_NAME;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_SCHOOL_NAME;
 import static com.paytm.digital.education.mapping.ErrorEnum.NO_ENTITY_FOUND;
@@ -82,28 +78,25 @@ import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.elasticsearch.common.geo.parsers.GeoWKTParser.COMMA;
 
-
 @Service
-public class SchoolDetailServiceImpl implements SchoolService {
+public class SchoolServiceImpl implements SchoolService {
 
     private final CommonMongoRepository    commonMongoRepository;
     private final DerivedAttributesHelper  derivedAttributesHelper;
     private final FacilityDataHelper       facilityDataHelper;
     private final CTAHelper                ctaHelper;
     private final SearchServiceImpl        searchService;
-    private final SubscriptionDetailHelper subscriptionDetailHelper;
     private final SchoolConfig             schoolConfig;
     private final SchoolUtilService        schoolUtilService;
     private final BannerDataHelper         bannerDataHelper;
     private final int                      nearbySchoolsCount;
 
-    public SchoolDetailServiceImpl(
+    public SchoolServiceImpl(
             CommonMongoRepository commonMongoRepository,
             DerivedAttributesHelper derivedAttributesHelper,
             FacilityDataHelper facilityDataHelper,
             CTAHelper ctaHelper,
             SearchServiceImpl searchService,
-            SubscriptionDetailHelper subscriptionDetailHelper,
             SchoolConfig schoolConfig,
             SchoolUtilService schoolUtilService,
             BannerDataHelper bannerDataHelper,
@@ -114,32 +107,16 @@ public class SchoolDetailServiceImpl implements SchoolService {
         this.facilityDataHelper = facilityDataHelper;
         this.ctaHelper = ctaHelper;
         this.searchService = searchService;
-        this.subscriptionDetailHelper = subscriptionDetailHelper;
         this.schoolConfig = schoolConfig;
         this.schoolUtilService = schoolUtilService;
         this.bannerDataHelper = bannerDataHelper;
         this.nearbySchoolsCount = nearbySchoolsCount;
     }
 
-    public List<School> getSchools(List<Long> entityIds, List<String> groupFields) {
-        if (CollectionUtils.isEmpty(groupFields)) {
-            throw new BadRequestException(INVALID_FIELD_GROUP,
-                    INVALID_FIELD_GROUP.getExternalMessage());
-        }
-
-        Set<Long> searchIds = new HashSet<>(entityIds);
-        List<School> schools =
-                commonMongoRepository
-                        .getEntityFieldsByValuesIn(SCHOOL_ID, new ArrayList<>(searchIds),
-                                School.class,
-                                groupFields);
-
-        return schools;
-    }
-
     @Override
+    @EduCache(cache = "schoolCache", keys = {"schoolId", "client.name", "fieldGroup"})
     public SchoolDetail getSchoolDetails(Long schoolId, Client client, String schoolName,
-            List<String> fields, String fieldGroup, Long userId) {
+            List<String> fields, String fieldGroup) {
         List<String> fieldsToBeFetched =
                 getFieldsByGroupAndCollectioName(SchoolConstants.SCHOOL, fields,
                         fieldGroup);
@@ -222,10 +199,6 @@ public class SchoolDetailServiceImpl implements SchoolService {
             schoolDetail.setCtaList(ctaList);
             addNearbySchoolsInResponse(schoolDetail, school);
 
-            if (Objects.nonNull(userId) && userId > 0) {
-                updateShortList(schoolDetail, SCHOOL, userId);
-            }
-
             if (!Client.APP.equals(client)) {
                 schoolDetail.setBanners(bannerDataHelper.getBannerData(entityName, client));
             }
@@ -282,17 +255,6 @@ public class SchoolDetailServiceImpl implements SchoolService {
                 .classTo(classLevelTriple.getMiddle())
                 .educationLevel(classLevelTriple.getRight())
                 .build();
-    }
-
-    private void updateShortList(SchoolDetail schoolDetail, EducationEntity educationEntity,
-            Long userId) {
-        List<Long> schoolIds = new ArrayList<>();
-        schoolIds.add(schoolDetail.getSchoolId());
-
-        List<Long> subscribedEntities = subscriptionDetailHelper
-                .getSubscribedEntities(educationEntity, userId, schoolIds);
-
-        schoolDetail.setShortlisted(!CollectionUtils.isEmpty(subscribedEntities));
     }
 
     private void addNearbySchoolsInResponse(SchoolDetail schoolDetail, School school) {

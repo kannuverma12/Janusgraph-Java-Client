@@ -1,8 +1,9 @@
 package com.paytm.digital.education.application.config.security;
 
 
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.Authentication;
@@ -20,9 +21,8 @@ public class PersonaAclAuthorization implements AuthorizationService {
     @Value("${acl.is_to_authorize}")
     private String isToAuthorize;
 
-    private              boolean isInitialized = false;
-    private static final Logger  LOGGER        =
-            LogManager.getLogger(PersonaAclAuthorization.class);
+    private        boolean isInitialized = false;
+    private static Logger  LOGGER           = LoggerFactory.getLogger(PersonaAclAuthorization.class);
 
     @Override
     public boolean isAdmin() {

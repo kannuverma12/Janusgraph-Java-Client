@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.ToString;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -19,7 +20,9 @@ import static com.paytm.digital.education.utility.DateUtil.stringToDate;
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Event {
+public class Event implements Serializable {
+
+    private static final long serialVersionUID = 6782077015608253201L;
 
     @Field("month")
     private String monthDate;

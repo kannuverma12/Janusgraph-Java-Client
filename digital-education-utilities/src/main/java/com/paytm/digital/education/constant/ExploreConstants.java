@@ -199,6 +199,7 @@ public interface ExploreConstants {
     // Detail APIs constants
     String EXAM_SHORT_NAME     = "exam_short_name";
     String EXAM_FULL_NAME      = "exam_full_name";
+    String ABOUT_EXAM          = "about_exam";
     String COURSE_PREFIX       = "course.";
     String INSTITUTE_PREFIX    = "institute.";
     String HIGHLIGHTS_TEMPLATE = "highlights";
@@ -299,6 +300,8 @@ public interface ExploreConstants {
     int    DELETE_RECENTS_BATCH_SIZE    = 100;
     String RECENT_SEARCHES_ENTITY       = "entity";
     String RECENT_SEARCHES_ID_SEPERATOR = "-";
+    String DUMMY_INSTITUTE_ICON         = "/institute_placeholder.svg";
+    String DUMMY_SCHOOL_ICON            = "/school_placeholder.svg";
 
     String CTA                  = "cta";
     String EXAM_SEARCH_CTA      = "exam_search_cta";
@@ -336,7 +339,11 @@ public interface ExploreConstants {
     String LANDING                       = "landing";
     String SECTIONS                      = "sections";
     String NAME                          = "name";
+    String FULL_NAME                     = "full_name";
     String FAILED                        = "failed";
+    String URL_DISPLAY_KEY               = "url_display_key";
+    String DESCRIPTION                   = "description";
+    String PARTIAL_FAILED                = "partial_failed";
 
     //Sections constants
     String BROWSE_BY_EXAM_LEVEL_APP         = "browse_by_exam_level_app";
@@ -356,6 +363,8 @@ public interface ExploreConstants {
     String WEB_FORM_URI_PREFIX              = "webFormUriPrefix";
     String PRIORITY                         = "priority";
     int    DEFAULT_EXAM_PRIORITY            = 9999;
+    String UPDATED_AT                       = "updated_at";
+    String NEWS_ARTICLE_TITLE               = "Trending News and Articles";
 
     String NO_TOPIC_FOUND = "No Topic Found";
 

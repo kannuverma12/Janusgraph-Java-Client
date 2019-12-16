@@ -1,14 +1,30 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import static com.paytm.digital.education.constant.ExploreConstants.APPLICATION;
+import static com.paytm.digital.education.constant.ExploreConstants.DD_MMM_YYYY;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_DETAIL;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FILTER_NAMESPACE;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_PREFIX;
+import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_MEDIUM;
+import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_MEDIUM_NAMESPACE;
+import static com.paytm.digital.education.constant.ExploreConstants.MMM_YYYY;
+import static com.paytm.digital.education.constant.ExploreConstants.NON_TENTATIVE;
+import static com.paytm.digital.education.constant.ExploreConstants.SECTION;
+import static com.paytm.digital.education.constant.ExploreConstants.WEB_FORM_URI_PREFIX;
+import static com.paytm.digital.education.enums.Client.APP;
+import static com.paytm.digital.education.enums.EducationEntity.EXAM;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
+
+import com.paytm.digital.education.annotation.EduCache;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.ExamPaytmKeys;
 import com.paytm.digital.education.database.entity.Instance;
 import com.paytm.digital.education.database.entity.SubExam;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.dto.detail.Event;
-import com.paytm.digital.education.dto.detail.Section;
-import com.paytm.digital.education.dto.detail.Topic;
-import com.paytm.digital.education.dto.detail.Unit;
 import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.response.dto.detail.ExamDetail;
@@ -17,7 +33,7 @@ import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.service.helper.DetailPageSectionHelper;
 import com.paytm.digital.education.explore.service.helper.ExamSectionHelper;
-import com.paytm.digital.education.explore.service.helper.WidgetsDataHelper;
+import com.paytm.digital.education.explore.service.helper.SimilarExamsHelper;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
 import com.paytm.digital.education.serviceimpl.helper.ExamLogoHelper;
@@ -29,34 +45,11 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import static com.paytm.digital.education.constant.ExploreConstants.APPLICATION;
-import static com.paytm.digital.education.constant.ExploreConstants.DATA;
-import static com.paytm.digital.education.constant.ExploreConstants.DD_MMM_YYYY;
-import static com.paytm.digital.education.constant.ExploreConstants.DEFAULT;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_DETAIL;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FILTER_NAMESPACE;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_PREFIX;
-import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_MEDIUM;
-import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_MEDIUM_NAMESPACE;
-import static com.paytm.digital.education.constant.ExploreConstants.MMM_YYYY;
-import static com.paytm.digital.education.constant.ExploreConstants.NON_TENTATIVE;
-import static com.paytm.digital.education.constant.ExploreConstants.PRECEDENCE;
-import static com.paytm.digital.education.constant.ExploreConstants.SECTION;
-import static com.paytm.digital.education.constant.ExploreConstants.WEB_FORM_URI_PREFIX;
-import static com.paytm.digital.education.constant.ExploreConstants.ZERO;
-import static com.paytm.digital.education.enums.Client.APP;
-import static com.paytm.digital.education.enums.EducationEntity.EXAM;
-import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
-import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
 
 @AllArgsConstructor
 @Service
@@ -69,18 +62,18 @@ public class ExamDetailServiceImpl {
     private DerivedAttributesHelper  derivedAttributesHelper;
     private DetailPageSectionHelper  detailPageSectionHelper;
     private BannerDataHelper         bannerDataHelper;
-    private WidgetsDataHelper        widgetsDataHelper;
     private ExamSectionHelper        examSectionHelper;
+    private SimilarExamsHelper       similarExamsHelper;
+    private NewsArticleServiceImpl      newsArticleService;
 
     private static int EXAM_PREFIX_LENGTH = EXAM_PREFIX.length();
 
-    //TODO - modularize methods for caching as. Its fine as of now as userId is not being used As of now.
-    @Cacheable(value = "exam_detail", keyGenerator = "customKeyGenerator")
+    @EduCache(cache = "exam_detail")
     public ExamDetail getExamDetail(Long entityId, String examUrlKey, String fieldGroup,
             List<String> fields, Client client, boolean syllabus,
             boolean importantDates, boolean derivedAttributes, boolean examCenters,
             boolean sections,
-            boolean widgets, boolean policies) throws ParseException {
+            boolean widgets, boolean policies, boolean newsArticles) {
 
         // TODO: fields are not being supported currently. Part of discussion
         List<String> groupFields =
@@ -90,7 +83,7 @@ public class ExamDetailServiceImpl {
             for (String requestedField : groupFields) {
                 if (requestedField.contains(EXAM_PREFIX)) {
                     examFields.add(requestedField
-                            .substring(EXAM_PREFIX_LENGTH, requestedField.length()));
+                            .substring(EXAM_PREFIX_LENGTH));
                 }
             }
         }
@@ -109,13 +102,23 @@ public class ExamDetailServiceImpl {
                     INVALID_EXAM_NAME.getExternalMessage());
         }
         return processExamDetail(exam, examFields, client, syllabus, importantDates,
-                derivedAttributes, examCenters, sections, widgets, policies);
+                derivedAttributes, examCenters, sections, widgets, policies, newsArticles);
     }
 
+    /**
+     * TODO:-
+     * Problem:- A cached method is calling another cached method in same service.
+     * Cache by pass issue can arise.
+     * Possible solutions:-
+     *   1. Is caching this method required ?
+     *   2. Refactor to move this method out
+     *   3. Autowire self
+     */
     @Cacheable(value = "process_exam_detail", keyGenerator = "customKeyGenerator")
     public ExamDetail processExamDetail(Exam exam, List<String> examFields, Client client,
             boolean syllabus, boolean importantDates, boolean derivedAttributes,
-            boolean examCenters, boolean sections, boolean widgets, boolean policies) {
+            boolean examCenters, boolean sections, boolean widgets, boolean policies,
+            boolean newsArticles) {
 
         Instance nearestInstance =
                 examInstanceHelper.getNearestInstance(exam.getInstances()).get();
@@ -123,8 +126,8 @@ public class ExamDetailServiceImpl {
                 getSubExamInstances(exam, nearestInstance.getInstanceId());
 
         return buildResponse(exam, client, syllabus, importantDates,
-                derivedAttributes, examCenters, sections, widgets, policies, nearestInstance,
-                subExamInstances);
+                derivedAttributes, examCenters, sections, widgets, policies, newsArticles,
+                nearestInstance, subExamInstances);
     }
 
     @Cacheable(value = "exam_app_specific_data", keyGenerator = "customKeyGenerator")
@@ -136,32 +139,6 @@ public class ExamDetailServiceImpl {
         examSectionHelper
                 .addDataPerSection(exam, examDetail, sections, nearestInstance, subExamInstances,
                         sectionConfigurationMap, syllabusFlg);
-    }
-
-    private List<Section> getSectionsFromEntitySyllabus(
-            List<com.paytm.digital.education.database.entity.Syllabus> entitySyllabusList) {
-        List<Section> sectionList = new ArrayList<>();
-        entitySyllabusList.forEach(entitySection -> {
-            List<Unit> units = new ArrayList<>();
-            entitySection.getUnits().forEach(entityUnit -> {
-                String unitName = entityUnit.getName();
-                if (!unitName.equals(ZERO)) {
-                    List<Topic> topics = new ArrayList<>();
-                    entityUnit.getTopics().forEach(entityTopic -> {
-                        String topicName = entityTopic.getName();
-                        if (!topicName.equals(ZERO)) {
-                            Topic topic = new Topic(topicName);
-                            topics.add(topic);
-                        }
-                    });
-                    Unit unit = new Unit(unitName, topics);
-                    units.add(unit);
-                }
-            });
-            Section section = new Section(entitySection.getSubjectName(), units);
-            sectionList.add(section);
-        });
-        return sectionList;
     }
 
     private Map<String, Instance> getSubExamInstances(Exam exam, int parentInstanceId) {
@@ -240,9 +217,8 @@ public class ExamDetailServiceImpl {
     }
 
     @Cacheable(value = "exam_web_specific_data", keyGenerator = "customKeyGenerator")
-    public void addWebSpecificData(ExamDetail examDetail, Exam exam, boolean derivedAttributes,
-            boolean sectionsFlag,
-            Client client, boolean widgets) {
+    public void addWebSpecificData(ExamDetail examDetail, Exam exam, boolean sectionsFlag,
+            boolean widgets) {
         examDetail.setDocumentsRequiredAtExam(exam.getDocumentsExam());
         examDetail.setDocumentsRequiredAtCounselling(exam.getDocumentsCounselling());
         examDetail.setAdmitCard(exam.getAdmitCard());
@@ -258,47 +234,38 @@ public class ExamDetailServiceImpl {
             examDetail.setDurationInHour(exam.getExamDuration());
         }
         String entityName = EXAM.name().toLowerCase();
-        Map<String, Object> highlights = new HashMap<>();
-        highlights.put(entityName, exam);
-        highlights.put(LINGUISTIC_MEDIUM, examDetail.getLinguisticMedium());
-        if (derivedAttributes) {
-            examDetail.setDerivedAttributes(
-                    derivedAttributesHelper.getDerivedAttributes(highlights,
-                            entityName, client));
-        }
         if (sectionsFlag) {
             examDetail.setSections(detailPageSectionHelper.getSectionOrder(entityName, null));
         }
         examDetail.setBanners(bannerDataHelper.getBannerData(entityName, null));
         if (widgets) {
-            examDetail.setWidgets(widgetsDataHelper.getWidgets(entityName, exam.getExamId(),
-                    getDomainName(exam.getDomains())
-            ));
+            examDetail.setWidgets(similarExamsHelper.getWidgetsData(exam));
         }
     }
 
     @Cacheable(value = "exam_build_response", keyGenerator = "customKeyGenerator")
     public  ExamDetail buildResponse(Exam exam, Client client, boolean syllabus,
             boolean importantDatesflag, boolean derivedAttributes, boolean examCenters,
-            boolean sectionsFlag, boolean widgets, boolean policies, Instance nearestInstance,
-            Map<String, Instance> subExamInstances) {
+            boolean sectionsFlag, boolean widgets, boolean policies, boolean newsArticles,
+            Instance nearestInstance, Map<String, Instance> subExamInstances) {
         ExamDetail examDetail = new ExamDetail();
         addCommonData(examDetail, exam, nearestInstance, subExamInstances, syllabus,
-                importantDatesflag, examCenters, policies);
+                importantDatesflag, examCenters, policies, client, derivedAttributes, newsArticles);
         if (APP.equals(client)) {
             List<String> sectionsList =
                     detailPageSectionHelper.getSectionOrder(EXAM.name().toLowerCase(), client);
             addAppSpecificData(examDetail, exam, sectionsList, syllabus, nearestInstance,
                     subExamInstances);
         } else {
-            addWebSpecificData(examDetail, exam, derivedAttributes, sectionsFlag, client, widgets);
+            addWebSpecificData(examDetail, exam, sectionsFlag, widgets);
         }
         return examDetail;
     }
 
     private void addCommonData(ExamDetail examResponse, Exam exam, Instance nearestInstance,
             Map<String, Instance> subExamInstances, boolean syllabusflg, boolean importantDatesFlg,
-            boolean examCentersFlg, boolean policies) {
+            boolean examCentersFlg, boolean policies, Client client, boolean derivedAttributes,
+            boolean newsArticles) {
         examResponse.setExamId(exam.getExamId());
         examResponse.setAbout(exam.getAboutExam());
         examResponse
@@ -342,6 +309,19 @@ public class ExamDetailServiceImpl {
                 examResponse.setSyllabus(syllabus);
             }
         }
+        String entityName = EXAM.name().toLowerCase();
+        Map<String, Object> highlights = new HashMap<>();
+        highlights.put(entityName, exam);
+        highlights.put(LINGUISTIC_MEDIUM, examResponse.getLinguisticMedium());
+        if (derivedAttributes) {
+            examResponse.setDerivedAttributes(
+                    derivedAttributesHelper.getDerivedAttributes(highlights,
+                            entityName, client));
+        }
+        if (newsArticles) {
+            examResponse.setNewsArticleResponse(newsArticleService
+                    .getMerchantAritcleForExam(exam.getExamId(), exam.getStreamIds()));
+        }
     }
 
     private void addPaytmKeys(ExamDetail examDetail, ExamPaytmKeys examPaytmKeys) {
@@ -352,56 +332,6 @@ public class ExamDetailServiceImpl {
             examDetail.getAdditionalProperties()
                     .put(WEB_FORM_URI_PREFIX, examPaytmKeys.getWebFormUriPrefix());
         }
-    }
-
-    private String getDomainName(List<String> domains) {
-        int noOfDomains = domains.size();
-        if (noOfDomains == 0) {
-            // when exam is not associated with any domain
-            return DEFAULT;
-        } else if (noOfDomains == 1) {
-            // when exam is associated with only one domain
-            return ((isDomainExistInDefineList(domains.get(0))) ? domains.get(0) : DEFAULT);
-        } else {
-            // when exam is associated with multiple domains
-            return findHigherPrecedenceDomain(domains);
-        }
-    }
-
-    /*
-     ** Find the domain whose similar exams will be displayed when exam is associated with
-     ** multiple domains.
-     */
-    private String findHigherPrecedenceDomain(List<String> domains) {
-        List<String> domainList = getDefinedDomainList();
-        for (String domain : domainList) {
-            if (domains.contains(domain)) {
-                return domain;
-            }
-        }
-        return DEFAULT;
-    }
-
-    /*
-     ** Check whether the domain exists in the defined list of domains
-     */
-    private boolean isDomainExistInDefineList(String domain) {
-        List<String> domainList = getDefinedDomainList();
-        if (domainList.contains(domain)) {
-            return true;
-        }
-        return false;
-    }
-
-    /*
-     ** Get the defined exam domains list
-     */
-    @Cacheable(value = "exam_domain_list")
-    public List<String> getDefinedDomainList() {
-        Map<String, Object> propertyMap = propertyReader
-                .getPropertiesAsMapByKey(EXPLORE_COMPONENT, EXAM.name().toLowerCase(),
-                        PRECEDENCE);
-        return (List<String>) propertyMap.get(DATA);
     }
 
     private List<Location> getExamCenters(Instance nearestInstance) {

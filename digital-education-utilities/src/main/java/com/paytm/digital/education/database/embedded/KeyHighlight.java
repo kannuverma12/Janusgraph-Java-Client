@@ -8,12 +8,15 @@ import org.hibernate.validator.constraints.URL;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 
 @Data
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class KeyHighlight {
+public class KeyHighlight implements Serializable {
+
+    private static final long serialVersionUID = -8463087836562100120L;
 
     @URL
     @NotEmpty

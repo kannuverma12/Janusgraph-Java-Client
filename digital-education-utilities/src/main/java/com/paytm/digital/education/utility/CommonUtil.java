@@ -38,6 +38,9 @@ import static com.paytm.digital.education.constant.ExploreConstants.CAROUSEL;
 import static com.paytm.digital.education.constant.ExploreConstants.CONSTITUENT;
 import static com.paytm.digital.education.constant.ExploreConstants.CONSTITUENT_OF;
 import static com.paytm.digital.education.constant.ExploreConstants.CTA;
+import static com.paytm.digital.education.constant.ExploreConstants.DUMMY_EXAM_ICON;
+import static com.paytm.digital.education.constant.ExploreConstants.DUMMY_INSTITUTE_ICON;
+import static com.paytm.digital.education.constant.ExploreConstants.DUMMY_SCHOOL_ICON;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FOCUS_APP;
 import static com.paytm.digital.education.constant.ExploreConstants.FACILITIES;
 import static com.paytm.digital.education.constant.ExploreConstants.FIELD_POST_FIX;
@@ -59,14 +62,18 @@ public class CommonUtil {
         if (educationEntity != null) {
             switch (educationEntity) {
                 case EXAM:
+                    logo = StringUtils.isNotBlank(logo) ? logo : DUMMY_EXAM_ICON;
                     return ConfigProperties.getBaseUrl() + ConfigProperties.getExamLogoPrefix()
                             + logo;
                 case SCHOOL:
+                    logo = StringUtils.isNotBlank(logo) ? logo : DUMMY_SCHOOL_ICON;
                     return ConfigProperties.getBaseUrl() + ConfigProperties.getSchoolLogoPrefix()
                             + logo;
-                default:
+                case INSTITUTE:
+                    logo = StringUtils.isNotBlank(logo) ? logo : DUMMY_INSTITUTE_ICON;
                     return ConfigProperties.getBaseUrl() + ConfigProperties.getLogoImagePrefix()
                             + logo;
+                default:
             }
         }
         return ConfigProperties.getBaseUrl() + ConfigProperties.getLogoImagePrefix()
