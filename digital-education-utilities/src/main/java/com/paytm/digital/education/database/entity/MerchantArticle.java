@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
@@ -19,7 +20,9 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @Document("merchant_articles")
-public class MerchantArticle extends Base {
+public class MerchantArticle extends Base implements Serializable {
+
+    private static final long serialVersionUID = 51591934474256669L;
 
     @Id
     @Field("_id")

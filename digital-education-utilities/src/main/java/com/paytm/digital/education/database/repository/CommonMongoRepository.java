@@ -208,7 +208,7 @@ public class CommonMongoRepository {
         return mongoOperation.findDistinct(mongoQuery, field, type, result);
     }
 
-    @EduCache(cache = "findAll")
+    @EduCache(cache = "findAll", shouldCacheNull = false)
     public <T> List<T> findAll(Map<String, Object> searchRequest, Class<T> instance,
             List<String> fields, String queryOperatorType) {
         if (queryOperatorType.equals(AND)) {
