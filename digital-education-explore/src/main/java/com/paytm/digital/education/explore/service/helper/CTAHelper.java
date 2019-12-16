@@ -72,6 +72,7 @@ public class CTAHelper {
             addCTAIfNotNull(ctas, feeCta);
         }
 
+        /* Get Updates CTA */
         if (ctaInfoHolder.shouldHaveLeadCTA()
                 && checkIfCTAConfigExists(ctaConfigurationMap, CTAType.LEAD, namespace, key)) {
             CTA cta = getLeadCTA(ctaInfoHolder.isClient(),
@@ -107,6 +108,7 @@ public class CTAHelper {
                 addCTAIfNotNull(ctas, cta);
             }
 
+            /* Share CTA */
             if (ctaInfoHolder.hasShareFeature()
                     && checkIfCTAConfigExists(ctaConfigurationMap, CTAType.SHARE, namespace, key)) {
                 CTA cta = getShareCTA((Map<String, String>) ctaConfigurationMap

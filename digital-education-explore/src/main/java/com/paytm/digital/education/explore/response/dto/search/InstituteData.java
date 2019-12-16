@@ -55,7 +55,7 @@ public class InstituteData extends SearchBaseData implements CTAInfoHolder {
 
     @JsonIgnore
     @Accessors(fluent = true)
-    private boolean shouldHaveLeadCTA = true;
+    private boolean shouldHaveLeadCTA = false;
 
     @JsonIgnore
     @Accessors(fluent = true)
@@ -70,7 +70,7 @@ public class InstituteData extends SearchBaseData implements CTAInfoHolder {
     @JsonIgnore
     @Override
     public boolean hasShareFeature() {
-        return false;
+        return true;
     }
 
     @JsonIgnore

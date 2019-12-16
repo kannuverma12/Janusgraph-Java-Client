@@ -139,7 +139,7 @@ public class InstituteDetail implements CTAInfoHolder, Serializable {
 
     @JsonIgnore
     @Accessors(fluent = true)
-    private boolean shouldHaveLeadCTA = true;
+    private boolean shouldHaveLeadCTA = false;
 
     @JsonIgnore
     @Accessors(fluent = true)
@@ -148,7 +148,7 @@ public class InstituteDetail implements CTAInfoHolder, Serializable {
     @JsonIgnore
     @Override
     public boolean hasShareFeature() {
-        return false;
+        return true;
     }
 
     @Override
