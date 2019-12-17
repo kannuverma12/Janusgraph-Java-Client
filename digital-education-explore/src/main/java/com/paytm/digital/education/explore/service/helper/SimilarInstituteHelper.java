@@ -7,6 +7,7 @@ import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTION_
 import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_NAME;
 import static com.paytm.digital.education.enums.EducationEntity.INSTITUTE;
 
+import com.paytm.digital.education.annotation.EduCache;
 import com.paytm.digital.education.database.entity.Institute;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.dto.OfficialAddress;
@@ -17,7 +18,6 @@ import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -43,7 +43,7 @@ public class SimilarInstituteHelper {
     private final WidgetsDataHelper     widgetsDataHelper;
     private final CommonMongoRepository commonMongoRepository;
 
-    @Cacheable(value = "similar_institutes_widgets", key = "'institute_id.'+#institute.instituteId")
+    @EduCache(cache = "similar_institutes_widgets", keys = "institute.instituteId")
     public List<Widget> getSimilarInstituteWigets(Institute institute) {
         List<Widget> widgetDataList = widgetsDataHelper
                 .getWidgets(INSTITUTE.name().toLowerCase(), institute.getInstituteId());
