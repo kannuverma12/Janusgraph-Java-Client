@@ -26,13 +26,16 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import static com.mongodb.QueryOperators.OR;
 import static com.paytm.digital.education.constant.ExploreConstants.CASTEGROUP;
@@ -268,11 +271,18 @@ public class InstituteDetailServiceImpl {
                         }
                     });
         }
+
+        List<Exam> exams = commonMongoRepository
+                .getEntityFieldsByValuesIn(EXAM_ID, new ArrayList<>(examIds), Exam.class,
+                        Collections.singletonList(EXAM_ID));
+        Set<Long> examIdsInDb = Optional.ofNullable(exams).orElse(new ArrayList<>()).stream()
+                .map(Exam::getExamId)
+                .collect(Collectors.toSet());
         Map<String, Object> examData = new HashMap<>();
         examData.put(EXAM_DEGREES, examDegrees);
         examData.put(EXAM_CUTOFF_GENDER, examGenders);
         examData.put(EXAM_CUTOFF_CASTEGROUP, examCasteGroup);
-        examData.put(EXAM_ID, examIds);
+        examData.put(EXAM_ID, examIdsInDb);
         return examData;
     }
 
