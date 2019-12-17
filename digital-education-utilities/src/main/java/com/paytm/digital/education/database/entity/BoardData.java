@@ -13,12 +13,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static com.sun.org.apache.xml.internal.utils.LocaleUtility.EMPTY_STRING;
+import static java.util.Collections.emptyList;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -127,15 +129,15 @@ public class BoardData implements Serializable {
 
     @Field("school_admission")
     @JsonProperty("school_admission")
-    private List<SchoolAdmission> schoolAdmissionList = Collections.emptyList();
+    private List<SchoolAdmission> schoolAdmissionList = emptyList();
 
     @Field("shifts")
     @JsonProperty("shifts")
-    private List<ShiftDetails> shifts = Collections.emptyList();
+    private List<ShiftDetails> shifts = emptyList();
 
     @Field("school_admission_tentative")
     @JsonProperty("tentative")
-    private List<SchoolAdmission> schoolAdmissionTentativeList = Collections.emptyList();
+    private List<SchoolAdmission> schoolAdmissionTentativeList = emptyList();
 
     @Field("medium_of_instruction")
     @JsonProperty("medium_of_instruction")
@@ -147,7 +149,7 @@ public class BoardData implements Serializable {
 
     @Field("enrollments")
     @JsonProperty("enrollments")
-    private Integer enrollments;
+    private List<Enrollment> enrollments;
 
     @Field("school_area_name")
     @JsonProperty("school_area_name")
@@ -158,9 +160,15 @@ public class BoardData implements Serializable {
     private List<String> programType;
 
     public String getStudentRatio() {
-        if (CommonUtils.isNullOrZero(enrollments) || CommonUtils.isNullOrZero(noOfTeachers)) {
+        if (CollectionUtils.isEmpty(enrollments) || CommonUtils.isNullOrZero(noOfTeachers)) {
             return EMPTY_STRING;
         }
-        return String.format("%d : 1", enrollments / noOfTeachers);
+        int enrollmentCount = Optional.ofNullable(enrollments).orElse(emptyList())
+                .stream()
+                .map(x -> Optional.of(x.getEnrollment()).orElse(0))
+                .mapToInt(Integer::intValue)
+                .sum();
+
+        return String.format("%d : 1", enrollmentCount / noOfTeachers);
     }
 }
