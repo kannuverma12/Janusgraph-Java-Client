@@ -18,6 +18,7 @@ import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -43,7 +44,7 @@ public class SimilarInstituteHelper {
     private final WidgetsDataHelper     widgetsDataHelper;
     private final CommonMongoRepository commonMongoRepository;
 
-    @EduCache(cache = "similar_institutes_widgets", keys = "institute.instituteId")
+    @Cacheable(value = "similar_institutes_widgets", key = "'institute_id.'+#institute.instituteId")
     public List<Widget> getSimilarInstituteWigets(Institute institute) {
         List<Widget> widgetDataList = widgetsDataHelper
                 .getWidgets(INSTITUTE.name().toLowerCase(), institute.getInstituteId());
