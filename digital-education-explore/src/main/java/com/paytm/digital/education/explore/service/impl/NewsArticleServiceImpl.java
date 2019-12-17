@@ -3,16 +3,23 @@ package com.paytm.digital.education.explore.service.impl;
 import static com.paytm.digital.education.constant.ExploreConstants.NEWS_ARTICLE_TITLE;
 
 import com.paytm.digital.education.database.entity.MerchantArticle;
+import com.paytm.digital.education.explore.response.dto.articles.NewsArticleData;
 import com.paytm.digital.education.explore.response.dto.articles.NewsArticleResponse;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,8 +36,9 @@ public class NewsArticleServiceImpl {
     private Integer defaultNoOfArticlesForExam;
 
     public NewsArticleResponse getMerchantAritcleForExam(long examId, List<Long> streamIds) {
+        List<MerchantArticle> articlesToReturn = null;
         try {
-            List<MerchantArticle> articlesToReturn =
+            articlesToReturn =
                     merchantArticleService.getArticlesByExamId(examId, defaultNoOfArticlesForExam);
             if (CollectionUtils.isEmpty(articlesToReturn)) {
                 articlesToReturn = new ArrayList<>();
@@ -47,13 +55,11 @@ public class NewsArticleServiceImpl {
                         articlesToReturn.addAll(streamWiseArticles);
                     }
                 }
-                return NewsArticleResponse.builder().title(NEWS_ARTICLE_TITLE)
-                        .data(articlesToReturn).build();
             }
-            return getByStreamIdsOnly(streamIds, defaultNoOfArticlesForExam);
+            return buildNewsArticleResponse(articlesToReturn);
         } catch (Exception ex) {
-            log.error("Exception caught while getting merchant article for exam. ExamId : ", ex,
-                    examId);
+            log.error("Exception caught while getting merchant article for exam. ExamId : {}, streamIds : {}", ex,
+                    examId, streamIds);
         }
         return null;
     }
@@ -61,16 +67,17 @@ public class NewsArticleServiceImpl {
 
     public NewsArticleResponse getMerchantArticleForInstitute(List<Long> examIds,
             List<Long> streamIds) {
+        List<MerchantArticle> articlesToReturn = null;
         try {
             if (!CollectionUtils.isEmpty(examIds)) {
-                List<MerchantArticle> articlesToReturn = merchantArticleService
+                articlesToReturn = merchantArticleService
                         .getArticlesByExamIds(examIds, defaultNoOfArticlesForExam);
                 if (CollectionUtils.isEmpty(articlesToReturn)) {
                     articlesToReturn = new ArrayList<>();
                 }
                 int articleSize = articlesToReturn.size();
                 if (articleSize < defaultNoOfArticlesForInstitute) {
-                    int remainingArticles = defaultNoOfArticlesForExam - articleSize;
+                    int remainingArticles = defaultNoOfArticlesForInstitute - articleSize;
                     List<MerchantArticle> streamWiseArticles =
                             merchantArticleService
                                     .getArticlesByStreamIds(streamIds, remainingArticles);
@@ -78,10 +85,8 @@ public class NewsArticleServiceImpl {
                         articlesToReturn.addAll(streamWiseArticles);
                     }
                 }
-                return NewsArticleResponse.builder().title(NEWS_ARTICLE_TITLE)
-                        .data(articlesToReturn).build();
             }
-            return getByStreamIdsOnly(streamIds, defaultNoOfArticlesForInstitute);
+            return buildNewsArticleResponse(articlesToReturn);
         } catch (Exception ex) {
             log.error(
                     "Exception caught while getting merchant article for institute. Exam Ids : {}, StreamIds : {}",
@@ -90,15 +95,25 @@ public class NewsArticleServiceImpl {
         return null;
     }
 
-    private NewsArticleResponse getByStreamIdsOnly(List<Long> streamIds, int limit) {
-        if (!CollectionUtils.isEmpty(streamIds)) {
-            List<MerchantArticle> articleList =
-                    merchantArticleService.getArticlesByStreamIds(streamIds, limit);
-            if (!CollectionUtils.isEmpty(articleList)) {
-                return NewsArticleResponse.builder().title(NEWS_ARTICLE_TITLE)
-                        .data(articleList).build();
-            }
+    private NewsArticleResponse buildNewsArticleResponse(List<MerchantArticle> articleList) {
+        if (!CollectionUtils.isEmpty(articleList)) {
+            Set<String> articleUrls = new HashSet<>();
+            List<NewsArticleData> articleData = articleList.stream()
+                    .filter(article -> !articleUrls.contains(article.getArticleUrl()))
+                    .peek(article -> articleUrls.add(article.getArticleUrl()))
+                    .map(this::convertToArticleResponse)
+                    .collect(Collectors.toList());
+            Collections.sort(articleData,
+                    Comparator.comparing(NewsArticleData::getUpdatedAt).reversed());
+            return NewsArticleResponse.builder().title(NEWS_ARTICLE_TITLE)
+                    .data(articleData).build();
         }
         return null;
+    }
+
+    private NewsArticleData convertToArticleResponse(MerchantArticle merchantArticle) {
+        NewsArticleData newsArticleData = new NewsArticleData();
+        BeanUtils.copyProperties(merchantArticle, newsArticleData);
+        return newsArticleData;
     }
 }
