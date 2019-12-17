@@ -72,18 +72,18 @@ public class NewsArticleServiceImpl {
             if (!CollectionUtils.isEmpty(examIds)) {
                 articlesToReturn = merchantArticleService
                         .getArticlesByExamIds(examIds, defaultNoOfArticlesForExam);
-                if (CollectionUtils.isEmpty(articlesToReturn)) {
-                    articlesToReturn = new ArrayList<>();
-                }
-                int articleSize = articlesToReturn.size();
-                if (articleSize < defaultNoOfArticlesForInstitute) {
-                    int remainingArticles = defaultNoOfArticlesForInstitute - articleSize;
-                    List<MerchantArticle> streamWiseArticles =
-                            merchantArticleService
-                                    .getArticlesByStreamIds(streamIds, remainingArticles);
-                    if (!CollectionUtils.isEmpty(streamWiseArticles)) {
-                        articlesToReturn.addAll(streamWiseArticles);
-                    }
+            }
+            if (CollectionUtils.isEmpty(articlesToReturn)) {
+                articlesToReturn = new ArrayList<>();
+            }
+            int articleSize = articlesToReturn.size();
+            if (articleSize < defaultNoOfArticlesForInstitute && !CollectionUtils
+                    .isEmpty(streamIds)) {
+                int remainingArticles = defaultNoOfArticlesForInstitute - articleSize;
+                List<MerchantArticle> streamWiseArticles =
+                        merchantArticleService.getArticlesByStreamIds(streamIds, remainingArticles);
+                if (!CollectionUtils.isEmpty(streamWiseArticles)) {
+                    articlesToReturn.addAll(streamWiseArticles);
                 }
             }
             return buildNewsArticleResponse(articlesToReturn);
