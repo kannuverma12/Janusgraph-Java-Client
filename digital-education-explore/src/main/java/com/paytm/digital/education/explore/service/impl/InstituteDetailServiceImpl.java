@@ -77,7 +77,7 @@ public class InstituteDetailServiceImpl {
         genderCategoryMap = genderAndCasteGroupHelper.getGenderAndCasteGroupMap();
     }
 
-    @EduCache(cache = "institute_detail")
+    @Cacheable(value = "institute_detail", keyGenerator = "customKeyGenerator")
     public InstituteDetail getinstituteDetail(Long entityId, String instituteUrlKey,
             String fieldGroup, Client client, boolean derivedAttributes,
             boolean cutOffs, boolean facilities, boolean gallery, boolean placements,
