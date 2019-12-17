@@ -2,6 +2,7 @@ package com.paytm.digital.education.advice.helper;
 
 import com.paytm.digital.education.advice.CacheKeyable;
 import com.paytm.digital.education.annotation.EduCache;
+import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.UnableToAccessBeanPropertyException;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
@@ -67,8 +68,10 @@ public class KeyGenerator {
     private static String fetchKey(Object o) {
         if (Objects.isNull(o)) {
             return EMPTY_STRING;
-        } else if (o instanceof Number || o instanceof Boolean || o instanceof CharSequence || o instanceof Enum) {
+        } else if (o instanceof Number || o instanceof Boolean || o instanceof CharSequence) {
             return o.toString();
+        } else if (o instanceof Enum) {
+            return ((Enum) o).name();
         } else if (o instanceof Map) {
             return toJson(sortMapByKeys((Map) o));
         } else if (o instanceof Class) {

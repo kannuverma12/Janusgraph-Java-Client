@@ -1,6 +1,7 @@
 package com.paytm.digital.education.explore.service.helper;
 
 import com.paytm.digital.education.config.SchoolConfig;
+import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.database.entity.Board;
 import com.paytm.digital.education.database.entity.BoardData;
@@ -45,7 +46,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class SchoolDuplicateDataPruneTest {
 
-    @Mock
     private CommonMongoRepository commonMongoRepository;
 
     @Mock
@@ -63,6 +63,9 @@ public class SchoolDuplicateDataPruneTest {
     @Mock
     private SchoolConfig schoolConfig;
 
+    @Mock
+    private CommonEntityMongoDAO commonEntityMongoDAO;
+
     private SchoolService schoolService;
 
     @Before
@@ -77,7 +80,8 @@ public class SchoolDuplicateDataPruneTest {
                 schoolConfig,
                 schoolUtilService,
                 null,
-                4
+                4,
+                commonEntityMongoDAO
         );
 
         when(derivedAttributesHelper.getDerivedAttributes(anyMap(), anyString(), any()))
@@ -190,10 +194,8 @@ public class SchoolDuplicateDataPruneTest {
     }
 
     private void setUpCommonMongoRepoResponse(School school) {
-        when(commonMongoRepository.getEntityByFields(
-                any(),
+        when(commonEntityMongoDAO.getSchoolById(
                 anyLong(),
-                any(),
                 any()))
                 .thenReturn(school);
     }

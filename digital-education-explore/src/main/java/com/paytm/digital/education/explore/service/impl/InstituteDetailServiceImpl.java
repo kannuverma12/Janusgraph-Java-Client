@@ -4,6 +4,7 @@ import com.paytm.digital.education.annotation.EduCache;
 import com.paytm.digital.education.database.entity.Course;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Institute;
+import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.enums.EducationEntity;
@@ -67,6 +68,7 @@ public class InstituteDetailServiceImpl {
     private CommonMongoRepository          commonMongoRepository;
     private InstituteDetailResponseBuilder instituteDetailResponseBuilder;
     private SubscriptionDetailHelper       subscriptionDetailHelper;
+    private CommonEntityMongoDAO           commonEntityMongoDAO;
 
     private static int EXAM_PREFIX_LENGTH   = EXAM_PREFIX.length();
     private static int COURSE_PREFIX_LENGTH = COURSE_PREFIX.length();
@@ -116,7 +118,7 @@ public class InstituteDetailServiceImpl {
         instituteIdList.add(entityId);
         queryObject.put(INSTITUTE_ID, instituteIdList);
         queryObject.put(PARENT_INSTITUTION, instituteIdList);
-        List<Institute> institutes = commonMongoRepository.findAll(queryObject, Institute.class,
+        List<Institute> institutes = commonEntityMongoDAO.getAllInstitutes(queryObject,
                 instituteFields, OR);
         Institute institute = null;
         for (Institute college : institutes) {
@@ -136,9 +138,8 @@ public class InstituteDetailServiceImpl {
             Long parentInstitutionId = institute.getParentInstitution();
             String parentInstitutionName = null;
             if (parentInstitutionId != null) {
-                Institute parentInstitution = commonMongoRepository
-                        .getEntityByFields(INSTITUTE_ID, parentInstitutionId, Institute.class,
-                                parentInstitutionFields);
+                Institute parentInstitution = commonEntityMongoDAO
+                        .getInstituteById(parentInstitutionId, parentInstitutionFields);
                 parentInstitutionName =
                         parentInstitution != null ? parentInstitution.getOfficialName() : null;
             }
@@ -169,10 +170,8 @@ public class InstituteDetailServiceImpl {
 
         Set<Long> searchIds = new HashSet<>(entityIds);
         List<Institute> institutes =
-                commonMongoRepository
-                        .getEntityFieldsByValuesIn(INSTITUTE_ID, new ArrayList<>(searchIds),
-                                Institute.class,
-                                instituteFields);
+                commonEntityMongoDAO
+                        .getInstitutesByIdsIn(new ArrayList<>(searchIds), instituteFields);
 
         if (!CollectionUtils.isEmpty(institutes) && searchIds.size() == institutes.size()) {
             return institutes;
@@ -196,6 +195,7 @@ public class InstituteDetailServiceImpl {
             courseFields.add(INSTITUTE_ID); // it will be removed in the future
             courseFields.add(STREAM_IDS);
             courseFields.add(EXAMS_ACCEPTED);
+            courses = commonEntityMongoDAO.getAllCourses(queryObject, courseFields, OR);
             courses = commonMongoRepository
                     .findAll(queryObject, Course.class,
                             courseFields, OR);
@@ -207,8 +207,7 @@ public class InstituteDetailServiceImpl {
             Map<String, Object> queryObject = new HashMap<>();
             queryObject.put(SUBEXAM_ID, new ArrayList<>(examIds));
             queryObject.put(EXAM_ID, new ArrayList<>(examIds));
-            examList = commonMongoRepository
-                    .findAll(queryObject, Exam.class, examFields, OR);
+            examList = commonEntityMongoDAO.getAllExams(queryObject, examFields, OR);
         }
         return instituteDetailResponseBuilder
                 .buildResponse(institute, courses, examList, examData, examIds,

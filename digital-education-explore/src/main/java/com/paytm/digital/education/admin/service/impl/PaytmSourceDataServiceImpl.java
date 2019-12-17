@@ -17,10 +17,10 @@ import com.paytm.digital.education.database.entity.PaytmSourceDataEntity;
 import com.paytm.digital.education.database.entity.School;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.database.repository.ExamRepository;
+import com.paytm.digital.education.database.repository.InstituteRepository;
 import com.paytm.digital.education.database.repository.PaytmSourceDataRepository;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.enums.EntitySourceType;
-import com.paytm.digital.education.explore.database.repository.InstituteRepository;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.utility.CommonUtils;
 import com.paytm.education.logger.Logger;
@@ -67,9 +67,8 @@ public class PaytmSourceDataServiceImpl {
         for (PaytmSourceData paytmSourceData : paytmSourceDataRequest.getPaytmSourceData()) {
 
             PaytmSourceDataEntity paytmSourceDataInDb = paytmSourceDataRepository
-                    .findByEntityIdAndEducationEntityAndSource(paytmSourceData.getEntityId(),
-                            paytmSourceDataRequest.getEducationEntity().name(),
-                            EntitySourceType.PAYTM.name());
+                    .findByEntityIdAndEducationEntity(paytmSourceData.getEntityId(),
+                            paytmSourceDataRequest.getEducationEntity().name());
 
             if (Objects.isNull(paytmSourceDataInDb)) {
                 paytmSourceDataInDb = new PaytmSourceDataEntity();
@@ -117,8 +116,7 @@ public class PaytmSourceDataServiceImpl {
         paytmSourceDataResponse.setPaytmSourceData(paytmSourceDataUpdatedList);
         paytmSourceDataResponse.setStatus(FAILED);
 
-        if (!CollectionUtils.isEmpty(paytmSourceDataUpdatedList)
-                && paytmSourceDataUpdatedList.size() == paytmSourceDataRequest.getPaytmSourceData()
+        if (paytmSourceDataUpdatedList.size() == paytmSourceDataRequest.getPaytmSourceData()
                 .size()) {
             paytmSourceDataResponse.setStatus(SUCCESS);
         } else if (!CollectionUtils.isEmpty(paytmSourceDataUpdatedList)
@@ -133,8 +131,7 @@ public class PaytmSourceDataServiceImpl {
         paytmSourceDataResponse.setStatus(FAILED);
 
         PaytmSourceDataEntity paytmSourceData = paytmSourceDataRepository
-                .findByEntityIdAndEducationEntityAndSource(entityId, entity.name(),
-                        EntitySourceType.PAYTM.name());
+                .findByEntityIdAndEducationEntity(entityId, entity.name());
 
         paytmSourceDataResponse.setStatus(FAILED);
         paytmSourceDataResponse.setMessage(ErrorEnum.NO_PAYTM_SOURCE_DATA.name());
@@ -142,6 +139,7 @@ public class PaytmSourceDataServiceImpl {
         if (Objects.nonNull(paytmSourceData)) {
             paytmSourceDataResponse.setStatus(SUCCESS);
             paytmSourceDataResponse.setPaytmSourceData(paytmSourceData);
+            paytmSourceDataResponse.setMessage(SUCCESS);
         }
         return paytmSourceDataResponse;
     }
@@ -157,9 +155,8 @@ public class PaytmSourceDataServiceImpl {
 
         for (PaytmSourceData paytmSourceData : paytmSourceDataRequest.getPaytmSourceData()) {
             PaytmSourceDataEntity paytmSourceDataInDb = paytmSourceDataRepository
-                    .findByEntityIdAndEducationEntityAndSource(paytmSourceData.getEntityId(),
-                            paytmSourceDataRequest.getEducationEntity().name(),
-                            EntitySourceType.PAYTM.name());
+                    .findByEntityIdAndEducationEntity(paytmSourceData.getEntityId(),
+                            paytmSourceDataRequest.getEducationEntity().name());
 
             if (Objects.isNull(paytmSourceDataInDb)) {
                 log.info(
@@ -218,7 +215,8 @@ public class PaytmSourceDataServiceImpl {
                 break;
             case SCHOOL:
                 School school =
-                        commonMongoRepository.getEntityById(SchoolConstants.SCHOOL_ID, entityId, School.class);
+                        commonMongoRepository
+                                .getEntityById(SchoolConstants.SCHOOL_ID, entityId, School.class);
                 if (Objects.nonNull(school)) {
                     Map<String, Object> entityDatamap =
                             mapper.convertValue(school, new TypeReference<Map<String, Object>>() {
@@ -229,7 +227,8 @@ public class PaytmSourceDataServiceImpl {
                 break;
             case COURSE:
                 Course course =
-                        commonMongoRepository.getEntityById(ExploreConstants.COURSE_ID, entityId, Course.class);
+                        commonMongoRepository
+                                .getEntityById(ExploreConstants.COURSE_ID, entityId, Course.class);
                 if (Objects.nonNull(course)) {
                     Map<String, Object> entityDatamap =
                             mapper.convertValue(course, new TypeReference<Map<String, Object>>() {

@@ -5,6 +5,7 @@ import com.paytm.digital.education.constant.ExploreConstants;
 import com.paytm.digital.education.database.entity.Course;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Institute;
+import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.dto.detail.Event;
 import com.paytm.digital.education.enums.Client;
@@ -30,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.paytm.digital.education.constant.ExploreConstants.COURSE_CLASS;
-import static com.paytm.digital.education.constant.ExploreConstants.COURSE_ID;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FULL_NAME;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SHORT_NAME;
@@ -54,6 +54,7 @@ public class CourseDetailServiceImpl {
     private SimilarInstituteServiceImpl similarInstituteService;
     private BannerDataHelper            bannerDataHelper;
     private ExamInstanceHelper          examInstanceHelper;
+    private CommonEntityMongoDAO        commonEntityMongoDAO;
 
     /*
      ** Method to get the course details and institute details
@@ -74,8 +75,7 @@ public class CourseDetailServiceImpl {
             ArrayList<String> courseQueryFields = allFields.get(COURSE.name().toLowerCase());
             courseQueryFields.add(INSTITUTE_ID);
             Course course =
-                    commonMongoRepository.getEntityByFields(COURSE_ID, entityId, Course.class,
-                            courseQueryFields);
+                    commonEntityMongoDAO.getCourseById(entityId, courseQueryFields);
             ArrayList<String> instituteQueryFields = allFields.get(INSTITUTE.name().toLowerCase());
             if (course == null) {
                 throw new BadRequestException(INVALID_COURSE_ID,
@@ -89,10 +89,8 @@ public class CourseDetailServiceImpl {
             Institute instituteDetails = null;
             if (course.getInstitutionId() != null && !CollectionUtils
                     .isEmpty(instituteQueryFields)) {
-                instituteDetails = commonMongoRepository.getEntityByFields(INSTITUTE_ID,
-                        course.getInstitutionId(),
-                        Institute.class,
-                        instituteQueryFields);
+                instituteDetails = commonEntityMongoDAO
+                        .getInstituteById(course.getInstitutionId(), instituteQueryFields);
             }
             return buildResponse(course, instituteDetails, course.getExamsAccepted(), client,
                     courseFees, institute, widgets, derivedAttributes, examAccepted);
@@ -110,8 +108,7 @@ public class CourseDetailServiceImpl {
         fields.add(INSTANCES);
         fields.add(SUB_EXAMS);
         fields.add(EXAM_ID);
-        List<Exam> exams = commonMongoRepository
-                .getEntityFieldsByValuesIn(EXAM_ID, examIds, Exam.class, fields);
+        List<Exam> exams = commonEntityMongoDAO.getExamsByIdsIn(examIds, fields);
 
         List<ExamDetail> examsAccepted = new ArrayList<>();
 
@@ -137,10 +134,7 @@ public class CourseDetailServiceImpl {
         List<String> examQueryFields = new ArrayList<>();
         examQueryFields.add(EXAM_SHORT_NAME);
         examQueryFields.add(EXAM_FULL_NAME);
-        return commonMongoRepository.getEntityByFields(EXAM_ID,
-                examIds.get(0),
-                Exam.class,
-                examQueryFields);
+        return commonEntityMongoDAO.getExamById(examIds.get(0), examQueryFields);
     }
 
     /*

@@ -1,4 +1,4 @@
-package com.paytm.digital.education.explore.database.repository;
+package com.paytm.digital.education.database.repository;
 
 import com.paytm.digital.education.database.entity.Institute;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.List;
 
 
-@Transactional
 @Repository
 public interface InstituteRepository extends MongoRepository<Institute, String> {
 

@@ -47,7 +47,7 @@ public class EntitySourceMappingDataValidatorTest {
         paytmSourceDataEntity.setActive(true);
         paytmSourceDataEntity.setExamData(new Exam());
 
-        when(paytmSourceDataRepository.findByEntityIdAndEducationEntityAndSource(anyLong(), anyString(),anyString()))
+        when(paytmSourceDataRepository.findByEntityIdAndEducationEntity(anyLong(), anyString()))
                 .thenReturn(paytmSourceDataEntity);
         validator.validateEntitySourceMappingData(entitySourceMappingRequest);
     }
