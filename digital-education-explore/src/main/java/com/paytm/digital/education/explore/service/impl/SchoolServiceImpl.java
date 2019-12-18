@@ -176,7 +176,7 @@ public class SchoolServiceImpl implements SchoolService {
             ).collect(Collectors.toList());
             schoolDetail.setImportantDateSections(importantDates);
             schoolDetail.setGallery(
-                    Optional.ofNullable(school.getGallery())
+                    ofNullable(school.getGallery())
                             .map(x -> new SchoolGalleryResponse(x, schoolUtilService))
                             .orElse(null));
             String entityName = SCHOOL.name().toLowerCase();
@@ -223,7 +223,7 @@ public class SchoolServiceImpl implements SchoolService {
     }
 
     private ShiftTable convertBoardToShiftTable(Board board) {
-        List<ShiftDetailsResponse> shiftDetailsResponseList = Optional.ofNullable(board)
+        List<ShiftDetailsResponse> shiftDetailsResponseList = ofNullable(board)
                 .map(Board::getData)
                 .map(BoardData::getShifts)
                 .orElse(emptyList())
@@ -324,7 +324,7 @@ public class SchoolServiceImpl implements SchoolService {
     }
 
     private GeoLocation buildGeoLocationFromSchool(School school) {
-        String latLon = Optional.ofNullable(school.getAddress())
+        String latLon = ofNullable(school.getAddress())
                 .map(SchoolOfficialAddress::getLatLon)
                 .orElse(EMPTY);
         String[] latLonArray = latLon.split(COMMA);
@@ -370,7 +370,7 @@ public class SchoolServiceImpl implements SchoolService {
             generalInformation.setOfficialName(school.getOfficialName());
             generalInformation.setShortName(school.getShortName());
             final String logoUrl =
-                    Optional.ofNullable(school.getGallery()).map(SchoolGallery::getLogo)
+                    ofNullable(school.getGallery()).map(SchoolGallery::getLogo)
                             .orElse(null);
             generalInformation
                     .setLogo(schoolUtilService.buildLogoFullPathFromRelativePath(logoUrl));
