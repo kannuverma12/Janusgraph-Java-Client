@@ -29,7 +29,7 @@ import static java.util.Collections.emptyList;
 @Builder
 @AllArgsConstructor
 public class BoardData implements Serializable {
-    private static final long serialVersionUID = 2210782670158787979L;
+    private static final long serialVersionUID = -3699642149145396518L;
 
     @Field("affiliation_type")
     @JsonProperty("affiliation_type")
