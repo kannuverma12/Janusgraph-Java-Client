@@ -49,6 +49,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -385,7 +386,8 @@ public class SchoolServiceImpl implements SchoolService {
     }
 
     private String getOfficialWebsiteLinkFromData(BoardData boardData) {
-        return boardData.getRelevantLinks()
+        return Optional.ofNullable(boardData.getRelevantLinks())
+                .orElse(new ArrayList<>())
                 .stream()
                 .filter(x -> OFFICIAL_WEBSITE_LINK.equals(x.getRelevantLinkType()))
                 .map(RelevantLink::getRelevantLinkUrl)
