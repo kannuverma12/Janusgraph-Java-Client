@@ -1,25 +1,26 @@
 package com.paytm.digital.education.explore.service.helper;
 
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.constant.ExploreConstants.NON_TENTATIVE;
 import static com.paytm.digital.education.constant.ExploreConstants.TENTATIVE;
 import static com.paytm.digital.education.constant.ExploreConstants.WIDGETS;
 import static com.paytm.digital.education.enums.EducationEntity.EXAM;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.eq;
 
 import com.paytm.digital.education.database.dao.StreamDAO;
 import com.paytm.digital.education.database.entity.Event;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Instance;
 import com.paytm.digital.education.database.entity.StreamEntity;
+import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.response.dto.common.Widget;
 import com.paytm.digital.education.explore.response.dto.common.WidgetData;
 import com.paytm.digital.education.property.reader.PropertyReader;
+import com.paytm.digital.education.serviceimpl.helper.EntitySourceMappingProvider;
 import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
 import org.joda.time.LocalDate;
 import org.junit.Before;
@@ -29,7 +30,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -41,40 +41,41 @@ import java.util.stream.Collectors;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WidgetsEntityDataHelperTest {
-    private static List<String> ONLINE  = new ArrayList<>(Arrays.asList("ONLINE"));
-    private static List<String> OFFLINE = new ArrayList<>(Arrays.asList("OFFLINE"));
+    private static List<String> ONLINE = singletonList("ONLINE");
+    private static List<String> OFFLINE = singletonList("OFFLINE");
     @Mock
-    CommonMongoRepository commonMongoRepository;
-
-    @InjectMocks
-    SimilarExamsHelper similarExamsHelper;
-
-    @InjectMocks
-    ExamInstanceHelper examInstanceHelper;
+    private CommonMongoRepository commonMongoRepository;
 
     @Mock
-    StreamDAO streamDAO;
+    private EntitySourceMappingProvider entitySourceMappingProvider;
+
+    @Mock
+    private StreamDAO streamDAO;
+
+    @Mock
+    private CommonEntityMongoDAO commonEntityMongoDAO;
+
     @Mock
     private PropertyReader propertyReader;
+
     @InjectMocks
     private WidgetsDataHelper widgetsDataHelper;
 
+    private SimilarExamsHelper similarExamsHelper;
+
+    @InjectMocks
+    private ExamInstanceHelper examInstanceHelper;
+
     @Before
     public void setUp() {
-        ReflectionTestUtils.setField(this.widgetsDataHelper, "propertyReader", propertyReader);
-        ReflectionTestUtils
-                .setField(this.similarExamsHelper, "widgetsDataHelper", widgetsDataHelper);
-        ReflectionTestUtils
-                .setField(this.similarExamsHelper, "commonMongoRepository", commonMongoRepository);
-        ReflectionTestUtils
-                .setField(this.similarExamsHelper, "examInstanceHelper", examInstanceHelper);
-
+        similarExamsHelper = new SimilarExamsHelper(
+                widgetsDataHelper, streamDAO, examInstanceHelper, commonEntityMongoDAO);
         Mockito.when(
                 propertyReader.getPropertiesAsMapByKey(EXPLORE_COMPONENT, EXAM.name().toLowerCase(),
                         WIDGETS))
                 .thenReturn(getWidgetsPropertiesData());
-        Mockito.when(commonMongoRepository
-                .getEntityFieldsByValuesIn(eq(EXAM_ID), anyList(), eq(Exam.class), anyList()))
+        Mockito.when(commonEntityMongoDAO
+                .getExamsByIdsIn(anyList(), anyList()))
                 .thenReturn(getExamList());
         Mockito.when(streamDAO.findAll()).thenReturn(getAllStreamsEntities());
     }
