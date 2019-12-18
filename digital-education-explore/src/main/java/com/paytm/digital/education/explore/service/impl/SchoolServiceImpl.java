@@ -75,6 +75,7 @@ import static com.paytm.digital.education.mapping.ErrorEnum.NO_ENTITY_FOUND;
 import static com.paytm.digital.education.utility.CommonUtils.isNullOrZero;
 import static com.paytm.digital.education.utility.FunctionUtils.fetchIfPresentFromNullable;
 import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.elasticsearch.common.geo.parsers.GeoWKTParser.COMMA;
 
@@ -381,7 +382,8 @@ public class SchoolServiceImpl implements SchoolService {
     }
 
     private String getOfficialWebsiteLinkFromData(BoardData boardData) {
-        return boardData.getRelevantLinks()
+        return ofNullable(boardData.getRelevantLinks())
+                .orElse(emptyList())
                 .stream()
                 .filter(x -> OFFICIAL_WEBSITE_LINK.equals(x.getRelevantLinkType()))
                 .map(RelevantLink::getRelevantLinkUrl)
