@@ -9,15 +9,15 @@ public enum ClassLevel {
     @JsonProperty("Nursery")
     NURSERY,
 
-    @JsonProperty("Primary School")
+    @JsonProperty("Primary")
     PRIMARY_SCHOOL,
 
-    @JsonProperty("Middle School")
+    @JsonProperty("Middle")
     MIDDLE_SCHOOL,
 
-    @JsonProperty("Secondary School")
+    @JsonProperty("Secondary")
     SECONDARY_SCHOOL,
 
-    @JsonProperty("Senior Secondary School")
+    @JsonProperty("Senior Secondary")
     SENIOR_SECONDARY_SCHOOL
 }
