@@ -163,12 +163,18 @@ public class BoardData implements Serializable {
         if (CollectionUtils.isEmpty(enrollments) || CommonUtils.isNullOrZero(noOfTeachers)) {
             return EMPTY_STRING;
         }
-        int enrollmentCount = Optional.ofNullable(enrollments).orElse(emptyList())
+        return String.format("%d : 1", enrollments() / noOfTeachers);
+    }
+
+    public int enrollments() {
+        if (CollectionUtils.isEmpty(enrollments)) {
+            return 0;
+        }
+
+        return Optional.ofNullable(enrollments).orElse(emptyList())
                 .stream()
                 .map(x -> Optional.of(x.getEnrollment()).orElse(0))
                 .mapToInt(Integer::intValue)
                 .sum();
-
-        return String.format("%d : 1", enrollmentCount / noOfTeachers);
     }
 }
