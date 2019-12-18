@@ -52,6 +52,7 @@ public abstract class AbstractCacheLockStrategy implements CacheLockStrategy {
             return computed;
         } catch (CachedMethodInvocationException e) {
             template.opsForValue().getOperations().delete(lockKey);
+            logger.error("Encountered exception while running cached method", e);
             final Throwable t = e.getCause();
             if (t instanceof EducationException) {
                 throw (EducationException) t;

@@ -8,11 +8,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serializable;
+
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NoArgsConstructor
-public class Enrollment {
+public class Enrollment implements Serializable {
+    private static final long serialVersionUID = -8989428193349292886L;
 
     @Field("class_from")
     @JsonProperty("class_from")
