@@ -110,7 +110,7 @@ public class ExamData extends SearchBaseData implements CTAInfoHolder {
     @JsonIgnore
     @Override
     public boolean hasShareFeature() {
-        return true;
+        return false;
     }
 
     @JsonIgnore
