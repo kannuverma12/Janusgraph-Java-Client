@@ -75,7 +75,6 @@ import static com.paytm.digital.education.mapping.ErrorEnum.NO_ENTITY_FOUND;
 import static com.paytm.digital.education.utility.CommonUtils.isNullOrZero;
 import static com.paytm.digital.education.utility.FunctionUtils.fetchIfPresentFromNullable;
 import static java.util.Collections.emptyList;
-import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.elasticsearch.common.geo.parsers.GeoWKTParser.COMMA;
 
@@ -176,7 +175,7 @@ public class SchoolServiceImpl implements SchoolService {
             ).collect(Collectors.toList());
             schoolDetail.setImportantDateSections(importantDates);
             schoolDetail.setGallery(
-                    ofNullable(school.getGallery())
+                    Optional.ofNullable(school.getGallery())
                             .map(x -> new SchoolGalleryResponse(x, schoolUtilService))
                             .orElse(null));
             String entityName = SCHOOL.name().toLowerCase();
@@ -223,7 +222,7 @@ public class SchoolServiceImpl implements SchoolService {
     }
 
     private ShiftTable convertBoardToShiftTable(Board board) {
-        List<ShiftDetailsResponse> shiftDetailsResponseList = ofNullable(board)
+        List<ShiftDetailsResponse> shiftDetailsResponseList = Optional.ofNullable(board)
                 .map(Board::getData)
                 .map(BoardData::getShifts)
                 .orElse(emptyList())
@@ -324,7 +323,7 @@ public class SchoolServiceImpl implements SchoolService {
     }
 
     private GeoLocation buildGeoLocationFromSchool(School school) {
-        String latLon = ofNullable(school.getAddress())
+        String latLon = Optional.ofNullable(school.getAddress())
                 .map(SchoolOfficialAddress::getLatLon)
                 .orElse(EMPTY);
         String[] latLonArray = latLon.split(COMMA);
@@ -370,7 +369,7 @@ public class SchoolServiceImpl implements SchoolService {
             generalInformation.setOfficialName(school.getOfficialName());
             generalInformation.setShortName(school.getShortName());
             final String logoUrl =
-                    ofNullable(school.getGallery()).map(SchoolGallery::getLogo)
+                    Optional.ofNullable(school.getGallery()).map(SchoolGallery::getLogo)
                             .orElse(null);
             generalInformation
                     .setLogo(schoolUtilService.buildLogoFullPathFromRelativePath(logoUrl));
@@ -382,8 +381,7 @@ public class SchoolServiceImpl implements SchoolService {
     }
 
     private String getOfficialWebsiteLinkFromData(BoardData boardData) {
-        return ofNullable(boardData.getRelevantLinks())
-                .orElse(emptyList())
+        return boardData.getRelevantLinks()
                 .stream()
                 .filter(x -> OFFICIAL_WEBSITE_LINK.equals(x.getRelevantLinkType()))
                 .map(RelevantLink::getRelevantLinkUrl)

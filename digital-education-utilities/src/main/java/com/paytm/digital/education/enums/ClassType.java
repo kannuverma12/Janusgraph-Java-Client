@@ -2,11 +2,16 @@ package com.paytm.digital.education.enums;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 public enum ClassType {
-    PRE_NURSERY("Pre-nursery"),
+    PRE_NURSERY("Pre Nursery"),
     NURSERY("Nursery"),
-    LKG("Lower Kindergarten (LKG)"),
-    UKG("Upper Kindergarten (UKG)"),
+    LKG("Lower Kinder Garten (LKG)"),
+    UKG("Upper Kinder Garten (UKG)"),
     ONE("1st"),
     TWO("2nd"),
     THREE("3rd"),
