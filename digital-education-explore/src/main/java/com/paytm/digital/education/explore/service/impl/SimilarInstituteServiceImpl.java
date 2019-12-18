@@ -273,12 +273,11 @@ public class SimilarInstituteServiceImpl {
     public Map<String, Object> getInstituteQueryMapForLocationAndStreams(String instituteState,
             String instituteCity, Collection<String> streams) {
         List<Long> instituteIds = getInstituteIdsByStreams(IN_OPERATOR, streams);
-        Map<String, Object> instituteIdMap = new HashMap<>();
-        instituteIdMap.put(IN_OPERATOR, instituteIds);
+
         Map<String, Object> instituteQueryMap = new HashMap<>();
         instituteQueryMap.put(INSTITUTION_STATE, instituteState);
         instituteQueryMap.put(INSTITUTION_CITY, instituteCity);
-        instituteQueryMap.put(INSTITUTE_ID, instituteIdMap);
+        instituteQueryMap.put(INSTITUTE_ID, instituteIds);
         return instituteQueryMap;
     }
 

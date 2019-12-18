@@ -296,15 +296,15 @@ public class CommonEntityMongoDAO {
 
     public List<Course> getAllCourses(Map<String, Object> queryObject,
             List<String> fields, String operator) {
-        List<Long> courseIds = (List<Long>) queryObject.get(COURSE_ID);
+        List<Long> instituteIds = (List<Long>) queryObject.get(INSTITUTE_ID);
         Map<EntitySourceType, List<Long>> sourceAndEntityIdsMap =
-                entitySourceMappingProvider.getSourceAndEntitiesMapping(COURSE, courseIds);
+                entitySourceMappingProvider.getSourceAndEntitiesMapping(COURSE, instituteIds);
         List<Course> courses = new ArrayList<>();
 
         if (!CollectionUtils.isEmpty(sourceAndEntityIdsMap)) {
             if (sourceAndEntityIdsMap.containsKey(C360)) {
                 List<Long> idsWithSourceMerchant = sourceAndEntityIdsMap.get(C360);
-                queryObject.put(COURSE_ID, idsWithSourceMerchant);
+                queryObject.put(INSTITUTE_ID, idsWithSourceMerchant);
                 courses.addAll(
                         Optional.ofNullable(commonMongoRepository.findAll(queryObject, Course.class,
                                 fields, operator)).orElse(new ArrayList<>()));
@@ -312,7 +312,7 @@ public class CommonEntityMongoDAO {
 
             if (sourceAndEntityIdsMap.containsKey(PAYTM)) {
                 List<Long> idsWithSourcePaytm = sourceAndEntityIdsMap.get(PAYTM);
-                queryObject.put(COURSE_ID, idsWithSourcePaytm);
+                queryObject.put(INSTITUTE_ID, idsWithSourcePaytm);
 
                 List<PaytmSourceDataEntity> paytmSourceDataEntities =
                         commonMongoRepository

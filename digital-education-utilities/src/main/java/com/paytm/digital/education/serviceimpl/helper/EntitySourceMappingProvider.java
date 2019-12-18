@@ -54,19 +54,20 @@ public class EntitySourceMappingProvider {
                             entitySourceMappingHelper.getPaytmSourceEntitiesForEntity(entity))
                             .orElse(new ArrayList<>());
 
-            entitiesWithSourcePaytm.retainAll(entityIds);
-            if (!CollectionUtils.isEmpty(entitiesWithSourcePaytm)) {
-                sourceAndEntityIdsMap.put(PAYTM, entitiesWithSourcePaytm);
-            }
-
-            entityIds.removeAll(entitiesWithSourcePaytm);
             if (!CollectionUtils.isEmpty(entityIds)) {
+                entitiesWithSourcePaytm.retainAll(entityIds);
+                if (!CollectionUtils.isEmpty(entitiesWithSourcePaytm)) {
+                    sourceAndEntityIdsMap.put(PAYTM, entitiesWithSourcePaytm);
+                    entityIds.removeAll(entitiesWithSourcePaytm);
+                }
                 sourceAndEntityIdsMap.put(C360, entityIds);
             }
         } catch (Exception e) {
             log.error(
                     "Exception occurred while finding source type for entity :{}, entityId :{}, "
                             + "returning default source (merchant)", e, entity, entityIds);
+            sourceAndEntityIdsMap = new HashMap<>();
+            sourceAndEntityIdsMap.put(C360, entityIds);
         }
         return sourceAndEntityIdsMap;
     }

@@ -196,9 +196,6 @@ public class InstituteDetailServiceImpl {
             courseFields.add(STREAM_IDS);
             courseFields.add(EXAMS_ACCEPTED);
             courses = commonEntityMongoDAO.getAllCourses(queryObject, courseFields, OR);
-            courses = commonMongoRepository
-                    .findAll(queryObject, Course.class,
-                            courseFields, OR);
         }
         Map<String, Object> examData = getExamData(courses, entityId);
         Set<Long> examIds = (Set<Long>) examData.get(EXAM_ID);
