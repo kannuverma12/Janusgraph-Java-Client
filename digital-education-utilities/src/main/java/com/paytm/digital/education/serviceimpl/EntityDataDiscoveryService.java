@@ -1,6 +1,7 @@
 package com.paytm.digital.education.serviceimpl;
 
 import com.paytm.digital.education.config.SchoolConfig;
+import com.paytm.digital.education.constant.ExploreConstants;
 import com.paytm.digital.education.database.dao.StreamDAO;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Institute;
@@ -30,7 +31,6 @@ import static com.paytm.digital.education.constant.ExploreConstants.ABOUT_EXAM;
 import static com.paytm.digital.education.constant.ExploreConstants.APP_DISPLAY_NAME;
 import static com.paytm.digital.education.constant.ExploreConstants.DESCRIPTION;
 import static com.paytm.digital.education.constant.ExploreConstants.DISPLAY_NAME;
-import static com.paytm.digital.education.constant.ExploreConstants.DUMMY_EXAM_ICON;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FULL_NAME;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SHORT_NAME;
@@ -87,10 +87,13 @@ public class EntityDataDiscoveryService {
                     item.put(NAME, institute.getOfficialName());
                     item.put(URL_DISPLAY_KEY,
                             CommonUtil.convertNameToUrlDisplayName(institute.getOfficialName()));
+                    String logo = Objects.nonNull(institute.getGallery()) ?
+                            institute.getGallery().getLogo() :
+                            ExploreConstants.EMPTY_STRING;
                     item.put(LOGO,
-                            CommonUtil.getLogoLink(institute.getGallery().getLogo(), INSTITUTE));
+                            CommonUtil.getLogoLink(logo, INSTITUTE));
                     item.put(ICON,
-                            CommonUtil.getLogoLink(institute.getGallery().getLogo(), INSTITUTE));
+                            CommonUtil.getLogoLink(logo, INSTITUTE));
                 } else {
                     log.error("Institute Id : {} of College in focus not found in the databse.",
                             item.get(INSTITUTE_ID));
@@ -197,10 +200,8 @@ public class EntityDataDiscoveryService {
                 Exam exam = examMap.get(examId);
                 examData.put(FULL_NAME, exam.getExamFullName());
                 examData.put(NAME, exam.getExamShortName());
-                String logoUrl = StringUtils.isNotBlank(exam.getLogo())
-                        ? exam.getLogo() : DUMMY_EXAM_ICON;
-                examData.put(LOGO, CommonUtil.getLogoLink(logoUrl, EXAM));
-                examData.put(ICON, CommonUtil.getLogoLink(logoUrl, EXAM));
+                examData.put(LOGO, CommonUtil.getLogoLink(exam.getLogo(), EXAM));
+                examData.put(ICON, CommonUtil.getLogoLink(exam.getLogo(), EXAM));
                 examData.put(URL_DISPLAY_KEY,
                         CommonUtil.convertNameToUrlDisplayName(exam.getExamFullName()));
                 if (StringUtils.isNotBlank(exam.getAboutExam())) {
@@ -227,7 +228,7 @@ public class EntityDataDiscoveryService {
                     item.put(SCHOOL_OFFICIAL_NAME, school.getOfficialName());
                     String logoUrl = (Objects.nonNull(school.getGallery()) && StringUtils
                             .isNotBlank(school.getGallery().getLogo()))
-                            ? school.getGallery().getLogo() : schoolConfig.getSchoolPlaceholderLogoURL();
+                            ? school.getGallery().getLogo() : ExploreConstants.EMPTY_STRING;
                     item.put(ICON, CommonUtil.getLogoLink(logoUrl, SCHOOL));
                     item.put(LOGO, item.get(ICON));
                     item.put(URL_DISPLAY_KEY,
