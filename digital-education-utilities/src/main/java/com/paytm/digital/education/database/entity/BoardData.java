@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import static com.sun.org.apache.xml.internal.utils.LocaleUtility.EMPTY_STRING;
 import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -171,9 +172,9 @@ public class BoardData implements Serializable {
             return 0;
         }
 
-        return Optional.ofNullable(enrollments).orElse(emptyList())
+        return ofNullable(enrollments).orElse(emptyList())
                 .stream()
-                .map(x -> Optional.of(x.getEnrollment()).orElse(0))
+                .map(x -> ofNullable(x.getEnrollment()).orElse(0))
                 .mapToInt(Integer::intValue)
                 .sum();
     }
