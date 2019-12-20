@@ -219,7 +219,7 @@ public class InstituteDetailResponseBuilder {
             Set<Long> examsAccepted = new HashSet<>();
             Set<Long> paytmStreamIds = new HashSet<>();
             getExamIdsAndStreams(courses, examsAccepted, paytmStreamIds);
-            instituteDetail.setNewsArticle(newsArticleService
+            instituteDetail.setNewsArticles(newsArticleService
                     .getMerchantArticleForInstitute(new ArrayList<>(examsAccepted),
                             new ArrayList<>(paytmStreamIds)));
         }

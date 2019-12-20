@@ -319,7 +319,7 @@ public class ExamDetailServiceImpl {
                             entityName, client));
         }
         if (newsArticles) {
-            examResponse.setNewsArticleResponse(newsArticleService
+            examResponse.setNewsArticles(newsArticleService
                     .getMerchantAritcleForExam(exam.getExamId(), exam.getStreamIds()));
         }
     }
