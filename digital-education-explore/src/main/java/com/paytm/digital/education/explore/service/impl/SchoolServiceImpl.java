@@ -49,7 +49,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -263,31 +265,23 @@ public class SchoolServiceImpl implements SchoolService {
     }
 
     private void addNearbySchoolsInResponse(SchoolDetail schoolDetail, School school) {
-        SearchRequest searchRequest = buildSearchRequestForSchool(school, true);
+        SearchRequest searchRequest = buildSearchRequestForSchool(school, false, false);
         if (Objects.isNull(searchRequest)) {
             return;
         }
-        SearchResponse searchResponse = searchService.search(searchRequest, null, null);
-        if (Objects.isNull(searchResponse)) {
-            return;
-        }
-        List<SearchBaseData> searchBaseDataList = searchResponse.getResults().getValues();
+        List<SearchBaseData> searchBaseDataList = getNearbySearchResults(school, searchRequest);
 
         if (CollectionUtils.isEmpty(searchBaseDataList)) {
-            /*** If there are no nearby schools from location or in same city,
-             * search for schools in same state**/
-            searchRequest = buildSearchRequestForSchool(school, false);
-            if (Objects.isNull(searchRequest)) {
-                return;
-            }
-            searchResponse = searchService.search(searchRequest, null, null);
-            searchBaseDataList = searchResponse.getResults().getValues();
+            searchRequest = buildSearchRequestForSchool(school, true, false);
+            searchBaseDataList = getNearbySearchResults(school, searchRequest);
+
             if (CollectionUtils.isEmpty(searchBaseDataList)) {
-                return;
+                searchRequest = buildSearchRequestForSchool(school, false, true);
+                searchBaseDataList = getNearbySearchResults(school, searchRequest);
             }
         }
         List<SchoolSearchData> schoolSearchDataList =
-                searchBaseDataList
+                Optional.ofNullable(searchBaseDataList).orElse(new ArrayList<>())
                         .stream()
                         .map(x -> (SchoolSearchData) x)
                         .filter(x -> !school.getSchoolId().equals(x.getSchoolId()))
@@ -295,9 +289,21 @@ public class SchoolServiceImpl implements SchoolService {
         schoolDetail.setNearbySchools(schoolSearchDataList);
     }
 
+    private List<SearchBaseData> getNearbySearchResults(School school,
+            SearchRequest searchRequest) {
+        SearchResponse searchResponse = searchService.search(searchRequest, null, null);
+        if (Objects.nonNull(searchResponse) && Objects.nonNull(searchResponse.getResults())) {
+            return Optional.ofNullable(searchResponse.getResults().getValues())
+                    .orElse(new ArrayList<>()).stream()
+                    .map(x -> (SchoolSearchData) x)
+                    .filter(s -> school.getSchoolId().compareTo(s.getSchoolId())
+                            != 0).collect(Collectors.toList());
+        }
+        return null;
+    }
 
-
-    private SearchRequest buildSearchRequestForSchool(School school, boolean isSameCityRequest) {
+    private SearchRequest buildSearchRequestForSchool(School school, boolean isSameCityRequest,
+            boolean isSameStateRequest) {
 
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.setEntity(SCHOOL);
@@ -309,7 +315,7 @@ public class SchoolServiceImpl implements SchoolService {
             return null;
         }
 
-        if (Objects.nonNull(geoLocation)) {
+        if (Objects.nonNull(geoLocation) && !isSameCityRequest && !isSameStateRequest) {
             searchRequest.setGeoLocation(geoLocation);
             LinkedHashMap<String, DataSortOrder> sortOrder = new LinkedHashMap<>();
             sortOrder.put(SORT_DISTANCE_FIELD, ASC);

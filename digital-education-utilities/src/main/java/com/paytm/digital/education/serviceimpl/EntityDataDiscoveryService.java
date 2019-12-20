@@ -87,8 +87,8 @@ public class EntityDataDiscoveryService {
                     item.put(NAME, institute.getOfficialName());
                     item.put(URL_DISPLAY_KEY,
                             CommonUtil.convertNameToUrlDisplayName(institute.getOfficialName()));
-                    String logo = Objects.nonNull(institute.getGallery()) ?
-                            institute.getGallery().getLogo() :
+                    String logo = Objects.nonNull(institute.getGallery())
+                            ? institute.getGallery().getLogo() :
                             ExploreConstants.EMPTY_STRING;
                     item.put(LOGO,
                             CommonUtil.getLogoLink(logo, INSTITUTE));
