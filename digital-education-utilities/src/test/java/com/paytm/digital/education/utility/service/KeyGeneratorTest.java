@@ -36,7 +36,7 @@ public class KeyGeneratorTest {
 
     private static final String CACHE_NAME = "test_cache";
 
-    private KeyGenerator keyGenerator = new KeyGenerator();
+    private KeyGenerator keyGenerator = new KeyGenerator(2000);
 
     @Test
     public void testDefaultArgs() {

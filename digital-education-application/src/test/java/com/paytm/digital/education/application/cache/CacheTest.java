@@ -11,7 +11,6 @@ import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import org.joda.time.DateTime;
 import org.junit.FixMethodOrder;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;

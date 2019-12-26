@@ -195,6 +195,14 @@ public class InstituteDetailServiceImpl {
             courseFields.add(INSTITUTE_ID); // it will be removed in the future
             courseFields.add(STREAM_IDS);
             courseFields.add(EXAMS_ACCEPTED);
+            /** TODO:-
+             * InstituteIdList can have hundreds of items. This can becomes an issue when the cache key is
+             * generated for findAll method in commonMongoRepository.
+             * See:- https://jira.mypaytm.com/browse/EDU-5038.
+             * One alternative is to use mongodb lookups to get all courses. This will
+             * also save a query where we fetch all child institutes.
+             * Connection reset issue was seen for institute id 100 (osmania university)
+             */
             courses = commonEntityMongoDAO.getAllCourses(queryObject, courseFields, OR);
         }
         Map<String, Object> examData = getExamData(courses, entityId);

@@ -2,12 +2,12 @@ package com.paytm.digital.education.advice.helper;
 
 import com.paytm.digital.education.advice.CacheKeyable;
 import com.paytm.digital.education.annotation.EduCache;
-import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.UnableToAccessBeanPropertyException;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
@@ -23,6 +23,7 @@ import static io.netty.util.internal.StringUtil.EMPTY_STRING;
 import static java.lang.String.join;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
+import static org.apache.commons.lang3.StringUtils.abbreviate;
 import static org.springframework.data.util.StreamUtils.zip;
 import static java.util.stream.Stream.concat;
 import static java.util.stream.Stream.of;
@@ -36,16 +37,28 @@ public class KeyGenerator {
     private static final String OBJECT_NOT_KEYABLE_ERROR = "Object {} does not have any way to convert to key";
     private static final String KEY_DELIMITER = ".";
     private static final String CACHE_NAME_DELIMITER = "##";
+    private static final String KEY_LENGTH_EXCEEDED_WARNING_TEMPLATE =
+            "Generated key length is greater than maximum allowed length of - {}. Key will be abbreviated - {}.";
+
+    private final int maxKeyLength;
+
+    public KeyGenerator(@Value("${twemproxy.max.key.length}") int maxKeyLength) {
+        this.maxKeyLength = maxKeyLength;
+    }
 
     public String generateKey(
             EduCache eduCacheAnnotation, Class declaringClass, String methodName, String[] params, Object[] values) {
         String[] keys = eduCacheAnnotation.keys();
         Object[] valuesProvidingKeys = keys.length == 0 ? values : extractValuesFromParams(keys, params, values);
-        return eduCacheAnnotation.cache() + CACHE_NAME_DELIMITER
+        String fullKey = eduCacheAnnotation.cache() + CACHE_NAME_DELIMITER
                 + concat(
                         of(declaringClass.getCanonicalName(), methodName),
                         stream(valuesProvidingKeys).map(KeyGenerator::fetchKey)
                 ).collect(joining(KEY_DELIMITER));
+        if (fullKey.length() > maxKeyLength) {
+            log.warn(KEY_LENGTH_EXCEEDED_WARNING_TEMPLATE, maxKeyLength, fullKey);
+        }
+        return abbreviate(fullKey, maxKeyLength);
     }
 
     private Object[] extractValuesFromParams(String[] keys, String[] params, Object[] values) {
