@@ -23,7 +23,7 @@
             <#assign highlights = highlights + ['{"logo_url":"https://assetscdn1.paytm.com/educationwebassets/education/explore/highlight/${clientName}/no_of_classrooms.svg","title":"No. of Classrooms","description":"${boardData.noOfClassrooms}"}']>
         </#if>
         <#assign enrollments=boardData.enrollments()>
-        <#if enrollments?has_content>
+        <#if enrollments?has_content && enrollments != 0>
             <#assign highlights = highlights + ['{"logo_url":"https://assetscdn1.paytm.com/educationwebassets/education/explore/highlight/${clientName}/total_student.svg","title":"No. of Students","description":"${enrollments}"}']>
         </#if>
         <#if boardData.mediumOfInstruction?has_content>

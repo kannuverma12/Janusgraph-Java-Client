@@ -24,6 +24,7 @@ import static com.paytm.digital.education.explore.constants.CompareConstants.CAR
 import static com.paytm.digital.education.explore.constants.CompareConstants.NIRF;
 import static com.paytm.digital.education.explore.constants.CompareConstants.UNIVERSITIES;
 
+import com.paytm.digital.education.annotation.EduCache;
 import com.paytm.digital.education.database.entity.Course;
 import com.paytm.digital.education.database.entity.Institute;
 import com.paytm.digital.education.database.entity.Ranking;

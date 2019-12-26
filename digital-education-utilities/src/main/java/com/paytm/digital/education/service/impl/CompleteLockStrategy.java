@@ -46,7 +46,7 @@ public class CompleteLockStrategy extends AbstractCacheLockStrategy {
                         Thread.sleep(500);
                         continue;
                     } catch (InterruptedException e) {
-                        logger.error("error", e);
+                        logger.error("Sleep interrupted exception", e);
                     }
                 }
 

@@ -30,11 +30,13 @@ public class JedisConfiguration {
     @PostConstruct
     public void init() {
         try {
-            JedisPoolConfig poolConfig = this.buildPoolConfig();
-            log.info("Redis Details : host : " + this.redisHost + " port : " + this.redisPort);
             Integer connTimeout = Objects.nonNull(this.redisConnectionTimeoutInMs)
                     ? Integer.valueOf(this.redisConnectionTimeoutInMs) :
                     DEFAULT_CONNECTION_TIMEOUT;
+            JedisPoolConfig poolConfig = this.buildPoolConfig();
+            poolConfig.setMaxWaitMillis(connTimeout);
+            poolConfig.setTestWhileIdle(true);
+            log.info("Redis Details : host : " + this.redisHost + " port : " + this.redisPort);
             Integer redisPortInt = Integer.parseInt(this.redisPort);
             jedisPool = new JedisPool(poolConfig, this.redisHost, redisPortInt, connTimeout);
         } catch (Exception ex) {

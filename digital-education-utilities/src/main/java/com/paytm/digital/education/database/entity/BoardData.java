@@ -17,10 +17,10 @@ import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Optional;
 
 import static com.sun.org.apache.xml.internal.utils.LocaleUtility.EMPTY_STRING;
 import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -29,7 +29,7 @@ import static java.util.Collections.emptyList;
 @Builder
 @AllArgsConstructor
 public class BoardData implements Serializable {
-    private static final long serialVersionUID = 2210782670158787979L;
+    private static final long serialVersionUID = -3699642149145396518L;
 
     @Field("affiliation_type")
     @JsonProperty("affiliation_type")
@@ -170,10 +170,9 @@ public class BoardData implements Serializable {
         if (CollectionUtils.isEmpty(enrollments)) {
             return 0;
         }
-
-        return Optional.ofNullable(enrollments).orElse(emptyList())
+        return ofNullable(enrollments).orElse(emptyList())
                 .stream()
-                .map(x -> Optional.of(x.getEnrollment()).orElse(0))
+                .map(x -> ofNullable(x.getEnrollment()).orElse(0))
                 .mapToInt(Integer::intValue)
                 .sum();
     }
