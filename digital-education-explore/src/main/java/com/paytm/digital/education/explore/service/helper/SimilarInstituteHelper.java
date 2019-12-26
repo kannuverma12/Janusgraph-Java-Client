@@ -44,7 +44,7 @@ public class SimilarInstituteHelper {
     private final WidgetsDataHelper     widgetsDataHelper;
     private final CommonEntityMongoDAO  commonEducationEntityMongoRepository;
 
-    @Cacheable(value = "similar_institutes_widgets", key = "'institute_id.'+#institute.instituteId")
+    @EduCache(cache = "similar_institutes_widgets", keys = {"institute.instituteId"})
     public List<Widget> getSimilarInstituteWigets(Institute institute) {
         List<Widget> widgetDataList = widgetsDataHelper
                 .getWidgets(INSTITUTE.name().toLowerCase(), institute.getInstituteId());

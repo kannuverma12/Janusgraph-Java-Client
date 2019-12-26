@@ -40,7 +40,6 @@ import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -72,7 +71,7 @@ public class SimilarInstituteServiceImpl {
             Arrays.asList(INSTITUTE_ID, OFFICIAL_NAME, GALLERY_LOGO, OFFICIAL_ADDRESS,
                     INSTITUTION_CITY, INSTITUTION_STATE);
 
-    @Cacheable(value = "similar_institutes", key = "'similar_'+#institute.instituteId")
+    @EduCache(cache = "similar_institutes", keys = {"institute.instituteId"})
     public List<Widget> getSimilarInstitutes(Institute institute) {
         if (Objects.nonNull(institute)) {
             try {
@@ -124,8 +123,8 @@ public class SimilarInstituteServiceImpl {
                 selectTopTwoStreams(streams), nirfRanking);
     }
 
-    @Cacheable(value = "similar_institutes_by_stream", key = "'similar_institutes_by_stream'"
-            + "+#institute.instituteId + #rankingSource + #limitPerStream")
+    @EduCache(cache = "similar_institutes_by_stream",
+            keys = {"institute.instituteId", "rankingSource", "limitPerStream"})
     public Widget getSimilarCollegesByStreams(Institute institute, String rankingSource,
             int limitPerStream,
             Collection<String> rankingStreams, Map<String, Ranking> rankingMap) {
@@ -208,7 +207,7 @@ public class SimilarInstituteServiceImpl {
         return nextGreaterIndex;
     }
 
-    @Cacheable(value = SIMILAR_COLLEGE_NAMESPACE, key = "'nirf_overall_ranking'")
+    @EduCache(cache = SIMILAR_COLLEGE_NAMESPACE)
     public List<Institute> getByOverAllRankings() {
         List<Institute> instituteList = instituteRepository.findAllByNIRFOverallRanking();
         Collections.sort(instituteList, (institute1, institute2) -> {
@@ -234,7 +233,7 @@ public class SimilarInstituteServiceImpl {
         return instituteList;
     }
 
-    @Cacheable(value = "similar_colleges_by_location", key = "'similar_by_location.'+#institute.instituteId")
+    @EduCache(cache = "similar_colleges_by_location", keys = {"institute.instituteId"})
     public Widget getSimilarCollegesByLocation(Institute institute) {
         Set<String> streams = getCourseStreamForInstitute(institute.getInstituteId());
         Map<String, Object> instituteQueryMap =
@@ -270,7 +269,7 @@ public class SimilarInstituteServiceImpl {
         return buildWidgetResponse(instituteList);
     }
 
-    @Cacheable(value = SIMILAR_COLLEGE_NAMESPACE, key = "'similar_'+#instituteState+'#'+instituteCity+'#'+streams")
+    @EduCache(cache = SIMILAR_COLLEGE_NAMESPACE)
     public Map<String, Object> getInstituteQueryMapForLocationAndStreams(String instituteState,
             String instituteCity, Collection<String> streams) {
         List<Long> instituteIds = getInstituteIdsByStreams(IN_OPERATOR, streams);
@@ -337,7 +336,7 @@ public class SimilarInstituteServiceImpl {
         return rankingDataMap;
     }
 
-    @Cacheable(value = "institute_ids_by_streams", keyGenerator = "customKeyGenerator")
+    @EduCache(cache = "institute_ids_by_streams")
     public List<Long> getInstituteIdsByStreams(String streamOperator, Collection<String> streams) {
         Map<String, Object> streamQueryMap = new HashMap<>();
         streamQueryMap.put(EXISTS, true);
@@ -359,7 +358,7 @@ public class SimilarInstituteServiceImpl {
         return null;
     }
 
-    @Cacheable(value = "course_stream_for_institute", key = "'course_streams.'+#instituteId")
+    @EduCache(cache = "course_stream_for_institute")
     public Set<String> getCourseStreamForInstitute(Long instituteId) {
         List<String> courseFields = Arrays.asList(STREAMS);
         Map<String,Object> queryMap = new HashMap<>();

@@ -82,7 +82,7 @@ public class InstituteDetailServiceImpl {
         genderCategoryMap = genderAndCasteGroupHelper.getGenderAndCasteGroupMap();
     }
 
-    @Cacheable(value = "institute_detail", keyGenerator = "customKeyGenerator")
+    @EduCache(cache = "institute_detail")
     public InstituteDetail getinstituteDetail(Long entityId, String instituteUrlKey,
             String fieldGroup, Client client, boolean derivedAttributes,
             boolean cutOffs, boolean facilities, boolean gallery, boolean placements,
@@ -152,9 +152,8 @@ public class InstituteDetailServiceImpl {
                 INVALID_INSTITUTE_ID.getExternalMessage());
     }
 
-    @Cacheable(value = "institutes", keyGenerator = "customKeyGenerator")
-    public List<Institute> getInstitutes(List<Long> entityIds, List<String> groupFields)
-            throws IOException, TimeoutException {
+    @EduCache(cache = "institutes")
+    public List<Institute> getInstitutes(List<Long> entityIds, List<String> groupFields) {
         if (CollectionUtils.isEmpty(groupFields)) {
             throw new BadRequestException(INVALID_FIELD_GROUP,
                     INVALID_FIELD_GROUP.getExternalMessage());
