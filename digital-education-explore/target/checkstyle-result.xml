@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="6.18">
+<file name="/home/shallumangla/education-workspace/digital-education-service/digital-education-explore/src/main/java/com/paytm/digital/education/explore/database/ingestion/Event.java">
+</file>
+<file name="/home/shallumangla/education-workspace/digital-education-service/digital-education-explore/src/main/java/com/paytm/digital/education/explore/response/dto/detail/InstituteDetail.java">
+</file>
+<file name="/home/shallumangla/education-workspace/digital-education-service/digital-education-explore/src/main/java/com/paytm/digital/education/explore/response/dto/detail/ExamDetail.java">
+</file>
+<file name="/home/shallumangla/education-workspace/digital-education-service/digital-education-explore/src/main/java/com/paytm/digital/education/explore/response/dto/search/InstituteData.java">
+</file>
+<file name="/home/shallumangla/education-workspace/digital-education-service/digital-education-explore/src/main/java/com/paytm/digital/education/explore/response/dto/search/ExamData.java">
+</file>
+<file name="/home/shallumangla/education-workspace/digital-education-service/digital-education-explore/src/main/java/com/paytm/digital/education/explore/service/helper/SimilarInstituteHelper.java">
+</file>
+<file name="/home/shallumangla/education-workspace/digital-education-service/digital-education-explore/src/main/java/com/paytm/digital/education/explore/service/helper/CompareInsightFeeProcessor.java">
+</file>
+<file name="/home/shallumangla/education-workspace/digital-education-service/digital-education-explore/src/main/java/com/paytm/digital/education/explore/service/CutoffService.java">
+</file>
+<file name="/home/shallumangla/education-workspace/digital-education-service/digital-education-explore/src/main/java/com/paytm/digital/education/explore/service/impl/CourseDetailServiceImpl.java">
+</file>
+<file name="/home/shallumangla/education-workspace/digital-education-service/digital-education-explore/src/main/java/com/paytm/digital/education/explore/service/impl/ExamDetailServiceImpl.java">
+</file>
+<file name="/home/shallumangla/education-workspace/digital-education-service/digital-education-explore/src/main/java/com/paytm/digital/education/explore/service/impl/SimilarInstituteServiceImpl.java">
+</file>
+<file name="/home/shallumangla/education-workspace/digital-education-service/digital-education-explore/src/main/java/com/paytm/digital/education/explore/service/impl/SubscriptionServiceImpl.java">
+</file>
+<file name="/home/shallumangla/education-workspace/digital-education-service/digital-education-explore/src/main/java/com/paytm/digital/education/explore/service/impl/CutoffServiceImpl.java">
+</file>
+<file name="/home/shallumangla/education-workspace/digital-education-service/digital-education-explore/src/main/java/com/paytm/digital/education/explore/service/impl/CompareServiceImpl.java">
+</file>
+<file name="/home/shallumangla/education-workspace/digital-education-service/digital-education-explore/src/main/java/com/paytm/digital/education/explore/service/impl/InstituteDetailServiceImpl.java">
+</file>
+</checkstyle>

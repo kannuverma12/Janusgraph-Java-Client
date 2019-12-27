@@ -1,0 +1,11 @@
+com/paytm/digital/education/explore/utility/ApprovalUtilTest.class
+com/paytm/digital/education/explore/utility/ValueFormatterTest.class
+com/paytm/digital/education/explore/service/impl/EntitySourceMappingServiceImplTest.class
+com/paytm/digital/education/explore/service/impl/EntitySourceMappingDataValidatorTest.class
+com/paytm/digital/education/explore/service/impl/TransformSchoolServiceTest.class
+com/paytm/digital/education/explore/database/repository/LeadRepositoryTest.class
+com/paytm/digital/education/explore/service/helper/WidgetsEntityDataHelperTest.class
+com/paytm/digital/education/explore/service/helper/SchoolDuplicateDataPruneTest.class
+com/paytm/digital/education/explore/utility/SchoolUtilServiceTest.class
+com/paytm/digital/education/explore/service/helper/ExamInstanceHelperTest.class
+com/paytm/digital/education/explore/service/impl/PaytmSourceDataServiceImplTest.class

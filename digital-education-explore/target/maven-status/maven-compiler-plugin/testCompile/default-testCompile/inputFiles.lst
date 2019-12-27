@@ -1,0 +1,11 @@
+/home/shallumangla/education-workspace/digital-education-service/digital-education-explore/src/test/java/com/paytm/digital/education/explore/service/impl/EntitySourceMappingDataValidatorTest.java
+/home/shallumangla/education-workspace/digital-education-service/digital-education-explore/src/test/java/com/paytm/digital/education/explore/service/impl/TransformSchoolServiceTest.java
+/home/shallumangla/education-workspace/digital-education-service/digital-education-explore/src/test/java/com/paytm/digital/education/explore/utility/SchoolUtilServiceTest.java
+/home/shallumangla/education-workspace/digital-education-service/digital-education-explore/src/test/java/com/paytm/digital/education/explore/service/helper/ExamInstanceHelperTest.java
+/home/shallumangla/education-workspace/digital-education-service/digital-education-explore/src/test/java/com/paytm/digital/education/explore/service/helper/SchoolDuplicateDataPruneTest.java
+/home/shallumangla/education-workspace/digital-education-service/digital-education-explore/src/test/java/com/paytm/digital/education/explore/utility/ApprovalUtilTest.java
+/home/shallumangla/education-workspace/digital-education-service/digital-education-explore/src/test/java/com/paytm/digital/education/explore/utility/ValueFormatterTest.java
+/home/shallumangla/education-workspace/digital-education-service/digital-education-explore/src/test/java/com/paytm/digital/education/explore/service/helper/WidgetsEntityDataHelperTest.java
+/home/shallumangla/education-workspace/digital-education-service/digital-education-explore/src/test/java/com/paytm/digital/education/explore/database/repository/LeadRepositoryTest.java
+/home/shallumangla/education-workspace/digital-education-service/digital-education-explore/src/test/java/com/paytm/digital/education/explore/service/impl/PaytmSourceDataServiceImplTest.java
+/home/shallumangla/education-workspace/digital-education-service/digital-education-explore/src/test/java/com/paytm/digital/education/explore/service/impl/EntitySourceMappingServiceImplTest.java

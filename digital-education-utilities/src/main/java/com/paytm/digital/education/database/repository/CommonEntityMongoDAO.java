@@ -20,6 +20,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.mongodb.QueryOperators.AND;
+import static com.mongodb.QueryOperators.IN;
+import static com.mongodb.QueryOperators.OR;
 import static com.paytm.digital.education.constant.ExploreConstants.COURSE_DATA_FIELD;
 import static com.paytm.digital.education.constant.ExploreConstants.COURSE_ID;
 import static com.paytm.digital.education.constant.ExploreConstants.DOT_SEPERATOR;
@@ -35,9 +38,6 @@ import static com.paytm.digital.education.enums.EducationEntity.INSTITUTE;
 import static com.paytm.digital.education.enums.EducationEntity.SCHOOL;
 import static com.paytm.digital.education.enums.EntitySourceType.C360;
 import static com.paytm.digital.education.enums.EntitySourceType.PAYTM;
-import static com.mongodb.QueryOperators.AND;
-import static com.mongodb.QueryOperators.OR;
-import static com.mongodb.QueryOperators.IN;
 
 @AllArgsConstructor
 @Repository
@@ -244,6 +244,7 @@ public class CommonEntityMongoDAO {
         if (CollectionUtils.isEmpty(instituteIds)) {
             return institutes;
         }
+
         Map<EntitySourceType, List<Long>> sourceAndEntityIdsMap =
                 entitySourceMappingProvider.getSourceAndEntitiesMapping(INSTITUTE, instituteIds);
 
@@ -288,6 +289,7 @@ public class CommonEntityMongoDAO {
         if (CollectionUtils.isEmpty(examIds)) {
             return exams;
         }
+
         Map<EntitySourceType, List<Long>> sourceAndEntityIdsMap =
                 entitySourceMappingProvider.getSourceAndEntitiesMapping(EXAM, examIds);
 
@@ -295,6 +297,7 @@ public class CommonEntityMongoDAO {
             if (sourceAndEntityIdsMap.containsKey(C360)) {
                 List<Long> idsWithSourceMerchant = sourceAndEntityIdsMap.get(C360);
                 updateQueryObject(queryObject, operator, EXAM_ID, idsWithSourceMerchant);
+
                 exams.addAll(
                         Optional.ofNullable(commonMongoRepository.findAll(queryObject, Exam.class,
                                 fields, operator)).orElse(new ArrayList<>()));
