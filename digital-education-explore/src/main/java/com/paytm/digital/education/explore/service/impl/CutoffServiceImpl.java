@@ -94,10 +94,10 @@ public class CutoffServiceImpl implements CutoffService {
         }
     }
 
-    private Map<String, Object> buildQueryObject(long instituteId, long examId, Gender gender,
+    private Map<String, Object> buildQueryObject(Long instituteId, long examId, Gender gender,
             String casteGroup) {
         Map<String, Object> queryObject = new HashMap<>();
-        queryObject.put(INSTITUTE_ID, instituteId);
+        queryObject.put(INSTITUTE_ID, Arrays.asList(instituteId));
         queryObject.put(CUTOFF_EXAM_ID, examId);
         queryObject.put(CUTOFF_CASTE_GROUP, casteGroup);
         queryObject.put(CUTOFF_GENDER, gender);
@@ -155,9 +155,9 @@ public class CutoffServiceImpl implements CutoffService {
     }
 
     @Cacheable(value = "cutoff_get_list")
-    public ExamAndCutOff getSearchList(long instituteId, long examId) {
+    public ExamAndCutOff getSearchList(Long instituteId, long examId) {
         Map<String, Object> queryParams = new HashMap<>();
-        queryParams.put(INSTITUTE_ID, instituteId);
+        queryParams.put(INSTITUTE_ID, Arrays.asList(instituteId));
         queryParams.put(CUTOFF_EXAM_ID, examId);
         Map<String, Boolean> existsQuery = new HashMap<>();
         existsQuery.put(EXISTS, true);
