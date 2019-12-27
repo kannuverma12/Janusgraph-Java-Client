@@ -27,6 +27,7 @@ import org.springframework.util.CollectionUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,6 +39,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import static com.mongodb.QueryOperators.AND;
+import static com.mongodb.QueryOperators.IN;
 import static com.mongodb.QueryOperators.OR;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SHORT_NAME;
@@ -140,7 +142,7 @@ public class CompareServiceImpl implements CompareService {
         List<Course> courses = new ArrayList<>();
         if (!CollectionUtils.isEmpty(courseFields)) {
             Map<String,Object> queryMap = new HashMap<>();
-            queryMap.put(INSTITUTE_ID, instituteIds);
+            queryMap.put(INSTITUTE_ID, Collections.singletonMap(IN, instituteIds));
             courses = commonEntityMongoDAO.getAllCourses(queryMap, courseFields, AND);
         }
 

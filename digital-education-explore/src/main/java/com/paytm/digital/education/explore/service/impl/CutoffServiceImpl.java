@@ -31,6 +31,7 @@ import java.util.Objects;
 
 import static com.mongodb.QueryOperators.AND;
 import static com.mongodb.QueryOperators.EXISTS;
+import static com.mongodb.QueryOperators.IN;
 import static com.paytm.digital.education.constant.ExploreConstants.CASTEGROUP;
 import static com.paytm.digital.education.constant.ExploreConstants.COURSE_CLASS;
 import static com.paytm.digital.education.constant.ExploreConstants.CUTOFF;
@@ -97,7 +98,7 @@ public class CutoffServiceImpl implements CutoffService {
     private Map<String, Object> buildQueryObject(Long instituteId, long examId, Gender gender,
             String casteGroup) {
         Map<String, Object> queryObject = new HashMap<>();
-        queryObject.put(INSTITUTE_ID, Arrays.asList(instituteId));
+        queryObject.put(INSTITUTE_ID, Collections.singletonMap(IN, Arrays.asList(instituteId)));
         queryObject.put(CUTOFF_EXAM_ID, examId);
         queryObject.put(CUTOFF_CASTE_GROUP, casteGroup);
         queryObject.put(CUTOFF_GENDER, gender);
@@ -157,7 +158,7 @@ public class CutoffServiceImpl implements CutoffService {
     @Cacheable(value = "cutoff_get_list")
     public ExamAndCutOff getSearchList(Long instituteId, long examId) {
         Map<String, Object> queryParams = new HashMap<>();
-        queryParams.put(INSTITUTE_ID, Arrays.asList(instituteId));
+        queryParams.put(INSTITUTE_ID, Collections.singletonMap(IN, Arrays.asList(instituteId)));
         queryParams.put(CUTOFF_EXAM_ID, examId);
         Map<String, Boolean> existsQuery = new HashMap<>();
         existsQuery.put(EXISTS, true);
