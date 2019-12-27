@@ -1,17 +1,8 @@
 package com.paytm.digital.education.explore.service.helper;
 
-import static com.paytm.digital.education.explore.constants.CompareConstants.AND_STRING;
-import static com.paytm.digital.education.explore.constants.CompareConstants.ARE_ALMOST_SAME;
-import static com.paytm.digital.education.explore.constants.CompareConstants.COURSE_FEES;
-import static com.paytm.digital.education.explore.constants.CompareConstants.FEES_FOR;
-import static com.paytm.digital.education.explore.constants.CompareConstants.LOWER_COMPARED_TO;
-import static com.paytm.digital.education.explore.constants.CompareConstants.NO_OF_INSTITUTES_WITH_MIN_FEE;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.explore.utility.CompareUtil.getInstituteName;
-
 import com.paytm.digital.education.database.entity.Course;
 import com.paytm.digital.education.database.entity.Institute;
-import com.paytm.digital.education.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
 import com.paytm.digital.education.explore.utility.CompareUtil;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -28,11 +19,21 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.mongodb.QueryOperators.AND;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.explore.constants.CompareConstants.AND_STRING;
+import static com.paytm.digital.education.explore.constants.CompareConstants.ARE_ALMOST_SAME;
+import static com.paytm.digital.education.explore.constants.CompareConstants.COURSE_FEES;
+import static com.paytm.digital.education.explore.constants.CompareConstants.FEES_FOR;
+import static com.paytm.digital.education.explore.constants.CompareConstants.LOWER_COMPARED_TO;
+import static com.paytm.digital.education.explore.constants.CompareConstants.NO_OF_INSTITUTES_WITH_MIN_FEE;
+import static com.paytm.digital.education.explore.utility.CompareUtil.getInstituteName;
+
 @Service
 @AllArgsConstructor
 public class CompareInsightFeeProcessor {
 
-    private CommonMongoRepository commonMongoRepository;
+    private CommonEntityMongoDAO commonEntityMongoDAO;
 
     public List<String> getComparativeInsights(List<Institute> instituteList) {
         Map<Long, Long> instituteIdFeeMap = new HashMap<>();
@@ -42,9 +43,11 @@ public class CompareInsightFeeProcessor {
                 instituteList.stream().map(institute -> institute.getInstituteId()).collect(Collectors.toList());
         Map<Long, List<Course>> instituteCoursesMap = new HashMap<>();
         if (!CollectionUtils.isEmpty(courseQueryFields)) {
-            List<Course> courses = commonMongoRepository
-                    .getEntityFieldsByValuesIn(INSTITUTE_ID, instituteIds, Course.class,
-                            courseQueryFields);
+            Map<String, Object> queryMap = new HashMap<>();
+            queryMap.put(INSTITUTE_ID, instituteIds);
+            List<Course> courses =
+                    commonEntityMongoDAO.getAllCourses(queryMap, courseQueryFields, AND);
+
             if (!CollectionUtils.isEmpty(courses)) {
                 instituteCoursesMap = courses.stream().filter(c -> Objects.nonNull(c.getInstitutionId()))
                         .collect(Collectors.groupingBy(c -> c.getInstitutionId(),

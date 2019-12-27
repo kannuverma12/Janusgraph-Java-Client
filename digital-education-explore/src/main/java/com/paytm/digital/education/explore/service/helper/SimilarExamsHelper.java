@@ -1,27 +1,12 @@
 package com.paytm.digital.education.explore.service.helper;
 
-import static com.paytm.digital.education.constant.ExploreConstants.DD_MMM_YYYY;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FULL_NAME;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SHORT_NAME;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTANCES;
-import static com.paytm.digital.education.constant.ExploreConstants.LOGO;
-import static com.paytm.digital.education.constant.ExploreConstants.MMM_YYYY;
-import static com.paytm.digital.education.constant.ExploreConstants.NON_TENTATIVE;
-import static com.paytm.digital.education.constant.ExploreConstants.OTHER;
-import static com.paytm.digital.education.constant.ExploreConstants.SUB_EXAMS;
-import static com.paytm.digital.education.constant.ExploreConstants.YYYY_MM;
-import static com.paytm.digital.education.enums.EducationEntity.EXAM;
-import static com.paytm.digital.education.utility.DateUtil.dateToString;
-import static com.paytm.digital.education.utility.DateUtil.formatDateString;
-
 import com.paytm.digital.education.database.dao.StreamDAO;
 import com.paytm.digital.education.database.entity.Base;
 import com.paytm.digital.education.database.entity.Event;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Instance;
 import com.paytm.digital.education.database.entity.StreamEntity;
-import com.paytm.digital.education.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
 import com.paytm.digital.education.explore.response.dto.common.Widget;
 import com.paytm.digital.education.explore.response.dto.common.WidgetData;
 import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
@@ -48,6 +33,21 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.paytm.digital.education.constant.ExploreConstants.DD_MMM_YYYY;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FULL_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SHORT_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTANCES;
+import static com.paytm.digital.education.constant.ExploreConstants.LOGO;
+import static com.paytm.digital.education.constant.ExploreConstants.MMM_YYYY;
+import static com.paytm.digital.education.constant.ExploreConstants.NON_TENTATIVE;
+import static com.paytm.digital.education.constant.ExploreConstants.OTHER;
+import static com.paytm.digital.education.constant.ExploreConstants.SUB_EXAMS;
+import static com.paytm.digital.education.constant.ExploreConstants.YYYY_MM;
+import static com.paytm.digital.education.enums.EducationEntity.EXAM;
+import static com.paytm.digital.education.utility.DateUtil.dateToString;
+import static com.paytm.digital.education.utility.DateUtil.formatDateString;
+
 @Service
 @AllArgsConstructor
 public class SimilarExamsHelper {
@@ -59,8 +59,8 @@ public class SimilarExamsHelper {
 
     private final WidgetsDataHelper     widgetsDataHelper;
     private final StreamDAO             streamDAO;
-    private final CommonMongoRepository commonMongoRepository;
     private final ExamInstanceHelper    examInstanceHelper;
+    private final CommonEntityMongoDAO  commonEntityMongoDAO;
 
     @Cacheable(value = "similar_exams_widgets", key = "'similar_exams.'+#exam.examId")
     public List<Widget> getWidgetsData(Exam exam) {
@@ -131,8 +131,7 @@ public class SimilarExamsHelper {
     }
 
     private Map<Long, Exam> getExamEntityMap(List<Long> entityIds) {
-        List<Exam> exams = commonMongoRepository
-                .getEntityFieldsByValuesIn(EXAM_ID, entityIds, Exam.class, examProjectionFields);
+        List<Exam> exams = commonEntityMongoDAO.getExamsByIdsIn(entityIds, examProjectionFields);
         return Optional.ofNullable(exams).orElse(new ArrayList<>()).stream()
                 .collect(Collectors.toMap(Exam::getExamId, Function
                         .identity()));

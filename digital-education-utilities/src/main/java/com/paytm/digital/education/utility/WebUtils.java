@@ -14,6 +14,7 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Arrays;
+import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 
 @UtilityClass
@@ -26,10 +27,15 @@ public class WebUtils {
                                            final String baseControllerUri) {
         try {
             HandlerExecutionChain chain = mapping.getHandler(request);
-            if (chain != null) {
-                HandlerMethod handler = (HandlerMethod) chain.getHandler();
-                String requestURI = String.join(",", handler.getMethodAnnotation(RequestMapping.class).path());
-                return buildURIFromParts(baseControllerUri, requestURI);
+            if (Objects.nonNull(chain)) {
+                Object handler = chain.getHandler();
+                if (Objects.nonNull(handler) && (handler instanceof HandlerMethod)) {
+                    HandlerMethod handlerMethod = (HandlerMethod) chain.getHandler();
+                    String requestURI =
+                            String.join(",",
+                                    handlerMethod.getMethodAnnotation(RequestMapping.class).path());
+                    return buildURIFromParts(baseControllerUri, requestURI);
+                }
             }
         } catch (Exception e) {
             log.warn("Request URI could not be handled - " + request.getRequestURI(), e);

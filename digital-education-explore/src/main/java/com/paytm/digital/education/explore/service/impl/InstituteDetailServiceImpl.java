@@ -4,6 +4,7 @@ import com.paytm.digital.education.annotation.EduCache;
 import com.paytm.digital.education.database.entity.Course;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Institute;
+import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.enums.EducationEntity;
@@ -26,13 +27,16 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import static com.mongodb.QueryOperators.OR;
 import static com.paytm.digital.education.constant.ExploreConstants.CASTEGROUP;
@@ -64,6 +68,7 @@ public class InstituteDetailServiceImpl {
     private CommonMongoRepository          commonMongoRepository;
     private InstituteDetailResponseBuilder instituteDetailResponseBuilder;
     private SubscriptionDetailHelper       subscriptionDetailHelper;
+    private CommonEntityMongoDAO           commonEntityMongoDAO;
 
     private static int EXAM_PREFIX_LENGTH   = EXAM_PREFIX.length();
     private static int COURSE_PREFIX_LENGTH = COURSE_PREFIX.length();
@@ -77,7 +82,7 @@ public class InstituteDetailServiceImpl {
         genderCategoryMap = genderAndCasteGroupHelper.getGenderAndCasteGroupMap();
     }
 
-    @Cacheable(value = "institute_detail", keyGenerator = "customKeyGenerator")
+    @EduCache(cache = "institute_detail")
     public InstituteDetail getinstituteDetail(Long entityId, String instituteUrlKey,
             String fieldGroup, Client client, boolean derivedAttributes,
             boolean cutOffs, boolean facilities, boolean gallery, boolean placements,
@@ -113,7 +118,7 @@ public class InstituteDetailServiceImpl {
         instituteIdList.add(entityId);
         queryObject.put(INSTITUTE_ID, instituteIdList);
         queryObject.put(PARENT_INSTITUTION, instituteIdList);
-        List<Institute> institutes = commonMongoRepository.findAll(queryObject, Institute.class,
+        List<Institute> institutes = commonEntityMongoDAO.getAllInstitutes(queryObject,
                 instituteFields, OR);
         Institute institute = null;
         for (Institute college : institutes) {
@@ -133,9 +138,8 @@ public class InstituteDetailServiceImpl {
             Long parentInstitutionId = institute.getParentInstitution();
             String parentInstitutionName = null;
             if (parentInstitutionId != null) {
-                Institute parentInstitution = commonMongoRepository
-                        .getEntityByFields(INSTITUTE_ID, parentInstitutionId, Institute.class,
-                                parentInstitutionFields);
+                Institute parentInstitution = commonEntityMongoDAO
+                        .getInstituteById(parentInstitutionId, parentInstitutionFields);
                 parentInstitutionName =
                         parentInstitution != null ? parentInstitution.getOfficialName() : null;
             }
@@ -148,9 +152,8 @@ public class InstituteDetailServiceImpl {
                 INVALID_INSTITUTE_ID.getExternalMessage());
     }
 
-    @Cacheable(value = "institutes", keyGenerator = "customKeyGenerator")
-    public List<Institute> getInstitutes(List<Long> entityIds, List<String> groupFields)
-            throws IOException, TimeoutException {
+    @EduCache(cache = "institutes")
+    public List<Institute> getInstitutes(List<Long> entityIds, List<String> groupFields) {
         if (CollectionUtils.isEmpty(groupFields)) {
             throw new BadRequestException(INVALID_FIELD_GROUP,
                     INVALID_FIELD_GROUP.getExternalMessage());
@@ -166,10 +169,8 @@ public class InstituteDetailServiceImpl {
 
         Set<Long> searchIds = new HashSet<>(entityIds);
         List<Institute> institutes =
-                commonMongoRepository
-                        .getEntityFieldsByValuesIn(INSTITUTE_ID, new ArrayList<>(searchIds),
-                                Institute.class,
-                                instituteFields);
+                commonEntityMongoDAO
+                        .getInstitutesByIdsIn(new ArrayList<>(searchIds), instituteFields);
 
         if (!CollectionUtils.isEmpty(institutes) && searchIds.size() == institutes.size()) {
             return institutes;
@@ -193,9 +194,15 @@ public class InstituteDetailServiceImpl {
             courseFields.add(INSTITUTE_ID); // it will be removed in the future
             courseFields.add(STREAM_IDS);
             courseFields.add(EXAMS_ACCEPTED);
-            courses = commonMongoRepository
-                    .findAll(queryObject, Course.class,
-                            courseFields, OR);
+            /** TODO:-
+             * InstituteIdList can have hundreds of items. This can becomes an issue when the cache key is
+             * generated for findAll method in commonMongoRepository.
+             * See:- https://jira.mypaytm.com/browse/EDU-5038.
+             * One alternative is to use mongodb lookups to get all courses. This will
+             * also save a query where we fetch all child institutes.
+             * Connection reset issue was seen for institute id 100 (osmania university)
+             */
+            courses = commonEntityMongoDAO.getAllCourses(queryObject, courseFields, OR);
         }
         Map<String, Object> examData = getExamData(courses, entityId);
         Set<Long> examIds = (Set<Long>) examData.get(EXAM_ID);
@@ -204,8 +211,7 @@ public class InstituteDetailServiceImpl {
             Map<String, Object> queryObject = new HashMap<>();
             queryObject.put(SUBEXAM_ID, new ArrayList<>(examIds));
             queryObject.put(EXAM_ID, new ArrayList<>(examIds));
-            examList = commonMongoRepository
-                    .findAll(queryObject, Exam.class, examFields, OR);
+            examList = commonEntityMongoDAO.getAllExams(queryObject, examFields, OR);
         }
         return instituteDetailResponseBuilder
                 .buildResponse(institute, courses, examList, examData, examIds,
@@ -268,11 +274,18 @@ public class InstituteDetailServiceImpl {
                         }
                     });
         }
+
+        List<Exam> exams = commonMongoRepository
+                .getEntityFieldsByValuesIn(EXAM_ID, new ArrayList<>(examIds), Exam.class,
+                        Collections.singletonList(EXAM_ID));
+        Set<Long> examIdsInDb = Optional.ofNullable(exams).orElse(new ArrayList<>()).stream()
+                .map(Exam::getExamId)
+                .collect(Collectors.toSet());
         Map<String, Object> examData = new HashMap<>();
         examData.put(EXAM_DEGREES, examDegrees);
         examData.put(EXAM_CUTOFF_GENDER, examGenders);
         examData.put(EXAM_CUTOFF_CASTEGROUP, examCasteGroup);
-        examData.put(EXAM_ID, examIds);
+        examData.put(EXAM_ID, examIdsInDb);
         return examData;
     }
 

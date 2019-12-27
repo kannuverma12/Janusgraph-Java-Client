@@ -25,7 +25,7 @@ import java.io.Serializable;
     })
 public class EntitySourceMappingEntity implements Serializable {
 
-    private static final long serialVersionUID = -85923250869591111L;
+    private static final long serialVersionUID = -8592325086959190L;
 
     @Id
     @Field("_id")

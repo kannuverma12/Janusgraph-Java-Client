@@ -19,5 +19,5 @@ public class NewsArticleResponse implements Serializable {
     private static final long serialVersionUID = 7565703583217345951L;
 
     private String title;
-    private List<MerchantArticle> data;
+    private List<NewsArticleData> data;
 }

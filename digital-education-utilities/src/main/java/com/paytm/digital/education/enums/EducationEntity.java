@@ -1,7 +1,6 @@
 package com.paytm.digital.education.enums;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @ToString

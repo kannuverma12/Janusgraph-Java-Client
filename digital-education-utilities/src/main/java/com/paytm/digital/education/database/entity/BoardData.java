@@ -17,7 +17,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Optional;
 
 import static com.sun.org.apache.xml.internal.utils.LocaleUtility.EMPTY_STRING;
 import static java.util.Collections.emptyList;
@@ -171,7 +170,6 @@ public class BoardData implements Serializable {
         if (CollectionUtils.isEmpty(enrollments)) {
             return 0;
         }
-
         return ofNullable(enrollments).orElse(emptyList())
                 .stream()
                 .map(x -> ofNullable(x.getEnrollment()).orElse(0))

@@ -1,16 +1,5 @@
 package com.paytm.digital.education.database.repository;
 
-import static com.mongodb.QueryOperators.AND;
-import static com.mongodb.QueryOperators.ELEM_MATCH;
-import static com.mongodb.QueryOperators.EXISTS;
-import static com.mongodb.QueryOperators.NE;
-import static com.mongodb.QueryOperators.OR;
-import static com.paytm.digital.education.constant.DBConstants.EQ_OPERATOR;
-import static com.paytm.digital.education.constant.DBConstants.GROUP_ACTIVE;
-import static com.paytm.digital.education.constant.DBConstants.GROUP_ENTITY;
-import static com.paytm.digital.education.constant.DBConstants.GROUP_NAME;
-import static com.paytm.digital.education.constant.DBConstants.IN_OPERATOR;
-
 import com.mongodb.client.result.UpdateResult;
 import com.paytm.digital.education.annotation.EduCache;
 import com.paytm.digital.education.database.entity.FieldGroup;
@@ -38,6 +27,19 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import static com.mongodb.QueryOperators.AND;
+import static com.mongodb.QueryOperators.ELEM_MATCH;
+import static com.mongodb.QueryOperators.EXISTS;
+import static com.mongodb.QueryOperators.NE;
+import static com.mongodb.QueryOperators.OR;
+import static com.paytm.digital.education.constant.DBConstants.EQ_OPERATOR;
+import static com.paytm.digital.education.constant.DBConstants.GROUP_ACTIVE;
+import static com.paytm.digital.education.constant.DBConstants.GROUP_ENTITY;
+import static com.paytm.digital.education.constant.DBConstants.GROUP_NAME;
+import static com.paytm.digital.education.constant.DBConstants.IN_OPERATOR;
+import static com.paytm.digital.education.constant.ExploreConstants.ENTITY;
+import static com.paytm.digital.education.constant.ExploreConstants.ENTITY_ID;
 
 @AllArgsConstructor
 @Repository
@@ -208,7 +210,7 @@ public class CommonMongoRepository {
         return mongoOperation.findDistinct(mongoQuery, field, type, result);
     }
 
-    @Cacheable(value = "findAll", key = "'findAll.'+#searchRequest+'.'+#instance+'.'+#fields+'.'+#queryOperatorType")
+    @EduCache(cache = "findAll")
     public <T> List<T> findAll(Map<String, Object> searchRequest, Class<T> instance,
             List<String> fields, String queryOperatorType) {
         if (queryOperatorType.equals(AND)) {
@@ -358,4 +360,30 @@ public class CommonMongoRepository {
         }
         return mongoQuery;
     }
+
+    public <T> T getEntityFromPaytmSourceByFields(long entityId,
+            String entityType, Class<T> instance,
+            List<String> fields) {
+        Query mongoQuery =
+                new Query(Criteria.where(ENTITY_ID).is(entityId).and(ENTITY).is(entityType));
+        if (Objects.nonNull(fields)) {
+            fields.forEach(field -> {
+                mongoQuery.fields().include(field);
+            });
+        }
+        return executeQuery(mongoQuery, instance);
+    }
+
+    public <T> List<T> getEntityFieldsFromPaytmSourceByValuesIn(String entityType,
+            List<Long> entityIds,
+            Class<T> instance,
+            List<String> fields) {
+        Query mongoQuery =
+                new Query(Criteria.where(ENTITY).is(entityType).and(ENTITY_ID).in(entityIds));
+        if (!CollectionUtils.isEmpty(fields)) {
+            fields.forEach(field -> mongoQuery.fields().include(field));
+        }
+        return executeMongoQuery(mongoQuery, instance);
+    }
+
 }

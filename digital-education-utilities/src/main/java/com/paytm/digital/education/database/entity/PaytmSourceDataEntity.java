@@ -14,7 +14,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.io.Serializable;
-import java.util.Map;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -47,7 +46,7 @@ public class PaytmSourceDataEntity implements Serializable {
     private boolean isActive;
 
     @Field("exam_data")
-    @JsonProperty("exam_data")
+    @JsonProperty(value = "exam_data")
     private Exam examData;
 
     @Field("institute_data")

@@ -9,7 +9,7 @@ import static com.paytm.digital.education.enums.EducationEntity.INSTITUTE;
 
 import com.paytm.digital.education.annotation.EduCache;
 import com.paytm.digital.education.database.entity.Institute;
-import com.paytm.digital.education.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
 import com.paytm.digital.education.dto.OfficialAddress;
 import com.paytm.digital.education.explore.response.dto.common.Widget;
 import com.paytm.digital.education.explore.response.dto.common.WidgetData;
@@ -42,9 +42,9 @@ public class SimilarInstituteHelper {
                     GALLERY_LOGO);
 
     private final WidgetsDataHelper     widgetsDataHelper;
-    private final CommonMongoRepository commonMongoRepository;
+    private final CommonEntityMongoDAO  commonEducationEntityMongoRepository;
 
-    @Cacheable(value = "similar_institutes_widgets", key = "'institute_id.'+#institute.instituteId")
+    @EduCache(cache = "similar_institutes_widgets", keys = {"institute.instituteId"})
     public List<Widget> getSimilarInstituteWigets(Institute institute) {
         List<Widget> widgetDataList = widgetsDataHelper
                 .getWidgets(INSTITUTE.name().toLowerCase(), institute.getInstituteId());
@@ -84,9 +84,8 @@ public class SimilarInstituteHelper {
     }
 
     private Map<Long, Institute> getInstituteDataMap(List<Long> instituteIds) {
-        List<Institute> institutes = commonMongoRepository
-                .getEntityFieldsByValuesIn(INSTITUTE_ID, instituteIds, Institute.class,
-                        projectionFields);
+        List<Institute> institutes = commonEducationEntityMongoRepository
+                .getInstitutesByIdsIn(instituteIds, projectionFields);
         return Optional.ofNullable(institutes).orElse(new ArrayList<>()).stream()
                 .collect(Collectors.toMap(Institute::getInstituteId, Function
                         .identity()));

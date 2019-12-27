@@ -1,12 +1,16 @@
 package com.paytm.digital.education.enums;
 
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
 
+@Getter
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum ClassType {
     PRE_NURSERY("Pre-nursery"),
     NURSERY("Nursery"),
-    LKG("Lower Kindergarten (LKG)"),
-    UKG("Upper Kindergarten (UKG)"),
+    LKG("Lower Kindergarten (LKG)", "LKG"),
+    UKG("Upper Kindergarten (UKG)", "UKG"),
     ONE("1st"),
     TWO("2nd"),
     THREE("3rd"),
@@ -21,15 +25,18 @@ public enum ClassType {
     TWELVE("12th"),
     NOT_PROVIDED("");
 
-    private final String readableValue;
+    @JsonProperty("short_name")
+    private final String shortName;
 
-    ClassType(String readableValue) {
-        this.readableValue = readableValue;
+    @JsonProperty("long_name")
+    private final String longName;
+
+    ClassType(String name) {
+        this(name, name);
     }
 
-    @JsonValue
-    public String getReadableValue() {
-        return this.readableValue;
+    ClassType(String longName, String shortName) {
+        this.longName = longName;
+        this.shortName = shortName;
     }
-
 }

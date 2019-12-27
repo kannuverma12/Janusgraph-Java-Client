@@ -122,8 +122,8 @@ public class InstituteDetail implements CTAInfoHolder, Serializable {
     @JsonProperty("articles")
     private List<CampusArticle> articles;
 
-    @JsonProperty("news_article")
-    private NewsArticleResponse newsArticle;
+    @JsonProperty("news_articles")
+    private NewsArticleResponse newsArticles;
 
     @JsonProperty("events")
     private List<CampusEventDetail> events;
@@ -139,7 +139,7 @@ public class InstituteDetail implements CTAInfoHolder, Serializable {
 
     @JsonIgnore
     @Accessors(fluent = true)
-    private boolean shouldHaveLeadCTA = false;
+    private boolean shouldHaveLeadCTA = true;
 
     @JsonIgnore
     @Accessors(fluent = true)

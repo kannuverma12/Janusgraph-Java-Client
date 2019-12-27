@@ -5,10 +5,15 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface EntitySourceMappingRepository
         extends MongoRepository<EntitySourceMappingEntity, ObjectId> {
 
     EntitySourceMappingEntity findByEntityIdAndEducationEntity(Long entityId,
             String educationEntity);
+
+    List<EntitySourceMappingEntity> findByEducationEntityAndSource(String educationEntity,
+            String source);
 }

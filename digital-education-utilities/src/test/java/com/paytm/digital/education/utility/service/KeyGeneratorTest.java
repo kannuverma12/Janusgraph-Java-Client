@@ -21,6 +21,7 @@ import java.util.Map;
 
 import static com.google.common.collect.ImmutableMap.of;
 import static com.paytm.digital.education.enums.ClassType.ONE;
+import static com.paytm.digital.education.enums.EducationEntity.EXAM;
 import static com.paytm.digital.education.utility.CommonUtils.sortMapByKeys;
 import static com.paytm.digital.education.utility.JsonUtils.toJson;
 import static com.paytm.digital.education.utility.enums.Test.VALUE;
@@ -35,7 +36,7 @@ public class KeyGeneratorTest {
 
     private static final String CACHE_NAME = "test_cache";
 
-    private KeyGenerator keyGenerator = new KeyGenerator();
+    private KeyGenerator keyGenerator = new KeyGenerator(2000);
 
     @Test
     public void testDefaultArgs() {
@@ -140,7 +141,8 @@ public class KeyGeneratorTest {
 
     @Test
     public void sortedMapTests() {
-        assertEquals(ONE.toString(), "ONE");
+        assertEquals(ONE.name(), "ONE");
+        assertEquals(EXAM.name(),"EXAM");
         Map<String, Integer> stringObjectMap = sortMapByKeys(of("b", 1, "a", 3));
         Iterator<Map.Entry<String, Integer>> stringMapIterator = stringObjectMap.entrySet().iterator();
         assertEquals("a", stringMapIterator.next().getKey());

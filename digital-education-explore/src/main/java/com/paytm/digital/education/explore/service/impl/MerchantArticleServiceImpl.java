@@ -62,9 +62,9 @@ public class MerchantArticleServiceImpl {
         Long paytmStreamId = getPaytmStreamId(merchantArticleRequest.getStream(),
                 merchantArticleRequest.getMerchant());
         if (Objects.isNull(paytmStreamId)) {
-            log.error("Stream does not exists. Article not saved.");
-            return updateResponse(articleResponse,HttpStatus.NOT_FOUND,
-                    "Stream does not exists. Article not saved.", null);
+            log.error("Stream does not exists for this merchant. Article not saved.");
+            return updateResponse(articleResponse, HttpStatus.NOT_FOUND,
+                    "Stream does not exists for this merchant. Article not saved.", null);
         }
         merchantArticle.setPaytmStreamId(paytmStreamId);
         try {

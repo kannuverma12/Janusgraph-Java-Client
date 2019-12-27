@@ -156,7 +156,7 @@ public class ExamDetail implements CTAInfoHolder, Serializable {
     private String registrationGuidelines;
 
     @JsonProperty("news_articles")
-    private NewsArticleResponse newsArticleResponse;
+    private NewsArticleResponse newsArticles;
 
     @JsonIgnore
     private Long collegePredictorPid;

@@ -101,7 +101,7 @@ public class ExamSectionHelper {
                 return Objects.nonNull(exam.getPaytmKeys()) && StringUtils
                         .isNotBlank(exam.getPaytmKeys().getRegistrationGuidelines());
             case NEWS_ARTICLES:
-                return Objects.nonNull(examDetail.getNewsArticleResponse());
+                return Objects.nonNull(examDetail.getNewsArticles());
             default:
                 return false;
         }

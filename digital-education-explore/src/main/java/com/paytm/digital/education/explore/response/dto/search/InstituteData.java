@@ -55,7 +55,7 @@ public class InstituteData extends SearchBaseData implements CTAInfoHolder {
 
     @JsonIgnore
     @Accessors(fluent = true)
-    private boolean shouldHaveLeadCTA = false;
+    private boolean shouldHaveLeadCTA = true;
 
     @JsonIgnore
     @Accessors(fluent = true)
