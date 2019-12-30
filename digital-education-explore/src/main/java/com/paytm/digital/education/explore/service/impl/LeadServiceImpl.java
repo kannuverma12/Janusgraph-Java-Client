@@ -1,8 +1,15 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import static com.paytm.digital.education.constant.ExploreConstants.COURSE_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.IS_ACCEPTING_APPLICATION;
+import static com.paytm.digital.education.database.entity.Lead.Constants.INSTITUTE_ID;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_PAYTM_STREAM;
+
 import com.paytm.digital.education.database.entity.BaseLeadResponse;
 import com.paytm.digital.education.database.entity.Course;
 import com.paytm.digital.education.database.entity.Exam;
+import com.paytm.digital.education.database.entity.Institute;
 import com.paytm.digital.education.database.entity.Lead;
 import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.database.entity.UserDetails;
@@ -27,12 +34,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-import static com.paytm.digital.education.constant.ExploreConstants.COURSE_ID;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.constant.ExploreConstants.IS_ACCEPTING_APPLICATION;
-import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_PAYTM_STREAM;
 
 @Service
 @AllArgsConstructor
@@ -201,8 +202,12 @@ public class LeadServiceImpl implements LeadService {
                     ErrorEnum.INVALID_COURSE_ID.getExternalMessage());
         }
         if (lead.getInstituteId().compareTo(course.getInstitutionId()) != 0) {
-            throw new BadRequestException(ErrorEnum.VALID_INSTITUTE_ID_FOR_COURSE_LEAD,
-                    ErrorEnum.VALID_INSTITUTE_ID_FOR_COURSE_LEAD.getExternalMessage());
+            Institute institute = commonEntityMongoDAO
+                    .getInstituteById(lead.getInstituteId(), Arrays.asList(INSTITUTE_ID));
+            if (Objects.isNull(institute)) {
+                throw new BadRequestException(ErrorEnum.VALID_INSTITUTE_ID_FOR_COURSE_LEAD,
+                        ErrorEnum.VALID_INSTITUTE_ID_FOR_COURSE_LEAD.getExternalMessage());
+            }
         }
         if (!course.isAcceptingApplication()) {
             throw new BadRequestException(ErrorEnum.COURSE_IS_NOT_ACCEPTING_APPLICATION,
