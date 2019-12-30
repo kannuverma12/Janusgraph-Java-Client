@@ -3,6 +3,8 @@ package com.paytm.digital.education.explore.service.external;
 import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.explore.thirdparty.catalog.Attributes;
 import com.paytm.digital.education.explore.thirdparty.catalog.CatalogProduct;
+import com.paytm.digital.education.utility.CommonUtils;
+import com.paytm.digital.education.utility.JsonUtils;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import org.slf4j.MDC;
@@ -46,14 +48,17 @@ public class FeeUrlGenerator {
             Attributes attributes =
                     catalogProduct.getVariants().get(0).getVariants().get(0).getProducts().get(0)
                             .getAttributes();
+            String url ;
             if (Client.APP.equals(client)) {
-                return createAppUrl(attributes);
+                url = createAppUrl(attributes);
+            } else {
+                url = createWebUrl(attributes);
             }
-            return createWebUrl(attributes);
+            log.info("URL generated for pid : {}  is {}", pid, url);
+            return url;
         } catch (Exception e) {
             log.error("Received unexpected response from catalog : {}",
                     e, e.getLocalizedMessage());
-
             return null;
         }
     }
