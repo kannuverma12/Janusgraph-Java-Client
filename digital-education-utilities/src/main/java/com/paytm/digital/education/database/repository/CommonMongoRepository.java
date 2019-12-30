@@ -361,6 +361,7 @@ public class CommonMongoRepository {
         return mongoQuery;
     }
 
+    @EduCache(cache = "fieldsFromPaytmSource", shouldCacheNull = false)
     public <T> T getEntityFromPaytmSourceByFields(long entityId,
             String entityType, Class<T> instance,
             List<String> fields) {
@@ -374,6 +375,7 @@ public class CommonMongoRepository {
         return executeQuery(mongoQuery, instance);
     }
 
+    @EduCache(cache = "fieldsFromPaytmSourceByValues", shouldCacheNull = false)
     public <T> List<T> getEntityFieldsFromPaytmSourceByValuesIn(String entityType,
             List<Long> entityIds,
             Class<T> instance,
