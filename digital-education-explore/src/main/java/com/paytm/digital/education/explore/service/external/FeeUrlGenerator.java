@@ -54,7 +54,7 @@ public class FeeUrlGenerator {
             } else {
                 url = createWebUrl(attributes);
             }
-            log.info("URL generated for pid : {}  is {}", pid, url);
+            log.info("Fee URL generated for pid : {}  is {}", pid, url);
             return url;
         } catch (Exception e) {
             log.error("Received unexpected response from catalog : {}",
