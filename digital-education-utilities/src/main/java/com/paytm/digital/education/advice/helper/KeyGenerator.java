@@ -55,10 +55,10 @@ public class KeyGenerator {
                         of(declaringClass.getCanonicalName(), methodName),
                         stream(valuesProvidingKeys).map(KeyGenerator::fetchKey)
                 ).collect(joining(KEY_DELIMITER));
-        if (fullKey.length() > maxKeyLength) {
+        if (fullKey.length() >= maxKeyLength) {
             log.warn(KEY_LENGTH_EXCEEDED_WARNING_TEMPLATE, maxKeyLength, fullKey);
         }
-        return abbreviate(fullKey, maxKeyLength);
+        return abbreviate(fullKey, maxKeyLength - 1);
     }
 
     private Object[] extractValuesFromParams(String[] keys, String[] params, Object[] values) {
