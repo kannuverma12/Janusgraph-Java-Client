@@ -38,7 +38,7 @@ public class KeyGenerator {
     private static final String KEY_DELIMITER = ".";
     private static final String CACHE_NAME_DELIMITER = "##";
     private static final String KEY_LENGTH_EXCEEDED_WARNING_TEMPLATE =
-            "Generated key length is greater than maximum allowed length of - {}. Key will be abbreviated - {}.";
+            "Generated key length is greater than maximum allowed length of - {}. Key {} will be abbreviated to {}.";
 
     private final int maxKeyLength;
 
@@ -55,10 +55,11 @@ public class KeyGenerator {
                         of(declaringClass.getCanonicalName(), methodName),
                         stream(valuesProvidingKeys).map(KeyGenerator::fetchKey)
                 ).collect(joining(KEY_DELIMITER));
+        String abbreviatedKey = abbreviate(fullKey, maxKeyLength - 1);
         if (fullKey.length() >= maxKeyLength) {
-            log.warn(KEY_LENGTH_EXCEEDED_WARNING_TEMPLATE, maxKeyLength, fullKey);
+            log.warn(KEY_LENGTH_EXCEEDED_WARNING_TEMPLATE, maxKeyLength, fullKey, abbreviatedKey);
         }
-        return abbreviate(fullKey, maxKeyLength - 1);
+        return abbreviatedKey;
     }
 
     private Object[] extractValuesFromParams(String[] keys, String[] params, Object[] values) {
