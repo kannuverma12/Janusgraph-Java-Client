@@ -14,9 +14,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.web.servlet.DispatcherServlet;
 import paytm.auth.personaaclclient.config.EnableACLPersonaAuth;
 
+@EnableRetry
 @SpringBootApplication(exclude = {EmbeddedMongoAutoConfiguration.class})
 @EnableCaching(proxyTargetClass = true)
 @EnableACLPersonaAuth

@@ -1,5 +1,7 @@
 package com.paytm.digital.education.explore.service.external;
 
+import static com.paytm.digital.education.constant.ExploreConstants.PAYTM_APP_REQUEST_ID;
+
 import com.paytm.digital.education.database.entity.BaseLeadResponse;
 import com.paytm.digital.education.database.entity.Lead;
 import com.paytm.digital.education.enums.EducationEntity;
@@ -19,8 +21,6 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.paytm.digital.education.constant.ExploreConstants.PAYTM_APP_REQUEST_ID;
-
 @Service
 public class LeadCareer360Service {
 
@@ -36,12 +36,12 @@ public class LeadCareer360Service {
     private String apiKey;
 
     @Autowired
-    private BaseRestApiService restApiService;
+    private Career360ServiceInvoker c360ServiceInvoker;
 
     public BaseLeadResponse sendUnfollow(Lead lead) {
         Career360UnfollowRequest career360UnfollowRequest = buildUnfollowRequest(lead);
         String jsonStr = JsonUtils.toJson(career360UnfollowRequest);
-        Career360UnfollowResponse response = restApiService
+        Career360UnfollowResponse response = c360ServiceInvoker
                 .post(c360LeadUnfollow, Career360UnfollowResponse.class, jsonStr, getHeaders());
         log.info("Careers360 lead response : {}", JsonUtils.toJson(response));
         return buildUnfollowResponse(response);
@@ -50,7 +50,7 @@ public class LeadCareer360Service {
     public BaseLeadResponse sendLead(Lead lead) {
         Career360LeadRequest career360LeadRequest = buildRequest(lead);
         String jsonStr = JsonUtils.toJson(career360LeadRequest);
-        Career360LeadResponse response = restApiService
+        Career360LeadResponse response = c360ServiceInvoker
                 .post(c360LeadFollow, Career360LeadResponse.class, jsonStr, getHeaders());
         log.info("Careers360 lead response : {}", JsonUtils.toJson(response));
         return buildResponse(response);

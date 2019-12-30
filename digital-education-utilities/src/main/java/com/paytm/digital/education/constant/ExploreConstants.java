@@ -368,6 +368,8 @@ public interface ExploreConstants {
 
     String NO_TOPIC_FOUND = "No Topic Found";
 
+    int CAREER_360_MAX_RETRY = 3;
+
     //Incremental data constants
     String DOT_SEPERATOR        = ".";
     String ENTITY               = "entity";
