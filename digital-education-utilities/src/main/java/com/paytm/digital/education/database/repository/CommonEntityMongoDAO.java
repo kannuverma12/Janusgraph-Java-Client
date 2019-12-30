@@ -7,16 +7,22 @@ import com.paytm.digital.education.database.entity.PaytmSourceDataEntity;
 import com.paytm.digital.education.database.entity.School;
 import com.paytm.digital.education.enums.EntitySourceType;
 import com.paytm.digital.education.serviceimpl.helper.EntitySourceMappingProvider;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.mongodb.QueryOperators.AND;
+import static com.mongodb.QueryOperators.IN;
+import static com.mongodb.QueryOperators.OR;
 import static com.paytm.digital.education.constant.ExploreConstants.COURSE_DATA_FIELD;
 import static com.paytm.digital.education.constant.ExploreConstants.COURSE_ID;
 import static com.paytm.digital.education.constant.ExploreConstants.DOT_SEPERATOR;
@@ -36,6 +42,8 @@ import static com.paytm.digital.education.enums.EntitySourceType.PAYTM;
 @AllArgsConstructor
 @Repository
 public class CommonEntityMongoDAO {
+
+    private static final Logger log = LoggerFactory.getLogger(CommonEntityMongoDAO.class);
 
     private final CommonMongoRepository       commonMongoRepository;
     private final EntitySourceMappingProvider entitySourceMappingProvider;
@@ -227,21 +235,30 @@ public class CommonEntityMongoDAO {
     public List<Institute> getAllInstitutes(Map<String, Object> queryObject,
             List<String> instituteFields, String operator) {
         List<Institute> institutes = new ArrayList<>();
-        List<Long> instituteIds = (List<Long>) queryObject.get(INSTITUTE_ID);
+        List<Long> instituteIds = null;
+        try {
+            instituteIds = getEntityIds(queryObject, operator, INSTITUTE_ID);
+        } catch (Exception e) {
+            log.error("Exception occurred while getting institutes for :", e, queryObject);
+        }
+        if (CollectionUtils.isEmpty(instituteIds)) {
+            return institutes;
+        }
+
         Map<EntitySourceType, List<Long>> sourceAndEntityIdsMap =
                 entitySourceMappingProvider.getSourceAndEntitiesMapping(INSTITUTE, instituteIds);
 
         if (!CollectionUtils.isEmpty(sourceAndEntityIdsMap)) {
             if (sourceAndEntityIdsMap.containsKey(C360)) {
                 List<Long> idsWithSourceMerchant = sourceAndEntityIdsMap.get(C360);
-                queryObject.put(INSTITUTE_ID, idsWithSourceMerchant);
+                updateQueryObject(queryObject, operator, INSTITUTE_ID, idsWithSourceMerchant);
                 institutes.addAll(Optional
                         .ofNullable(commonMongoRepository.findAll(queryObject, Institute.class,
                                 instituteFields, operator)).orElse(new ArrayList<>()));
             }
             if (sourceAndEntityIdsMap.containsKey(PAYTM)) {
                 List<Long> idsWithSourcePaytm = sourceAndEntityIdsMap.get(PAYTM);
-                queryObject.put(INSTITUTE_ID, idsWithSourcePaytm);
+                updateQueryObject(queryObject, operator, INSTITUTE_ID, idsWithSourcePaytm);
 
                 List<PaytmSourceDataEntity> paytmSourceDataEntities =
                         commonMongoRepository
@@ -264,20 +281,30 @@ public class CommonEntityMongoDAO {
         List<Exam> exams = new ArrayList<>();
         List<Long> examIds = Optional.ofNullable((List<Long>) queryObject.get(EXAM_ID))
                 .orElse(new ArrayList<>());
+        try {
+            examIds = getEntityIds(queryObject, operator, EXAM_ID);
+        } catch (Exception e) {
+            log.error("Exception occurred while getting courses for :", e, queryObject);
+        }
+        if (CollectionUtils.isEmpty(examIds)) {
+            return exams;
+        }
+
         Map<EntitySourceType, List<Long>> sourceAndEntityIdsMap =
                 entitySourceMappingProvider.getSourceAndEntitiesMapping(EXAM, examIds);
 
         if (!CollectionUtils.isEmpty(sourceAndEntityIdsMap)) {
             if (sourceAndEntityIdsMap.containsKey(C360)) {
                 List<Long> idsWithSourceMerchant = sourceAndEntityIdsMap.get(C360);
-                queryObject.put(EXAM_ID, idsWithSourceMerchant);
+                updateQueryObject(queryObject, operator, EXAM_ID, idsWithSourceMerchant);
+
                 exams.addAll(
                         Optional.ofNullable(commonMongoRepository.findAll(queryObject, Exam.class,
                                 fields, operator)).orElse(new ArrayList<>()));
             }
             if (sourceAndEntityIdsMap.containsKey(PAYTM)) {
                 List<Long> idsWithSourcePaytm = sourceAndEntityIdsMap.get(PAYTM);
-                queryObject.put(EXAM_ID, idsWithSourcePaytm);
+                updateQueryObject(queryObject, operator, EXAM_ID, idsWithSourcePaytm);
 
                 List<PaytmSourceDataEntity> paytmSourceDataEntities =
                         commonMongoRepository
@@ -296,15 +323,23 @@ public class CommonEntityMongoDAO {
 
     public List<Course> getAllCourses(Map<String, Object> queryObject,
             List<String> fields, String operator) {
-        List<Long> instituteIds = (List<Long>) queryObject.get(INSTITUTE_ID);
+        List<Long> instituteIds = null;
+        List<Course> courses = new ArrayList<>();
+        try {
+            instituteIds = getEntityIds(queryObject, operator, INSTITUTE_ID);
+        } catch (Exception e) {
+            log.error("Exception occurred while getting courses for :", e, queryObject);
+        }
+        if (CollectionUtils.isEmpty(instituteIds)) {
+            return courses;
+        }
         Map<EntitySourceType, List<Long>> sourceAndEntityIdsMap =
                 entitySourceMappingProvider.getSourceAndEntitiesMapping(COURSE, instituteIds);
-        List<Course> courses = new ArrayList<>();
 
         if (!CollectionUtils.isEmpty(sourceAndEntityIdsMap)) {
             if (sourceAndEntityIdsMap.containsKey(C360)) {
                 List<Long> idsWithSourceMerchant = sourceAndEntityIdsMap.get(C360);
-                queryObject.put(INSTITUTE_ID, idsWithSourceMerchant);
+                updateQueryObject(queryObject, operator, INSTITUTE_ID, idsWithSourceMerchant);
                 courses.addAll(
                         Optional.ofNullable(commonMongoRepository.findAll(queryObject, Course.class,
                                 fields, operator)).orElse(new ArrayList<>()));
@@ -312,7 +347,7 @@ public class CommonEntityMongoDAO {
 
             if (sourceAndEntityIdsMap.containsKey(PAYTM)) {
                 List<Long> idsWithSourcePaytm = sourceAndEntityIdsMap.get(PAYTM);
-                queryObject.put(INSTITUTE_ID, idsWithSourcePaytm);
+                updateQueryObject(queryObject, operator, INSTITUTE_ID, idsWithSourcePaytm);
 
                 List<PaytmSourceDataEntity> paytmSourceDataEntities =
                         commonMongoRepository
@@ -328,6 +363,24 @@ public class CommonEntityMongoDAO {
             }
         }
         return courses;
+    }
+
+    private List<Long> getEntityIds(Map<String, Object> queryObject, String operator, String key) {
+        List<Long> entityIds = null;
+        if (operator.equals(OR)) {
+            entityIds = (List<Long>) queryObject.get(key);
+        } else if (operator.equals(AND)) {
+            entityIds = (List<Long>) ((Map) queryObject.get(key)).get(IN);
+        }
+        return entityIds;
+    }
+
+    private void updateQueryObject(Map<String, Object> queryObject, String operator, String key, List<Long> ids) {
+        if (operator.equals(AND)) {
+            queryObject.put(key, Collections.singletonMap(IN, ids));
+        } else {
+            queryObject.put(key, ids);
+        }
     }
 
     private List<String> getProjectionFieldsForPaytmSource(List<String> projectionFields,

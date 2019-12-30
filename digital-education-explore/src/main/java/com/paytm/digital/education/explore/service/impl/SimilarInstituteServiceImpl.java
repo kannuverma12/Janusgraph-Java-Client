@@ -2,6 +2,7 @@ package com.paytm.digital.education.explore.service.impl;
 
 import static com.mongodb.QueryOperators.AND;
 import static com.mongodb.QueryOperators.EXISTS;
+import static com.mongodb.QueryOperators.IN;
 import static com.mongodb.QueryOperators.NE;
 import static com.paytm.digital.education.constant.ExploreConstants.COLLEGES_PER_STREAM;
 import static com.paytm.digital.education.constant.ExploreConstants.EMPTY_SQUARE_BRACKETS;
@@ -277,7 +278,7 @@ public class SimilarInstituteServiceImpl {
         Map<String, Object> instituteQueryMap = new HashMap<>();
         instituteQueryMap.put(INSTITUTION_STATE, instituteState);
         instituteQueryMap.put(INSTITUTION_CITY, instituteCity);
-        instituteQueryMap.put(INSTITUTE_ID, instituteIds);
+        instituteQueryMap.put(INSTITUTE_ID, Collections.singletonMap(IN, Arrays.asList(instituteIds)));
         return instituteQueryMap;
     }
 
@@ -362,7 +363,7 @@ public class SimilarInstituteServiceImpl {
     public Set<String> getCourseStreamForInstitute(Long instituteId) {
         List<String> courseFields = Arrays.asList(STREAMS);
         Map<String,Object> queryMap = new HashMap<>();
-        queryMap.put(INSTITUTE_ID,Arrays.asList(instituteId));
+        queryMap.put(INSTITUTE_ID, Collections.singletonMap(IN, Arrays.asList(instituteId)));
         List<Course> courses = commonEntityMongoDAO.getAllCourses(queryMap, courseFields, AND);
         Set<String> courseStreams = courses.stream().filter(c -> Objects.nonNull(c.getStreams()))
                 .flatMap(course -> course.getStreams().stream()).collect(Collectors.toSet());
