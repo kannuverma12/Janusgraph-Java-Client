@@ -136,7 +136,7 @@ public class CommonUtils {
 
     public static <K extends Comparable<K>, V> LinkedHashMap<K, V> sortMapByKeys(Map<K, V> map) {
         return map.entrySet().stream().sorted(comparingByKey())
-                .collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2,
-                        LinkedHashMap::new));
+                .collect(LinkedHashMap::new, (m, v) -> m.put(v.getKey(), v.getValue()),
+                        LinkedHashMap::putAll);
     }
 }
