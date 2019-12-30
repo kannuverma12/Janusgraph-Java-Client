@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import static com.paytm.digital.education.constant.CommonConstants.REDIS_LOCK_POSTFIX;
 import static com.paytm.digital.education.utility.CommonUtils.sortMapByKeys;
 import static com.paytm.digital.education.utility.JsonUtils.toJson;
 import static io.netty.util.internal.StringUtil.EMPTY_STRING;
@@ -55,7 +56,7 @@ public class KeyGenerator {
                         of(declaringClass.getCanonicalName(), methodName),
                         stream(valuesProvidingKeys).map(KeyGenerator::fetchKey)
                 ).collect(joining(KEY_DELIMITER));
-        String abbreviatedKey = abbreviate(fullKey, maxKeyLength - 1);
+        String abbreviatedKey = abbreviate(fullKey, maxKeyLength - 1 - REDIS_LOCK_POSTFIX.length());
         if (fullKey.length() >= maxKeyLength) {
             log.warn(KEY_LENGTH_EXCEEDED_WARNING_TEMPLATE, maxKeyLength, fullKey, abbreviatedKey);
         }

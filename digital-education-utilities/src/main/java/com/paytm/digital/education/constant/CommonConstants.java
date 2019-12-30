@@ -48,6 +48,7 @@ public interface CommonConstants {
     SimpleDateFormat MMM_YYYY    = new SimpleDateFormat("MMM,yyyy");
     SimpleDateFormat DD_MMM_YYYY = new SimpleDateFormat("dd MMM,yyyy");
     SimpleDateFormat YYYY_MM     = new SimpleDateFormat("yyyy-MM");
+    String REDIS_LOCK_POSTFIX   = "::redisLock";
 
 
 }
