@@ -184,7 +184,9 @@ public enum ErrorEnum {
     INVALID_PAYTM_SOURCE_MAPPING_DATA(4080,
             "No paytm source data present for entityId  %s, cannot set mapping", BAD_REQUEST, 1),
     INVALID_MERCHANT_SOURCE_MAPPING_DATA(4081,
-            "No merchant source data present for entityId  %s, cannot set mapping", BAD_REQUEST, 1)
+            "No merchant source data present for entityId  %s, cannot set mapping", BAD_REQUEST, 1),
+    CTA_CONFIG_NOT_FOUND_FOR_ENTITY(4082,
+            "No Entity level CTA config found for entity %s", BAD_REQUEST, 1)
     ;
 
     private final int        internalCode;

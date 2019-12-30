@@ -21,9 +21,9 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Document
 @NoArgsConstructor
-public class Institute implements Serializable {
+public class Institute implements Serializable, CTAConfigHolder {
 
-    private static final long serialVersionUID = 2645594892342379786L;
+    private static final long serialVersionUID = -4488543417404243863L;
 
     @Id
     @Field("_id")
@@ -151,6 +151,9 @@ public class Institute implements Serializable {
 
     @Field("paytm_updated_at")
     private Date paytmUpdatedAt = new Date();
+
+    @Field("cta_config")
+    private CTAConfig cTAConfig;
 
     public Institute(String commonName, Long instituteId) {
         this.commonName = commonName;

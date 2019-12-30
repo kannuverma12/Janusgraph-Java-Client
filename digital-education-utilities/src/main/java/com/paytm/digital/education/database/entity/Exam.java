@@ -17,9 +17,9 @@ import java.util.List;
 @NoArgsConstructor
 @Document(collection = "exam")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Exam extends Base {
+public class Exam extends Base implements CTAConfigHolder{
 
-    private static final long serialVersionUID = -8592325086959190870L;
+    private static final long serialVersionUID = 3503012720576400401L;
 
     @Id
     @Field("_id")
@@ -123,6 +123,9 @@ public class Exam extends Base {
 
     @JsonProperty("url_display_key")
     private String urlDisplayKey;
+
+    @Field("cta_config")
+    private CTAConfig cTAConfig;
 
     public Exam(long examId) {
         this.examId = examId;

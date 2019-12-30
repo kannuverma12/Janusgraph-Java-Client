@@ -24,9 +24,9 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class School implements Serializable {
+public class School implements Serializable, CTAConfigHolder {
 
-    private static final long serialVersionUID = -1753614543628299736L;
+    private static final long serialVersionUID = 653260411002959319L;
 
     @Id
     @Field("_id")
@@ -109,6 +109,9 @@ public class School implements Serializable {
 
     @Field("paytm_keys")
     private SchoolPaytmKeys paytmKeys;
+
+    @Field("cta_config")
+    private CTAConfig cTAConfig;
 
     @JsonProperty("url_display_key")
     private String urlDisplayKey;

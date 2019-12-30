@@ -1,8 +1,10 @@
 package com.paytm.digital.education.application.config.security;
 
+import com.paytm.digital.education.explore.controller.CTAEntityConverter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -76,5 +78,10 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins(coachingAllowedHosts)
                 .allowedHeaders(coachingAllowedHeaders)
                 .allowedMethods(allowedMethods);
+    }
+
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addConverter(new CTAEntityConverter());
     }
 }
