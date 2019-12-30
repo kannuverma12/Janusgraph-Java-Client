@@ -63,6 +63,7 @@ public class CTAHelper {
                     ExploreConstants.EXPLORE_COMPONENT, namespace, key);
             return ctas;
         }
+        log.info("CTA config map : {} , pid : {}, ", ctaConfigurationMap, ctaInfoHolder.getPid());
 
         if (Objects.nonNull(ctaInfoHolder.getPid())
                 && checkIfCTAConfigExists(ctaConfigurationMap, CTAType.FEE, namespace, key)) {
