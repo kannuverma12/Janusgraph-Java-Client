@@ -73,7 +73,11 @@ function transformCourse(doc) {
     transformedCourse.study_mode = doc.study_mode;
     transformedCourse.duration_in_months = doc.course_duration;
     info("course_id : " + doc.course_id + ", lead_enabled = " + doc.lead_enabled);
-    transformedCourse.is_accepting_application = doc.lead_enabled;
+    if(doc.lead_enabled && doc.lead_enabled == 1) {
+        transformedCourse.is_accepting_application = true;
+    } else {
+        transformedCourse.is_accepting_application = false;
+    }
     transformedCourse.domain_name = [];
     transformedCourse.stream_ids = doc.stream_ids;
     for (var k = 0; k < doc.streams.length; k++) {
