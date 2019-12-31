@@ -43,8 +43,8 @@ public class KeyGenerator {
 
     private final int maxKeyLength;
 
-    public KeyGenerator(@Value("${twemproxy.max.key.length}") int maxKeyLength) {
-        this.maxKeyLength = maxKeyLength;
+    public KeyGenerator(@Value("${twemproxy.max.key.length}") int twemProxyMaxKeyLength) {
+        this.maxKeyLength = twemProxyMaxKeyLength - KEY_LENGTH_EXCEEDED_WARNING_TEMPLATE.length() - 1;
     }
 
     public String generateKey(
@@ -56,8 +56,8 @@ public class KeyGenerator {
                         of(declaringClass.getCanonicalName(), methodName),
                         stream(valuesProvidingKeys).map(KeyGenerator::fetchKey)
                 ).collect(joining(KEY_DELIMITER));
-        String abbreviatedKey = abbreviate(fullKey, maxKeyLength - 1 - REDIS_LOCK_POSTFIX.length());
-        if (fullKey.length() >= maxKeyLength) {
+        String abbreviatedKey = abbreviate(fullKey, maxKeyLength);
+        if (fullKey.length() > maxKeyLength) {
             log.warn(KEY_LENGTH_EXCEEDED_WARNING_TEMPLATE, maxKeyLength, fullKey, abbreviatedKey);
         }
         return abbreviatedKey;
