@@ -1,44 +1,82 @@
 package com.paytm.digital.education.explore.service.helper;
 
+import com.google.common.collect.ImmutableMap;
 import com.paytm.digital.education.constant.ExploreConstants;
+import com.paytm.digital.education.database.entity.CTAConfig;
 import com.paytm.digital.education.enums.Client;
+import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.enums.CTAType;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.detail.CTAInfoHolder;
+import com.paytm.digital.education.explore.response.dto.detail.school.detail.SchoolDetail;
 import com.paytm.digital.education.explore.service.external.FeeUrlGenerator;
+import com.paytm.digital.education.explore.service.helper.cta.producer.BrochureCTAProducer;
+import com.paytm.digital.education.explore.service.helper.cta.producer.CTAProducer;
+import com.paytm.digital.education.explore.service.helper.cta.producer.CompareCTAProducer;
+import com.paytm.digital.education.explore.service.helper.cta.producer.FeeCTAProducer;
+import com.paytm.digital.education.explore.service.helper.cta.producer.FormCTAProducer;
+import com.paytm.digital.education.explore.service.helper.cta.producer.LeadCTAProducer;
+import com.paytm.digital.education.explore.service.helper.cta.producer.PredictorCTAProducer;
+import com.paytm.digital.education.explore.service.helper.cta.producer.ShareCTAProducer;
+import com.paytm.digital.education.explore.service.helper.cta.producer.ShortListCTAProducer;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.constant.ExploreConstants.DIRECTORY_SEPARATOR_SLASH;
 import static com.paytm.digital.education.constant.ExploreConstants.DISPLAY_NAME;
 import static com.paytm.digital.education.constant.ExploreConstants.ICON;
 import static com.paytm.digital.education.constant.ExploreConstants.WEB_FORM_URI_PREFIX;
 import static com.paytm.digital.education.enums.Client.APP;
+import static com.paytm.digital.education.explore.enums.CTAType.BROCHURE;
+import static com.paytm.digital.education.explore.enums.CTAType.COMPARE;
+import static com.paytm.digital.education.explore.enums.CTAType.FEE;
+import static com.paytm.digital.education.explore.enums.CTAType.FORMS;
+import static com.paytm.digital.education.explore.enums.CTAType.LEAD;
+import static com.paytm.digital.education.explore.enums.CTAType.PREDICTOR;
+import static com.paytm.digital.education.explore.enums.CTAType.SHARE;
+import static com.paytm.digital.education.explore.enums.CTAType.SHORTLIST;
 import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.ACTIVE_DISPLAY_NAME;
 import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.ACTIVE_ICON;
 import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.CLIENT;
 import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.WEB;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
+@RequiredArgsConstructor
 public class CTAHelper {
 
-    @Autowired
-    private FeeUrlGenerator feeUrlGenerator;
 
-    @Autowired
-    private PropertyReader propertyReader;
+    private final FeeUrlGenerator feeUrlGenerator;
+
+    private final PropertyReader propertyReader;
+
+    private final BrochureCTAProducer brochureCTAProducer;
+
+    private final CompareCTAProducer compareCTAProducer;
+
+    private final FeeCTAProducer feeCTAProducer;
+
+    private final FormCTAProducer formCTAProducer;
+
+    private final LeadCTAProducer leadCTAProducer;
+
+    private final PredictorCTAProducer predictorCTAProducer;
+
+    private final ShareCTAProducer shareCTAProducer;
+
+    private final ShortListCTAProducer shortListCTAProducer;
 
     @Value("${forms.prefix.url}")
     private String formsUrlPrefix;
@@ -51,7 +89,46 @@ public class CTAHelper {
 
     private static Logger log = LoggerFactory.getLogger(CTAHelper.class);
 
+    private final Map<CTAType, CTAProducer> ctaTypeCTAProducerMap = ImmutableMap.<CTAType, CTAProducer>builder()
+            .put(BROCHURE, brochureCTAProducer)
+            .put(COMPARE, compareCTAProducer)
+            .put(FEE, feeCTAProducer)
+            .put(FORMS, formCTAProducer)
+            .put(LEAD, leadCTAProducer)
+            .put(PREDICTOR, predictorCTAProducer)
+            .put(SHARE, shareCTAProducer)
+            .put(SHORTLIST, shortListCTAProducer)
+            .build();
+
     public List<CTA> buildCTA(CTAInfoHolder ctaInfoHolder, Client client) {
+
+        CTAConfig ctaConfig = getCTAConfig(ctaInfoHolder);
+        CTAConfig finalCTAConfig = isEmpty(ctaConfig.getCtaTypes()) ? null : ctaConfig;
+
+        String key = ctaInfoHolder.ctaDbPropertyKey();
+        String namespace = ctaInfoHolder.getCorrespondingEntity().name().toLowerCase();
+        Map<String, Object> ctaConfigurationMap = propertyReader.getPropertiesAsMapByKey(
+                ExploreConstants.EXPLORE_COMPONENT, namespace, key);
+        return finalCTAConfig.getCtaTypes()
+                .stream()
+                .map(ctaType -> ctaTypeCTAProducerMap
+                        .get(ctaType)
+                        .produceCTA(ctaInfoHolder, ctaConfigurationMap, client))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    private CTAConfig getCTAConfig(CTAInfoHolder ctaInfoHolder) {
+        EducationEntity educationEntity = ctaInfoHolder.getCorrespondingEntity();
+        switch (educationEntity) {
+            case SCHOOL:
+                SchoolDetail school = (SchoolDetail) ctaInfoHolder;
+                Long schoolId = school.getSchoolId();
+        }
+        return null;
+    }
+
+    public List<CTA> buildCTA(CTAInfoHolder ctaInfoHolder, Client client, String ignorable) {
         String key = ctaInfoHolder.ctaDbPropertyKey();
         String namespace = ctaInfoHolder.getCorrespondingEntity().name().toLowerCase();
         Map<String, Object> ctaConfigurationMap = propertyReader.getPropertiesAsMapByKey(
@@ -66,46 +143,46 @@ public class CTAHelper {
         log.info("CTA config map : {} , pid : {}, ", ctaConfigurationMap, ctaInfoHolder.getPid());
 
         if (Objects.nonNull(ctaInfoHolder.getPid())
-                && checkIfCTAConfigExists(ctaConfigurationMap, CTAType.FEE, namespace, key)) {
+                && checkIfCTAConfigExists(ctaConfigurationMap, FEE, namespace, key)) {
             CTA feeCta = getFeeCTA(ctaInfoHolder.getPid(), client,
                     (Map<String, String>) ctaConfigurationMap
-                            .get(CTAType.FEE.name().toLowerCase()), key, namespace);
+                            .get(FEE.name().toLowerCase()), key, namespace);
             addCTAIfNotNull(ctas, feeCta);
         }
 
         /* Get Updates CTA */
         if (ctaInfoHolder.shouldHaveLeadCTA()
-                && checkIfCTAConfigExists(ctaConfigurationMap, CTAType.LEAD, namespace, key)) {
+                && checkIfCTAConfigExists(ctaConfigurationMap, LEAD, namespace, key)) {
             CTA cta = getLeadCTA(ctaInfoHolder.isClient(),
                     (Map<String, String>) ctaConfigurationMap
-                            .get(CTAType.LEAD.name().toLowerCase()), key, namespace);
+                            .get(LEAD.name().toLowerCase()), key, namespace);
             addCTAIfNotNull(ctas, cta);
         }
 
         if (StringUtils.isNotBlank(ctaInfoHolder.getBrochureUrl())
-                && checkIfCTAConfigExists(ctaConfigurationMap, CTAType.BROCHURE, namespace, key)) {
+                && checkIfCTAConfigExists(ctaConfigurationMap, BROCHURE, namespace, key)) {
             CTA cta = getBrochureCTA(ctaInfoHolder.getBrochureUrl(),
                     (Map<String, String>) ctaConfigurationMap
-                            .get(CTAType.BROCHURE.name().toLowerCase()), key, namespace);
+                            .get(BROCHURE.name().toLowerCase()), key, namespace);
             addCTAIfNotNull(ctas, cta);
         }
 
         if (ctaInfoHolder.hasCompareFeature()
                 && !APP.equals(client)
-                && checkIfCTAConfigExists(ctaConfigurationMap, CTAType.COMPARE, namespace, key)) {
+                && checkIfCTAConfigExists(ctaConfigurationMap, COMPARE, namespace, key)) {
             CTA cta = getCompareCTA((Map<String, String>) ctaConfigurationMap
-                    .get(CTAType.COMPARE.name().toLowerCase()), key, namespace);
+                    .get(COMPARE.name().toLowerCase()), key, namespace);
             addCTAIfNotNull(ctas, cta);
         }
 
         if (APP.equals(client)) {
 
             if (Objects.nonNull(ctaInfoHolder.getCollegePredictorPid())
-                    && checkIfCTAConfigExists(ctaConfigurationMap, CTAType.PREDICTOR, namespace,
+                    && checkIfCTAConfigExists(ctaConfigurationMap, PREDICTOR, namespace,
                     key)) {
                 CTA cta = getPredictorCTA(ctaInfoHolder.getCollegePredictorPid(),
                         (Map<String, String>) ctaConfigurationMap
-                                .get(CTAType.PREDICTOR.name().toLowerCase()), key, namespace);
+                                .get(PREDICTOR.name().toLowerCase()), key, namespace);
                 addCTAIfNotNull(ctas, cta);
             }
 
@@ -119,10 +196,10 @@ public class CTAHelper {
         }
 
         if (StringUtils.isNotBlank(ctaInfoHolder.getFormId())
-                && checkIfCTAConfigExists(ctaConfigurationMap, CTAType.FORMS, namespace, key)) {
+                && checkIfCTAConfigExists(ctaConfigurationMap, FORMS, namespace, key)) {
             CTA cta = getFormsCTA(ctaInfoHolder.getFormId(),
                     (Map<String, String>) ctaConfigurationMap
-                            .get(CTAType.FORMS.name().toLowerCase()),
+                            .get(FORMS.name().toLowerCase()),
                     ctaInfoHolder.getAdditionalProperties(), client, key, namespace);
             addCTAIfNotNull(ctas, cta);
         }
@@ -142,13 +219,13 @@ public class CTAHelper {
         String name = ctaConfiguration.get(CTA.Constants.DISPLAY_NAME);
         String icon = ctaConfiguration
                 .getOrDefault(CTA.Constants.ICON, ExploreConstants.CTA_LOGO_PLACEHOLDER);
-        if (!checkIfNameExists(name, CTAType.PREDICTOR, key, namespace)) {
+        if (!checkIfNameExists(name, PREDICTOR, key, namespace)) {
             return null;
         }
         return CTA.builder()
                 .logo(CommonUtil.getAbsoluteUrl(icon, ExploreConstants.CTA))
                 .url(predictorUrlPrefix + predictorId.toString())
-                .type(CTAType.PREDICTOR)
+                .type(PREDICTOR)
                 .label(name)
                 .build();
     }
@@ -164,13 +241,13 @@ public class CTAHelper {
         } else {
             name = ctaConfiguration.get(DISPLAY_NAME + WEB);
             urlBuilder = new StringBuilder(formsWebUrlPrefix);
-            if (!CollectionUtils.isEmpty(additionKeys) && additionKeys
+            if (!isEmpty(additionKeys) && additionKeys
                     .containsKey(WEB_FORM_URI_PREFIX)) {
                 urlBuilder.append(additionKeys.get(WEB_FORM_URI_PREFIX).toString())
                         .append(DIRECTORY_SEPARATOR_SLASH);
             }
         }
-        if (!checkIfNameExists(name, CTAType.FORMS, key, namespace)) {
+        if (!checkIfNameExists(name, FORMS, key, namespace)) {
             return null;
         }
         String icon = ctaConfiguration
@@ -179,7 +256,7 @@ public class CTAHelper {
         return CTA.builder()
                 .logo(CommonUtil.getAbsoluteUrl(icon, ExploreConstants.CTA))
                 .url(urlBuilder.toString())
-                .type(CTAType.FORMS)
+                .type(FORMS)
                 .label(name)
                 .build();
     }
@@ -190,7 +267,7 @@ public class CTAHelper {
         String icon = ctaConfiguration
                 .getOrDefault(CTA.Constants.ICON, ExploreConstants.CTA_LOGO_PLACEHOLDER);
         String feeUrl = feeUrlGenerator.generateUrl(pid, client);
-        if (!checkIfNameExists(name, CTAType.FEE, key, namespace)) {
+        if (!checkIfNameExists(name, FEE, key, namespace)) {
             return null;
         }
 
@@ -201,7 +278,7 @@ public class CTAHelper {
         CTA cta = CTA.builder()
                 .label(name)
                 .logo(CommonUtil.getAbsoluteUrl(icon, ExploreConstants.CTA))
-                .type(CTAType.FEE)
+                .type(FEE)
                 .url(feeUrl)
                 .build();
         return cta;
@@ -212,11 +289,11 @@ public class CTAHelper {
         String name = ctaConfiguration.get(DISPLAY_NAME);
         String relativeIcon =
                 ctaConfiguration.getOrDefault(ICON, ExploreConstants.CTA_LOGO_PLACEHOLDER);
-        if (!checkIfNameExists(name, CTAType.COMPARE, key, namespace)) {
+        if (!checkIfNameExists(name, COMPARE, key, namespace)) {
             return null;
         }
         return CTA.builder()
-                .type(CTAType.BROCHURE)
+                .type(BROCHURE)
                 .label(name)
                 .logo(CommonUtil.getAbsoluteUrl(relativeIcon, ExploreConstants.CTA))
                 .url(brochureUrl)
@@ -269,11 +346,11 @@ public class CTAHelper {
                 .getOrDefault(ICON, ExploreConstants.CTA_LOGO_PLACEHOLDER);
         String activeRelativeUrl = ctaConfigurationMap
                 .getOrDefault(ACTIVE_ICON, ExploreConstants.CTA_LOGO_PLACEHOLDER);
-        if (!checkIfNameExists(leadLabel, activeLabel, CTAType.LEAD, key, namespace)) {
+        if (!checkIfNameExists(leadLabel, activeLabel, LEAD, key, namespace)) {
             return null;
         }
         return CTA.builder()
-                .type(CTAType.LEAD)
+                .type(LEAD)
                 .label(leadLabel)
                 .activeText(activeLabel)
                 .activeLogo(CommonUtil.getAbsoluteUrl(activeRelativeUrl, ExploreConstants.CTA))
@@ -286,11 +363,11 @@ public class CTAHelper {
         String name = ctaConfiguration.get(DISPLAY_NAME);
         String activeName = ctaConfiguration.get(ACTIVE_DISPLAY_NAME);
         String relativeIconUrl = ctaConfiguration.get(ICON);
-        if (!checkIfNameExists(name, activeName, CTAType.COMPARE, key, namespace)) {
+        if (!checkIfNameExists(name, activeName, COMPARE, key, namespace)) {
             return null;
         }
         return CTA.builder()
-                .type(CTAType.COMPARE)
+                .type(COMPARE)
                 .label(name)
                 .logo(CommonUtil.getAbsoluteUrl(relativeIconUrl, ExploreConstants.CTA))
                 .activeText(activeName)
