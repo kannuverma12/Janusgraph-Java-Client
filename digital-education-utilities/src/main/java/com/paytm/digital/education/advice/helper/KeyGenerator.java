@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import static com.paytm.digital.education.constant.CommonConstants.REDIS_LOCK_POSTFIX;
 import static com.paytm.digital.education.utility.CommonUtils.sortMapByKeys;
 import static com.paytm.digital.education.utility.JsonUtils.toJson;
 import static io.netty.util.internal.StringUtil.EMPTY_STRING;
@@ -38,12 +39,12 @@ public class KeyGenerator {
     private static final String KEY_DELIMITER = ".";
     private static final String CACHE_NAME_DELIMITER = "##";
     private static final String KEY_LENGTH_EXCEEDED_WARNING_TEMPLATE =
-            "Generated key length is greater than maximum allowed length of - {}. Key will be abbreviated - {}.";
+            "Generated key length is greater than maximum allowed length of - {}. Key {} will be abbreviated to {}.";
 
     private final int maxKeyLength;
 
-    public KeyGenerator(@Value("${twemproxy.max.key.length}") int maxKeyLength) {
-        this.maxKeyLength = maxKeyLength;
+    public KeyGenerator(@Value("${twemproxy.max.key.length}") int twemProxyMaxKeyLength) {
+        this.maxKeyLength = twemProxyMaxKeyLength - KEY_LENGTH_EXCEEDED_WARNING_TEMPLATE.length() - 1;
     }
 
     public String generateKey(
@@ -55,10 +56,11 @@ public class KeyGenerator {
                         of(declaringClass.getCanonicalName(), methodName),
                         stream(valuesProvidingKeys).map(KeyGenerator::fetchKey)
                 ).collect(joining(KEY_DELIMITER));
+        String abbreviatedKey = abbreviate(fullKey, maxKeyLength);
         if (fullKey.length() > maxKeyLength) {
-            log.warn(KEY_LENGTH_EXCEEDED_WARNING_TEMPLATE, maxKeyLength, fullKey);
+            log.warn(KEY_LENGTH_EXCEEDED_WARNING_TEMPLATE, maxKeyLength, fullKey, abbreviatedKey);
         }
-        return abbreviate(fullKey, maxKeyLength);
+        return abbreviatedKey;
     }
 
     private Object[] extractValuesFromParams(String[] keys, String[] params, Object[] values) {

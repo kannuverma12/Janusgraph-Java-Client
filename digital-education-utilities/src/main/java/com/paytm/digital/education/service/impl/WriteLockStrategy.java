@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import static com.paytm.digital.education.constant.CommonConstants.REDIS_LOCK_POSTFIX;
 import static java.time.Duration.ofSeconds;
 
 @Service
@@ -58,7 +59,7 @@ public class WriteLockStrategy extends AbstractCacheLockStrategy {
         logger.debug("Old cache value for key ", key);
 
         synchronized (key.intern()) {
-            String lockKey = key + "::redisLock";
+            String lockKey = key + REDIS_LOCK_POSTFIX;
             Boolean success = template.opsForValue()
                     .setIfAbsent(lockKey, "1", ofSeconds(lockDurationForProcessInSeconds));
             if (BooleanUtils.isNotTrue(success)) {

@@ -12,6 +12,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.mongodb.QueryOperators.AND;
+import static com.mongodb.QueryOperators.IN;
 import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.explore.constants.CompareConstants.AND_STRING;
 import static com.paytm.digital.education.explore.constants.CompareConstants.ARE_ALMOST_SAME;
@@ -44,7 +46,7 @@ public class CompareInsightFeeProcessor {
         Map<Long, List<Course>> instituteCoursesMap = new HashMap<>();
         if (!CollectionUtils.isEmpty(courseQueryFields)) {
             Map<String, Object> queryMap = new HashMap<>();
-            queryMap.put(INSTITUTE_ID, instituteIds);
+            queryMap.put(INSTITUTE_ID, Collections.singletonMap(IN, instituteIds));
             List<Course> courses =
                     commonEntityMongoDAO.getAllCourses(queryMap, courseQueryFields, AND);
 
