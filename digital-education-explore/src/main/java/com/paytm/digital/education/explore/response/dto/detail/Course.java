@@ -29,4 +29,7 @@ public class Course implements Serializable {
 
     @JsonProperty("fee")
     private Long fee;
+
+    @JsonProperty("is_accepting_application")
+    private boolean acceptingApplication;
 }

@@ -63,6 +63,7 @@ public class CourseDetailHelper {
                     course.setUrlDisplayKey(courseData.getUrlDisplayKey());
                     course.setSeats(courseData.getSeatsAvailable());
                     course.setFee(courseData.getFee());
+                    course.setAcceptingApplication(courseData.isAcceptingApplication());
                     courses.add(course);
                 });
             }
@@ -102,6 +103,7 @@ public class CourseDetailHelper {
                                 course.setUrlDisplayKey(courseData.getUrlDisplayKey());
                                 course.setSeats(courseData.getSeatsAvailable());
                                 course.setFee(courseData.getFee());
+                                course.setAcceptingApplication(courseData.isAcceptingApplication());
                                 courses.add(course);
                             });
                             coursesPerLevel
