@@ -180,9 +180,9 @@ public class InstituteDetailResponseBuilder {
         } else {
             instituteDetail.setBanners(bannerDataHelper.getBannerData(entityName, client));
         }
-        if (institute.getIsClient() == 1) {
-            instituteDetail.setClient(true);
-        }
+
+        checkIfLeadClient(institute.getIsClient(), instituteDetail);
+
         if (widgets) {
             instituteDetail.setWidgets(similarInstituteService.getSimilarInstitutes(institute));
         }
@@ -408,6 +408,33 @@ public class InstituteDetailResponseBuilder {
                 if (!CollectionUtils.isEmpty(course.getStreamIds())) {
                     streamIds.addAll(course.getStreamIds());
                 }
+            }
+        }
+    }
+
+    private void checkIfLeadClient(int isClient, InstituteDetail instituteDetail) {
+        if (isClient == 0) {
+            return;
+        }
+
+        if (!CollectionUtils.isEmpty(instituteDetail.getCourses())) {
+            List<com.paytm.digital.education.explore.response.dto.detail.Course> leadCourses =
+                    instituteDetail.getCourses().stream()
+                            .filter(course -> course.isAcceptingApplication())
+                            .collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(leadCourses)) {
+                instituteDetail.setClient(true);
+            }
+        }
+
+        if (!CollectionUtils.isEmpty(instituteDetail.getCoursesPerLevel())) {
+            List<com.paytm.digital.education.explore.response.dto.detail.Course> leadCourses =
+                    instituteDetail.getCoursesPerLevel().values().stream()
+                            .flatMap(courses -> courses.stream())
+                            .filter(course -> course.isAcceptingApplication())
+                            .collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(leadCourses)) {
+                instituteDetail.setClient(true);
             }
         }
     }
