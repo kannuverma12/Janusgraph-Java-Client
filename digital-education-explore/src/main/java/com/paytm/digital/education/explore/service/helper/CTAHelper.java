@@ -261,8 +261,9 @@ public class CTAHelper {
             leadLabel = ctaConfigurationMap.get(DISPLAY_NAME + CLIENT);
             activeLabel = ctaConfigurationMap.get(ACTIVE_DISPLAY_NAME + CLIENT);
         } else {
-            leadLabel = ctaConfigurationMap.get(DISPLAY_NAME);
-            activeLabel = ctaConfigurationMap.get(ACTIVE_DISPLAY_NAME);
+            return null;
+            //leadLabel = ctaConfigurationMap.get(DISPLAY_NAME);
+            //activeLabel = ctaConfigurationMap.get(ACTIVE_DISPLAY_NAME);
         }
         String relativeUrl = ctaConfigurationMap
                 .getOrDefault(ICON, ExploreConstants.CTA_LOGO_PLACEHOLDER);
