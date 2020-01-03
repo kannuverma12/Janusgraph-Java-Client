@@ -64,6 +64,7 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
 
 @Service
 public class ExamService {
+
     private static final Logger log = LoggerFactory.getLogger(ExamService.class);
 
     @Autowired

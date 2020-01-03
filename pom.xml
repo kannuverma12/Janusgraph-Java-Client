@@ -7,6 +7,7 @@
     <modules>
         <module>digital-education-explore</module>
         <module>digital-education-coaching</module>
+        <module>digital-education-profiles</module>
         <module>digital-education-utilities</module>
         <module>digital-education-application</module>
         <module>digital-education-elasticsearch</module>

@@ -57,6 +57,7 @@ import static com.paytm.digital.education.utility.DateUtil.dateToString;
 @Service
 @RequiredArgsConstructor
 public class ExamDetailServiceImpl {
+
     private static final Logger log = LoggerFactory.getLogger(ExamDetailServiceImpl.class);
 
     private final CommonMongoRepository   commonMongoRepository;
