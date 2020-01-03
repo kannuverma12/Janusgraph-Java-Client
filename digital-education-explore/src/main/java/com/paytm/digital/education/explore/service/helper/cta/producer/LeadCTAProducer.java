@@ -8,7 +8,6 @@ import com.paytm.digital.education.explore.response.dto.detail.CTAInfoHolder;
 import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -20,7 +19,6 @@ import static com.paytm.digital.education.explore.response.dto.common.CTA.Consta
 import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.ACTIVE_ICON;
 import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.CLIENT;
 
-@RequiredArgsConstructor
 @Service
 public class LeadCTAProducer extends AbstractCTAProducer {
     private static Logger log = LoggerFactory.getLogger(LeadCTAProducer.class);
@@ -32,10 +30,10 @@ public class LeadCTAProducer extends AbstractCTAProducer {
 
     @Override
     public CTA cta(CTAInfoHolder ctaInfoHolder, Map<String, String> ctaConfigMap, Client client) {
-        return getLeadCTA(ctaInfoHolder, ctaConfigMap, client);
+        return getLeadCTA(ctaInfoHolder, ctaConfigMap);
     }
 
-    private CTA getLeadCTA(CTAInfoHolder ctaInfoHolder, Map<String, String> ctaConfigurationMap, Client client) {
+    private CTA getLeadCTA(CTAInfoHolder ctaInfoHolder, Map<String, String> ctaConfigurationMap) {
         boolean isThirdPartyClient = ctaInfoHolder.isClient();
         String key = ctaInfoHolder.ctaDbPropertyKey();
         String namespace = ctaInfoHolder.getCorrespondingEntity().name().toLowerCase();

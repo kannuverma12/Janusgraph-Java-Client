@@ -38,11 +38,17 @@ public class FeeCTAProducer extends AbstractCTAProducer {
         String key = ctaInfoHolder.ctaDbPropertyKey();
         String namespace = ctaInfoHolder.getCorrespondingEntity().name().toLowerCase();
         Long pid = ctaInfoHolder.getPid();
+
+        if (pid == null) {
+            return null;
+        }
+
         String name = ctaConfiguration.get(CTA.Constants.DISPLAY_NAME);
         String icon = ctaConfiguration
                 .getOrDefault(CTA.Constants.ICON, ExploreConstants.CTA_LOGO_PLACEHOLDER);
         String feeUrl = feeUrlGenerator.generateUrl(pid, client);
-        if (!checkIfNameExists(name, CTAType.FEE, key, namespace)) {
+
+        if (!checkIfNameExists(name, key, namespace)) {
             return null;
         }
 
@@ -50,6 +56,7 @@ public class FeeCTAProducer extends AbstractCTAProducer {
             log.error("Unable to build fee url for pid {}", pid);
             return null;
         }
+
         CTA cta = CTA.builder()
                 .label(name)
                 .logo(CommonUtil.getAbsoluteUrl(icon, ExploreConstants.CTA))

@@ -3,8 +3,10 @@ package com.paytm.digital.education.explore.response.dto.detail;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.database.entity.CTAConfig;
 import com.paytm.digital.education.dto.OfficialAddress;
 import com.paytm.digital.education.dto.detail.ExamAndCutOff;
+import com.paytm.digital.education.enums.CTAEntity;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.articles.NewsArticleResponse;
 import com.paytm.digital.education.explore.response.dto.common.BannerData;
@@ -155,6 +157,11 @@ public class InstituteDetail implements CTAInfoHolder, Serializable {
     @JsonIgnore
     public EducationEntity getCorrespondingEntity() {
         return INSTITUTE;
+    }
+
+    @Override
+    public CTAConfig getCTAConfig(CTAConfigFetchService ctaConfigFetchService) {
+        return ctaConfigFetchService.fetchCTAConfig(CTAEntity.INSTITUTE, instituteId);
     }
 
 }

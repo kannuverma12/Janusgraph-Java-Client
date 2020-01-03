@@ -8,7 +8,6 @@ import com.paytm.digital.education.explore.response.dto.detail.CTAInfoHolder;
 import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +16,6 @@ import java.util.Map;
 import static com.paytm.digital.education.enums.Client.APP;
 import static com.paytm.digital.education.explore.enums.CTAType.PREDICTOR;
 
-@RequiredArgsConstructor
 @Service
 public class PredictorCTAProducer extends AbstractCTAProducer {
     private static Logger log = LoggerFactory.getLogger(PredictorCTAProducer.class);
@@ -41,16 +39,19 @@ public class PredictorCTAProducer extends AbstractCTAProducer {
     private CTA getPredictorCTA(CTAInfoHolder ctaInfoHolder, Map<String, String> ctaConfiguration) {
         String key = ctaInfoHolder.ctaDbPropertyKey();
         String namespace = ctaInfoHolder.getCorrespondingEntity().name().toLowerCase();
-        Long predictorId = ctaInfoHolder.getCollegePredictorPid();
+        Long predictorPid = ctaInfoHolder.getCollegePredictorPid();
+        if (predictorPid == null) {
+            return null;
+        }
         String name = ctaConfiguration.get(CTA.Constants.DISPLAY_NAME);
         String icon = ctaConfiguration
                 .getOrDefault(CTA.Constants.ICON, ExploreConstants.CTA_LOGO_PLACEHOLDER);
-        if (!checkIfNameExists(name, CTAType.PREDICTOR, key, namespace)) {
+        if (!checkIfNameExists(name, key, namespace)) {
             return null;
         }
         return CTA.builder()
                 .logo(CommonUtil.getAbsoluteUrl(icon, ExploreConstants.CTA))
-                .url(predictorUrlPrefix + predictorId.toString())
+                .url(predictorUrlPrefix + predictorPid.toString())
                 .type(CTAType.PREDICTOR)
                 .label(name)
                 .build();

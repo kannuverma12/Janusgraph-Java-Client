@@ -26,8 +26,8 @@ public abstract class AbstractCTAProducer implements CTAProducer {
         if (checkIfCTAConfigExists(ctaInfoHolder, parentCTAConfigMap)) {
             return null;
         }
-        Map<String, String> ctaConfigMap = (Map<String, String>) parentCTAConfigMap
-                .get(CTAType.FEE.name().toLowerCase());
+        CTAType ctaType = getCTAType();
+        Map<String, String> ctaConfigMap = (Map<String, String>) parentCTAConfigMap.get(ctaType.name().toLowerCase());
         return cta(ctaInfoHolder, ctaConfigMap, client);
     }
 
@@ -40,10 +40,9 @@ public abstract class AbstractCTAProducer implements CTAProducer {
         return true;
     }
 
-    protected boolean checkIfNameExists(String name, CTAType ctaType, String key,
-                                        String namespace) {
+    protected boolean checkIfNameExists(String name, String key, String namespace) {
         if (StringUtils.isBlank(name)) {
-            log.warn("CTA name not found for {} key {} namespace {}", ctaType, key, namespace);
+            log.warn("CTA name not found for {} key {} namespace {}", getCTAType(), key, namespace);
             return false;
         }
         return true;

@@ -8,7 +8,6 @@ import com.paytm.digital.education.explore.response.dto.detail.CTAInfoHolder;
 import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -22,7 +21,6 @@ import static com.paytm.digital.education.enums.Client.APP;
 import static com.paytm.digital.education.explore.enums.CTAType.FORMS;
 import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.WEB;
 
-@RequiredArgsConstructor
 @Service
 public class FormCTAProducer extends AbstractCTAProducer {
     private static Logger log = LoggerFactory.getLogger(FormCTAProducer.class);
@@ -48,6 +46,9 @@ public class FormCTAProducer extends AbstractCTAProducer {
 
     private CTA getFormsCTA(CTAInfoHolder ctaInfoHolder, Map<String, String> ctaConfiguration, Client client) {
         String formsId = ctaInfoHolder.getFormId();
+        if (formsId == null) {
+            return null;
+        }
         String key = ctaInfoHolder.ctaDbPropertyKey();
         String namespace = ctaInfoHolder.getCorrespondingEntity().name().toLowerCase();
         Map<String, Object> additionKeys = ctaInfoHolder.getAdditionalProperties();
@@ -65,7 +66,7 @@ public class FormCTAProducer extends AbstractCTAProducer {
                         .append(DIRECTORY_SEPARATOR_SLASH);
             }
         }
-        if (!checkIfNameExists(name, CTAType.FORMS, key, namespace)) {
+        if (!checkIfNameExists(name, key, namespace)) {
             return null;
         }
         String icon = ctaConfiguration

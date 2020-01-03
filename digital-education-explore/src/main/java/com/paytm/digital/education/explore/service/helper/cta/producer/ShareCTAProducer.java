@@ -8,7 +8,6 @@ import com.paytm.digital.education.explore.response.dto.detail.CTAInfoHolder;
 import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -18,7 +17,6 @@ import static com.paytm.digital.education.constant.ExploreConstants.ICON;
 import static com.paytm.digital.education.enums.Client.APP;
 import static com.paytm.digital.education.explore.enums.CTAType.SHARE;
 
-@RequiredArgsConstructor
 @Service
 public class ShareCTAProducer extends AbstractCTAProducer {
     private static Logger log = LoggerFactory.getLogger(ShareCTAProducer.class);
@@ -42,7 +40,7 @@ public class ShareCTAProducer extends AbstractCTAProducer {
         String name = ctaConfiguration.get(DISPLAY_NAME);
         String relativeIconUrl =
                 ctaConfiguration.getOrDefault(ICON, ExploreConstants.CTA_LOGO_PLACEHOLDER);
-        if (!checkIfNameExists(name, CTAType.SHARE, key, namespace)) {
+        if (!checkIfNameExists(name, key, namespace)) {
             return null;
         }
         return CTA.builder()

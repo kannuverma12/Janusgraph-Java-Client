@@ -3,8 +3,11 @@ package com.paytm.digital.education.explore.response.dto.search;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.database.entity.CTAConfig;
 import com.paytm.digital.education.dto.OfficialAddress;
+import com.paytm.digital.education.enums.CTAEntity;
 import com.paytm.digital.education.explore.es.model.GeoLocation;
+import com.paytm.digital.education.explore.response.dto.detail.CTAConfigFetchService;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -65,5 +68,10 @@ public class SchoolSearchData extends SearchBaseData implements CTAInfoHolderWit
     @JsonIgnore
     @Accessors(fluent = true)
     private String ctaDbPropertyKey = SCHOOL_SEARCH_CTA;
+
+    @Override
+    public CTAConfig getCTAConfig(CTAConfigFetchService ctaConfigFetchService) {
+        return ctaConfigFetchService.fetchCTAConfig(CTAEntity.SCHOOL, schoolId);
+    }
 
 }
