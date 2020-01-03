@@ -1,15 +1,14 @@
 package com.paytm.digital.education.explore.controller;
 
 import com.paytm.digital.education.database.entity.CTAConfig;
-import com.paytm.digital.education.enums.BulkOperationType;
 import com.paytm.digital.education.enums.CTAEntity;
+import com.paytm.digital.education.explore.request.dto.cta.BulkOperationRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static com.paytm.digital.education.constant.ExploreConstants.EDUCATION_BASE_URL;
@@ -51,7 +50,7 @@ public class CTAConfigController {
 
     @RequestMapping(method = RequestMethod.POST, path = "/auth/v1/{entity}/cta_config/bulk_op")
     public boolean doBulkOperation(@PathVariable("entity") CTAEntity entity,
-                                     @RequestParam("bulk_op") BulkOperationType bulkOperationType) {
-        return ctaConfigService.bulkOperation(entity, bulkOperationType);
+                                   @RequestBody BulkOperationRequest bulkOperationRequest) {
+        return ctaConfigService.bulkOperation(entity, bulkOperationRequest.getBulkOperationType());
     }
 }

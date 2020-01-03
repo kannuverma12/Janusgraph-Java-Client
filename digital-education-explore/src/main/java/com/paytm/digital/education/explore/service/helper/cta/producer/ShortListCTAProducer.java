@@ -15,7 +15,7 @@ import java.util.Map;
 import static com.paytm.digital.education.constant.ExploreConstants.DISPLAY_NAME;
 import static com.paytm.digital.education.constant.ExploreConstants.ICON;
 import static com.paytm.digital.education.enums.Client.APP;
-import static com.paytm.digital.education.explore.enums.CTAType.BROCHURE;
+import static com.paytm.digital.education.explore.enums.CTAType.SHORTLIST;
 import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.ACTIVE_DISPLAY_NAME;
 import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.ACTIVE_ICON;
 import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.WEB;
@@ -26,7 +26,7 @@ public class ShortListCTAProducer extends AbstractCTAProducer {
 
     @Override
     public CTAType getCTAType() {
-        return BROCHURE;
+        return SHORTLIST;
     }
 
     @Override
