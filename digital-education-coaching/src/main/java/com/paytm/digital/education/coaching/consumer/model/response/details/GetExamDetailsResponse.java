@@ -7,7 +7,7 @@ import com.paytm.digital.education.coaching.consumer.model.dto.ExamAdditionalInf
 import com.paytm.digital.education.coaching.consumer.model.dto.ImportantDatesBannerDetails;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingCourses;
 import com.paytm.digital.education.coaching.consumer.model.dto.TopCoachingInstitutes;
-import com.paytm.digital.education.dto.detail.Event;
+import com.paytm.digital.education.dto.detail.ImportantDate;
 import com.paytm.digital.education.dto.detail.Syllabus;
 import lombok.Builder;
 import lombok.Data;
@@ -33,7 +33,7 @@ public class GetExamDetailsResponse {
     private ImportantDatesBannerDetails importantDatesBannerDetails;
     private List<SectionDataHolder>     sectionsList;
     private List<Syllabus>              syllabus;
-    private List<Event>                 importantDates;
+    private List<ImportantDate>         importantDates;
     private String                      eligibility;
     private String                      examPattern;
     private String                      result;

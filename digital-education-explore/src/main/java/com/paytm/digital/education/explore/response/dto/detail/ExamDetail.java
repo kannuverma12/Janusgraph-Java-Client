@@ -7,7 +7,7 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.dto.detail.Event;
+import com.paytm.digital.education.dto.detail.ImportantDate;
 import com.paytm.digital.education.dto.detail.Syllabus;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.articles.NewsArticleResponse;
@@ -83,9 +83,6 @@ public class ExamDetail implements CTAInfoHolder, Serializable {
     @JsonProperty("application_fee")
     private Integer applicationFee;                // DNA
 
-    @JsonProperty("important_dates")
-    private List<Event> importantDates;
-
     @JsonProperty("application_process")
     private String applicationProcess;            // DNA
 
@@ -154,6 +151,9 @@ public class ExamDetail implements CTAInfoHolder, Serializable {
 
     @JsonProperty("registration_guidelines")
     private String registrationGuidelines;
+
+    @JsonProperty("important_dates")
+    private List<ImportantDate> importantDates;
 
     @JsonProperty("news_articles")
     private NewsArticleResponse newsArticles;

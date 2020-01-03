@@ -11,4 +11,8 @@ public class EventInstanceDateHolder {
     private final Event    event;
     private final Instance instance;
     private final Date     date;
+
+    public Integer instanceId() {
+        return this.instance.getInstanceId();
+    }
 }

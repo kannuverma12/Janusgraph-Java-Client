@@ -17,11 +17,13 @@ import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.property.reader.PropertyReader;
+import com.paytm.digital.education.serviceimpl.helper.ExamDatesHelper;
 import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
 import com.paytm.digital.education.serviceimpl.helper.ExamLogoHelper;
 import com.paytm.digital.education.utility.CommonUtils;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -61,18 +63,31 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
 
 @Slf4j
 @Service
-@AllArgsConstructor
 public class ExamService {
 
-    private final CoachingCourseService     coachingCourseService;
-    private final CoachingInstituteService  coachingInstituteService;
-    private final SearchDataHelper          searchDataHelper;
-    private final PropertyReader            propertyReader;
-    private final CoachingExamSectionHelper coachingExamSectionHelper;
-    private final ExamInstanceHelper        examInstanceHelper;
-    private final ExamLogoHelper            examLogoHelper;
-    private final CoachingExamDAO           coachingExamDAO;
-    private final CoachingStreamDAO         coachingStreamDAO;
+    @Autowired
+    private CoachingCourseService     coachingCourseService;
+    @Autowired
+    private CoachingInstituteService  coachingInstituteService;
+    @Autowired
+    private SearchDataHelper          searchDataHelper;
+    @Autowired
+    private PropertyReader            propertyReader;
+    @Autowired
+    private CoachingExamSectionHelper coachingExamSectionHelper;
+    @Autowired
+    private ExamInstanceHelper        examInstanceHelper;
+    @Autowired
+    private ExamLogoHelper            examLogoHelper;
+    @Autowired
+    private ExamDatesHelper           examDatesHelper;
+    @Autowired
+    private CoachingExamDAO           coachingExamDAO;
+    @Autowired
+    private CoachingStreamDAO         coachingStreamDAO;
+
+    @Value("${exam.default.instances.for.date:2}")
+    private Integer defaultNoOfInstances;
 
     public GetExamDetailsResponse getExamDetails(final long examId, final String urlDisplayKey) {
         Exam exam = coachingExamDAO.findByExamId(EXAM_ID, examId,
@@ -110,8 +125,7 @@ public class ExamService {
                 .topCoachingInstitutes(this.getTopCoachingInstitutes(exam))
                 .topCoachingCourses(this.getTopCoachingCourses(exam))
                 .sections(sections)
-                .importantDates(examInstanceHelper
-                        .getImportantDates(exam, nearestInstance, subExamInstances))
+                .importantDates(examDatesHelper.getImportantDates(exam, defaultNoOfInstances))
                 .importantDatesBannerDetails(this.getImportantDatesBannerDetails())
                 .build();
 
