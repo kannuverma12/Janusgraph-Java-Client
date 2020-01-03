@@ -139,7 +139,7 @@ public class InstituteDetail implements CTAInfoHolder, Serializable {
 
     @JsonIgnore
     @Accessors(fluent = true)
-    private boolean shouldHaveLeadCTA = false;
+    private boolean shouldHaveLeadCTA = true;
 
     @JsonIgnore
     @Accessors(fluent = true)
