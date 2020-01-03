@@ -22,11 +22,13 @@ import com.paytm.digital.education.database.entity.InstiPaytmKeys;
 import com.paytm.digital.education.database.entity.Institute;
 import com.paytm.digital.education.dto.OfficialAddress;
 import com.paytm.digital.education.enums.Client;
+import com.paytm.digital.education.enums.CollegeEntityType;
 import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.PublishStatus;
 import com.paytm.digital.education.explore.response.dto.common.BannerData;
 import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
 import com.paytm.digital.education.explore.response.dto.detail.Ranking;
+import com.paytm.digital.education.explore.response.dto.search.CourseData;
 import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
 import com.paytm.digital.education.explore.service.helper.CampusEngagementHelper;
 import com.paytm.digital.education.explore.service.helper.CourseDetailHelper;
@@ -181,7 +183,7 @@ public class InstituteDetailResponseBuilder {
             instituteDetail.setBanners(bannerDataHelper.getBannerData(entityName, client));
         }
 
-        checkIfLeadClient(institute.getIsClient(), instituteDetail);
+        checkIfLeadClient(institute.getIsClient(), instituteDetail, institute.getEntityType());
 
         if (widgets) {
             instituteDetail.setWidgets(similarInstituteService.getSimilarInstitutes(institute));
@@ -412,30 +414,16 @@ public class InstituteDetailResponseBuilder {
         }
     }
 
-    private void checkIfLeadClient(int isClient, InstituteDetail instituteDetail) {
+    private void checkIfLeadClient(int isClient, InstituteDetail instituteDetail,
+            CollegeEntityType entityType) {
         if (isClient == 0) {
             return;
         }
 
-        if (!CollectionUtils.isEmpty(instituteDetail.getCourses())) {
-            List<com.paytm.digital.education.explore.response.dto.detail.Course> leadCourses =
-                    instituteDetail.getCourses().stream()
-                            .filter(course -> course.isAcceptingApplication())
-                            .collect(Collectors.toList());
-            if (!CollectionUtils.isEmpty(leadCourses)) {
-                instituteDetail.setClient(true);
-            }
-        }
-
-        if (!CollectionUtils.isEmpty(instituteDetail.getCoursesPerLevel())) {
-            List<com.paytm.digital.education.explore.response.dto.detail.Course> leadCourses =
-                    instituteDetail.getCoursesPerLevel().values().stream()
-                            .flatMap(courses -> courses.stream())
-                            .filter(course -> course.isAcceptingApplication())
-                            .collect(Collectors.toList());
-            if (!CollectionUtils.isEmpty(leadCourses)) {
-                instituteDetail.setClient(true);
-            }
+        List<CourseData> leadCourses = courseDetailHelper
+                .getLeadCourses(Arrays.asList(instituteDetail.getInstituteId()), entityType);
+        if (!CollectionUtils.isEmpty(leadCourses)) {
+            instituteDetail.setClient(true);
         }
     }
 }
