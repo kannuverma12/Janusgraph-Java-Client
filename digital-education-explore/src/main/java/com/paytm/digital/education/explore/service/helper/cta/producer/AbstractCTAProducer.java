@@ -23,7 +23,7 @@ public abstract class AbstractCTAProducer implements CTAProducer {
         if (parentCTAConfigMap == null) {
             return null;
         }
-        if (checkIfCTAConfigExists(ctaInfoHolder, parentCTAConfigMap)) {
+        if (!checkIfCTAConfigExists(ctaInfoHolder, parentCTAConfigMap)) {
             return null;
         }
         CTAType ctaType = getCTAType();

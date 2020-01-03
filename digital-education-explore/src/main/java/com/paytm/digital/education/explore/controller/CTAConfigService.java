@@ -3,6 +3,7 @@ package com.paytm.digital.education.explore.controller;
 import com.paytm.digital.education.database.entity.CTAConfig;
 import com.paytm.digital.education.database.entity.CTAConfigHolder;
 import com.paytm.digital.education.database.entity.EducationEntityCTAConfig;
+import com.paytm.digital.education.enums.BulkOperationType;
 import com.paytm.digital.education.enums.CTAEntity;
 import com.paytm.digital.education.exception.NotFoundException;
 import com.paytm.digital.education.explore.response.dto.detail.CTAConfigFetchService;
@@ -58,6 +59,19 @@ public class CTAConfigService implements CTAConfigFetchService {
         ctaConfigHolder.setCTAConfig(ctaConfig);
         ctaConfigDBService.saveCTAConfigHolder(ctaConfigHolder);
         return ctaConfigHolder.getCTAConfig();
+    }
+
+    private boolean bulkResetEntity(CTAEntity ctaEntity) {
+        return ctaConfigDBService.resetCTATypesInEntity(ctaEntity);
+    }
+
+    public boolean bulkOperation(CTAEntity ctaEntity, BulkOperationType bulkOperationType) {
+        switch (bulkOperationType) {
+            case RESET:
+                return bulkResetEntity(ctaEntity);
+            default:
+                return false;
+        }
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.paytm.digital.education.explore.controller;
 
+import com.google.common.collect.ImmutableMap;
 import com.paytm.digital.education.database.entity.CTAConfigHolder;
 import com.paytm.digital.education.database.entity.EducationEntityCTAConfig;
 import com.paytm.digital.education.database.entity.Exam;
@@ -7,29 +8,28 @@ import com.paytm.digital.education.database.entity.Institute;
 import com.paytm.digital.education.database.entity.School;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.enums.CTAEntity;
+import com.paytm.digital.education.enums.CTAType;
 import com.paytm.digital.education.enums.EducationEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.aop.framework.AopProxyUtils;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import static com.google.common.collect.ImmutableMap.of;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 
 @RequiredArgsConstructor
 @Service
 public class CTAConfigDBService {
     private final CommonMongoRepository commonMongoRepository;
     private CommonMongoRepository underlyingCommonMongoRepository;
-
-    private static final Map<EducationEntity, CTAEntity> map = of(
-            EducationEntity.SCHOOL, CTAEntity.SCHOOL,
-            EducationEntity.EXAM, CTAEntity.EXAM,
-            EducationEntity.INSTITUTE, CTAEntity.INSTITUTE
-    );
 
     @PostConstruct
     public void setUnderlyingCommonMongoRepository() {
@@ -65,6 +65,17 @@ public class CTAConfigDBService {
 
     public void saveCTAConfigHolder(CTAConfigHolder ctaConfigHolder) {
         commonMongoRepository.saveOrUpdate(ctaConfigHolder);
+    }
+
+    public boolean resetCTATypesInEntity(CTAEntity ctaEntity) {
+        commonMongoRepository
+                .updateMulti(
+                        emptyMap(),
+                        emptyList(),
+                        Update.update("cta_config.cta_types", emptyList()),
+                        ctaEntity.getCorrespondingClass()
+                );
+        return true;
     }
 
     private CTAConfigHolder getCTAConfigHolder(
