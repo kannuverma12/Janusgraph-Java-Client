@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.enums.CTAType.BROCHURE;
 import static com.paytm.digital.education.enums.CTAType.COMPARE;
@@ -35,6 +34,7 @@ import static com.paytm.digital.education.enums.CTAType.LEAD;
 import static com.paytm.digital.education.enums.CTAType.PREDICTOR;
 import static com.paytm.digital.education.enums.CTAType.SHARE;
 import static com.paytm.digital.education.enums.CTAType.SHORTLIST;
+import static java.util.stream.Collectors.toList;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
@@ -82,10 +82,9 @@ public class CTAHelper {
                 ExploreConstants.EXPLORE_COMPONENT, namespace, key);
         return finalCTAConfig.getCtaTypes()
                 .stream()
-                .map(ctaType -> ctaTypeCTAProducerMap
-                        .get(ctaType)
-                        .produceCTA(ctaInfoHolder, ctaConfigurationMap, client))
+                .map(ctaTypeCTAProducerMap::get)
+                .map(ctaProducer -> ctaProducer.produceCTA(ctaInfoHolder, ctaConfigurationMap, client))
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 }
