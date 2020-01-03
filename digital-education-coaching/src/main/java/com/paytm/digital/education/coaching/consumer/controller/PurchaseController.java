@@ -6,7 +6,8 @@ import com.paytm.digital.education.coaching.consumer.model.response.transactiona
 import com.paytm.digital.education.coaching.consumer.model.response.transactionalflow.VerifyResponse;
 import com.paytm.digital.education.coaching.consumer.service.transactionalflow.PurchaseService;
 import com.paytm.digital.education.exception.PurchaseException;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,11 +24,12 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.U
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.URL.V1;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.URL.VERIFY;
 
-@Slf4j
 @RestController
 @RequestMapping(value = COACHING_BASE + V1)
 @Validated
 public class PurchaseController {
+
+    private static final Logger log = LoggerFactory.getLogger(PurchaseController.class);
 
     @Autowired private PurchaseService purchaseService;
 

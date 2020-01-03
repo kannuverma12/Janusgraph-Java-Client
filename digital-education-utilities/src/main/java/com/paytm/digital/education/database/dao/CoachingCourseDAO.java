@@ -4,6 +4,7 @@ import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.database.repository.CoachingProgramRepository;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.database.repository.SequenceGenerator;
+import com.paytm.digital.education.metrics.annotations.NullValueAlert;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -48,8 +49,9 @@ public class CoachingCourseDAO {
         return this.programRepository.findAll();
     }
 
+    @NullValueAlert(mandatoryFields = "#mandatoryFields")
     public List<CoachingCourseEntity> findByCourseId(String courseIdField, long courseId,
-            List<String> projectionFields) {
+            List<String> projectionFields, List<String> mandatoryFields) {
         Map<String, Object> searchRequest = new HashMap<>();
         searchRequest.put(courseIdField, courseId);
         return commonMongoRepository
@@ -57,17 +59,20 @@ public class CoachingCourseDAO {
                         projectionFields, AND);
     }
 
+    @NullValueAlert(mandatoryFields = "#mandatoryFields")
     public List<CoachingCourseEntity> findByCourseIdsIn(String courseIdField,
             List<Long> courseIds,
-            List<String> projectionFields) {
+            List<String> projectionFields, List<String> mandatoryFields) {
         return commonMongoRepository.getEntityFieldsByValuesIn(courseIdField, courseIds,
                 CoachingCourseEntity.class, projectionFields);
     }
 
+    @NullValueAlert(mandatoryFields = "#mandatoryFields")
     public List<CoachingCourseEntity> findByCoachingInstIdAndIsDynAndIsEnabledAndMerchantPIdsIn(
             String instituteIdField, long instituteId, String isDynamicField, Boolean isDynamic,
             String isEnabledField, Boolean isEnabled, String merchantProductIdField,
-            List<String> merchantProductIds, List<String> projectionFields) {
+            List<String> merchantProductIds, List<String> projectionFields,
+            List<String> mandatoryFields) {
         Map<String, Object> searchRequest = new HashMap<>();
         searchRequest.put(instituteIdField, instituteId);
         searchRequest.put(isDynamicField, isDynamic);

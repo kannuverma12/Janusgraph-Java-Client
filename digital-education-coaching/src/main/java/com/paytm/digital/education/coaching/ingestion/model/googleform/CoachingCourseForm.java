@@ -252,4 +252,17 @@ public class CoachingCourseForm {
     @JsonProperty("redirect_url")
     @GoogleSheetColumnName("Redirect Url")
     private String redirectUrl;
+
+    @JsonProperty("post_order_cta")
+    @GoogleSheetColumnName("Post order CTA")
+    private String postOrderCta;
+
+    @JsonProperty("list_page_cta")
+    @GoogleSheetColumnName("List Page CTA")
+    private String listPageCta;
+
+    @JsonProperty("details_page_cta")
+    @GoogleSheetColumnName("Details Page CTA")
+    private String detailsPageCta;
+
 }

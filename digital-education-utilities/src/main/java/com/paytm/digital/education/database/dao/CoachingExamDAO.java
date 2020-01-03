@@ -5,6 +5,7 @@ import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.repository.CoachingExamRepositoryNew;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.database.repository.SequenceGenerator;
+import com.paytm.digital.education.metrics.annotations.NullValueAlert;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -40,15 +41,17 @@ public class CoachingExamDAO {
         return this.coachingCenterRepository.findAll();
     }
 
+    @NullValueAlert(mandatoryFields = "#mandatoryFields")
     public List<Exam> findByExamIdsIn(String examIdField,
             List<Long> examIds,
-            List<String> projectionFields) {
+            List<String> projectionFields, List<String> mandatoryFields) {
         return commonMongoRepository.getEntityFieldsByValuesIn(examIdField, examIds,
                 Exam.class, projectionFields);
     }
 
+    @NullValueAlert(mandatoryFields = "#mandatoryFields")
     public Exam findByExamId(String examIdField, long examId,
-            List<String> projectionFields) {
+            List<String> projectionFields, List<String> mandatoryFields) {
         return commonMongoRepository.getEntityByFields(
                 examIdField, examId, Exam.class, projectionFields);
     }

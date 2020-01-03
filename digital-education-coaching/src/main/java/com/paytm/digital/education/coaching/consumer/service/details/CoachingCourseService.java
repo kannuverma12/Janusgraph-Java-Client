@@ -21,21 +21,25 @@ import com.paytm.digital.education.coaching.utils.ComparisonUtils;
 import com.paytm.digital.education.coaching.utils.ImageUtils;
 import com.paytm.digital.education.database.dao.CoachingCenterDAO;
 import com.paytm.digital.education.database.dao.CoachingCourseDAO;
+import com.paytm.digital.education.database.dao.CoachingCtaDAO;
 import com.paytm.digital.education.database.dao.CoachingExamDAO;
 import com.paytm.digital.education.database.dao.CoachingInstituteDAO;
 import com.paytm.digital.education.database.dao.TopRankerDAO;
 import com.paytm.digital.education.database.embedded.Currency;
 import com.paytm.digital.education.database.entity.CoachingCenterEntity;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
+import com.paytm.digital.education.database.entity.CoachingCtaEntity;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
 import com.paytm.digital.education.database.repository.CoachingCourseFeatureRepository;
+import com.paytm.digital.education.enums.CTAViewType;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.utility.CommonUtils;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -46,6 +50,7 @@ import org.springframework.util.StringUtils;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,6 +59,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.CENTER_ID;
@@ -120,9 +126,10 @@ import static com.paytm.digital.education.constant.CommonConstants.TOP_COACHING_
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_COURSE_ID_AND_URL_DISPLAY_KEY;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_INSTITUTE_ID;
 
-@Slf4j
 @Service
 public class CoachingCourseService {
+
+    private static final Logger log = LoggerFactory.getLogger(CoachingCourseService.class);
 
     private static final String TARGET_EXAM     = "TARGET_EXAM";
     private static final String TOP_RANKER_EXAM = "TOP_RANKER_EXAM";
@@ -146,7 +153,7 @@ public class CoachingCourseService {
                     "elearning_practice_paper_count", "classroom_lecture_count",
                     "classroom_lecture_duration", "classroom_test_count", "sgst", "cgst", "igst",
                     "tcs", "merchant_product_id", "is_enabled", "validity", "validity_type",
-                    "paytm_product_id");
+                    "paytm_product_id", "cta_info");
 
     private static final List<String> EXAM_FIELDS =
             Arrays.asList("exam_id", "exam_full_name", "exam_short_name", "conducting_body",
@@ -182,6 +189,8 @@ public class CoachingCourseService {
     private TopRankerDAO                    topRankerDAO;
     @Autowired
     private CoachingCenterDAO               coachingCenterDAO;
+    @Autowired
+    private CoachingCtaDAO                  coachingCtaDAO;
 
     public GetCoachingCourseDetailsResponse getCourseDetailsByIdAndUrlDisplayKey(
             final long courseId, final String urlDisplayKey) {
@@ -206,10 +215,31 @@ public class CoachingCourseService {
         final Map<Long, CoachingCenterEntity> centerIdAndCenterMap = this.fetchCenterByCenterIds(
                 topRankerEntityList);
 
+        final Map<Long, CoachingCtaEntity> ctaIdToCtaMap;
+        if (!CollectionUtils.isEmpty(course.getCtaInfo())
+                && !CollectionUtils.isEmpty(course.getCtaInfo().values())) {
+            ctaIdToCtaMap = this.fetchCtaIdToCtaMapByCtaIds(course.getCtaInfo().values()
+                    .stream().flatMap(List::stream).collect(Collectors.toList()));
+        } else {
+            ctaIdToCtaMap = Collections.emptyMap();
+        }
+
         return this.buildResponse(course, institute, examTypeAndExamListMap,
                 topRankerEntityList, centerIdAndCenterMap, examIdAndNameMap, courseIdAndNameMap,
-                this.fetchCoachingCourseFeatures(course.getCourseFeatureIds()),
+                ctaIdToCtaMap, this.fetchCoachingCourseFeatures(course.getCourseFeatureIds()),
                 this.fetchSections());
+    }
+
+    private Map<Long, CoachingCtaEntity> fetchCtaIdToCtaMapByCtaIds(Collection<Long> ctaIds) {
+
+        List<CoachingCtaEntity> ctaList = this.fetchCtaByCtaIds(new ArrayList<>(ctaIds));
+
+        if (!ctaList.isEmpty()) {
+            return ctaList.stream().collect(Collectors.toMap(cta -> cta.getCtaId(),
+                    Function.identity()));
+        }
+
+        return Collections.emptyMap();
     }
 
     private Map<Long, String> buildCourseIdAndNameMapAndFillExamIds(
@@ -259,7 +289,7 @@ public class CoachingCourseService {
 
         final List<CoachingCourseEntity> coachingCourseEntityList =
                 coachingCourseDAO.findByCourseId(COACHING_COURSE_ID, courseId,
-                        CoachingCourseService.COURSE_FIELDS);
+                        CoachingCourseService.COURSE_FIELDS, CoachingCourseService.COURSE_FIELDS);
 
         if (CollectionUtils.isEmpty(coachingCourseEntityList)
                 || coachingCourseEntityList.size() > 1
@@ -276,7 +306,8 @@ public class CoachingCourseService {
 
     private CoachingInstituteEntity fetchInstitute(final long instituteId) {
         final CoachingInstituteEntity institute =
-                coachingInstituteDAO.findByInstituteId(INSTITUTE_ID, instituteId, INSTITUTE_FIELDS);
+                coachingInstituteDAO.findByInstituteId(INSTITUTE_ID, instituteId, INSTITUTE_FIELDS,
+                        INSTITUTE_FIELDS);
         if (institute == null) {
             log.error("Got null CoachingInstitute for id: {}", instituteId);
             throw new BadRequestException(INVALID_INSTITUTE_ID,
@@ -305,7 +336,7 @@ public class CoachingCourseService {
 
     private List<CoachingCourseEntity> fetchCourses(final List<Long> coachingCourseIdList,
             final List<String> fields) {
-        return coachingCourseDAO.findByCourseIdsIn(COURSE_ID, coachingCourseIdList, fields);
+        return coachingCourseDAO.findByCourseIdsIn(COURSE_ID, coachingCourseIdList, fields, fields);
     }
 
     private Map<String, List<Exam>> fetchExamTypeAndExamListMap(List<Long> targetExamIdList,
@@ -342,10 +373,14 @@ public class CoachingCourseService {
         return examTypeAndExamListMap;
     }
 
+    private List<CoachingCtaEntity> fetchCtaByCtaIds(final List<Long> ctaIdList) {
+        return coachingCtaDAO.findAllByCtaIdIn(ctaIdList);
+    }
+
     private List<com.paytm.digital.education.database.entity.Exam> fetchExamsByExamIds(
             final List<Long> examIdList) {
         return coachingExamDAO.findByExamIdsIn(EXAM_ID, examIdList,
-                CoachingCourseService.EXAM_FIELDS);
+                CoachingCourseService.EXAM_FIELDS, CoachingCourseService.EXAM_FIELDS);
     }
 
     private List<TopRankerEntity> fetchTopRankers(final long courseId, final Long instituteId) {
@@ -357,14 +392,15 @@ public class CoachingCourseService {
         List<TopRankerEntity> topRankerEntityList =
                 topRankerDAO.findByCourseIdsInAndSortBy(COACHING_COURSE_IDS,
                         Collections.singletonList(courseId),
-                        TOP_RANKER_FIELDS, sortMap);
+                        TOP_RANKER_FIELDS, sortMap, TOP_RANKER_FIELDS);
 
         if (CollectionUtils.isEmpty(topRankerEntityList)) {
             log.warn("Got no topRankers for courseId: {}", courseId);
             topRankerEntityList =
                     topRankerDAO.findByInstituteIdsInAndSortBy(INSTITUTE_ID,
                             Collections.singletonList(instituteId),
-                            CoachingCourseService.TOP_RANKER_FIELDS, sortMap);
+                            CoachingCourseService.TOP_RANKER_FIELDS, sortMap,
+                            CoachingCourseService.TOP_RANKER_FIELDS);
             if (CollectionUtils.isEmpty(topRankerEntityList)) {
                 log.warn("Got no topRankers for instituteId: {}", instituteId);
                 return new ArrayList<>();
@@ -385,7 +421,7 @@ public class CoachingCourseService {
 
         List<CoachingCenterEntity> coachingCenterEntityList =
                 coachingCenterDAO.findByCenterIdsIn(CENTER_ID, centerIdList,
-                        CENTER_FIELDS);
+                        CENTER_FIELDS, CENTER_FIELDS);
 
         if (CollectionUtils.isEmpty(coachingCenterEntityList)) {
             return Collections.EMPTY_MAP;
@@ -402,6 +438,7 @@ public class CoachingCourseService {
             final Map<Long, CoachingCenterEntity> centerIdAndCenterMap,
             final Map<Long, String> examIdAndNameMap,
             final Map<Long, String> courseIdAndNameMap,
+            final Map<Long, CoachingCtaEntity> ctaIdToCtaMap,
             final List<CoachingCourseFeature> coachingCourseFeatures,
             final List<String> sections) {
 
@@ -429,6 +466,22 @@ public class CoachingCourseService {
                 (course.getDiscountedPrice().floatValue() * CONVENIENCE_FEE_PERCENTAGE) / 100;
         TaxBreakup convFeeTaxInfo = this.getConvFeeTaxInfo(convFee);
         TaxBreakup taxInfo = this.getTaxInfo(course.getDiscountedPrice().floatValue());
+
+        Map<CTAViewType, List<CoachingCtaEntity>> ctaMap;
+
+        if (!CollectionUtils.isEmpty(course.getCtaInfo())) {
+            ctaMap = new HashMap<>(course.getCtaInfo().size());
+            for (Map.Entry<CTAViewType, List<Long>> entry : course.getCtaInfo().entrySet()) {
+                List<Long> ctaIdList = entry.getValue();
+                List<CoachingCtaEntity> ctaList = new ArrayList<>();
+                for (Long ctaId : ctaIdList) {
+                    ctaList.add(ctaIdToCtaMap.get(ctaId));
+                }
+                ctaMap.put(entry.getKey(), ctaList);
+            }
+        } else {
+            ctaMap = Collections.emptyMap();
+        }
 
         return GetCoachingCourseDetailsResponse.builder()
                 .courseId(course.getCourseId())
@@ -488,6 +541,7 @@ public class CoachingCourseService {
                         .build())
                 .courseHighlights(courseHighlights)
                 .sections(sections)
+                .ctaMap(ctaMap)
                 .build();
     }
 
@@ -632,8 +686,7 @@ public class CoachingCourseService {
                     }
                 }
             } catch (final Exception ex) {
-                log.error("Got exception, course: {}, field: {}, exception: ",
-                        course, field, ex);
+                log.error("Got exception, course: {}, field: {}, exception: ", ex, course, field);
             }
         }
         return courseMoreInfoMap;

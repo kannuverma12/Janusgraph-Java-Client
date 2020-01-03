@@ -1,6 +1,8 @@
 package com.paytm.digital.education.database.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -24,6 +26,7 @@ public class CoachingCtaEntity {
     private ObjectId id;
 
     @Field("cta_id")
+    @JsonProperty("cta_id")
     private Long ctaId;
 
     @Field("name")
@@ -33,12 +36,15 @@ public class CoachingCtaEntity {
     private String description;
 
     @Field("cta_type")
+    @JsonProperty("cta_type")
     private String ctaType;
 
     @Field("logo_url")
+    @JsonProperty("logo_url")
     private String logoUrl;
 
     @Field("cta_url")
+    @JsonProperty("cta_url")
     private String url;
 
     @Field("properties")

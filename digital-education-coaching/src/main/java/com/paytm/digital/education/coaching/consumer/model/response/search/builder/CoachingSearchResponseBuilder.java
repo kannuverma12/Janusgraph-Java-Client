@@ -17,7 +17,8 @@ import com.paytm.digital.education.elasticsearch.models.FilterField;
 import com.paytm.digital.education.elasticsearch.models.MetricAggregationResponse;
 import com.paytm.digital.education.enums.es.AggregationType;
 import com.paytm.digital.education.utility.CommonUtil;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -27,9 +28,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@Slf4j
 @Service
 public class CoachingSearchResponseBuilder {
+
+    private static final Logger log = LoggerFactory.getLogger(CoachingSearchResponseBuilder.class);
 
     public <T> void populateSearchFilters(SearchResponse searchResponse,
             ElasticResponse<T> elasticResponse, ElasticRequest elasticRequest,

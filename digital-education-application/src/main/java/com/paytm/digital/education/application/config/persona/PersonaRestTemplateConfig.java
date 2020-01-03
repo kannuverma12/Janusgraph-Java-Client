@@ -1,6 +1,6 @@
 package com.paytm.digital.education.application.config.persona;
 
-import com.paytm.digital.education.application.config.metric.DataDogClient;
+import com.paytm.digital.education.metrics.DataDogClient;
 import com.paytm.digital.education.application.constant.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

@@ -5,14 +5,13 @@
     <parent>
         <artifactId>digital-education-service</artifactId>
         <groupId>com.paytm.digital.education</groupId>
-        <version>0.0.9-SNAPSHOT</version>
+        <version>0.0.16-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>digital-education-application</artifactId>
 
     <properties>
-        <datadog.version>2.6.1</datadog.version>
         <swagger.version>2.9.2</swagger.version>
     </properties>
 
@@ -57,14 +56,9 @@
 
         <!-- DataDog -->
         <dependency>
-            <groupId>com.datadoghq</groupId>
-            <artifactId>java-dogstatsd-client</artifactId>
-            <version>${datadog.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.paytm.digital.education</groupId>
             <artifactId>digital-education-utilities</artifactId>
-            <version>0.0.33-SNAPSHOT</version>
+            <version>0.0.41-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
 

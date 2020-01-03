@@ -21,7 +21,8 @@ import com.paytm.digital.education.serviceimpl.helper.ExamDatesHelper;
 import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
 import com.paytm.digital.education.serviceimpl.helper.ExamLogoHelper;
 import com.paytm.digital.education.utility.CommonUtils;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -61,9 +62,9 @@ import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_COA
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
 
-@Slf4j
 @Service
 public class ExamService {
+    private static final Logger log = LoggerFactory.getLogger(ExamService.class);
 
     @Autowired
     private CoachingCourseService     coachingCourseService;
@@ -91,7 +92,7 @@ public class ExamService {
 
     public GetExamDetailsResponse getExamDetails(final long examId, final String urlDisplayKey) {
         Exam exam = coachingExamDAO.findByExamId(EXAM_ID, examId,
-                EXAM_DETAILS_FIELDS);
+                EXAM_DETAILS_FIELDS, EXAM_DETAILS_FIELDS);
         if (Objects.isNull(exam)) {
             log.error("Exam with id: {} does not exist", examId);
             throw new BadRequestException(INVALID_EXAM_ID);
@@ -187,7 +188,7 @@ public class ExamService {
 
     private StreamEntity getStreamEntity(final long streamId) {
         return coachingStreamDAO.findByStreamId(STREAM_ID,
-                streamId, STREAM_DETAILS_FIELDS);
+                streamId, STREAM_DETAILS_FIELDS, STREAM_DETAILS_FIELDS);
     }
 
     private TopCoachingInstitutes getTopCoachingInstitutes(Exam exam) {

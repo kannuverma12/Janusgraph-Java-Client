@@ -17,8 +17,9 @@ import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.response.dto.search.SearchResult;
 import com.paytm.digital.education.explore.service.helper.SearchAggregateHelper;
 import com.paytm.digital.education.utility.CommonUtil;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
@@ -45,10 +46,11 @@ import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMP
 import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_ANALYZER_EXAM;
 import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_INDEX_EXAM;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class ExamLandingPageServiceImpl extends AbstractSearchServiceImpl {
+
+    private static final Logger log = LoggerFactory.getLogger(ExamLandingPageServiceImpl.class);
 
     private static Map<String, Float>           searchFieldKeys;
     private static Map<String, FilterQueryType> filterQueryTypeMap;

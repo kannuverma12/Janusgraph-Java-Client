@@ -1,6 +1,6 @@
 package com.paytm.digital.education.application.config.aspect;
 
-import com.paytm.digital.education.application.config.metric.DataDogClient;
+import com.paytm.digital.education.metrics.DataDogClient;
 import com.paytm.digital.education.application.constant.Constant;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;

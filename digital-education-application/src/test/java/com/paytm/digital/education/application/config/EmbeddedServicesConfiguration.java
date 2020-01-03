@@ -26,18 +26,18 @@ public class EmbeddedServicesConfiguration {
     private static Logger logger = LoggerFactory.getLogger(EmbeddedServicesConfiguration.class);
 
     private final String mongoHost;
-    private final int mongoPort;
-    private final int redisPort;
+    private final int    mongoPort;
+    private final int    redisPort;
 
-    private RedisServer redisServer;
+    private RedisServer      redisServer;
     private MongodExecutable mongodExecutable;
 
-    public EmbeddedServicesConfiguration(@Value("${redis.port}") int redisPort,
-                                         @Value("${mongo.host}") String mongoHost,
-                                         @Value("${mongo.port}") int mongoPort) {
-        this.redisPort = redisPort;
+    public EmbeddedServicesConfiguration(@Value("${redis.port}") String redisPort,
+            @Value("${mongo.host}") String mongoHost,
+            @Value("${mongo.port}") String mongoPort) {
+        this.redisPort = Integer.parseInt(redisPort);
         this.mongoHost = mongoHost;
-        this.mongoPort = mongoPort;
+        this.mongoPort = Integer.parseInt(mongoPort);
     }
 
     @PostConstruct

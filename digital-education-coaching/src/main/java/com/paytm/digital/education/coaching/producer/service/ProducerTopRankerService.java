@@ -1,21 +1,23 @@
 package com.paytm.digital.education.coaching.producer.service;
 
-import com.paytm.digital.education.database.dao.TopRankerDAO;
 import com.paytm.digital.education.coaching.producer.ConverterUtil;
 import com.paytm.digital.education.coaching.producer.model.request.TopRankerDataRequest;
+import com.paytm.digital.education.database.dao.TopRankerDAO;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
 import com.paytm.digital.education.exception.InvalidRequestException;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class ProducerTopRankerService {
+
+    private static final Logger log = LoggerFactory.getLogger(ProducerTopRankerService.class);
 
     private final TopRankerDAO topRankerDAO;
 

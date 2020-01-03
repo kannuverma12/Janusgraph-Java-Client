@@ -1,7 +1,8 @@
 package com.paytm.digital.education.coaching.connections.rest;
 
 import com.paytm.digital.education.utility.JsonUtils;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -13,8 +14,10 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
-@Slf4j
 public class RequestResponseLoggingInterceptor implements ClientHttpRequestInterceptor {
+
+    private static final Logger log =
+            LoggerFactory.getLogger(RequestResponseLoggingInterceptor.class);
 
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body,

@@ -12,7 +12,7 @@ import java.util.Objects;
 @Service()
 public class RedisCacheService {
 
-    private static Logger log = LoggerFactory.getLogger(RedisCacheService.class);
+    private static final Logger log = LoggerFactory.getLogger(RedisCacheService.class);
 
     public RedisCacheService() {
     }
@@ -20,7 +20,7 @@ public class RedisCacheService {
     public void addKeyToCache(String pKey, String pValue, Integer lRecordTtl) {
         Jedis jedis = null;
         log.debug("Add key to cache key : {}, value: {}, ttl : {}",
-                new Object[] {pKey, pValue, lRecordTtl});
+                pKey, pValue, lRecordTtl);
         try {
             JedisPool jedisPool = JedisConfiguration.getJedisPool();
             jedis = jedisPool.getResource();
@@ -60,6 +60,20 @@ public class RedisCacheService {
         return value;
     }
 
-    public void clearCache(String cacheName) {
+    public void delKeyFromCache(String key) {
+        log.debug("Delete Value From Cache, key : {} ", key);
+        Jedis jedis = null;
+        try {
+            JedisPool jedisPool = JedisConfiguration.getJedisPool();
+            jedis = jedisPool.getResource();
+            jedis.del(key);
+        } catch (Exception ex) {
+            log.error("Error while deleting value from redis, key : {}", ex, key);
+        } finally {
+            if (Objects.nonNull(jedis)) {
+                jedis.close();
+            }
+
+        }
     }
 }

@@ -6,8 +6,6 @@ import org.springframework.http.MediaType;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.ACCESS_KEY;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.CHECKSUM_HASH;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.PAYTM_APP_REQUEST_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.PAYTM_REQUEST_ID;
 
@@ -24,8 +22,6 @@ public class HeaderTemplate {
             {
                 put(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.toString());
                 put(PAYTM_REQUEST_ID, paytmRequestId);
-                put(CHECKSUM_HASH, checksumHash);
-                put(ACCESS_KEY, accessKey);
                 put(PAYTM_APP_REQUEST_ID, paytmAppRequestId);
             }
         };

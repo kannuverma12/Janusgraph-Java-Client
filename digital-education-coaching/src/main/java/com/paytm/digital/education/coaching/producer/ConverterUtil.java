@@ -6,7 +6,6 @@ import com.paytm.digital.education.coaching.producer.model.request.CoachingBanne
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCenterDataRequest;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCourseDataRequest;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCourseFeatureDataRequest;
-import com.paytm.digital.education.coaching.producer.model.request.CoachingCoursePatchRequest;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCtaDataRequest;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingExamDataRequest;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingInstituteDataRequest;
@@ -238,10 +237,6 @@ public class ConverterUtil {
         coachingCourseEntity.setPriority(request.getPriority());
 
         coachingCourseEntity.setIsDynamic(request.getIsDynamic());
-    }
-
-    public static void patchCoachingCourse(CoachingCoursePatchRequest request,
-            CoachingCourseEntity coachingCourseEntity) {
         coachingCourseEntity.setCtaInfo(request.getCtaInfo());
     }
 

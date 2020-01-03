@@ -9,8 +9,8 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EMPTY_STRING;
@@ -97,6 +97,9 @@ public class ExportCoachingCourseTransformer {
                         form.setCourseValidityType(entity.getValidityType().getText());
                     }
                     fillImportantDates(form, entity.getImportantDates());
+                    if (Objects.nonNull(entity.getCtaInfo())) {
+                        fillCtaData(form, entity.getCtaInfo());
+                    }
                     return form;
                 })
                 .collect(Collectors.toList());
@@ -119,5 +122,18 @@ public class ExportCoachingCourseTransformer {
             form.setImportantDateKey3(importantDates.get(2).getKey());
             form.setImportantDateVal3(importantDates.get(2).getValue());
         }
+    }
+
+    private static void fillCtaData(CoachingCourseForm form,
+            Map<CTAViewType, List<Long>> ctaInfo) {
+        String ctaIdListForPostOrder = (CollectionUtils.isEmpty(ctaInfo.get(CTAViewType.POST_ORDER))
+                ? EMPTY_STRING : StringUtils.join(ctaInfo.get(CTAViewType.POST_ORDER), ","));
+        String ctaIdListForListPage = (CollectionUtils.isEmpty(ctaInfo.get(CTAViewType.LIST))
+                ? EMPTY_STRING : StringUtils.join(ctaInfo.get(CTAViewType.LIST), ","));
+        String ctaIdListForDetailsPage = (CollectionUtils.isEmpty(ctaInfo.get(CTAViewType.DETAILS))
+                ? EMPTY_STRING : StringUtils.join(ctaInfo.get(CTAViewType.DETAILS), ","));
+        form.setPostOrderCta(ctaIdListForPostOrder);
+        form.setListPageCta(ctaIdListForListPage);
+        form.setDetailsPageCta(ctaIdListForDetailsPage);
     }
 }

@@ -1,25 +1,5 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import static com.paytm.digital.education.constant.ExploreConstants.APPLICATION;
-import static com.paytm.digital.education.constant.ExploreConstants.DD_MMM_YYYY;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_DETAIL;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FILTER_NAMESPACE;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_PREFIX;
-import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_MEDIUM;
-import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_MEDIUM_NAMESPACE;
-import static com.paytm.digital.education.constant.ExploreConstants.MMM_YYYY;
-import static com.paytm.digital.education.constant.ExploreConstants.NON_TENTATIVE;
-import static com.paytm.digital.education.constant.ExploreConstants.SECTION;
-import static com.paytm.digital.education.constant.ExploreConstants.WEB_FORM_URI_PREFIX;
-import static com.paytm.digital.education.constant.ExploreConstants.ZERO;
-import static com.paytm.digital.education.enums.Client.APP;
-import static com.paytm.digital.education.enums.EducationEntity.EXAM;
-import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
-import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
-import static com.paytm.digital.education.utility.DateUtil.dateToString;
-
 import com.paytm.digital.education.annotation.EduCache;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.ExamPaytmKeys;
@@ -42,6 +22,8 @@ import com.paytm.digital.education.serviceimpl.helper.ExamDatesHelper;
 import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
 import com.paytm.digital.education.serviceimpl.helper.ExamLogoHelper;
 import com.paytm.digital.education.utility.CommonUtil;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,9 +37,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.paytm.digital.education.constant.ExploreConstants.APPLICATION;
+import static com.paytm.digital.education.constant.ExploreConstants.DD_MMM_YYYY;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_DETAIL;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FILTER_NAMESPACE;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_PREFIX;
+import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_MEDIUM;
+import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_MEDIUM_NAMESPACE;
+import static com.paytm.digital.education.constant.ExploreConstants.NON_TENTATIVE;
+import static com.paytm.digital.education.constant.ExploreConstants.SECTION;
+import static com.paytm.digital.education.constant.ExploreConstants.WEB_FORM_URI_PREFIX;
+import static com.paytm.digital.education.enums.Client.APP;
+import static com.paytm.digital.education.enums.EducationEntity.EXAM;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
+import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
+import static com.paytm.digital.education.utility.DateUtil.dateToString;
+
 @Service
 @RequiredArgsConstructor
 public class ExamDetailServiceImpl {
+    private static final Logger log = LoggerFactory.getLogger(ExamDetailServiceImpl.class);
 
     private final CommonMongoRepository   commonMongoRepository;
     private final ExamLogoHelper          examLogoHelper;
@@ -117,9 +117,9 @@ public class ExamDetailServiceImpl {
      * Problem:- A cached method is calling another cached method in same service.
      * Cache by pass issue can arise.
      * Possible solutions:-
-     *   1. Is caching this method required ?
-     *   2. Refactor to move this method out
-     *   3. Autowire self
+     * 1. Is caching this method required ?
+     * 2. Refactor to move this method out
+     * 3. Autowire self
      */
     @Cacheable(value = "process_exam_detail", keyGenerator = "customKeyGenerator")
     public ExamDetail processExamDetail(Exam exam, List<String> examFields, Client client,
@@ -231,7 +231,7 @@ public class ExamDetailServiceImpl {
     }
 
     @Cacheable(value = "exam_build_response", keyGenerator = "customKeyGenerator")
-    public  ExamDetail buildResponse(Exam exam, Client client, boolean syllabus,
+    public ExamDetail buildResponse(Exam exam, Client client, boolean syllabus,
             boolean importantDatesflag, boolean derivedAttributes, boolean examCenters,
             boolean sectionsFlag, boolean widgets, boolean policies, boolean newsArticles,
             Instance nearestInstance, Map<String, Instance> subExamInstances) {

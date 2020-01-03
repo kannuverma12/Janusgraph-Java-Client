@@ -3,10 +3,6 @@ package com.paytm.digital.education.coaching.consumer.service.search;
 import com.paytm.digital.education.coaching.consumer.model.request.SearchRequest;
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.builder.CoachingSearchResponseBuilder;
-import com.paytm.digital.education.es.model.CoachingCenterSearch;
-import com.paytm.digital.education.es.model.CoachingCourseSearch;
-import com.paytm.digital.education.es.model.CoachingInstituteSearch;
-import com.paytm.digital.education.es.model.ExamSearch;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
@@ -17,13 +13,18 @@ import com.paytm.digital.education.elasticsearch.models.SortField;
 import com.paytm.digital.education.enums.es.AggregationType;
 import com.paytm.digital.education.enums.es.DataSortOrder;
 import com.paytm.digital.education.enums.es.FilterQueryType;
+import com.paytm.digital.education.es.model.CoachingCenterSearch;
+import com.paytm.digital.education.es.model.CoachingCourseSearch;
+import com.paytm.digital.education.es.model.CoachingInstituteSearch;
+import com.paytm.digital.education.es.model.ExamSearch;
 import com.paytm.digital.education.exception.EducationException;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.search.service.ISearchService;
 import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.utility.HierarchyIdentifierUtils;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,9 +41,9 @@ import java.util.concurrent.TimeoutException;
 import static com.paytm.digital.education.enums.es.FilterQueryType.RANGE;
 
 @Service
-@Slf4j
 public abstract class AbstractSearchService {
 
+    private static final Logger log = LoggerFactory.getLogger(AbstractSearchService.class);
 
     protected Map<Class, Map<String, String>> hierarchyMap;
 

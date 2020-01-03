@@ -9,7 +9,8 @@ import com.paytm.digital.education.coaching.ingestion.service.exportdata.ExportS
 import com.paytm.digital.education.coaching.ingestion.transformer.exportdata.ExportCompetitiveExamTransformer;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,9 +19,10 @@ import java.util.List;
 
 import static com.paytm.digital.education.coaching.constants.GoogleSheetExportConstants.COMPETITIVE_EXAM_SHEET_ID;
 
-@Slf4j
 @Service
 public class CompetitiveExamExportService extends AbstractExportService implements ExportService {
+
+    private static final Logger log = LoggerFactory.getLogger(CompetitiveExamExportService.class);
 
     private static final List<String> FIELDS = new ArrayList<String>() {
         {

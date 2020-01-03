@@ -17,6 +17,7 @@ public class CoachingConstants {
     public static final String EXAM_ID                         = "exam_id";
     public static final String STREAM_ID                       = "stream_id";
     public static final String COURSE_ID                       = "course_id";
+    public static final String CTA_ID                          = "cta_id";
     public static final String COURSE_TYPE                     = "course_type";
     public static final String COACHING_EXAM_STREAMS           = "stream_names";
     public static final String COACHING_COURSE_EXAMS           = "exam_names";
@@ -48,10 +49,10 @@ public class CoachingConstants {
     public static final String COACHING_COURSE_ID         = "course_id";
     public static final String COACHING_COURSE_IDS        = "course_ids";
     public static final String NAME                       = "name";
-    public static final String PAYTM_REQUEST_ID           = "PaytmRequestId";
+    public static final String PAYTM_REQUEST_ID           = "paytm-request-id";
     public static final String PAYTM_APP_REQUEST_ID       = "x-app-rid";
-    public static final String CHECKSUM_HASH              = "ChecksumHash";
-    public static final String ACCESS_KEY                 = "AccessKey";
+    public static final String CHECKSUM_HASH              = "check_sum_hash";
+    public static final String ACCESS_KEY                 = "access_key";
     public static final String EXAM_FILTER_NAMESPACE      = "exam_filter";
     public static final String EXAM_SEARCH_NAMESPACE      = "exam_search";
     public static final String EXAM_DETAIL_NAMESPACE      = "exam_detail";
@@ -61,6 +62,7 @@ public class CoachingConstants {
     public static final String CENTER_SEARCH_NAMESPACE    = "center_search";
     public static final String COURSE_FILTER_NAMESPACE    = "course_filter";
     public static final String COURSE_SEARCH_NAMESPACE    = "course_search";
+    public static final String TIME_STAMP                 = "time_stamp";
 
     public static final String INSTITUTES_GOOGLE_SHEET =
             "https://docs.google.com/spreadsheets/u/1/d/1gXwzFk3tLldPBYkgWZZINAc4gNJBSyItINeLLg4Bqs8/edit#gid=1844071691";
@@ -146,8 +148,7 @@ public class CoachingConstants {
 
 
     public static class Search {
-
-        public static final String EXAM_INDEX                      = "education_search_exam_v4";
+        
         public static final String SEARCH_INDEX_COACHING_COURSE    = "coaching_course_v1";
         public static final String SEARCH_INDEX_COACHING_INSTITUTE = "coaching_institute_v1";
         public static final String SEARCH_INDEX_COACHING_CENTER    = "coaching_center_v1";
@@ -155,8 +156,6 @@ public class CoachingConstants {
         public static final String IGNORE_GLOBAL_PRIORITY = "ignore_global_priority";
         public static final String IGNORE_ENTITY_POSITION = "ignore_entity_position";
 
-        public static final String EXAM_ANALYZER                      =
-                "word_delimiter_analyzer_search";
         public static final String SEARCH_ANALYZER_COACHING_COURSE    =
                 "word_delimiter_analyzer_search";
         public static final String SEARCH_ANALYZER_COACHING_INSTITUTE =

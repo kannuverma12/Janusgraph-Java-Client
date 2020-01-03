@@ -4,6 +4,7 @@ import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.database.repository.SequenceGenerator;
 import com.paytm.digital.education.database.repository.StreamRepository;
+import com.paytm.digital.education.metrics.annotations.NullValueAlert;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -50,14 +51,16 @@ public class CoachingStreamDAO {
         return streamRepository.findByStreamName(name);
     }
 
+    @NullValueAlert(mandatoryFields = "#mandatoryFields")
     public StreamEntity findByStreamId(String streamIdField, long streamId,
-            List<String> projectionFields) {
+            List<String> projectionFields, List<String> mandatoryFields) {
         return commonMongoRepository.getEntityByFields(
                 streamIdField, streamId, StreamEntity.class, projectionFields);
     }
 
+    @NullValueAlert(mandatoryFields = "#mandatoryFields")
     public List<StreamEntity> findByStreamIdsIn(String streamIdField, List<Long> streamIds,
-            List<String> projectionFields) {
+            List<String> projectionFields, List<String> mandatoryFields) {
         return commonMongoRepository.getEntityFieldsByValuesIn(streamIdField, streamIds,
                 StreamEntity.class, projectionFields);
     }
