@@ -35,14 +35,6 @@ public class CTAConfigDBService {
         return getCTAConfigHolder(commonMongoRepository, ctaEntity, id, asList("cta_config"));
     }
 
-    public CTAConfigHolder getCTAConfigHolderAllFields(CTAEntity ctaEntity, long id) {
-        return getCTAConfigHolder(commonMongoRepository, ctaEntity, id, null);
-    }
-
-    public CTAConfigHolder getCTAConfigHolderOnlyCTAConfigBypassCache(CTAEntity ctaEntity, long id) {
-        return getCTAConfigHolder(underlyingCommonMongoRepository, ctaEntity, id, asList("cta_config"));
-    }
-
     public CTAConfigHolder getCTAConfigHolderAllFieldsBypassCache(CTAEntity ctaEntity, long id) {
         return getCTAConfigHolder(underlyingCommonMongoRepository, ctaEntity, id, null);
     }
