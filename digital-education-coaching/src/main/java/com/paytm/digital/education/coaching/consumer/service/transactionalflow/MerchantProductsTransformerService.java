@@ -84,7 +84,7 @@ public class MerchantProductsTransformerService {
         }
         CoachingInstituteEntity coachingInstituteEntity = coachingInstituteDAO
                 .findByPaytmMerchantId(PAYTM_MERCHANT_ID, request.getMerchantId().toString(),
-                        INSTITUTE_FIELDS);
+                        INSTITUTE_FIELDS, INSTITUTE_FIELDS);
 
         if (Objects.isNull(coachingInstituteEntity) || !coachingInstituteEntity.getIsEnabled()) {
             log.error("No coaching institute found with merchant id: {}", request.getMerchantId());
@@ -103,7 +103,8 @@ public class MerchantProductsTransformerService {
                 coachingCourseDAO.findByCoachingInstIdAndIsDynAndIsEnabledAndMerchantPIdsIn(
                         COACHING_INSTITUTE_ID, coachingInstituteEntity.getInstituteId(),
                         IS_DYNAMIC, true, IS_ENABLED, true,
-                        MERCHANT_PRODUCT_ID, merchantProductIds, COACHING_COURSE_FIELDS);
+                        MERCHANT_PRODUCT_ID, merchantProductIds, COACHING_COURSE_FIELDS,
+                        COACHING_COURSE_FIELDS);
         if (CollectionUtils.isEmpty(dynamicCoachingCourses)) {
             log.error("Dynamic courses for merchant_id: {} does not exist",
                     request.getMerchantId());

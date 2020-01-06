@@ -2,14 +2,15 @@ package com.paytm.digital.education.coaching.producer.service;
 
 import com.paytm.digital.education.coaching.producer.model.dto.CoachingCourseDTO;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCourseDataRequest;
-import com.paytm.digital.education.coaching.producer.model.request.CoachingCoursePatchRequest;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.exception.InvalidRequestException;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -54,6 +55,11 @@ public class CoachingCourseManagerService {
         producerTargetExamService.isValidExamIds(coachingCourseDataRequest.getPrimaryExamIds());
         producerCoachingCourseFeatureService
                 .isValidCourseFeatureIds(coachingCourseDataRequest.getCourseFeatureIds());
+        if (!ObjectUtils.isEmpty(coachingCourseDataRequest.getCtaInfo().values())) {
+            coachingCtaManagerService
+                    .isValidCTAIds(coachingCourseDataRequest.getCtaInfo()
+                            .values().stream().flatMap(List::stream).collect(Collectors.toList()));
+        }
         return CoachingCourseDTO
                 .builder().courseId(programService.save(coachingCourseDataRequest).getCourseId())
                 .build();
@@ -75,21 +81,13 @@ public class CoachingCourseManagerService {
         producerTargetExamService.isValidExamIds(coachingCourseDataRequest.getPrimaryExamIds());
         producerCoachingCourseFeatureService
                 .isValidCourseFeatureIds(coachingCourseDataRequest.getCourseFeatureIds());
+        if (!ObjectUtils.isEmpty(coachingCourseDataRequest.getCtaInfo().values())) {
+            coachingCtaManagerService
+                    .isValidCTAIds(coachingCourseDataRequest.getCtaInfo()
+                            .values().stream().flatMap(List::stream).collect(Collectors.toList()));
+        }
         return CoachingCourseDTO
                 .builder()
                 .courseId(programService.update(coachingCourseDataRequest).getCourseId()).build();
-    }
-
-    public CoachingCourseDTO patch(CoachingCoursePatchRequest coachingCoursePatchRequest) {
-
-        Optional.ofNullable(coachingCoursePatchRequest.getCourseId())
-                .orElseThrow(() -> new InvalidRequestException("course id should be present"));
-
-        coachingCtaManagerService.isValidCTAIds(coachingCoursePatchRequest.getCtaInfo().values()
-                .stream().collect(Collectors.toList()));
-
-        return CoachingCourseDTO
-                .builder()
-                .courseId(programService.patch(coachingCoursePatchRequest).getCourseId()).build();
     }
 }

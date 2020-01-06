@@ -38,17 +38,17 @@ import static com.paytm.digital.education.enums.es.AggregationType.GEO_DISTANCE;
 import static com.paytm.digital.education.enums.es.AggregationType.MINMAX;
 import static com.paytm.digital.education.enums.es.AggregationType.TERMS;
 import static com.paytm.digital.education.enums.es.AggregationType.TOP_HITS;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_ACCEPTED;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_EDUCATION_LEVEL;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_ESTABLISHMENT_YEAR;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_FEE;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_GENDER_ACCEPTED;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_BOARDS_OWNERSHIP;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_CITY;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_FACILITIES;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_LOCATION;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_MEDIUM;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_STATE;
+import static com.paytm.digital.education.constant.SchoolConstants.SCHOOL_BOARDS_ACCEPTED;
+import static com.paytm.digital.education.constant.SchoolConstants.SCHOOL_BOARDS_EDUCATION_LEVEL;
+import static com.paytm.digital.education.constant.SchoolConstants.SCHOOL_BOARDS_ESTABLISHMENT_YEAR;
+import static com.paytm.digital.education.constant.SchoolConstants.SCHOOL_BOARDS_FEE;
+import static com.paytm.digital.education.constant.SchoolConstants.SCHOOL_BOARDS_GENDER_ACCEPTED;
+import static com.paytm.digital.education.constant.SchoolConstants.SCHOOL_BOARDS_OWNERSHIP;
+import static com.paytm.digital.education.constant.SchoolConstants.SCHOOL_CITY;
+import static com.paytm.digital.education.constant.SchoolConstants.SCHOOL_FACILITIES;
+import static com.paytm.digital.education.constant.SchoolConstants.SCHOOL_LOCATION;
+import static com.paytm.digital.education.constant.SchoolConstants.SCHOOL_MEDIUM;
+import static com.paytm.digital.education.constant.SchoolConstants.SCHOOL_STATE;
 
 @Service
 @AllArgsConstructor

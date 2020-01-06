@@ -36,7 +36,7 @@ import static com.paytm.digital.education.database.entity.PaytmKeys.Constants.PA
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.S3_IMAGE_PATH_SUFFIX;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SCHOOL_ENTITY;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SCHOOL_FILE_VERSION;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_ID;
+import static com.paytm.digital.education.constant.SchoolConstants.SCHOOL_ID;
 
 @Service
 @AllArgsConstructor
@@ -75,10 +75,10 @@ public class TransformSchoolService {
 
             log.info("Saving schools to db.");
             for (School school : schoolEntities) {
-
-                uploadImagestoS3(school.getGallery(), school.getSchoolId());
-
-                commonMongoRepository.saveOrUpdate(school);
+                if (Objects.nonNull(school)) {
+                    uploadImagestoS3(school.getGallery(), school.getSchoolId());
+                    commonMongoRepository.saveOrUpdate(school);
+                }
             }
             log.info("Saved schools to db.");
             log.info("Updating version number for schools");

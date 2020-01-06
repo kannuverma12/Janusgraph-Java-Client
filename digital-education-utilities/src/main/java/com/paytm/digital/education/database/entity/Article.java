@@ -1,13 +1,16 @@
 package com.paytm.digital.education.database.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
-public class Article {
+public class Article implements Serializable {
+
+    private static final long serialVersionUID = -7687616076765113553L;
+
     @Field("article_title")
     private String articleTitle;
 

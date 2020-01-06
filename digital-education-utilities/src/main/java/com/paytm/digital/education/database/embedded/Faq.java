@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
+import java.io.Serializable;
 
 @Data
 @Builder
@@ -15,7 +16,9 @@ import javax.validation.constraints.NotEmpty;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Faq {
+public class Faq implements Serializable {
+
+    private static final long serialVersionUID = -7645833042841691666L;
 
     @NotEmpty
     private String question;

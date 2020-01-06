@@ -152,7 +152,8 @@ public class DetailPageSectionHelper {
             List<String> validatedSectionOrder =
                     validateRequestSections(sectionOrderRequest.getSectionOrder(),
                             pageEntity.getSections());
-            if (validatedSectionOrder.size() == pageEntity.getSections().size()) {
+            if (validatedSectionOrder.size() == pageEntity.getSections().size()
+                    && validatedSectionOrder.size() == sectionOrderRequest.getSectionOrder().size()) {
                 Map<String, Object> query = new HashMap<>();
                 query.put(NAME, sectionOrderRequest.getEntity());
                 List<String> fields = Arrays.asList(SECTIONS);
@@ -187,9 +188,13 @@ public class DetailPageSectionHelper {
     private List<String> validateRequestSections(List<String> requestSectionOrder,
             List<String> dbSectionOrder) {
         List<String> validatedList = new ArrayList<>();
-        for (String section : requestSectionOrder) {
-            if (Objects.nonNull(dbSectionOrder) && dbSectionOrder.contains(section)) {
-                validatedList.add(section);
+        if (!CollectionUtils.isEmpty(dbSectionOrder)) {
+            for (String section : requestSectionOrder) {
+                if (dbSectionOrder.contains(section)) {
+                    validatedList.add(section);
+                } else {
+                    break;
+                }
             }
         }
         return validatedList;
@@ -210,7 +215,8 @@ public class DetailPageSectionHelper {
         List<String> validatedSectionOrder =
                 validateRequestSections(sectionOrderRequest.getSectionOrder(), dbSections);
         String entity = sectionOrderRequest.getEntity();
-        if (Objects.nonNull(dbSections) && (validatedSectionOrder.size() == dbSections.size())) {
+        if (Objects.nonNull(dbSections) && (validatedSectionOrder.size() == dbSections.size())
+                && validatedSectionOrder.size() == sections.size()) {
             Update update = new Update();
             String updateKey = ATTRIBUTES + "." + entity;
             update.set(updateKey, sections);

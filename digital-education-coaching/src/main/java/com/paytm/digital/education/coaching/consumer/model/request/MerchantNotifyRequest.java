@@ -34,7 +34,7 @@ public class MerchantNotifyRequest {
     @Valid
     @ApiModelProperty(required = true)
     private NotifyUserInfo userData;
-
+    
     @NotEmpty
     @ApiModelProperty(required = true)
     private String orderCreatedAt;

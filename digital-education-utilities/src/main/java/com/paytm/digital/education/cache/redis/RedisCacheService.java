@@ -1,6 +1,6 @@
 package com.paytm.digital.education.cache.redis;
 
-import com.paytm.digital.education.config.RedisConfiguration;
+import com.paytm.digital.education.config.JedisConfiguration;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ public class RedisCacheService {
         log.debug("Add key to cache key : {}, value: {}, ttl : {}",
                 pKey, pValue, lRecordTtl);
         try {
-            JedisPool jedisPool = RedisConfiguration.getJedisPool();
+            JedisPool jedisPool = JedisConfiguration.getJedisPool();
             jedis = jedisPool.getResource();
             if (lRecordTtl != -1) {
                 jedis.setex(pKey, lRecordTtl, pValue);
@@ -30,7 +30,7 @@ public class RedisCacheService {
                 jedis.set(pKey, pValue);
             }
         } catch (Exception ex) {
-            log.error("Exception while adding key : {} , value : {}, ttl : {}",
+            log.error("Error while adding key : {} , value : {}, ttl : {}",
                     ex, pKey, pValue, lRecordTtl);
         } finally {
             if (Objects.nonNull(jedis)) {
@@ -46,11 +46,11 @@ public class RedisCacheService {
         String value = null;
 
         try {
-            JedisPool jedisPool = RedisConfiguration.getJedisPool();
+            JedisPool jedisPool = JedisConfiguration.getJedisPool();
             jedis = jedisPool.getResource();
             value = jedis.get(pKey);
         } catch (Exception ex) {
-            log.error("Exception while getting value from redis, key : {}", ex, pKey);
+            log.error("Error while getting value from redis, key : {}", ex, pKey);
         } finally {
             if (Objects.nonNull(jedis)) {
                 jedis.close();
@@ -64,7 +64,7 @@ public class RedisCacheService {
         log.debug("Delete Value From Cache, key : {} ", key);
         Jedis jedis = null;
         try {
-            JedisPool jedisPool = RedisConfiguration.getJedisPool();
+            JedisPool jedisPool = JedisConfiguration.getJedisPool();
             jedis = jedisPool.getResource();
             jedis.del(key);
         } catch (Exception ex) {

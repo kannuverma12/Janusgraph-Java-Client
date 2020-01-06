@@ -20,6 +20,8 @@ import javax.validation.constraints.Min;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class InstiPaytmKeys extends PaytmKeys {
 
+    private static final long serialVersionUID = -1034416636091161805L;
+
     @Field("pid")
     @JsonProperty("pid")
     @Min(1)

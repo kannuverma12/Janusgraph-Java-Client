@@ -1,5 +1,6 @@
 package com.paytm.digital.education.explore.service.helper;
 
+import com.paytm.digital.education.annotation.EduCache;
 import com.paytm.digital.education.explore.response.dto.detail.Facility;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.FacilityResponse;
 import com.paytm.digital.education.property.reader.PropertyReader;
@@ -7,7 +8,6 @@ import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -31,7 +31,7 @@ public class FacilityDataHelper {
 
     private PropertyReader propertyReader;
 
-    @Cacheable(value = "properties", key = "#instituteId", unless = "#result == null")
+    @EduCache(cache = "properties", shouldCacheNull = false)
     public List<Facility> getFacilitiesData(long instituteId, List<String> facilites) {
         if (!CollectionUtils.isEmpty(facilites)) {
             Map<String, Map<String, Object>> propertyMap =
@@ -73,6 +73,7 @@ public class FacilityDataHelper {
         return facilityResponse;
     }
 
+    @EduCache(cache = "properties")
     public List<FacilityResponse> mapSchoolFacilitiesToDataObject(List<String> facilitiesAsString) {
         Map<String, Object> map =
                 propertyReader.getPropertiesAsMapByKey(

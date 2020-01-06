@@ -17,12 +17,14 @@ import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.property.reader.PropertyReader;
+import com.paytm.digital.education.serviceimpl.helper.ExamDatesHelper;
 import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
 import com.paytm.digital.education.serviceimpl.helper.ExamLogoHelper;
 import com.paytm.digital.education.utility.CommonUtils;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -61,24 +63,37 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_EXAM_NAME;
 
 @Service
-@AllArgsConstructor
 public class ExamService {
 
     private static final Logger log = LoggerFactory.getLogger(ExamService.class);
 
-    private final CoachingCourseService     coachingCourseService;
-    private final CoachingInstituteService  coachingInstituteService;
-    private final SearchDataHelper          searchDataHelper;
-    private final PropertyReader            propertyReader;
-    private final CoachingExamSectionHelper coachingExamSectionHelper;
-    private final ExamInstanceHelper        examInstanceHelper;
-    private final ExamLogoHelper            examLogoHelper;
-    private final CoachingExamDAO           coachingExamDAO;
-    private final CoachingStreamDAO         coachingStreamDAO;
+    @Autowired
+    private CoachingCourseService     coachingCourseService;
+    @Autowired
+    private CoachingInstituteService  coachingInstituteService;
+    @Autowired
+    private SearchDataHelper          searchDataHelper;
+    @Autowired
+    private PropertyReader            propertyReader;
+    @Autowired
+    private CoachingExamSectionHelper coachingExamSectionHelper;
+    @Autowired
+    private ExamInstanceHelper        examInstanceHelper;
+    @Autowired
+    private ExamLogoHelper            examLogoHelper;
+    @Autowired
+    private ExamDatesHelper           examDatesHelper;
+    @Autowired
+    private CoachingExamDAO           coachingExamDAO;
+    @Autowired
+    private CoachingStreamDAO         coachingStreamDAO;
+
+    @Value("${exam.default.instances.for.date:2}")
+    private Integer defaultNoOfInstances;
 
     public GetExamDetailsResponse getExamDetails(final long examId, final String urlDisplayKey) {
         Exam exam = coachingExamDAO.findByExamId(EXAM_ID, examId,
-                EXAM_DETAILS_FIELDS);
+                EXAM_DETAILS_FIELDS, EXAM_DETAILS_FIELDS);
         if (Objects.isNull(exam)) {
             log.error("Exam with id: {} does not exist", examId);
             throw new BadRequestException(INVALID_EXAM_ID);
@@ -112,8 +127,7 @@ public class ExamService {
                 .topCoachingInstitutes(this.getTopCoachingInstitutes(exam))
                 .topCoachingCourses(this.getTopCoachingCourses(exam))
                 .sections(sections)
-                .importantDates(examInstanceHelper
-                        .getImportantDates(exam, nearestInstance, subExamInstances))
+                .importantDates(examDatesHelper.getImportantDates(exam, defaultNoOfInstances))
                 .importantDatesBannerDetails(this.getImportantDatesBannerDetails())
                 .build();
 
@@ -175,7 +189,7 @@ public class ExamService {
 
     private StreamEntity getStreamEntity(final long streamId) {
         return coachingStreamDAO.findByStreamId(STREAM_ID,
-                streamId, STREAM_DETAILS_FIELDS);
+                streamId, STREAM_DETAILS_FIELDS, STREAM_DETAILS_FIELDS);
     }
 
     private TopCoachingInstitutes getTopCoachingInstitutes(Exam exam) {

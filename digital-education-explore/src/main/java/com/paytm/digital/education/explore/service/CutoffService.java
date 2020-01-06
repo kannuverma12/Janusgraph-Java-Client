@@ -11,5 +11,5 @@ public interface CutoffService {
     List<CutoffSearchResponse> searchCutOffs(long instituteId, long examId, Gender gender,
             String casteGroup, String fieldGroup);
 
-    ExamAndCutOff getSearchList(long instituteId, long examId);
+    ExamAndCutOff getSearchList(Long instituteId, long examId);
 }

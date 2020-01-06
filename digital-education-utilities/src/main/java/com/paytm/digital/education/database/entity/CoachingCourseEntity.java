@@ -26,6 +26,8 @@ import java.util.Map;
 @CompoundIndex(def = "{'paytm_product_id':1, 'merchant_product_id':1}", unique = true, name = "course_unique")
 public class CoachingCourseEntity extends Base {
 
+    private static final long serialVersionUID = -4618189079504193593L;
+
     @Id
     @Field("_id")
     @JsonIgnore
@@ -186,5 +188,5 @@ public class CoachingCourseEntity extends Base {
     private Boolean isDynamic;
 
     @Field("cta_info")
-    private Map<CTAViewType, Long> ctaInfo;
+    private Map<CTAViewType, List<Long>> ctaInfo;
 }

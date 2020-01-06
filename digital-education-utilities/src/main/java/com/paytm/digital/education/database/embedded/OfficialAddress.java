@@ -1,18 +1,21 @@
 package com.paytm.digital.education.database.embedded;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serializable;
+
 @Data
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class OfficialAddress {
+public class OfficialAddress implements Serializable {
+
+    private static final long serialVersionUID = -4213089272994598615L;
 
     @Field("address_line1")
     private String addressLine1;

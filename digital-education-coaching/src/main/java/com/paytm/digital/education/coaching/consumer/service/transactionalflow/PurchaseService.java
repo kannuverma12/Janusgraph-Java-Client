@@ -20,7 +20,8 @@ import com.paytm.digital.education.exception.PurchaseException;
 import com.paytm.digital.education.utility.JsonUtils;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -46,14 +47,19 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_CART_ITEMS;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_MERCHANT_DATA;
 
 @Service
-@AllArgsConstructor
 public class PurchaseService {
 
     private static final Logger log = LoggerFactory.getLogger(PurchaseService.class);
 
+    @Autowired
     private RedisCacheService redisCacheService;
+    @Autowired
     private CoachingCourseDAO coachingCourseDAO;
+    @Autowired
     private MerchantCall      merchantCall;
+
+    @Value("${coaching.category.id}")
+    private String categoryId;
 
     public VerifyResponse verify(VerifyRequest request) throws PurchaseException {
         List<CartItem> cartItems = request.getCartItems();
@@ -153,6 +159,13 @@ public class PurchaseService {
                     "Invalid Merchant Product Id for course_id: {}, DB m_p_id: {}, request m_p_id: {}",
                     courseId, coachingCourseEntity.getMerchantProductId(),
                     cartItem.getMetaData().getMerchantProductId());
+            return false;
+        }
+
+        if (!cartItem.getCategoryId().equals(categoryId)) {
+            log.error(
+                    "Invalid category id for course_id: {}, Correct category_id: {}, request category_id: {}",
+                    courseId, categoryId, cartItem.getCategoryId());
             return false;
         }
 

@@ -247,7 +247,8 @@ public class CoachingCourseSearchService extends AbstractSearchService {
 
     private CoachingInstituteEntity fetchInstitute(final long instituteId) {
         final CoachingInstituteEntity institute =
-                coachingInstituteDAO.findByInstituteId(INSTITUTE_ID, instituteId, INSTITUTE_FIELDS);
+                coachingInstituteDAO.findByInstituteId(INSTITUTE_ID, instituteId, INSTITUTE_FIELDS,
+                        INSTITUTE_FIELDS);
         if (institute == null) {
             log.error("Got null CoachingInstitute for id: {}", instituteId);
             throw new BadRequestException(INVALID_INSTITUTE_ID,

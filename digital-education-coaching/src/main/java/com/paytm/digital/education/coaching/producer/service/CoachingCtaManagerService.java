@@ -98,5 +98,4 @@ public class CoachingCtaManagerService {
         }
         return true;
     }
-
 }

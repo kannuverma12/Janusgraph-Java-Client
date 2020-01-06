@@ -60,7 +60,8 @@ public class CoachingStreamService {
     public GetStreamDetailsResponse getStreamDetails(final long streamId,
             final String urlDisplayKey) {
         StreamEntity streamEntity =
-                coachingStreamDAO.findByStreamId(STREAM_ID, streamId, STREAM_DETAILS_FIELDS);
+                coachingStreamDAO.findByStreamId(STREAM_ID, streamId, STREAM_DETAILS_FIELDS,
+                        STREAM_DETAILS_FIELDS);
 
         if (Objects.isNull(streamEntity) || !streamEntity.getIsEnabled()) {
             log.error("Stream with id: {} does not exist", streamId);

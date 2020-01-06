@@ -337,7 +337,8 @@ public class CampusAdminServiceImpl implements CampusAdminService {
                     event.setCreatedAt(campusEngagementHelper.convertDateFormat(XCEL_DATE_FORMAT,
                             DB_DATE_FORMAT, xcelEvent.getTimestamp()));
                 } catch (Exception e) {
-                    log.error("error parsing date");
+                    log.error("Error parsing date : {}, expected format is : {}", e.getMessage(),
+                            XCEL_DATE_FORMAT);
                 }
 
                 boolean isMediaEmpty = true;

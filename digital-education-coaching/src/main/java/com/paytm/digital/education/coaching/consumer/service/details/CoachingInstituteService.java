@@ -144,7 +144,7 @@ public class CoachingInstituteService {
             String urlDisplayKey, Long streamId, Long examId) {
         CoachingInstituteEntity coachingInstituteEntity =
                 coachingInstituteDAO.findByInstituteId(INSTITUTE_ID, instituteId,
-                        COACHING_INSTITUTE_FIELDS);
+                        COACHING_INSTITUTE_FIELDS, COACHING_INSTITUTE_FIELDS);
         if (Objects.isNull(coachingInstituteEntity)
                 || Objects.isNull(coachingInstituteEntity.getIsEnabled())
                 || !coachingInstituteEntity.getIsEnabled()) {
@@ -158,6 +158,7 @@ public class CoachingInstituteService {
             throw new BadRequestException(INVALID_INSTITUTE_NAME);
         }
 
+        fetchCoachingCentersByInstituteId(instituteId);
         Map<String, Object> propertyMap = propertyReader.getPropertiesAsMapByKey(
                 DETAILS_PROPERTY_COMPONENT, DETAILS_PROPERTY_NAMESPACE, DETAILS_PROPERTY_KEY);
 
@@ -251,7 +252,7 @@ public class CoachingInstituteService {
         }
         com.paytm.digital.education.database.entity.StreamEntity stream =
                 coachingStreamDAO.findByStreamId(STREAM_ID, streamId,
-                        STREAM_FIELDS);
+                        STREAM_FIELDS, STREAM_FIELDS);
         if (Objects.isNull(stream)
                 || Objects.isNull(stream.getIsEnabled()) || !stream.getIsEnabled()) {
             return null;
@@ -272,14 +273,14 @@ public class CoachingInstituteService {
     }
 
     private com.paytm.digital.education.database.entity.Exam getExamEntity(Long examId) {
-        return coachingExamDAO.findByExamId(EXAM_ID, examId, EXAM_FIELDS);
+        return coachingExamDAO.findByExamId(EXAM_ID, examId, EXAM_FIELDS, EXAM_FIELDS);
     }
 
     private Map<Long, CoachingCenterEntity> fetchCoachingCentersByInstituteId(
             final long instituteId) {
         List<CoachingCenterEntity> coachingCenterEntityList =
                 coachingCenterDAO.findByInstituteId(INSTITUTE_ID, instituteId,
-                        CENTER_FIELDS);
+                        CENTER_FIELDS, CENTER_FIELDS);
         if (CollectionUtils.isEmpty(coachingCenterEntityList)) {
             return Collections.EMPTY_MAP;
         }
@@ -423,7 +424,7 @@ public class CoachingInstituteService {
         List<com.paytm.digital.education.database.entity.Exam> examEntityList =
                 coachingExamDAO.findByExamIdsIn(EXAM_ID,
                         coachingInstituteEntity.getExams(),
-                        CoachingInstituteService.EXAM_FIELDS);
+                        CoachingInstituteService.EXAM_FIELDS, CoachingInstituteService.EXAM_FIELDS);
 
         Map<Long, com.paytm.digital.education.database.entity.Exam> examIdToValueMap =
                 new HashMap<>();
@@ -458,6 +459,7 @@ public class CoachingInstituteService {
         List<com.paytm.digital.education.database.entity.StreamEntity> streamEntityList =
                 coachingStreamDAO.findByStreamIdsIn(STREAM_ID,
                         coachingInstituteEntity.getStreams(),
+                        CoachingInstituteService.STREAM_FIELDS,
                         CoachingInstituteService.STREAM_FIELDS);
 
         Map<Long, com.paytm.digital.education.database.entity.StreamEntity> streamIdToValueMap =
@@ -494,18 +496,21 @@ public class CoachingInstituteService {
             topRankerEntityList =
                     topRankerDAO.findByInstituteIdAndIsEnabledAndExamIdAndSortBy(
                             INSTITUTE_ID, instituteId, IS_ENABLED, true, EXAM_ID, examId,
-                            CoachingCourseService.TOP_RANKER_FIELDS, sortMap, TOP_RANKER_LIMIT);
+                            CoachingCourseService.TOP_RANKER_FIELDS, sortMap, TOP_RANKER_LIMIT,
+                            CoachingCourseService.TOP_RANKER_FIELDS);
 
         } else if (Objects.nonNull(streamId)) {
             topRankerEntityList =
                     topRankerDAO.findByInstituteIdAndIsEnabledAndStreamIdsAndSortBy(
                             INSTITUTE_ID, instituteId, IS_ENABLED, true, STREAM_IDS, streamId,
-                            CoachingCourseService.TOP_RANKER_FIELDS, sortMap, TOP_RANKER_LIMIT);
+                            CoachingCourseService.TOP_RANKER_FIELDS, sortMap, TOP_RANKER_LIMIT,
+                            CoachingCourseService.TOP_RANKER_FIELDS);
         } else {
             topRankerEntityList =
                     topRankerDAO.findByInstituteIdAndIsEnabledAndSortBy(
                             INSTITUTE_ID, instituteId, IS_ENABLED, true,
-                            CoachingCourseService.TOP_RANKER_FIELDS, sortMap, TOP_RANKER_LIMIT);
+                            CoachingCourseService.TOP_RANKER_FIELDS, sortMap, TOP_RANKER_LIMIT,
+                            CoachingCourseService.TOP_RANKER_FIELDS);
         }
 
         if (CollectionUtils.isEmpty(topRankerEntityList) && Objects.nonNull(examId)) {
@@ -518,7 +523,8 @@ public class CoachingInstituteService {
                 topRankerEntityList =
                         topRankerDAO.findByInstituteIdAndIsEnabledAndStreamIdsAndSortBy(
                                 INSTITUTE_ID, instituteId, IS_ENABLED, true, STREAM_IDS, streamId,
-                                CoachingCourseService.TOP_RANKER_FIELDS, sortMap, TOP_RANKER_LIMIT);
+                                CoachingCourseService.TOP_RANKER_FIELDS, sortMap, TOP_RANKER_LIMIT,
+                                CoachingCourseService.TOP_RANKER_FIELDS);
             }
         }
 
@@ -558,7 +564,7 @@ public class CoachingInstituteService {
             }
         };
         List<com.paytm.digital.education.database.entity.Exam> examEntityList =
-                coachingExamDAO.findByExamIdsIn(EXAM_ID, examIds, examFields);
+                coachingExamDAO.findByExamIdsIn(EXAM_ID, examIds, examFields, examFields);
         if (!CollectionUtils.isEmpty(examEntityList)) {
             for (com.paytm.digital.education.database.entity.Exam examEntity : examEntityList) {
                 examIdsAndNameMap.put(examEntity.getExamId(), examEntity.getExamShortName());
@@ -580,7 +586,7 @@ public class CoachingInstituteService {
         };
         List<CoachingCourseEntity> coachingCourseEntityList =
                 coachingCourseDAO.findByCourseIdsIn(COURSE_ID, courseIds,
-                        coachingCourseFields);
+                        coachingCourseFields, coachingCourseFields);
         if (!CollectionUtils.isEmpty(coachingCourseEntityList)) {
             for (CoachingCourseEntity coachingCourseEntity : coachingCourseEntityList) {
                 coachingCourseIdsAndNameMap.put(coachingCourseEntity.getCourseId(),

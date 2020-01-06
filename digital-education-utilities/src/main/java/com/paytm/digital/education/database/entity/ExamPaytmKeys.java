@@ -15,6 +15,8 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ExamPaytmKeys extends PaytmKeys {
 
+    private static final long serialVersionUID = 8460070816928343174L;
+
     @JsonProperty("college_predictor_id")
     @Field("college_predictor_id")
     private Long collegePredictorId;

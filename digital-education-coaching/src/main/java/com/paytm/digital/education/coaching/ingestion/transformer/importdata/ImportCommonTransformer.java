@@ -7,6 +7,7 @@ import com.paytm.education.logger.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ImportCommonTransformer {
@@ -80,6 +81,23 @@ public class ImportCommonTransformer {
 
         for (final String value : commaSeparatedValues) {
             list.add(value.trim());
+        }
+
+        return list;
+    }
+
+    static List<Long> convertStringToListOfDistinctLong(final String input) {
+        if (StringUtils.isEmpty(input)) {
+            return Collections.emptyList();
+        }
+
+        final String[] commaSeparatedValues = input.split(DELIMITER_COMMA);
+        final List<Long> list = new ArrayList<>();
+
+        for (final String value : commaSeparatedValues) {
+            if (!list.contains(Long.valueOf(value.trim()))) {
+                list.add(Long.valueOf(value.trim()));
+            }
         }
 
         return list;

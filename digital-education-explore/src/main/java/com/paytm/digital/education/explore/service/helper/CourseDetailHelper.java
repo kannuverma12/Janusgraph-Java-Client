@@ -6,10 +6,13 @@ import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.detail.Course;
+import com.paytm.digital.education.explore.response.dto.search.CourseData;
 import com.paytm.digital.education.explore.response.dto.search.CourseSearchResponse;
 import com.paytm.digital.education.explore.response.dto.search.SearchBaseData;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.service.impl.CourseSearchService;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -18,11 +21,14 @@ import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
+import static com.paytm.digital.education.constant.ExploreConstants.ACCEPTING_APPLICATION;
 import static com.paytm.digital.education.constant.ExploreConstants.COURSE_SIZE_FOR_INSTITUTE_DETAIL;
 import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID_COURSE;
 import static com.paytm.digital.education.constant.ExploreConstants.PARENT_INSTITUTE_ID_COURSE;
@@ -33,6 +39,8 @@ public class CourseDetailHelper {
 
     private CourseSearchService courseSearchService;
 
+    private static final Logger log = LoggerFactory.getLogger(CourseDetailHelper.class);
+
     /**
      * Filtering by parent institute id for universities to get courses of all child colleges
      */
@@ -42,7 +50,7 @@ public class CourseDetailHelper {
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.setEntity(EducationEntity.COURSE);
         searchRequest.setLimit(COURSE_SIZE_FOR_INSTITUTE_DETAIL);
-        searchRequest.setFetchFilter(true);
+        searchRequest.setFetchFilter(false);
         Map<String, List<Object>> filters = new HashMap<>();
         if (type == CollegeEntityType.UNIVERSITY) {
             filters.put(PARENT_INSTITUTE_ID_COURSE, instituteIds);
@@ -63,6 +71,7 @@ public class CourseDetailHelper {
                     course.setUrlDisplayKey(courseData.getUrlDisplayKey());
                     course.setSeats(courseData.getSeatsAvailable());
                     course.setFee(courseData.getFee());
+                    course.setAcceptingApplication(courseData.isAcceptingApplication());
                     courses.add(course);
                 });
             }
@@ -102,6 +111,7 @@ public class CourseDetailHelper {
                                 course.setUrlDisplayKey(courseData.getUrlDisplayKey());
                                 course.setSeats(courseData.getSeatsAvailable());
                                 course.setFee(courseData.getFee());
+                                course.setAcceptingApplication(courseData.isAcceptingApplication());
                                 courses.add(course);
                             });
                             coursesPerLevel
@@ -114,4 +124,36 @@ public class CourseDetailHelper {
         }
         return new MutablePair<>(0L, coursesPerLevel);
     }
+
+    public List<CourseData> getLeadCourses(List<Object> instituteIds,
+            CollegeEntityType type) {
+        List<CourseData> courseDataResponse = new ArrayList<>();
+        try {
+            SearchRequest searchRequest = new SearchRequest();
+            searchRequest.setEntity(EducationEntity.COURSE);
+            searchRequest.setFetchFilter(false);
+            Map<String, List<Object>> filters = new HashMap<>();
+            if (type == CollegeEntityType.UNIVERSITY) {
+                filters.put(PARENT_INSTITUTE_ID_COURSE, instituteIds);
+            } else {
+                filters.put(INSTITUTE_ID_COURSE, instituteIds);
+            }
+            filters.put(ACCEPTING_APPLICATION, Arrays.asList("true"));
+            searchRequest.setFilter(filters);
+            SearchResponse response = courseSearchService.search(searchRequest);
+            if (!CollectionUtils.isEmpty(response.getResults().getValues())) {
+                List<SearchBaseData> searchDataList = response.getResults().getValues();
+                for (SearchBaseData searchData : searchDataList) {
+                    List<CourseData> courseDataList = ((CourseSearchResponse)searchData).getCourses();
+                    if (!CollectionUtils.isEmpty(courseDataList)) {
+                        courseDataResponse.addAll(courseDataList);
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            log.error("Error in getting lead courses for institute Ids : {}", ex, instituteIds);
+        }
+        return courseDataResponse;
+    }
+
 }

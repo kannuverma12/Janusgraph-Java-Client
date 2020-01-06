@@ -1,6 +1,7 @@
 package com.paytm.digital.education.mapping;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 import org.springframework.http.HttpStatus;
 
@@ -170,7 +171,21 @@ public enum ErrorEnum {
             "Invalid geodistance. Please provide geodistance less than %s kms in request.",
             BAD_REQUEST, 1),
     ENTITY_NOT_SUPPORTED(4073, "Requested entity not supported for this operation.", BAD_REQUEST,
-            0);
+            0),
+    INVALID_EXAM_ID_FOR_EXAM_NAME(4074, "Blank exam id provided for exam name %s .", BAD_REQUEST,
+            1),
+    SOMETHING_BROKE_WHILE_SERIALIZING_DESERIALIZING(4075,
+            "Something broke while serializing/deserializing.", INTERNAL_SERVER_ERROR,0),
+    CACHE_BEAN_KEY_INACCESSIBLE(4076, "Cache Bean Inaccessible. Bean - %s, Key - %s",
+            INTERNAL_SERVER_ERROR, 2),
+    TEST_ENUM(4077, "Test Enum", INTERNAL_SERVER_ERROR, 0),
+    INVALID_PAYTM_SOURCE_DATA(4078, "Invalid paytm source data for entityId  %s .", BAD_REQUEST, 1),
+    NO_PAYTM_SOURCE_DATA(4079, "Empty paytm source data present in request.", BAD_REQUEST, 1),
+    INVALID_PAYTM_SOURCE_MAPPING_DATA(4080,
+            "No paytm source data present for entityId  %s, cannot set mapping", BAD_REQUEST, 1),
+    INVALID_MERCHANT_SOURCE_MAPPING_DATA(4081,
+            "No merchant source data present for entityId  %s, cannot set mapping", BAD_REQUEST, 1)
+    ;
 
     private final int        internalCode;
     private final String     externalMessage;

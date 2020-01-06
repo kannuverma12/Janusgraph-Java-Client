@@ -1,9 +1,16 @@
 package com.paytm.digital.education.config;
 
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
+import org.apache.http.HeaderElement;
+import org.apache.http.HeaderElementIterator;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.message.BasicHeaderElementIterator;
+import org.apache.http.protocol.HTTP;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +20,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class RestApiConfiguration {
@@ -37,6 +45,11 @@ public class RestApiConfiguration {
 
     @Value("${http.client.validate.inactivity.time:2000}")
     private Integer httpConnectionValidateTime;
+
+    @Value("${http.client.keep.alive.time:30000}")
+    private Integer keepAliveInMillis;
+
+    private static final Logger log = LoggerFactory.getLogger(RestApiConfiguration.class);
 
     @Bean
     public RestTemplate restTemplate() {
@@ -78,7 +91,29 @@ public class RestApiConfiguration {
                 .setConnectionManager(
                         getPoolingHttpClientConnectionManager())
                 .evictExpiredConnections()
+                .evictIdleConnections(30, TimeUnit.SECONDS)
+                .setKeepAliveStrategy(getConnectionKeepAliveStrategy())
                 .setDefaultRequestConfig(getRequestConfig())
                 .build();
+    }
+
+    private ConnectionKeepAliveStrategy getConnectionKeepAliveStrategy() {
+        return (response, context) -> {
+            HeaderElementIterator it = new BasicHeaderElementIterator(
+                    response.headerIterator(HTTP.CONN_KEEP_ALIVE));
+            while (it.hasNext()) {
+                HeaderElement he = it.nextElement();
+                String param = he.getName();
+                String value = he.getValue();
+                if (value != null && param.equalsIgnoreCase("timeout")) {
+                    try {
+                        return Long.parseLong(value) * 1000;
+                    } catch (NumberFormatException ex) {
+                        log.error("Error in parsing keep-alive timeout, value = {} : ", ex, value);
+                    }
+                }
+            }
+            return keepAliveInMillis;
+        };
     }
 }

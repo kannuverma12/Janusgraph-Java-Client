@@ -5,9 +5,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.dto.OfficialAddress;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CourseInstituteDetail {
+public class CourseInstituteDetail implements Serializable {
+    private static final long serialVersionUID = -5234614790830525491L;
 
     @JsonProperty("official_name")
     private String officialName;

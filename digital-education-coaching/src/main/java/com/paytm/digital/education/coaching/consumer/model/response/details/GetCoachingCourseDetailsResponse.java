@@ -48,6 +48,6 @@ public class GetCoachingCourseDetailsResponse {
     private CoachingCourseFee            coachingCourseFee;
     private CourseGetStarted             courseGetStarted;
 
-    private Map<CTAViewType, CoachingCtaEntity> ctaMap;
-    private List<String>                        sections;
+    private Map<CTAViewType, List<CoachingCtaEntity>> ctaMap;
+    private List<String>                              sections;
 }

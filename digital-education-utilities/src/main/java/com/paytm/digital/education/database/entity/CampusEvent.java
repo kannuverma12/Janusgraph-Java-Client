@@ -4,11 +4,15 @@ import lombok.Data;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 @Data
-public class CampusEvent {
+public class CampusEvent implements Serializable {
+
+    private static final long serialVersionUID = 5296386636462346494L;
+
     @Field("event_type")
     private String eventType;
 

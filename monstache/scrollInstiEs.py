@@ -42,7 +42,7 @@ def process_hits(hits):
             names.append(insti['_source']['common_name'])
         if 'image_link' in insti['_source'] and insti['_source']['image_link']:
             logo = insti['_source']['image_link']
-        if 'stste' in insti['_source'] and insti['_source']['state']:
+        if 'state' in insti['_source'] and insti['_source']['state']:
             state = insti['_source']['state']
         if 'city' in insti['_source'] and insti['_source']['city']:
             city = insti['_source']['city']

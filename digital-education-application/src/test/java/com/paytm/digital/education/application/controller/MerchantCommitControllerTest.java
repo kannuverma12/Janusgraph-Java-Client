@@ -23,7 +23,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -43,7 +43,17 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @RunWith(SpringRunner.class)
-@ActiveProfiles(value = {"test"})
+@TestPropertySource(
+        value = "/application-test.properties",
+        properties = {
+                "kafka.listener.should.configure=true",
+                "kafka.listener.endpoint.enabled=true",
+                "redis.port=6382",
+                "mongo.port=27021",
+                "spring.data.mongodb.uri=mongodb://localhost:27021/digital-education",
+                "spring.kafka.bootstrap-servers=localhost:9095"
+        }
+)
 @WebMvcTest(value = PurchaseController.class, secure = false)
 public class MerchantCommitControllerTest {
 
@@ -65,6 +75,10 @@ public class MerchantCommitControllerTest {
     private MockMvc      mockMvc;
     @MockBean
     private MerchantCall merchantCall;
+
+    @Test
+    public void allConfigsOK() {
+    }
 
     @Test
     public void merchantCommitSuccess() throws Exception {

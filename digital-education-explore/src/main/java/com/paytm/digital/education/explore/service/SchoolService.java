@@ -7,6 +7,5 @@ import java.util.List;
 
 public interface SchoolService {
     SchoolDetail getSchoolDetails(
-            Long schoolId, Client client, String schoolName, List<String> fields, String fieldGroup,
-            Long userId);
+            Long schoolId, Client client, String schoolName, List<String> fields, String fieldGroup);
 }

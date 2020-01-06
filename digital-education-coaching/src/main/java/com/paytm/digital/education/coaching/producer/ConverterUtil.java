@@ -6,7 +6,6 @@ import com.paytm.digital.education.coaching.producer.model.request.CoachingBanne
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCenterDataRequest;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCourseDataRequest;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCourseFeatureDataRequest;
-import com.paytm.digital.education.coaching.producer.model.request.CoachingCoursePatchRequest;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCtaDataRequest;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingExamDataRequest;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingInstituteDataRequest;
@@ -28,7 +27,6 @@ import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
 
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ConverterUtil {
@@ -239,16 +237,7 @@ public class ConverterUtil {
         coachingCourseEntity.setPriority(request.getPriority());
 
         coachingCourseEntity.setIsDynamic(request.getIsDynamic());
-    }
-
-    public static void patchCoachingCourse(CoachingCoursePatchRequest request,
-            CoachingCourseEntity coachingCourseEntity) {
-
-        if (Objects.isNull(coachingCourseEntity.getCtaInfo())) {
-            coachingCourseEntity.setCtaInfo(request.getCtaInfo());
-        } else {
-            coachingCourseEntity.getCtaInfo().putAll(request.getCtaInfo());
-        }
+        coachingCourseEntity.setCtaInfo(request.getCtaInfo());
     }
 
     public static void setExamUpdateData(TargetExamUpdateRequest request,

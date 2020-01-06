@@ -1,18 +1,16 @@
 package com.paytm.digital.education.database.dao;
 
-import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.database.repository.CoachingInstituteRepositoryNew;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.database.repository.SequenceGenerator;
+import com.paytm.digital.education.metrics.annotations.NullValueAlert;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Objects;
-
-import static com.mongodb.QueryOperators.AND;
 
 
 @Component
@@ -48,15 +46,17 @@ public class CoachingInstituteDAO {
         return this.coachingInstituteRepositoryNew.findAll();
     }
 
+    @NullValueAlert(mandatoryFields = "#mandatoryFields")
     public CoachingInstituteEntity findByInstituteId(String instituteIdField, long instituteId,
-            List<String> projectionFields) {
+            List<String> projectionFields, List<String> mandatoryFields) {
         return commonMongoRepository.getEntityByFields(
                 instituteIdField, instituteId, CoachingInstituteEntity.class, projectionFields);
     }
 
+    @NullValueAlert(mandatoryFields = "#mandatoryFields")
     public CoachingInstituteEntity findByPaytmMerchantId(String paytmMerchantIdFiled,
             String paytmMerchantId,
-            List<String> projectionFields) {
+            List<String> projectionFields, List<String> mandatoryFields) {
         return commonMongoRepository.getEntityByFields(
                 paytmMerchantIdFiled, paytmMerchantId, CoachingInstituteEntity.class,
                 projectionFields);

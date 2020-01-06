@@ -59,10 +59,11 @@ public class CTAHelper {
         List<CTA> ctas = new ArrayList<>();
 
         if (Objects.isNull(ctaConfigurationMap)) {
-            log.error("CTA config map not found for component {} namespace {} key {}",
+            log.warn("CTA config map not found for component {} namespace {} key {}",
                     ExploreConstants.EXPLORE_COMPONENT, namespace, key);
             return ctas;
         }
+        log.info("CTA config map : {} , pid : {}, ", ctaConfigurationMap, ctaInfoHolder.getPid());
 
         if (Objects.nonNull(ctaInfoHolder.getPid())
                 && checkIfCTAConfigExists(ctaConfigurationMap, CTAType.FEE, namespace, key)) {
@@ -72,6 +73,7 @@ public class CTAHelper {
             addCTAIfNotNull(ctas, feeCta);
         }
 
+        /* Get Updates CTA */
         if (ctaInfoHolder.shouldHaveLeadCTA()
                 && checkIfCTAConfigExists(ctaConfigurationMap, CTAType.LEAD, namespace, key)) {
             CTA cta = getLeadCTA(ctaInfoHolder.isClient(),
@@ -107,6 +109,7 @@ public class CTAHelper {
                 addCTAIfNotNull(ctas, cta);
             }
 
+            /* Share CTA */
             if (ctaInfoHolder.hasShareFeature()
                     && checkIfCTAConfigExists(ctaConfigurationMap, CTAType.SHARE, namespace, key)) {
                 CTA cta = getShareCTA((Map<String, String>) ctaConfigurationMap
@@ -258,8 +261,9 @@ public class CTAHelper {
             leadLabel = ctaConfigurationMap.get(DISPLAY_NAME + CLIENT);
             activeLabel = ctaConfigurationMap.get(ACTIVE_DISPLAY_NAME + CLIENT);
         } else {
-            leadLabel = ctaConfigurationMap.get(DISPLAY_NAME);
-            activeLabel = ctaConfigurationMap.get(ACTIVE_DISPLAY_NAME);
+            return null;
+            //leadLabel = ctaConfigurationMap.get(DISPLAY_NAME);
+            //activeLabel = ctaConfigurationMap.get(ACTIVE_DISPLAY_NAME);
         }
         String relativeUrl = ctaConfigurationMap
                 .getOrDefault(ICON, ExploreConstants.CTA_LOGO_PLACEHOLDER);
@@ -311,7 +315,7 @@ public class CTAHelper {
     private boolean checkIfNameExists(String name, CTAType ctaType, String key,
             String namespace) {
         if (StringUtils.isBlank(name)) {
-            log.error("CTA name not found for {} key {} namespace {}", ctaType, key, namespace);
+            log.warn("CTA name not found for {} key {} namespace {}", ctaType, key, namespace);
             return false;
         }
         return true;
@@ -320,7 +324,7 @@ public class CTAHelper {
     private boolean checkIfNameExists(String name, String activeName, CTAType ctaType, String key,
             String namespace) {
         if (StringUtils.isBlank(activeName) || StringUtils.isBlank(name)) {
-            log.error("CTA name not found for {} key {} namespace {}", ctaType, key, namespace);
+            log.warn("CTA name not found for {} key {} namespace {}", ctaType, key, namespace);
             return false;
         }
         return true;

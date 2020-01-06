@@ -11,8 +11,8 @@ autosuggestIndex="education_autosuggestion_v2"
 autosuggestIndexType="education"
 
 
-instiESData= es.search(index='education_search_institute_v4', filter_path=['hits.hits._id','hits.hits._source.names', 'hits.hits._source.official_name', 'hits.hits._source.city', 'hits.hits._source.state', 'hits.hits._source.institute_id'],size=10000)
-examESData= es.search(index='education_search_exam_v4', filter_path=['hits.hits._id','hits.hits._source.exam_full_name','hits.hits._source.exam_name_synonyms','hits.hits._source.exam_short_name', 'hits.hits._source.official_name','hits.hits._source.exam_id'],size=10000)
+instiESData= es.search(index='education_search_institute_v4', filter_path=['hits.hits._id','hits.hits._source.names', 'hits.hits._source.official_name', 'hits.hits._source.city', 'hits.hits._source.state', 'hits.hits._source.image_link', 'hits.hits._source.institute_id'],size=10000)
+examESData= es.search(index='education_search_exam_v4', filter_path=['hits.hits._id','hits.hits._source.exam_full_name','hits.hits._source.exam_name_synonyms','hits.hits._source.exam_short_name', 'hits.hits._source.official_name', 'hits.hits._source.image_link', 'hits.hits._source.exam_id'],size=10000)
 
 instiNames= instiESData['hits']['hits']
 examNames= examESData['hits']['hits']
@@ -26,11 +26,12 @@ def getInstiData(instiNames):
             cityNames.append(insti['_source']['city'])
         if 'state' in insti['_source'] and insti['_source']['state']:
             stateNames.append(insti['_source']['state'])
-        yield { "_index": autosuggestIndex, "_type":autosuggestIndexType,"_id": 'insti_'+insti['_id'], "_source" : {"names" : insti['_source']['official_name'], "official_name" : insti['_source']['official_name'], "entity_type": "institute", "entity_id": insti['_source']['institute_id']}, }
+        yield { "_index": autosuggestIndex, "_type":autosuggestIndexType,"_id": 'insti_'+insti['_id'], "_source" : {"names" : insti['_source']['official_name'], "official_name" : insti['_source']['official_name'], "official_address":{"state":insti['_source']['state'], "city":insti['_source']['city']}, "logo":insti['_source']['image_link'], "entity_type": "institute", "entity_id": insti['_source']['institute_id']}, }
 
 
 def genExamData(examNames):
         for exam in examNames:
+                logo = None
                 print exam
                 print
                 names = []
@@ -42,7 +43,9 @@ def genExamData(examNames):
                 if 'exam_name_synonyms' in exam['_source'] and exam['_source']['exam_name_synonyms'] :
                     for name in exam['_source']['exam_name_synonyms']:
                         names.append(name)
-                yield { "_index": autosuggestIndex, "_type":autosuggestIndexType,"_id": 'exam_'+exam['_id'], "_source" : {"names" : names, "official_name" : exam['_source']['official_name'], "entity_type": "exam", "entity_id": exam['_source']['exam_id']}, }
+                if 'image_link' in exam['_source'] and exam['_source']['image_link']:
+                    logo = exam['_source']['image_link']
+                yield { "_index": autosuggestIndex, "_type":autosuggestIndexType,"_id": 'exam_'+exam['_id'], "_source" : {"names" : names, "official_name" : exam['_source']['official_name'], "logo":logo, "entity_type": "exam", "entity_id": exam['_source']['exam_id']}, }
 
 
 def getCityData(cityNames):

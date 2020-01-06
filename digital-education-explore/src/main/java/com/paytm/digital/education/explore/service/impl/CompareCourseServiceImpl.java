@@ -5,6 +5,7 @@ import com.paytm.digital.education.database.entity.CourseFee;
 import com.paytm.digital.education.database.entity.Cutoff;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.SubExam;
+import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.enums.Gender;
 import com.paytm.digital.education.exception.BadRequestException;
@@ -23,7 +24,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.paytm.digital.education.constant.ExploreConstants.COURSE_ID;
 import static com.paytm.digital.education.enums.Gender.FEMALE;
 import static com.paytm.digital.education.enums.Gender.MALE;
 import static com.paytm.digital.education.enums.Gender.OTHERS;
@@ -35,6 +35,7 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 public class CompareCourseServiceImpl implements CompareCourseService {
     private CommonMongoRepository commonMongoRepository;
     private CompareServiceImpl    compareService;
+    private CommonEntityMongoDAO  commonEntityMongoDAO;
 
     public List<CompareCourseDetail> compareCourses(List<Long> courseList, String fieldGroup,
             List<String> fields) {
@@ -44,8 +45,8 @@ public class CompareCourseServiceImpl implements CompareCourseService {
             throw new BadRequestException(INVALID_FIELD_GROUP,
                     INVALID_FIELD_GROUP.getExternalMessage());
         }
-        List<Course> courses = commonMongoRepository
-                .getEntityFieldsByValuesIn(COURSE_ID, courseList, Course.class, projectionFields);
+        List<Course> courses = commonEntityMongoDAO.getCoursesByIdsIn(courseList, projectionFields);
+
         Set<Long> examIds = courses.stream().filter(c -> Objects.nonNull(c.getExamsAccepted()))
                 .flatMap(c -> c.getExamsAccepted().stream())
                 .collect(Collectors.toSet());

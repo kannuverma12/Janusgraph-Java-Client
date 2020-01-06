@@ -1,5 +1,16 @@
 package com.paytm.digital.education.explore.response.builders;
 
+import static com.paytm.digital.education.constant.ExploreConstants.APPROVALS;
+import static com.paytm.digital.education.constant.ExploreConstants.CAREER_LOGO;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_PREFIX;
+import static com.paytm.digital.education.constant.ExploreConstants.NIRF_LOGO;
+import static com.paytm.digital.education.constant.ExploreConstants.NOTABLE_ALUMNI_PLACEHOLDER;
+import static com.paytm.digital.education.constant.ExploreConstants.OVERALL_RANKING;
+import static com.paytm.digital.education.constant.ExploreConstants.RANKING_CAREER;
+import static com.paytm.digital.education.constant.ExploreConstants.RANKING_LOGO;
+import static com.paytm.digital.education.constant.ExploreConstants.RANKING_NIRF;
+import static com.paytm.digital.education.enums.EducationEntity.INSTITUTE;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paytm.digital.education.database.entity.Alumni;
@@ -11,11 +22,13 @@ import com.paytm.digital.education.database.entity.InstiPaytmKeys;
 import com.paytm.digital.education.database.entity.Institute;
 import com.paytm.digital.education.dto.OfficialAddress;
 import com.paytm.digital.education.enums.Client;
+import com.paytm.digital.education.enums.CollegeEntityType;
 import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.PublishStatus;
 import com.paytm.digital.education.explore.response.dto.common.BannerData;
 import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
 import com.paytm.digital.education.explore.response.dto.detail.Ranking;
+import com.paytm.digital.education.explore.response.dto.search.CourseData;
 import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
 import com.paytm.digital.education.explore.service.helper.CampusEngagementHelper;
 import com.paytm.digital.education.explore.service.helper.CourseDetailHelper;
@@ -25,6 +38,7 @@ import com.paytm.digital.education.explore.service.helper.FacilityDataHelper;
 import com.paytm.digital.education.explore.service.helper.GalleryDataHelper;
 import com.paytm.digital.education.explore.service.helper.PlacementDataHelper;
 import com.paytm.digital.education.explore.service.helper.StreamDataHelper;
+import com.paytm.digital.education.explore.service.impl.NewsArticleServiceImpl;
 import com.paytm.digital.education.explore.service.impl.SimilarInstituteServiceImpl;
 import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
 import com.paytm.digital.education.utility.CommonUtil;
@@ -51,17 +65,6 @@ import java.util.TreeMap;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import static com.paytm.digital.education.constant.ExploreConstants.APPROVALS;
-import static com.paytm.digital.education.constant.ExploreConstants.CAREER_LOGO;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_PREFIX;
-import static com.paytm.digital.education.constant.ExploreConstants.NIRF_LOGO;
-import static com.paytm.digital.education.constant.ExploreConstants.NOTABLE_ALUMNI_PLACEHOLDER;
-import static com.paytm.digital.education.constant.ExploreConstants.OVERALL_RANKING;
-import static com.paytm.digital.education.constant.ExploreConstants.RANKING_CAREER;
-import static com.paytm.digital.education.constant.ExploreConstants.RANKING_LOGO;
-import static com.paytm.digital.education.constant.ExploreConstants.RANKING_NIRF;
-import static com.paytm.digital.education.enums.EducationEntity.INSTITUTE;
-
 @Service
 @AllArgsConstructor
 public class InstituteDetailResponseBuilder {
@@ -79,13 +82,14 @@ public class InstituteDetailResponseBuilder {
     private SimilarInstituteServiceImpl similarInstituteService;
     private StreamDataHelper            streamDataHelper;
     private CampusEngagementHelper      campusEngagementHelper;
+    private NewsArticleServiceImpl      newsArticleService;
 
     public InstituteDetail buildResponse(Institute institute, List<Course> courses,
             List<Exam> examList, Map<String, Object> examRelatedData, Set<Long> examIds,
             String parentInstitutionName, Client client, boolean derivedAttributes,
             boolean cutOffs, boolean facilities, boolean gallery, boolean placements,
             boolean notableAlumni, boolean sections, boolean widgets, boolean coursesPerDegree,
-            boolean campusEngagementFlag)
+            boolean campusEngagementFlag, boolean newsArticles)
             throws IOException, TimeoutException {
         InstituteDetail instituteDetail = new InstituteDetail();
         instituteDetail.setInstituteId(institute.getInstituteId());
@@ -178,9 +182,9 @@ public class InstituteDetailResponseBuilder {
         } else {
             instituteDetail.setBanners(bannerDataHelper.getBannerData(entityName, client));
         }
-        if (institute.getIsClient() == 1) {
-            instituteDetail.setClient(true);
-        }
+
+        checkIfLeadClient(institute.getIsClient(), instituteDetail, institute.getEntityType());
+
         if (widgets) {
             instituteDetail.setWidgets(similarInstituteService.getSimilarInstitutes(institute));
         }
@@ -211,6 +215,15 @@ public class InstituteDetailResponseBuilder {
                             .getCampusEventsData(campusEngagement.getEvents()));
                 }
             }
+        }
+
+        if (newsArticles) {
+            Set<Long> examsAccepted = new HashSet<>();
+            Set<Long> paytmStreamIds = new HashSet<>();
+            getExamIdsAndStreams(courses, examsAccepted, paytmStreamIds);
+            instituteDetail.setNewsArticles(newsArticleService
+                    .getMerchantArticleForInstitute(new ArrayList<>(examsAccepted),
+                            new ArrayList<>(paytmStreamIds)));
         }
 
         if (Objects.nonNull(institute.getPaytmKeys())) {
@@ -386,4 +399,31 @@ public class InstituteDetailResponseBuilder {
         return null;
     }
 
+    private void getExamIdsAndStreams(List<Course> courses, Set<Long> examIds,
+            Set<Long> streamIds) {
+        if (!CollectionUtils.isEmpty(courses)) {
+            for (Course course : courses) {
+                if (!CollectionUtils.isEmpty(course.getExamsAccepted())) {
+                    examIds.addAll(course.getExamsAccepted());
+                }
+
+                if (!CollectionUtils.isEmpty(course.getStreamIds())) {
+                    streamIds.addAll(course.getStreamIds());
+                }
+            }
+        }
+    }
+
+    private void checkIfLeadClient(int isClient, InstituteDetail instituteDetail,
+            CollegeEntityType entityType) {
+        if (isClient == 0) {
+            return;
+        }
+
+        List<CourseData> leadCourses = courseDetailHelper
+                .getLeadCourses(Arrays.asList(instituteDetail.getInstituteId()), entityType);
+        if (!CollectionUtils.isEmpty(leadCourses)) {
+            instituteDetail.setClient(true);
+        }
+    }
 }

@@ -2,7 +2,6 @@ package com.paytm.digital.education.coaching.producer.service;
 
 import com.paytm.digital.education.coaching.producer.ConverterUtil;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCourseDataRequest;
-import com.paytm.digital.education.coaching.producer.model.request.CoachingCoursePatchRequest;
 import com.paytm.digital.education.database.dao.CoachingCourseDAO;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.exception.InvalidRequestException;
@@ -10,7 +9,6 @@ import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -47,19 +45,6 @@ public class ProducerCoachingCourseService {
         try {
             return coachingCourseDAO.save(coachingCourseEntity);
         } catch (DataIntegrityViolationException ex) {
-            throw new InvalidRequestException(ex.getMessage(), ex);
-        }
-    }
-
-    public CoachingCourseEntity patch(CoachingCoursePatchRequest coachingCoursePatchRequest) {
-        CoachingCourseEntity coachingCourseEntity = Optional.ofNullable(
-                coachingCourseDAO.findByProgramId(coachingCoursePatchRequest.getCourseId()))
-                .orElseThrow(() -> new InvalidRequestException(
-                        "course id not present : " + coachingCoursePatchRequest.getCourseId()));
-        ConverterUtil.patchCoachingCourse(coachingCoursePatchRequest, coachingCourseEntity);
-        try {
-            return coachingCourseDAO.save(coachingCourseEntity);
-        } catch (NonTransientDataAccessException ex) {
             throw new InvalidRequestException(ex.getMessage(), ex);
         }
     }

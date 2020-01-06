@@ -33,8 +33,8 @@ import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.constant.ExploreConstants.GALLERY_LOGO;
 import static com.paytm.digital.education.constant.ExploreConstants.HIGHLIGHT;
 import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_ID;
+import static com.paytm.digital.education.constant.SchoolConstants.SCHOOL;
+import static com.paytm.digital.education.constant.SchoolConstants.SCHOOL_ID;
 
 @Service
 @AllArgsConstructor
@@ -105,7 +105,7 @@ public class AdminServiceImpl implements AdminService {
             }
 
         } catch (Exception ex) {
-            log.error("Error caught while uploading documents : {}", ex);
+            log.error("Error caught while uploading documents : ", ex);
             response.setError(ex.getMessage());
         } finally {
             try {

@@ -45,6 +45,8 @@ public class CartItem {
     @ApiModelProperty(required = true)
     private Float unitSellingPrice;
 
+    @NotEmpty
+    @ApiModelProperty(required = true)
     private String categoryId;
 
     @NotEmpty

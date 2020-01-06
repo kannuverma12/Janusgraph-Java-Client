@@ -54,4 +54,7 @@ public class Event {
     @JsonProperty("date_range_end")
     private Date dateRangeEnd;
 
+    @Field("date_name")
+    @JsonProperty("date_name")
+    private String dateName;
 }

@@ -1,37 +1,8 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import com.paytm.digital.education.database.entity.Course;
-import com.paytm.digital.education.database.entity.Institute;
-import com.paytm.digital.education.database.entity.Ranking;
-import com.paytm.digital.education.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.explore.database.repository.InstituteRepository;
-import com.paytm.digital.education.explore.enums.CourseStream;
-import com.paytm.digital.education.explore.response.dto.common.Widget;
-import com.paytm.digital.education.explore.response.dto.common.WidgetData;
-import com.paytm.digital.education.explore.service.helper.WidgetsDataHelper;
-import com.paytm.digital.education.utility.CommonUtil;
-import com.paytm.education.logger.Logger;
-import com.paytm.education.logger.LoggerFactory;
-import lombok.AllArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import static com.mongodb.QueryOperators.AND;
 import static com.mongodb.QueryOperators.EXISTS;
+import static com.mongodb.QueryOperators.IN;
 import static com.mongodb.QueryOperators.NE;
 import static com.paytm.digital.education.constant.ExploreConstants.COLLEGES_PER_STREAM;
 import static com.paytm.digital.education.constant.ExploreConstants.EMPTY_SQUARE_BRACKETS;
@@ -54,6 +25,37 @@ import static com.paytm.digital.education.explore.constants.CompareConstants.CAR
 import static com.paytm.digital.education.explore.constants.CompareConstants.NIRF;
 import static com.paytm.digital.education.explore.constants.CompareConstants.UNIVERSITIES;
 
+import com.paytm.digital.education.annotation.EduCache;
+import com.paytm.digital.education.database.entity.Course;
+import com.paytm.digital.education.database.entity.Institute;
+import com.paytm.digital.education.database.entity.Ranking;
+import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
+import com.paytm.digital.education.database.repository.CommonMongoRepository;
+import com.paytm.digital.education.database.repository.InstituteRepository;
+import com.paytm.digital.education.explore.enums.CourseStream;
+import com.paytm.digital.education.explore.response.dto.common.Widget;
+import com.paytm.digital.education.explore.response.dto.common.WidgetData;
+import com.paytm.digital.education.explore.service.helper.SimilarInstituteHelper;
+import com.paytm.digital.education.utility.CommonUtil;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
+import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 
 @Service
 @AllArgsConstructor
@@ -61,15 +63,16 @@ public class SimilarInstituteServiceImpl {
 
     private static final Logger log = LoggerFactory.getLogger(SimilarInstituteServiceImpl.class);
 
-    private CommonMongoRepository commonMongoRepository;
-    private InstituteRepository   instituteRepository;
-    private WidgetsDataHelper     widgetsDataHelper;
+    private CommonMongoRepository  commonMongoRepository;
+    private InstituteRepository    instituteRepository;
+    private SimilarInstituteHelper similarInstituteHelper;
+    private CommonEntityMongoDAO   commonEntityMongoDAO;
 
     private static List<String> projectionFields =
             Arrays.asList(INSTITUTE_ID, OFFICIAL_NAME, GALLERY_LOGO, OFFICIAL_ADDRESS,
                     INSTITUTION_CITY, INSTITUTION_STATE);
 
-    @Cacheable(value = "similar_institutes", key = "'similar_'+#institute.instituteId")
+    @EduCache(cache = "similar_institutes", keys = {"institute.instituteId"})
     public List<Widget> getSimilarInstitutes(Institute institute) {
         if (Objects.nonNull(institute)) {
             try {
@@ -90,14 +93,12 @@ public class SimilarInstituteServiceImpl {
                 log.error("Error caught while getting similar colleges for the instituteId : "
                         + institute.getInstituteId(), ex);
             }
-            return widgetsDataHelper
-                    .getWidgets(INSTITUTE.name().toLowerCase(), institute.getInstituteId());
+            return similarInstituteHelper.getSimilarInstituteWigets(institute);
         }
         return null;
     }
 
-
-    private Widget getSimilarCollegesByNirfRanking(Institute institute,
+    public Widget getSimilarCollegesByNirfRanking(Institute institute,
             Map<String, Ranking> nirfRanking) {
         //If Only one stream is present, show similar colleges based on the streams present
         Set<String> streams = getRankingStreams(nirfRanking);
@@ -123,7 +124,9 @@ public class SimilarInstituteServiceImpl {
                 selectTopTwoStreams(streams), nirfRanking);
     }
 
-    private Widget getSimilarCollegesByStreams(Institute institute, String rankingSource,
+    @EduCache(cache = "similar_institutes_by_stream",
+            keys = {"institute.instituteId", "rankingSource", "limitPerStream"})
+    public Widget getSimilarCollegesByStreams(Institute institute, String rankingSource,
             int limitPerStream,
             Collection<String> rankingStreams, Map<String, Ranking> rankingMap) {
         List<Institute> instituteResultList = new ArrayList<>();
@@ -205,7 +208,7 @@ public class SimilarInstituteServiceImpl {
         return nextGreaterIndex;
     }
 
-    @Cacheable(value = SIMILAR_COLLEGE_NAMESPACE, key = "nirf_overall_ranking")
+    @EduCache(cache = SIMILAR_COLLEGE_NAMESPACE)
     public List<Institute> getByOverAllRankings() {
         List<Institute> instituteList = instituteRepository.findAllByNIRFOverallRanking();
         Collections.sort(instituteList, (institute1, institute2) -> {
@@ -231,13 +234,14 @@ public class SimilarInstituteServiceImpl {
         return instituteList;
     }
 
-    private Widget getSimilarCollegesByLocation(Institute institute) {
+    @EduCache(cache = "similar_colleges_by_location", keys = {"institute.instituteId"})
+    public Widget getSimilarCollegesByLocation(Institute institute) {
         Set<String> streams = getCourseStreamForInstitute(institute.getInstituteId());
         Map<String, Object> instituteQueryMap =
                 getInstituteQueryMapForLocationAndStreams(institute.getInstitutionState(),
                         institute.getInstitutionCity(), selectTopTwoStreams(streams));
-        List<Institute> instituteList = commonMongoRepository
-                .findAll(instituteQueryMap, Institute.class, projectionFields, AND);
+        List<Institute> instituteList = commonEntityMongoDAO
+                .getAllInstitutes(instituteQueryMap, projectionFields, AND);
         if (!CollectionUtils.isEmpty(instituteList)
                 && instituteList.size() > TOTAL_SIMILAR_COLLEGE) {
             instituteList = instituteList.stream()
@@ -249,8 +253,8 @@ public class SimilarInstituteServiceImpl {
         if (CollectionUtils.isEmpty(instituteList)
                 || instituteList.size() < TOTAL_SIMILAR_COLLEGE) {
             instituteQueryMap.remove(INSTITUTION_CITY);
-            instituteList = commonMongoRepository
-                    .findAll(instituteQueryMap, Institute.class, projectionFields, AND);
+            instituteList = commonEntityMongoDAO
+                    .getAllInstitutes(instituteQueryMap,projectionFields,AND);
             if (!CollectionUtils.isEmpty(instituteList)) {
                 instituteList = instituteList.stream()
                         .filter(institute1 -> !institute1.getInstituteId()
@@ -266,15 +270,15 @@ public class SimilarInstituteServiceImpl {
         return buildWidgetResponse(instituteList);
     }
 
-    private Map<String, Object> getInstituteQueryMapForLocationAndStreams(String instituteState,
+    @EduCache(cache = SIMILAR_COLLEGE_NAMESPACE)
+    public Map<String, Object> getInstituteQueryMapForLocationAndStreams(String instituteState,
             String instituteCity, Collection<String> streams) {
         List<Long> instituteIds = getInstituteIdsByStreams(IN_OPERATOR, streams);
-        Map<String, Object> instituteIdMap = new HashMap<>();
-        instituteIdMap.put(IN_OPERATOR, instituteIds);
+
         Map<String, Object> instituteQueryMap = new HashMap<>();
         instituteQueryMap.put(INSTITUTION_STATE, instituteState);
         instituteQueryMap.put(INSTITUTION_CITY, instituteCity);
-        instituteQueryMap.put(INSTITUTE_ID, instituteIdMap);
+        instituteQueryMap.put(INSTITUTE_ID, Collections.singletonMap(IN, Arrays.asList(instituteIds)));
         return instituteQueryMap;
     }
 
@@ -333,7 +337,8 @@ public class SimilarInstituteServiceImpl {
         return rankingDataMap;
     }
 
-    private List<Long> getInstituteIdsByStreams(String streamOperator, Collection<String> streams) {
+    @EduCache(cache = "institute_ids_by_streams")
+    public List<Long> getInstituteIdsByStreams(String streamOperator, Collection<String> streams) {
         Map<String, Object> streamQueryMap = new HashMap<>();
         streamQueryMap.put(EXISTS, true);
         streamQueryMap.put(NE, EMPTY_SQUARE_BRACKETS);
@@ -354,11 +359,12 @@ public class SimilarInstituteServiceImpl {
         return null;
     }
 
-    private Set<String> getCourseStreamForInstitute(Long instituteId) {
+    @EduCache(cache = "course_stream_for_institute")
+    public Set<String> getCourseStreamForInstitute(Long instituteId) {
         List<String> courseFields = Arrays.asList(STREAMS);
-        List<Course> courses = commonMongoRepository
-                .getEntityFieldsByValuesIn(INSTITUTE_ID, Arrays.asList(instituteId), Course.class,
-                        courseFields);
+        Map<String,Object> queryMap = new HashMap<>();
+        queryMap.put(INSTITUTE_ID, Collections.singletonMap(IN, Arrays.asList(instituteId)));
+        List<Course> courses = commonEntityMongoDAO.getAllCourses(queryMap, courseFields, AND);
         Set<String> courseStreams = courses.stream().filter(c -> Objects.nonNull(c.getStreams()))
                 .flatMap(course -> course.getStreams().stream()).collect(Collectors.toSet());
         return courseStreams;

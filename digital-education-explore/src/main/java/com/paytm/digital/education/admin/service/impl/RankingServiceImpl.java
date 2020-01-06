@@ -14,6 +14,7 @@ import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
+import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -38,7 +39,8 @@ import static com.paytm.digital.education.admin.utility.AdminConstants.PAYTM_RAN
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_NAME;
-import static com.paytm.digital.education.explore.constants.SchoolConstants.SCHOOL_ID;
+import static com.paytm.digital.education.constant.SchoolConstants.SCHOOL_ID;
+import static java.util.Collections.emptyList;
 
 @Service
 @AllArgsConstructor
@@ -329,9 +331,14 @@ public class RankingServiceImpl implements RankingService {
     }
 
     private <T> List<T> validEntitities(List<Long> entityIds, String key, Class<T> type) {
-        return commonMongoRepository
+        CommonMongoRepository targetCommonMongoRepository
+                = (CommonMongoRepository) AopProxyUtils.getSingletonTarget(commonMongoRepository);
+        if (targetCommonMongoRepository == null) {
+            return emptyList();
+        }
+        return targetCommonMongoRepository
                 .getEntityFieldsByValuesIn(key, entityIds, type,
-                        Arrays.asList(key, PAYTM_KEYS), PAYTM_KEYS);
+                        Arrays.asList(key, PAYTM_KEYS));
     }
 
 

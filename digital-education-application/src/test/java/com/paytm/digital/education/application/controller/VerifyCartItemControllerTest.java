@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -54,7 +54,17 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.U
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.URL.VERIFY;
 
 @RunWith(SpringRunner.class)
-@ActiveProfiles(value = {"test"})
+@TestPropertySource(
+        value = "/application-test.properties",
+        properties = {
+                "kafka.listener.should.configure=true",
+                "kafka.listener.endpoint.enabled=true",
+                "redis.port=6384",
+                "mongo.port=27023",
+                "spring.data.mongodb.uri=mongodb://localhost:27023/digital-education",
+                "spring.kafka.bootstrap-servers=localhost:9097"
+        }
+)
 @WebMvcTest(value = PurchaseController.class, secure = false)
 public class VerifyCartItemControllerTest {
 

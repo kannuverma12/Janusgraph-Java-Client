@@ -262,5 +262,5 @@ public class CoachingCourseDataRequest {
 
     private Boolean isDynamic = Boolean.FALSE;
 
-    private Map<CTAViewType, Long> ctaInfo;
+    private Map<CTAViewType, @UniqueElements List<Long>> ctaInfo;
 }

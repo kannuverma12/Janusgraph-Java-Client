@@ -2,7 +2,9 @@ package com.paytm.digital.education.enums;
 
 public enum CTAViewType {
 
-    DETAILS("details");
+    DETAILS("details"),
+    LIST("list"),
+    POST_ORDER("post_order");
 
     private String text;
 

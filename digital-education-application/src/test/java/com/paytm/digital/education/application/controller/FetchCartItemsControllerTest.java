@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -36,7 +36,17 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.U
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.URL.V1;
 
 @RunWith(SpringRunner.class)
-@ActiveProfiles(value = {"test"})
+@TestPropertySource(
+        value = "/application-test.properties",
+        properties = {
+                "kafka.listener.should.configure=true",
+                "kafka.listener.endpoint.enabled=true",
+                "redis.port=6381",
+                "mongo.port=27020",
+                "spring.data.mongodb.uri=mongodb://localhost:27020/digital-education",
+                "spring.kafka.bootstrap-servers=localhost:9094"
+        }
+)
 @WebMvcTest(value = CartItemsController.class, secure = false)
 public class FetchCartItemsControllerTest {
 
@@ -49,7 +59,7 @@ public class FetchCartItemsControllerTest {
     private final Long   userId        = 123L;
 
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc                        mockMvc;
     @Autowired
     private RedisCacheService              redisCacheService;
     @Autowired
@@ -71,8 +81,8 @@ public class FetchCartItemsControllerTest {
 
     @Test
     public void successResponse() throws Exception {
-        CoachingCourseEntity coachingCourseEntity=createCoachingCourse();
-        CoachingInstituteEntity coachingInstituteEntity=createCoachingInstitute();
+        CoachingCourseEntity coachingCourseEntity = createCoachingCourse();
+        CoachingInstituteEntity coachingInstituteEntity = createCoachingInstitute();
         FetchCartItemsRequestBody request = getRequest();
         RequestBuilder requestBuilder =
                 MockMvcRequestBuilders.post(COACHING_BASE + V1 + "/fetch-cart-items")
@@ -83,11 +93,11 @@ public class FetchCartItemsControllerTest {
         CartDataResponse cartDataResponse
                 = JsonUtils
                 .fromJson(result.getResponse().getContentAsString(), CartDataResponse.class);
-        CheckoutCartItem checkoutCartItem=cartDataResponse.getCartItems().get(0);
+        CheckoutCartItem checkoutCartItem = cartDataResponse.getCartItems().get(0);
         Assert.assertEquals((long) checkoutCartItem.getProductId(), 123L);
-        String referenceId=checkoutCartItem.getReferenceId();
-        String cacheKey=getCacheKey(referenceId,123L,"1");
-        String value=redisCacheService.getValueFromCache(cacheKey);
+        String referenceId = checkoutCartItem.getReferenceId();
+        String cacheKey = getCacheKey(referenceId, 123L, "1");
+        String value = redisCacheService.getValueFromCache(cacheKey);
         Assert.assertNotNull(value);
         coachingInstituteRepositoryNew.delete(coachingInstituteEntity);
         coachingProgramRepository.delete(coachingCourseEntity);
@@ -96,8 +106,8 @@ public class FetchCartItemsControllerTest {
 
     @Test
     public void invalidMerchantId() throws Exception {
-        CoachingCourseEntity coachingCourseEntity=createCoachingCourse();
-        CoachingInstituteEntity coachingInstituteEntity=createCoachingInstitute();
+        CoachingCourseEntity coachingCourseEntity = createCoachingCourse();
+        CoachingInstituteEntity coachingInstituteEntity = createCoachingInstitute();
         FetchCartItemsRequestBody request = getRequest();
         request.setMerchantId(123L);
         RequestBuilder requestBuilder =
@@ -113,10 +123,11 @@ public class FetchCartItemsControllerTest {
 
     @Test
     public void invalidMerchantProductId() throws Exception {
-        CoachingCourseEntity coachingCourseEntity=createCoachingCourse();
-        CoachingInstituteEntity coachingInstituteEntity=createCoachingInstitute();
+        CoachingCourseEntity coachingCourseEntity = createCoachingCourse();
+        CoachingInstituteEntity coachingInstituteEntity = createCoachingInstitute();
         FetchCartItemsRequestBody request = getRequest();
-        request.setMerchantData("{\"product_list\":[{\"description\":\"desc\",\"merchant_product_tax_data\":{\"gstin\":\"abcd\",\"total_cgst\":1,\"total_igst\":1,\"total_sgst\":1,\"total_utgst\":1},\"price\":25378.9,\"product_id\":\"123\",\"product_name\":\"abcd\",\"quantity\":1}]}");
+        request.setMerchantData(
+                "{\"product_list\":[{\"description\":\"desc\",\"merchant_product_tax_data\":{\"gstin\":\"abcd\",\"total_cgst\":1,\"total_igst\":1,\"total_sgst\":1,\"total_utgst\":1},\"price\":25378.9,\"product_id\":\"123\",\"product_name\":\"abcd\",\"quantity\":1}]}");
         RequestBuilder requestBuilder =
                 MockMvcRequestBuilders.post(COACHING_BASE + V1 + "/fetch-cart-items")
                         .contentType(MediaType.APPLICATION_JSON).content(JsonUtils.toJson(request))
@@ -130,10 +141,11 @@ public class FetchCartItemsControllerTest {
 
     @Test
     public void invalidMerchantData() throws Exception {
-        CoachingCourseEntity coachingCourseEntity=createCoachingCourse();
-        CoachingInstituteEntity coachingInstituteEntity=createCoachingInstitute();
+        CoachingCourseEntity coachingCourseEntity = createCoachingCourse();
+        CoachingInstituteEntity coachingInstituteEntity = createCoachingInstitute();
         FetchCartItemsRequestBody request = getRequest();
-        request.setMerchantData("{\"product_list\":[\"description\":\"desc\",\"merchant_product_tax_data\":{\"gstin\":\"abcd\",\"total_cgst\":1,\"total_igst\":1,\"total_sgst\":1,\"total_utgst\":1},\"price\":25378.9,\"product_id\":\"123\",\"product_name\":\"abcd\",\"quantity\":1}]}");
+        request.setMerchantData(
+                "{\"product_list\":[\"description\":\"desc\",\"merchant_product_tax_data\":{\"gstin\":\"abcd\",\"total_cgst\":1,\"total_igst\":1,\"total_sgst\":1,\"total_utgst\":1},\"price\":25378.9,\"product_id\":\"123\",\"product_name\":\"abcd\",\"quantity\":1}]}");
         RequestBuilder requestBuilder =
                 MockMvcRequestBuilders.post(COACHING_BASE + V1 + "/fetch-cart-items")
                         .contentType(MediaType.APPLICATION_JSON).content(JsonUtils.toJson(request))
@@ -144,7 +156,7 @@ public class FetchCartItemsControllerTest {
         coachingProgramRepository.delete(coachingCourseEntity);
     }
 
-    private FetchCartItemsRequestBody getRequest(){
+    private FetchCartItemsRequestBody getRequest() {
         return FetchCartItemsRequestBody.builder()
                 .merchantData(merchantData)
                 .merchantId(merchantId)

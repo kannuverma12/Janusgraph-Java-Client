@@ -6,9 +6,7 @@ import com.paytm.digital.education.explore.response.dto.detail.ExamDetail;
 import com.paytm.digital.education.explore.response.dto.detail.InstituteDetail;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.SchoolDetail;
 import com.paytm.digital.education.explore.service.SchoolService;
-import com.paytm.digital.education.explore.service.impl.CourseDetailServiceImpl;
-import com.paytm.digital.education.explore.service.impl.ExamDetailServiceImpl;
-import com.paytm.digital.education.explore.service.impl.InstituteDetailServiceImpl;
+import com.paytm.digital.education.explore.service.impl.DetailApiServiceImpl;
 import com.paytm.digital.education.explore.validators.ExploreValidator;
 import lombok.AllArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -33,11 +31,9 @@ import static com.paytm.digital.education.constant.ExploreConstants.EDUCATION_BA
 @RequestMapping(EDUCATION_BASE_URL)
 public class DetailsApiController {
 
-    private InstituteDetailServiceImpl instituteDetailService;
-    private CourseDetailServiceImpl    courseDetailService;
-    private ExamDetailServiceImpl      examDetailService;
     private ExploreValidator           exploreValidator;
     private SchoolService              schoolService;
+    private DetailApiServiceImpl       detailsService;
 
     @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/exam/{examId}/{examName}")
     public @ResponseBody ExamDetail getExamById(
@@ -59,14 +55,16 @@ public class DetailsApiController {
                     Boolean widgets,
             @RequestParam(value = "policies", required = false, defaultValue = "true")
                     Boolean policies,
+            @RequestParam(value = "news_articles", required = false, defaultValue = "true")
+                    Boolean newsArticles,
             @RequestHeader(value = "x-user-id", required = false) Long userId,
-            @RequestHeader(value = "fe_client", required = false) Client client) throws Exception {
+            @RequestHeader(value = "fe_client", required = false) Client client) {
         exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
 
-        return examDetailService
-                .getDetail(examId, examName, userId, fieldGroup, fields, client, syllabus,
+        return detailsService
+                .getExamDetail(examId, examName, userId, fieldGroup, fields, client, syllabus,
                         importantDates, derivedAttributes, examCenters, sections,
-                        widgets, policies);
+                        widgets, policies, newsArticles);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/institute/{instituteId}/{instituteName}")
@@ -96,13 +94,15 @@ public class DetailsApiController {
             @RequestParam(value = "courses_per_degree", required = false, defaultValue = "true")
                     Boolean coursesPerDegree,
             @RequestParam(value = "campus_engagement", required = false, defaultValue = "true")
-                    Boolean campusEngagementFlag)
+                    Boolean campusEngagementFlag,
+            @RequestParam(value = "news_articles", required = false, defaultValue = "true")
+                        Boolean newsArticles)
             throws Exception {
         exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
-        return instituteDetailService
-                .getDetail(instituteId, instituteName, userId, fieldGroup, fields, client,
+        return detailsService
+                .getinstituteDetail(instituteId, instituteName, userId, fieldGroup, fields, client,
                         derivedAttributes, cutOffs, facilities, gallery, placements, notableAlumni,
-                        sections, widgets, coursesPerDegree, campusEngagementFlag);
+                        sections, widgets, coursesPerDegree, campusEngagementFlag, newsArticles);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/course/{courseId}/{courseName}")
@@ -123,8 +123,8 @@ public class DetailsApiController {
             @RequestParam(value = "exams_accepted", required = false, defaultValue = "true")
                     Boolean examAccepted) {
         exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
-        return courseDetailService
-                .getDetail(courseId, courseName, userId, fieldGroup, fields, client, courseFees,
+        return detailsService
+                .getCourseDetail(courseId, courseName, userId, fieldGroup, fields, client, courseFees,
                         institute, widgets, derivedAttributes, examAccepted);
     }
 
@@ -137,7 +137,7 @@ public class DetailsApiController {
                                 @RequestHeader(value = "fe_client", required = false, defaultValue = "WEB")
                                         Client client) {
         exploreValidator.validateFieldAndFieldGroup(fields, fieldGroup);
-        return schoolService
+        return detailsService
                 .getSchoolDetails(schoolId, client, schoolName, fields, fieldGroup, userId);
     }
 

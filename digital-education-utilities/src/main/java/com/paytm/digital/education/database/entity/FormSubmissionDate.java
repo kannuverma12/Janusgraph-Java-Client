@@ -8,12 +8,15 @@ import lombok.ToString;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class FormSubmissionDate {
+public class FormSubmissionDate implements Serializable {
+
+    private static final long serialVersionUID = -2730191926544292927L;
 
     @Field("date_range_start")
     @JsonProperty("date_range_start")

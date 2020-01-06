@@ -78,7 +78,7 @@ public class ExamData extends SearchBaseData implements CTAInfoHolder {
 
     @JsonIgnore
     @Accessors(fluent = true)
-    private boolean shouldHaveLeadCTA = true;
+    private boolean shouldHaveLeadCTA = false;
 
     @JsonIgnore
     @Accessors(fluent = true)
@@ -104,6 +104,12 @@ public class ExamData extends SearchBaseData implements CTAInfoHolder {
     @JsonIgnore
     @Override
     public boolean hasCompareFeature() {
+        return false;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean hasShareFeature() {
         return false;
     }
 
