@@ -26,7 +26,7 @@ import static com.paytm.digital.education.enums.EducationEntity.INSTITUTE;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InstituteDetail implements CTAInfoHolder, Serializable {
 
-    private static final long serialVersionUID = -653557675224255635L;
+    private static final long serialVersionUID = -1453606151448370768L;
 
     @JsonProperty("institute_id")
     private long instituteId;
