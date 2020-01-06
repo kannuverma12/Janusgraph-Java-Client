@@ -408,7 +408,7 @@ function transformCollege(superDoc) {
     }
   }
 
-  if(superDoc.is_client == 1 && lead_enabled) {
+  if(superDoc.is_client && superDoc.is_client == 1 && lead_enabled) {
     transformedCollege.is_client = true;
   } else {
     transformedCollege.is_client = false;
