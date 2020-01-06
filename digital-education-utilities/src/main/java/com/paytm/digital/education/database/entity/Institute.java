@@ -4,8 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.enums.CollegeEntityType;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -153,7 +156,9 @@ public class Institute implements Serializable, CTAConfigHolder {
     private Date paytmUpdatedAt = new Date();
 
     @Field("cta_config")
-    private CTAConfig cTAConfig;
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private CTAConfig ctaConfig;
 
     public Institute(String commonName, Long instituteId) {
         this.commonName = commonName;
@@ -161,4 +166,13 @@ public class Institute implements Serializable, CTAConfigHolder {
         this.paytmUpdatedAt = new Date();
     }
 
+    @Override
+    public CTAConfig getCTAConfig() {
+        return ctaConfig;
+    }
+
+    @Override
+    public void setCTAConfig(CTAConfig ctaConfig) {
+        this.ctaConfig = ctaConfig;
+    }
 }

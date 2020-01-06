@@ -73,8 +73,8 @@ public class CTAHelper {
     public List<CTA> buildCTA(CTAInfoHolder ctaInfoHolder, Client client) {
 
         CTAConfig ctaConfig = ctaInfoHolder.getCTAConfig(ctaConfigFetchService);
-        CTAConfig finalCTAConfig = isEmpty(ctaConfig.getCtaTypes()) ?
-                ctaInfoHolder.getEntityLevelCTAConfig(ctaConfigFetchService) : ctaConfig;
+        CTAConfig finalCTAConfig = isEmpty(ctaConfig.getCtaTypes())
+                ? ctaInfoHolder.getEntityLevelCTAConfig(ctaConfigFetchService) : ctaConfig;
 
         String key = ctaInfoHolder.ctaDbPropertyKey();
         String namespace = ctaInfoHolder.getCorrespondingEntity().name().toLowerCase();

@@ -14,7 +14,7 @@ import java.util.Map;
 public abstract class AbstractCTAProducer implements CTAProducer {
     private static Logger log = LoggerFactory.getLogger(AbstractCTAProducer.class);
 
-    public abstract CTAType getCTAType();
+    public abstract CTAType ctaType();
 
     public abstract CTA cta(CTAInfoHolder ctaInfoHolder, Map<String, String> ctaConfigMap, Client client);
 
@@ -26,7 +26,7 @@ public abstract class AbstractCTAProducer implements CTAProducer {
         if (!checkIfCTAConfigExists(ctaInfoHolder, parentCTAConfigMap)) {
             return null;
         }
-        CTAType ctaType = getCTAType();
+        CTAType ctaType = ctaType();
         Map<String, String> ctaConfigMap = (Map<String, String>) parentCTAConfigMap.get(ctaType.name().toLowerCase());
         return cta(ctaInfoHolder, ctaConfigMap, client);
     }
@@ -42,14 +42,14 @@ public abstract class AbstractCTAProducer implements CTAProducer {
 
     protected boolean checkIfNameExists(String name, String key, String namespace) {
         if (StringUtils.isBlank(name)) {
-            log.warn("CTA name not found for {} key {} namespace {}", getCTAType(), key, namespace);
+            log.warn("CTA name not found for {} key {} namespace {}", ctaType(), key, namespace);
             return false;
         }
         return true;
     }
 
     private boolean checkIfCTAConfigExists(CTAInfoHolder ctaInfoHolder, Map<String, Object> parentCTAConfigMap) {
-        CTAType ctaType = getCTAType();
+        CTAType ctaType = ctaType();
         String key = ctaInfoHolder.ctaDbPropertyKey();
         String namespace = ctaInfoHolder.getCorrespondingEntity().name().toLowerCase();
         if (parentCTAConfigMap.containsKey(ctaType.name().toLowerCase())) {

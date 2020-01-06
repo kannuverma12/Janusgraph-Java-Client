@@ -9,6 +9,7 @@ import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.Getter;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +18,14 @@ import java.util.Map;
 import static com.paytm.digital.education.constant.ExploreConstants.DISPLAY_NAME;
 import static com.paytm.digital.education.constant.ExploreConstants.ICON;
 import static com.paytm.digital.education.explore.enums.CTAType.BROCHURE;
-import static com.paytm.digital.education.explore.enums.CTAType.SHARE;
 
 @Service
 @Getter
 public class BrochureCTAProducer extends AbstractCTAProducer {
     private static Logger log = LoggerFactory.getLogger(BrochureCTAProducer.class);
 
-    private final CTAType cTAType = BROCHURE;
+    @Accessors(fluent = true)
+    private final CTAType ctaType = BROCHURE;
 
     @Override
     public CTA cta(CTAInfoHolder ctaInfoHolder, Map<String, String> ctaConfigMap, Client client) {

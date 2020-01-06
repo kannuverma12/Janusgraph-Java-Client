@@ -5,5 +5,6 @@ import com.paytm.digital.education.enums.CTAEntity;
 
 public interface CTAConfigFetchService {
     CTAConfig fetchCTAConfig(CTAEntity ctaEntity, long id);
+
     CTAConfig fetchCTAConfig(CTAEntity ctaEntity);
 }

@@ -1,8 +1,11 @@
 package com.paytm.digital.education.database.entity;
 
 import com.paytm.digital.education.enums.CTAEntity;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -22,10 +25,22 @@ public class EducationEntityCTAConfig implements Serializable, CTAConfigHolder {
     private CTAEntity ctaEntity;
 
     @Field("cta_config")
-    private CTAConfig cTAConfig;
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private CTAConfig ctaConfig;
+
+    @Override
+    public CTAConfig getCTAConfig() {
+        return ctaConfig;
+    }
+
+    @Override
+    public void setCTAConfig(CTAConfig ctaConfig) {
+        this.ctaConfig = ctaConfig;
+    }
 
     public EducationEntityCTAConfig(CTAEntity ctaEntity, CTAConfig cTAConfig) {
         this.ctaEntity = ctaEntity;
-        this.cTAConfig = cTAConfig;
+        this.ctaConfig = cTAConfig;
     }
 }

@@ -54,13 +54,12 @@ public class CTAConfigDBService {
     }
 
     public boolean resetCTATypesInEntity(CTAEntity ctaEntity) {
-        commonMongoRepository
-                .updateMulti(
-                        emptyMap(),
-                        emptyList(),
-                        Update.update("cta_config.cta_types", emptyList()),
-                        ctaEntity.getCorrespondingClass()
-                );
+        commonMongoRepository.updateMulti(
+                emptyMap(),
+                emptyList(),
+                Update.update("cta_config.cta_types", emptyList()),
+                ctaEntity.getCorrespondingClass()
+        );
         return true;
     }
 

@@ -9,6 +9,7 @@ import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.Getter;
+import lombok.experimental.Accessors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +26,8 @@ public class PredictorCTAProducer extends AbstractCTAProducer {
     @Value("${predictor.app.url.prefix}")
     private String predictorUrlPrefix;
 
-    private final CTAType cTAType = PREDICTOR;
+    @Accessors(fluent = true)
+    private final CTAType ctaType = PREDICTOR;
 
     @Override
     public CTA cta(CTAInfoHolder ctaInfoHolder, Map<String, String> ctaConfigMap, Client client) {

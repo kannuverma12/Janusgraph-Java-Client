@@ -9,6 +9,7 @@ import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.Getter;
+import lombok.experimental.Accessors;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -25,7 +26,8 @@ import static com.paytm.digital.education.explore.response.dto.common.CTA.Consta
 public class LeadCTAProducer extends AbstractCTAProducer {
     private static Logger log = LoggerFactory.getLogger(LeadCTAProducer.class);
 
-    private final CTAType cTAType = LEAD;
+    @Accessors(fluent = true)
+    private final CTAType ctaType = LEAD;
 
     @Override
     public CTA cta(CTAInfoHolder ctaInfoHolder, Map<String, String> ctaConfigMap, Client client) {

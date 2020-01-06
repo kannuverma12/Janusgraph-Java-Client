@@ -11,6 +11,7 @@ import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +27,8 @@ public class FeeCTAProducer extends AbstractCTAProducer {
 
     private final FeeUrlGenerator feeUrlGenerator;
 
-    private final CTAType cTAType = FEE;
+    @Accessors(fluent = true)
+    private final CTAType ctaType = FEE;
 
     @Override
     public CTA cta(CTAInfoHolder ctaInfoHolder, Map<String, String> ctaConfigMap, Client client) {

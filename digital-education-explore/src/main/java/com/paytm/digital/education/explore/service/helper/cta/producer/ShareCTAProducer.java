@@ -9,6 +9,7 @@ import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.Getter;
+import lombok.experimental.Accessors;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -23,7 +24,8 @@ import static com.paytm.digital.education.explore.enums.CTAType.SHARE;
 public class ShareCTAProducer extends AbstractCTAProducer {
     private static Logger log = LoggerFactory.getLogger(ShareCTAProducer.class);
 
-    private final CTAType cTAType = SHARE;
+    @Accessors(fluent = true)
+    private final CTAType ctaType = SHARE;
 
     @Override
     public CTA cta(CTAInfoHolder ctaInfoHolder, Map<String, String> ctaConfigMap, Client client) {

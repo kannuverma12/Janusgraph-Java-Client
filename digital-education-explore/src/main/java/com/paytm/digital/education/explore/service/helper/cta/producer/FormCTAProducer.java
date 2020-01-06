@@ -9,6 +9,7 @@ import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.Getter;
+import lombok.experimental.Accessors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -36,7 +37,8 @@ public class FormCTAProducer extends AbstractCTAProducer {
     @Value("${forms.web.url.prefix}")
     private String formsWebUrlPrefix;
 
-    private final CTAType cTAType = FORMS;
+    @Accessors(fluent = true)
+    private final CTAType ctaType = FORMS;
 
     @Override
     public CTA cta(CTAInfoHolder ctaInfoHolder, Map<String, String> ctaConfiguration, Client client) {

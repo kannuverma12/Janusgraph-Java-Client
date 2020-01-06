@@ -3,8 +3,11 @@ package com.paytm.digital.education.database.entity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.enums.PublishStatus;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -17,7 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @Document(collection = "exam")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Exam extends Base implements CTAConfigHolder{
+public class Exam extends Base implements CTAConfigHolder {
 
     private static final long serialVersionUID = 3503012720576400401L;
 
@@ -125,7 +128,9 @@ public class Exam extends Base implements CTAConfigHolder{
     private String urlDisplayKey;
 
     @Field("cta_config")
-    private CTAConfig cTAConfig;
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private CTAConfig ctaConfig;
 
     public Exam(long examId) {
         this.examId = examId;
@@ -134,5 +139,15 @@ public class Exam extends Base implements CTAConfigHolder{
     public Exam(String examShortName, Long examId) {
         this.examShortName = examShortName;
         this.examId = examId;
+    }
+
+    @Override
+    public CTAConfig getCTAConfig() {
+        return ctaConfig;
+    }
+
+    @Override
+    public void setCTAConfig(CTAConfig ctaConfig) {
+        this.ctaConfig = ctaConfig;
     }
 }
