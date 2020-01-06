@@ -8,6 +8,7 @@ import com.paytm.digital.education.explore.response.dto.detail.CTAInfoHolder;
 import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
+import lombok.Getter;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -18,13 +19,11 @@ import static com.paytm.digital.education.enums.Client.APP;
 import static com.paytm.digital.education.explore.enums.CTAType.SHARE;
 
 @Service
+@Getter
 public class ShareCTAProducer extends AbstractCTAProducer {
     private static Logger log = LoggerFactory.getLogger(ShareCTAProducer.class);
 
-    @Override
-    public CTAType getCTAType() {
-        return SHARE;
-    }
+    private final CTAType cTAType = SHARE;
 
     @Override
     public CTA cta(CTAInfoHolder ctaInfoHolder, Map<String, String> ctaConfigMap, Client client) {

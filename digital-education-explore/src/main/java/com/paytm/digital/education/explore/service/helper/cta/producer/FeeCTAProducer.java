@@ -9,6 +9,7 @@ import com.paytm.digital.education.explore.service.external.FeeUrlGenerator;
 import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -19,15 +20,13 @@ import static com.paytm.digital.education.explore.enums.CTAType.FEE;
 
 @RequiredArgsConstructor
 @Service
+@Getter
 public class FeeCTAProducer extends AbstractCTAProducer {
     private static Logger log = LoggerFactory.getLogger(FeeCTAProducer.class);
 
     private final FeeUrlGenerator feeUrlGenerator;
 
-    @Override
-    public CTAType getCTAType() {
-        return FEE;
-    }
+    private final CTAType cTAType = FEE;
 
     @Override
     public CTA cta(CTAInfoHolder ctaInfoHolder, Map<String, String> ctaConfigMap, Client client) {

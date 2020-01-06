@@ -9,6 +9,7 @@ import com.paytm.digital.education.explore.response.dto.detail.CTAInfoHolder;
 import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
+import lombok.Getter;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -20,13 +21,11 @@ import static com.paytm.digital.education.explore.enums.CTAType.COMPARE;
 import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.ACTIVE_DISPLAY_NAME;
 
 @Service
+@Getter
 public class CompareCTAProducer extends AbstractCTAProducer {
     private static Logger log = LoggerFactory.getLogger(CompareCTAProducer.class);
 
-    @Override
-    public CTAType getCTAType() {
-        return COMPARE;
-    }
+    private final CTAType cTAType = COMPARE;
 
     @Override
     public CTA cta(CTAInfoHolder ctaInfoHolder, Map<String, String> ctaConfigMap, Client client) {

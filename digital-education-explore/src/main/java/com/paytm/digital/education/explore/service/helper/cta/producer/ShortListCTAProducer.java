@@ -8,6 +8,7 @@ import com.paytm.digital.education.explore.response.dto.detail.CTAInfoHolder;
 import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
+import lombok.Getter;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -21,13 +22,11 @@ import static com.paytm.digital.education.explore.response.dto.common.CTA.Consta
 import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.WEB;
 
 @Service
+@Getter
 public class ShortListCTAProducer extends AbstractCTAProducer {
     private static Logger log = LoggerFactory.getLogger(BrochureCTAProducer.class);
 
-    @Override
-    public CTAType getCTAType() {
-        return SHORTLIST;
-    }
+    private final CTAType cTAType = SHORTLIST;
 
     @Override
     public CTA cta(CTAInfoHolder ctaInfoHolder, Map<String, String> ctaConfigMap, Client client) {

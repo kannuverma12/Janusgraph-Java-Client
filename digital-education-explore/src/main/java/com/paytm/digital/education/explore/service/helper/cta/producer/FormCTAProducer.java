@@ -8,6 +8,7 @@ import com.paytm.digital.education.explore.response.dto.detail.CTAInfoHolder;
 import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -22,6 +23,7 @@ import static com.paytm.digital.education.explore.enums.CTAType.FORMS;
 import static com.paytm.digital.education.explore.response.dto.common.CTA.Constants.WEB;
 
 @Service
+@Getter
 public class FormCTAProducer extends AbstractCTAProducer {
     private static Logger log = LoggerFactory.getLogger(FormCTAProducer.class);
 
@@ -34,10 +36,7 @@ public class FormCTAProducer extends AbstractCTAProducer {
     @Value("${forms.web.url.prefix}")
     private String formsWebUrlPrefix;
 
-    @Override
-    public CTAType getCTAType() {
-        return FORMS;
-    }
+    private final CTAType cTAType = FORMS;
 
     @Override
     public CTA cta(CTAInfoHolder ctaInfoHolder, Map<String, String> ctaConfiguration, Client client) {
