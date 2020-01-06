@@ -364,12 +364,6 @@ function transformCollege(superDoc) {
       lead_enabled = true;
     }
 
-    if(superDoc.is_client == 1 && lead_enabled) {
-      transformedCollege.is_client = true;
-    } else {
-      transformedCollege.is_client = false;
-    }
-
     for (var k = 0; k < course.streams.length; k++) {
         if(course.streams[k].toLowerCase() === 'education' ||
             course.streams[k].toLowerCase() === 'sciences' ||
@@ -412,6 +406,12 @@ function transformCollege(superDoc) {
         transformedCollege.courses[i].fees = college_fees;
       }
     }
+  }
+
+  if(superDoc.is_client == 1 && lead_enabled) {
+    transformedCollege.is_client = true;
+  } else {
+    transformedCollege.is_client = false;
   }
 
   if (transformedCollege.courses.length === 0) {
