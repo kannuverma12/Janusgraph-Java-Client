@@ -20,6 +20,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.DispatcherServlet;
 import paytm.auth.personaaclclient.config.EnableACLPersonaAuth;
 
@@ -46,6 +47,13 @@ public class Application {
                     .getProperty("vault.source", Boolean.class, Boolean.FALSE);
             log.info("isVaultSource : {}", isVaultSource);
             if (isVaultSource) {
+                String profile = event.getEnvironment().getProperty("spring.profiles.active");
+                log.info("Profile : {}", profile);
+                if (StringUtils.isEmpty(profile)) {
+                    log.error("Profile not present in application.properties");
+                    System.exit(1);
+                }
+                System.setProperty("spring.profiles.active", profile);
                 log.info("Going to load vault properties");
                 try {
                     loadVaultProperties();
