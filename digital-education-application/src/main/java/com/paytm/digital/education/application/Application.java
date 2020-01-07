@@ -66,7 +66,7 @@ public class Application {
 
     private static void loadVaultProperties() throws Exception {
         try {
-            VaultUtil.injectVaultProperties("spring.profiles.active");
+            VaultUtil.injectVaultProperties("SPRING_PROFILES_ACTIVE");
         } catch (Exception e) {
             log.error("Could not inject vault properties ", e);
             throw e;
