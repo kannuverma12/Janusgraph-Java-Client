@@ -31,6 +31,7 @@ import static com.paytm.digital.education.constant.ExploreConstants.ABOUT_EXAM;
 import static com.paytm.digital.education.constant.ExploreConstants.APP_DISPLAY_NAME;
 import static com.paytm.digital.education.constant.ExploreConstants.DESCRIPTION;
 import static com.paytm.digital.education.constant.ExploreConstants.DISPLAY_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.DUMMY_EXAM_ICON;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FULL_NAME;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SHORT_NAME;
@@ -71,7 +72,6 @@ public class EntityDataDiscoveryService {
     private final        StreamDAO                 streamDAO;
     private final        SchoolConfig              schoolConfig;
     private final        CommonEntityMongoDAO      commonEntityMongoDAO;
-
 
     public void updateInstituteData(Section section) {
         List<Map<String, Object>> sectionItems = section.getItems();

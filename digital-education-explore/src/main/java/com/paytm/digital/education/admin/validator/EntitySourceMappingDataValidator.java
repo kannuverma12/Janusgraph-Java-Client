@@ -69,7 +69,6 @@ public class EntitySourceMappingDataValidator {
                         Exam.class);
                 if (Objects.isNull(exam)) {
                     throw new EducationException(INVALID_MERCHANT_SOURCE_MAPPING_DATA,
-
                             new Object[] {entitySourceMappingData.getEntityId().toString()});
                 }
             }

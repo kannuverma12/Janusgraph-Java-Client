@@ -1,4 +1,4 @@
-package com.paytm.digital.education.application.config.metric;
+package com.paytm.digital.education.metrics;
 
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
@@ -95,6 +95,20 @@ public class DataDogClient {
                     .append(DELIMITER_DOT).append("requestRate")
                     .toString();
             statsDClient.recordGaugeValue(aspect, requestCount);
+        } else {
+            log.error("Data Dog Client is not initialized properly, statsDClient : {}",
+                    statsDClient);
+        }
+    }
+
+    public void increment(String metricName, String... tags) {
+        if (!isDatadogEnabled) {
+            log.warn("Data Dog Client is disabled");
+        } else if (statsDClient != null) {
+            String aspect = new StringBuilder(environment)
+                    .append(DELIMITER_DOT).append(metricName)
+                    .toString();
+            statsDClient.increment(aspect, tags);
         } else {
             log.error("Data Dog Client is not initialized properly, statsDClient : {}",
                     statsDClient);

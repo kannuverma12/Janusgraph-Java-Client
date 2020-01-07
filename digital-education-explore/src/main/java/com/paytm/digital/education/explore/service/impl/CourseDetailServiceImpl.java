@@ -7,7 +7,7 @@ import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Institute;
 import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.dto.detail.Event;
+import com.paytm.digital.education.dto.detail.ImportantDate;
 import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.response.dto.detail.CourseDetail;
@@ -18,10 +18,11 @@ import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.utility.FieldsRetrievalUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
-import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
+import com.paytm.digital.education.serviceimpl.helper.ExamDatesHelper;
 import com.paytm.digital.education.utility.CommonUtil;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -44,17 +45,20 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_COURSE_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_COURSE_NAME;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 
-@AllArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class CourseDetailServiceImpl {
 
-    private CommonMongoRepository       commonMongoRepository;
-    private DerivedAttributesHelper     derivedAttributesHelper;
-    private PropertyReader              propertyReader;
-    private SimilarInstituteServiceImpl similarInstituteService;
-    private BannerDataHelper            bannerDataHelper;
-    private ExamInstanceHelper          examInstanceHelper;
-    private CommonEntityMongoDAO        commonEntityMongoDAO;
+    private final CommonMongoRepository       commonMongoRepository;
+    private final DerivedAttributesHelper     derivedAttributesHelper;
+    private final PropertyReader              propertyReader;
+    private final SimilarInstituteServiceImpl similarInstituteService;
+    private final BannerDataHelper            bannerDataHelper;
+    private final ExamDatesHelper             examDatesHelper;
+    private final CommonEntityMongoDAO        commonEntityMongoDAO;
+
+    @Value("${course.default.instances.for.date:1}")
+    private Integer defaultNoOfInstances;
 
     /*
      ** Method to get the course details and institute details
@@ -114,11 +118,13 @@ public class CourseDetailServiceImpl {
 
         for (Exam exam : exams) {
             ExamDetail examDetail = new ExamDetail();
-            List<Event> impDates = examInstanceHelper.getImportantDates(exam);
+            List<ImportantDate> importantDates = examDatesHelper.getImportantDates(exam, defaultNoOfInstances);
             examDetail.setExamId(exam.getExamId());
             examDetail.setUrlDisplayName(
                     CommonUtil.convertNameToUrlDisplayName(exam.getExamFullName()));
-            examDetail.setImportantDates(impDates);
+            if (!CollectionUtils.isEmpty(importantDates)) {
+                examDetail.setImportantDates(importantDates);
+            }
             examDetail.setExamFullName(exam.getExamFullName());
             examDetail.setExamShortName(exam.getExamShortName());
             examsAccepted.add(examDetail);

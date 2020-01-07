@@ -11,8 +11,9 @@ import com.paytm.digital.education.dto.detail.Syllabus;
 import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
 import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.utility.JsonUtils;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -28,8 +29,9 @@ import static com.paytm.digital.education.coaching.enums.DisplayHeadings.ALL_YOU
 
 @Service
 @AllArgsConstructor
-@Slf4j
 public class CoachingExamSectionHelper {
+
+    private static final Logger log = LoggerFactory.getLogger(CoachingExamSectionHelper.class);
 
     private ExamInstanceHelper examInstanceHelper;
 

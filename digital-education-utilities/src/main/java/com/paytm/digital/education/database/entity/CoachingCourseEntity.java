@@ -188,5 +188,5 @@ public class CoachingCourseEntity extends Base {
     private Boolean isDynamic;
 
     @Field("cta_info")
-    private Map<CTAViewType, Long> ctaInfo;
+    private Map<CTAViewType, List<Long>> ctaInfo;
 }

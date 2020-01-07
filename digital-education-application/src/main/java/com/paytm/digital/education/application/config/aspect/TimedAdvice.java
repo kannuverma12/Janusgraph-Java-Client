@@ -3,7 +3,7 @@ package com.paytm.digital.education.application.config.aspect;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.paytm.digital.education.application.config.metric.DataDogClient;
+import com.paytm.digital.education.metrics.DataDogClient;
 import com.paytm.digital.education.application.constant.Constant;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;

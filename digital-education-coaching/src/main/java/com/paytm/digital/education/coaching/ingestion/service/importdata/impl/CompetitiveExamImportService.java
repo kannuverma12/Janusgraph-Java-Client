@@ -10,7 +10,8 @@ import com.paytm.digital.education.coaching.ingestion.transformer.importdata.Imp
 import com.paytm.digital.education.coaching.producer.controller.ProducerTargetExamController;
 import com.paytm.digital.education.coaching.producer.model.dto.TargetExamDTO;
 import com.paytm.digital.education.utility.JsonUtils;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -21,10 +22,11 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.C
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EMPTY_STRING;
 import static com.paytm.digital.education.coaching.constants.GoogleSheetImportConstants.COMPETITIVE_EXAM_SHEET_ID;
 
-@Slf4j
 @Service
 public class CompetitiveExamImportService extends AbstractImportService
         implements ImportService {
+
+    private static final Logger log = LoggerFactory.getLogger(CompetitiveExamImportService.class);
 
     private static final String TYPE = "CompetitiveExam";
 
@@ -59,7 +61,7 @@ public class CompetitiveExamImportService extends AbstractImportService
                         ImportCompetitiveExamTransformer.convert(newCompetitiveExamForm));
             }
         } catch (final Exception e) {
-            log.error("Got Exception in upsertFailedRecords for input: {}, exception: ", form, e);
+            log.error("Got Exception in upsertFailedRecords for input: {}, exception: ", e, form);
         }
     }
 
@@ -75,7 +77,7 @@ public class CompetitiveExamImportService extends AbstractImportService
                         ImportCompetitiveExamTransformer.convert(newCompetitiveExamForm));
             }
         } catch (final Exception e) {
-            log.error("Got Exception in upsertNewRecords for input: {}, exception: ", form, e);
+            log.error("Got Exception in upsertNewRecords for input: {}, exception: ", e, form);
             failureMessage = e.getMessage();
         }
 

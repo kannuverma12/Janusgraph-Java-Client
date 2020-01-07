@@ -5,8 +5,9 @@ import com.paytm.digital.education.coaching.producer.model.request.TopRankerData
 import com.paytm.digital.education.database.entity.CoachingCenterEntity;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.exception.InvalidRequestException;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +15,11 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class TopRankerManagerService {
+
+    private static final Logger log = LoggerFactory.getLogger(TopRankerManagerService.class);
 
     @Autowired
     private final ProducerTopRankerService producerTopRankerService;
@@ -58,7 +60,8 @@ public class TopRankerManagerService {
         producerTargetExamService.isValidExamIds(Arrays.asList(request.getExamId()));
         producerCoachingCourseService.isValidCourseIds(request.getCourseStudied());
 
-        return TopRankerDTO.builder().topRankerId(producerTopRankerService.create(request).getTopRankerId())
+        return TopRankerDTO.builder()
+                .topRankerId(producerTopRankerService.create(request).getTopRankerId())
                 .build();
     }
 
@@ -84,7 +87,8 @@ public class TopRankerManagerService {
         producerTargetExamService.isValidExamIds(Arrays.asList(request.getExamId()));
         producerCoachingCourseService.isValidCourseIds(request.getCourseStudied());
 
-        return TopRankerDTO.builder().topRankerId(producerTopRankerService.update(request).getTopRankerId())
+        return TopRankerDTO.builder()
+                .topRankerId(producerTopRankerService.update(request).getTopRankerId())
                 .build();
 
     }

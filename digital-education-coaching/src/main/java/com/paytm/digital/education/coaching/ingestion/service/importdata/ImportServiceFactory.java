@@ -3,7 +3,6 @@ package com.paytm.digital.education.coaching.ingestion.service.importdata;
 import com.paytm.digital.education.coaching.ingestion.model.IngestionFormEntity;
 import com.paytm.digital.education.coaching.ingestion.service.importdata.impl.CoachingBannerImportService;
 import com.paytm.digital.education.coaching.ingestion.service.importdata.impl.CoachingCTAImportService;
-import com.paytm.digital.education.coaching.ingestion.service.importdata.impl.CoachingCTAMappingImportService;
 import com.paytm.digital.education.coaching.ingestion.service.importdata.impl.CoachingCenterImportService;
 import com.paytm.digital.education.coaching.ingestion.service.importdata.impl.CoachingCourseFeatureImportService;
 import com.paytm.digital.education.coaching.ingestion.service.importdata.impl.CoachingCourseImportService;
@@ -11,26 +10,26 @@ import com.paytm.digital.education.coaching.ingestion.service.importdata.impl.Co
 import com.paytm.digital.education.coaching.ingestion.service.importdata.impl.CoachingInstituteImportService;
 import com.paytm.digital.education.coaching.ingestion.service.importdata.impl.CompetitiveExamImportService;
 import com.paytm.digital.education.coaching.ingestion.service.importdata.impl.TopRankerImportService;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-@Slf4j
 @Component
 @AllArgsConstructor
 public class ImportServiceFactory {
 
+    private static final Logger log = LoggerFactory.getLogger(ImportServiceFactory.class);
+
     private final CoachingBannerImportService        coachingBannerIngestorService;
     private final CoachingCenterImportService        coachingCenterIngestorService;
     private final CoachingCourseFeatureImportService coachingCourseFeatureIngestorService;
-    private final CoachingCourseImportService     coachingCourseIngestorService;
-    private final CoachingExamImportService       coachingExamIngestorService;
-    private final CoachingInstituteImportService  coachingInstituteIngestorService;
-    private final CompetitiveExamImportService    competitiveExamIngestorService;
-    private final TopRankerImportService          topRankerIngestorService;
-    private final CoachingCTAImportService        ctaImportService;
-    private final CoachingCTAMappingImportService coachingCTAMappingImportService;
-
+    private final CoachingCourseImportService        coachingCourseIngestorService;
+    private final CoachingExamImportService          coachingExamIngestorService;
+    private final CoachingInstituteImportService     coachingInstituteIngestorService;
+    private final CompetitiveExamImportService       competitiveExamIngestorService;
+    private final TopRankerImportService             topRankerIngestorService;
+    private final CoachingCTAImportService           ctaImportService;
 
     public ImportService getIngestorService(final IngestionFormEntity formEntity) {
 
@@ -61,9 +60,6 @@ public class ImportServiceFactory {
             }
             case COACHING_COURSE_CTA_FORM: {
                 return this.ctaImportService;
-            }
-            case COACHING_CTA_MAPPING_FORM: {
-                return this.coachingCTAMappingImportService;
             }
             default: {
 

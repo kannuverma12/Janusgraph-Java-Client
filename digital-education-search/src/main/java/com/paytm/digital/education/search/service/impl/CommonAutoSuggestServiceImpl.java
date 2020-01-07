@@ -16,8 +16,9 @@ import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.search.model.AutoSuggestEsData;
 import com.paytm.digital.education.search.service.CommonAutoSuggestionService;
 import com.paytm.digital.education.utility.HierarchyIdentifierUtils;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -39,8 +40,9 @@ import static com.paytm.digital.education.constant.CommonConstants.OFFICIAL_NAME
 
 @Service
 @AllArgsConstructor
-@Slf4j
 public class CommonAutoSuggestServiceImpl implements CommonAutoSuggestionService {
+
+    private static final Logger log = LoggerFactory.getLogger(CommonAutoSuggestServiceImpl.class);
 
     private ElasticSearchService elasticSearchService;
     private Map<String, String>  suggestClassLevelMap;

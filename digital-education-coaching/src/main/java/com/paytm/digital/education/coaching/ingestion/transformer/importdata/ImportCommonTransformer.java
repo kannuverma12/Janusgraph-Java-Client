@@ -2,14 +2,17 @@ package com.paytm.digital.education.coaching.ingestion.transformer.importdata;
 
 import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.CourseType;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-@Slf4j
 public class ImportCommonTransformer {
+
+    private static final Logger log = LoggerFactory.getLogger(ImportCommonTransformer.class);
 
     private static final String YES             = "Yes";
     private static final String DELIMITER_COMMA = ",";
@@ -78,6 +81,23 @@ public class ImportCommonTransformer {
 
         for (final String value : commaSeparatedValues) {
             list.add(value.trim());
+        }
+
+        return list;
+    }
+
+    static List<Long> convertStringToListOfDistinctLong(final String input) {
+        if (StringUtils.isEmpty(input)) {
+            return Collections.emptyList();
+        }
+
+        final String[] commaSeparatedValues = input.split(DELIMITER_COMMA);
+        final List<Long> list = new ArrayList<>();
+
+        for (final String value : commaSeparatedValues) {
+            if (!list.contains(Long.valueOf(value.trim()))) {
+                list.add(Long.valueOf(value.trim()));
+            }
         }
 
         return list;

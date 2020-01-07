@@ -16,7 +16,6 @@ import com.paytm.digital.education.utility.JsonUtils;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,9 +47,11 @@ import static org.mockito.BDDMockito.given;
         value = "/application-test.properties",
         properties = {
                 "kafka.listener.should.configure=true",
-                "redis.port=6381",
-                "mongo.port=27019",
-                "spring.data.mongodb.uri=mongodb://localhost:27019/digital-education"
+                "kafka.listener.endpoint.enabled=true",
+                "redis.port=6382",
+                "mongo.port=27021",
+                "spring.data.mongodb.uri=mongodb://localhost:27021/digital-education",
+                "spring.kafka.bootstrap-servers=localhost:9095"
         }
 )
 @WebMvcTest(value = PurchaseController.class, secure = false)
@@ -170,7 +171,7 @@ public class MerchantCommitControllerTest {
         cartItem.setMrp(10.0f);
         cartItem.setConvFee(0.0f);
         cartItem.setDiscount(0.0f);
-        cartItem.setSellingPrice(10.0f);
+        cartItem.setTotalSellingPrice(10.0f);
         cartItem.setQuantity(1);
         cartItem.setReferenceId(referenceId);
 

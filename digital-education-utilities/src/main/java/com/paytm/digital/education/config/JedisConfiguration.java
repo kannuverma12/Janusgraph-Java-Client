@@ -13,19 +13,20 @@ import java.util.Objects;
 
 @Configuration
 public class JedisConfiguration {
-    private static final Logger    log                        = LoggerFactory.getLogger(JedisConfiguration.class);
-    private static final Integer   DEFAULT_CONNECTION_TIMEOUT = 5000;
-    private static final Integer   DEFAULT_POOL_SIZE          = 50;
+    private static final Logger  log                        =
+            LoggerFactory.getLogger(JedisConfiguration.class);
+    private static final Integer DEFAULT_CONNECTION_TIMEOUT = 5000;
+    private static final Integer DEFAULT_POOL_SIZE          = 50;
 
     @Value("${redis.host}")
-    private              String  redisHost;
+    private        String    redisHost;
     @Value("${redis.port}")
-    private              String  redisPort;
+    private        String    redisPort;
     @Value("${redis.max_pool_size}")
-    private              String  redisMaxPoolSize;
+    private        String    redisMaxPoolSize;
     @Value("${redis.connection_timeout_in_ms}")
-    private              String  redisConnectionTimeoutInMs;
-    private static       JedisPool jedisPool;
+    private        String    redisConnectionTimeoutInMs;
+    private static JedisPool jedisPool;
 
     @PostConstruct
     public void init() {

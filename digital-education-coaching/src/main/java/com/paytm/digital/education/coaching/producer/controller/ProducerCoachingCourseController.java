@@ -53,15 +53,4 @@ public class ProducerCoachingCourseController {
             @Valid @RequestBody CoachingCourseDataRequest request) {
         return new ResponseEntity<>(coachingCourseManagerService.update(request), HttpStatus.OK);
     }
-
-    @PatchMapping(
-            value = "/v1/admin/coaching-programs",
-            produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Updates existing coaching program",
-            notes = "Updates existing coaching program in the collection of programs")
-    public ResponseEntity<CoachingCourseDTO> patchCoachingProgram(
-            @Valid @RequestBody CoachingCoursePatchRequest request) {
-        return new ResponseEntity<>(coachingCourseManagerService.patch(request), HttpStatus.OK);
-    }
 }

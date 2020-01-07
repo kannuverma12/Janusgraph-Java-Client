@@ -1,6 +1,7 @@
 package com.paytm.digital.education.explore.service.impl;
 
 import com.paytm.digital.education.config.SchoolConfig;
+import com.paytm.digital.education.constant.ExploreConstants;
 import com.paytm.digital.education.daoresult.SubscribedEntityCount;
 import com.paytm.digital.education.daoresult.subscription.SubscriptionWithExam;
 import com.paytm.digital.education.daoresult.subscription.SubscriptionWithInstitute;
@@ -36,9 +37,11 @@ import java.util.Objects;
 
 import static com.paytm.digital.education.constant.DBConstants.UNREAD_SHORTLIST_COUNT;
 import static com.paytm.digital.education.constant.ExploreConstants.APPROVALS;
+import static com.paytm.digital.education.constant.ExploreConstants.DUMMY_EXAM_ICON;
 import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
 import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_SEARCH_NAMESPACE;
 import static com.paytm.digital.education.constant.ExploreConstants.SUCCESS;
+import static com.paytm.digital.education.enums.EducationEntity.EXAM;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 
 
@@ -184,14 +187,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                     subscriptionWithExam.getEntityDetails().setUrlDisplayKey(CommonUtil
                             .convertNameToUrlDisplayName(
                                     subscriptionWithExam.getEntityDetails().getExamFullName()));
-
-                    if (StringUtils.isNotBlank(subscriptionWithExam.getEntityDetails().getLogo())) {
-                        String logoLink = CommonUtil
-                                .getLogoLink(subscriptionWithExam.getEntityDetails().getLogo(),
-                                        EducationEntity.EXAM);
-                        subscriptionWithExam.getEntityDetails()
-                                .setLogo(logoLink);
+                    String logoUrl = subscriptionWithExam.getEntityDetails().getLogo();
+                    if (StringUtils.isBlank(logoUrl)) {
+                        logoUrl = DUMMY_EXAM_ICON;
                     }
+                    logoUrl = CommonUtil.getLogoLink(logoUrl, EXAM);
+                    subscriptionWithExam.getEntityDetails().setLogo(logoUrl);
                 }
             }
         } catch (Exception ex) {

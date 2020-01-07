@@ -1,5 +1,8 @@
 package com.paytm.digital.education.dto.detail;
 
+import static com.paytm.digital.education.constant.DBConstants.NON_TENTATIVE;
+import static com.paytm.digital.education.utility.CommonUtils.setLastDateOfMonth;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -50,4 +53,24 @@ public class Event implements Serializable {
     @JsonProperty("certainity")
     private String certainity;
 
+    @JsonProperty("date_name")
+    private String dateName;
+
+    @JsonProperty("ongoing")
+    private Boolean ongoing;
+
+    @JsonProperty("upcoming")
+    private Boolean upcoming;
+
+    public Date calculateCorrespondingDate() {
+        Date eventDate;
+        if (NON_TENTATIVE.equalsIgnoreCase(this.getCertainity())) {
+            eventDate = (this.getDateEndRange() != null
+                    ? this.getDateEndRange()
+                    : this.getDateStartRange());
+        } else {
+            eventDate = setLastDateOfMonth(this.getMonthTimestamp());
+        }
+        return eventDate;
+    }
 }

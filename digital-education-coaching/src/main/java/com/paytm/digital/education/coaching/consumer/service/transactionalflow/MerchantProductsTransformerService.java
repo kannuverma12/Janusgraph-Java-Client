@@ -15,7 +15,8 @@ import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.utility.JsonUtils;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,9 +43,11 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_CART_ITEMS;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_MERCHANT_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_MERCHANT_PRODUCTS;
 
-@Slf4j
 @Service
 public class MerchantProductsTransformerService {
+
+    private static final Logger log =
+            LoggerFactory.getLogger(MerchantProductsTransformerService.class);
 
     @Value("${education.vertical.id}")
     private String educationVerticalId;
@@ -81,7 +84,7 @@ public class MerchantProductsTransformerService {
         }
         CoachingInstituteEntity coachingInstituteEntity = coachingInstituteDAO
                 .findByPaytmMerchantId(PAYTM_MERCHANT_ID, request.getMerchantId().toString(),
-                        INSTITUTE_FIELDS);
+                        INSTITUTE_FIELDS, INSTITUTE_FIELDS);
 
         if (Objects.isNull(coachingInstituteEntity) || !coachingInstituteEntity.getIsEnabled()) {
             log.error("No coaching institute found with merchant id: {}", request.getMerchantId());
@@ -100,7 +103,8 @@ public class MerchantProductsTransformerService {
                 coachingCourseDAO.findByCoachingInstIdAndIsDynAndIsEnabledAndMerchantPIdsIn(
                         COACHING_INSTITUTE_ID, coachingInstituteEntity.getInstituteId(),
                         IS_DYNAMIC, true, IS_ENABLED, true,
-                        MERCHANT_PRODUCT_ID, merchantProductIds, COACHING_COURSE_FIELDS);
+                        MERCHANT_PRODUCT_ID, merchantProductIds, COACHING_COURSE_FIELDS,
+                        COACHING_COURSE_FIELDS);
         if (CollectionUtils.isEmpty(dynamicCoachingCourses)) {
             log.error("Dynamic courses for merchant_id: {} does not exist",
                     request.getMerchantId());
@@ -125,7 +129,8 @@ public class MerchantProductsTransformerService {
                 }
                 String referenceId = UUID.randomUUID().toString();
                 CheckoutCartItem cartItem = CheckoutCartItem.builder()
-                        .sellingPrice(merchantProduct.getPrice())
+                        .totalSellingPrice(merchantProduct.getPrice() * merchantProduct.getQuantity())
+                        .unitSellingPrice(merchantProduct.getPrice())
                         .productId(dynamicCoachingCourse.getPaytmProductId())
                         .categoryId(coachingCategoryId)
                         .educationVertical(COACHING_VERTICAL_NAME)

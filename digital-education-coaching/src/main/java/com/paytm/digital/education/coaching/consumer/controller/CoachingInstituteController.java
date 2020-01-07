@@ -2,7 +2,8 @@ package com.paytm.digital.education.coaching.consumer.controller;
 
 import com.paytm.digital.education.coaching.consumer.model.response.details.GetCoachingInstituteDetailsResponse;
 import com.paytm.digital.education.coaching.consumer.service.details.CoachingInstituteService;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,11 +18,12 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.U
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.URL.GET_COACHING_INSTITUTE_DETAILS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.URL.V1;
 
-@Slf4j
 @RestController
 @RequestMapping(value = COACHING_BASE + V1)
 @Validated
 public class CoachingInstituteController {
+
+    private static final Logger log = LoggerFactory.getLogger(CoachingInstituteController.class);
 
     @Autowired
     private CoachingInstituteService coachingInstituteService;

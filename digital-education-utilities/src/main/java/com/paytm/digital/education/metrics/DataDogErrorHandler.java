@@ -1,4 +1,4 @@
-package com.paytm.digital.education.application.config.metric;
+package com.paytm.digital.education.metrics;
 
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;

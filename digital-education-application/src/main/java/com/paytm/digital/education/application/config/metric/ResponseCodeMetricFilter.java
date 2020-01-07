@@ -1,6 +1,7 @@
 package com.paytm.digital.education.application.config.metric;
 
 import com.paytm.digital.education.application.constant.Constant;
+import com.paytm.digital.education.metrics.DataDogClient;
 import com.paytm.digital.education.utility.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;

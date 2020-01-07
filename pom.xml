@@ -7,6 +7,7 @@
     <modules>
         <module>digital-education-explore</module>
         <module>digital-education-coaching</module>
+        <module>digital-education-profiles</module>
         <module>digital-education-utilities</module>
         <module>digital-education-application</module>
         <module>digital-education-elasticsearch</module>
@@ -21,7 +22,7 @@
 
     <groupId>com.paytm.digital.education</groupId>
     <artifactId>digital-education-service</artifactId>
-    <version>0.0.9-SNAPSHOT</version>
+    <version>0.0.16-SNAPSHOT</version>
     <name>digital-education</name>
     <description>Digital education project</description>
 

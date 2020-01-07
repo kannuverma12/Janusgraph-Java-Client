@@ -9,8 +9,9 @@ import com.paytm.digital.education.coaching.consumer.service.search.CoachingInst
 import com.paytm.digital.education.coaching.consumer.service.search.ExamSearchService;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.enums.es.DataSortOrder;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -21,8 +22,9 @@ import java.util.concurrent.TimeoutException;
 
 @Service
 @AllArgsConstructor
-@Slf4j
 public class SearchDataHelper {
+
+    private static final Logger log = LoggerFactory.getLogger(SearchDataHelper.class);
 
     private CoachingCourseSearchService    coachingCourseSearch;
     private CoachingInstituteSearchService coachingInstituteSearchService;
@@ -45,11 +47,11 @@ public class SearchDataHelper {
             SearchResponse searchResponse = handler(entity).search(searchRequest);
             return searchResponse.getResults().getValues();
         } catch (IOException e) {
-            log.error("IO Exception for fetching top {} : {} for : {}",
-                    entity.toString(), e.getMessage(), filters.toString());
+            log.error("IO Exception for fetching top {} for : {}",
+                    e, entity.toString(), filters.toString());
         } catch (TimeoutException e) {
-            log.error("Timeout exception for fetching top {} : {} for : {}",
-                    entity.toString(), e.getMessage(), filters.toString());
+            log.error("Timeout exception for fetching top {} for : {}",
+                    e, entity.toString(), filters.toString());
         }
         return null;
     }

@@ -12,14 +12,16 @@ import com.paytm.digital.education.coaching.consumer.model.request.MerchantNotif
 import com.paytm.digital.education.coaching.consumer.model.request.VerifyRequest;
 import com.paytm.digital.education.coaching.consumer.model.response.transactionalflow.MerchantNotifyResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.transactionalflow.VerifyResponse;
-import com.paytm.digital.education.database.dao.CoachingCourseDAO;
 import com.paytm.digital.education.coaching.utils.ComparisonUtils;
+import com.paytm.digital.education.database.dao.CoachingCourseDAO;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.exception.PurchaseException;
 import com.paytm.digital.education.utility.JsonUtils;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -44,14 +46,20 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.T
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_CART_ITEMS;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_MERCHANT_DATA;
 
-@Slf4j
 @Service
-@AllArgsConstructor
 public class PurchaseService {
 
+    private static final Logger log = LoggerFactory.getLogger(PurchaseService.class);
+
+    @Autowired
     private RedisCacheService redisCacheService;
+    @Autowired
     private CoachingCourseDAO coachingCourseDAO;
+    @Autowired
     private MerchantCall      merchantCall;
+
+    @Value("${coaching.category.id}")
+    private String categoryId;
 
     public VerifyResponse verify(VerifyRequest request) throws PurchaseException {
         List<CartItem> cartItems = request.getCartItems();
@@ -154,6 +162,13 @@ public class PurchaseService {
             return false;
         }
 
+        if (!cartItem.getCategoryId().equals(categoryId)) {
+            log.error(
+                    "Invalid category id for course_id: {}, Correct category_id: {}, request category_id: {}",
+                    courseId, categoryId, cartItem.getCategoryId());
+            return false;
+        }
+
         if (!StringUtils.isEmpty(cartItem.getMetaData().getCourseType()) && !coachingCourseEntity
                 .getCourseType().getText().equals(cartItem.getMetaData().getCourseType())) {
             log.error("Invalid Course type for course_id: {}, DB type: {}, request type: {}",
@@ -179,16 +194,26 @@ public class PurchaseService {
             return false;
         }
 
+        if (cartItem.getQuantity() <= 0) {
+            return false;
+        }
+
         if (!cartItem.getProductId().equals(redisCartItem.getProductId())
                 || !cartItem.getQuantity().equals(redisCartItem.getQuantity())
                 || !ComparisonUtils.thresholdBasedFloatsComparison(cartItem.getBasePrice(),
                 redisCartItem.getBasePrice())
                 || !ComparisonUtils.thresholdBasedFloatsComparison(cartItem.getConvFee(),
                 redisCartItem.getConvFee())
-                || !ComparisonUtils.thresholdBasedFloatsComparison(cartItem.getSellingPrice(),
-                redisCartItem.getSellingPrice())
-                || !cartItem.getCategoryId().equals(redisCartItem.getCategoryId())
+                || !ComparisonUtils.thresholdBasedFloatsComparison(cartItem.getTotalSellingPrice(),
+                redisCartItem.getTotalSellingPrice())
+                || !ComparisonUtils.thresholdBasedFloatsComparison(cartItem.getUnitSellingPrice(),
+                redisCartItem.getUnitSellingPrice())
                 || !cartItem.getEducationVertical().equals(redisCartItem.getEducationVertical())) {
+            return false;
+        }
+
+        if (!StringUtils.isEmpty(cartItem.getCategoryId()) && !cartItem.getCategoryId()
+                .equals(redisCartItem.getCategoryId())) {
             return false;
         }
 
@@ -239,14 +264,13 @@ public class PurchaseService {
 
     private boolean verifyPriceAndTaxes(CartItem cartItem,
             CoachingCourseEntity coachingCourseEntity) {
-        if (Objects.isNull(coachingCourseEntity)) {
+        if (Objects.isNull(coachingCourseEntity) || cartItem.getQuantity() <= 0) {
             return false;
         }
 
         //Verify Base Price
-        float price =
-                (float) (double) (coachingCourseEntity.getDiscountedPrice()) * cartItem
-                        .getQuantity();
+        float unitPrice = (float) (double) (coachingCourseEntity.getDiscountedPrice());
+        float price = unitPrice * cartItem.getQuantity();
         if (!ComparisonUtils.thresholdBasedFloatsComparison(price, cartItem.getBasePrice())) {
             return false;
         }
@@ -258,10 +282,18 @@ public class PurchaseService {
             return false;
         }
 
+        //Verify Unit Price
+        float unitConvenienceFee = convenienceFee / cartItem.getQuantity();
+        float unitSellingPrice = unitPrice + unitConvenienceFee;
+        if (!ComparisonUtils
+                .thresholdBasedFloatsComparison(unitSellingPrice, cartItem.getUnitSellingPrice())) {
+            return false;
+        }
+
         //Verify Selling Price
         float sellingPrice = price + convenienceFee;
         if (!ComparisonUtils.thresholdBasedFloatsComparison(sellingPrice,
-                cartItem.getSellingPrice())) {
+                cartItem.getTotalSellingPrice())) {
             return false;
         }
 
