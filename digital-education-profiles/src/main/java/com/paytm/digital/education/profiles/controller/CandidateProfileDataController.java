@@ -40,7 +40,7 @@ public class CandidateProfileDataController {
     @PutMapping(value = "/profiles/bulk/{profile_id}")
     public ResponseEntity<List<ProfileDataEntity>> bulkUpdateCandidateProfileData(
             @PathVariable(value = "profile_id") @NotNull @Min(1) Long profileId,
-            @Valid @RequestBody List<ProfileDataRequest> profileDataRequest){
+            @Valid @RequestBody List<ProfileDataRequest> profileDataRequest) {
         List<ProfileDataEntity> candidateInformation = candidateProfileDataService
                 .bulkUpdateCandidateProfileData(profileDataRequest,profileId);
         return new ResponseEntity<>(candidateInformation,HttpStatus.OK);

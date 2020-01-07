@@ -56,7 +56,7 @@ public class CandidateProfileDataService {
     }
 
     public List<ProfileDataEntity> bulkUpdateCandidateProfileData(List<ProfileDataRequest> profileDataRequests,
-                                                            Long profileId){
+                                                            Long profileId) {
 
         List<ProfileDataEntity>  profileDataEntityList = new ArrayList<>();
         ProfileIdentifierEntity profileIdentifierEntity =
@@ -76,11 +76,12 @@ public class CandidateProfileDataService {
     private void processProfileEntityList(List<ProfileDataRequest> profileDataRequests,
                                           ProfileIdentifierEntity profileIdentifierEntity,
                                           List<ProfileDataEntity> profileDataEntityList
-                                          ){
-        for(ProfileDataRequest profileDataRequest : profileDataRequests){
+                                          ) {
+        for (ProfileDataRequest profileDataRequest : profileDataRequests) {
 
             ProfileDataEntity profileDataEntity = candidateProfileDataDAO
-                    .findByProfileIdAndKey(profileIdentifierEntity.getProfileId(), profileDataRequest.getKey()).orElse(null);
+                    .findByProfileIdAndKey(profileIdentifierEntity.getProfileId(),
+                            profileDataRequest.getKey()).orElse(null);
 
             if (profileDataEntity == null) {
                 profileDataEntity = new ProfileDataEntity();
