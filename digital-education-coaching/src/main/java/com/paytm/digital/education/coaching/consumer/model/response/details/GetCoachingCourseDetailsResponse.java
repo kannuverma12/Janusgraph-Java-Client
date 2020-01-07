@@ -49,5 +49,5 @@ public class GetCoachingCourseDetailsResponse {
     private CourseGetStarted             courseGetStarted;
 
     private Map<CTAViewType, List<CoachingCtaEntity>> ctaMap;
-    private List<String>                        sections;
+    private List<String>                              sections;
 }
