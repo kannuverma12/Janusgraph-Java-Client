@@ -130,8 +130,9 @@ public class MerchantCallImpl implements MerchantCall {
         String signatureMessage =
                 PAYTM_HOST_FOR_SIGNATURE + "|" + merchantInfo.getHost() + "|" + endpoint + "|"
                         + method + "|" + requestString + "|" + queryParamsString;
-        log.info("Message signature for outgoing request {} ", signatureMessage);
         String signature = AuthUtils.getSignature(signatureMessage, merchantInfo.getSecretKey());
+        log.info("Message signature for outgoing request , message : {} , signature : {} ",
+                signatureMessage, signature);
 
         MerchantCommitResponse merchantCommitResponse;
         try {
