@@ -13,6 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Slf4j
 @Service
 @AllArgsConstructor
@@ -49,6 +52,46 @@ public class CandidateProfileDataService {
         } catch (NonTransientDataAccessException ex) {
             logger.error("error on updating profile data", ex);
             throw new InvalidRequestException(ex.getMessage(), ex);
+        }
+    }
+
+    public List<ProfileDataEntity> bulkUpdateCandidateProfileData(List<ProfileDataRequest> profileDataRequests,
+                                                            Long profileId){
+
+        List<ProfileDataEntity>  profileDataEntityList = new ArrayList<>();
+        ProfileIdentifierEntity profileIdentifierEntity =
+                candidateProfileDAO.findByProfileId(profileId).orElseThrow(() ->
+                        new InvalidRequestException("profile id should be present"));
+
+        processProfileEntityList(profileDataRequests,profileIdentifierEntity,profileDataEntityList);
+
+        try {
+            return candidateProfileDataDAO.saveAll(profileDataEntityList);
+        } catch (NonTransientDataAccessException ex) {
+            logger.error("error on updating profile data", ex);
+            throw new InvalidRequestException(ex.getMessage(), ex);
+        }
+    }
+
+    private void processProfileEntityList(List<ProfileDataRequest> profileDataRequests,
+                                          ProfileIdentifierEntity profileIdentifierEntity,
+                                          List<ProfileDataEntity> profileDataEntityList
+                                          ){
+        for(ProfileDataRequest profileDataRequest : profileDataRequests){
+
+            ProfileDataEntity profileDataEntity = candidateProfileDataDAO
+                    .findByProfileIdAndKey(profileIdentifierEntity.getProfileId(), profileDataRequest.getKey()).orElse(null);
+
+            if (profileDataEntity == null) {
+                profileDataEntity = new ProfileDataEntity();
+                profileDataEntity.setCustomerId(profileIdentifierEntity.getCustomerId());
+                profileDataEntity.setProfileId(profileIdentifierEntity.getProfileId());
+                profileDataEntity.setKey(profileDataRequest.getKey());
+            }
+
+            profileDataEntity.setIsEnabled(profileDataRequest.getIsEnabled());
+            profileDataEntity.setValue(profileDataRequest.getValue());
+            profileDataEntityList.add(profileDataEntity);
         }
     }
 

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -34,6 +35,15 @@ public class CandidateProfileDataController {
         ProfileDataEntity candidateInformation = candidateProfileDataService
                 .updateCandidateProfileData(profileDataRequest, profileId);
         return new ResponseEntity<>(candidateInformation, HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/profiles/bulk/{profile_id}")
+    public ResponseEntity<List<ProfileDataEntity>> bulkUpdateCandidateProfileData(
+            @PathVariable(value = "profile_id") @NotNull @Min(1) Long profileId,
+            @Valid @RequestBody List<ProfileDataRequest> profileDataRequest){
+        List<ProfileDataEntity> candidateInformation = candidateProfileDataService
+                .bulkUpdateCandidateProfileData(profileDataRequest,profileId);
+        return new ResponseEntity<>(candidateInformation,HttpStatus.OK);
     }
 
 }
