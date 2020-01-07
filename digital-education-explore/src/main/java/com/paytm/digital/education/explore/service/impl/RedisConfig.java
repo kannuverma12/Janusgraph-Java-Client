@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+@Configuration
 public class RedisConfig {
 
     private final int port;
