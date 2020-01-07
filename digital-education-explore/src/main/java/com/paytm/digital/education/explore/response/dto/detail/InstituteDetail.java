@@ -6,12 +6,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.dto.OfficialAddress;
 import com.paytm.digital.education.dto.detail.ExamAndCutOff;
 import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.explore.response.dto.articles.NewsArticleResponse;
 import com.paytm.digital.education.explore.response.dto.common.BannerData;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.common.Widget;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,7 +22,9 @@ import static com.paytm.digital.education.enums.EducationEntity.INSTITUTE;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class InstituteDetail implements CTAInfoHolder {
+public class InstituteDetail implements CTAInfoHolder, Serializable {
+
+    private static final long serialVersionUID = -653557675224255635L;
 
     @JsonProperty("institute_id")
     private long instituteId;
@@ -118,6 +122,9 @@ public class InstituteDetail implements CTAInfoHolder {
     @JsonProperty("articles")
     private List<CampusArticle> articles;
 
+    @JsonProperty("news_articles")
+    private NewsArticleResponse newsArticles;
+
     @JsonProperty("events")
     private List<CampusEventDetail> events;
 
@@ -141,7 +148,7 @@ public class InstituteDetail implements CTAInfoHolder {
     @JsonIgnore
     @Override
     public boolean hasShareFeature() {
-        return false;
+        return true;
     }
 
     @Override

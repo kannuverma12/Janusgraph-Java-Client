@@ -3,10 +3,14 @@ package com.paytm.digital.education.database.entity;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
-public class CampusAmbassador {
+public class CampusAmbassador implements Serializable {
+
+    private static final long serialVersionUID = -5847901310220876210L;
+
     @Field("name")
     private String name;
 

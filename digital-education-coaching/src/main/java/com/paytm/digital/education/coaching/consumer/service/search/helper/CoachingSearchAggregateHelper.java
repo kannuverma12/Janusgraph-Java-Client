@@ -5,6 +5,8 @@ import com.paytm.digital.education.elasticsearch.models.BucketSort;
 import com.paytm.digital.education.enums.es.AggregationType;
 import com.paytm.digital.education.enums.es.BucketAggregationSortParms;
 import com.paytm.digital.education.enums.es.DataSortOrder;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -29,6 +31,8 @@ import static com.paytm.digital.education.enums.es.AggregationType.TOP_HITS;
 
 @Service
 public class CoachingSearchAggregateHelper {
+
+    private static final Logger log = LoggerFactory.getLogger(CoachingSearchAggregateHelper.class);
 
     public AggregateField[] getExamAggregateData() {
         List<String> examKeys =

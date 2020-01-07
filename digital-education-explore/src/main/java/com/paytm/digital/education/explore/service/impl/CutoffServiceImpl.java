@@ -1,20 +1,20 @@
 package com.paytm.digital.education.explore.service.impl;
 
-import com.paytm.digital.education.exception.BadRequestException;
-import com.paytm.digital.education.exception.NotFoundException;
 import com.paytm.digital.education.database.entity.Course;
 import com.paytm.digital.education.database.entity.Cutoff;
+import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.enums.Gender;
-import com.paytm.digital.education.explore.response.dto.common.CutOff;
 import com.paytm.digital.education.dto.detail.ExamAndCutOff;
+import com.paytm.digital.education.enums.Gender;
+import com.paytm.digital.education.exception.BadRequestException;
+import com.paytm.digital.education.exception.NotFoundException;
+import com.paytm.digital.education.explore.response.dto.common.CutOff;
 import com.paytm.digital.education.explore.response.dto.search.CutoffSearchResponse;
 import com.paytm.digital.education.explore.service.CutoffService;
 import com.paytm.digital.education.explore.service.helper.GenderAndCasteGroupHelper;
-import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.explore.utility.FieldsRetrievalUtil;
+import com.paytm.digital.education.utility.CommonUtil;
 import lombok.AllArgsConstructor;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -31,6 +31,7 @@ import java.util.Objects;
 
 import static com.mongodb.QueryOperators.AND;
 import static com.mongodb.QueryOperators.EXISTS;
+import static com.mongodb.QueryOperators.IN;
 import static com.paytm.digital.education.constant.ExploreConstants.CASTEGROUP;
 import static com.paytm.digital.education.constant.ExploreConstants.COURSE_CLASS;
 import static com.paytm.digital.education.constant.ExploreConstants.CUTOFF;
@@ -42,7 +43,6 @@ import static com.paytm.digital.education.constant.ExploreConstants.GENDER;
 import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.constant.ExploreConstants.OTHER_CATEGORIES;
 import static com.paytm.digital.education.enums.EducationEntity.COURSE;
-
 import static com.paytm.digital.education.enums.Gender.OTHERS;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 import static com.paytm.digital.education.mapping.ErrorEnum.NO_CUTOFF_EXISTS;
@@ -55,6 +55,7 @@ public class CutoffServiceImpl implements CutoffService {
 
     private CommonMongoRepository     commonMongoRepository;
     private GenderAndCasteGroupHelper genderAndCasteGroupHelper;
+    private CommonEntityMongoDAO commonEntityMongoDAO;
 
     private Map<String, Map<String, Object>> genderCategoryMap;
 
@@ -79,10 +80,10 @@ public class CutoffServiceImpl implements CutoffService {
             if (Objects.nonNull(gender) && gender.equals(OTHERS)) {
                 gender = null;
             }
-            List<Course> courseAndCutoffs = commonMongoRepository
-                    .findAll(buildQueryObject(instituteId, examId, gender, casteGroup),
-                            Course.class,
+            List<Course> courseAndCutoffs = commonEntityMongoDAO
+                    .getAllCourses(buildQueryObject(instituteId, examId, gender, casteGroup),
                             courseProjectionFields, AND);
+
             if (courseAndCutoffs.isEmpty()) {
                 throw new NotFoundException(NO_CUTOFF_EXISTS,
                         NO_CUTOFF_EXISTS.getExternalMessage());
@@ -94,10 +95,10 @@ public class CutoffServiceImpl implements CutoffService {
         }
     }
 
-    private Map<String, Object> buildQueryObject(long instituteId, long examId, Gender gender,
+    private Map<String, Object> buildQueryObject(Long instituteId, long examId, Gender gender,
             String casteGroup) {
         Map<String, Object> queryObject = new HashMap<>();
-        queryObject.put(INSTITUTE_ID, instituteId);
+        queryObject.put(INSTITUTE_ID, Collections.singletonMap(IN, Arrays.asList(instituteId)));
         queryObject.put(CUTOFF_EXAM_ID, examId);
         queryObject.put(CUTOFF_CASTE_GROUP, casteGroup);
         queryObject.put(CUTOFF_GENDER, gender);
@@ -155,9 +156,9 @@ public class CutoffServiceImpl implements CutoffService {
     }
 
     @Cacheable(value = "cutoff_get_list")
-    public ExamAndCutOff getSearchList(long instituteId, long examId) {
+    public ExamAndCutOff getSearchList(Long instituteId, long examId) {
         Map<String, Object> queryParams = new HashMap<>();
-        queryParams.put(INSTITUTE_ID, instituteId);
+        queryParams.put(INSTITUTE_ID, Collections.singletonMap(IN, Arrays.asList(instituteId)));
         queryParams.put(CUTOFF_EXAM_ID, examId);
         Map<String, Boolean> existsQuery = new HashMap<>();
         existsQuery.put(EXISTS, true);
@@ -169,9 +170,9 @@ public class CutoffServiceImpl implements CutoffService {
     private ExamAndCutOff getGenderCasteGroupList(Map<String, Object> queryParams) {
         ExamAndCutOff examAndCutOff = new ExamAndCutOff();
         List<String> projectionFields = Arrays.asList(CUTOFF);
-        List<Course> courses = commonMongoRepository
-                .findAll(queryParams, Course.class,
-                        projectionFields, AND);
+        List<Course> courses =
+                commonEntityMongoDAO.getAllCourses(queryParams, projectionFields, AND);
+
         Map<Gender, String> genders = new HashMap<>();
         Map<String, String> casteGroups = new HashMap<>();
         Map<String, Object> genderMap = genderCategoryMap.get(GENDER);

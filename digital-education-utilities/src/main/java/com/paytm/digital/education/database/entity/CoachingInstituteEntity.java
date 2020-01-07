@@ -21,6 +21,8 @@ import java.util.List;
 @Document("coaching_institute")
 public class CoachingInstituteEntity extends Base {
 
+    private static final long serialVersionUID = -6468670960040059657L;
+
     @Id
     @Field("_id")
     @JsonIgnore

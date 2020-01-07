@@ -19,8 +19,9 @@ import com.paytm.digital.education.coaching.utils.AuthUtils;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.mapping.ErrorEnum;
 import com.paytm.digital.education.utility.JsonUtils;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -36,15 +37,19 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.ACCESS_KEY;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.CHECKSUM_HASH;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.PAYTM_APP_REQUEST_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.PAYTM_REQUEST_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.RestTemplateConstants.MERCHANT_COMMIT_TIMEOUT_MS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.RestTemplateConstants.PAYTM_HOST_FOR_SIGNATURE;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.TIME_STAMP;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class MerchantCallImpl implements MerchantCall {
+
+    private static final Logger log = LoggerFactory.getLogger(MerchantCallImpl.class);
 
     @Override
     public MerchantCommitRequest getMerchantCommitRequestBody(
@@ -87,7 +92,7 @@ public class MerchantCallImpl implements MerchantCall {
                     .paytmOrderItemId(String.valueOf(cartItem.getItemId()))
                     .price((double) cartItem.getPrice())
                     .discount((double) cartItem.getDiscount())
-                    .totalPrice((double) cartItem.getSellingPrice())
+                    .totalPrice((double) cartItem.getTotalSellingPrice())
                     .quantity((double) cartItem.getQuantity())
                     .taxInfo(taxInfo)
                     .build());
@@ -112,21 +117,21 @@ public class MerchantCallImpl implements MerchantCall {
             NotifyMerchantInfo merchantInfo) {
         String endpoint = merchantInfo.getNotifyEndpoint();
         String completeEndpoint = merchantInfo.getHost() + endpoint;
-        String method = "POST";
+        final String method = "POST";
         Map<String, Object> queryParams = new TreeMap<>();
+        long currentTimeStamp = System.currentTimeMillis();
+        queryParams.put(TIME_STAMP, currentTimeStamp);
+        queryParams.put(ACCESS_KEY, merchantInfo.getAccessKey());
+
         String queryParamsString = "";
         String requestString = JsonUtils.toJson(request);
-
-        long currentTimeStamp = System.currentTimeMillis();
-        queryParams.put("timestamp", currentTimeStamp);
         if (!CollectionUtils.isEmpty(queryParams)) {
             queryParamsString = JsonUtils.toJson(queryParams);
         }
-
         String signatureMessage =
                 PAYTM_HOST_FOR_SIGNATURE + "|" + merchantInfo.getHost() + "|" + endpoint + "|"
                         + method + "|" + requestString + "|" + queryParamsString;
-
+        log.info("Message signature for outgoing request {} ",signatureMessage);
         String signature = AuthUtils.getSignature(signatureMessage, merchantInfo.getSecretKey());
 
         MerchantCommitResponse merchantCommitResponse;
@@ -135,10 +140,12 @@ public class MerchantCallImpl implements MerchantCall {
                     CoachingRestTemplate.getRequestTemplate(MERCHANT_COMMIT_TIMEOUT_MS)
                             .postForObject(
                                     UriComponentsBuilder.fromHttpUrl(completeEndpoint)
-                                            .queryParam("timestamp", currentTimeStamp)
+                                            .queryParam(TIME_STAMP, currentTimeStamp)
+                                            .queryParam(ACCESS_KEY, merchantInfo.getAccessKey())
+                                            .queryParam(CHECKSUM_HASH, signature)
                                             .toUriString(),
                                     HeaderTemplate
-                                            .getMerchantHeader(MDC.get(PAYTM_REQUEST_ID), signature,
+                                            .getMerchantHeader(MDC.get("PaytmRequestId"), signature,
                                                     merchantInfo.getAccessKey(),
                                                     MDC.get(PAYTM_APP_REQUEST_ID)),
                                     requestString,
@@ -170,7 +177,7 @@ public class MerchantCallImpl implements MerchantCall {
                 HttpClientErrorException hce = (HttpClientErrorException) rce;
                 if (hce.getStatusCode() == HttpStatus.BAD_REQUEST) {
                     log.error(
-                            "Bed Request in merchant commit for request : {} "
+                            "Bad Request in merchant commit for request : {} "
                                     + " signature message : {}  response : {} ",
                             requestString, signatureMessage, hce.getResponseBodyAsString());
                     return MerchantNotifyResponse
@@ -183,7 +190,7 @@ public class MerchantCallImpl implements MerchantCall {
             }
 
             log.error("Exception occurred in merchant commit call for body: {} and exception: ",
-                    request, rce);
+                    rce, request);
             return MerchantNotifyResponse
                     .builder()
                     .status(MerchantNotifyStatus.PENDING)

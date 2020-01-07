@@ -3,8 +3,9 @@ package com.paytm.digital.education.coaching.ingestion.service;
 import com.paytm.digital.education.database.entity.FailedData;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.DateUtil;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,10 +15,11 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.C
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.DATA_INGEST;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.GOOGLE_SHEETS_INFO;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class IngestDataHelper {
+
+    private static final Logger log = LoggerFactory.getLogger(IngestDataHelper.class);
 
     private final PropertyReader propertyReader;
 

@@ -10,14 +10,16 @@ import com.paytm.digital.education.coaching.ingestion.service.exportdata.impl.Co
 import com.paytm.digital.education.coaching.ingestion.service.exportdata.impl.CoachingInstituteExportService;
 import com.paytm.digital.education.coaching.ingestion.service.exportdata.impl.CompetitiveExamExportService;
 import com.paytm.digital.education.coaching.ingestion.service.exportdata.impl.TopRankerExportService;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-@Slf4j
 @Component
 @AllArgsConstructor
 public class ExportServiceFactory {
+
+    private static final Logger log = LoggerFactory.getLogger(ExportServiceFactory.class);
 
     private final CoachingBannerExportService        coachingBannerExportService;
     private final CoachingCenterExportService        coachingCenterExportService;

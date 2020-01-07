@@ -39,4 +39,7 @@ public class CourseData {
     @JsonProperty("college_name")
     private String       instituteName;
 
+    @JsonProperty("is_accepting_applications")
+    private boolean acceptingApplication;
+
 }

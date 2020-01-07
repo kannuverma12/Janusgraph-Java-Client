@@ -9,13 +9,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Board {
+public class Board implements Serializable {
+    private static final long serialVersionUID = 7570905243672352856L;
 
     @JsonProperty("name")
     private SchoolBoardType name;

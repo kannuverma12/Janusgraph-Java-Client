@@ -3,15 +3,16 @@ package com.paytm.digital.education.explore.service.impl;
 import com.google.common.collect.Sets;
 import com.paytm.digital.education.database.entity.Section;
 import com.paytm.digital.education.database.repository.SectionRepository;
-import com.paytm.digital.education.enums.es.DataSortOrder;
 import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.enums.es.DataSortOrder;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.search.ExamLevelData;
 import com.paytm.digital.education.explore.response.dto.search.ExamSectionData;
 import com.paytm.digital.education.explore.response.dto.search.ExamSubItemData;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -37,10 +38,11 @@ import static com.paytm.digital.education.constant.ExploreConstants.FILTERS;
 import static com.paytm.digital.education.constant.ExploreConstants.LEVEL;
 import static com.paytm.digital.education.enums.es.DataSortOrder.ASC;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class SectionServiceImpl {
+
+    private static final Logger log = LoggerFactory.getLogger(SectionServiceImpl.class);
 
     private ExamLandingPageServiceImpl examSearchService;
     private SectionRepository          sectionRepository;

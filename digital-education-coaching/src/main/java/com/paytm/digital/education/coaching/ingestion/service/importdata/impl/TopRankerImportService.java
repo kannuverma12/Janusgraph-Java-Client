@@ -12,7 +12,8 @@ import com.paytm.digital.education.coaching.producer.controller.ProducerTopRanke
 import com.paytm.digital.education.coaching.producer.model.dto.TopRankerDTO;
 import com.paytm.digital.education.coaching.producer.model.request.TopRankerDataRequest;
 import com.paytm.digital.education.utility.JsonUtils;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -24,9 +25,10 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.C
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EMPTY_STRING;
 import static com.paytm.digital.education.coaching.constants.GoogleSheetImportConstants.TOP_RANKER_SHEET_ID;
 
-@Slf4j
 @Service
 public class TopRankerImportService extends AbstractImportService implements ImportService {
+
+    private static final Logger log = LoggerFactory.getLogger(TopRankerImportService.class);
 
     private static final String TYPE = "CoachingTopRanker";
 
@@ -69,7 +71,7 @@ public class TopRankerImportService extends AbstractImportService implements Imp
                 response = this.producerTopRankerController.updateTopRanker(request);
             }
         } catch (final Exception e) {
-            log.error("Got Exception in upsertNewRecords for input: {}, exception: ", form, e);
+            log.error("Got Exception in upsertNewRecords for input: {}, exception: ", e, form);
             failureMessage = e.getMessage();
         }
 
@@ -95,7 +97,7 @@ public class TopRankerImportService extends AbstractImportService implements Imp
                 this.producerTopRankerController.updateTopRanker(request);
             }
         } catch (final Exception e) {
-            log.error("Got Exception in upsertFailedRecords for input: {}, exception: ", form, e);
+            log.error("Got Exception in upsertFailedRecords for input: {}, exception: ", e, form);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.paytm.digital.education.explore.service.helper;
 
 import com.paytm.digital.education.config.SchoolConfig;
+import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.database.entity.Board;
 import com.paytm.digital.education.database.entity.BoardData;
@@ -8,12 +9,12 @@ import com.paytm.digital.education.database.entity.School;
 import com.paytm.digital.education.database.entity.SchoolFeeDetails;
 import com.paytm.digital.education.database.entity.SchoolOfficialAddress;
 import com.paytm.digital.education.database.entity.ShiftDetails;
-import com.paytm.digital.education.database.repository.CommonMongoRepository;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.SchoolDetail;
 import com.paytm.digital.education.explore.response.dto.detail.school.detail.ShiftTable;
 import com.paytm.digital.education.explore.response.dto.search.SearchResponse;
 import com.paytm.digital.education.explore.response.dto.search.SearchResult;
-import com.paytm.digital.education.explore.service.impl.SchoolDetailServiceImpl;
+import com.paytm.digital.education.explore.service.SchoolService;
+import com.paytm.digital.education.explore.service.impl.SchoolServiceImpl;
 import com.paytm.digital.education.explore.service.impl.SearchServiceImpl;
 import com.paytm.digital.education.explore.utility.SchoolUtilService;
 import org.assertj.core.util.Lists;
@@ -45,7 +46,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class SchoolDuplicateDataPruneTest {
 
-    @Mock
     private CommonMongoRepository commonMongoRepository;
 
     @Mock
@@ -63,22 +63,25 @@ public class SchoolDuplicateDataPruneTest {
     @Mock
     private SchoolConfig schoolConfig;
 
-    private SchoolDetailServiceImpl schoolDetailService;
+    @Mock
+    private CommonEntityMongoDAO commonEntityMongoDAO;
+
+    private SchoolService schoolService;
 
     @Before
     public void setUpPrerequisites() {
         SchoolUtilService schoolUtilService = new SchoolUtilService(schoolConfig);
-        schoolDetailService = new SchoolDetailServiceImpl(
+        schoolService = new SchoolServiceImpl(
                 commonMongoRepository,
                 derivedAttributesHelper,
                 facilityDataHelper,
                 ctaHelper,
                 searchService,
-                null,
                 schoolConfig,
                 schoolUtilService,
                 null,
-                4
+                4,
+                commonEntityMongoDAO
         );
 
         when(derivedAttributesHelper.getDerivedAttributes(anyMap(), anyString(), any()))
@@ -107,8 +110,8 @@ public class SchoolDuplicateDataPruneTest {
         List<String> fields = Collections.singletonList(field);
 
 
-        SchoolDetail schoolDetail = schoolDetailService.getSchoolDetails(
-                1L, APP, school.getOfficialName(), fields, null, null);
+        SchoolDetail schoolDetail = schoolService.getSchoolDetails(
+                1L, APP, school.getOfficialName(), fields, null);
 
         assertEquals(schoolDetail.getShiftTables().size(), 1);
         ShiftTable shiftTable = schoolDetail.getShiftTables().get(0);
@@ -133,8 +136,8 @@ public class SchoolDuplicateDataPruneTest {
         List<String> fields = Collections.singletonList(field);
 
 
-        SchoolDetail schoolDetail = schoolDetailService.getSchoolDetails(
-                1L, APP, school.getOfficialName(), fields, null, null);
+        SchoolDetail schoolDetail = schoolService.getSchoolDetails(
+                1L, APP, school.getOfficialName(), fields, null);
 
         assertEquals(schoolDetail.getShiftTables().size(), 1);
         ShiftTable shiftTable = schoolDetail.getShiftTables().get(0);
@@ -160,8 +163,8 @@ public class SchoolDuplicateDataPruneTest {
         String field = "test";
         List<String> fields = Collections.singletonList(field);
 
-        SchoolDetail schoolDetail = schoolDetailService.getSchoolDetails(
-                1L, APP, school.getOfficialName(), fields, null, null);
+        SchoolDetail schoolDetail = schoolService.getSchoolDetails(
+                1L, APP, school.getOfficialName(), fields, null);
 
         assertEquals(schoolDetail.getFeesDetails().size(), 1);
         assertEquals(schoolDetail.getFeesDetails().get(0).getFeeAmount().longValue(), 1);
@@ -180,8 +183,8 @@ public class SchoolDuplicateDataPruneTest {
         String field = "test";
         List<String> fields = Collections.singletonList(field);
 
-        SchoolDetail schoolDetail = schoolDetailService.getSchoolDetails(
-                1L, APP, school.getOfficialName(), fields, null, null);
+        SchoolDetail schoolDetail = schoolService.getSchoolDetails(
+                1L, APP, school.getOfficialName(), fields, null);
 
         assertEquals(schoolDetail.getFeesDetails().size(), 2);
         assertEquals(schoolDetail.getFeesDetails().get(0).getFeeAmount().longValue(), 1);
@@ -191,10 +194,8 @@ public class SchoolDuplicateDataPruneTest {
     }
 
     private void setUpCommonMongoRepoResponse(School school) {
-        when(commonMongoRepository.getEntityByFields(
-                any(),
+        when(commonEntityMongoDAO.getSchoolById(
                 anyLong(),
-                any(),
                 any()))
                 .thenReturn(school);
     }

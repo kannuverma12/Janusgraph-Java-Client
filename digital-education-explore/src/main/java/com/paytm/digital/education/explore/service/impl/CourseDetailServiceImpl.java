@@ -1,11 +1,13 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import com.paytm.digital.education.annotation.EduCache;
 import com.paytm.digital.education.constant.ExploreConstants;
 import com.paytm.digital.education.database.entity.Course;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Institute;
+import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
-import com.paytm.digital.education.dto.detail.Event;
+import com.paytm.digital.education.dto.detail.ImportantDate;
 import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.explore.response.dto.detail.CourseDetail;
@@ -16,11 +18,11 @@ import com.paytm.digital.education.explore.service.helper.BannerDataHelper;
 import com.paytm.digital.education.explore.service.helper.DerivedAttributesHelper;
 import com.paytm.digital.education.explore.utility.FieldsRetrievalUtil;
 import com.paytm.digital.education.property.reader.PropertyReader;
-import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
+import com.paytm.digital.education.serviceimpl.helper.ExamDatesHelper;
 import com.paytm.digital.education.utility.CommonUtil;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -30,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.paytm.digital.education.constant.ExploreConstants.COURSE_CLASS;
-import static com.paytm.digital.education.constant.ExploreConstants.COURSE_ID;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FULL_NAME;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SHORT_NAME;
@@ -44,21 +45,25 @@ import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_COURSE_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_COURSE_NAME;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_FIELD_GROUP;
 
-@AllArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class CourseDetailServiceImpl {
 
-    private CommonMongoRepository       commonMongoRepository;
-    private DerivedAttributesHelper     derivedAttributesHelper;
-    private PropertyReader              propertyReader;
-    private SimilarInstituteServiceImpl similarInstituteService;
-    private BannerDataHelper            bannerDataHelper;
-    private ExamInstanceHelper          examInstanceHelper;
+    private final CommonMongoRepository       commonMongoRepository;
+    private final DerivedAttributesHelper     derivedAttributesHelper;
+    private final PropertyReader              propertyReader;
+    private final SimilarInstituteServiceImpl similarInstituteService;
+    private final BannerDataHelper            bannerDataHelper;
+    private final ExamDatesHelper             examDatesHelper;
+    private final CommonEntityMongoDAO        commonEntityMongoDAO;
+
+    @Value("${course.default.instances.for.date:1}")
+    private Integer defaultNoOfInstances;
 
     /*
      ** Method to get the course details and institute details
      */
-    @Cacheable(value = "course_detail", keyGenerator = "customKeyGenerator")
+    @EduCache(cache = "course_detail")
     public CourseDetail getCourseDetails(long entityId, String courseUrlKey, String fieldGroup,
             List<String> fields, Client client, boolean courseFees,
             boolean institute, boolean widgets, boolean derivedAttributes, boolean examAccepted) {
@@ -74,8 +79,7 @@ public class CourseDetailServiceImpl {
             ArrayList<String> courseQueryFields = allFields.get(COURSE.name().toLowerCase());
             courseQueryFields.add(INSTITUTE_ID);
             Course course =
-                    commonMongoRepository.getEntityByFields(COURSE_ID, entityId, Course.class,
-                            courseQueryFields);
+                    commonEntityMongoDAO.getCourseById(entityId, courseQueryFields);
             ArrayList<String> instituteQueryFields = allFields.get(INSTITUTE.name().toLowerCase());
             if (course == null) {
                 throw new BadRequestException(INVALID_COURSE_ID,
@@ -89,10 +93,8 @@ public class CourseDetailServiceImpl {
             Institute instituteDetails = null;
             if (course.getInstitutionId() != null && !CollectionUtils
                     .isEmpty(instituteQueryFields)) {
-                instituteDetails = commonMongoRepository.getEntityByFields(INSTITUTE_ID,
-                        course.getInstitutionId(),
-                        Institute.class,
-                        instituteQueryFields);
+                instituteDetails = commonEntityMongoDAO
+                        .getInstituteById(course.getInstitutionId(), instituteQueryFields);
             }
             return buildResponse(course, instituteDetails, course.getExamsAccepted(), client,
                     courseFees, institute, widgets, derivedAttributes, examAccepted);
@@ -110,18 +112,19 @@ public class CourseDetailServiceImpl {
         fields.add(INSTANCES);
         fields.add(SUB_EXAMS);
         fields.add(EXAM_ID);
-        List<Exam> exams = commonMongoRepository
-                .getEntityFieldsByValuesIn(EXAM_ID, examIds, Exam.class, fields);
+        List<Exam> exams = commonEntityMongoDAO.getExamsByIdsIn(examIds, fields);
 
         List<ExamDetail> examsAccepted = new ArrayList<>();
 
         for (Exam exam : exams) {
             ExamDetail examDetail = new ExamDetail();
-            List<Event> impDates = examInstanceHelper.getImportantDates(exam);
+            List<ImportantDate> importantDates = examDatesHelper.getImportantDates(exam, defaultNoOfInstances);
             examDetail.setExamId(exam.getExamId());
             examDetail.setUrlDisplayName(
                     CommonUtil.convertNameToUrlDisplayName(exam.getExamFullName()));
-            examDetail.setImportantDates(impDates);
+            if (!CollectionUtils.isEmpty(importantDates)) {
+                examDetail.setImportantDates(importantDates);
+            }
             examDetail.setExamFullName(exam.getExamFullName());
             examDetail.setExamShortName(exam.getExamShortName());
             examsAccepted.add(examDetail);
@@ -137,10 +140,7 @@ public class CourseDetailServiceImpl {
         List<String> examQueryFields = new ArrayList<>();
         examQueryFields.add(EXAM_SHORT_NAME);
         examQueryFields.add(EXAM_FULL_NAME);
-        return commonMongoRepository.getEntityByFields(EXAM_ID,
-                examIds.get(0),
-                Exam.class,
-                examQueryFields);
+        return commonEntityMongoDAO.getExamById(examIds.get(0), examQueryFields);
     }
 
     /*

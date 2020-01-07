@@ -6,10 +6,14 @@ import lombok.Data;
 import lombok.ToString;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serializable;
+
 @Data
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Alumni {
+public class Alumni implements Serializable {
+
+    private static final long serialVersionUID = -2363595443245584662L;
 
     @Field("alumni_name")
     @JsonProperty("alumni_name")

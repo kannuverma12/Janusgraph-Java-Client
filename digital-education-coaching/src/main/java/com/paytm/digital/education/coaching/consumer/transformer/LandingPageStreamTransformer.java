@@ -4,7 +4,8 @@ import com.paytm.digital.education.coaching.consumer.model.dto.LandingPageStream
 import com.paytm.digital.education.coaching.utils.ImageUtils;
 import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.utility.CommonUtil;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -14,9 +15,10 @@ import java.util.List;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.STREAM_PLACEHOLDER;
 import static com.paytm.digital.education.constant.CommonConstants.STREAMS;
 
-@Slf4j
 @Component
 public class LandingPageStreamTransformer {
+
+    private static final Logger log = LoggerFactory.getLogger(LandingPageStreamTransformer.class);
 
     public List<LandingPageStreamDto> getLandingPageStreamDtoFromStreamEntity(
             List<StreamEntity> streamEntities) {

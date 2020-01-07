@@ -10,8 +10,9 @@ import com.paytm.digital.education.explore.response.dto.detail.SectionDataHolder
 import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
 import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.digital.education.utility.JsonUtils;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -25,9 +26,10 @@ import static com.paytm.digital.education.constant.ExploreConstants.SECTION;
 import static com.paytm.digital.education.constant.ExploreConstants.SECTION_PLACEHOLDER;
 
 @Service
-@Slf4j
 @AllArgsConstructor
 public class ExamSectionHelper {
+
+    private static final Logger log = LoggerFactory.getLogger(ExamSectionHelper.class);
 
     private ExamInstanceHelper examInstanceHelper;
 
@@ -100,6 +102,8 @@ public class ExamSectionHelper {
             case REGISTRATION_GUIDELINES:
                 return Objects.nonNull(exam.getPaytmKeys()) && StringUtils
                         .isNotBlank(exam.getPaytmKeys().getRegistrationGuidelines());
+            case NEWS_ARTICLES:
+                return Objects.nonNull(examDetail.getNewsArticles());
             default:
                 return false;
         }

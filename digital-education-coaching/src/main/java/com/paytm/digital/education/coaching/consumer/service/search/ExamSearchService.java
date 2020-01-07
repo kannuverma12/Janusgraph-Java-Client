@@ -8,7 +8,6 @@ import com.paytm.digital.education.coaching.consumer.model.response.search.Searc
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResponse;
 import com.paytm.digital.education.coaching.consumer.model.response.search.SearchResult;
 import com.paytm.digital.education.coaching.consumer.service.search.helper.CoachingSearchAggregateHelper;
-import com.paytm.digital.education.es.model.ExamSearch;
 import com.paytm.digital.education.coaching.utils.SearchUtils;
 import com.paytm.digital.education.elasticsearch.models.AggregateField;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
@@ -16,10 +15,12 @@ import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.elasticsearch.models.TopHitsAggregationResponse;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.enums.es.FilterQueryType;
+import com.paytm.digital.education.es.model.ExamSearch;
 import com.paytm.digital.education.serviceimpl.helper.ExamLogoHelper;
 import com.paytm.digital.education.utility.CommonUtil;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -49,13 +50,16 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.S
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.EXAM_SHORT_NAME_BOOST;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.Search.STREAM_IDS;
 import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_MEDIUM;
+import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_ANALYZER_EXAM;
 import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_EXAM_LEVEL;
+import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_INDEX_EXAM;
 import static com.paytm.digital.education.enums.es.FilterQueryType.TERMS;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class ExamSearchService extends AbstractSearchService {
+
+    private static final Logger log = LoggerFactory.getLogger(ExamSearchService.class);
 
     private static Map<String, Float>            searchFieldKeys;
     private static Map<String, FilterQueryType>  filterQueryTypeMap;
@@ -78,7 +82,7 @@ public class ExamSearchService extends AbstractSearchService {
     }
 
     @Override
-    @Cacheable(value = "exam_search",key = "#searchRequest.key")
+    @Cacheable(value = "exam_search", key = "#searchRequest.key")
     public SearchResponse search(SearchRequest searchRequest) throws IOException, TimeoutException {
         validateRequest(searchRequest, filterQueryTypeMap);
         ElasticRequest elasticRequest = buildSearchRequest(searchRequest);
@@ -101,8 +105,7 @@ public class ExamSearchService extends AbstractSearchService {
     @Override
     protected ElasticRequest buildSearchRequest(SearchRequest searchRequest) {
         ElasticRequest elasticRequest =
-                createSearchRequest(searchRequest, CoachingConstants.Search.EXAM_ANALYZER,
-                        CoachingConstants.Search.EXAM_INDEX);
+                createSearchRequest(searchRequest, SEARCH_ANALYZER_EXAM, SEARCH_INDEX_EXAM);
         populateSearchFields(searchRequest, elasticRequest, searchFieldKeys, ExamSearch.class);
         populateFilterFields(searchRequest, elasticRequest, ExamSearch.class, filterQueryTypeMap);
         if (StringUtils.isBlank(searchRequest.getTerm())) {

@@ -12,7 +12,8 @@ import com.paytm.digital.education.coaching.producer.controller.ProducerCoaching
 import com.paytm.digital.education.coaching.producer.model.dto.CoachingCourseFeatureDTO;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCourseFeatureDataRequest;
 import com.paytm.digital.education.utility.JsonUtils;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -24,10 +25,12 @@ import static com.paytm.digital.education.coaching.constants.CoachingConstants.C
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.EMPTY_STRING;
 import static com.paytm.digital.education.coaching.constants.GoogleSheetImportConstants.COACHING_COURSE_FEATURE_SHEET_ID;
 
-@Slf4j
 @Service
 public class CoachingCourseFeatureImportService extends AbstractImportService
         implements ImportService {
+
+    private static final Logger log =
+            LoggerFactory.getLogger(CoachingCourseFeatureImportService.class);
 
     private static final String TYPE = "CoachingCourseFeature";
 
@@ -73,7 +76,7 @@ public class CoachingCourseFeatureImportService extends AbstractImportService
                         request);
             }
         } catch (final Exception e) {
-            log.error("Got Exception in upsertNewRecords for input: {}, exception: ", form, e);
+            log.error("Got Exception in upsertNewRecords for input: {}, exception: ", e, form);
             failureMessage = e.getMessage();
         }
         if (null == response || !response.getStatusCode().is2xxSuccessful()
@@ -99,7 +102,7 @@ public class CoachingCourseFeatureImportService extends AbstractImportService
                 this.producerCoachingCourseFeatureController.updateCoachingCourseFeature(request);
             }
         } catch (final Exception e) {
-            log.error("Got Exception in upsertFailedRecords for input: {}, exception: ", form, e);
+            log.error("Got Exception in upsertFailedRecords for input: {}, exception: ", e, form);
         }
     }
 

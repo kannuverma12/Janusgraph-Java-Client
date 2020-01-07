@@ -13,8 +13,9 @@ import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.CommonUtils;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -44,10 +45,11 @@ import static com.paytm.digital.education.coaching.enums.DisplayHeadings.TOP_COA
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_STREAM_ID;
 import static com.paytm.digital.education.mapping.ErrorEnum.INVALID_STREAM_NAME;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class CoachingStreamService {
+
+    private static final Logger log = LoggerFactory.getLogger(CoachingStreamService.class);
 
     private final CoachingCourseService    coachingCourseService;
     private final CoachingInstituteService coachingInstituteService;
@@ -58,7 +60,8 @@ public class CoachingStreamService {
     public GetStreamDetailsResponse getStreamDetails(final long streamId,
             final String urlDisplayKey) {
         StreamEntity streamEntity =
-                coachingStreamDAO.findByStreamId(STREAM_ID, streamId, STREAM_DETAILS_FIELDS);
+                coachingStreamDAO.findByStreamId(STREAM_ID, streamId, STREAM_DETAILS_FIELDS,
+                        STREAM_DETAILS_FIELDS);
 
         if (Objects.isNull(streamEntity) || !streamEntity.getIsEnabled()) {
             log.error("Stream with id: {} does not exist", streamId);

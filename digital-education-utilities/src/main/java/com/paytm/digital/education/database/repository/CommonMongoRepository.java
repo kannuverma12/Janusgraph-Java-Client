@@ -1,17 +1,7 @@
 package com.paytm.digital.education.database.repository;
 
-import static com.mongodb.QueryOperators.AND;
-import static com.mongodb.QueryOperators.ELEM_MATCH;
-import static com.mongodb.QueryOperators.EXISTS;
-import static com.mongodb.QueryOperators.NE;
-import static com.mongodb.QueryOperators.OR;
-import static com.paytm.digital.education.constant.DBConstants.EQ_OPERATOR;
-import static com.paytm.digital.education.constant.DBConstants.GROUP_ACTIVE;
-import static com.paytm.digital.education.constant.DBConstants.GROUP_ENTITY;
-import static com.paytm.digital.education.constant.DBConstants.GROUP_NAME;
-import static com.paytm.digital.education.constant.DBConstants.IN_OPERATOR;
-
 import com.mongodb.client.result.UpdateResult;
+import com.paytm.digital.education.annotation.EduCache;
 import com.paytm.digital.education.database.entity.FieldGroup;
 import com.paytm.digital.education.database.entity.FtlTemplate;
 import com.paytm.education.logger.Logger;
@@ -38,6 +28,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.mongodb.QueryOperators.AND;
+import static com.mongodb.QueryOperators.ELEM_MATCH;
+import static com.mongodb.QueryOperators.EXISTS;
+import static com.mongodb.QueryOperators.NE;
+import static com.mongodb.QueryOperators.OR;
+import static com.paytm.digital.education.constant.DBConstants.EQ_OPERATOR;
+import static com.paytm.digital.education.constant.DBConstants.GROUP_ACTIVE;
+import static com.paytm.digital.education.constant.DBConstants.GROUP_ENTITY;
+import static com.paytm.digital.education.constant.DBConstants.GROUP_NAME;
+import static com.paytm.digital.education.constant.DBConstants.IN_OPERATOR;
+import static com.paytm.digital.education.constant.ExploreConstants.ENTITY;
+import static com.paytm.digital.education.constant.ExploreConstants.ENTITY_ID;
+
 @AllArgsConstructor
 @Repository
 public class CommonMongoRepository {
@@ -54,8 +57,7 @@ public class CommonMongoRepository {
         return executeQuery(mongoQuery, instance);
     }
 
-    @Cacheable(value = "fields", key = "'entitiesByFields.'+#key+'.'+#entityId+'.'"
-            + "+#instance+'.'+#fields", unless = "#result == null")
+    @EduCache(cache = "fields", shouldCacheNull = false)
     public <T> T getEntityByFields(String key, long entityId, Class<T> instance,
             List<String> fields) {
         Query mongoQuery = new Query(Criteria.where(key).is(entityId));
@@ -79,22 +81,10 @@ public class CommonMongoRepository {
         return executeQuery(mongoQuery, instance);
     }
 
-    @Cacheable(value = "fields", unless = "#result == null")
+    @Cacheable(value = "fields", unless = "#result == null", keyGenerator = "customKeyGenerator")
     public <T> List<T> getEntityFieldsByValuesIn(String key, List<Long> entityIds,
             Class<T> instance,
             List<String> fields) {
-        Query mongoQuery = new Query(Criteria.where(key).in(entityIds));
-        if (!CollectionUtils.isEmpty(fields)) {
-            fields.forEach(field -> mongoQuery.fields().include(field));
-        }
-        return executeMongoQuery(mongoQuery, instance);
-    }
-
-    @Cacheable(value = "cacheKey", unless = "#result == null", condition = "#cacheKey != "
-            + "\"paytm_keys\"")
-    public <T> List<T> getEntityFieldsByValuesIn(String key, List<Long> entityIds,
-            Class<T> instance,
-            List<String> fields, String cacheKey) {
         Query mongoQuery = new Query(Criteria.where(key).in(entityIds));
         if (!CollectionUtils.isEmpty(fields)) {
             fields.forEach(field -> mongoQuery.fields().include(field));
@@ -128,13 +118,13 @@ public class CommonMongoRepository {
         return executeMongoQuery(mongoQuery, instance);
     }
 
-    @Cacheable(value = "field_group", unless = "#result == null")
+    @EduCache(cache = "field_group", shouldCacheNull = false)
     public <T> List<String> getFieldsByGroup(Class<T> collectionClass, String fieldGroup) {
         String collectionName = context.getPersistentEntity(collectionClass).getCollection();
         return getFieldsByGroupAndCollectioName(collectionName, fieldGroup);
     }
 
-    @Cacheable(value = "field_group", unless = "#result == null")
+    @EduCache(cache = "field_group", shouldCacheNull = false)
     public List<String> getFieldsByGroupAndCollectioName(String collectionName, String fieldGroup) {
         Query mongoQuery = new Query(Criteria
                 .where(GROUP_NAME).is(fieldGroup)
@@ -160,8 +150,7 @@ public class CommonMongoRepository {
         return executeMongoQuery(mongoQuery, type);
     }
 
-    @Cacheable(value = "ftl_templates", key = "'ftl_templates.'+#templateName+'.'"
-            + "+#entityName", unless = "#result == null")
+    @EduCache(cache = "ftl_templates", shouldCacheNull = false)
     public String getTemplate(String templateName, String entityName) {
         Query mongoQuery = new Query(
                 Criteria.where("name").is(templateName).and("entity").is(entityName).and("active")
@@ -221,7 +210,7 @@ public class CommonMongoRepository {
         return mongoOperation.findDistinct(mongoQuery, field, type, result);
     }
 
-    @Cacheable(value = "findAll", key = "'findAll.'+#searchRequest+'.'+#instance+'.'+#fields+'.'+#queryOperatorType")
+    @EduCache(cache = "findAll")
     public <T> List<T> findAll(Map<String, Object> searchRequest, Class<T> instance,
             List<String> fields, String queryOperatorType) {
         if (queryOperatorType.equals(AND)) {
@@ -371,4 +360,32 @@ public class CommonMongoRepository {
         }
         return mongoQuery;
     }
+
+    @EduCache(cache = "fieldsFromPaytmSource", shouldCacheNull = false)
+    public <T> T getEntityFromPaytmSourceByFields(long entityId,
+            String entityType, Class<T> instance,
+            List<String> fields) {
+        Query mongoQuery =
+                new Query(Criteria.where(ENTITY_ID).is(entityId).and(ENTITY).is(entityType));
+        if (Objects.nonNull(fields)) {
+            fields.forEach(field -> {
+                mongoQuery.fields().include(field);
+            });
+        }
+        return executeQuery(mongoQuery, instance);
+    }
+
+    @EduCache(cache = "fieldsFromPaytmSourceByValues", shouldCacheNull = false)
+    public <T> List<T> getEntityFieldsFromPaytmSourceByValuesIn(String entityType,
+            List<Long> entityIds,
+            Class<T> instance,
+            List<String> fields) {
+        Query mongoQuery =
+                new Query(Criteria.where(ENTITY).is(entityType).and(ENTITY_ID).in(entityIds));
+        if (!CollectionUtils.isEmpty(fields)) {
+            fields.forEach(field -> mongoQuery.fields().include(field));
+        }
+        return executeMongoQuery(mongoQuery, instance);
+    }
+
 }

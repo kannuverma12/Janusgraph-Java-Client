@@ -1,5 +1,8 @@
 package com.paytm.digital.education.explore.service.external;
 
+import static com.paytm.digital.education.constant.ExploreConstants.CAREER_360_MAX_RETRY;
+import static com.paytm.digital.education.constant.ExploreConstants.PAYTM_APP_REQUEST_ID;
+
 import com.paytm.digital.education.database.entity.BaseLeadResponse;
 import com.paytm.digital.education.database.entity.Lead;
 import com.paytm.digital.education.enums.EducationEntity;
@@ -14,12 +17,12 @@ import com.paytm.education.logger.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.paytm.digital.education.constant.ExploreConstants.PAYTM_APP_REQUEST_ID;
 
 @Service
 public class LeadCareer360Service {
@@ -41,8 +44,8 @@ public class LeadCareer360Service {
     public BaseLeadResponse sendUnfollow(Lead lead) {
         Career360UnfollowRequest career360UnfollowRequest = buildUnfollowRequest(lead);
         String jsonStr = JsonUtils.toJson(career360UnfollowRequest);
-        Career360UnfollowResponse response = restApiService
-                .post(c360LeadUnfollow, Career360UnfollowResponse.class, jsonStr, getHeaders());
+        Career360UnfollowResponse response =
+                post(c360LeadUnfollow, Career360UnfollowResponse.class, jsonStr, getHeaders());
         log.info("Careers360 lead response : {}", JsonUtils.toJson(response));
         return buildUnfollowResponse(response);
     }
@@ -50,8 +53,8 @@ public class LeadCareer360Service {
     public BaseLeadResponse sendLead(Lead lead) {
         Career360LeadRequest career360LeadRequest = buildRequest(lead);
         String jsonStr = JsonUtils.toJson(career360LeadRequest);
-        Career360LeadResponse response = restApiService
-                .post(c360LeadFollow, Career360LeadResponse.class, jsonStr, getHeaders());
+        Career360LeadResponse response =
+                post(c360LeadFollow, Career360LeadResponse.class, jsonStr, getHeaders());
         log.info("Careers360 lead response : {}", JsonUtils.toJson(response));
         return buildResponse(response);
     }
@@ -88,6 +91,12 @@ public class LeadCareer360Service {
         headers.put("x-api-token", apiKey);
         headers.put(PAYTM_APP_REQUEST_ID, MDC.get(PAYTM_APP_REQUEST_ID));
         return headers;
+    }
+
+    @Retryable(value = {ResourceAccessException.class}, maxAttempts = CAREER_360_MAX_RETRY)
+    private  <T> T post(String postUrl, Class<T> responseType, String requestStr,
+            Map<String, String> headers) {
+        return restApiService.post(postUrl, responseType, requestStr, headers);
     }
 
     private Career360LeadRequest buildRequest(Lead lead) {

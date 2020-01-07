@@ -1,11 +1,13 @@
 package com.paytm.digital.education.coaching.utils;
 
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @UtilityClass
 public class ComparisonUtils {
+
+    private static final Logger log = LoggerFactory.getLogger(ComparisonUtils.class);
 
     private static final double THRESHOLD_DOUBLE = 0.01;
     private static final float  THRESHOLD_FLOAT  = 0.01F;

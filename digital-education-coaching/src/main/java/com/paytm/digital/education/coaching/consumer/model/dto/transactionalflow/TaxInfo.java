@@ -2,6 +2,7 @@ package com.paytm.digital.education.coaching.consumer.model.dto.transactionalflo
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,18 +18,22 @@ import javax.validation.constraints.NotNull;
 public class TaxInfo {
 
     @NotNull
+    @ApiModelProperty(required = true)
     @JsonProperty("totalCGST")
     private Float totalCGST;
 
     @NotNull
+    @ApiModelProperty(required = true)
     @JsonProperty("totalSGST")
     private Float totalSGST;
 
     @NotNull
+    @ApiModelProperty(required = true)
     @JsonProperty("totalIGST")
     private Float totalIGST;
 
     @NotNull
+    @ApiModelProperty(required = true)
     @JsonProperty("totalUTGST")
     private Float totalUTGST;
 }

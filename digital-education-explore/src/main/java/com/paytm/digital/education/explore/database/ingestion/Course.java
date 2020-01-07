@@ -11,14 +11,16 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Course {
+public class Course implements Serializable {
 
+    private static final long serialVersionUID = -7263845681788980444L;
     @Id
     @Field("_id")
     @JsonIgnore

@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
@@ -17,8 +18,8 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class SchoolGallery {
-
+public class SchoolGallery implements Serializable {
+    private static final long serialVersionUID = 3789721435216048371L;
     @Field("images")
     private List<String> images;
 

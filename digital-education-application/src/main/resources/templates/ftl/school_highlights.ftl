@@ -22,8 +22,9 @@
         <#if boardData.noOfClassrooms?has_content>
             <#assign highlights = highlights + ['{"logo_url":"https://assetscdn1.paytm.com/educationwebassets/education/explore/highlight/${clientName}/no_of_classrooms.svg","title":"No. of Classrooms","description":"${boardData.noOfClassrooms}"}']>
         </#if>
-        <#if boardData.enrollments?has_content>
-            <#assign highlights = highlights + ['{"logo_url":"https://assetscdn1.paytm.com/educationwebassets/education/explore/highlight/${clientName}/total_student.svg","title":"No. of Students","description":"${boardData.enrollments}"}']>
+        <#assign enrollments=boardData.enrollments()>
+        <#if enrollments?has_content && enrollments != 0>
+            <#assign highlights = highlights + ['{"logo_url":"https://assetscdn1.paytm.com/educationwebassets/education/explore/highlight/${clientName}/total_student.svg","title":"No. of Students","description":"${enrollments}"}']>
         </#if>
         <#if boardData.mediumOfInstruction?has_content>
             <#assign highlights = highlights + ['{"logo_url":"https://assetscdn1.paytm.com/educationwebassets/education/explore/highlight/${clientName}/medium.svg","title":"Medium","description":"${boardData.mediumOfInstruction?join(", ")}"}']>

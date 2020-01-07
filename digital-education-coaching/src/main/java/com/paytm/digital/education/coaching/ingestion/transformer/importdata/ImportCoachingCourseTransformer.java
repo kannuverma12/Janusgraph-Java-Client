@@ -3,6 +3,7 @@ package com.paytm.digital.education.coaching.ingestion.transformer.importdata;
 import com.paytm.digital.education.coaching.ingestion.model.googleform.CoachingCourseForm;
 import com.paytm.digital.education.coaching.producer.model.embedded.ImportantDate;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCourseDataRequest;
+import com.paytm.digital.education.enums.CTAViewType;
 import com.paytm.digital.education.enums.CourseCover;
 import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.CourseType;
@@ -11,7 +12,9 @@ import com.paytm.digital.education.enums.Language;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ImportCoachingCourseTransformer {
 
@@ -80,6 +83,8 @@ public class ImportCoachingCourseTransformer {
                 .isEnabled(ImportCommonTransformer.convertStringToBoolean(form.getStatusActive()))
                 .paytmProductId(form.getPaytmProductId())
                 .isDynamic(ImportCommonTransformer.convertStringToBoolean(form.getIsDynamic()))
+                .ctaInfo(buildCtaInfo(form.getPostOrderCta(),form.getListPageCta(),
+                        form.getDetailsPageCta()))
                 .build();
     }
 
@@ -103,5 +108,21 @@ public class ImportCoachingCourseTransformer {
         }
 
         return importantDateList;
+    }
+
+    private static Map<CTAViewType, List<Long>> buildCtaInfo(
+            String ctaIdListForPostOrder, String ctaIdListForListPage,
+            String ctaIdListForDetailsPage) {
+        Map<CTAViewType, List<Long>> ctaInfo = new HashMap<>();
+        ctaInfo.put(CTAViewType.POST_ORDER,
+                ImportCommonTransformer
+                        .convertStringToListOfDistinctLong(ctaIdListForPostOrder));
+        ctaInfo.put(CTAViewType.LIST,
+                ImportCommonTransformer
+                        .convertStringToListOfDistinctLong(ctaIdListForListPage));
+        ctaInfo.put(CTAViewType.DETAILS,
+                ImportCommonTransformer
+                        .convertStringToListOfDistinctLong(ctaIdListForDetailsPage));
+        return ctaInfo;
     }
 }

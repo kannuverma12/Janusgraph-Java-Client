@@ -1,15 +1,16 @@
 package com.paytm.digital.education.explore.response.dto.detail;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.paytm.digital.education.dto.detail.Event;
+import com.paytm.digital.education.dto.detail.ImportantDate;
 import com.paytm.digital.education.dto.detail.Syllabus;
 import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.explore.response.dto.articles.NewsArticleResponse;
 import com.paytm.digital.education.explore.response.dto.common.BannerData;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.common.Widget;
@@ -18,7 +19,9 @@ import lombok.experimental.Accessors;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ExamDetail implements CTAInfoHolder {
+public class ExamDetail implements CTAInfoHolder, Serializable {
+
+    private static final long serialVersionUID = -6625619228578283622L;
 
     @JsonProperty("exam_id")
     private Long examId;
@@ -79,9 +82,6 @@ public class ExamDetail implements CTAInfoHolder {
 
     @JsonProperty("application_fee")
     private Integer applicationFee;                // DNA
-
-    @JsonProperty("important_dates")
-    private List<Event> importantDates;
 
     @JsonProperty("application_process")
     private String applicationProcess;            // DNA
@@ -152,6 +152,12 @@ public class ExamDetail implements CTAInfoHolder {
     @JsonProperty("registration_guidelines")
     private String registrationGuidelines;
 
+    @JsonProperty("important_dates")
+    private List<ImportantDate> importantDates;
+
+    @JsonProperty("news_articles")
+    private NewsArticleResponse newsArticles;
+
     @JsonIgnore
     private Long collegePredictorPid;
 
@@ -205,7 +211,7 @@ public class ExamDetail implements CTAInfoHolder {
     @JsonIgnore
     @Override
     public boolean hasShareFeature() {
-        return false;
+        return true;
     }
 
     @Override

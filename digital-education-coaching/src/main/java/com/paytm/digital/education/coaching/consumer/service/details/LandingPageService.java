@@ -19,8 +19,9 @@ import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.enums.es.DataSortOrder;
 import com.paytm.digital.education.utility.JsonUtils;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -60,8 +61,9 @@ import static com.paytm.digital.education.enums.es.DataSortOrder.ASC;
 
 @Service
 @AllArgsConstructor
-@Slf4j
 public class LandingPageService {
+
+    private static final Logger log = LoggerFactory.getLogger(LandingPageService.class);
 
     private SearchDataHelper             searchDataHelper;
     private ExamSearchService            examSearchService;
@@ -158,11 +160,9 @@ public class LandingPageService {
             SearchResponse searchResponse = examSearchService.search(searchRequest);
             return fetchTopExamsPerStreamFromSearchResponse(searchResponse, streamsInOrder);
         } catch (IOException e) {
-            log.error("IO Exception for fetching top exams per stream "
-                    + "", e);
+            log.error("IO Exception for fetching top exams per stream ", e);
         } catch (TimeoutException e) {
-            log.error("Timeout exception for fetching top top exams per stream ",
-                    e);
+            log.error("Timeout exception for fetching top top exams per stream ", e);
         }
         return null;
     }

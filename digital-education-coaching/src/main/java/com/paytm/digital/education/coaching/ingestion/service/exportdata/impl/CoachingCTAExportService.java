@@ -9,7 +9,8 @@ import com.paytm.digital.education.coaching.ingestion.service.exportdata.ExportS
 import com.paytm.digital.education.coaching.ingestion.transformer.exportdata.ExportCoachingCTATransformer;
 import com.paytm.digital.education.database.dao.CoachingCtaDAO;
 import com.paytm.digital.education.database.entity.CoachingCtaEntity;
-import lombok.extern.slf4j.Slf4j;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +18,10 @@ import java.util.List;
 
 import static com.paytm.digital.education.coaching.constants.GoogleSheetExportConstants.COACHING_CTA_SHEET_ID;
 
-@Slf4j
 @Service
 public class CoachingCTAExportService extends AbstractExportService implements ExportService {
+
+    private static final Logger log = LoggerFactory.getLogger(CoachingCTAExportService.class);
 
     @Autowired
     private CoachingCtaDAO coachingCtaDAO;

@@ -1,16 +1,18 @@
 package com.paytm.digital.education.coaching.ingestion.service;
 
 import com.paytm.digital.education.coaching.ingestion.model.GoogleSheetColumnName;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
 import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
 @UtilityClass
 public class IngestionHelper {
+
+    private static final Logger log = LoggerFactory.getLogger(IngestionHelper.class);
 
     public String convertNumberToA1Notation(int columnNumber, int padding) {
         return convertNumberToA1Notation(columnNumber + padding);

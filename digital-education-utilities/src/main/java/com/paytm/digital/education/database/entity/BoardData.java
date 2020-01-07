@@ -13,11 +13,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.util.CollectionUtils;
 
-import java.util.Collections;
+import java.io.Serializable;
 import java.util.List;
 
 import static com.sun.org.apache.xml.internal.utils.LocaleUtility.EMPTY_STRING;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -25,7 +28,9 @@ import static com.sun.org.apache.xml.internal.utils.LocaleUtility.EMPTY_STRING;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class BoardData {
+public class BoardData implements Serializable {
+    private static final long serialVersionUID = -3699642149145396518L;
+
     @Field("affiliation_type")
     @JsonProperty("affiliation_type")
     private String affiliationType;
@@ -124,15 +129,15 @@ public class BoardData {
 
     @Field("school_admission")
     @JsonProperty("school_admission")
-    private List<SchoolAdmission> schoolAdmissionList = Collections.emptyList();
+    private List<SchoolAdmission> schoolAdmissionList = emptyList();
 
     @Field("shifts")
     @JsonProperty("shifts")
-    private List<ShiftDetails> shifts = Collections.emptyList();
+    private List<ShiftDetails> shifts = emptyList();
 
     @Field("school_admission_tentative")
     @JsonProperty("tentative")
-    private List<SchoolAdmission> schoolAdmissionTentativeList = Collections.emptyList();
+    private List<SchoolAdmission> schoolAdmissionTentativeList = emptyList();
 
     @Field("medium_of_instruction")
     @JsonProperty("medium_of_instruction")
@@ -144,7 +149,7 @@ public class BoardData {
 
     @Field("enrollments")
     @JsonProperty("enrollments")
-    private Integer enrollments;
+    private List<Enrollment> enrollments;
 
     @Field("school_area_name")
     @JsonProperty("school_area_name")
@@ -155,9 +160,20 @@ public class BoardData {
     private List<String> programType;
 
     public String getStudentRatio() {
-        if (CommonUtils.isNullOrZero(enrollments) || CommonUtils.isNullOrZero(noOfTeachers)) {
+        if (CollectionUtils.isEmpty(enrollments) || CommonUtils.isNullOrZero(noOfTeachers)) {
             return EMPTY_STRING;
         }
-        return String.format("%d : 1", enrollments / noOfTeachers);
+        return String.format("%d : 1", enrollments() / noOfTeachers);
+    }
+
+    public int enrollments() {
+        if (CollectionUtils.isEmpty(enrollments)) {
+            return 0;
+        }
+        return ofNullable(enrollments).orElse(emptyList())
+                .stream()
+                .map(x -> ofNullable(x.getEnrollment()).orElse(0))
+                .mapToInt(Integer::intValue)
+                .sum();
     }
 }
