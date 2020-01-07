@@ -72,8 +72,8 @@ public class TransformAndSaveCourseService {
                                     course.getCourseId(),
                                     com.paytm.digital.education.database.entity.Course.class);
                     if (!CollectionUtils.isEmpty(examStreamData)) {
-                        course.setStreamIds((List<Long>) examStreamData
-                                .getOrDefault(STREAM_IDS, new ArrayList<>()));
+                        course.setStreamIds(new ArrayList<>((Set<Long>) examStreamData
+                                .getOrDefault(STREAM_IDS, new HashSet<>())));
                     }
                 }
                 commonMongoRepository.saveOrUpdate(course);
