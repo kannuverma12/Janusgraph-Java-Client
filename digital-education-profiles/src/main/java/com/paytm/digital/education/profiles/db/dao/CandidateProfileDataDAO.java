@@ -44,5 +44,7 @@ public class CandidateProfileDataDAO {
                 .findByProfileIdAndKeyInAndIsEnabled(id, keys, isEnabled));
     }
 
-
+    public List<ProfileDataEntity> saveAll(@NonNull List<ProfileDataEntity> profileDataEntity) {
+        return candidateProfileDataRepository.saveAll(profileDataEntity);
+    }
 }
