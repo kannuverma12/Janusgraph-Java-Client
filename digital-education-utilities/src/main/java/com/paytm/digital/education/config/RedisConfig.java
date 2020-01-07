@@ -1,4 +1,4 @@
-package com.paytm.digital.education.explore.service.impl;
+package com.paytm.digital.education.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+@Configuration
 public class RedisConfig {
 
     private final int port;
@@ -38,3 +39,4 @@ public class RedisConfig {
         return template;
     }
 }
+
