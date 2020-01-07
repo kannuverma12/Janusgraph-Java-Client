@@ -6,11 +6,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serializable;
+
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CourseFee {
+public class CourseFee  implements Serializable {
 
+    private static final long serialVersionUID = -1753614543628299731L;
     @JsonProperty("fee")
     @Field("fee")
     private Integer fee;
