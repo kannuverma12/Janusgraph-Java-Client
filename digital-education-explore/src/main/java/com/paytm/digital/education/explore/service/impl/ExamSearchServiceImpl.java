@@ -7,6 +7,7 @@ import static com.paytm.digital.education.constant.ExploreConstants.EXAM;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FILTER_NAMESPACE;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FULL_NAME;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FULL_NAME_BOOST;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_GLOBAL_PRIORITY;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_NAME_SYNONYMS;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_NAME_SYNONYMS_BOOST;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_OFFICIAL_NAME;
@@ -282,6 +283,7 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
                 searchRequest.getSortOrder()
                         .put(SEARCH_STREAM_PREFIX + streamId.toString() + SEARCH_STREAM_SUFFIX, ASC);
             }
+            searchRequest.getSortOrder().put(EXAM_GLOBAL_PRIORITY, ASC);
         }
     }
 
