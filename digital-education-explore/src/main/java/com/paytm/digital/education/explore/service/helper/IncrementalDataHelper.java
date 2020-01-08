@@ -119,26 +119,26 @@ public class IncrementalDataHelper {
             }
         } else {
             String examFileName = String.valueOf(versioningData.get(NEXT_EXAM_FILE_VERSION));
-            String examFinalName = examFileName.indexOf(".") > 0 ?
-                    examFileName.substring(0, examFileName.indexOf(".")) : examFileName;
+            String examFinalName = examFileName.indexOf(".") > 0
+                    ? examFileName.substring(0, examFileName.indexOf(".")) : examFileName;
             currentExamFileName = MessageFormat.format(SFTP_EXAM_FILE_NAME_FORMAT,
                     examFinalName);
 
             String instFileName = String.valueOf(versioningData.get(NEXT_INSTITUTE_FILE_VERSION));
-            String instFinalName = instFileName.indexOf(".") > 0 ?
-                    examFileName.substring(0, examFileName.indexOf(".")) : examFileName;
+            String instFinalName = instFileName.indexOf(".") > 0
+                    ? examFileName.substring(0, examFileName.indexOf(".")) : examFileName;
             currentInstituteFileName = MessageFormat.format(SFTP_INSTITUTE_FILE_NAME_FORMAT,
                     instFinalName);
 
             String courseFileName = String.valueOf(versioningData.get(NEXT_COURSE_FILE_VERSION));
-            String courseFinalName = courseFileName.indexOf(".") > 0 ?
-                    examFileName.substring(0, examFileName.indexOf(".")) : examFileName;
+            String courseFinalName = courseFileName.indexOf(".") > 0
+                    ? examFileName.substring(0, examFileName.indexOf(".")) : examFileName;
             currentCourseFileName = MessageFormat.format(SFTP_COURSE_FILE_NAME_FORMAT,
                     courseFinalName);
 
             String schoolFileName = String.valueOf(versioningData.get(NEXT_SCHOOL_FILE_VERSION));
-            String schoolFinalName = schoolFileName.indexOf(".") > 0 ?
-                    examFileName.substring(0, examFileName.indexOf(".")) : examFileName;
+            String schoolFinalName = schoolFileName.indexOf(".") > 0
+                    ? examFileName.substring(0, examFileName.indexOf(".")) : examFileName;
             currentSchoolFileName = MessageFormat.format(SFTP_SCHOOL_FILE_NAME_FORMAT,
                     schoolFinalName);
         }
