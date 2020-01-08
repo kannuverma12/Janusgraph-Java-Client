@@ -43,7 +43,7 @@
 		<dependency>
 			<groupId>com.paytm.digital.education</groupId>
 			<artifactId>digital-education-utilities</artifactId>
-			<version>0.0.41-SNAPSHOT</version>
+			<version>0.0.47-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
