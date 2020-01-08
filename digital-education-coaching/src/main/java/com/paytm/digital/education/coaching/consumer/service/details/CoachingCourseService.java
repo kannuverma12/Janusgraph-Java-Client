@@ -34,6 +34,7 @@ import com.paytm.digital.education.database.entity.TopRankerEntity;
 import com.paytm.digital.education.database.repository.CoachingCourseFeatureRepository;
 import com.paytm.digital.education.enums.CTAViewType;
 import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.enums.Language;
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.utility.CommonUtil;
@@ -650,9 +651,8 @@ public class CoachingCourseService {
         final Map<String, String> infoMap = new LinkedHashMap<>();
         infoMap.put(COURSE_TYPE.getValue(), null == course.getCourseType()
                 ? EMPTY_STRING : course.getCourseType().getText());
-        infoMap.put(LANGUAGE.getValue(), null == course.getLanguage()
-                ? EMPTY_STRING : course.getLanguage().getText());
-
+        infoMap.put(LANGUAGE.getValue(),
+                convertLanguageEnumListToTextList(course.getLanguage()));
         infoMap.put(PROVIDES_CERTIFICATE.getValue(), this.coachingCourseTransformer
                 .convertBooleanToString(course.getIsCertificateAvailable()));
         infoMap.put(DOUBT_SOLVING_SESSIONS.getValue(),
@@ -734,5 +734,20 @@ public class CoachingCourseService {
             return null;
         }
         return examTypeAndExamListMap.get(TARGET_EXAM).get(0).getExamShortName();
+    }
+
+    private String convertLanguageEnumListToTextList(String languageList) {
+        if (StringUtils.isEmpty(languageList)) {
+            return null;
+        }
+        String[] languageEnumList = languageList.split(",");
+        List<String> languageTextList = new ArrayList<>();
+        for (String language : languageEnumList) {
+            Language languageEnum = Language.fromString(language.trim());
+            if (Objects.nonNull(languageEnum)) {
+                languageTextList.add(languageEnum.getText());
+            }
+        }
+        return String.join(",", languageTextList);
     }
 }

@@ -4,6 +4,7 @@ import com.paytm.digital.education.coaching.ingestion.model.googleform.CoachingC
 import com.paytm.digital.education.database.embedded.CoachingCourseImportantDate;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.enums.CTAViewType;
+import com.paytm.digital.education.enums.Language;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -46,7 +47,7 @@ public class ExportCoachingCourseTransformer {
                             .originalPrice(entity.getOriginalPrice())
                             .discountedPrice(entity.getDiscountedPrice())
                             .levelOfEducation(entity.getCourseLevel().getDisplayName())
-                            .language(entity.getLanguage().getText())
+                            .language(entity.getLanguage())
                             .syllabus(entity.getSyllabus())
                             .courseCovers(entity.getCourseCover().getText())
                             .howToUse1(entity.getHowToUse1())

@@ -86,7 +86,7 @@ public class CoachingCourseEntity extends Base {
     private CourseCover courseCover;
 
     @Field("language")
-    private Language language;
+    private String language;
 
     @Field("syllabus")
     private String syllabus;

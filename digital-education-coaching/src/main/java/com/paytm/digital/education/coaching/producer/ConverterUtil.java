@@ -26,7 +26,11 @@ import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
+import com.paytm.digital.education.enums.Language;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class ConverterUtil {
@@ -166,7 +170,7 @@ public class ConverterUtil {
         coachingCourseEntity.setOriginalPrice(request.getOriginalPrice());
         coachingCourseEntity.setDiscountedPrice(request.getDiscountedPrice());
         coachingCourseEntity.setCourseLevel(request.getCourseLevel());
-        coachingCourseEntity.setLanguage(request.getLanguage());
+        coachingCourseEntity.setLanguage(getLanguageListAsString(request.getLanguage()));
         coachingCourseEntity.setSyllabus(request.getSyllabusAndBrochure());
         coachingCourseEntity.setImportantDates(request.getImportantDates().stream()
                 .map(input -> CoachingCourseImportantDate.builder()
@@ -291,6 +295,13 @@ public class ConverterUtil {
                 .setProperties(ctaEntity.getProperties())
                 .setUrl(ctaEntity.getUrl());
 
+    }
+
+    private static String getLanguageListAsString(List<Language> languageList) {
+        if (!CollectionUtils.isEmpty(languageList)) {
+            return languageList.stream().map(Language::name).collect(Collectors.joining(","));
+        }
+        return null;
     }
 }
 
