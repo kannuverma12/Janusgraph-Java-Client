@@ -1,6 +1,7 @@
 package com.paytm.digital.education.mapping;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 import org.springframework.http.HttpStatus;
@@ -184,7 +185,13 @@ public enum ErrorEnum {
     INVALID_PAYTM_SOURCE_MAPPING_DATA(4080,
             "No paytm source data present for entityId  %s, cannot set mapping", BAD_REQUEST, 1),
     INVALID_MERCHANT_SOURCE_MAPPING_DATA(4081,
-            "No merchant source data present for entityId  %s, cannot set mapping", BAD_REQUEST, 1)
+            "No merchant source data present for entityId  %s, cannot set mapping", BAD_REQUEST, 1),
+    EITHER_USER_PROFILE_OR_REQUEST_SHOULD_HAVE_EMAIL(4082, "Either user profile or request should have email",
+            BAD_REQUEST, 0),
+    REPORT_GENERATION_ERROR(4083, "Error generating listing report", INTERNAL_SERVER_ERROR, 0),
+    CTA_CONFIG_NOT_FOUND_FOR_ENTITY(4084,
+            "No Entity level CTA config found for entity %s", BAD_REQUEST, 1),
+    DUPLICATE_INSTITUTE_ERROR(4085, "Institute with id %s and product %s already exists", CONFLICT, 2)
     ;
 
     private final int        internalCode;
