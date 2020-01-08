@@ -119,13 +119,13 @@ public class IncrementalDataHelper {
             }
         } else {
             currentExamFileName = MessageFormat.format(SFTP_EXAM_FILE_NAME_FORMAT,
-                    versioningData.get(NEXT_EXAM_FILE_VERSION));
+                    String.valueOf(versioningData.get(NEXT_EXAM_FILE_VERSION)));
             currentInstituteFileName = MessageFormat.format(SFTP_INSTITUTE_FILE_NAME_FORMAT,
-                    versioningData.get(NEXT_INSTITUTE_FILE_VERSION));
+                    String.valueOf(versioningData.get(NEXT_INSTITUTE_FILE_VERSION)));
             currentCourseFileName = MessageFormat.format(SFTP_COURSE_FILE_NAME_FORMAT,
-                    versioningData.get(NEXT_COURSE_FILE_VERSION));
+                    String.valueOf(versioningData.get(NEXT_COURSE_FILE_VERSION)));
             currentSchoolFileName = MessageFormat.format(SFTP_SCHOOL_FILE_NAME_FORMAT,
-                    versioningData.get(NEXT_SCHOOL_FILE_VERSION));
+                    String.valueOf(versioningData.get(NEXT_SCHOOL_FILE_VERSION)));
         }
 
         try {
