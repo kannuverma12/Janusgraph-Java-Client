@@ -157,4 +157,7 @@ public class Exam {
     @Field("paytm_keys")
     @JsonProperty("paytm_keys")
     private PaytmKeys paytmKeys;
+
+    @Field("paytm_updated_at")
+    private Date paytmUpdatedAt = new Date();
 }

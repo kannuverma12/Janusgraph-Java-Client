@@ -113,9 +113,11 @@ public class School implements Serializable {
     @JsonProperty("url_display_key")
     private String urlDisplayKey;
 
+    @Field("paytm_updated_at")
+    private Date paytmUpdatedAt = new Date();
+
     public School(String officialName, Long schoolId) {
         this.officialName = officialName;
         this.schoolId = schoolId;
     }
-
 }
