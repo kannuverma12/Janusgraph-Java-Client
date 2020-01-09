@@ -143,6 +143,7 @@ public class Course implements Serializable {
     @JsonProperty("stream_ids")
     private List<Long> streamIds;
 
+    @Field("lead_enabled")
     @JsonProperty("lead_enabled")
     private int leadEnabled;
 
