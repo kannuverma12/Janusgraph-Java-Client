@@ -118,14 +118,29 @@ public class IncrementalDataHelper {
                             ErrorEnum.INVALID_ENTITY_FOR_DATA_IMPORT.getExternalMessage());
             }
         } else {
+            String examFileName = String.valueOf(versioningData.get(NEXT_EXAM_FILE_VERSION));
+            String examFinalName = examFileName.indexOf(".") > 0
+                    ? examFileName.substring(0, examFileName.indexOf(".")) : examFileName;
             currentExamFileName = MessageFormat.format(SFTP_EXAM_FILE_NAME_FORMAT,
-                    versioningData.get(NEXT_EXAM_FILE_VERSION));
+                    examFinalName);
+
+            String instFileName = String.valueOf(versioningData.get(NEXT_INSTITUTE_FILE_VERSION));
+            String instFinalName = instFileName.indexOf(".") > 0
+                    ? instFileName.substring(0, instFileName.indexOf(".")) : instFileName;
             currentInstituteFileName = MessageFormat.format(SFTP_INSTITUTE_FILE_NAME_FORMAT,
-                    versioningData.get(NEXT_INSTITUTE_FILE_VERSION));
+                    instFinalName);
+
+            String courseFileName = String.valueOf(versioningData.get(NEXT_COURSE_FILE_VERSION));
+            String courseFinalName = courseFileName.indexOf(".") > 0
+                    ? courseFileName.substring(0, courseFileName.indexOf(".")) : courseFileName;
             currentCourseFileName = MessageFormat.format(SFTP_COURSE_FILE_NAME_FORMAT,
-                    versioningData.get(NEXT_COURSE_FILE_VERSION));
+                    courseFinalName);
+
+            String schoolFileName = String.valueOf(versioningData.get(NEXT_SCHOOL_FILE_VERSION));
+            String schoolFinalName = schoolFileName.indexOf(".") > 0
+                    ? schoolFileName.substring(0, schoolFileName.indexOf(".")) : schoolFileName;
             currentSchoolFileName = MessageFormat.format(SFTP_SCHOOL_FILE_NAME_FORMAT,
-                    versioningData.get(NEXT_SCHOOL_FILE_VERSION));
+                    schoolFinalName);
         }
 
         try {
