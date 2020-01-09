@@ -28,7 +28,6 @@ import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.database.entity.TopRankerEntity;
 import com.paytm.digital.education.enums.Language;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -242,6 +241,7 @@ public class ConverterUtil {
 
         coachingCourseEntity.setIsDynamic(request.getIsDynamic());
         coachingCourseEntity.setCtaInfo(request.getCtaInfo());
+        coachingCourseEntity.setIsOnboarded(request.getIsOnboarded());
     }
 
     public static void setExamUpdateData(TargetExamUpdateRequest request,

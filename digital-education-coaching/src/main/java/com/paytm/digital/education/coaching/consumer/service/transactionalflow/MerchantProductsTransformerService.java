@@ -32,6 +32,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.COACHING_VERTICAL_NAME;
+import static com.paytm.digital.education.coaching.constants.CoachingConstants.COURSE_IS_ONBOARDED;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.CachingConstants.CACHE_KEY_DELIMITER;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.CachingConstants.CACHE_TTL;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.IS_DYNAMIC;
@@ -58,7 +59,8 @@ public class MerchantProductsTransformerService {
     private static final List<String> INSTITUTE_FIELDS       =
             Arrays.asList("institute_id", "is_enabled");
     private static final List<String> COACHING_COURSE_FIELDS = Arrays.asList("paytm_product_id",
-            "merchant_product_id", "is_enabled", "course_id", "course_type");
+            "merchant_product_id", "is_enabled", "course_id", "course_type", "is_onboarded",
+            "is_dynamic");
 
 
     @Autowired
@@ -103,8 +105,8 @@ public class MerchantProductsTransformerService {
                 coachingCourseDAO.findByCoachingInstIdAndIsDynAndIsEnabledAndMerchantPIdsIn(
                         COACHING_INSTITUTE_ID, coachingInstituteEntity.getInstituteId(),
                         IS_DYNAMIC, true, IS_ENABLED, true,
-                        MERCHANT_PRODUCT_ID, merchantProductIds, COACHING_COURSE_FIELDS,
-                        COACHING_COURSE_FIELDS);
+                        MERCHANT_PRODUCT_ID, merchantProductIds, COURSE_IS_ONBOARDED, true,
+                        COACHING_COURSE_FIELDS, COACHING_COURSE_FIELDS);
         if (CollectionUtils.isEmpty(dynamicCoachingCourses)) {
             log.error("Dynamic courses for merchant_id: {} does not exist",
                     request.getMerchantId());
@@ -129,7 +131,8 @@ public class MerchantProductsTransformerService {
                 }
                 String referenceId = UUID.randomUUID().toString();
                 CheckoutCartItem cartItem = CheckoutCartItem.builder()
-                        .totalSellingPrice(merchantProduct.getPrice() * merchantProduct.getQuantity())
+                        .totalSellingPrice(
+                                merchantProduct.getPrice() * merchantProduct.getQuantity())
                         .unitSellingPrice(merchantProduct.getPrice())
                         .productId(dynamicCoachingCourse.getPaytmProductId())
                         .categoryId(coachingCategoryId)
