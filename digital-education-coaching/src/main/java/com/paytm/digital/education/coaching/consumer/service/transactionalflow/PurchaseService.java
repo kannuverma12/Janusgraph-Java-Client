@@ -146,7 +146,9 @@ public class PurchaseService {
             return false;
         }
 
-        if (!coachingCourseEntity.getIsOnboarded() || !coachingCourseEntity.getIsEnabled()) {
+        if ((Objects.nonNull(coachingCourseEntity.getIsOnboarded()) && !coachingCourseEntity
+                .getIsOnboarded()) || (Objects.nonNull(coachingCourseEntity.getIsEnabled())
+                && !coachingCourseEntity.getIsEnabled())) {
             log.error("Coaching course either not active or not onboarded right now, course_id: {}",
                     courseId);
             return false;
