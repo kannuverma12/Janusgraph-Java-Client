@@ -278,7 +278,7 @@ public class SimilarInstituteServiceImpl {
         Map<String, Object> instituteQueryMap = new HashMap<>();
         instituteQueryMap.put(INSTITUTION_STATE, instituteState);
         instituteQueryMap.put(INSTITUTION_CITY, instituteCity);
-        instituteQueryMap.put(INSTITUTE_ID, Collections.singletonMap(IN, Arrays.asList(instituteIds)));
+        instituteQueryMap.put(INSTITUTE_ID, Collections.singletonMap(IN_OPERATOR, instituteIds));
         return instituteQueryMap;
     }
 
