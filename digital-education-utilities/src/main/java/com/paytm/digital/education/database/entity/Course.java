@@ -116,4 +116,7 @@ public class Course implements Serializable {
 
     @Field("stream_ids")
     private List<Long> streamIds;
+
+    @Field("lead_enabled")
+    private int leadEnabled;
 }
