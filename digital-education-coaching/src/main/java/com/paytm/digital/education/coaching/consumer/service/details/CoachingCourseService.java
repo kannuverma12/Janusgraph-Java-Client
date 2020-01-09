@@ -543,7 +543,7 @@ public class CoachingCourseService {
                 .courseHighlights(courseHighlights)
                 .sections(sections)
                 .ctaMap(ctaMap)
-                .isOnboarded(course.getIsOnboarded())
+                .courseOnboarded(course.getIsOnboarded())
                 .build();
     }
 

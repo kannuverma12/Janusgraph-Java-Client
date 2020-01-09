@@ -1,7 +1,6 @@
 package com.paytm.digital.education.coaching.consumer.model.response.details;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.paytm.digital.education.coaching.consumer.model.dto.MockTest;
@@ -51,7 +50,5 @@ public class GetCoachingCourseDetailsResponse {
 
     private Map<CTAViewType, List<CoachingCtaEntity>> ctaMap;
     private List<String>                              sections;
-
-    @JsonProperty("is_onboarded")
-    private boolean isOnboarded;
+    private boolean                                   courseOnboarded;
 }
