@@ -154,7 +154,7 @@ public class CoachingCourseService {
                     "elearning_practice_paper_count", "classroom_lecture_count",
                     "classroom_lecture_duration", "classroom_test_count", "sgst", "cgst", "igst",
                     "tcs", "merchant_product_id", "is_enabled", "validity", "validity_type",
-                    "paytm_product_id", "cta_info");
+                    "paytm_product_id", "cta_info", "is_onboarded");
 
     private static final List<String> EXAM_FIELDS =
             Arrays.asList("exam_id", "exam_full_name", "exam_short_name", "conducting_body",
@@ -543,6 +543,7 @@ public class CoachingCourseService {
                 .courseHighlights(courseHighlights)
                 .sections(sections)
                 .ctaMap(ctaMap)
+                .isOnboarded(course.getIsOnboarded())
                 .build();
     }
 

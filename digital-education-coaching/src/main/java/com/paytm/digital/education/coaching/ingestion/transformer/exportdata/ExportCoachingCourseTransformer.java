@@ -4,7 +4,6 @@ import com.paytm.digital.education.coaching.ingestion.model.googleform.CoachingC
 import com.paytm.digital.education.database.embedded.CoachingCourseImportantDate;
 import com.paytm.digital.education.database.entity.CoachingCourseEntity;
 import com.paytm.digital.education.enums.CTAViewType;
-import com.paytm.digital.education.enums.Language;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -92,6 +91,8 @@ public class ExportCoachingCourseTransformer {
                             .paytmProductId(entity.getPaytmProductId())
                             .isDynamic(ExportCommonTransformer
                                     .convertBooleanToString(entity.getIsDynamic()))
+                            .isOnboarded(ExportCommonTransformer
+                                    .convertBooleanToString(entity.getIsOnboarded()))
                             .build();
 
                     if (Objects.nonNull(entity.getValidityType())) {

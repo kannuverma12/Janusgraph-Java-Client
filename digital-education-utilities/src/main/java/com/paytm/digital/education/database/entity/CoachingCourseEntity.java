@@ -188,4 +188,7 @@ public class CoachingCourseEntity extends Base {
 
     @Field("cta_info")
     private Map<CTAViewType, List<Long>> ctaInfo;
+
+    @Field("is_onboarded")
+    private Boolean isOnboarded;
 }

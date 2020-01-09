@@ -13,7 +13,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,8 +84,9 @@ public class ImportCoachingCourseTransformer {
                 .isEnabled(ImportCommonTransformer.convertStringToBoolean(form.getStatusActive()))
                 .paytmProductId(form.getPaytmProductId())
                 .isDynamic(ImportCommonTransformer.convertStringToBoolean(form.getIsDynamic()))
-                .ctaInfo(buildCtaInfo(form.getPostOrderCta(),form.getListPageCta(),
+                .ctaInfo(buildCtaInfo(form.getPostOrderCta(), form.getListPageCta(),
                         form.getDetailsPageCta()))
+                .isOnboarded(ImportCommonTransformer.convertStringToBoolean(form.getIsOnboarded()))
                 .build();
     }
 
