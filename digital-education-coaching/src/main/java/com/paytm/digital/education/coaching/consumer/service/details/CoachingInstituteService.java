@@ -252,7 +252,7 @@ public class CoachingInstituteService {
         }
         com.paytm.digital.education.database.entity.StreamEntity stream =
                 coachingStreamDAO.findByStreamId(STREAM_ID, streamId,
-                        STREAM_FIELDS,STREAM_FIELDS);
+                        STREAM_FIELDS, STREAM_FIELDS);
         if (Objects.isNull(stream)
                 || Objects.isNull(stream.getIsEnabled()) || !stream.getIsEnabled()) {
             return null;
@@ -459,7 +459,8 @@ public class CoachingInstituteService {
         List<com.paytm.digital.education.database.entity.StreamEntity> streamEntityList =
                 coachingStreamDAO.findByStreamIdsIn(STREAM_ID,
                         coachingInstituteEntity.getStreams(),
-                        CoachingInstituteService.STREAM_FIELDS,CoachingInstituteService.STREAM_FIELDS);
+                        CoachingInstituteService.STREAM_FIELDS,
+                        CoachingInstituteService.STREAM_FIELDS);
 
         Map<Long, com.paytm.digital.education.database.entity.StreamEntity> streamIdToValueMap =
                 new HashMap<>();
