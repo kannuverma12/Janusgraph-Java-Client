@@ -67,6 +67,7 @@ public class TransformInstituteService {
                 if (Objects.nonNull(existingInstitute)) {
                     institute.setId(existingInstitute.getId());
                     institute.setPaytmKeys(existingInstitute.getPaytmKeys());
+                    institute.setCTAConfig(existingInstitute.getCTAConfig());
                 }
                 commonMongoRepository.saveOrUpdate(institute);
             }

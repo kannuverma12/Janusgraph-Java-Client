@@ -5,9 +5,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.database.entity.CTAConfig;
 import com.paytm.digital.education.database.entity.PaytmKeys;
 import com.paytm.digital.education.enums.PublishStatus;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -153,6 +157,9 @@ public class Exam {
     @Field("result")
     @JsonProperty("result")
     private String result;
+
+    @Field("cta_config")
+    private CTAConfig ctaConfig;
 
     @Field("paytm_keys")
     @JsonProperty("paytm_keys")
