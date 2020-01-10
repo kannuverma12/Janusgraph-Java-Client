@@ -1,5 +1,38 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import static com.paytm.digital.education.constant.ExploreConstants.APPLICATION;
+import static com.paytm.digital.education.constant.ExploreConstants.DATE_TAB;
+import static com.paytm.digital.education.constant.ExploreConstants.DD_MMM_YYYY;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FILTER_NAMESPACE;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FULL_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FULL_NAME_BOOST;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_GLOBAL_PRIORITY;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_NAME_SYNONYMS;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_NAME_SYNONYMS_BOOST;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_OFFICIAL_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_OFFICIAL_NAME_BOOST;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_OFFICIAL_NAME_NGRAM;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_OFFICIAL_NAME_NGRAM_BOOST;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SEARCH_NAMESPACE;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SHORT_NAME;
+import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SHORT_NAME_BOOST;
+import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
+import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_MEDIUM;
+import static com.paytm.digital.education.constant.ExploreConstants.MMM_YYYY;
+import static com.paytm.digital.education.constant.ExploreConstants.NON_TENTATIVE;
+import static com.paytm.digital.education.constant.ExploreConstants.RESULT;
+import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_ANALYZER_EXAM;
+import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_EXAM_LEVEL;
+import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_INDEX_EXAM;
+import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_STREAM_PREFIX;
+import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_STREAM_SUFFIX;
+import static com.paytm.digital.education.constant.ExploreConstants.STREAM_IDS;
+import static com.paytm.digital.education.constant.ExploreConstants.SYLLABUS_TAB;
+import static com.paytm.digital.education.constant.ExploreConstants.YYYY_MM;
+import static com.paytm.digital.education.enums.es.DataSortOrder.ASC;
+import static com.paytm.digital.education.enums.es.FilterQueryType.TERMS;
+
 import com.paytm.digital.education.database.entity.ExamPaytmKeys;
 import com.paytm.digital.education.elasticsearch.models.ElasticRequest;
 import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
@@ -23,46 +56,18 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
-
-import static com.paytm.digital.education.constant.ExploreConstants.APPLICATION;
-import static com.paytm.digital.education.constant.ExploreConstants.DATE_TAB;
-import static com.paytm.digital.education.constant.ExploreConstants.DD_MMM_YYYY;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FILTER_NAMESPACE;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FULL_NAME;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FULL_NAME_BOOST;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_NAME_SYNONYMS;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_NAME_SYNONYMS_BOOST;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_OFFICIAL_NAME;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_OFFICIAL_NAME_BOOST;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_OFFICIAL_NAME_NGRAM;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_OFFICIAL_NAME_NGRAM_BOOST;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SEARCH_NAMESPACE;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SHORT_NAME;
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SHORT_NAME_BOOST;
-import static com.paytm.digital.education.constant.ExploreConstants.EXPLORE_COMPONENT;
-import static com.paytm.digital.education.constant.ExploreConstants.LINGUISTIC_MEDIUM;
-import static com.paytm.digital.education.constant.ExploreConstants.MMM_YYYY;
-import static com.paytm.digital.education.constant.ExploreConstants.NON_TENTATIVE;
-import static com.paytm.digital.education.constant.ExploreConstants.RESULT;
-import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_ANALYZER_EXAM;
-import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_EXAM_LEVEL;
-import static com.paytm.digital.education.constant.ExploreConstants.SEARCH_INDEX_EXAM;
-import static com.paytm.digital.education.constant.ExploreConstants.SYLLABUS_TAB;
-import static com.paytm.digital.education.constant.ExploreConstants.YYYY_MM;
-import static com.paytm.digital.education.enums.es.FilterQueryType.TERMS;
-import static com.paytm.digital.education.constant.ExploreConstants.STREAM_IDS;
+import javax.annotation.PostConstruct;
 
 @Service
 @AllArgsConstructor
@@ -112,6 +117,7 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
         populateAggregateFields(searchRequest, elasticRequest,
                 searchAggregateHelper.getExamAggregateData(), ExamSearch.class);
         validateSortFields(searchRequest, sortFields);
+        setSortOrderByStreamsPosition(searchRequest);
         populateSortFields(searchRequest, elasticRequest, ExamSearch.class);
         return elasticRequest;
     }
@@ -264,6 +270,21 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
             }
         }
         return instanceIndex;
+    }
+
+    private void setSortOrderByStreamsPosition(SearchRequest searchRequest) {
+        if (searchRequest.getFilter().containsKey(STREAM_IDS) && !CollectionUtils
+                .isEmpty(searchRequest.getFilter().get(STREAM_IDS))) {
+            if (CollectionUtils.isEmpty(searchRequest.getSortOrder())) {
+                searchRequest.setSortOrder(new LinkedHashMap<>());
+            }
+            List<Object> streamIds = searchRequest.getFilter().get(STREAM_IDS);
+            for (Object streamId : streamIds) {
+                searchRequest.getSortOrder()
+                        .put(SEARCH_STREAM_PREFIX + streamId.toString() + SEARCH_STREAM_SUFFIX, ASC);
+            }
+            searchRequest.getSortOrder().put(EXAM_GLOBAL_PRIORITY, ASC);
+        }
     }
 
 }

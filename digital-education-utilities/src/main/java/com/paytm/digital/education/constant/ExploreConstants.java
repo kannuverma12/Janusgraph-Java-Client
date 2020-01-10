@@ -365,6 +365,8 @@ public interface ExploreConstants {
     int    DEFAULT_EXAM_PRIORITY            = 9999;
     String UPDATED_AT                       = "updated_at";
     String NEWS_ARTICLE_TITLE               = "Trending News and Articles";
+    String SEARCH_STREAM_PREFIX             = "streams.";
+    String SEARCH_STREAM_SUFFIX             = ".position";
 
     String NO_TOPIC_FOUND = "No Topic Found";
 
