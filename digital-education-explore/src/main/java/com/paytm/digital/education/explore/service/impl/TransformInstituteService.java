@@ -1,5 +1,8 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.INSTITUTE_FILE_VERSION;
+
 import com.paytm.digital.education.config.AwsConfig;
 import com.paytm.digital.education.database.entity.Alumni;
 import com.paytm.digital.education.database.entity.Gallery;
@@ -22,18 +25,15 @@ import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.INSTITUTE_FILE_VERSION;
 
 @Service
 @AllArgsConstructor
@@ -47,37 +47,35 @@ public class TransformInstituteService {
 
     public Integer transformAndSaveInstituteData(List<InstituteDto> dtos, Boolean versionUpdate)
             throws EducationException {
-        List<Institute> institutes = transformInstituteDtos(dtos);
-
+        int updateCount = 0;
         try {
-            Set<Long> ids =
-                    institutes.stream().map(i -> i.getInstituteId()).collect(Collectors.toSet());
-
-            List<Institute> dbInstitutes = new ArrayList<>();
-            dbInstitutes = incrementalDataHelper
-                    .getExistingData(Institute.class, INSTITUTE_ID, new ArrayList<>(ids));
-
-            Map<Long, Institute> ojbIdToInstIdMap = dbInstitutes.stream()
-                    .collect(Collectors.toMap(i -> i.getInstituteId(), i -> i));
-
-            log.info("Saving to DB after transformation");
-            for (Institute institute : institutes) {
-                Long id = institute.getInstituteId();
-                Institute existingInstitute = ojbIdToInstIdMap.get(id);
-                if (Objects.nonNull(existingInstitute)) {
-                    institute.setId(existingInstitute.getId());
-                    institute.setPaytmKeys(existingInstitute.getPaytmKeys());
+            for (InstituteDto instituteDto : dtos) {
+                try {
+                    Institute transformedInstitute = transformInstitute(instituteDto);
+                    List<Institute> dbInstitutes = incrementalDataHelper
+                            .getExistingData(Institute.class, INSTITUTE_ID,
+                                    Arrays.asList(transformedInstitute.getInstituteId()));
+                    if (!CollectionUtils.isEmpty(dbInstitutes)) {
+                        Institute dbDataInstitute = dbInstitutes.get(0);
+                        transformedInstitute.setId(dbDataInstitute.getId());
+                        transformedInstitute.setPaytmKeys(dbDataInstitute.getPaytmKeys());
+                    }
+                    log.info("Saving to DB after transformation institute_id : {}",
+                            transformedInstitute.getInstituteId());
+                    commonMongoRepository.saveOrUpdate(transformedInstitute);
+                    updateCount++;
+                    log.info("Saved in DB. institute_id : {}",
+                            transformedInstitute.getInstituteId());
+                } catch (Exception ex) {
+                    log.error("Error in transforming institute_id : {}", ex,instituteDto.getInstituteId());
                 }
-                commonMongoRepository.saveOrUpdate(institute);
             }
-            log.info("Saved in DB.");
-
             if (Objects.isNull(versionUpdate) || versionUpdate) {
                 log.info("Updating version number for institute");
                 incrementalDataHelper.incrementFileVersion(INSTITUTE_FILE_VERSION);
             }
             log.info("Institute data dump import done.");
-            return institutes.size();
+            return updateCount;
         } catch (Exception e) {
             log.error("Institute ingestion exceptions : ", e);
             throw new BadRequestException(ErrorEnum.CORRUPTED_FILE,
@@ -127,6 +125,42 @@ public class TransformInstituteService {
         return instituteStreamBuilder.build()
                 .filter(CommonUtils.distinctBy(Institute::getId))
                 .collect(Collectors.toList());
+    }
+
+    private Institute transformInstitute(InstituteDto dto) {
+        log.info("Institute Document from Dump for id : {}, {} ", dto.getInstituteId(),
+                JsonUtils.toJson(dto));
+        Institute institute =
+                new Institute(dto.getCommonName(), Long.valueOf(dto.getInstituteId()));
+
+        log.info("Transforming document to db entity for id : {}", dto.getInstituteId());
+        BeanUtils.copyProperties(dto, institute);
+
+        institute.setInstituteId(Long.valueOf(dto.getInstituteId()));
+        institute.setStudentCount(dto.getTotalIntake());
+
+        // rankings
+        List<RankingDto> rankingDtos = dto.getRankings();
+        List<Ranking> rankings = null;
+        if (rankingDtos.size() > 0) {
+            rankings = new ArrayList<>();
+        }
+        for (RankingDto rdto : rankingDtos) {
+            Ranking ranking = new Ranking();
+            BeanUtils.copyProperties(rdto, ranking);
+            ranking.setStream(rdto.getRankingStream());
+            rankings.add(ranking);
+        }
+
+        //notable alumni
+        updateNotableAlumniDetails(institute);
+
+        // S3 upload
+        uploadImages(institute);
+
+        institute.setRankings(rankings);
+        log.info("Transformation done for id : {}", dto.getInstituteId());
+        return institute;
     }
 
     private void updateNotableAlumniDetails(Institute institute) {

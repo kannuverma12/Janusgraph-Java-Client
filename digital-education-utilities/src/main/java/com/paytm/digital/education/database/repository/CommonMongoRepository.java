@@ -221,6 +221,16 @@ public class CommonMongoRepository {
         return null;
     }
 
+    public <T> List<T> findAllEntities(Map<String, Object> searchRequest, Class<T> instance,
+            List<String> fields, String queryOperatorType) {
+        if (queryOperatorType.equals(AND)) {
+            return executeMongoQuery(createMongoQuery(searchRequest, fields), instance);
+        } else if (queryOperatorType.equals(OR)) {
+            return executeMongoQuery(createOrMongoQuery(searchRequest, fields), instance);
+        }
+        return null;
+    }
+
     @Cacheable(value = "findAllSortBy", key = "'findAllSortBy.'+#searchRequest+'.'+#instance+'.'"
             + "+#fields+'.'+#queryOperatorType+'.'+#sortMap+'.'+#limit")
     public <T> List<T> findAllAndSortBy(Map<String, Object> searchRequest, Class<T> instance,
