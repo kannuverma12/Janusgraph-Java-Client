@@ -108,7 +108,7 @@ public class CacheTest {
     @Test
     public void testCacheConcurrenceForCompleteLockStrategy() throws Exception {
 
-        final int numberOfThreads = 10000;
+        final int numberOfThreads = 10;
 
         CacheLockStrategy oldCacheLock =
                 this.updateCacheLockStrategyInRedisOrchestrator(completeLockStrategy);
@@ -137,7 +137,7 @@ public class CacheTest {
 
     @Test
     public void testCacheConcurrenceSequentialExecutionForWriteLockStrategy() throws Exception {
-        final int numberOfThreads = 1000;
+        final int numberOfThreads = 10;
 
         CacheLockStrategy oldCacheLock =
                 this.updateCacheLockStrategyInRedisOrchestrator(writeLockStrategy);
@@ -168,7 +168,7 @@ public class CacheTest {
 
     @Test
     public void testCacheConcurrenceRunsMultipleTimeWithoutCacheAnnotation() throws Exception {
-        final int numberOfThreads = 10000;
+        final int numberOfThreads = 10;
 
         String arg1 = "arg1";
         String arg2 = "arg2";
