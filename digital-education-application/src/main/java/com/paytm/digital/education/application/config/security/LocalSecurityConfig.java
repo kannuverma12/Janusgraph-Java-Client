@@ -44,6 +44,7 @@ public class LocalSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/explore/admin/entity/v1/**").authenticated()
+                .antMatchers("/explore/auth/v1/merchant/article").authenticated()
                 .anyRequest().permitAll();
 
         http.headers().frameOptions().disable();
