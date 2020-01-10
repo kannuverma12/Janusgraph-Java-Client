@@ -155,6 +155,7 @@ public class Institute implements Serializable {
     public Institute(String commonName, Long instituteId) {
         this.commonName = commonName;
         this.instituteId = instituteId;
+        this.paytmUpdatedAt = new Date();
     }
 
 }
