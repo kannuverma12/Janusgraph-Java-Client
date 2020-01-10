@@ -149,9 +149,13 @@ public class Institute implements Serializable {
     @Field("paytm_keys")
     private InstiPaytmKeys paytmKeys;
 
+    @Field("paytm_updated_at")
+    private Date paytmUpdatedAt = new Date();
+
     public Institute(String commonName, Long instituteId) {
         this.commonName = commonName;
         this.instituteId = instituteId;
+        this.paytmUpdatedAt = new Date();
     }
 
 }
