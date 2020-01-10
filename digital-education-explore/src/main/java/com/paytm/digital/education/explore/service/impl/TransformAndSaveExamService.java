@@ -94,6 +94,7 @@ public class TransformAndSaveExamService {
                         }
                     }
                     exam.setPaytmKeys(currentExam.getPaytmKeys());
+                    exam.setCtaConfig(currentExam.getCTAConfig());
                 }
                 commonMongoRepository.saveOrUpdate(exam);
                 updatedExams++;
