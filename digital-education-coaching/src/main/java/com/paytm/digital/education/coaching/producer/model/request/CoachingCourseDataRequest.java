@@ -153,7 +153,7 @@ public class CoachingCourseDataRequest {
     private List<Long> courseFeatureIds;
 
     @Min(value = 1)
-    @Max(value = 100)
+    @Max(value = 10000)
     @ApiModelProperty(value = "number of test counts for test series")
     private Integer testCount;
 
@@ -163,34 +163,34 @@ public class CoachingCourseDataRequest {
     private Integer testDuration;
 
     @Min(value = 1)
-    @Max(value = 300)
+    @Max(value = 10000000)
     @ApiModelProperty(value = "question count in each test of test series")
     private Integer testQuestionCount;
 
     @Min(value = 1)
-    @Max(value = 300)
+    @Max(value = 10000)
     @ApiModelProperty(value = "practice paper count of test series")
     private Integer testPracticePaperCount;
 
 
     @Positive
-    @Max(value = 50)
+    @Max(value = 10000)
     @ApiModelProperty(value = "provided books count in the course")
     private Integer distanceLearningBooksCount;
 
     @Positive
-    @Max(value = 50)
+    @Max(value = 10000)
     @ApiModelProperty(value = "provided solved paper count in the course")
     private Integer distanceLearningSolvedPaperCount;
 
     @Positive
-    @Max(value = 50)
+    @Max(value = 10000)
     @ApiModelProperty(value = "provided assignments count in the course")
     private Integer distanceLearningAssignmentsCount;
 
 
     @Positive
-    @Max(value = 100)
+    @Max(value = 10000)
     @ApiModelProperty(value = "provided lecture count in the course")
     private Integer elearningLectureCount;
 
@@ -200,17 +200,17 @@ public class CoachingCourseDataRequest {
     private Integer elearningLectureDuration;
 
     @Positive
-    @Max(value = 100)
+    @Max(value = 10000)
     @ApiModelProperty(value = "online test count in the course")
     private Integer elearningOnlineTestCount;
 
     @Positive
-    @Max(value = 100)
+    @Max(value = 10000)
     @ApiModelProperty(value = "practice paper count in the course")
     private Integer elearningPracticePaperCount;
 
     @Positive
-    @Max(value = 100)
+    @Max(value = 10000)
     @ApiModelProperty(value = "provided lecture count in the course")
     private Integer classroomLectureCount;
 
@@ -220,13 +220,13 @@ public class CoachingCourseDataRequest {
     private Integer classroomLectureDuration;
 
     @Positive
-    @Max(value = 100)
+    @Max(value = 10000)
     @ApiModelProperty(value = "online test count in the course")
     private Integer classroomTestCount;
 
     @Size(max = 10)
     @Pattern(regexp = "^[1-9]*:[1-9]*$")
-    @ApiModelProperty(value = "practice paper count in the course")
+    @ApiModelProperty(value = "classroom teacher student ratio in course")
     private String classroomTeacherStudentRatio;
 
     @Size(max = 200)
