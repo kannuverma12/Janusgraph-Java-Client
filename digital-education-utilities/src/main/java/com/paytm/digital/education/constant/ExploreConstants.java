@@ -381,6 +381,9 @@ public interface ExploreConstants {
     String EXAM_DATA_FIELD      = "exam_data";
     String COURSE_DATA_FIELD    = "course_data";
     String SCHOOL_DATA_FIELD    = "school_data";
+    String CTA_CONFIG           = "cta_config";
+    String CTA_ENTITY           = "cta_entity";
+    String CTA_CONFIG_CTA_TYPES = "cta_config.cta_types";
 
     public static class CachingConstants {
         public static final String CACHE_KEY_DELIMITER = "_";

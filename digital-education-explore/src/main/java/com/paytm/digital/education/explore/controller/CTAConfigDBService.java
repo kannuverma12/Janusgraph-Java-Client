@@ -15,6 +15,9 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.util.List;
 
+import static com.paytm.digital.education.constant.ExploreConstants.CTA_CONFIG;
+import static com.paytm.digital.education.constant.ExploreConstants.CTA_CONFIG_CTA_TYPES;
+import static com.paytm.digital.education.constant.ExploreConstants.CTA_ENTITY;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
@@ -32,7 +35,7 @@ public class CTAConfigDBService {
     }
 
     public CTAConfigHolder getCTAConfigHolderOnlyCTAConfig(CTAEntity ctaEntity, long id) {
-        return getCTAConfigHolder(commonMongoRepository, ctaEntity, id, asList("cta_config"));
+        return getCTAConfigHolder(commonMongoRepository, ctaEntity, id, asList(CTA_CONFIG));
     }
 
     public CTAConfigHolder getCTAConfigHolderAllFieldsBypassCache(CTAEntity ctaEntity, long id) {
@@ -41,12 +44,12 @@ public class CTAConfigDBService {
 
     public CTAConfigHolder getCTAConfigHolderAllFields(CTAEntity entity) {
         return commonMongoRepository
-                .getEntityByFields("cta_entity", entity.name(), EducationEntityCTAConfig.class, null);
+                .getEntityByFields(CTA_ENTITY, entity.name(), EducationEntityCTAConfig.class, null);
     }
 
     public CTAConfigHolder getCTAConfigHolderAllFieldsByPassCache(CTAEntity entity) {
         return underlyingCommonMongoRepository
-                .getEntityByFields("cta_entity", entity.name(), EducationEntityCTAConfig.class, null);
+                .getEntityByFields(CTA_ENTITY, entity.name(), EducationEntityCTAConfig.class, null);
     }
 
     public void saveCTAConfigHolder(CTAConfigHolder ctaConfigHolder) {
@@ -57,7 +60,7 @@ public class CTAConfigDBService {
         commonMongoRepository.updateMulti(
                 emptyMap(),
                 emptyList(),
-                Update.update("cta_config.cta_types", emptyList()),
+                Update.update(CTA_CONFIG_CTA_TYPES, emptyList()),
                 ctaEntity.getCorrespondingClass()
         );
         return true;

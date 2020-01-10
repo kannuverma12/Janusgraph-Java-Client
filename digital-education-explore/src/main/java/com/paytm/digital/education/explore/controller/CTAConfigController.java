@@ -21,26 +21,26 @@ public class CTAConfigController {
 
     private final CTAConfigService ctaConfigService;
 
-    @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/{entity}/cta_config")
+    @RequestMapping(method = RequestMethod.GET, path = "/auth/admin/v1/{entity}/cta_config")
     public CTAConfig getEntityCTAConfig(@PathVariable("entity") CTAEntity entity) {
         return ctaConfigService.getEducationEntityConfig(entity);
 
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "/auth/v1/{entity}/{entity_id}/cta_config")
+    @RequestMapping(method = RequestMethod.GET, path = "/auth/admin/v1/{entity}/{entity_id}/cta_config")
     public CTAConfig getEntityDocCTAConfig(@PathVariable("entity") CTAEntity entity,
                                            @PathVariable("entity_id") long entityId) {
         return ctaConfigService.getEntityDocumentConfig(entity, entityId);
     }
 
-    @RequestMapping(method = RequestMethod.POST, path = "/auth/v1/{entity}/cta_config")
+    @RequestMapping(method = RequestMethod.POST, path = "/auth/admin/v1/{entity}/cta_config")
     public CTAConfig putEntityCTAConfig(@PathVariable("entity") CTAEntity entity,
                                         @RequestBody CTAConfig ctaConfig) {
         return ctaConfigService.putEducationEntityConfig(entity, ctaConfig);
 
     }
 
-    @RequestMapping(method = RequestMethod.POST, path = "/auth/v1/{entity}/{entity_id}/cta_config")
+    @RequestMapping(method = RequestMethod.POST, path = "/auth/admin/v1/{entity}/{entity_id}/cta_config")
     public CTAConfig putEntityDocCTAConfig(@PathVariable("entity") CTAEntity entity,
                                            @PathVariable("entity_id") long entityId,
                                            @RequestBody CTAConfig ctaConfig) {
@@ -48,7 +48,7 @@ public class CTAConfigController {
     }
 
 
-    @RequestMapping(method = RequestMethod.POST, path = "/auth/v1/{entity}/cta_config/bulk_op")
+    @RequestMapping(method = RequestMethod.POST, path = "/auth/admin/v1/{entity}/cta_config/bulk_op")
     public boolean doBulkOperation(@PathVariable("entity") CTAEntity entity,
                                    @RequestBody BulkOperationRequest bulkOperationRequest) {
         return ctaConfigService.bulkOperation(entity, bulkOperationRequest.getBulkOperationType());
