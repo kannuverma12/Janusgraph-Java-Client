@@ -119,4 +119,7 @@ public class Course implements Serializable {
 
     @Field("lead_enabled")
     private int leadEnabled;
+
+    @Field("paytm_updated_at")
+    private Date paytmUpdatedAt = new Date();
 }

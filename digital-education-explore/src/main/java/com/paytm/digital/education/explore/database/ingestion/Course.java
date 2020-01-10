@@ -147,4 +147,7 @@ public class Course implements Serializable {
     @JsonProperty("lead_enabled")
     private int leadEnabled;
 
+    @Field("paytm_updated_at")
+    private Date paytmUpdatedAt = new Date();
+
 }
