@@ -1,6 +1,5 @@
 package com.paytm.digital.education.serviceimpl;
 
-import com.paytm.digital.education.config.SchoolConfig;
 import com.paytm.digital.education.constant.ExploreConstants;
 import com.paytm.digital.education.database.dao.StreamDAO;
 import com.paytm.digital.education.database.entity.Exam;
@@ -10,6 +9,7 @@ import com.paytm.digital.education.database.entity.Section;
 import com.paytm.digital.education.database.entity.StreamEntity;
 import com.paytm.digital.education.database.repository.CommonEntityMongoDAO;
 import com.paytm.digital.education.exception.EducationException;
+import com.paytm.digital.education.serviceimpl.helper.ExamDatesHelper;
 import com.paytm.digital.education.utility.CommonUtil;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
@@ -20,6 +20,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -31,7 +32,6 @@ import static com.paytm.digital.education.constant.ExploreConstants.ABOUT_EXAM;
 import static com.paytm.digital.education.constant.ExploreConstants.APP_DISPLAY_NAME;
 import static com.paytm.digital.education.constant.ExploreConstants.DESCRIPTION;
 import static com.paytm.digital.education.constant.ExploreConstants.DISPLAY_NAME;
-import static com.paytm.digital.education.constant.ExploreConstants.DUMMY_EXAM_ICON;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_FULL_NAME;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_ID;
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SHORT_NAME;
@@ -40,11 +40,14 @@ import static com.paytm.digital.education.constant.ExploreConstants.GALLERY_LOGO
 import static com.paytm.digital.education.constant.ExploreConstants.ICON;
 import static com.paytm.digital.education.constant.ExploreConstants.ID;
 import static com.paytm.digital.education.constant.ExploreConstants.IMAGE_URL;
+import static com.paytm.digital.education.constant.ExploreConstants.IMPORTANT_DATES;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTANCES;
 import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.constant.ExploreConstants.LOGO;
 import static com.paytm.digital.education.constant.ExploreConstants.NAME;
 import static com.paytm.digital.education.constant.ExploreConstants.OFFICIAL_NAME;
 import static com.paytm.digital.education.constant.ExploreConstants.STREAM_IDS;
+import static com.paytm.digital.education.constant.ExploreConstants.SUB_EXAMS;
 import static com.paytm.digital.education.constant.ExploreConstants.SUB_ITEMS;
 import static com.paytm.digital.education.constant.ExploreConstants.URL_DISPLAY_KEY;
 import static com.paytm.digital.education.constant.SchoolConstants.SCHOOL_ID;
@@ -62,16 +65,16 @@ public class EntityDataDiscoveryService {
     private static final List<String> INSTITUTE_PROJECTION_FIELDS =
             Arrays.asList(INSTITUTE_ID, OFFICIAL_NAME, GALLERY_LOGO);
     private static final List<String> EXAM_PROJECTION_FIELDS      =
-            Arrays.asList(EXAM_ID, EXAM_FULL_NAME, EXAM_SHORT_NAME, LOGO);
+            Arrays.asList(EXAM_ID, EXAM_FULL_NAME, EXAM_SHORT_NAME, LOGO, INSTANCES, SUB_EXAMS);
     private static final List<String>                   EXAM_FIELDS_WITH_ABOUT     =
             Arrays.asList(EXAM_ID, EXAM_FULL_NAME, EXAM_SHORT_NAME, LOGO, ABOUT_EXAM);
     private static final List<String>              SCHOOL_PROJECTION_FIELDS    =
             Arrays.asList(SCHOOL_ID, SCHOOL_OFFICIAL_NAME, SCHOOL_LOGO);
     private static final Logger                    log                         =
             LoggerFactory.getLogger(EntityDataDiscoveryService.class);
-    private final        StreamDAO                 streamDAO;
-    private final        SchoolConfig              schoolConfig;
-    private final        CommonEntityMongoDAO      commonEntityMongoDAO;
+    private final StreamDAO            streamDAO;
+    private final CommonEntityMongoDAO commonEntityMongoDAO;
+    private final ExamDatesHelper      examDatesHelper;
 
     public void updateInstituteData(Section section) {
         List<Map<String, Object>> sectionItems = section.getItems();
@@ -204,6 +207,9 @@ public class EntityDataDiscoveryService {
                 examData.put(ICON, CommonUtil.getLogoLink(exam.getLogo(), EXAM));
                 examData.put(URL_DISPLAY_KEY,
                         CommonUtil.convertNameToUrlDisplayName(exam.getExamFullName()));
+                examData.put(IMPORTANT_DATES,
+                        Optional.ofNullable(examDatesHelper.getNearestUpcomingAndOngoingImportantDates(exam))
+                                .orElse(new HashMap<>()));
                 if (StringUtils.isNotBlank(exam.getAboutExam())) {
                     examData.put(DESCRIPTION, exam.getAboutExam());
                 }

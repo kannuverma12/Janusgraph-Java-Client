@@ -39,8 +39,6 @@ import com.paytm.digital.education.elasticsearch.models.ElasticResponse;
 import com.paytm.digital.education.enums.Client;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.enums.es.FilterQueryType;
-import com.paytm.digital.education.explore.es.model.Event;
-import com.paytm.digital.education.explore.es.model.ExamInstance;
 import com.paytm.digital.education.explore.es.model.ExamSearch;
 import com.paytm.digital.education.explore.request.dto.search.SearchRequest;
 import com.paytm.digital.education.explore.response.dto.search.ExamData;
@@ -50,15 +48,16 @@ import com.paytm.digital.education.explore.response.dto.search.SearchResult;
 import com.paytm.digital.education.explore.service.helper.SearchAggregateHelper;
 import com.paytm.digital.education.serviceimpl.helper.ExamLogoHelper;
 import com.paytm.digital.education.utility.CommonUtil;
-import com.paytm.digital.education.utility.DateUtil;
-import lombok.AllArgsConstructor;
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -67,17 +66,22 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
-import javax.annotation.PostConstruct;
+
+
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
 
-    private static Map<String, Float>                   searchFieldKeys;
-    private static Map<String, FilterQueryType>         filterQueryTypeMap;
-    private static Set<String> sortFields;
-    private        SearchAggregateHelper                searchAggregateHelper;
-    private        ExamLogoHelper                       examLogoHelper;
+    private static Map<String, Float>           searchFieldKeys;
+    private static Map<String, FilterQueryType> filterQueryTypeMap;
+    private static Set<String>                  sortFields;
+    private final  SearchAggregateHelper        searchAggregateHelper;
+    private final  ExamLogoHelper               examLogoHelper;
+    private final  ExamSearchDatesHelper        examSearchDatesHelper;
+
+    private static final Logger log =
+            LoggerFactory.getLogger(ExamSearchServiceImpl.class);
 
     @PostConstruct
     private void init() {
@@ -122,63 +126,6 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
         return elasticRequest;
     }
 
-    private void setAllDates(ExamData examData, ExamInstance instance) {
-
-        if (!CollectionUtils.isEmpty(instance.getEvents())) {
-            instance.getEvents().forEach(event -> {
-                if (event.getType().equalsIgnoreCase(APPLICATION)) {
-                    if (event.getCertainty() != null
-                            && event.getCertainty().equalsIgnoreCase(NON_TENTATIVE)) {
-                        if (event.getStartDate() != null) {
-                            examData.setApplicationStartDate(
-                                    DateUtil.dateToString(event.getStartDate(), DD_MMM_YYYY));
-                            examData.setApplicationEndDate(
-                                    DateUtil.dateToString(event.getEndDate(), DD_MMM_YYYY));
-                        } else {
-                            examData.setApplicationStartDate(
-                                    DateUtil.dateToString(event.getDate(), DD_MMM_YYYY));
-                        }
-                    } else {
-                        examData.setApplicationMonth(
-                                DateUtil.formatDateString(event.getMonth(), YYYY_MM, MMM_YYYY));
-                    }
-                } else if (event.getType().equalsIgnoreCase(EXAM)) {
-                    if (event.getCertainty() != null
-                            && event.getCertainty().equalsIgnoreCase(NON_TENTATIVE)) {
-                        if (event.getStartDate() != null) {
-                            examData.setExamStartDate(
-                                    DateUtil.dateToString(event.getStartDate(), DD_MMM_YYYY));
-                            examData.setExamEndDate(
-                                    DateUtil.dateToString(event.getEndDate(), DD_MMM_YYYY));
-                        } else {
-                            examData.setExamStartDate(
-                                    DateUtil.dateToString(event.getDate(), MMM_YYYY));
-                        }
-                    } else {
-                        examData.setExamMonth(
-                                DateUtil.formatDateString(event.getMonth(), YYYY_MM, MMM_YYYY));
-                    }
-                } else if (event.getType().equalsIgnoreCase(RESULT)) {
-                    if (event.getCertainty() != null
-                            && event.getCertainty().equalsIgnoreCase(NON_TENTATIVE)) {
-                        if (event.getStartDate() != null) {
-                            examData.setResultStartDate(
-                                    DateUtil.dateToString(event.getStartDate(), DD_MMM_YYYY));
-                            examData.setResultEndDate(
-                                    DateUtil.dateToString(event.getEndDate(), DD_MMM_YYYY));
-                        } else {
-                            examData.setResultStartDate(
-                                    DateUtil.dateToString(event.getDate(), DD_MMM_YYYY));
-                        }
-                    } else {
-                        examData.setResultMonth(
-                                DateUtil.formatDateString(event.getMonth(), YYYY_MM, MMM_YYYY));
-                    }
-                }
-            });
-        }
-    }
-
     @Override
     protected void populateSearchResults(SearchResponse searchResponse,
             ElasticResponse elasticResponse, Map<String, Map<String, Object>> properties,
@@ -196,20 +143,13 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
                 examData.setUrlDisplayName(
                         CommonUtil.convertNameToUrlDisplayName(examSearch.getOfficialName()));
                 examData.setLogoUrl(examLogoHelper
-                        .getExamLogoUrl(new Long(examSearch.getExamId()), examSearch.getImageLink()));
+                        .getExamLogoUrl((long) examSearch.getExamId(), examSearch.getImageLink()));
                 List<String> dataAvailable = new ArrayList<>();
                 if (!CollectionUtils.isEmpty(examSearch.getDataAvailable())) {
                     dataAvailable.addAll(examSearch.getDataAvailable());
                 }
                 if (!CollectionUtils.isEmpty(examSearch.getExamInstances())) {
-                    int instanceIndex = 0;
-                    instanceIndex = getRelevantInstanceIndex(
-                            examSearch.getExamInstances(), APPLICATION);
-                    setAllDates(examData, examSearch.getExamInstances().get(instanceIndex));
-                    if (examSearch.getExamInstances().get(instanceIndex)
-                            .isSyllabusAvailable()) {
-                        dataAvailable.add(SYLLABUS_TAB);
-                    }
+                    examSearchDatesHelper.setAllImportantDates(examData);
                     dataAvailable.add(DATE_TAB);
                 }
                 if (Objects.nonNull(examSearch.getPaytmKeys())) {
@@ -219,57 +159,13 @@ public class ExamSearchServiceImpl extends AbstractSearchServiceImpl {
                 }
                 examData.setCtaList(ctaHelper.buildCTA(examData, client));
                 examData.setDataAvailable(dataAvailable);
-                examDataMap.put(Long.valueOf(examSearch.getExamId()), examData);
+                examDataMap.put((long) examSearch.getExamId(), examData);
                 examDataList.add(examData);
             });
             searchResults.setValues(examDataList);
         }
         searchResponse.setResults(searchResults);
         searchResponse.setEntityDataMap(examDataMap);
-    }
-
-    private int getRelevantInstanceIndex(List<ExamInstance> instances, String type) {
-        int instanceIndex = 0;
-        if (!CollectionUtils.isEmpty(instances) || instances.size() > 1) {
-            Date presentDate = new Date();
-            Date futureMinDate = new Date(Long.MAX_VALUE);
-            Date pastMaxDate = new Date(Long.MIN_VALUE);
-            for (int index = 0; index < instances.size(); index++) {
-                Date minApplicationDate = new Date(Long.MAX_VALUE);
-                if (!CollectionUtils.isEmpty(instances.get(index).getEvents())) {
-                    List<Event> events = instances.get(index).getEvents();
-                    for (int eventIndex = 0; eventIndex < events.size(); eventIndex++) {
-                        if (events.get(eventIndex).getType() != null
-                                && events.get(eventIndex).getType().equalsIgnoreCase(type)) {
-                            if (events.get(eventIndex).getCertainty() != null
-                                    && events.get(eventIndex).getCertainty()
-                                    .equalsIgnoreCase(NON_TENTATIVE)) {
-                                minApplicationDate = events.get(eventIndex).getStartDate() != null
-                                        ? events.get(eventIndex).getStartDate()
-                                        : events.get(eventIndex).getDate();
-                            } else {
-                                minApplicationDate =
-                                        DateUtil.stringToDate(events.get(eventIndex).getMonth(),
-                                                YYYY_MM);
-                            }
-                        }
-
-                        if (minApplicationDate != null) {
-                            if (minApplicationDate.compareTo(presentDate) >= 0
-                                    && futureMinDate.compareTo(minApplicationDate) > 0) {
-                                futureMinDate = minApplicationDate;
-                                instanceIndex = index;
-                            } else if (futureMinDate.compareTo(new Date(Long.MAX_VALUE)) == 0
-                                    && minApplicationDate.compareTo(pastMaxDate) > 0) {
-                                pastMaxDate = minApplicationDate;
-                                instanceIndex = index;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return instanceIndex;
     }
 
     private void setSortOrderByStreamsPosition(SearchRequest searchRequest) {

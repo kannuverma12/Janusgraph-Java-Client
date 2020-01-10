@@ -30,6 +30,7 @@ public interface ExploreConstants {
     String EXAM          = "EXAM";
     String PRECEDENCE    = "precedence";
     String DEFAULT       = "DEFAULT";
+    String TENTATIVE_DATE = "(Tentative)";
 
     String GROUP_NAME   = "name";
     String GROUP_ENTITY = "entity";
@@ -344,6 +345,7 @@ public interface ExploreConstants {
     String URL_DISPLAY_KEY               = "url_display_key";
     String DESCRIPTION                   = "description";
     String PARTIAL_FAILED                = "partial_failed";
+    String IMPORTANT_DATES               = "important_dates";
 
     //Sections constants
     String BROWSE_BY_EXAM_LEVEL_APP         = "browse_by_exam_level_app";
