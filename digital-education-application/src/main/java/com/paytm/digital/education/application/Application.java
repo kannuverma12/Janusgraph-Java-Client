@@ -35,6 +35,9 @@ public class Application {
 
     private static final Logger log = LoggerFactory.getLogger(Application.class);
 
+    private static final String vaultSourceProperty          = "vault.source";
+    private static final String springProfilesActiveProperty = "spring.profiles.active";
+
     static {
         MainMapLookup.setMainArguments("digital-education-service");
     }
@@ -44,16 +47,16 @@ public class Application {
         @Override
         public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
             Boolean isVaultSource = event.getEnvironment()
-                    .getProperty("vault.source", Boolean.class, Boolean.FALSE);
-            log.info("isVaultSource : {}", isVaultSource);
+                    .getProperty(vaultSourceProperty, Boolean.class, Boolean.FALSE);
+            log.info("Vault properties flag set for profile? : {}", isVaultSource);
             if (isVaultSource) {
-                String profile = event.getEnvironment().getProperty("spring.profiles.active");
+                String profile = event.getEnvironment().getProperty(springProfilesActiveProperty);
                 log.info("Profile : {}", profile);
                 if (StringUtils.isEmpty(profile)) {
                     log.error("Profile not present in application.properties");
                     System.exit(1);
                 }
-                System.setProperty("spring.profiles.active", profile);
+                System.setProperty(springProfilesActiveProperty, profile);
                 log.info("Going to load vault properties");
                 try {
                     loadVaultProperties();
@@ -74,7 +77,7 @@ public class Application {
 
     private static void loadVaultProperties() throws Exception {
         try {
-            VaultUtil.injectVaultProperties("spring.profiles.active");
+            VaultUtil.injectVaultProperties(springProfilesActiveProperty);
         } catch (Exception e) {
             log.error("Could not inject vault properties ", e);
             throw e;
