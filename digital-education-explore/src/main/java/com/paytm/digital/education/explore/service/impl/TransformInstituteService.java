@@ -54,7 +54,7 @@ public class TransformInstituteService {
                     Institute transformedInstitute = transformInstitute(instituteDto);
                     List<Institute> dbInstitutes = incrementalDataHelper
                             .getExistingData(Institute.class, INSTITUTE_ID,
-                                    Arrays.asList(transformedInstitute.getInstituteId()));
+                                    new ArrayList<>(Arrays.asList(transformedInstitute.getInstituteId())));
                     if (!CollectionUtils.isEmpty(dbInstitutes)) {
                         Institute dbDataInstitute = dbInstitutes.get(0);
                         transformedInstitute.setId(dbDataInstitute.getId());
