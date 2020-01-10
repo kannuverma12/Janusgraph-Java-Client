@@ -25,7 +25,7 @@ import static com.paytm.digital.education.explore.response.dto.common.CTA.Consta
 @Service
 @Getter
 public class ShortListCTAProducer extends AbstractCTAProducer {
-    private static Logger log = LoggerFactory.getLogger(BrochureCTAProducer.class);
+    private static Logger log = LoggerFactory.getLogger(ShortListCTAProducer.class);
 
     @Accessors(fluent = true)
     private final CTAType ctaType = SHORTLIST;
