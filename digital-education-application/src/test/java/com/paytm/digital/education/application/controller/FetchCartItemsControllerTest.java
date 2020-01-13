@@ -182,6 +182,7 @@ public class FetchCartItemsControllerTest {
         coachingCourseEntity.setCoachingInstituteId(123L);
         coachingCourseEntity.setOriginalPrice(123D);
         coachingCourseEntity.setDiscountedPrice(123D);
+        coachingCourseEntity.setIsOnboarded(true);
         return coachingProgramRepository.save(coachingCourseEntity);
     }
 

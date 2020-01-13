@@ -146,6 +146,14 @@ public class PurchaseService {
             return false;
         }
 
+        if ((Objects.nonNull(coachingCourseEntity.getIsOnboarded()) && !coachingCourseEntity
+                .getIsOnboarded()) || (Objects.nonNull(coachingCourseEntity.getIsEnabled())
+                && !coachingCourseEntity.getIsEnabled())) {
+            log.error("Coaching course either not active or not onboarded right now, course_id: {}",
+                    courseId);
+            return false;
+        }
+
         if (!coachingCourseEntity.getPaytmProductId().equals(cartItem.getProductId())) {
             log.error("Invalid Product Id for course_id: {}, DB p_id: {}, request p_id: {}",
                     courseId, coachingCourseEntity.getPaytmProductId(),

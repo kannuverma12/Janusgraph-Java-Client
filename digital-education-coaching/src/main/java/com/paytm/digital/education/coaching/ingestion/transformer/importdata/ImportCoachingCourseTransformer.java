@@ -9,6 +9,7 @@ import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.CourseType;
 import com.paytm.digital.education.enums.DurationType;
 import com.paytm.digital.education.enums.Language;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public class ImportCoachingCourseTransformer {
                 .originalPrice(form.getOriginalPrice())
                 .discountedPrice(form.getDiscountedPrice())
                 .courseLevel(CourseLevel.fromString(form.getLevelOfEducation()))
-                .language(Language.fromString(form.getLanguage()))
+                .language(getLanguageList(form.getLanguage()))
                 .syllabusAndBrochure(form.getSyllabus())
                 .isCertificateAvailable(ImportCommonTransformer.convertStringToBoolean(
                         form.getCertificate()))
@@ -83,8 +84,9 @@ public class ImportCoachingCourseTransformer {
                 .isEnabled(ImportCommonTransformer.convertStringToBoolean(form.getStatusActive()))
                 .paytmProductId(form.getPaytmProductId())
                 .isDynamic(ImportCommonTransformer.convertStringToBoolean(form.getIsDynamic()))
-                .ctaInfo(buildCtaInfo(form.getPostOrderCta(),form.getListPageCta(),
+                .ctaInfo(buildCtaInfo(form.getPostOrderCta(), form.getListPageCta(),
                         form.getDetailsPageCta()))
+                .isOnboarded(ImportCommonTransformer.convertStringToBoolean(form.getIsOnboarded()))
                 .build();
     }
 
@@ -125,4 +127,21 @@ public class ImportCoachingCourseTransformer {
                         .convertStringToListOfDistinctLong(ctaIdListForDetailsPage));
         return ctaInfo;
     }
+
+    private static List<Language> getLanguageList(String languages) {
+        List<Language> languageList = new ArrayList<>(0);
+        if (StringUtils.isEmpty(languages)) {
+            return languageList;
+        }
+        List<String> stringLanguageList = ImportCommonTransformer
+                .convertStringToListOfString(languages);
+
+        if (!CollectionUtils.isEmpty(stringLanguageList)) {
+            for (String language : stringLanguageList) {
+                languageList.add(Language.fromString(language));
+            }
+        }
+        return languageList;
+    }
+
 }

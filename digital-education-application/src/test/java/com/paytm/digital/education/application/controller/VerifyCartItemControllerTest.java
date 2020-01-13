@@ -204,6 +204,7 @@ public class VerifyCartItemControllerTest {
         coachingCourseEntity.setCoachingInstituteId(100000L);
         coachingCourseEntity.setOriginalPrice(25378.9D);
         coachingCourseEntity.setDiscountedPrice(25378.9D);
+        coachingCourseEntity.setIsOnboarded(true);
         return coachingProgramRepository.save(coachingCourseEntity);
     }
 
@@ -219,6 +220,7 @@ public class VerifyCartItemControllerTest {
         coachingCourseEntity.setCoachingInstituteId(100000L);
         coachingCourseEntity.setOriginalPrice(25378.9D);
         coachingCourseEntity.setDiscountedPrice(25378.9D);
+        coachingCourseEntity.setIsOnboarded(true);
         return coachingProgramRepository.save(coachingCourseEntity);
     }
 

@@ -71,12 +71,13 @@ public class CoachingCourseDAO {
     public List<CoachingCourseEntity> findByCoachingInstIdAndIsDynAndIsEnabledAndMerchantPIdsIn(
             String instituteIdField, long instituteId, String isDynamicField, Boolean isDynamic,
             String isEnabledField, Boolean isEnabled, String merchantProductIdField,
-            List<String> merchantProductIds, List<String> projectionFields,
-            List<String> mandatoryFields) {
+            List<String> merchantProductIds, String isOnboardedField, Boolean isOnboarded,
+            List<String> projectionFields, List<String> mandatoryFields) {
         Map<String, Object> searchRequest = new HashMap<>();
         searchRequest.put(instituteIdField, instituteId);
         searchRequest.put(isDynamicField, isDynamic);
         searchRequest.put(isEnabledField, isEnabled);
+        searchRequest.put(isOnboardedField, isOnboarded);
         Map<String, Object> merchantProductIdQueryMap = new HashMap<>();
         merchantProductIdQueryMap.put(IN, merchantProductIds);
         searchRequest.put(merchantProductIdField, merchantProductIdQueryMap);

@@ -35,6 +35,7 @@ public class CoachingConstants {
     public static final String IS_ENABLED                      = "is_enabled";
     public static final String CENTER_ID                       = "center_id";
     public static final String IS_DYNAMIC                      = "is_dynamic";
+    public static final String COURSE_IS_ONBOARDED             = "is_onboarded";
     public static final String MERCHANT_ID                     = "merchant_id";
     public static final String MERCHANT_PRODUCT_ID             = "merchant_product_id";
     public static final String EXAM_YEAR                       = "exam_year";
@@ -148,7 +149,6 @@ public class CoachingConstants {
 
 
     public static class Search {
-        
         public static final String SEARCH_INDEX_COACHING_COURSE    = "coaching_course_v1";
         public static final String SEARCH_INDEX_COACHING_INSTITUTE = "coaching_institute_v1";
         public static final String SEARCH_INDEX_COACHING_CENTER    = "coaching_center_v1";

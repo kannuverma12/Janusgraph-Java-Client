@@ -40,7 +40,6 @@ import java.util.TreeMap;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.ACCESS_KEY;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.CHECKSUM_HASH;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.PAYTM_APP_REQUEST_ID;
-import static com.paytm.digital.education.coaching.constants.CoachingConstants.PAYTM_REQUEST_ID;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.RestTemplateConstants.MERCHANT_COMMIT_TIMEOUT_MS;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.RestTemplateConstants.PAYTM_HOST_FOR_SIGNATURE;
 import static com.paytm.digital.education.coaching.constants.CoachingConstants.TIME_STAMP;
@@ -131,8 +130,9 @@ public class MerchantCallImpl implements MerchantCall {
         String signatureMessage =
                 PAYTM_HOST_FOR_SIGNATURE + "|" + merchantInfo.getHost() + "|" + endpoint + "|"
                         + method + "|" + requestString + "|" + queryParamsString;
-        log.info("Message signature for outgoing request {} ",signatureMessage);
         String signature = AuthUtils.getSignature(signatureMessage, merchantInfo.getSecretKey());
+        log.info("Message signature for outgoing request , message : {} , signature : {} ",
+                signatureMessage, signature);
 
         MerchantCommitResponse merchantCommitResponse;
         try {
