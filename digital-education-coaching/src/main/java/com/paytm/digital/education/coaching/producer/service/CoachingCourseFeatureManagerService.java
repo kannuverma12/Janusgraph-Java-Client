@@ -2,6 +2,8 @@ package com.paytm.digital.education.coaching.producer.service;
 
 import com.paytm.digital.education.coaching.producer.model.dto.CoachingCourseFeatureDTO;
 import com.paytm.digital.education.coaching.producer.model.request.CoachingCourseFeatureDataRequest;
+import com.paytm.digital.education.database.entity.CoachingCourseFeatureEntity;
+import com.paytm.digital.education.database.entity.CoachingInstituteEntity;
 import com.paytm.digital.education.exception.InvalidRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,16 +52,28 @@ public class CoachingCourseFeatureManagerService {
                 producerCoachingInstituteService.findByInstituteId(request.getInstituteId()))
                 .orElseThrow(() -> new InvalidRequestException(
                         "institute id not present : " + request.getInstituteId()));
-        if (!CollectionUtils.isEmpty(producerCoachingCourseFeatureService
-                .findByInstituteIdAndName(request.getInstituteId(),
-                        request.getCoachingCourseFeatureName().getText()))) {
-            throw new InvalidRequestException(
-                    "Feature name in specified institute already exists : " + request
-                            .getCoachingCourseFeatureName());
+
+        CoachingCourseFeatureEntity coachingCourseFeatureEntity =
+                Optional.ofNullable(
+                        producerCoachingCourseFeatureService
+                                .findByCoachingCourseFeatureId(request.getCoachingCourseFeatureId()))
+                        .orElseThrow(() -> new InvalidRequestException("feature id not present in db"));
+
+        if (Objects.nonNull(coachingCourseFeatureEntity.getName())
+                && !coachingCourseFeatureEntity.getName()
+                .equals(request.getCoachingCourseFeatureName().getText())) {
+            if (!CollectionUtils.isEmpty(producerCoachingCourseFeatureService
+                    .findByInstituteIdAndName(request.getInstituteId(),
+                            request.getCoachingCourseFeatureName().getText()))) {
+                throw new InvalidRequestException(
+                        "Feature name in specified institute already exists : " + request
+                                .getCoachingCourseFeatureName());
+            }
         }
         return CoachingCourseFeatureDTO.builder()
                 .coachingCourseFeatureId(
-                        producerCoachingCourseFeatureService.update(request).getCoachingCourseFeatureId()
+                        producerCoachingCourseFeatureService.update(request)
+                                .getCoachingCourseFeatureId()
                 )
                 .build();
     }
