@@ -120,7 +120,7 @@ public class CoachingCourseDataRequest {
 
     @NotNull
     @ApiModelProperty(value = "language of coaching course")
-    private Language language;
+    private List<Language> language;
 
     @NotEmpty
     private String syllabusAndBrochure;
