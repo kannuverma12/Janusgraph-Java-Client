@@ -50,4 +50,5 @@ public class GetCoachingCourseDetailsResponse {
 
     private Map<CTAViewType, List<CoachingCtaEntity>> ctaMap;
     private List<String>                              sections;
+    private boolean                                   courseOnboarded;
 }

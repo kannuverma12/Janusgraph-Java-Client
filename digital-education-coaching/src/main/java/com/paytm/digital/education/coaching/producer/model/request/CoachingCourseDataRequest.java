@@ -263,4 +263,7 @@ public class CoachingCourseDataRequest {
     private Boolean isDynamic = Boolean.FALSE;
 
     private Map<CTAViewType, @UniqueElements List<Long>> ctaInfo;
+
+    @ApiModelProperty(value = "flag to enable/disable course purchase, default is false")
+    private Boolean isOnboarded = Boolean.FALSE;
 }
