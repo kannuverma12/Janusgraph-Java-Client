@@ -34,6 +34,9 @@ import static com.paytm.digital.education.enums.CTAType.LEAD;
 import static com.paytm.digital.education.enums.CTAType.PREDICTOR;
 import static com.paytm.digital.education.enums.CTAType.SHARE;
 import static com.paytm.digital.education.enums.CTAType.SHORTLIST;
+import static com.paytm.digital.education.utility.FunctionUtils.fetchIfPresentFromNullable;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -73,14 +76,16 @@ public class CTAHelper {
     public List<CTA> buildCTA(CTAInfoHolder ctaInfoHolder, Client client) {
 
         CTAConfig ctaConfig = ctaInfoHolder.getCTAConfig(ctaConfigFetchService);
-        CTAConfig finalCTAConfig = isEmpty(ctaConfig.getCtaTypes())
+        CTAConfig finalCTAConfig = isEmpty(fetchIfPresentFromNullable(ctaConfig, CTAConfig::getCtaTypes))
                 ? ctaInfoHolder.getEntityLevelCTAConfig(ctaConfigFetchService) : ctaConfig;
 
         String key = ctaInfoHolder.ctaDbPropertyKey();
         String namespace = ctaInfoHolder.getCorrespondingEntity().name().toLowerCase();
         Map<String, Object> ctaConfigurationMap = propertyReader.getPropertiesAsMapByKey(
                 ExploreConstants.EXPLORE_COMPONENT, namespace, key);
-        return finalCTAConfig.getCtaTypes()
+        return ofNullable(finalCTAConfig)
+                .map(CTAConfig::getCtaTypes)
+                .orElse(emptyList())
                 .stream()
                 .map(ctaTypeCTAProducerMap::get)
                 .map(ctaProducer -> ctaProducer.produceCTA(ctaInfoHolder, ctaConfigurationMap, client))

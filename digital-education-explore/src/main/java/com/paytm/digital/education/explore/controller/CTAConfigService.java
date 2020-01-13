@@ -76,11 +76,19 @@ public class CTAConfigService implements CTAConfigFetchService {
 
     @Override
     public CTAConfig fetchCTAConfig(CTAEntity ctaEntity, long id) {
-        return getEntityDocumentConfig(ctaEntity, id);
+        CTAConfigHolder ctaConfigHolder = ctaConfigDBService.getCTAConfigHolderOnlyCTAConfig(ctaEntity, id);
+        if (ctaConfigHolder == null) {
+            return null;
+        }
+        return ctaConfigHolder.getCTAConfig();
     }
 
     @Override
     public CTAConfig fetchCTAConfig(CTAEntity ctaEntity) {
-        return getEducationEntityConfig(ctaEntity);
+        CTAConfigHolder ctaConfigHolder = ctaConfigDBService.getCTAConfigHolderAllFields(ctaEntity);
+        if (ctaConfigHolder == null) {
+            return null;
+        }
+        return ctaConfigHolder.getCTAConfig();
     }
 }
