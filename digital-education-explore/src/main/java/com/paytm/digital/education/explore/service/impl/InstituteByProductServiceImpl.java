@@ -1,5 +1,35 @@
 package com.paytm.digital.education.explore.service.impl;
 
+import static com.opencsv.CSVWriter.DEFAULT_SEPARATOR;
+import static com.paytm.digital.education.constant.ExploreConstants.CSV_EXTENSION;
+import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
+import static com.paytm.digital.education.constant.ExploreConstants.REPORT_PREFIX;
+import static com.paytm.digital.education.constant.ExploreConstants.YYYYMMDDHHMMSSZ;
+import static com.paytm.digital.education.constant.InstituteByProductConstants.ACTION;
+import static com.paytm.digital.education.constant.InstituteByProductConstants.CUSTOMER_ACTION;
+import static com.paytm.digital.education.constant.InstituteByProductConstants.EMAIL;
+import static com.paytm.digital.education.constant.InstituteByProductConstants.INSTITUTE_BY_PRODUCT_ENTRY_ID;
+import static com.paytm.digital.education.constant.InstituteByProductConstants.IS_DELETED;
+import static com.paytm.digital.education.enums.Action.SHOW_INTEREST;
+import static com.paytm.digital.education.mapping.ErrorEnum.DUPLICATE_INSTITUTE_ERROR;
+import static com.paytm.digital.education.mapping.ErrorEnum.NO_ENTITY_FOUND;
+import static com.paytm.digital.education.mapping.ErrorEnum.REPORT_GENERATION_ERROR;
+import static com.paytm.digital.education.utility.DateUtil.dateToString;
+import static java.util.Arrays.asList;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.springframework.data.domain.Sort.Direction.ASC;
+import static org.springframework.data.domain.Sort.Direction.DESC;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.lookup;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.project;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.replaceRoot;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.sort;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.unwind;
+import static org.springframework.data.mongodb.core.query.Criteria.where;
+import static org.springframework.data.mongodb.core.query.Query.query;
+
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
@@ -18,11 +48,13 @@ import com.paytm.digital.education.explore.dto.ActionFullReportDto;
 import com.paytm.digital.education.explore.dto.InstituteByProductDto;
 import com.paytm.digital.education.explore.dto.InstituteListResponseDto;
 import com.paytm.digital.education.explore.service.InstituteByProductService;
+import com.paytm.digital.education.service.notification.EmailNotificationService;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.bson.Document;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -30,38 +62,14 @@ import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-
-import static com.opencsv.CSVWriter.DEFAULT_SEPARATOR;
-import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
-import static com.paytm.digital.education.constant.InstituteByProductConstants.ACTION;
-import static com.paytm.digital.education.constant.InstituteByProductConstants.CUSTOMER_ACTION;
-import static com.paytm.digital.education.constant.InstituteByProductConstants.EMAIL;
-import static com.paytm.digital.education.constant.InstituteByProductConstants.INSTITUTE_BY_PRODUCT_ENTRY_ID;
-import static com.paytm.digital.education.constant.InstituteByProductConstants.IS_DELETED;
-import static com.paytm.digital.education.enums.Action.SHOW_INTEREST;
-import static com.paytm.digital.education.mapping.ErrorEnum.DUPLICATE_INSTITUTE_ERROR;
-import static com.paytm.digital.education.mapping.ErrorEnum.NO_ENTITY_FOUND;
-import static com.paytm.digital.education.mapping.ErrorEnum.REPORT_GENERATION_ERROR;
-import static java.util.Arrays.asList;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.springframework.data.domain.Sort.Direction.DESC;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.lookup;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.project;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.replaceRoot;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.sort;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.unwind;
-import static org.springframework.data.mongodb.core.query.Criteria.where;
-import static org.springframework.data.mongodb.core.query.Query.query;
-import static org.springframework.data.domain.Sort.Direction.ASC;
+import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -126,6 +134,10 @@ public class InstituteByProductServiceImpl implements InstituteByProductService 
     private final EmailService emailService;
     private final KeyGenerator keyGenerator;
     private final StringRedisTemplate redisTemplate;
+    private final EmailNotificationService emailNotificationService;
+
+    @Value("${explore.user.onboard.email.template}")
+    private String userOnboardEmailTemplate;
 
     @Override
     @EduCache(cache = CACHE, shouldCacheNull = SHOULD_CACHE_NULL)
@@ -169,6 +181,11 @@ public class InstituteByProductServiceImpl implements InstituteByProductService 
             customerAction.setIsDeleted(null);
             customerAction.setUpdatedAt(new Date());
         }
+        //Send user onboard email
+        Map<String, Object> params = new HashMap<>();
+        params.put(EXPLORE_INSTITUTE_ID, exploreInstituteId);
+        emailNotificationService.notify(userOnboardEmailTemplate, email, params);
+        
         try {
             commonMongoRepository.saveOrUpdate(customerAction);
         } catch (DuplicateKeyException duplicateKeyException) {
@@ -348,5 +365,9 @@ public class InstituteByProductServiceImpl implements InstituteByProductService 
             );
         }
         return instituteByProduct;
+    }
+
+    private String getReportFileName() {
+        return REPORT_PREFIX + dateToString(new Date(), YYYYMMDDHHMMSSZ) + CSV_EXTENSION;
     }
 }

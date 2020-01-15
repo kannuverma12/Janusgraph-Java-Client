@@ -11,6 +11,7 @@ import com.paytm.digital.education.explore.thirdparty.lead.Career360LeadRequest;
 import com.paytm.digital.education.explore.thirdparty.lead.Career360LeadResponse;
 import com.paytm.digital.education.explore.thirdparty.lead.Career360UnfollowRequest;
 import com.paytm.digital.education.explore.thirdparty.lead.Career360UnfollowResponse;
+import com.paytm.digital.education.service.http.BaseRestApiService;
 import com.paytm.digital.education.utility.JsonUtils;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;

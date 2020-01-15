@@ -1,4 +1,4 @@
-package com.paytm.digital.education.explore.service.external;
+package com.paytm.digital.education.service.http;
 
 import com.paytm.digital.education.exception.BadRequestException;
 import com.paytm.digital.education.mapping.ErrorEnum;
@@ -7,7 +7,6 @@ import com.paytm.education.logger.LoggerFactory;
 import lombok.AllArgsConstructor;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.MDC;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -23,8 +22,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import static com.paytm.digital.education.constant.ExploreConstants.PAYTM_APP_REQUEST_ID;
 
 @Service
 @AllArgsConstructor
@@ -87,7 +84,7 @@ public class BaseRestApiService {
         return responseEntity.getBody();
     }
 
-    URI getURI(String url, Map<String, ?> queryParams, List<String> pathVariablesInOrder) {
+    public URI getURI(String url, Map<String, ?> queryParams, List<String> pathVariablesInOrder) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
         if (!CollectionUtils.isEmpty(pathVariablesInOrder)) {
             for (String var : pathVariablesInOrder) {
