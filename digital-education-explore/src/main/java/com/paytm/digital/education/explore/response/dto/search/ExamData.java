@@ -3,19 +3,18 @@ package com.paytm.digital.education.explore.response.dto.search;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.database.entity.CTAConfig;
 import com.paytm.digital.education.enums.EducationEntity;
+import com.paytm.digital.education.explore.response.dto.detail.CTAConfigFetchService;
 import com.paytm.digital.education.explore.response.dto.detail.CTAInfoHolder;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.List;
 
 import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SEARCH_CTA;
 
-import java.util.List;
-
-import static com.paytm.digital.education.constant.ExploreConstants.EXAM_SEARCH_CTA;
+import static com.paytm.digital.education.enums.CTAEntity.EXAM;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -99,6 +98,11 @@ public class ExamData extends SearchBaseData implements CTAInfoHolder {
     @Override
     public EducationEntity getCorrespondingEntity() {
         return EducationEntity.EXAM;
+    }
+
+    @Override
+    public CTAConfig getCTAConfig(CTAConfigFetchService ctaConfigFetchService) {
+        return ctaConfigFetchService.fetchCTAConfig(EXAM, examId);
     }
 
     @JsonIgnore

@@ -265,4 +265,8 @@ public class CoachingCourseForm {
     @GoogleSheetColumnName("Details Page CTA")
     private String detailsPageCta;
 
+    @JsonProperty("is_onboarded")
+    @GoogleSheetColumnName("Is Onboarded")
+    private String isOnboarded;
+
 }

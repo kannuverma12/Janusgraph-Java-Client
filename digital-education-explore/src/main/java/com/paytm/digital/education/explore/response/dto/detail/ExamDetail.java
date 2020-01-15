@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.dto.detail.ImportantDate;
+import com.paytm.digital.education.database.entity.CTAConfig;
 import com.paytm.digital.education.dto.detail.Syllabus;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.articles.NewsArticleResponse;
@@ -17,11 +18,13 @@ import com.paytm.digital.education.explore.response.dto.common.Widget;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import static com.paytm.digital.education.enums.CTAEntity.EXAM;
+
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ExamDetail implements CTAInfoHolder, Serializable {
 
-    private static final long serialVersionUID = -6625619228578283622L;
+    private static final long serialVersionUID = -3701491468073696733L;
 
     @JsonProperty("exam_id")
     private Long examId;
@@ -194,6 +197,11 @@ public class ExamDetail implements CTAInfoHolder, Serializable {
     @Override
     public EducationEntity getCorrespondingEntity() {
         return EducationEntity.EXAM;
+    }
+
+    @Override
+    public CTAConfig getCTAConfig(CTAConfigFetchService ctaConfigFetchService) {
+        return ctaConfigFetchService.fetchCTAConfig(EXAM, examId);
     }
 
     @JsonIgnore

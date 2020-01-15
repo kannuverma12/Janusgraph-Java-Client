@@ -5,10 +5,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paytm.digital.education.enums.SchoolEntityType;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -24,9 +27,9 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class School implements Serializable {
+public class School implements Serializable, CTAConfigHolder {
 
-    private static final long serialVersionUID = -1753614543628299736L;
+    private static final long serialVersionUID = 2312167977795785599L;
 
     @Id
     @Field("_id")
@@ -110,12 +113,29 @@ public class School implements Serializable {
     @Field("paytm_keys")
     private SchoolPaytmKeys paytmKeys;
 
+    @Field("cta_config")
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private CTAConfig ctaConfig;
+
     @JsonProperty("url_display_key")
     private String urlDisplayKey;
+
+    @Field("paytm_updated_at")
+    private Date paytmUpdatedAt = new Date();
 
     public School(String officialName, Long schoolId) {
         this.officialName = officialName;
         this.schoolId = schoolId;
     }
 
+    @Override
+    public CTAConfig getCTAConfig() {
+        return ctaConfig;
+    }
+
+    @Override
+    public void setCTAConfig(CTAConfig ctaConfig) {
+        this.ctaConfig = ctaConfig;
+    }
 }

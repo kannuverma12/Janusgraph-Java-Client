@@ -7,7 +7,6 @@ import com.paytm.digital.education.enums.CourseCover;
 import com.paytm.digital.education.enums.CourseLevel;
 import com.paytm.digital.education.enums.CourseType;
 import com.paytm.digital.education.enums.DurationType;
-import com.paytm.digital.education.enums.Language;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
@@ -26,7 +25,7 @@ import java.util.Map;
 @CompoundIndex(def = "{'paytm_product_id':1, 'merchant_product_id':1}", unique = true, name = "course_unique")
 public class CoachingCourseEntity extends Base {
 
-    private static final long serialVersionUID = -4618189079504193593L;
+    private static final long serialVersionUID = 2708311073409061214L;
 
     @Id
     @Field("_id")
@@ -86,7 +85,7 @@ public class CoachingCourseEntity extends Base {
     private CourseCover courseCover;
 
     @Field("language")
-    private Language language;
+    private String language;
 
     @Field("syllabus")
     private String syllabus;
@@ -189,4 +188,7 @@ public class CoachingCourseEntity extends Base {
 
     @Field("cta_info")
     private Map<CTAViewType, List<Long>> ctaInfo;
+
+    @Field("is_onboarded")
+    private Boolean isOnboarded;
 }

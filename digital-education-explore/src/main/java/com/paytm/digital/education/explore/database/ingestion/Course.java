@@ -142,4 +142,12 @@ public class Course implements Serializable {
     @Field("stream_ids")
     @JsonProperty("stream_ids")
     private List<Long> streamIds;
+
+    @Field("lead_enabled")
+    @JsonProperty("lead_enabled")
+    private int leadEnabled;
+
+    @Field("paytm_updated_at")
+    private Date paytmUpdatedAt = new Date();
+
 }

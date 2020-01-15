@@ -46,7 +46,7 @@ public class ExportCoachingCourseTransformer {
                             .originalPrice(entity.getOriginalPrice())
                             .discountedPrice(entity.getDiscountedPrice())
                             .levelOfEducation(entity.getCourseLevel().getDisplayName())
-                            .language(entity.getLanguage().getText())
+                            .language(entity.getLanguage())
                             .syllabus(entity.getSyllabus())
                             .courseCovers(entity.getCourseCover().getText())
                             .howToUse1(entity.getHowToUse1())
@@ -91,6 +91,8 @@ public class ExportCoachingCourseTransformer {
                             .paytmProductId(entity.getPaytmProductId())
                             .isDynamic(ExportCommonTransformer
                                     .convertBooleanToString(entity.getIsDynamic()))
+                            .isOnboarded(ExportCommonTransformer
+                                    .convertBooleanToString(entity.getIsOnboarded()))
                             .build();
 
                     if (Objects.nonNull(entity.getValidityType())) {

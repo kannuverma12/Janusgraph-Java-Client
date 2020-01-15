@@ -11,6 +11,7 @@ import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import org.joda.time.DateTime;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -107,7 +108,7 @@ public class CacheTest {
     @Test
     public void testCacheConcurrenceForCompleteLockStrategy() throws Exception {
 
-        final int numberOfThreads = 10000;
+        final int numberOfThreads = 10;
 
         CacheLockStrategy oldCacheLock =
                 this.updateCacheLockStrategyInRedisOrchestrator(completeLockStrategy);
@@ -136,7 +137,7 @@ public class CacheTest {
 
     @Test
     public void testCacheConcurrenceSequentialExecutionForWriteLockStrategy() throws Exception {
-        final int numberOfThreads = 1000;
+        final int numberOfThreads = 10;
 
         CacheLockStrategy oldCacheLock =
                 this.updateCacheLockStrategyInRedisOrchestrator(writeLockStrategy);
@@ -167,7 +168,7 @@ public class CacheTest {
 
     @Test
     public void testCacheConcurrenceRunsMultipleTimeWithoutCacheAnnotation() throws Exception {
-        final int numberOfThreads = 10000;
+        final int numberOfThreads = 10;
 
         String arg1 = "arg1";
         String arg2 = "arg2";

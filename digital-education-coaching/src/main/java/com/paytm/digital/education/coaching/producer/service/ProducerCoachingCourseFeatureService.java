@@ -63,4 +63,8 @@ public class ProducerCoachingCourseFeatureService {
         return true;
     }
 
+    public CoachingCourseFeatureEntity findByCoachingCourseFeatureId(Long id) {
+        return coachingCourseFeatureDAO.findByCoachingCourseFeatureId(id);
+    }
+
 }

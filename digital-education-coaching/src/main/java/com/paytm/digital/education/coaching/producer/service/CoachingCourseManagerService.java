@@ -90,5 +90,4 @@ public class CoachingCourseManagerService {
                 .builder()
                 .courseId(programService.update(coachingCourseDataRequest).getCourseId()).build();
     }
-
 }
