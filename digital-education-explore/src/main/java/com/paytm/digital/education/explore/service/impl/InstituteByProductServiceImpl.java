@@ -180,6 +180,14 @@ public class InstituteByProductServiceImpl implements InstituteByProductService 
     @Override
     public CustomerAction deleteCustomerActionForProduct(
             Long userId, Product product, String email, Long exploreInstituteId, Action action) {
+        final String key = keyGenerator.generateKey(
+                EDU_CACHE,
+                InstituteByProductServiceImpl.class,
+                "getInstitutesByProduct",
+                new String[]{"userId", "product", "email"},
+                new Object[]{userId, product, email}
+        );
+        redisTemplate.delete(key);
         InstituteByProduct instituteByProduct = getInstituteByProduct(exploreInstituteId, product);
         CustomerAction customerAction =
                 mongoOperation.findOne(
