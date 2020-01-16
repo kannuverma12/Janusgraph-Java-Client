@@ -385,6 +385,12 @@ public interface ExploreConstants {
     String CTA_ENTITY           = "cta_entity";
     String CTA_CONFIG_CTA_TYPES = "cta_config.cta_types";
 
+    String REPORT_PREFIX            = "REPORT_";
+    String CSV_EXTENSION            = ".csv";
+    String USER_ONBOARD_REPORT_PATH = "onboard/report/";
+
+    SimpleDateFormat YYYYMMDDHHMMSSZ = new SimpleDateFormat("yyyyMMddhhmmssSSS");
+
     public static class CachingConstants {
         public static final String CACHE_KEY_DELIMITER = "_";
     }

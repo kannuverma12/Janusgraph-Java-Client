@@ -11,5 +11,7 @@ public class InstituteByProductConstants {
 
     public static final String CUSTOMER_ACTION = "customer_action";
 
+    public static final String UPDATED_AT = "updated_at";
+
 }
 

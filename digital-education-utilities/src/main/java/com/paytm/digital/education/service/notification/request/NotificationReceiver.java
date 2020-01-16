@@ -1,0 +1,21 @@
+package com.paytm.digital.education.service.notification.request;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
+
+import java.util.List;
+
+@Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class NotificationReceiver {
+
+    @JsonProperty("notificationReceiverType")
+    private String notificationReceiverType;
+
+    @JsonProperty("notificationReceiverIdentifier")
+    private List<String> notificationReceiverIdentifier;
+
+}
