@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.io.Serializable;
-import java.util.Set;
+import java.util.LinkedHashSet;
 
-import static java.util.Collections.emptySet;
+import static com.google.common.collect.Sets.newLinkedHashSet;
 
 @Data
 @AllArgsConstructor
@@ -20,5 +20,5 @@ public class CTAConfig implements Serializable {
 
     @JsonProperty("cta_types")
     @Field("cta_types")
-    private Set<CTAType> ctaTypes = emptySet();
+    private LinkedHashSet<CTAType> ctaTypes = newLinkedHashSet();
 }
