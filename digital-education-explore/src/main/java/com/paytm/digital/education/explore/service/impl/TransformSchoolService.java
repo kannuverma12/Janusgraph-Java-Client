@@ -32,7 +32,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.paytm.digital.education.database.entity.PaytmKeys.Constants.PAYTM_KEYS;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.S3_IMAGE_PATH_SUFFIX;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SCHOOL_ENTITY;
 import static com.paytm.digital.education.explore.constants.IncrementalDataIngestionConstants.SCHOOL_FILE_VERSION;
@@ -61,7 +60,7 @@ public class TransformSchoolService {
             Map<Long, School> schoolIdToSchoolMap = schoolsFromDb.stream()
                     .collect(Collectors.toMap(School::getSchoolId, Function.identity()));
 
-            String[] ignorableKeys = {PAYTM_KEYS};
+            String[] ignorableKeys = {};
             List<School> schoolEntities = schoolDtos
                     .stream()
                     .map(schoolDto ->

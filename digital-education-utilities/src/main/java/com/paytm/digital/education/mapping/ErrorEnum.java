@@ -186,10 +186,12 @@ public enum ErrorEnum {
             "No paytm source data present for entityId  %s, cannot set mapping", BAD_REQUEST, 1),
     INVALID_MERCHANT_SOURCE_MAPPING_DATA(4081,
             "No merchant source data present for entityId  %s, cannot set mapping", BAD_REQUEST, 1),
-    CTA_CONFIG_NOT_FOUND_FOR_ENTITY(4082,
-            "No Entity level CTA config found for entity %s", BAD_REQUEST, 1),
+    EITHER_USER_PROFILE_OR_REQUEST_SHOULD_HAVE_EMAIL(4082, "Either user profile or request should have email",
+            BAD_REQUEST, 0),
     REPORT_GENERATION_ERROR(4083, "Error generating listing report", INTERNAL_SERVER_ERROR, 0),
-    DUPLICATE_INSTITUTE_ERROR(4085, "Institute with id %s and product %s already exists", CONFLICT, 2)
+    CTA_CONFIG_NOT_FOUND_FOR_ENTITY(4084,
+            "No Entity level CTA config found for entity %s", BAD_REQUEST, 1),
+    DUPLICATE_INSTITUTE_ERROR(4085, "Institute with id %s and product %s already exists", CONFLICT, 2),
     ;
 
     private final int        internalCode;

@@ -30,6 +30,7 @@ public interface ExploreConstants {
     String EXAM          = "EXAM";
     String PRECEDENCE    = "precedence";
     String DEFAULT       = "DEFAULT";
+    String TENTATIVE_DATE = "(Tentative)";
 
     String GROUP_NAME   = "name";
     String GROUP_ENTITY = "entity";
@@ -344,6 +345,7 @@ public interface ExploreConstants {
     String URL_DISPLAY_KEY               = "url_display_key";
     String DESCRIPTION                   = "description";
     String PARTIAL_FAILED                = "partial_failed";
+    String IMPORTANT_DATES               = "important_dates";
 
     //Sections constants
     String BROWSE_BY_EXAM_LEVEL_APP         = "browse_by_exam_level_app";
@@ -365,6 +367,8 @@ public interface ExploreConstants {
     int    DEFAULT_EXAM_PRIORITY            = 9999;
     String UPDATED_AT                       = "updated_at";
     String NEWS_ARTICLE_TITLE               = "Trending News and Articles";
+    String SEARCH_STREAM_PREFIX             = "streams.";
+    String SEARCH_STREAM_SUFFIX             = ".position";
 
     String NO_TOPIC_FOUND = "No Topic Found";
 
@@ -377,6 +381,9 @@ public interface ExploreConstants {
     String EXAM_DATA_FIELD      = "exam_data";
     String COURSE_DATA_FIELD    = "course_data";
     String SCHOOL_DATA_FIELD    = "school_data";
+    String CTA_CONFIG           = "cta_config";
+    String CTA_ENTITY           = "cta_entity";
+    String CTA_CONFIG_CTA_TYPES = "cta_config.cta_types";
 
     String REPORT_PREFIX            = "REPORT_";
     String CSV_EXTENSION            = ".csv";

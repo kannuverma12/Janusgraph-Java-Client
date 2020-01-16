@@ -3,9 +3,12 @@ package com.paytm.digital.education.explore.response.dto.search;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.database.entity.CTAConfig;
 import com.paytm.digital.education.dto.OfficialAddress;
+import com.paytm.digital.education.enums.CTAEntity;
 import com.paytm.digital.education.enums.EducationEntity;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
+import com.paytm.digital.education.explore.response.dto.detail.CTAConfigFetchService;
 import com.paytm.digital.education.explore.response.dto.detail.CTAInfoHolder;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -77,6 +80,11 @@ public class InstituteData extends SearchBaseData implements CTAInfoHolder {
     @Override
     public EducationEntity getCorrespondingEntity() {
         return INSTITUTE;
+    }
+
+    @Override
+    public CTAConfig getCTAConfig(CTAConfigFetchService ctaConfigFetchService) {
+        return ctaConfigFetchService.fetchCTAConfig(CTAEntity.INSTITUTE, instituteId);
     }
 
     @JsonIgnore

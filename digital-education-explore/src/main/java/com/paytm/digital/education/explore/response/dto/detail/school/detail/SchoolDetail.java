@@ -3,10 +3,13 @@ package com.paytm.digital.education.explore.response.dto.detail.school.detail;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paytm.digital.education.database.entity.CTAConfig;
 import com.paytm.digital.education.database.entity.SchoolFeeDetails;
+import com.paytm.digital.education.enums.CTAEntity;
 import com.paytm.digital.education.explore.response.dto.common.BannerData;
 import com.paytm.digital.education.explore.response.dto.common.CTA;
 import com.paytm.digital.education.explore.response.dto.detail.Attribute;
+import com.paytm.digital.education.explore.response.dto.detail.CTAConfigFetchService;
 import com.paytm.digital.education.explore.response.dto.search.CTAInfoHolderWithDefaultSchoolSettings;
 import com.paytm.digital.education.explore.response.dto.search.SchoolSearchData;
 import lombok.Data;
@@ -20,7 +23,7 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor
 public class SchoolDetail implements CTAInfoHolderWithDefaultSchoolSettings, Serializable {
-    private static final long serialVersionUID = -4842586288197124640L;
+    private static final long serialVersionUID = 8906924009950646638L;
 
     @JsonProperty("school_id")
     private Long schoolId;
@@ -81,4 +84,9 @@ public class SchoolDetail implements CTAInfoHolderWithDefaultSchoolSettings, Ser
 
     @JsonProperty("banners")
     private List<BannerData> banners;
+
+    @Override
+    public CTAConfig getCTAConfig(CTAConfigFetchService ctaConfigFetchService) {
+        return ctaConfigFetchService.fetchCTAConfig(CTAEntity.SCHOOL, schoolId);
+    }
 }

@@ -1,16 +1,16 @@
 package com.paytm.digital.education.dto.detail;
 
-import static com.paytm.digital.education.constant.DBConstants.NON_TENTATIVE;
-import static com.paytm.digital.education.utility.CommonUtils.setLastDateOfMonth;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+import static com.paytm.digital.education.constant.DBConstants.NON_TENTATIVE;
+import static com.paytm.digital.education.utility.CommonUtils.setLastDateOfMonth;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -61,6 +61,9 @@ public class Event implements Serializable {
 
     @JsonProperty("upcoming")
     private Boolean upcoming;
+
+    @JsonProperty("other_event_label")
+    private String otherEventLabel;
 
     public Date calculateCorrespondingDate() {
         Date eventDate;

@@ -21,6 +21,7 @@ import com.paytm.digital.education.explore.response.dto.common.Widget;
 import com.paytm.digital.education.explore.response.dto.common.WidgetData;
 import com.paytm.digital.education.property.reader.PropertyReader;
 import com.paytm.digital.education.serviceimpl.helper.EntitySourceMappingProvider;
+import com.paytm.digital.education.serviceimpl.helper.ExamDatesHelper;
 import com.paytm.digital.education.serviceimpl.helper.ExamInstanceHelper;
 import org.joda.time.LocalDate;
 import org.junit.Before;
@@ -58,6 +59,9 @@ public class WidgetsEntityDataHelperTest {
     @Mock
     private PropertyReader propertyReader;
 
+    @Mock
+    private ExamDatesHelper examDatesHelper;
+
     @InjectMocks
     private WidgetsDataHelper widgetsDataHelper;
 
@@ -69,7 +73,7 @@ public class WidgetsEntityDataHelperTest {
     @Before
     public void setUp() {
         similarExamsHelper = new SimilarExamsHelper(
-                widgetsDataHelper, streamDAO, examInstanceHelper, commonEntityMongoDAO);
+                widgetsDataHelper, streamDAO, commonEntityMongoDAO, examDatesHelper);
         Mockito.when(
                 propertyReader.getPropertiesAsMapByKey(EXPLORE_COMPONENT, EXAM.name().toLowerCase(),
                         WIDGETS))

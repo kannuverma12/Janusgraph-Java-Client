@@ -1,8 +1,5 @@
 package com.paytm.digital.education.explore.service;
 
-import static com.paytm.digital.education.constant.ExploreConstants.NON_TENTATIVE;
-import static com.paytm.digital.education.constant.ExploreConstants.TENTATIVE;
-
 import com.paytm.digital.education.database.entity.Event;
 import com.paytm.digital.education.database.entity.Exam;
 import com.paytm.digital.education.database.entity.Instance;
@@ -19,14 +16,15 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
+
+import static com.paytm.digital.education.constant.ExploreConstants.NON_TENTATIVE;
+import static com.paytm.digital.education.constant.ExploreConstants.TENTATIVE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ImportantDatesTest {
