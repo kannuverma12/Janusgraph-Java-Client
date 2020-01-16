@@ -40,6 +40,8 @@ import static com.paytm.digital.education.constant.DBConstants.GROUP_NAME;
 import static com.paytm.digital.education.constant.DBConstants.IN_OPERATOR;
 import static com.paytm.digital.education.constant.ExploreConstants.ENTITY;
 import static com.paytm.digital.education.constant.ExploreConstants.ENTITY_ID;
+import static org.springframework.data.mongodb.core.query.Criteria.where;
+import static org.springframework.data.mongodb.core.query.Query.query;
 
 @AllArgsConstructor
 @Repository
@@ -53,14 +55,14 @@ public class CommonMongoRepository {
     @Cacheable(value = "entities", key = "'entitiesById.'+#key+'.'+#entityId+'.'+#instance", unless = "#result == null")
     public <T> T getEntityById(String key, long entityId, Class<T> instance) {
         log.debug("Querying entityById for key :  {}, entityId : {}", key, entityId);
-        Query mongoQuery = new Query(Criteria.where(key).is(entityId));
+        Query mongoQuery = new Query(where(key).is(entityId));
         return executeQuery(mongoQuery, instance);
     }
 
     @EduCache(cache = "fields", shouldCacheNull = false)
     public <T> T getEntityByFields(String key, long entityId, Class<T> instance,
             List<String> fields) {
-        Query mongoQuery = new Query(Criteria.where(key).is(entityId));
+        Query mongoQuery = new Query(where(key).is(entityId));
         if (Objects.nonNull(fields)) {
             fields.forEach(field -> {
                 mongoQuery.fields().include(field);
@@ -72,7 +74,7 @@ public class CommonMongoRepository {
     @Cacheable(value = "fields", unless = "#result == null")
     public <T> T getEntityByFields(String key, String entityId, Class<T> instance,
             List<String> fields) {
-        Query mongoQuery = new Query(Criteria.where(key).is(entityId));
+        Query mongoQuery = new Query(where(key).is(entityId));
         if (Objects.nonNull(fields)) {
             fields.forEach(field -> {
                 mongoQuery.fields().include(field);
@@ -85,7 +87,7 @@ public class CommonMongoRepository {
     public <T> List<T> getEntityFieldsByValuesIn(String key, List<Long> entityIds,
             Class<T> instance,
             List<String> fields) {
-        Query mongoQuery = new Query(Criteria.where(key).in(entityIds));
+        Query mongoQuery = new Query(where(key).in(entityIds));
         if (!CollectionUtils.isEmpty(fields)) {
             fields.forEach(field -> mongoQuery.fields().include(field));
         }
@@ -95,7 +97,7 @@ public class CommonMongoRepository {
     @Cacheable(value = "fields", unless = "#result == null")
     public <T> List<T> getEntityFieldsByValuesInAndSortBy(String key, List<Long> entityIds,
             Class<T> instance, List<String> fields, Map<Sort.Direction, String> sortMap) {
-        Query mongoQuery = new Query(Criteria.where(key).in(entityIds));
+        Query mongoQuery = new Query(where(key).in(entityIds));
 
         Query mongoQueryWithSortParams = this.addSortParamsToQuery(mongoQuery, sortMap);
         fields.forEach(field -> mongoQueryWithSortParams.fields().include(field));
@@ -126,8 +128,7 @@ public class CommonMongoRepository {
 
     @EduCache(cache = "field_group", shouldCacheNull = false)
     public List<String> getFieldsByGroupAndCollectioName(String collectionName, String fieldGroup) {
-        Query mongoQuery = new Query(Criteria
-                .where(GROUP_NAME).is(fieldGroup)
+        Query mongoQuery = new Query(where(GROUP_NAME).is(fieldGroup)
                 .and(GROUP_ENTITY).is(collectionName).and(
                         GROUP_ACTIVE).is(true));
         FieldGroup groupDetail = executeQuery(mongoQuery, FieldGroup.class);
@@ -141,7 +142,7 @@ public class CommonMongoRepository {
             + "+#type+'.'+#fields", unless = "#result == null")
     public <T> List<T> getEntitiesByIdAndFields(String key, long entityId, Class<T> type,
             List<String> fields) {
-        Query mongoQuery = new Query(Criteria.where(key).is(entityId));
+        Query mongoQuery = new Query(where(key).is(entityId));
         if (!CollectionUtils.isEmpty(fields)) {
             fields.forEach(field -> {
                 mongoQuery.fields().include(field);
@@ -153,7 +154,7 @@ public class CommonMongoRepository {
     @EduCache(cache = "ftl_templates", shouldCacheNull = false)
     public String getTemplate(String templateName, String entityName) {
         Query mongoQuery = new Query(
-                Criteria.where("name").is(templateName).and("entity").is(entityName).and("active")
+                where("name").is(templateName).and("entity").is(entityName).and("active")
                         .is(true));
         FtlTemplate template = executeQuery(mongoQuery, FtlTemplate.class);
         if (template != null) {
@@ -168,7 +169,7 @@ public class CommonMongoRepository {
         for (Map.Entry<String, Object> entry : data.entrySet()) {
             update.set(entry.getKey(), entry.getValue());
         }
-        Query query = new Query(Criteria.where(entity).is(entityId));
+        Query query = new Query(where(entity).is(entityId));
         UpdateResult updateResult = mongoOperation.updateFirst(query, update, type);
         log.info("Mongo update result : {}", updateResult.toString());
         return updateResult.getMatchedCount();
@@ -272,7 +273,7 @@ public class CommonMongoRepository {
         Query mongoQuery = new Query();
         searchRequest.forEach((key, value) -> {
             if (value instanceof Map) {
-                Criteria criteria = Criteria.where(key);
+                Criteria criteria = where(key);
                 Map nestedFieldsMap = ((Map) value);
                 if (nestedFieldsMap.containsKey(EXISTS)) {
                     criteria.exists((Boolean) (nestedFieldsMap.get(EXISTS)));
@@ -281,7 +282,7 @@ public class CommonMongoRepository {
                     Criteria elemMatchCriteria = null;
                     for (Object nestedKey : nestedFieldsMap.keySet()) {
                         if (Objects.isNull(elemMatchCriteria)) {
-                            elemMatchCriteria = Criteria.where(nestedKey.toString())
+                            elemMatchCriteria = where(nestedKey.toString())
                                     .is(nestedFieldsMap.get(nestedKey));
                         } else {
                             elemMatchCriteria.and(nestedKey.toString())
@@ -301,7 +302,7 @@ public class CommonMongoRepository {
                 }
                 mongoQuery.addCriteria(criteria);
             } else {
-                mongoQuery.addCriteria(Criteria.where(key).is(value));
+                mongoQuery.addCriteria(where(key).is(value));
             }
         });
         fields.forEach(field -> {
@@ -321,7 +322,7 @@ public class CommonMongoRepository {
         Query mongoQuery = new Query();
         List<Criteria> criteriaList = new ArrayList<>();
         for (Map.Entry<String, Object> entry : searchRequest.entrySet()) {
-            criteriaList.add(Criteria.where(entry.getKey()).in((ArrayList) entry.getValue()));
+            criteriaList.add(where(entry.getKey()).in((ArrayList) entry.getValue()));
         }
         mongoQuery.addCriteria(
                 new Criteria().orOperator(criteriaList.toArray(new Criteria[criteriaList.size()])));
@@ -376,7 +377,7 @@ public class CommonMongoRepository {
             String entityType, Class<T> instance,
             List<String> fields) {
         Query mongoQuery =
-                new Query(Criteria.where(ENTITY_ID).is(entityId).and(ENTITY).is(entityType));
+                new Query(where(ENTITY_ID).is(entityId).and(ENTITY).is(entityType));
         if (Objects.nonNull(fields)) {
             fields.forEach(field -> {
                 mongoQuery.fields().include(field);
@@ -391,11 +392,10 @@ public class CommonMongoRepository {
             Class<T> instance,
             List<String> fields) {
         Query mongoQuery =
-                new Query(Criteria.where(ENTITY).is(entityType).and(ENTITY_ID).in(entityIds));
+                new Query(where(ENTITY).is(entityType).and(ENTITY_ID).in(entityIds));
         if (!CollectionUtils.isEmpty(fields)) {
             fields.forEach(field -> mongoQuery.fields().include(field));
         }
         return executeMongoQuery(mongoQuery, instance);
     }
-
 }
