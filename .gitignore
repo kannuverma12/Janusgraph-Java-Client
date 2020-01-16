@@ -1,6 +1,13 @@
 target/
 **/logs/
 
+.gitignore
+.DS_Store
+digital-education-application/.DS_Store
+digital-education-elasticsearch/.DS_Store
+digital-education-search/.DS_Store
+digital-education-utilities/.DS_Store
+institutions.json
 ### Mvn ###
 mvnw
 mvnw.cmd
