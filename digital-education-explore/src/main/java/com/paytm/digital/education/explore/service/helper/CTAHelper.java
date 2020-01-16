@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.google.common.collect.Sets.newLinkedHashSet;
 import static com.paytm.digital.education.enums.CTAType.BROCHURE;
 import static com.paytm.digital.education.enums.CTAType.COMPARE;
 import static com.paytm.digital.education.enums.CTAType.FEE;
@@ -35,7 +36,6 @@ import static com.paytm.digital.education.enums.CTAType.PREDICTOR;
 import static com.paytm.digital.education.enums.CTAType.SHARE;
 import static com.paytm.digital.education.enums.CTAType.SHORTLIST;
 import static com.paytm.digital.education.utility.FunctionUtils.fetchIfPresentFromNullable;
-import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -85,7 +85,7 @@ public class CTAHelper {
                 ExploreConstants.EXPLORE_COMPONENT, namespace, key);
         return ofNullable(finalCTAConfig)
                 .map(CTAConfig::getCtaTypes)
-                .orElse(emptyList())
+                .orElse(newLinkedHashSet())
                 .stream()
                 .map(ctaTypeCTAProducerMap::get)
                 .map(ctaProducer -> ctaProducer.produceCTA(ctaInfoHolder, ctaConfigurationMap, client))
