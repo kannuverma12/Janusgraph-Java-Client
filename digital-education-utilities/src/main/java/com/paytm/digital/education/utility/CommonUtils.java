@@ -26,7 +26,6 @@ import java.util.function.Predicate;
 import static com.paytm.digital.education.ingestion.constant.IngestionConstants.NO;
 import static com.paytm.digital.education.ingestion.constant.IngestionConstants.YES;
 import static java.util.Map.Entry.comparingByKey;
-import static java.util.stream.Collectors.toMap;
 
 @UtilityClass
 public class CommonUtils {

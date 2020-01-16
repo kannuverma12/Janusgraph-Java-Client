@@ -50,5 +50,12 @@ public interface CommonConstants {
     SimpleDateFormat YYYY_MM     = new SimpleDateFormat("yyyy-MM");
     String REDIS_LOCK_POSTFIX   = "::redisLock";
 
+    String CUSTOMER_ID      = "CUSTOMERID";
+    String EMAIL_ID         = "EMAIL";
+    String CLIENT_ID        = "client_id";
+    String SECRET_KEY       = "secret_key";
+    String CONTENT_TYPE     = "content-type";
+    String APPLICATION_JSON = "application/json";
+    String NO_REPLY_EMAIL   = "no-reply@paytm.com";
 
 }
