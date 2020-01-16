@@ -378,8 +378,9 @@ public interface ExploreConstants {
     String COURSE_DATA_FIELD    = "course_data";
     String SCHOOL_DATA_FIELD    = "school_data";
 
-    String REPORT_PREFIX    = "REPORT_";
-    String CSV_EXTENSION    = ".csv";
+    String REPORT_PREFIX            = "REPORT_";
+    String CSV_EXTENSION            = ".csv";
+    String USER_ONBOARD_REPORT_PATH = "onboard/report/";
 
     SimpleDateFormat YYYYMMDDHHMMSSZ = new SimpleDateFormat("yyyyMMddhhmmssSSS");
 

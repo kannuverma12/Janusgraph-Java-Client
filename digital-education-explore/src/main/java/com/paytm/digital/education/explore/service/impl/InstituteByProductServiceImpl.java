@@ -2,19 +2,25 @@ package com.paytm.digital.education.explore.service.impl;
 
 import static com.opencsv.CSVWriter.DEFAULT_SEPARATOR;
 import static com.paytm.digital.education.constant.ExploreConstants.CSV_EXTENSION;
+import static com.paytm.digital.education.constant.ExploreConstants.DD_MMM_YYYY;
+import static com.paytm.digital.education.constant.ExploreConstants.EDUCATION_EXPLORE_PREFIX;
 import static com.paytm.digital.education.constant.ExploreConstants.INSTITUTE_ID;
 import static com.paytm.digital.education.constant.ExploreConstants.REPORT_PREFIX;
+import static com.paytm.digital.education.constant.ExploreConstants.USER_ONBOARD_REPORT_PATH;
 import static com.paytm.digital.education.constant.ExploreConstants.YYYYMMDDHHMMSSZ;
 import static com.paytm.digital.education.constant.InstituteByProductConstants.ACTION;
 import static com.paytm.digital.education.constant.InstituteByProductConstants.CUSTOMER_ACTION;
 import static com.paytm.digital.education.constant.InstituteByProductConstants.EMAIL;
 import static com.paytm.digital.education.constant.InstituteByProductConstants.INSTITUTE_BY_PRODUCT_ENTRY_ID;
 import static com.paytm.digital.education.constant.InstituteByProductConstants.IS_DELETED;
+import static com.paytm.digital.education.constant.InstituteByProductConstants.UPDATED_AT;
 import static com.paytm.digital.education.enums.Action.SHOW_INTEREST;
 import static com.paytm.digital.education.mapping.ErrorEnum.DUPLICATE_INSTITUTE_ERROR;
 import static com.paytm.digital.education.mapping.ErrorEnum.NO_ENTITY_FOUND;
 import static com.paytm.digital.education.mapping.ErrorEnum.REPORT_GENERATION_ERROR;
 import static com.paytm.digital.education.utility.DateUtil.dateToString;
+import static com.paytm.digital.education.utility.DateUtil.get24HourBackDate;
+import static com.paytm.digital.education.utility.DateUtil.getCurrentDate;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.data.domain.Sort.Direction.ASC;
@@ -36,6 +42,7 @@ import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import com.paytm.digital.education.advice.helper.KeyGenerator;
 import com.paytm.digital.education.annotation.EduCache;
+import com.paytm.digital.education.config.AwsConfig;
 import com.paytm.digital.education.database.entity.CustomerAction;
 import com.paytm.digital.education.database.entity.InstituteByProduct;
 import com.paytm.digital.education.database.repository.CommonMongoRepository;
@@ -47,12 +54,15 @@ import com.paytm.digital.education.explore.dto.ActionCountReportDto;
 import com.paytm.digital.education.explore.dto.ActionFullReportDto;
 import com.paytm.digital.education.explore.dto.InstituteByProductDto;
 import com.paytm.digital.education.explore.dto.InstituteListResponseDto;
+import com.paytm.digital.education.explore.dto.Mail;
 import com.paytm.digital.education.explore.service.InstituteByProductService;
+import com.paytm.digital.education.service.S3Service;
 import com.paytm.digital.education.service.notification.EmailNotificationService;
 import com.paytm.education.logger.Logger;
 import com.paytm.education.logger.LoggerFactory;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.output.StringBuilderWriter;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
@@ -62,7 +72,11 @@ import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.util.Date;
@@ -105,6 +119,8 @@ public class InstituteByProductServiceImpl implements InstituteByProductService 
     private static final String[] KEYS = {};
     private static final String CACHE = "instituteByProduct";
     private static final boolean SHOULD_CACHE_NULL = false;
+    private static final String  REPORT_MAIL_BODY  =
+            "<html><body><h4>Please find the attached report.</h4></body></html>";
 
     private static final EduCache EDU_CACHE = new EduCache() {
 
@@ -129,14 +145,16 @@ public class InstituteByProductServiceImpl implements InstituteByProductService 
         }
     };
 
-    private final MongoOperations mongoOperation;
-    private final CommonMongoRepository commonMongoRepository;
-    private final EmailService emailService;
-    private final KeyGenerator keyGenerator;
-    private final StringRedisTemplate redisTemplate;
+    private final MongoOperations          mongoOperation;
+    private final CommonMongoRepository    commonMongoRepository;
+    private final EmailService             emailService;
+    private final KeyGenerator             keyGenerator;
+    private final StringRedisTemplate      redisTemplate;
     private final EmailNotificationService emailNotificationService;
+    private final S3Service                s3Service;
+    private final ReportMailConfig         reportMailConfig;
 
-    @Value("${explore.user.onboard.email.template}")
+    @Value("${common.user.onboard.email.template}")
     private String userOnboardEmailTemplate;
 
     @Override
@@ -185,7 +203,7 @@ public class InstituteByProductServiceImpl implements InstituteByProductService 
         Map<String, Object> params = new HashMap<>();
         params.put(EXPLORE_INSTITUTE_ID, exploreInstituteId);
         emailNotificationService.notify(userOnboardEmailTemplate, email, params);
-        
+
         try {
             commonMongoRepository.saveOrUpdate(customerAction);
         } catch (DuplicateKeyException duplicateKeyException) {
@@ -233,7 +251,9 @@ public class InstituteByProductServiceImpl implements InstituteByProductService 
 
     private String computeCountReport() {
         Aggregation agg = newAggregation(
-                match(where(IS_DELETED).is(null).and(ACTION).is(SHOW_INTEREST)),
+                match(where(IS_DELETED).is(null).and(ACTION).is(SHOW_INTEREST)
+                        .and(UPDATED_AT).lte(getCurrentDate())
+                        .gte(get24HourBackDate())),
                 group(INSTITUTE_BY_PRODUCT_ENTRY_ID).count().as(COUNT),
                 sort(DESC, COUNT),
                 lookup(INSTITUTE_BY_PRODUCT, ID, ID, DATA),
@@ -264,7 +284,9 @@ public class InstituteByProductServiceImpl implements InstituteByProductService 
 
     private String computeFullReport() {
         Aggregation agg = newAggregation(
-                match(where(IS_DELETED).is(null).and(ACTION).is(SHOW_INTEREST)),
+                match(where(IS_DELETED).is(null).and(ACTION).is(SHOW_INTEREST)
+                        .and(UPDATED_AT).lte(getCurrentDate())
+                        .gte(get24HourBackDate())),
                 group(INSTITUTE_BY_PRODUCT_ENTRY_ID).count().as(COUNT),
                 sort(DESC, COUNT),
                 lookup(CUSTOMER_ACTION, ID, INSTITUTE_BY_PRODUCT_ENTRY_ID, DATA),
@@ -300,7 +322,16 @@ public class InstituteByProductServiceImpl implements InstituteByProductService 
     @Override
     public void sendReport() {
         String report = computeReport();
-        emailService.sendMailWithAttachment("test@gmail.com", "report", "val", report);
+        if (StringUtils.isNotBlank(report)) {
+            String reportPath = uploadFileToS3(report);
+            log.info("Report file path after uploading to s3 : {}", reportPath);
+            Mail mail = new Mail(reportMailConfig.toAddresses(), reportMailConfig.getFrom(),
+                    reportMailConfig.getSubject() + dateToString(new Date(), DD_MMM_YYYY),
+                    REPORT_MAIL_BODY);
+            emailService.sendMailWithAttachment(mail, reportPath);
+        } else {
+            log.info("No content available to be send .");
+        }
     }
 
     @Override
@@ -365,6 +396,26 @@ public class InstituteByProductServiceImpl implements InstituteByProductService 
             );
         }
         return instituteByProduct;
+    }
+
+    private String uploadFileToS3(String content) {
+        String filename = getReportFileName();
+        String filepath = System.getProperty("java.io.tmpdir") + filename;
+        try {
+            File file = new File(filepath);
+            FileWriter writer = new FileWriter(file);
+            writer.write(content);
+            writer.close();
+
+            InputStream inStream = new FileInputStream(file);
+            String s3FilePath = s3Service
+                    .uploadFile(inStream, filename, filename, USER_ONBOARD_REPORT_PATH,
+                            AwsConfig.getS3ExploreBucketNameWithoutSuffix());
+            return AwsConfig.getMediaBaseUrl() + EDUCATION_EXPLORE_PREFIX + s3FilePath;
+        } catch (IOException e) {
+            log.error("Error in upload report to S3 to  : {}", e, filepath);
+        }
+        return null;
     }
 
     private String getReportFileName() {

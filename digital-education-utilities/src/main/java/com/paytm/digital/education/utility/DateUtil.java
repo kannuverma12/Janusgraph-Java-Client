@@ -1,14 +1,14 @@
 package com.paytm.digital.education.utility;
 
+import com.paytm.education.logger.Logger;
+import com.paytm.education.logger.LoggerFactory;
+import org.apache.commons.lang3.StringUtils;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-
-import com.paytm.education.logger.Logger;
-import com.paytm.education.logger.LoggerFactory;
-import org.apache.commons.lang3.StringUtils;
 
 
 
@@ -79,4 +79,9 @@ public class DateUtil {
         String finalString = newFormat.format(date);
         return newFormat.parse(finalString);
     }
+
+    public static Date get24HourBackDate() {
+        return new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000);
+    }
+
 }

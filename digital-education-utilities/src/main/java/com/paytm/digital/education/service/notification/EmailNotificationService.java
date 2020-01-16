@@ -12,6 +12,7 @@ import com.paytm.digital.education.service.notification.request.NotificationSend
 import com.paytm.digital.education.service.notification.response.NotificationResponse;
 import com.paytm.digital.education.utility.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,10 @@ public class EmailNotificationService {
 
     public NotificationResponse notify(String templateName, String emailId,
             Map<String, Object> params) {
+        if (StringUtils.isBlank(templateName)) {
+            log.error("Email template can't be null. Please provide a valid email template");
+            return null;
+        }
         NotificationRequest notificationRequest = new NotificationRequest();
         //set template name
         notificationRequest.setTemplateName(templateName);
