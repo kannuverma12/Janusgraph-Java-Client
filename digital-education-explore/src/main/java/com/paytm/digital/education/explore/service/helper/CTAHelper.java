@@ -261,7 +261,6 @@ public class CTAHelper {
             leadLabel = ctaConfigurationMap.get(DISPLAY_NAME + CLIENT);
             activeLabel = ctaConfigurationMap.get(ACTIVE_DISPLAY_NAME + CLIENT);
         } else {
-            //return null;
             leadLabel = ctaConfigurationMap.get(DISPLAY_NAME);
             activeLabel = ctaConfigurationMap.get(ACTIVE_DISPLAY_NAME);
         }
