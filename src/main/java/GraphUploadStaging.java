@@ -31,16 +31,16 @@ public class GraphUploadStaging {
     public static JanusGraph create() {
         Builder config = JanusGraphFactory.build();
         //config.set("storage.backend", "cassandrathrift");
-        //config.set("storage.cassandra.keyspace", "wynk_graph");
+        //config.set("storage.cassandra.keyspace", "w_graph");
 
         config.set("storage.backend", "cql");
-        config.set("storage.cql.keyspace", "wynk_graph");
+        config.set("storage.cql.keyspace", "w_graph");
         config.set("storage.cql.read-consistency-level", "ONE");
         config.set("storage.cql.write-consistency-level", "ONE");
 
         config.set("ids.block-size", "1000000000");
         config.set("ids.renew-percentage", "0.3");
-        config.set("storage.hostname", "10.1.2.144");
+        config.set("storage.hostname", "10.100.200.144");
         graph = config.open();
         System.out.println("Graph = " + graph);
         manage(graph);
@@ -79,7 +79,7 @@ public class GraphUploadStaging {
         for(int i = 3611501; i < 3612600; ++i) {
             String followId = "sn-uid-" + i;
             System.out.println("Adding new edge : " + followId);
-            Node from = new Node(EntityType.USER, "arijit-singh");
+            Node from = new Node(EntityType.USER, "singh");
             Node to = new Node(EntityType.ARTIST, followId, nodeProperties);
             Arrow arrow = new Arrow(from, to, EdgeLabel.FOLLOW, edgeProperties);
 
@@ -146,7 +146,7 @@ public class GraphUploadStaging {
         try {
             Builder config = JanusGraphFactory.build();
             config.set("storage.backend", "cassandrathrift");
-            config.set("storage.cassandra.keyspace", "graph_wynk1");
+            config.set("storage.cassandra.keyspace", "graph_w");
             config.set("storage.hostname", "127.0.0.1");
             graph = config.open();
             System.out.println("Graph = " + graph);

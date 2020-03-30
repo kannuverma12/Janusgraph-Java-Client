@@ -18,30 +18,25 @@ public class GraphBulkUpload {
         System.exit(0);
     }
 
-
     static JanusGraph create() {
         JanusGraphFactory.Builder config = JanusGraphFactory.build();
         config.set("storage.backend", "cassandrathrift");
-        config.set("storage.cassandra.keyspace", "wynk_graph");
+        config.set("storage.cassandra.keyspace", "w_graph");
         config.set("ids.block-size", "1000000000");
-        config.set("ids.renew-percentage","0.3");
+        config.set("ids.renew-percentage", "0.3");
         config.set("storage.cassandra.frame-size-mb", "128");
         config.set("storage.cassandra.thrift.cpool.max-wait", -1);
 
+        config.set("storage.buffer-size", "60000");
+        config.set("storage.batch-loading", "true");
 
-        config.set("storage.buffer-size","60000");
-        config.set("storage.batch-loading","true");
-
-
-        config.set("storage.hostname", "10.70.1.167,10.70.0.18,10.70.0.141");
-
-        //config.set("storage.hostname", "10.1.2.144");
+        config.set("storage.hostname", "10.10.20.144");
 
         graph = config.open();
-        System.out.println("Graph = "+graph);
+        System.out.println("Graph = " + graph);
         manage(graph);
         traversalSource = graph.traversal();
-        System.out.println("traversalSource = "+traversalSource);
+        System.out.println("traversalSource = " + traversalSource);
         load(graph);
 
         return graph;
@@ -75,7 +70,7 @@ public class GraphBulkUpload {
         mgmt.commit();
     }
 
-    static void bulkUplaod(){
+    static void bulkUplaod() {
         TransactionBuilder builder = graph.buildTransaction();
         JanusGraphTransaction tx = builder.enableBatchLoading().consistencyChecks(false).start();
         Map<String, Object> edgeProperties = new HashMap<>();
@@ -83,12 +78,12 @@ public class GraphBulkUpload {
         edgeProperties.put("time", System.currentTimeMillis());
 
         nodeProperties.put("curated", true);
-        for(int i =2511500 ; i<2511501; i++){
-            String followId = "sn-uid-"+i;
-            System.out.println("Adding new node : "+followId);
+        for (int i = 2511500; i < 2511501; i++) {
+            String followId = "sn-uid-" + i;
+            System.out.println("Adding new node : " + followId);
             Node from = new Node(EntityType.USER, "ikka");
             Node to = new Node(EntityType.ARTIST, followId, nodeProperties);
-            Arrow arrow = new Arrow(from, to,EdgeLabel.FOLLOW, edgeProperties);
+            Arrow arrow = new Arrow(from, to, EdgeLabel.FOLLOW, edgeProperties);
             try {
                 addEdge(arrow);
             } catch (Exception e) {
@@ -114,8 +109,8 @@ public class GraphBulkUpload {
             traversalSource.tx().commit();
             // ideally there should be a commit here.... as the V() method below will create a new txn
 //            if (!updateEdge(arrow)) {
-                traversalSource.V(fromV).next().addEdge(arrow.label.label(), toV, convertProperties(arrow.properties));
-                // commit here as well.
+            traversalSource.V(fromV).next().addEdge(arrow.label.label(), toV, convertProperties(arrow.properties));
+            // commit here as well.
             //}
         } catch (Exception e) {
             e.printStackTrace();
@@ -134,7 +129,7 @@ public class GraphBulkUpload {
         return propArray;
     }
 
-    public static Vertex addVertex(Node node) throws Exception{
+    public static Vertex addVertex(Node node) throws Exception {
         try {
             JanusGraphVertex janusGraphVertex = graph.addVertex(node.label.label());
             janusGraphVertex.property(node.idKey, node.vid);

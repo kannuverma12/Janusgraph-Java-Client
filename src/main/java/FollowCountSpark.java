@@ -16,23 +16,23 @@ public class FollowCountSpark {
 
     private static void createHGraph() {
         hgraph = GraphFactory.open("/Users/b0216282/Documents/backups/git/janusgraph/src/main/resources/jp_spark.properties");
-        System.out.println("Graph = "+hgraph);
+        System.out.println("Graph = " + hgraph);
         //traversalSource = hgraph.traversal().withComputer(SparkGraphComputer.class);
-        System.out.println("traversalSource = "+traversalSource);
+        System.out.println("traversalSource = " + traversalSource);
         getAllEdgesFromHGraph();
     }
 
-    static long getAllEdgesFromHGraph(){
-        try{
+    static long getAllEdgesFromHGraph() {
+        try {
             GraphTraversal<Vertex, Vertex> allV = traversalSource.V();
             GraphTraversal<Vertex, Vertex> gt = allV.has("vid", "supernode");
             GraphTraversal<Vertex, Long> c = gt.outE()
 //                    .limit(600000)
                     .count();
             long l = c.next();
-            System.out.println("All edges = "+l);
+            System.out.println("All edges = " + l);
             return l;
-        }catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("Error while fetching the edges for : ");
             e.printStackTrace();
         }
