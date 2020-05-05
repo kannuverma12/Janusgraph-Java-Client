@@ -1,9 +1,0 @@
-bombay => mumbai
-
-calcutta => kolkata
-
-bengaluru, banglore, bengluru => bangalore
-
-madras => chennai
-
-ncr => delhi
